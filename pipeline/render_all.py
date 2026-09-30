@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace')))
 W = os.path.dirname(os.path.abspath(__file__))
 OUT = S + '/out'
-TOTAL = 900
+TOTAL = 960
 CHUNKS = int(os.environ.get('CHUNKS', '12'))
 WORKERS = int(os.environ.get('WORKERS', '4'))
 

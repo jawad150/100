@@ -9,7 +9,7 @@ import cv2
 from engine import *
 
 FPS = 30
-DUR = 30.0
+DUR = 32.0
 NSUB = int(os.environ.get('NSUB', '6'))      # motion-blur sub-samples
 SHUTTER = 0.55                               # fraction of frame interval
 
@@ -1069,7 +1069,6 @@ def logo_glow():
 
 def scene_out(cv, t, cam):
     u = t - OUT_T0
-    fade = prog(t, 29.72, 30.0)
     # far decor
     obj3d(cv, 'torus', t, 110 + wobble(t, 0.2, 8), 330 + wobble(t, 0.25, 10), 230 * pop(t, OUT_T0 + 0.3), blur=5, rot=-25)
     obj3d(cv, 'capsule', t, 960, 1720 + wobble(t, 0.2, 10), 170 * pop(t, OUT_T0 + 0.5), blur=6, rot=35)
@@ -1092,13 +1091,123 @@ def scene_out(cv, t, cam):
             obj3d(cv, nm, t, x + wobble(t, 0.5, 5, i), yy + wobble(t, 0.6, 7, i), s * pp, rot=rot, t_off=i * 0.37)
     cp = e_out_expo(prog(t, 27.15, 27.6))
     draw(cv, chip('motion'), 540, 985 + (1 - cp) * 30, opacity=cp)
-    l1, l2 = out_words()
-    draw_words(cv, l1, 540, 1255, t, 27.45)
-    draw_words(cv, l2, 540, 1332, t, 27.6, glow=ORANGE)
-    ap = pop(t, 28.0, 0.5)
-    if ap > 0:
-        bounce = abs(math.sin((t - 28.0) * 3.2)) * 26
-        obj3d(cv, 'arrow3d', t, 540, 1500 + bounce, 130 * ap)
+
+# ============================================================== SCENE 7: PROFILE ENDING (28.3 - 32)
+
+ZT0, ZT1 = 28.3, 29.15
+BADGE_T0 = 29.3
+USER = '@jawad_mp4'
+
+@functools.lru_cache(maxsize=None)
+def avatar_img():
+    im = cv2.imread(S + '/src/profile.webp')
+    if im is None:
+        from PIL import Image
+        im = np.asarray(Image.open(S + '/src/profile.webp').convert('RGB'))[..., ::-1]
+    im = im[..., ::-1].astype(np.float32) / 255
+    h, w = im.shape[:2]
+    side = int(min(w, h) * 0.74)
+    cx, cy = int(w * 0.46), int(h * 0.44)
+    sub = im[max(0, cy - side // 2):cy + side // 2, max(0, cx - side // 2):cx + side // 2]
+    return cv2.resize(sub, (700, 700), interpolation=cv2.INTER_AREA)
+
+@functools.lru_cache(maxsize=64)
+def avatar_sprite(r):
+    d = 2 * r
+    img = cv2.resize(avatar_img(), (d, d), interpolation=cv2.INTER_AREA)
+    ys, xs = np.mgrid[0:d, 0:d].astype(np.float32)
+    dist = np.sqrt((xs - r + 0.5) ** 2 + (ys - r + 0.5) ** 2)
+    return pad(rgb_to_sprite(img, np.clip(r - dist, 0, 1)), 2)
+
+@functools.lru_cache(maxsize=64)
+def ring_glow(r):
+    return ring_sprite(2 * r + 80, r + 3, 5, ORANGE2, glow=10)
+
+@functools.lru_cache(maxsize=None)
+def badge_parts():
+    name = text_sprite(USER, 'Unbounded-800', 50)
+    sub = text_sprite('Follow for more AI tutorials', 'Inter-600', 28, hexc('#B8B0A6'))
+    btn = pill('FOLLOW  +', 'Inter-900', 34, pad_x=46, pad_y=26, grad=(hexc('#FF9A2E'), hexc('#FF4A00')),
+               border=(1, 0.85, 0.7, 0.55), tracking=0.08)
+    return name, sub, btn
+
+def zoom_state(t):
+    p = e_inout_expo(prog(t, ZT0, ZT1))
+    return p, lerp(1200, 120, p), lerp(960, 840, p), lerp(1.0, 0.16, p)
+
+def profile_ending(cv, inner, t):
+    """cv: fresh background; inner: the rendered reel frame to be zoomed out into the avatar circle."""
+    p, r, cy, sc = zoom_state(t)
+    cx = 540
+    # badge phase: circle travels to the badge's left end
+    bp = e_inout_cubic(prog(t, BADGE_T0, BADGE_T0 + 0.6))
+    bx, by, br = 222, 900, 92
+    cx, cy, r = lerp(cx, bx, bp), lerp(cy, by, bp), lerp(r, br, bp)
+    # badge body grows out of the circle
+    if bp > 0:
+        name, sub, btn = badge_parts()
+        bw = lerp(2 * br, 860, bp)
+        bh = 2 * br + 36
+        d = rrect_alpha(int(bw), int(bh), bh / 2, 40)
+        body = solid(sdf_fill(d), (0.07, 0.06, 0.055, 0.92))
+        body = over_spr(body, solid(sdf_stroke(d, 2.0), (1, 0.55, 0.2, 0.55)))
+        gl = glow_bar_badge(int(bw), int(bh))
+        composite(cv, gl, int(bx - br - 18 - 40 - 20), int(by - bh / 2 - 40 - 20), 0.9 * bp, 'add')
+        composite(cv, body, int(bx - br - 18 - 40), int(by - bh / 2 - 40), 1.0)
+        tp = e_out_expo(prog(t, BADGE_T0 + 0.35, BADGE_T0 + 0.85))
+        tx = bx + br + 34
+        draw(cv, name, tx + name.shape[1] / 2 + (1 - tp) * 40, by - 26, opacity=tp)
+        sp = e_out_expo(prog(t, BADGE_T0 + 0.5, BADGE_T0 + 1.0))
+        draw(cv, sub, tx + sub.shape[1] / 2 + (1 - sp) * 40, by + 34, opacity=sp)
+        fp = pop(t, BADGE_T0 + 0.9, 0.5, 2.0)
+        if fp > 0:
+            bty = 1130
+            draw(cv, cta_glow_btn(), 540, bty + 8, scale=fp, opacity=0.6 + 0.2 * math.sin(t * 5), mode='add')
+            s_ = fp * (1 + 0.03 * math.sin(t * 5))
+            draw(cv, btn, 540, bty, scale=s_)
+            ph = ((t - BADGE_T0 - 1.2) % 1.6) / 1.1
+            if 0 < ph < 1:
+                draw(cv, pill_sheen(btn, ph), 540, bty, scale=s_, mode='add')
+        for i, (nm, x, yy, sz, t0, rot) in enumerate([('blob_flower', 150, 640, 140, BADGE_T0 + 0.8, -10),
+                                                     ('blob_drop', 940, 660, 130, BADGE_T0 + 0.9, 8),
+                                                     ('blob_bear', 170, 1300, 150, BADGE_T0 + 1.0, -6),
+                                                     ('blob_cube', 915, 1310, 120, BADGE_T0 + 1.1, 10)]):
+            pp_ = pop(t, t0, 0.5)
+            if pp_ > 0:
+                obj3d(cv, nm, t, x + wobble(t, 0.5, 5, i), yy + wobble(t, 0.6, 7, i), sz * pp_, rot=rot, t_off=i * 0.37)
+    # circle contents: zoomed-out reel frame, cross-fading to the avatar
+    ri = int(max(8, r))
+    x0, y0 = int(cx - ri), int(cy - ri)
+    X0, Y0, X1, Y1 = max(0, x0), max(0, y0), min(W, x0 + 2 * ri), min(H, y0 + 2 * ri)
+    if X1 <= X0 or Y1 <= Y0:
+        return
+    M = np.float32([[sc, 0, cx - 540 * sc - X0], [0, sc, cy - 960 * sc - Y0]])
+    roi = cv2.warpAffine(inner, M, (X1 - X0, Y1 - Y0), flags=cv2.INTER_AREA if sc < 0.9 else cv2.INTER_LINEAR)
+    av_a = smooth(prog(t, ZT1 - 0.45, ZT1 + 0.05))
+    if av_a > 0:
+        av = cv2.resize(avatar_img(), (2 * ri, 2 * ri), interpolation=cv2.INTER_AREA)[Y0 - y0:Y1 - y0, X0 - x0:X1 - x0]
+        roi = roi * (1 - av_a) + av * av_a
+    ys, xs = np.mgrid[Y0:Y1, X0:X1].astype(np.float32)
+    dist = np.sqrt((xs - cx) ** 2 + (ys - cy) ** 2)
+    m = np.clip(r - dist, 0, 1)[..., None]
+    cv[Y0:Y1, X0:X1] = cv[Y0:Y1, X0:X1] * (1 - m) + roi * m
+    ra = prog(t, ZT0 + 0.2, ZT1)
+    if ra > 0:
+        rg = ring_glow(ri)
+        draw(cv, rg, cx, cy, opacity=ra, mode='add')
+        pulse = ((t - ZT1) * 0.7) % 1.0 if t > ZT1 else 0
+        if t > ZT1:
+            draw(cv, ring_sprite(400, 180, 3, ORANGE2), cx, cy, scale=(r / 180) * (1 + pulse * 0.6),
+                 opacity=(1 - pulse) * 0.7, mode='add')
+
+@functools.lru_cache(maxsize=64)
+def glow_bar_badge(bw, bh):
+    d = rrect_alpha(bw, bh, bh / 2, 60)
+    return cv2.GaussianBlur(solid(sdf_fill(d), ORANGE), (0, 0), 20) * 0.5
+
+@functools.lru_cache(maxsize=None)
+def cta_glow_btn():
+    return glow_of(badge_parts()[2], 22, ORANGE, 1.0)
 
 # ============================================================== frame assembly
 
@@ -1108,7 +1217,7 @@ SCENES = [
     (8.45, 21.72, scene_steps),
     (21.5, 24.5, scene_pay),
     (24.12, 26.2, scene_wall),
-    (25.9, 30.01, scene_out),
+    (25.9, 32.01, scene_out),
 ]
 
 def cam_at(t):
@@ -1134,9 +1243,14 @@ def render_sub(t):
     for a, b, fn in SCENES:
         if a <= t < b:
             fn(cv, t, cam)
+    if t >= ZT0:
+        inner = cv
+        cv = np.empty((H, W, 3), np.float32)
+        background(cv, t, glow=1.2, rays=0.6, grid=0.0)
+        profile_ending(cv, inner, t)
     return cv
 
-FLASHES = [(0.0, 0.9, 0.5), (6.85, 0.55, 0.3), (21.58, 0.9, 0.35), (24.2, 0.25, 0.3), (25.98, 0.5, 0.45)]
+FLASHES = [(0.0, 0.9, 0.5), (6.85, 0.55, 0.3), (21.58, 0.9, 0.35), (24.2, 0.25, 0.3), (25.98, 0.5, 0.45), (29.1, 0.3, 0.35)]
 CA_HITS = [2.9, 6.85, 8.6, 11.4, 14.8, 19.2, 21.58, 24.3, 25.98]
 
 def post_params(t):
@@ -1151,7 +1265,7 @@ def post_params(t):
         if abs(t - h) < 0.25:
             ca = max(ca, 6 * (1 - abs(t - h) / 0.25))
     fade_in = 1 - prog(t, 0.0, 0.18)
-    fade = max(prog(t, 29.72, 30.0), fade_in)
+    fade = max(prog(t, 31.72, 32.0), fade_in)
     return fl, ca, fade
 
 def render_frame(fi, nsub=NSUB):

@@ -1,10 +1,10 @@
 """Procedural score + SFX for the reel (48 kHz stereo WAV)."""
-import os, numpy as np, subprocess, sys
+import numpy as np, subprocess, sys
 from scipy import signal
 
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace')))
 SR = 48000
-DUR = 30.0
+DUR = 32.0
 N = int(SR * DUR)
 rng = np.random.default_rng(5)
 
@@ -342,23 +342,50 @@ def place_original(orig):
         out[i0:i0 + n] += seg * fade[:, None]
     return out
 
+VO_LINES = [(0.35, 0), (3.7, 1), (6.95, 2), (8.85, 3), (11.65, 4), (14.95, 5), (19.3, 6), (22.25, 7),
+            (24.5, 8), (29.5, 9)]
+
+def load_vo(i):
+    import wave
+    w = wave.open(f'{S}/tts/vo_{i}.wav')
+    x = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float64) / 32768
+    x = signal.resample_poly(x, SR, w.getframerate())
+    # voice polish: low cut, presence lift, gentle compression, short room
+    x = hp(x, 90)
+    x = x + 0.35 * bp(x, 2500, 6000)
+    env = np.abs(signal.hilbert(x))
+    env = lp(env, 12)
+    g = np.where(env > 0.12, (0.12 / (env + 1e-9)) ** 0.5, 1.0)
+    x = x * g
+    x = x / (np.abs(x).max() + 1e-9)
+    return reverb(x, 0.08, 0.6)
+
+def ending_sfx():
+    whoosh(28.2, 0.9, 200, 3000, 0.5, 0.0, 0.0, peak=0.7)
+    impact(29.12, 0.7); shimmer(29.15, 1.8, 0.16)
+    whoosh(29.3, 0.6, 600, 4000, 0.25, -0.6, 0.2)
+    for k in range(4):
+        tick(29.7 + k * 0.08, 0.1, 2600 + 150 * k)
+    pop(30.2, 0.35, 260, 900)
+    for k, tp in enumerate([30.1, 30.2, 30.3, 30.4]):
+        pop(tp, 0.2, 280 + 30 * k, 950 + 50 * k, pan=[-0.6, 0.6, -0.5, 0.5][k])
+
 if __name__ == '__main__':
     build()
-    orig = place_original(load_original())
-    # sidechain-ish ducking of music under big hits
-    duck = np.ones(N)
-    for th in [0.02, 6.85, 8.62, 21.58, 25.97]:
-        i = at(th)
-        n = int(0.6 * SR)
-        duck[i:i + n] = np.minimum(duck[i:i + n], 0.45 + 0.55 * np.linspace(0, 1, n) ** 2)
-    mix = music * 0.55 * duck[:, None] + sfx * 0.8 + orig * 0.32
-    # fade out
-    fo = at(29.6)
+    ending_sfx()
+    vo = np.zeros((N, 2))
+    for t0, i in VO_LINES:
+        add(vo, t0, load_vo(i), 1.0)
+    # duck SFX under the voice
+    venv = lp(np.abs(vo[:, 0]), 6)
+    venv = venv / (venv.max() + 1e-9)
+    duck = 1 - 0.55 * np.clip(venv * 4, 0, 1)
+    mix = sfx * 0.6 * duck[:, None] + vo * 0.9
+    fo = at(31.6)
     mix[fo:] *= np.linspace(1, 0, N - fo)[:, None] ** 1.5
     mix = hp(mix, 25)
-    # loudness: normalize RMS to ~ -15 dBFS, soft clip
     rms = np.sqrt(np.mean(mix ** 2))
-    mix *= 10 ** (-15 / 20) / (rms + 1e-9)
+    mix *= 10 ** (-16 / 20) / (rms + 1e-9)
     mix = np.tanh(mix * 1.1) / np.tanh(1.1)
     mix *= 0.93 / np.abs(mix).max()
     import wave
