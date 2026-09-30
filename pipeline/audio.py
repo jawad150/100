@@ -1,5 +1,5 @@
 """Procedural score + SFX for the reel (48 kHz stereo WAV)."""
-import numpy as np, subprocess, sys
+import os, numpy as np, subprocess, sys
 from scipy import signal
 
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace')))
@@ -380,7 +380,7 @@ if __name__ == '__main__':
     venv = lp(np.abs(vo[:, 0]), 6)
     venv = venv / (venv.max() + 1e-9)
     duck = 1 - 0.55 * np.clip(venv * 4, 0, 1)
-    mix = sfx * 0.6 * duck[:, None] + vo * 0.9
+    mix = sfx * 0.6 if os.environ.get('NO_VO') else sfx * 0.6 * duck[:, None] + vo * 0.9
     fo = at(31.6)
     mix[fo:] *= np.linspace(1, 0, N - fo)[:, None] ** 1.5
     mix = hp(mix, 25)
