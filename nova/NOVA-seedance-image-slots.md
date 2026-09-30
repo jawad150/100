@@ -1,7 +1,7 @@
 # NOVA — Seedance 2.5 prompts with @image slots
 ### One 30s clip + one 15s clip = 45s ad
 
-The references are numbered in the same order they were made in the image-generation sequence (A1 → A17, then the K1 keyframe). Upload them into Seedance **in exactly this slot order**, so that `@image1` in the prompt is the first image you attached, `@image2` the second, and so on.
+The references are numbered in the same order they were made in the image-generation sequence (A1 → A17). No keyframes are used: the vault plate (A12) plus the text places the bottle on the plinth. Upload them into Seedance **in exactly this slot order**, so that `@image1` in the prompt is the first image you attached, `@image2` the second, and so on.
 
 ## Master image list (image-generation order)
 
@@ -18,14 +18,12 @@ The references are numbered in the same order they were made in the image-genera
 | A9 | `@vero` | Vero base face (used only to make A10) |
 | A10 | `@verogown` | Vero, gown |
 | A11 | `@solen` | Solen |
-| A12 | `@vault` | Vault plate (used only to make K1) |
+| A12 | `@vault` | Vault plate |
 | A13 | `@atrium` | Atrium plate |
 | A14 | `@corridor` | Corridor plate (described in text, not attached) |
 | A15 | `@roof` | Roof plate |
 | A16 | `@goldroom` | Gold room plate (described in text, not attached) |
 | A17 | `@street` | Street plate (described in text, not attached) |
-| K1 | `@k_vault` | Vault keyframe: bottle on the plinth |
-| K2 | `@k_hero` | Hero bottle keyframe (optional) |
 
 ---
 
@@ -37,9 +35,9 @@ The references are numbered in the same order they were made in the image-genera
 | **@image2** | Briefcase sheet | A4 |
 | **@image3** | Kade, vault wardrobe | A7 |
 | **@image4** | Vero, gown | A10 |
-| **@image5** | Atrium plate | A13 |
-| **@image6** | Roof plate | A15 |
-| **@image7** | Vault keyframe (bottle on plinth) | K1 |
+| **@image5** | Vault plate | A12 |
+| **@image6** | Atrium plate | A13 |
+| **@image7** | Roof plate | A15 |
 
 ```
 SCENE CONTEXT
@@ -65,19 +63,21 @@ thin black gloves ending at the wrist bone, matte black single-lens optic,
 100% matches the reference.
 @image4: Vero, 31, dark hair in a low twisted knot, small mole on the right
 cheekbone, floor-length midnight blue silk gown, 100% matches the reference.
-@image5: marble gallery atrium, black plinth with a glass vitrine, thin steel
+@image5: the circular vault chamber — honed black marble floor, walls and
+dome, one 1-metre aperture at the apex dropping a single vertical shaft of cold
+light onto a waist-height 80cm black marble plinth at the centre, thin steel
+ring in the floor at its base, 100% matches the reference. In this video the
+NOVA bottle from @image1 stands alone at the exact centre of the plinth top.
+@image6: marble gallery atrium, black plinth with a glass vitrine, thin steel
 floor ring around the plinth base, crystal chandeliers, 100% matches the
 reference.
-@image6: flat wet concrete rooftop forty storeys up, steel access door on the
+@image7: flat wet concrete rooftop forty storeys up, steel access door on the
 left, blurred skyline in rain, 100% matches the reference.
-@image7: the vault wide frame — circular black marble chamber, one dome
-aperture dropping a vertical shaft of light onto an 80cm black marble plinth,
-the bottle standing at the plinth centre, camera at chest height angled 15
-degrees down, 100% matches the reference.
 
 FORMAT MODE
 Timed multishot, cuts only at the specified points, the camera does not cut on
-its own. Every vault wide uses the identical locked frame of @image7.
+its own. Every vault wide is one identical locked frame: the @image5 vault,
+plinth dead centre, chest height, 3 metres away, angled 15 degrees down, 47°.
 
 0.0s to 3.0s — STREET. Wide 84°, camera locked 5cm above black wet asphalt, a
 puddle with a blue reflection in the lower third, dark stone facades with
@@ -107,7 +107,7 @@ down a brushed stainless steel corridor. Thin blue laser lines cross it at
 irregular angles. Kade, 5 metres away, turned sideways, leans back as a
 diagonal beam passes 5cm in front of his face, grazing his stubble in blue.
 13.5s HARD CUT
-13.5s to 16.5s — VAULT WIDE, the exact @image7 frame, 47°, locked-off. Kade
+13.5s to 16.5s — VAULT WIDE, the same locked vault wide frame in @image5: plinth dead centre, camera at chest height 3 metres away angled 15 degrees down, 47°, 47°, locked-off. Kade
 walks out of the darkness from frame left at 3 km/h carrying the closed case,
 lays it flat on the plinth top 20cm left of the bottle, unlatches it and lifts
 the lid away from camera: the blue velvet interior faces camera, one precise
@@ -128,7 +128,7 @@ bottle 10cm from his bare left wrist; one press, a fine mist cone hits the
 inside of the wrist glowing blue; he lifts the wrist toward his face, eyes
 closing, one breath in.
 21.5s HARD CUT
-21.5s to 25.0s — VAULT WIDE, the exact @image7 frame again, locked-off, the
+21.5s to 25.0s — VAULT WIDE, the same locked vault wide frame in @image5: plinth dead centre, camera at chest height 3 metres away angled 15 degrees down, 47° again, locked-off, the
 open empty case on the left of the plinth top. 21.5s to 22.7s Kade, cap back
 on, sets the bottle down upright at the exact centre of the plinth; the base
 touches the stone and his gloved fingers open and lift away. 22.7s to 23.3s
@@ -206,7 +206,7 @@ readable text appears anywhere.
 | **@image3** | Kade, overcoat | A8 |
 | **@image4** | Vero, gown | A10 |
 | **@image5** | Solen | A11 |
-| **@image6** | Vault keyframe (bottle on plinth) | K1 |
+| **@image6** | Vault plate | A12 |
 
 **End card text (type in After Effects over 11–15s):** *They took the case. He took NOVA.* → **NOVA** · EAU DE PARFUM
 
@@ -233,10 +233,11 @@ cheekbone, floor-length midnight blue silk gown, 100% matches the reference.
 @image5: Solen, 58, heavy-set, silver hair combed flat, pale blue deep-set
 eyes, charcoal waistcoat, sleeves rolled, plain gold signet ring on the right
 little finger, 100% matches the reference.
-@image6: the vault wide frame — circular black marble chamber, one vertical
-shaft of light onto an 80cm black marble plinth, the bottle standing at the
-plinth centre, camera at chest height angled 15 degrees down, 100% matches the
-reference.
+@image6: the circular vault chamber — honed black marble floor, walls and
+dome, one 1-metre aperture at the apex dropping a single vertical shaft of cold
+light onto a waist-height 80cm black marble plinth at the centre, thin steel
+ring in the floor at its base, 100% matches the reference. In this video the
+NOVA bottle from @image1 stands alone at the exact centre of the plinth top.
 
 FORMAT MODE
 Timed multishot, cuts only at the specified points, the camera does not cut on
@@ -255,7 +256,7 @@ one precise empty bottle-shaped cavity, nothing else, lit by the lid LED.
 hot lamp: eyes fixed, jaw sets, one slow blink, a nostril flares. Complete
 stillness.
 5.0s HARD CUT
-5.0s to 7.0s — VAULT, the exact @image6 frame, locked-off tripod: the empty
+5.0s to 7.0s — VAULT, the same locked vault wide frame in @image6: plinth dead centre, camera at chest height 3 metres away angled 15 degrees down, 47°, locked-off tripod: the empty
 vault, no one in it, the bottle still standing upright at the plinth centre in
 its cold shaft of light, fine dust drifting down through the beam.
 7.0s HARD CUT
@@ -315,7 +316,7 @@ segment.
 
 POSITIVE LOCKS
 The case is empty, velvet pristine, cavity clearly bottle-shaped. The vault
-frame matches @image6 with the bottle standing upright and no people. Solen,
+frame shows the plinth dead centre with the bottle standing upright and no people. Solen,
 Kade and Vero match their references. Kade keeps walking; Vero ends turned back
 toward him. The wrist is bare skin with only a subtle blue shimmer. No text
 anywhere in the image.
@@ -323,6 +324,8 @@ anywhere in the image.
 
 ---
 
+**Shot 13 match (the bottle still on the plinth in Clip 2):** without a keyframe, the Clip 2 vault shot may not line up exactly with Clip 1. If it's off, cut the frames from Clip 1 at about 22.7–23.3s (bottle alone, before he closes the case) and use them for shot 13.
+
 **If Seedance caps the number of references:**
-- **Clip 1:** drop @image6 (roof) first, then @image5 (atrium). Both places are also described in the text. Renumber the tags in the prompt to match what you uploaded.
+- **Clip 1:** drop @image7 (roof) first, then @image6 (atrium). Both places are also described in the text. Renumber the tags in the prompt to match what you uploaded.
 - **Clip 2:** drop @image4 (Vero) last, because her turning back is the payoff of the film.
