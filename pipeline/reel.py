@@ -940,8 +940,8 @@ def scene_pay(cv, t, cam):
           opacity=1 - ex)
     obj3d(cv, 'sphere', t, 120 + wobble(t, 0.3, 5), 1790, 130 * pop(t, 22.6), opacity=1 - ex)
     l1, l2 = pay_words()
-    draw_words(cv, l1, 540, 262, t, 21.8, exit_t=24.1)
-    draw_words(cv, l2, 540, 350, t, 21.95, exit_t=24.12, glow=ORANGE)
+    draw_words(cv, l1, 540, 262, t, 21.8, exit_t=23.8, exit_dur=0.28)
+    draw_words(cv, l2, 540, 350, t, 21.95, exit_t=23.83, exit_dur=0.28, glow=ORANGE)
 
 # ============================================================== SCENE 5: CLONE WALL (24.15 - 26.1)
 

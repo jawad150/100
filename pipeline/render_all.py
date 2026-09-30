@@ -31,9 +31,10 @@ if __name__ == '__main__':
             f.write(f"file '{o}'\n")
     subprocess.run(['python3', 'audio.py'], cwd=W, check=True)
     final = f'{OUT}/higgsfield_genjutsu_reel.mp4'
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt',
-                    '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a',
-                    '-c:v', 'libx264', '-preset', 'slow', '-crf', os.environ.get('CRF', '17'), '-profile:v', 'high',
-                    '-pix_fmt', 'yuv420p', '-r', '30', '-movflags', '+faststart',
-                    '-c:a', 'aac', '-b:a', '256k', '-shortest', final], check=True)
+    base = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt',
+            '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'slow',
+            '-b:v', '10M', '-maxrate', '14M', '-bufsize', '20M', '-passlogfile', f'{OUT}/x264pass']
+    subprocess.run(base + ['-pass', '1', '-an', '-f', 'mp4', '/dev/null'], check=True)
+    subprocess.run(base + ['-pass', '2', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-r', '30',
+                           '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '256k', '-shortest', final], check=True)
     print('final', final, os.path.getsize(final) / 1e6, 'MB', f'total {time.time() - t0:.0f}s', flush=True)
