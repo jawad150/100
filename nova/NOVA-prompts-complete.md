@@ -1,5 +1,5 @@
 # NOVA — Complete Prompt File
-### Images (GPT Image 2.5 on OpenArt) → Keyframes → Video (Seedance on OpenArt) · in production order
+### Images (GPT Image 2.5 on OpenArt) → Keyframes → Video (Seedance 2.5 on OpenArt, 4 sequences) · in production order
 
 This file goes with `NOVA-production-bible-v2.md` and `NOVA-visual-storyboard-v2.html`. Shot numbers and timecodes match both.
 
@@ -10,7 +10,7 @@ This file goes with `NOVA-production-bible-v2.md` and `NOVA-visual-storyboard-v2
 4. In the image prompts, `@image1` means "attach the locked image named here as the first reference".
 5. The video prompts use your Element tags directly (`@nova`, `@kadeblack` …). If OpenArt limits how many references a clip can take, attach them in the order listed, because the most important one comes first.
 6. For Kade, attach **only the wardrobe sheet** for that shot (`@kadeblack` or `@kaderain`), not `@kade` as well. The wardrobe sheet already carries the locked face, and two face references tend to fight each other.
-7. Seedance clip lengths: generate the length shown and trim to the storyboard timing in the edit.
+7. **Video = Part C:** four multi-shot sequences in Seedance 2.5 (12s, 24s, 12s, 12s). Part D holds single-shot prompts for repairing any one beat that fails.
 8. All lettering (NOVA, the tagline, EAU DE PARFUM) is typed in After Effects, never generated.
 
 ---
@@ -908,7 +908,438 @@ letters, no logo.
 
 ---
 
-# PART C — VIDEO PROMPTS (Seedance), IN SHOT ORDER
+# PART C — SEEDANCE 2.5 SEQUENCES (main method)
+
+Seedance 2.5 can hold up to 30 seconds, so the 42-second film is built from **4 multi-shot sequences** instead of 17 separate clips. Each sequence stays within one world and one small set of references.
+
+| Seq | Film time | Covers shots | Generate | References (in priority order) |
+|---|---|---|---|---|
+| **S1 Arrival** | 0:00–0:09 | 01, 02, 03 | **12s** | `@atrium` `@verogown` `@nova` `@street` |
+| **S2 The Vault** ★ | 0:09–0:24 **+ 0:32–0:34** | 04, 05, 06, 07, 08, 09A, 09B, **13** | **24s** | `@k_vault` `@nova` `@kadeblack` `@case` `@corridor` |
+| **S3 Roof → Gold** | 0:24–0:32 | 10, 11, 12 | **12s** | `@solen` `@caseempty` `@kaderain` `@roof` `@goldroom` |
+| **S4 Return → End** | 0:34–0:42 | 14A, 14B, 15 | **12s** | `@kaderain` `@verogown` `@atrium` `@nova` |
+
+**Why not two 30-second clips?**
+- **Retries:** if one beat fails in a 30-second clip, you pay to regenerate all 30 seconds. With these four, a failure only costs 12–24 seconds.
+- **References:** a 30-second clip spanning street, vault, roof and study needs 9 or more references, and identity drifts as the count goes up.
+- **Handles:** each sequence is generated slightly longer than it plays, which leaves room to trim in the edit.
+
+**The big win: shot 13 comes free from S2.** In S2, after Kade walks out, the locked camera holds on the bottle alone for 3 seconds. That hold *is* shot 13, cut out and placed after Solen's scene in the edit. It's the same generation and the same locked camera, so the frame matches shot 06 perfectly.
+
+**Generate S2 first**, because it holds the whole twist. Then S3, S4, S1.
+
+**If one beat inside a sequence fails**, don't regenerate the whole sequence. Use that shot's single prompt from **Part D** (for example V09B) and cut it in.
+
+**If OpenArt caps the reference count**, drop references from the end of the list first.
+
+---
+
+## S1 · Arrival · shots 01–03 · generate 12s
+
+```
+SCENE CONTEXT
+Night in a rain-soaked city. A man in a long black overcoat steps out of a car
+into a puddle; a burst of blue perfume mist fills the frame; then a black-tie
+gala in a marble atrium, where the NOVA perfume bottle glows in a vitrine and
+a woman in a midnight blue gown stops to look at it before the whole plinth
+sinks into the floor.
+
+ACTIVE REFERENCES
+@atrium: marble gallery atrium, black plinth with a glass vitrine, thin steel
+floor ring around the plinth base, crystal chandeliers, 100% matches the
+reference.
+@verogown: Vero, 31, dark hair in a low twisted knot, small mole on the right
+cheekbone, floor-length midnight blue silk gown, 100% matches the reference.
+@nova: sapphire crystal perfume bottle inside the vitrine — faceted ovoid,
+hollow spherical void through its centre, luminous blue liquid, eight-spike
+metal star cap, 100% matches the reference.
+@street: narrow wet stone street at night with abstract blue-white wall
+signage, 100% matches the reference.
+
+FORMAT MODE
+Timed multishot, cuts only at the specified points, the camera does not cut on
+its own.
+
+0.0s to 4.0s — STREET. Wide 84°, camera locked 5cm above black wet asphalt, a
+puddle with a blue reflection filling the lower third. The rear door of a black
+unbadged sedan on the right swings open; one black shoe steps down into the
+puddle, a soaked black overcoat hem falls behind it, water splashes in a crown;
+both feet walk out of frame left at 4 km/h. Only legs, shoes and coat hem are
+ever in frame. Heavy rain rings the puddle.
+4.0s HARD CUT
+4.0s to 6.5s — MIST. 63°, pure black void; a burst of fine atomized mist fires
+toward the lens from bottom centre and the camera pushes into it at 6 km/h;
+droplets sharp at the leading edge, hazy behind; by 6.5s the whole frame is a
+glowing electric blue-white veil. 48 fps slow motion in this segment only.
+6.5s HARD CUT
+6.5s to 12.0s — ATRIUM. 63°, chest height, slow push-in at 2 km/h through a
+gap in a black-tie crowd. The glowing vitrine with the NOVA bottle is centred.
+6.5s to 8.5s Vero walks in from frame left, slows and stops one metre from the
+vitrine, eyes fixed on the bottle, head tilting a few degrees. 8.5s to 12.0s
+the plinth, vitrine and bottle descend smoothly into the steel floor ring at
+0.3 km/h as one heavy mechanical unit, the glow sinking with it; Vero's gaze
+follows it down. Guests keep moving and talking around her.
+No drift mid-segment.
+
+PERFORMANCE
+Vero is composed and still; desire shows only in her eyes and one small
+breath through parted lips. Pore-level skin, catch-lights from the vitrine.
+
+PHYSICS
+Rain impacts ring the water; the shoe displaces the puddle with weight; the
+mist droplets slow with air resistance; the plinth moves on a smooth track;
+the silk gown settles with weight as she stops.
+
+LIGHTING
+Street: cold blue-white signage spill from frame left at 8500K, deep black
+shadows. Mist: one hard 9000K backlight. Atrium: cold 7000K glow from inside
+the vitrine lighting the bottle and Vero's face from below-front, warm 3200K
+chandelier fill from above.
+
+COLOR GRADE
+Navy and black throughout, electric sapphire and cyan in the mist and the
+bottle, warm amber only in the chandelier crystals.
+
+AUDIO
+Heavy rain, a car door, one splash and a low bass drone; a crisp atomizer
+spray and a rising whoosh; then a soft gala murmur and a low hydraulic hum.
+
+STYLE
+Photoreal luxury thriller cinema, fine film grain, 24 fps real time except the
+mist segment.
+
+POSITIVE LOCKS
+The man's face never appears. One bottle, inside the vitrine, descending with
+the plinth. Vero matches the reference. The car is unbadged, signage is
+abstract light, and no readable text appears anywhere.
+```
+
+---
+
+## S2 · The Vault · shots 04–09B + 13 · generate 24s · ★★ THE TWIST
+**Attach `@k_vault` as the vault reference.** Don't use it as the first frame here, because this sequence opens on the macros.
+
+```
+SCENE CONTEXT
+A thief breaks in and reaches a circular black marble vault where the NOVA
+perfume bottle stands alone on a plinth in a shaft of light. He opens an empty
+briefcase beside it, lifts the bottle into the light, sprays it once on his
+bare wrist, sets the bottle BACK on the plinth, closes the empty case and
+leaves. The bottle stays.
+
+ACTIVE REFERENCES
+@k_vault: the vault wide frame — circular black marble chamber, one dome
+aperture dropping a vertical shaft of light onto an 80cm black marble plinth,
+the bottle standing at the plinth centre, camera at chest height angled 15
+degrees down, 100% matches the reference.
+@nova: sapphire crystal perfume bottle — forty facets, hollow spherical void
+through its centre, luminous blue liquid, brushed blue-silver collar,
+eight-spike metal star cap, small engraved star emblem on the base, 100%
+matches the reference.
+@kadeblack: Kade, 33, South Asian, pale scar through the left eyebrow, grey
+streak at the right temple, three-day stubble, matte black technical jacket,
+thin black gloves ending at the wrist bone, matte black single-lens optic,
+100% matches the reference.
+@case: matte black carbon fibre attaché case, gunmetal corners, navy leather
+handle; inside, pristine blue velvet with one EMPTY bottle-shaped cavity, 100%
+matches the reference.
+@corridor: brushed stainless steel security corridor, one-point perspective,
+100% matches the reference.
+
+FORMAT MODE
+Timed multishot, cuts only at the specified points, the camera does not cut on
+its own. Every return to the vault wide uses the identical locked frame of
+@k_vault.
+
+0.0s to 2.4s — MACROS. Three fast extreme close-ups, 0.8s each, handheld:
+a black-gloved hand pressing flat on a brushed-steel panel (12°); the matte
+black optic swinging down over his right eye, only eye socket and stubble in
+frame (18°); a thin black fibre-optic cable sliding under a steel door gap
+toward camera at floor level (12°).
+2.4s HARD CUT
+2.4s to 5.0s — CORRIDOR. 63°, locked-off dead centre, one-point perspective.
+Thin blue laser lines cross the corridor floor to ceiling at irregular angles.
+Kade, 5 metres away, turned sideways, slides one leg over a low beam, then
+leans back as a diagonal beam passes 5cm in front of his face, grazing his
+stubble in blue. Perfectly still, one breath.
+5.0s HARD CUT
+5.0s to 9.0s — VAULT WIDE. 47°, locked-off, the exact @k_vault frame: the
+bottle alone on the plinth in the light shaft. Kade walks out of the darkness
+from frame left at 3 km/h carrying the closed case, lays it flat on the plinth
+top 20cm left of the bottle, unlatches it and lifts the lid away from camera:
+the blue velvet interior faces camera, one precise bottle-shaped cavity,
+clearly empty. The bottle stands untouched.
+9.0s HARD CUT
+9.0s to 11.5s — FACE. MCU 29°, locked at eye level. Kade raises the bottle
+into the light shaft at chin height; light through the hollow core projects an
+eight-armed star with a dark centre across his face, the dark centre on the
+bridge of his nose, the arms over cheekbones and brow. First full view of his
+face. He holds completely still, eyes on the bottle.
+11.5s HARD CUT
+11.5s to 13.0s — PRODUCT MACROS. Two extreme close-ups, 0.75s each, 12°: light
+sliding across the crystal facets with the blue liquid shifting and one air
+bubble rising; the eight-spike metal star cap from low angle, light travelling
+along each spike.
+13.0s HARD CUT
+13.0s to 15.0s — SPRAY. MCU 29°, focus on the wrist. The cap is off; his
+gloved right hand holds the bottle 10cm from his left wrist, jacket cuff pulled
+back to bare skin. One press: a fine mist cone hits the inside of the bare
+wrist, glowing blue in the light. He lifts the wrist toward his face, eyes
+closing, one slow breath in.
+15.0s HARD CUT
+15.0s to 24.0s — VAULT WIDE, the exact @k_vault frame again, 47°, locked-off
+tripod for the entire segment. The open empty case lies on the left of the
+plinth top. 15.0s to 16.5s Kade lowers the bottle, cap back on, and sets it
+down upright at the exact centre of the plinth; the base touches the stone and
+his gloved fingers open and lift away. 16.5s to 17.5s nothing moves; the
+bottle stands alone in the light. 17.5s to 19.0s he closes the lid of the
+empty case, snaps both latches and lifts it by the handle. 19.0s to 20.5s he
+walks out of frame left at 3 km/h; the vault walls wash in a slow pulsing deep
+red. 20.5s to 21.5s the red fades out and the cold light returns. 21.5s to
+24.0s the frame holds: the empty vault, no one in it, the bottle still
+standing upright at the plinth centre in its shaft of light, fine dust
+drifting down through the beam.
+No drift mid-segment.
+
+PERFORMANCE
+Kade: total control and calm; slow breath through the nose, relaxed jaw, no
+hesitation, an almost reverent stillness when the star lands on his face.
+Pore-level skin, stubble catching blue light, living catch-lights.
+
+PHYSICS
+Glove leather creases under pressure; the optic swings with inertia; laser
+lines stay perfectly straight and pass in front of him; the case has weight,
+latches recoil; mist droplets are real, backlit and bead on skin; the bottle
+lands with weight and a real contact shadow; dust falls through the beam.
+
+LIGHTING
+Corridor: low cold 6000K cove strips with blue laser lines as the key. Vault:
+one hard 7000K vertical shaft from the dome onto the plinth, everything outside
+it navy black; the star caustic is the key light on his face; red alarm wash
+on the walls only, 19.0s to 20.5s.
+
+COLOR GRADE
+Deep navy shadows, electric sapphire and cyan in the glass, mist and lasers,
+platinum highlights on metal, natural warm skin under blue.
+
+AUDIO
+Metal, servo click, cable hiss; silence and breath in the corridor; footsteps
+echoing on marble and latch clicks; a big score swell with sub-bass on the
+face; one crisp spray and an inhale; the glass "tok" of the bottle on stone,
+held silence, latch clicks, footsteps, a low alarm hum that fades to room tone.
+
+STYLE
+Photoreal heist cinema, fine film grain, 24 fps real time.
+
+POSITIVE LOCKS
+The vault wide frame is identical every time it appears. The bottle ends the
+sequence standing upright at the plinth centre, sharp and clearly visible, for
+the final 2.5 seconds. The case is empty from start to finish. The star on his
+face has eight arms and a dark centre. Kade's face matches the reference:
+eyebrow scar, grey temple streak. No text or markings anywhere.
+```
+
+---
+
+## S3 · Roof → Gold room · shots 10–12 · generate 12s
+
+```
+SCENE CONTEXT
+On a rain-soaked rooftop, guards with torches corner the thief; he calmly
+slides the closed briefcase across the concrete to their feet and steps back
+into the dark. A burst of gold mist. Then in a dark oak study under a brass
+lamp, the collector opens the recovered case: it is empty.
+
+ACTIVE REFERENCES
+@solen: Solen, 58, heavy-set, silver hair combed flat, pale blue deep-set
+eyes, charcoal waistcoat, sleeves rolled, plain gold signet ring on the right
+little finger, 100% matches the reference.
+@caseempty: the open matte black case, pristine blue velvet with one empty
+bottle-shaped cavity lit by the LED in the lid, 100% matches the reference.
+@kaderain: Kade, 33, South Asian, long soaked black wool overcoat, wet hair
+pushed back, bare hands, 100% matches the reference.
+@roof: flat wet concrete rooftop forty storeys up, steel access door on the
+left, blurred skyline, 100% matches the reference.
+@goldroom: dark oak study, round dark table, brass pendant lamp, cigar smoke,
+100% matches the reference.
+
+FORMAT MODE
+Timed multishot, cuts only at the specified points, the camera does not cut on
+its own.
+
+0.0s to 5.0s — ROOF. 84°, handheld at waist height behind Kade's right
+shoulder, looking toward the door. The steel door on the left is flung open;
+three guards as pure backlit black silhouettes aim torches at Kade, who stands
+6 metres away on the right holding the closed case. 0.0s to 1.0s the beams find
+him and he stops. 1.0s to 2.5s he bends and slides the case along the wet
+concrete toward them; it skids 5 metres at 8 km/h throwing water and stops at
+their feet. 2.5s to 4.0s two guards lunge for it. 4.0s to 5.0s Kade steps
+backward out of the beams into the rain and darkness.
+5.0s HARD CUT
+5.0s to 6.5s — GOLD MIST. 63°, black void, a burst of fine mist fires toward
+the lens as the camera pushes in at 6 km/h, filling the frame with glowing
+amber-gold. 48 fps slow motion in this segment only.
+6.5s HARD CUT
+6.5s to 9.5s — CASE. High angle 47°, locked, looking straight down onto the
+round oak table. Solen's hands with the signet ring flip both latches and raise
+the lid. The interior faces camera: pristine blue velvet, one precise empty
+bottle-shaped cavity, nothing else, lit by the lid LED.
+9.5s HARD CUT
+9.5s to 12.0s — FACE. MCU 29°, locked. Solen looks down into the case under
+the hot lamp: eyes fixed, jaw sets, one slow blink, a nostril flares. Complete
+stillness.
+No drift mid-segment.
+
+PERFORMANCE
+Kade: unhurried, upright, hands open after the release. Solen: stillness,
+muscle-level anger held behind the eyes; pore-level skin, broken capillaries,
+sweat sheen under the lamp.
+
+PHYSICS
+Heavy rain streaks and splashes; the case slides with weight, fans water and
+slows with friction; the overcoat drips; mist droplets slow in the air; the
+case lid lifts with weight; cigar smoke drifts in the lamp light.
+
+LIGHTING
+Roof: hard white 6000K torch beams through rain from the door, guards pure
+silhouettes, cold blue skyline glow. Study: one hot 2800K tungsten pendant
+directly above the table, everything outside its pool in deep shadow.
+
+COLOR GRADE
+Roof in black, navy and white beams. Mist and study in old gold, amber and
+dark oak; the only blue in the study is the velvet inside the case.
+
+AUDIO
+Rain, distant sirens, the case scraping and skidding, the score at its peak;
+the score cuts dead into the mist with a low tungsten hum; two latch clicks,
+then total silence.
+
+STYLE
+Photoreal noir thriller, fine film grain, 24 fps real time except the mist
+segment.
+
+POSITIVE LOCKS
+Guards are faceless backlit silhouettes. The case is closed on the roof and
+empty in the study, velvet pristine, cavity clearly bottle-shaped. Solen
+matches the reference. No text anywhere.
+```
+
+---
+
+## S4 · Return → End card · shots 14A, 14B, 15 · generate 12s
+**Type the end-card text in AE:** *They took the case. He took NOVA.* → **NOVA** · EAU DE PARFUM.
+
+```
+SCENE CONTEXT
+The gala upstairs is still going as if nothing happened. The thief, in a wet
+black overcoat, walks calmly through the crowd; the woman in the midnight blue
+gown passes him, stops and turns back as she catches his scent; he tugs his
+cuff over his wrist; then the NOVA bottle alone in a black void, throwing a
+star of light onto the wall behind it.
+
+ACTIVE REFERENCES
+@kaderain: Kade, 33, South Asian, long soaked black wool overcoat, wet hair
+pushed back, grey streak at the right temple, bare hands, 100% matches the
+reference.
+@verogown: Vero, 31, dark hair in a low twisted knot, mole on the right
+cheekbone, floor-length midnight blue silk gown, 100% matches the reference.
+@atrium: marble gallery atrium with crystal chandeliers and brass balconies,
+100% matches the reference.
+@nova: sapphire crystal perfume bottle — forty facets, hollow spherical void,
+luminous blue liquid, brushed blue-silver collar, eight-spike metal star cap,
+100% matches the reference.
+
+FORMAT MODE
+Timed multishot, cuts only at the specified points, the camera does not cut on
+its own.
+
+0.0s to 5.0s — WALK. 47°, steadicam 2 metres behind Kade at chest height,
+following at 3 km/h through a black-tie crowd toward the far doors, water
+dripping from his coat hem. 1.5s to 2.5s Vero, walking toward camera on the
+right, passes him shoulder to shoulder. 2.5s to 5.0s she takes two more steps,
+slows, stops, and turns her head and shoulders back over her left shoulder
+toward him, eyes half closing, lips slightly parted. Kade keeps walking without
+looking back.
+5.0s HARD CUT
+5.0s to 6.5s — CUFF INSERT. ECU 18°, handheld tracking alongside at 3 km/h.
+His bare left wrist at hip height mid-walk; a faint cool blue shimmer catches
+on the inside of the wrist under the light, then his right fingers tug the wet
+overcoat cuff down over it.
+6.5s HARD CUT
+6.5s to 12.0s — HERO. 29°, a very slow orbit left to right at 0.5 km/h around
+the NOVA bottle standing on a glossy black surface in a pure black void,
+centred slightly low with empty black space in the lower third. One hard cold
+backlight passes through the hollow core and throws an eight-armed star with a
+dark centre onto a matte black wall 1 metre behind it. 6.5s to 9.5s the facets
+catch the light as the orbit moves. 9.5s to 12.0s the backlight dims slowly and
+the star fades to darkness, leaving the bottle glowing faintly blue.
+No drift mid-segment.
+
+PERFORMANCE
+Vero: a small intake of breath through the nose, eyelids lowering, the
+faintest recognition at the corner of her mouth. Kade: completely neutral and
+unhurried. Pore-level skin, living catch-lights from the chandeliers.
+
+PHYSICS
+Wet wool swings heavily and drips; the silk gown twists with her turn and
+settles with weight; the star is a real optical caustic with fine threads;
+glossy reflection under the bottle base.
+
+LIGHTING
+Atrium: warm 3200K chandelier light from above, cool 7000K spill near the empty
+plinth ring, damp highlights on Kade's hair and coat, a thin cool glint on the
+wrist. Hero: one hard 7500K backlight through the bottle core, a thin rim on
+the cap spikes, black void.
+
+COLOR GRADE
+Black crowd, midnight blue silk, amber chandelier accents, navy shadows; the
+hero shot in deep navy to electric sapphire with platinum metal.
+
+AUDIO
+The gala murmur distant and softened, a single soft sustained note; the final
+note, one crisp spray sound, then black silence.
+
+STYLE
+Photoreal luxury cinema, fine film grain, 24 fps real time.
+
+POSITIVE LOCKS
+Kade and Vero both match their references. Kade keeps walking away; Vero ends
+her segment turned back toward him. The wrist is bare skin with only a subtle
+blue shimmer. The bottle matches the reference exactly. No text anywhere in the
+image.
+```
+
+---
+
+## Edit assembly for the 4 sequences
+
+| Film time | Take from | Sequence time | Shot |
+|---|---|---|---|
+| 0:00–0:03 | S1 | 0.5–3.5 | 01 street |
+| 0:03–0:05 | S1 | 4.3–6.3 | 02 blue mist (cut out at the whiteout) |
+| 0:05–0:09 | S1 | 7.5–11.5 | 03 Vero + plinth sinks |
+| 0:09–0:11 | S2 | 0.2–2.2 | 04 macros |
+| 0:11–0:13 | S2 | 2.8–4.8 | 05 corridor |
+| 0:13–0:16 | S2 | 6.0–9.0 | 06 empty case opens |
+| 0:16–0:18 | S2 | 9.3–11.3 | 07 star on face |
+| 0:18–0:20 | S2 | 11.5–13.0 (+ stretch) | 08 product macros |
+| 0:20–0:21.5 | S2 | 13.3–14.8 | 09A spray |
+| 0:21.5–0:24 | S2 | 15.0–17.5 | **09B bottle set back, hold** |
+| 0:24–0:28 | S3 | 0.5–4.5 | 10 roof, case slide |
+| 0:28–0:29 | S3 | 5.3–6.3 | 11 gold mist |
+| 0:29–0:32 | S3 | 6.5–9.5 | 12 empty case (silence) |
+| 0:32–0:34 | **S2** | **21.8–23.8** | **13 bottle still there** (same locked frame as 06) |
+| 0:34–0:37 | S4 | 1.5–4.5 | 14A Vero turns |
+| 0:37–0:38 | S4 | 5.2–6.2 | 14B cuff |
+| 0:38–0:42 | S4 | 7.5–11.5 | 15 hero + AE text |
+
+These in/out points assume Seedance keeps to the timecodes. It will drift a little, so trim by eye and keep the durations in the Film time column.
+
+---
+
+# PART D — SINGLE-SHOT PROMPTS (fallback / repair)
+
+Use these only to **replace one beat that failed inside a sequence** from Part C. Each one also works as a standalone 5s clip.
 
 **Order of generation (hardest first):** 06 → 09B → 13 → 07 → 10 → 12 → 14A/14B → then 01, 02, 03, 04, 05, 08, 09A, 11, 15.
 They are **listed below in film order** so the edit is easy to follow.
@@ -2002,7 +2433,7 @@ centre. Empty black space in the lower third. No text anywhere in the image.
 
 ---
 
-# PART D — EDIT ASSEMBLY (quick reference)
+# PART E — EDIT ASSEMBLY IF YOU USE SINGLE SHOTS
 
 | Order | Clip | Trim to | Note |
 |---|---|---|---|
