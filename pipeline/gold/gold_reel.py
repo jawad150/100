@@ -596,7 +596,7 @@ def stage_bg():
     return np.concatenate([im, np.ones(im.shape[:2] + (1,), np.float32)], 2)
 
 
-@functools.lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=3)
 def card_mask(w, h, r):
     d = rrect_alpha(w, h, r, 0)
     return sdf_fill(d)
