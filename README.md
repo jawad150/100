@@ -1,3 +1,46 @@
+# Gold market reel — black × gold motion graphics (Rida)
+
+**Final video:** [`reel/gold_reel_final.mp4`](reel/gold_reel_final.mp4) (1080×1920, 29.97 fps, 79.4 s, voice and SFX) · captions as SRT: [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt)
+
+This adds 3D motion graphics on top of the color-corrected, green-screen-removed render (`color correction.mp4`). The edit follows the script "Sona achanak itna neeche kyun gira". Gold is always `#E49F38`; everything else is black.
+
+| Time | Script beat | Motion graphics |
+|---|---|---|
+| 0.0–5.2 s | Hook: "Sona achanak itna mehnga kaise ho gaya? … crash … opportunity zone?" | 3D gold bars rain down in front of and behind her, with "SONA" and "CRASH?" type behind her head, golden rays, a crash arrow and a target |
+| 5.2–13.6 s | Gold traders, sharp retracement, 3 reasons | 3D gold/black candlestick chart, a crash arrow, and a 3D "3" behind her |
+| 13.6–25.1 s | 01 · Treasury yields | Chapter card (video on a floating gold-edged 3D card, neon "YIELDS", tags), a 3D Treasury bond, "2007", a money bag and return arrow, a gold "Au" coin, and an "INTEREST 0%" tag |
+| 25.1–30.4 s | 02 · US Dollar | Chapter card (neon "DOLLAR"), a 3D gold "$", a dollar coin and a selling-pressure arrow |
+| 30.4–40.2 s | 03 · Fed rate hike | Chapter card (neon "FED"), a 3D Fed building, an October/25 bp calendar, 3D "0.25%" and "60-70%", and a rate-hike odds meter |
+| 40.2–51.4 s | 28 Sept drop, −4 %, $4,145; "har drop crash nahi hota" | 28 Sept calendar, 3D "−4%" and "$4,145", crash arrow, gold bar; then a spotlight push-in with rays, "CRASH NAHI" type and a gold check badge |
+| 51.4–64.6 s | 30 Sept, 40 %, $4,200, correction not crash | Empty-stage rebound arrow, 30 Sept calendar, "40%" with the meter falling, "$4,200" with an up arrow and a $-cycle icon, a struck-through "STRUCTURAL CRASH" tag and "CORRECTION" type |
+| 64.6–79.4 s | Fed next move, PCE, oil risk; selective buying; risk and news flow | Fed building, candles and oil barrel with tags; target; shield and news bubble; outro rays and fade |
+
+Throughout:
+- **Captions:** Roman Urdu, word by word, synced to her speech. Keywords are in gold, the font is General Sans (as in the AE project), and the captions ride along with the camera.
+- **Camera:** a virtual 3D camera with push-ins, orbits, dutch angles, angle cuts and impact shakes. The stage moves at about 80% of her motion, which gives real parallax.
+- **Transitions:** whip pans (both shots side by side, motion-blurred), zoom-throughs and a spin. Motion blur is real: 3 to 9 sub-frames per frame.
+
+## How it's built (`pipeline/gold/`)
+
+- `matte.py`: Robust Video Matting (ONNX) person matte for every frame. It lets type and 3D objects sit behind her, and lets the stage move separately from her.
+- `gold_assets.py`: Blender (Cycles) renders of the script elements as transparent PNG sequences. These are gold bar, Au coin, $, crash and rebound arrows, candlesticks, Fed building, Treasury bond, oil barrel, shield, calendars and 3D numbers.
+- `timeline.py`: the edit. It holds the shots, camera keys, transitions, chapter cards, element cues, captions (with Whisper word indices) and SFX cues.
+- `gold_reel.py`: the compositor, which reuses `pipeline/engine.py`. It renders stills (`still 2.0,16.5`) or encoded frame ranges.
+- `gold_audio.py`: synthesized SFX (whooshes, impacts, risers, coin chings, pops, clicks) ducked under the original voice, normalized to −12 LUFS.
+- `render.py`: parallel chunked render, audio and final mux.
+- `export_captions.py`: writes the synced captions as SRT.
+
+Rebuild (sources from the Drive folder go in `workspace/src`, the script's PNGs in `workspace/assets2d`):
+
+```bash
+pip install bpy numpy "opencv-python-headless==4.10.0.84" pillow scipy faster-whisper onnxruntime
+python3 pipeline/gold/matte.py
+python3 pipeline/gold/gold_assets.py ingot coin_au dollar3d arrow_crash arrow_up candles3d fed bond barrel shield cal_oct cal_28sep cal_30sep num_3 num_2007 num_025 num_6070 num_4pct num_4145 num_40 num_4200
+python3 pipeline/gold/render.py
+```
+
+---
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.

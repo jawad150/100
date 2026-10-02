@@ -34,6 +34,7 @@ NUMBERS = {
 
 
 def reset(res=(600, 600), samples=32):
+    samples = int(os.environ.get('SAMPLES', samples))
     k = float(os.environ.get('RES', '1.25'))
     res = (int(res[0] * k), int(res[1] * k))
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -147,6 +148,8 @@ def render_seq(name, nframes, update):
     for i in frames:
         update(i, nframes)
         sc.render.filepath = f'{d}/{i:03d}.png'
+        if os.environ.get('SKIP_EXISTING') and os.path.exists(sc.render.filepath):
+            continue
         bpy.ops.render.render(write_still=True)
         print('rendered', name, i, flush=True)
 

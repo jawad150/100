@@ -741,9 +741,9 @@ def draw_captions(cv, t, v, shot):
     if PHRASES is None:
         PHRASES = _parse_captions()
     for ph in PHRASES:
-        if not (ph['t_on'] <= t < ph['t_off'] + 0.2):
+        if not (ph['t_on'] <= t < ph['t_off'] + 0.12):
             continue
-        out = clamp((t - ph['t_off']) / 0.2)
+        out = clamp((t - ph['t_off']) / 0.12)
         base_y = TL.CAPTION_Y[shot_of(ph['t_on'] + 0.05)]
         # captions ride along with the camera (partially) so they feel attached to the shot
         z = v['zoom'] ** 0.35

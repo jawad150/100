@@ -206,17 +206,17 @@ ke:26 recent:27 / days:28 mein:29
 yaani:35 *Gold:36 / recent:37 *rally:38 / ke:39 baad:40
 *sharply:41 / *neeche:42 / aaya:43 hai:44
 Iski:45 / *3:46 bari:47 / *wajahain:48 hain:49
-Pehli@13.86 / US@14.14 *Treasury:51 / *Yields:52 / barh:53 gayi:54 hain:55
+Pehli@13.72 / US@14.02 *Treasury:51 / *Yields:52 / barh:53 gayi:54 hain:55
 *10:56 saala:57 / Treasury:58 Yields:59
 June:60 *2007:61 / ke:62 baad:63 / *highest:64 *level:65
 par:66 pohanch:67 / gayi:68
 Yaani:69 *investors:70 ko:71 / US:72 government:73 / *bonds:74 se:75
 behtar:76 *return:77 / mil:78 raha:79 tha:80
 jabke:81 *Gold:82 / koi:83 *interest:84 / nahi:85 deta:86
-Doosri@25.98 / US@26.26 *Dollar:88 / *strong:89 hua:90
+Doosri@25.68 / US@26.08 *Dollar:88 / *strong:89 hua:90
 Jab:91 *Dollar:92 / strong:93 hota:94 hai:95
-iss:96 se:97 *Gold:98 par:99 / *selling:100 / *pressure:101 / aata:102 hai@30.00
-Teesri@31.48 / *Fed@31.78 ke:104 / *rate:105 *hike:106
+iss:96 se:97 *Gold:98 par:99 / *selling:100 / *pressure:101 / aata:102 hai@30.12
+Teesri@31.20 / *Fed@31.56 ke:104 / *rate:105 *hike:106
 ki:107 / *umeedain:108
 *October:109 me:110 / *25:111 / *basis-point:112
 yaani:114 / *0.25%:115
