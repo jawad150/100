@@ -1,6 +1,6 @@
 # Gold market reel — black × gold motion graphics (Rida)
 
-**Final video:** [`reel/gold_reel_4k.mp4`](reel/gold_reel_4k.mp4) is native 4K (2160×3840) at 29.97 fps, 79.4 s, with voice and SFX. A 1080p copy is at [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4), and the captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).
+**Final video:** [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4) is 1080×1920, 29.97 fps, 79.4 s, with voice and SFX (87 MB). The native-4K master (2160×3840, 34 Mbps, 340 MB) is too large for GitHub, so it's delivered separately as `gold_reel_4k.mp4`; `pipeline/gold/render.py` regenerates it. The synced captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).
 
 This adds 3D motion graphics on top of the color-corrected, green-screen-removed render (`color correction.mp4`, 4K). The edit follows the script "Sona achanak itna neeche kyun gira". Gold is `#E49F38` (lit as metal, so it carries highlights and shade); everything else is black.
 
