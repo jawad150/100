@@ -1071,7 +1071,7 @@ TITLE_FONT, TITLE_TRACK = 'Cinzel-900', 0.02   # cinematic titles; captions stay
 CAP_STYLE = {True: ('GeneralSans-700', 104, GOLD), False: ('GeneralSans-600', 70, WHITE)}
 
 
-@functools.lru_cache(maxsize=48)
+@functools.lru_cache(maxsize=16)
 def glyph(text, gold):
     """Word sprite at output resolution with its exact pen origin: (sprite, baseline_row, origin_col, advance_px)."""
     fname, size, col = CAP_STYLE[gold]
@@ -1105,7 +1105,7 @@ def phrase_layout(i):
         for j, w in enumerate(row):
             spr, base, left, adv = glyph(w['text'], w['gold'])
             if j:
-                x += max(cap_metrics(w['gold'])[1], cap_metrics(row[j - 1]['gold'])[1]) * 0.9
+                x += max(cap_metrics(w['gold'])[1], cap_metrics(row[j - 1]['gold'])[1]) * 1.55 + 4
             items.append((w, spr, base, left, x))
             x += adv / K
         cap = max(cap_metrics(w['gold'])[0] for w in row)
@@ -1129,9 +1129,9 @@ def phrase_layout(i):
 
 def draw_captions(cv, t, v, shot):
     for ph in phrases():
-        if not (ph['t_on'] <= t < ph['t_off'] + 0.12):
+        if not (ph['t_on'] <= t < ph['t_off']):
             continue
-        out = clamp((t - ph['t_off']) / 0.12)
+        out = clamp((t - (ph['t_off'] - 0.09)) / 0.09)     # exit finishes before the next phrase starts
         base_y = TL.CAPTION_Y[shot_of(ph['t_on'] + 0.05)]
         # captions ride along with the camera (partially) so they feel attached to the shot
         z = v['zoom'] ** 0.25

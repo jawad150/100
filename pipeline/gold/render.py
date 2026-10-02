@@ -13,7 +13,7 @@ import timeline as TL
 S = os.environ.get('GOLD_WORKDIR', os.path.abspath(os.path.join(HERE, '..', '..', 'workspace')))
 OUT = S + '/out'
 CHUNKS = int(os.environ.get('CHUNKS', '24'))
-WORKERS = int(os.environ.get('WORKERS', '4'))
+WORKERS = int(os.environ.get('WORKERS', '3'))   # ~3 GB per 4K worker (render + encoder)
 TOTAL = TL.NFRAMES
 
 
@@ -23,11 +23,15 @@ def run(k):
     if os.path.exists(out) and os.environ.get('RESUME'):
         return out
     t = time.time()
-    subprocess.run([sys.executable, 'gold_reel.py', 'range', str(f0), str(f1), out + '.tmp.mp4'], cwd=HERE, check=True,
-                   stdout=open(f'{OUT}/chunk_{k:02d}.log', 'w'), stderr=subprocess.STDOUT)
-    os.replace(out + '.tmp.mp4', out)
-    print(f'chunk {k} [{f0},{f1}) {time.time() - t:.0f}s', flush=True)
-    return out
+    for attempt in range(2):          # one retry (e.g. after an out-of-memory kill)
+        r = subprocess.run([sys.executable, 'gold_reel.py', 'range', str(f0), str(f1), out + '.tmp.mp4'], cwd=HERE,
+                           stdout=open(f'{OUT}/chunk_{k:02d}.log', 'w'), stderr=subprocess.STDOUT)
+        if r.returncode == 0:
+            os.replace(out + '.tmp.mp4', out)
+            print(f'chunk {k} [{f0},{f1}) {time.time() - t:.0f}s', flush=True)
+            return out
+        print(f'chunk {k} failed ({r.returncode}), attempt {attempt + 1}', flush=True)
+    return None
 
 
 if __name__ == '__main__':
@@ -35,6 +39,9 @@ if __name__ == '__main__':
     t0 = time.time()
     with ThreadPoolExecutor(WORKERS) as ex:
         outs = list(ex.map(run, range(CHUNKS)))
+    missing = [k for k, o in enumerate(outs) if o is None]
+    if missing:
+        sys.exit(f'chunks failed: {missing}')
     with open(f'{OUT}/concat.txt', 'w') as f:
         for o in outs:
             f.write(f"file '{o}'\n")
