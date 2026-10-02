@@ -182,6 +182,14 @@ def text_obj(body, fontfile, size=1.0, extrude=0.1, bev=0.015, align='CENTER'):
     return o
 
 
+def fit_width(o, maxw):
+    bpy.context.view_layer.update()
+    w = o.dimensions.x
+    if w > maxw:
+        k = maxw / w
+        o.scale = (k, k, k)
+
+
 def poly_curve(pts, extrude=0.1, bev=0.02, name='poly'):
     cu = bpy.data.curves.new(name, 'CURVE')
     cu.dimensions = '2D'
@@ -251,11 +259,11 @@ def ingot():
     bm.free()
     bevel(o, 0.045, 4)
     o.data.materials.append(gold(0.17))
-    t = text_obj('999.9', 'Anton-400.ttf', 0.34, 0.02, 0.006)
+    t = text_obj('999.9', 'Cinzel-900.ttf', 0.30, 0.02, 0.006)
     t.location = (0, 0, 0.255)
     t.data.materials.append(gold(0.28))
     t.parent = o
-    t2 = text_obj('GOLD', 'Anton-400.ttf', 0.2, 0.015, 0.004)
+    t2 = text_obj('GOLD', 'Cinzel-900.ttf', 0.18, 0.015, 0.004)
     t2.location = (0, -0.2, 0.255)
     t2.data.materials.append(gold(0.28))
     t2.parent = o
@@ -285,7 +293,7 @@ def coin_au():
         shade_smooth(r)
         r.data.materials.append(gold(0.12))
         r.parent = root
-        t = text_obj('Au', 'Poppins-800.ttf', 1.05, 0.03, 0.01)
+        t = text_obj('Au', 'Cinzel-900.ttf', 1.0, 0.03, 0.01)
         t.rotation_euler = (math.radians(90), 0, 0 if sy < 0 else math.pi)
         t.location = (0, sy * 0.1 + sy * 0.0, -0.05)
         t.data.materials.append(gold(0.3))
@@ -302,7 +310,7 @@ def dollar3d():
     reset((520, 620), 40)
     studio()
     camera((0, -7, 0.3), (0, 0, 0), 58)
-    t = text_obj('$', 'ArchivoBlack-400.ttf', 3.0, 0.22, 0.03)
+    t = text_obj('$', 'Cinzel-900.ttf', 3.0, 0.24, 0.03)
     t.rotation_euler = (math.radians(90), 0, 0)
     t.data.materials.append(gold(0.15))
 
@@ -453,7 +461,7 @@ def fed():
     ped.location = (0, 0, 0.97)
     ped.data.materials.append(gm)
     ped.parent = root
-    t = text_obj('FED', 'Anton-400.ttf', 0.34, 0.02, 0.006)
+    t = text_obj('FED', 'Cinzel-900.ttf', 0.26, 0.02, 0.006)
     t.rotation_euler = (math.radians(90), 0, 0)
     t.location = (0, -0.67, 0.82)
     t.data.materials.append(gm)
@@ -481,9 +489,10 @@ def bond():
     frame_o = tube([(x, -0.05, y) for x, y in fr + [fr[0]]], 0.022, 'frame')
     frame_o.data.materials.append(gm)
     frame_o.parent = root
-    for body, size, z, font in (('US TREASURY', 0.2, 0.5, 'Inter-800.ttf'), ('10Y', 0.62, 0.05, 'Anton-400.ttf'),
-                                ('YIELD', 0.16, -0.38, 'Inter-700.ttf')):
+    for body, size, z, font in (('US TREASURY', 0.18, 0.5, 'Cinzel-900.ttf'), ('10Y', 0.56, 0.05, 'Cinzel-900.ttf'),
+                                ('YIELD', 0.15, -0.38, 'Cinzel-700.ttf')):
         t = text_obj(body, font, size, 0.02, 0.005)
+        fit_width(t, 1.3)
         t.rotation_euler = (math.radians(90), 0, 0)
         t.location = (-0.45, -0.06, z)
         t.data.materials.append(gm)
@@ -597,12 +606,14 @@ def calendar(key, top, big):
         r = bpy.context.object
         r.data.materials.append(gm)
         r.parent = root
-    t1 = text_obj(top, 'Inter-900.ttf', 0.34, 0.02, 0.004)
+    t1 = text_obj(top, 'Cinzel-900.ttf', 0.30, 0.02, 0.004)
+    fit_width(t1, 1.7)
     t1.rotation_euler = (math.radians(90), 0, 0)
     t1.location = (0, -0.19, 0.78)
     t1.data.materials.append(bm_)
     t1.parent = root
-    t2 = text_obj(big, 'Anton-400.ttf', 1.15, 0.06, 0.01)
+    t2 = text_obj(big, 'Cinzel-900.ttf', 1.05, 0.06, 0.01)
+    fit_width(t2, 1.65)
     t2.rotation_euler = (math.radians(90), 0, 0)
     t2.location = (0, -0.2, -0.28)
     t2.data.materials.append(gm)
@@ -618,13 +629,16 @@ def number(key):
     """3D extruded gold number that swings in from edge-on and settles (then the compositor holds it)."""
     txt = NUMBERS[key]
     n_ch = len(txt)
-    w = int(min(1400, 260 + 175 * n_ch))
+    w = int(min(1500, 300 + 190 * n_ch))
     reset((w, 520), 40)
     studio(key=800, rim=2000)
-    t = text_obj(txt, 'Anton-400.ttf', 2.4, 0.3, 0.035)
+    t = text_obj(txt, 'Cinzel-900.ttf', 2.4, 0.3, 0.035)
     t.rotation_euler = (math.radians(90), 0, 0)
     t.data.materials.append(gold(0.16))
-    camera((0, -10.5 - 0.5 * max(0, n_ch - 3), 0.0), (0, 0, 0), 62)
+    bpy.context.view_layer.update()
+    half_fov = math.atan(18 / 62)
+    dist = max(10.5, t.dimensions.x / 2 * 1.2 / math.tan(half_fov))
+    camera((0, -dist, 0.0), (0, 0, 0), 62)
 
     def upd(i, n):
         x = i / (n - 1)

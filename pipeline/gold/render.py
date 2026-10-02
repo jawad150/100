@@ -39,10 +39,15 @@ if __name__ == '__main__':
         for o in outs:
             f.write(f"file '{o}'\n")
     subprocess.run([sys.executable, 'gold_audio.py'], cwd=HERE, check=True)
-    final = f'{OUT}/gold_reel_final.mp4'
+    master = f'{OUT}/gold_reel_4k.mp4'
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt',
                     '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'slow',
-                    '-crf', '16', '-maxrate', '24M', '-bufsize', '40M', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
-                    '-r', '30000/1001', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '320k', '-shortest', final],
+                    '-crf', '17', '-profile:v', 'high', '-level', '5.2', '-pix_fmt', 'yuv420p',
+                    '-r', '30000/1001', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '320k', '-shortest', master],
                    check=True)
-    print('final', final, round(os.path.getsize(final) / 1e6, 1), 'MB', f'{time.time() - t0:.0f}s', flush=True)
+    share = f'{OUT}/gold_reel_1080p.mp4'
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', master, '-vf', 'scale=1080:1920:flags=lanczos',
+                    '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
+                    '-movflags', '+faststart', '-c:a', 'copy', share], check=True)
+    for final in (master, share):
+        print('final', final, round(os.path.getsize(final) / 1e6, 1), 'MB', f'{time.time() - t0:.0f}s', flush=True)

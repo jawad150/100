@@ -127,7 +127,7 @@ ELEMENTS = [
     E('num_3', 12.15, 13.61, 215, 640, 440, layer='back', dz=150, enter='slam', play='once', fps=30),
     # --- chapter 01: Treasury yields
     E('bond', 15.80, 19.70, 290, 330, 250, layer='back', dz=160, enter='fly'),
-    E('num_2007', 17.20, 19.70, 800, 290, 170, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_2007', 17.20, 19.70, 800, 290, 140, layer='back', dz=200, enter='slam', play='once', fps=30),
     E('money_bag', 20.20, 23.15, 190, 840, 300, layer='front', dz=-90, kind='png', enter='drop', sway=10),
     E('arrow_up', 22.35, 23.15, 860, 760, 300, layer='front', dz=-80, enter='fly', play='once', fps=30),
     E('coin_au', 23.45, 25.09, 850, 860, 300, layer='front', dz=-100, enter='pop'),
@@ -138,21 +138,21 @@ ELEMENTS = [
     # --- chapter 03: Fed
     E('fed', 31.55, 33.00, 840, 640, 380, layer='back', dz=150, enter='rise'),
     E('cal_oct', 33.05, 37.00, 850, 760, 330, layer='back', dz=120, enter='drop'),
-    E('num_025', 35.00, 37.00, 560, 330, 230, layer='back', dz=200, enter='slam', play='once', fps=30),
-    E('num_6070', 38.10, 40.17, 650, 300, 200, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_025', 35.00, 37.00, 580, 330, 170, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_6070', 38.10, 40.17, 600, 300, 150, layer='back', dz=200, enter='slam', play='once', fps=30),
     # --- the drop: 28 Sept, -4%, $4,145
     E('cal_28sep', 41.80, 43.36, 540, 240, 230, layer='back', dz=150, enter='drop'),
-    E('num_4pct', 43.38, 44.45, 540, 225, 190, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_4pct', 43.38, 44.45, 540, 225, 170, layer='back', dz=200, enter='slam', play='once', fps=30),
     E('arrow_crash', 43.95, 47.15, 185, 640, 300, layer='front', dz=-100, enter='fly', play='once', fps=30),
-    E('num_4145', 44.50, 47.15, 540, 230, 175, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_4145', 44.50, 47.15, 540, 230, 150, layer='back', dz=200, enter='slam', play='once', fps=30),
     E('ingot', 46.25, 47.15, 890, 860, 210, layer='front', dz=-100, enter='drop'),
     E('guarantee_gold', 49.95, 51.00, 860, 900, 260, layer='front', dz=-120, kind='png', enter='slam', sway=10),
     # --- empty stage: rebound teaser, then 30 Sept / 40% / $4,200
     E('arrow_up', 51.75, 53.75, 540, 760, 560, layer='back', dz=200, enter='rise', play='once', fps=24),
     E('cal_30sep', 54.00, 57.55, 210, 330, 250, layer='back', dz=120, enter='drop'),
-    E('num_40', 56.60, 57.55, 860, 290, 190, layer='back', dz=150, enter='slam', play='once', fps=30),
+    E('num_40', 56.60, 57.55, 860, 290, 150, layer='back', dz=150, enter='slam', play='once', fps=30),
     E('arrow_up', 58.10, 60.60, 190, 700, 330, layer='back', dz=100, enter='fly', play='once', fps=30),
-    E('num_4200', 58.55, 60.60, 560, 215, 165, layer='back', dz=200, enter='slam', play='once', fps=30),
+    E('num_4200', 58.55, 60.60, 560, 215, 140, layer='back', dz=200, enter='slam', play='once', fps=30),
     E('refund', 58.90, 60.60, 925, 400, 200, layer='back', dz=100, kind='png', enter='pop', spin=0.6),
     # --- outlook: Fed next move, PCE data, Middle East oil risk
     E('fed', 65.10, 69.25, 200, 530, 230, layer='back', dz=120, enter='rise'),
@@ -171,11 +171,20 @@ INGOT_RAIN = [(0.00, 180, 230, -150, 0, -18), (0.10, 860, 260, -200, 9, 22), (0.
 
 # big gold type behind the presenter: (t_in, t_out, text, sy, height, dz)
 BIG_TYPE = [
-    (0.05, 1.95, 'SONA', 360, 330, 300),
-    (2.60, 3.50, 'CRASH?', 330, 270, 300),
-    (48.10, 51.10, 'CRASH NAHI', 330, 140, 300),
-    (63.30, 64.60, 'CORRECTION', 245, 135, 300),
+    (48.10, 51.10, 'CRASH NAHI', 300, 88, 1200),
+    (63.30, 64.60, 'CORRECTION', 245, 86, 300),
 ]
+
+# reference-style hook (first shot): halo disc behind the head, huge words flanking the head in
+# perspective, neon gold light trails wrapping around her, and a slammed gold title block.
+HOOK = dict(
+    halo=(0.0, 2.0, 560, 520, 760),                       # t_in, t_out, sx, sy, diameter
+    flank=[('SONA', 0.06, 0.94, 380, 215, 8), ('MEHNGA?', 0.94, 1.98, 380, 125, -8)],  # word, t_in, t_out, sy, height, ry
+    trails=[(0.10, 1.95, 'back', [(-60, 260), (260, 440), (620, 250), (900, 420), (1140, 330)]),
+            (0.35, 1.95, 'front', [(1140, 1240), (820, 1080), (460, 1290), (150, 1100), (-60, 1200)]),
+            (2.62, 3.50, 'back', [(-60, 640), (300, 520), (700, 660), (1140, 500)])],
+    block=(2.68, 3.50, 'CRASH?', 540, 1010, -4),
+)
 
 # tag pills in the scene: (t_in, t_out, text, sx, sy, layer)
 PILLS = [
@@ -287,6 +296,11 @@ def _cues():
         out.append((t0 + 0.55, 'ching', 0.18))
     for t in BIG_TYPE:
         out.append((t[0], 'impact', 0.55))
+    for fl in HOOK['flank']:
+        out.append((fl[1] - 0.08, 'whoosh', 0.55))
+    for tr in HOOK['trails']:
+        out.append((tr[0], 'swish', 0.4))
+    out.append((HOOK['block'][0], 'impact', 0.85))
     for p in PILLS:
         out.append((p[0], 'click', 0.35))
     for m in METERS:

@@ -1,33 +1,40 @@
 # Gold market reel — black × gold motion graphics (Rida)
 
-**Final video:** [`reel/gold_reel_final.mp4`](reel/gold_reel_final.mp4) (1080×1920, 29.97 fps, 79.4 s, voice and SFX) · captions as SRT: [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt)
+**Final video:** [`reel/gold_reel_4k.mp4`](reel/gold_reel_4k.mp4) is native 4K (2160×3840) at 29.97 fps, 79.4 s, with voice and SFX. A 1080p copy is at [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4), and the captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).
 
-This adds 3D motion graphics on top of the color-corrected, green-screen-removed render (`color correction.mp4`). The edit follows the script "Sona achanak itna neeche kyun gira". Gold is always `#E49F38`; everything else is black.
+This adds 3D motion graphics on top of the color-corrected, green-screen-removed render (`color correction.mp4`, 4K). The edit follows the script "Sona achanak itna neeche kyun gira". Gold is `#E49F38` (lit as metal, so it carries highlights and shade); everything else is black.
+
+**Look**
+- **Native 4K render.** The layout is designed at 1080×1920 and every frame is rendered at 2×, straight from the 4K source frames.
+- **Grade.** Deep neutral blacks, a filmic S-curve with a soft shoulder, warm-gold highlights, neutral shadows and natural skin. Teal spill from the keyed stage is removed, and the teal stage is pushed toward black. A detail pass adds a thresholded fine sharpen and light clarity. Bloom has gold-leaning halation, and there's fine grain.
+- **Type.** Cinzel (overlap-free) is used for titles, the chapter cards, tags and the 3D numbers; General Sans is used for the captions.
+- **Text styling.** All text is styled as cinematic 3D: bevel and emboss, an extruded side, a deep glow and a contact shadow.
+- **Captions.** Roman Urdu, word by word, synced to her speech (cross-checked against two transcriptions and speech onsets). Lines are centered and share exact baselines, and gold keywords are emphasized.
+- **Camera.** A virtual 3D camera with parallax, built from three layers:
+  - authored moves (push-ins, orbits, dutch angles, angle cuts, impact shakes);
+  - a fast-paced edit layer that snaps to a new angle on every caption phrase, with motion-blurred 0.3 s expo moves and every third one a hard cut;
+  - an edge guard so the original frame edges never show.
+- **Transitions.** Whip pans (both shots side by side), zoom-throughs and a spin, all with real sub-frame motion blur.
 
 | Time | Script beat | Motion graphics |
 |---|---|---|
-| 0.0–5.2 s | Hook: "Sona achanak itna mehnga kaise ho gaya? … crash … opportunity zone?" | 3D gold bars rain down in front of and behind her, with "SONA" and "CRASH?" type behind her head, golden rays, a crash arrow and a target |
-| 5.2–13.6 s | Gold traders, sharp retracement, 3 reasons | 3D gold/black candlestick chart, a crash arrow, and a 3D "3" behind her |
+| 0.0–5.2 s | Hook: "Sona achanak itna mehnga kaise ho gaya? … crash … opportunity zone?" | Reference-style hook: a gold halo disc behind her head, "SONA" then "MEHNGA?" split behind her head, neon gold light trails wrapping around her, 3D gold bars raining down, a slammed gold "CRASH?" title block, a crash arrow and a target |
+| 5.2–13.6 s | Gold traders, sharp retracement, 3 reasons | 3D gold/black candlestick chart, a crash arrow, and a 3D "3" |
 | 13.6–25.1 s | 01 · Treasury yields | Chapter card (video on a floating gold-edged 3D card, neon "YIELDS", tags), a 3D Treasury bond, "2007", a money bag and return arrow, a gold "Au" coin, and an "INTEREST 0%" tag |
 | 25.1–30.4 s | 02 · US Dollar | Chapter card (neon "DOLLAR"), a 3D gold "$", a dollar coin and a selling-pressure arrow |
-| 30.4–40.2 s | 03 · Fed rate hike | Chapter card (neon "FED"), a 3D Fed building, an October/25 bp calendar, 3D "0.25%" and "60-70%", and a rate-hike odds meter |
-| 40.2–51.4 s | 28 Sept drop, −4 %, $4,145; "har drop crash nahi hota" | 28 Sept calendar, 3D "−4%" and "$4,145", crash arrow, gold bar; then a spotlight push-in with rays, "CRASH NAHI" type and a gold check badge |
-| 51.4–64.6 s | 30 Sept, 40 %, $4,200, correction not crash | Empty-stage rebound arrow, 30 Sept calendar, "40%" with the meter falling, "$4,200" with an up arrow and a $-cycle icon, a struck-through "STRUCTURAL CRASH" tag and "CORRECTION" type |
+| 30.4–40.2 s | 03 · Fed rate hike | Chapter card (neon "FED"), a 3D Fed building, an October/25 bp calendar, "0.25%" and "60-70%" with a rate-hike odds meter |
+| 40.2–51.4 s | 28 Sept drop, −4 %, $4,145; "har drop crash nahi hota" | 28 Sept calendar, "−4%", "$4,145", crash arrow, gold bar; then a spotlight push-in with rays, "CRASH NAHI" and a gold check badge |
+| 51.4–64.6 s | 30 Sept, 40 %, $4,200, correction not crash | Empty-stage rebound arrow, 30 Sept calendar, "40%" with the meter falling, "$4,200" with an up arrow and a $-cycle icon, a struck-through "STRUCTURAL CRASH" tag, and "CORRECTION" |
 | 64.6–79.4 s | Fed next move, PCE, oil risk; selective buying; risk and news flow | Fed building, candles and oil barrel with tags; target; shield and news bubble; outro rays and fade |
-
-Throughout:
-- **Captions:** Roman Urdu, word by word, synced to her speech. Keywords are in gold, the font is General Sans (as in the AE project), and the captions ride along with the camera.
-- **Camera:** a virtual 3D camera with push-ins, orbits, dutch angles, angle cuts and impact shakes. The stage moves at about 80% of her motion, which gives real parallax.
-- **Transitions:** whip pans (both shots side by side, motion-blurred), zoom-throughs and a spin. Motion blur is real: 3 to 9 sub-frames per frame.
 
 ## How it's built (`pipeline/gold/`)
 
 - `matte.py`: Robust Video Matting (ONNX) person matte for every frame. It lets type and 3D objects sit behind her, and lets the stage move separately from her.
 - `gold_assets.py`: Blender (Cycles) renders of the script elements as transparent PNG sequences. These are gold bar, Au coin, $, crash and rebound arrows, candlesticks, Fed building, Treasury bond, oil barrel, shield, calendars and 3D numbers.
 - `timeline.py`: the edit. It holds the shots, camera keys, transitions, chapter cards, element cues, captions (with Whisper word indices) and SFX cues.
-- `gold_reel.py`: the compositor, which reuses `pipeline/engine.py`. It renders stills (`still 2.0,16.5`) or encoded frame ranges.
+- `gold_reel.py`: the compositor, which reuses `pipeline/engine.py`. It renders in a 1080×1920 design space at `OUT_K`× resolution (2 means 4K, from `workspace/frames4k`). It handles the grade, 3D text styles, captions, camera layers and motion blur, and renders stills (`still 2.0,16.5`) or encoded frame ranges.
 - `gold_audio.py`: synthesized SFX (whooshes, impacts, risers, coin chings, pops, clicks) ducked under the original voice, normalized to −12 LUFS.
-- `render.py`: parallel chunked render, audio and final mux.
+- `render.py`: parallel chunked render, audio, the 4K master and the 1080p copy.
 - `export_captions.py`: writes the synced captions as SRT.
 
 Rebuild (sources from the Drive folder go in `workspace/src`, the script's PNGs in `workspace/assets2d`):
@@ -35,6 +42,7 @@ Rebuild (sources from the Drive folder go in `workspace/src`, the script's PNGs 
 ```bash
 pip install bpy numpy "opencv-python-headless==4.10.0.84" pillow scipy faster-whisper onnxruntime
 python3 pipeline/gold/matte.py
+ffmpeg -i workspace/src/color_correction.mp4 -q:v 2 -start_number 0 workspace/frames4k/%05d.jpg
 python3 pipeline/gold/gold_assets.py ingot coin_au dollar3d arrow_crash arrow_up candles3d fed bond barrel shield cal_oct cal_28sep cal_30sep num_3 num_2007 num_025 num_6070 num_4pct num_4145 num_40 num_4200
 python3 pipeline/gold/render.py
 ```
