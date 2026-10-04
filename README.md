@@ -44,3 +44,11 @@ python3 pipeline/render_all.py            # -> workspace/out/higgsfield_genjutsu
 ```
 
 To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Set `REEL_WORKDIR` to use a different workspace folder.
+
+---
+
+# Dr. Sukkar — Behind the Mask (hero reel)
+
+A 49-second 4:3 (1440×1080) hero reel for Dr. Sukkar. It cuts the interview against graded surgical and facility B-roll and ends on **DR. SUKKAR / BEHIND THE MASK**. The edit, grade, sound and rebuild steps are described in [`pipeline/sukkar/README.md`](pipeline/sukkar/README.md).
+
+The show LUT for grading this shoot's S-Log3 / S-Gamut3.Cine footage to the reel's look is [`reel/sukkar/SukkarReel_SLog3-SGamut3Cine_to_Rec709_look.cube`](reel/sukkar/SukkarReel_SLog3-SGamut3Cine_to_Rec709_look.cube) (33³, Resolve/Premiere compatible).
