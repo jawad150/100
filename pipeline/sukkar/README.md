@@ -47,6 +47,24 @@ The B-roll is Sony S-Log3 / S-Gamut3.Cine, 10-bit 4:2:2, full range, as read fro
 - **Natural OR sound:** taken only from speech-free stretches (C9017, C9019, the tray part of C8894, atrium and exterior). Several clips carry OR conversation about a patient, so their audio is never used. The natural-sound stem was transcribed to confirm that no speech gets through.
 - **Mix:** natural sound is ducked about 14 dB under dialogue and comes forward in the cold open, the build, the exterior and the final hero hold. Normalized linearly to −16 LUFS integrated, −1.5 dBTP. The end card is left silent for music.
 
+### Audio v3: denoised dialogue + sound design (no music)
+
+- **`clean_dialogue.py`:** rebuilds the dialogue on the reel timeline, then cleans it.
+  - Runs DeepFilterNet3 at 48 kHz, capped at 32 dB of attenuation. The weights come from the Hugging Face mirror `fal/DeepFilterNet3`, converted to `models/DeepFilterNet3/checkpoints/`.
+  - Adds high-pass and gentle EQ, de-essing and 2:1 compression.
+  - Applies a downward expander keyed 24 dB below the speech level, so gaps go quiet.
+  - Latency is measured as zero, so lip sync is unchanged.
+- **`sfx_sukkar.py`:** synthesises the whole SFX track, so it has no noise floor. Cues come from the edit list in `reel_sukkar.py`, so every cut lands on its frame:
+  - **cold open:** a glove snap, shutter ticks, steel clinks, flash pops and a riser
+  - **the cut into the breath:** a hit and a single heartbeat
+  - **under the OR scenes:** a soft patient-monitor beep
+  - **interview transitions:** whooshes and a low thump
+  - **montage:** a whip, then clinks and ticks with a riser into the flash swell
+  - **facility:** shimmer, air whooshes on each dissolve and a curtain swish
+  - **back in the OR:** a dip whomp, a latex stretch and snap, and mask rustle
+  - **end card:** a cinematic boom with shimmer
+- **`final_audio.py`:** ducks the SFX about 5 dB under speech, gain-stages both stems to the same −16 LUFS mix, and writes `SFX`, `DIALOGUE_clean` and `PREVIEW` MP3s. Each is 49.17 s, so they line up with the picture at 0:00.
+
 ## Rebuild
 
 Run everything from a workspace folder containing `src/`. The source zip from Dropbox is larger than most free disks, so `zipstream.py` streams it and saves only what is needed. Large interview files can be saved as audio-only sparse files using the sample tables that a first pass captures.
