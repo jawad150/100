@@ -27,16 +27,16 @@ INSERTS = [
 BOXES = [(47.18, 49.02), (69.38, 70.60)]
 
 # "!!!" popping above her head (ref 2 opening): (t_in, t_out)
-BANGS = [(1.96, 3.42), (49.40, 51.10)]
+BANGS = [(1.96, 3.42)]
 
 # in-scene elements kept from the 3D set (others now live in the cutaways)
 KEEP_ELEMENTS = {('target', 4.30), ('fed', 31.55)}
 
 # big condensed type behind her head (ref 1 "BETTER THAN" look): (t_in, t_out, text, sy, height, dz)
 BIG_TYPE = [
-    (49.10, 51.10, 'CRASH NAHI', 300, 150, 1200),
-    (63.30, 64.60, 'CORRECTION', 245, 150, 300),
+    (49.10, 51.10, 'CRASH NAHI', 300, 108, 1200),
+    (63.30, 64.60, 'CORRECTION', 245, 104, 300),
 ]
 
 # hook: ref-1 halo + condensed words split behind the head + light trails (no title block)
-HOOK_FLANK = [('SONA', 0.06, 0.94, 380, 330, 8), ('MEHNGA?', 0.94, 1.98, 380, 250, -8)]
+HOOK_FLANK = [('SONA', 0.06, 0.94, 380, 260, 8), ('MEHNGA?', 0.94, 1.98, 380, 165, -8)]

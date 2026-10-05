@@ -25,7 +25,7 @@ from gold_reel import (en, K, OW, OH, W, H, CX, CY, FPS, clamp, lerp, prog, e_ou
 
 # ---------------------------------------------------------------- configure the shared engine
 G.COVER_ALL = True
-G.TITLE_FONT, G.TITLE_TRACK = 'Anton-400', 0.0
+G.TITLE_FONT, G.TITLE_TRACK = 'Anton-400', 0.0          # replaced by KEY_FONT below
 G.PILL_FONT, G.NEON_FONT, G.BLOCK_FONT, G.BIG_STYLE = 'InterTight-800', 'Anton-400', 'InterTight-900', 'flat'
 G.TL.BIG_TYPE[:] = RT.BIG_TYPE
 G.TL.HOOK['flank'] = RT.HOOK_FLANK
@@ -35,11 +35,201 @@ G.TL.METERS[:] = []
 G.TL.INGOT_RAIN[:] = []
 G.TL.ELEMENTS[:] = [e for e in G.TL.ELEMENTS if (e['name'], e['t0']) in RT.KEEP_ELEMENTS]
 S = G.S
-CAP_FONT = 'InterTight-800'
+CAP_FONT = 'Poppins-600'              # white words (matches the supplied 'shuru ki aur' sample)
+# keyword / headline face: Gwyner Condensed when its files are in fonts/ (paid font, supplied by the user),
+# otherwise Instrument Serif - the closest free condensed high-contrast serif. Mixed with Inter Tight.
+KEY_FONT = next((n for n in ('GwynerCondensed-Italic', 'GwynerCondensed-BoldItalic', 'GwynerCondensed-Bold')
+                 if os.path.exists(f'{S}/fonts/{n}.ttf')), 'PlayfairDisplay-700i')   # gold italic serif ('trading')
+KIND = {'white': (CAP_FONT, -0.01, 0.92), 'gold': (KEY_FONT, 0.0, 1.32 if KEY_FONT.startswith('Gwyner') else 1.22),
+        'goldsans': ('Poppins-700', -0.01, 1.0)}
+G.TITLE_FONT, G.TITLE_TRACK, G.NEON_FONT = KEY_FONT, 0.0, KEY_FONT
 TRACK = np.array(json.load(open(S + '/work/head_track.json')), np.float32)
 FACE = json.load(open(S + '/work/face_track.json'))     # OpenCV face boxes, smoothed (None where not found)
 SMALL = {'ke', 'ki', 'ko', 'ne', 'se', 'me', 'ya', 'yeh', 'ye', 'ka', 'par', 'aur', 'hai', 'hain', 'tak', 'jo',
          'the', 'aa', 'ho', 'iss', 'jab', 'ek'}
+
+# ---------------------------------------------------------------- cinematic shot plan (refs 1-3)
+# Every phrase becomes a shot: wide / medium / close-up / extreme close-up framed on her tracked face,
+# hard cuts between sizes, crash zoom-ins on key lines, quick zoom-outs, slow push-ins / pull-outs,
+# Dutch tilts on dramatic beats, and a camera that follows her face like an operator.
+from scipy.ndimage import gaussian_filter1d as _gf
+
+_FACE = np.array([f if f is not None else [np.nan] * 4 for f in json.load(open(S + '/work/face_track.json'))],
+                 np.float32)
+CAMF = _FACE.copy()                       # heavily smoothed face for the camera to follow
+for _k in range(len(TL.CUTS)):
+    _a = TL.CUTS[_k]
+    _b = TL.CUTS[_k + 1] if _k + 1 < len(TL.CUTS) else len(CAMF)
+    _seg = CAMF[_a:_b]
+    _ok = ~np.isnan(_seg[:, 0])
+    if _ok.sum() < 2:
+        continue
+    _idx = np.arange(_b - _a)
+    for _c in range(4):
+        CAMF[_a:_b, _c] = _gf(np.interp(_idx, _idx[_ok], _seg[_ok, _c]), 12, mode='nearest')
+
+SHOT = {  # target on-screen face height (design px), face centre target (x offset from centre, y)
+    'WIDE': (None, 0, 0), 'MED': (300, 110, 640), 'MEDLOW': (280, 90, 900), 'CU': (470, 55, 760),
+    'ECU': (640, 0, 860),
+}
+ENTRY_WIDE = [(25.09, 25.75), (30.43, 31.05), (40.17, 40.75), (51.42, 53.85)]   # she walks in / empty stage
+HOOK_END = TL.CUT_T[1]
+
+
+def _key(p):
+    return p['i'] in RT.BLOCKS
+
+
+@functools.lru_cache(maxsize=None)
+def shot_plan():
+    """[(t0, t1, type, motion, side, dutch, smooth_in)] covering the whole edit after the hook."""
+    ph = [p for p in G.phrases() if p['t_on'] >= HOOK_END - 0.05]
+    cuts = [c for c in TL.CUT_T[1:]]
+    bounds = sorted(set(round(x, 3) for x in [HOOK_END] + cuts[1:] + [p['t_on'] for p in ph] +
+                        [a for a, b in ENTRY_WIDE] + [b for a, b in ENTRY_WIDE] + [76.9]))
+    keep = [bounds[0]]
+    for b in bounds[1:]:
+        hard = any(abs(b - c) < 1e-2 for c in cuts) or any(abs(b - e) < 1e-2 for w in ENTRY_WIDE for e in w) \
+            or abs(b - 76.9) < 1e-3
+        if b - keep[-1] > 0.05 and (hard or b - keep[-1] >= 1.05):
+            keep.append(b)
+    keep.append(TL.NFRAMES / FPS + 0.1)
+    keep = [b for j, b in enumerate(keep) if j == 0 or j == len(keep) - 1 or keep[j + 1] - b >= 0.35
+            or any(abs(b - c) < 1e-2 for c in cuts)]
+    plan, cycle, last, side, n = [], ['MED', 'WIDE', 'CU', 'MED', 'CU', 'WIDE'], None, 1, 0
+    for a, b in zip(keep, keep[1:]):
+        mid = (a + b) / 2
+        p = next((q for q in ph if q['t_on'] <= a + 0.02 < q['t_off'] + 0.3), None)
+        key = p is not None and _key(p)
+        big = any(t0 - 0.3 < mid < t1 + 0.3 for t0, t1, *_ in RT.BIG_TYPE)
+        card = any(sc['t_in'] - 0.2 < mid < sc['t_out'] + 0.2 for sc in TL.SECTIONS)
+        entry = any(e0 - 0.02 <= a < e1 - 0.02 for e0, e1 in ENTRY_WIDE)
+        if a >= 76.85:
+            typ, mot = 'WIDE', 'pull'                     # outro: pull out wide
+        elif entry:
+            typ, mot = 'WIDE', 'push'
+        elif card:
+            typ, mot = 'MED', 'hold'
+        elif big:
+            typ, mot = 'MEDLOW', 'push'
+        elif key:
+            typ = 'CU' if last != 'CU' else 'ECU'
+            mot = 'crash' if n % 2 == 0 else 'push'
+        else:
+            typ = cycle[n % len(cycle)]
+            if typ == last:
+                typ = cycle[(n + 1) % len(cycle)]
+            mot = ['push', 'pull', 'hold', 'zoomout'][n % 4] if typ != 'WIDE' else ['pull', 'push'][n % 2]
+        dutch = (2.8 if n % 2 else -2.8) if (key and typ in ('CU', 'ECU')) else 0.0
+        smooth = (n % 4 == 3) and not any(abs(a - c) < 1e-2 for c in cuts) and not entry   # fast zoom, not a cut
+        side = -side
+        plan.append((a, b, typ, mot, side, dutch, smooth))
+        last = typ
+        n += 1
+    return plan
+
+
+def _plan_at(t):
+    plan = shot_plan()
+    for seg in plan:
+        if seg[0] <= t < seg[1]:
+            return seg
+    if t < plan[0][0]:
+        return plan[0]                 # frames a hair before the first rounded boundary
+    return plan[-1] if t >= plan[-1][1] else min(plan, key=lambda g: min(abs(t - g[0]), abs(t - g[1])))
+
+
+@functools.lru_cache(maxsize=None)
+def _seg_face_h(t0, t1):
+    a, b = int(t0 * FPS), max(int(t1 * FPS), int(t0 * FPS) + 1)
+    hs = CAMF[a:b, 3]
+    hs = hs[~np.isnan(hs)]
+    return float(np.median(hs)) if len(hs) else 200.0
+
+
+def _framing(seg, t):
+    """(zoom, cam_x, cam_y) for a plan segment at time t, following the smoothed face."""
+    t0, t1, typ, mot, side, dutch, smooth = seg
+    fi = int(clamp(round(t * FPS), 0, len(CAMF) - 1))
+    fx, fy, fw, fh = CAMF[fi]
+    if np.isnan(fx):
+        fx, fy = 540.0, 600.0
+    tgt_h, dx, ty = SHOT[typ]
+    if tgt_h is None:
+        z = 1.04
+        tx, ty = fx, fy                       # no reframing: keep the face where it is in the plate
+    else:
+        z = clamp(tgt_h / _seg_face_h(t0, t1), 1.04, 2.2 if typ == 'ECU' else 2.0)
+        tx = 540 + side * dx
+    u = clamp((t - t0) / max(t1 - t0, 0.3))
+    if mot == 'push':
+        z *= lerp(1.0, 1.10, e_inout_cubic(u))
+    elif mot == 'pull':
+        z *= lerp(1.10, 1.0, e_inout_cubic(u))
+    elif mot == 'crash':
+        z *= lerp(0.72, 1.0, e_out_expo(clamp((t - t0) / 0.24))) * lerp(1.0, 1.05, u)
+    elif mot == 'zoomout':
+        z *= lerp(1.30, 1.0, e_out_expo(clamp((t - t0) / 0.32)))
+    z = max(z, 1.02)
+    if tgt_h is None:
+        x, y = (fx - 540) * 0.15, (fy - 700) * 0.1
+    else:
+        x = fx - 540 - (tx - 540) / z
+        y = fy - 960 - (ty - 960) / z
+    mx, my = 540 * (1 - 1 / z), 960 * (1 - 1 / z)          # never past the edges of the footage
+    return z, clamp(x, -mx, mx), clamp(y, -my, my)
+
+
+def _plan_moving(t):
+    seg = _plan_at(t)
+    if seg is None:
+        return False
+    t0, t1, typ, mot, side, dutch, smooth = seg
+    return (mot == 'crash' and t - t0 < 0.26) or (mot == 'zoomout' and t - t0 < 0.34) or (smooth and t - t0 < 0.3)
+
+
+_orig_key_values = G._key_cam_values
+
+
+def cine_cam_values(t):
+    """Replaces the old authored camera after the hook: shot plan + operator follow + shakes."""
+    if t < HOOK_END:
+        v = _orig_key_values(t)
+        return G._cover(v, G.shot_of(t))
+    seg = _plan_at(t)
+    z, x, y = _framing(seg, t)
+    roll = seg[5]
+    if seg[6] and t - seg[0] < 0.3:                          # fast zoom from the previous framing
+        prev = _plan_at(seg[0] - 1e-3)
+        if prev is not None:
+            z0, x0, y0 = _framing(prev, seg[0] - 1e-3)
+            q = e_inout_expo_(clamp((t - seg[0]) / 0.3))
+            z, x, y, roll = lerp(z0, z, q), lerp(x0, x, q), lerp(y0, y, q), lerp(prev[5], roll, q)
+    # operator: gentle handheld + a slow orbit feel
+    x += 4 * math.sin(t * 0.83) + 2 * math.sin(t * 2.1 + 1)
+    y += 3 * math.sin(t * 0.67 + 2)
+    roll += 0.3 * math.sin(t * 0.5 + 0.3)
+    ry = 2.5 * math.sin(t * 0.35)
+    for tp, kick, amp in TL.PUNCH:
+        if tp - 0.05 <= t < tp + 0.9:
+            u = t - tp
+            if u >= 0:
+                z *= 1 + kick * math.exp(-u * 7)
+                d = math.exp(-u * 9) * amp
+                x += d * math.sin(u * 71)
+                y += d * math.cos(u * 59)
+                roll += d * 0.06 * math.sin(u * 47)
+    v = dict(zoom=z, x=x, y=y, roll=roll, rx=0.0, ry=ry)
+    return G._cover(v, G.shot_of(t))
+
+
+def e_inout_expo_(x):
+    return G.e_inout_expo(x)
+
+
+G.base_cam_values = cine_cam_values
+G.snap_values = lambda t: (G.SNAP_NEUTRAL, _plan_moving(t))
+
 
 # ---------------------------------------------------------------- plate (untouched color grade)
 
@@ -76,15 +266,21 @@ def draw_person(cv, i, cam, plates):
 # ---------------------------------------------------------------- text sprites (ref look)
 
 
-def _mask(text, size, font=CAP_FONT, track=-0.045):
-    return text_mask(text, font, int(size * K), track)
+@functools.lru_cache(maxsize=256)
+def _mask(text, size, kind='white'):
+    font, track, sc = KIND[kind]
+    m = text_mask(text, font, int(size * sc * K), track)
+    if kind == 'gold' and font.startswith('Gwyner'):      # a touch heavier, like the supplied sample
+        m = cv2.dilate(np.pad(m, 3), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)),
+                       iterations=max(1, int(round(0.8 * K))))
+    return m
 
 
 @functools.lru_cache(maxsize=64)
 def word_sprite(text, kind, size):
     """Caption word at output res: a stacked 3D depth shadow, a soft drop shadow, a tight dark edge for
     contrast on any background, then glow + face. kind: 'gold' (keyword) or 'white'."""
-    a = np.pad(_mask(text, size), int(48 * K))
+    a = np.pad(_mask(text, size, kind), int(48 * K))
     dk = (0.0, 0.0, 0.0, 1.0)
     out = np.zeros(a.shape + (4,), np.float32)
     soft = cv2.GaussianBlur(G._shift(a, 3 * K, 9 * K), (0, 0), 9 * K)          # soft cast shadow
@@ -94,20 +290,26 @@ def word_sprite(text, kind, size):
         out = over_spr(out, solid(G._shift(a, j * 0.45, j * 0.9) * 0.9, (0.04, 0.03, 0.02, 1)))
     edge = cv2.GaussianBlur(cv2.dilate(a, np.ones((3, 3), np.uint8), iterations=max(1, int(K))), (0, 0), 1.5 * K)
     out = over_spr(out, solid(edge * 0.75, dk))                                 # tight dark edge
-    if kind == 'gold':
-        g = cv2.GaussianBlur(a, (0, 0), 5 * K) * 0.65 + cv2.GaussianBlur(a, (0, 0), 18 * K) * 0.55
-        out = over_spr(out, solid(np.clip(g, 0, 1), GOLD))
-        top = np.linspace(1.04, 0.86, a.shape[0], dtype=np.float32)[:, None, None]
-        face = np.concatenate([np.clip(GOLD3 * top, 0, 1) * a[..., None], a[..., None]], 2)
+    if kind in ('gold', 'goldsans'):
+        # bright gold gradient (pale yellow top -> warm gold bottom) with a hot warm glow, as in the sample
+        g = (cv2.GaussianBlur(a, (0, 0), 4 * K) * 0.75 + cv2.GaussianBlur(a, (0, 0), 14 * K) * 0.65 +
+             cv2.GaussianBlur(a, (0, 0), 34 * K) * 0.35)
+        out = over_spr(out, solid(np.clip(g, 0, 1), (1.0, 0.70, 0.22, 1)))
+        ys = np.where(a.max(1) > 0.5)[0]
+        y0, y1 = (ys.min(), ys.max()) if len(ys) else (0, a.shape[0])
+        v = np.clip((np.arange(a.shape[0], dtype=np.float32) - y0) / max(y1 - y0, 1), 0, 1)[:, None, None]
+        top, bot = np.array([1.0, 0.92, 0.58], np.float32), np.array([0.93, 0.62, 0.20], np.float32)
+        col = top + (bot - top) * v ** 0.9
+        face = np.concatenate([col * a[..., None], a[..., None]], 2)
         return over_spr(out, face)
     g = cv2.GaussianBlur(a, (0, 0), 6 * K) * 0.22 + cv2.GaussianBlur(a, (0, 0), 20 * K) * 0.20
     out = over_spr(out, solid(np.clip(g, 0, 1), (1.0, 0.96, 0.88, 1)))
     return over_spr(out, solid(a, WHITE))
 
 
-def glyph_box(text, size):
-    """Design-px (width, cap height) of the bare glyphs."""
-    m = _mask(text, size)
+def glyph_box(text, size, kind='white'):
+    """Design-px (width, height) of the bare glyphs."""
+    m = _mask(text, size, kind)
     return m.shape[1] / K, m.shape[0] / K
 
 # ---------------------------------------------------------------- tracking helpers
@@ -153,9 +355,10 @@ def word_size(w, mode):
 
 
 @functools.lru_cache(maxsize=None)
-def vmetrics(text, size):
+def vmetrics(text, size, kind='white'):
     """(ink top, ink bottom) relative to the baseline and the font cap height, design px."""
-    f = en.font(CAP_FONT, int(size * K))
+    font, track, sc = KIND[kind]
+    f = en.font(font, int(size * sc * K))
     x0, y0, x1, y1 = f.getbbox(text, anchor='ls')
     cap = -f.getbbox('H', anchor='ls')[1]
     return y0 / K, y1 / K, cap / K
@@ -178,13 +381,13 @@ def block_layout(pi, k):
             lines.append(cur)
     items, widths, base, maxw, bottom = [], [], 0.0, 0.0, 0.0
     for li, row in enumerate(lines):
-        cap = max(vmetrics(w['text'], word_size(w, 'block'))[2] for w in row)
+        cap = max(vmetrics(w['text'], word_size(w, 'block'), word_kind(w))[2] for w in row)
         base += cap if li == 0 else cap * 1.20
         x = 0.0
         for j, w in enumerate(row):
             sz = word_size(w, 'block')
-            gw, gh = glyph_box(w['text'], sz)
-            top, bot, _ = vmetrics(w['text'], sz)
+            gw, gh = glyph_box(w['text'], sz, word_kind(w))
+            top, bot, _ = vmetrics(w['text'], sz, word_kind(w))
             items.append((w, x, base + top - 4 / K, gw, gh, li))
             bottom = max(bottom, base + bot)
             x += gw + sz * 0.16
@@ -218,11 +421,11 @@ def block_plan(pi):
     if avail >= 300 and hs <= 330:
         top = scr[1] - hs * 0.34 * zoom
         return dict(side=side, align='L' if side > 0 else 'R', dx=side * gap, dy=-hs * 0.34,
-                    maxw=min(avail, 470), maxh=min((1660 - top) / zoom, 480))
+                    maxw=min(avail * 0.8, 470), maxh=min((1660 - top) / zoom, 480))   # 0.8: perspective margin
     # under the face, centred on her
     top = scr[1] + hs * 0.55 * zoom
     return dict(side=1 if scr[0] < 540 else -1, align='C', dx=0.0, dy=hs * 0.55,
-                maxw=min(980 / zoom, 600), maxh=min((1680 - top) / zoom, 420))
+                maxw=min(900 / zoom, 560) * 0.85, maxh=min((1680 - top) / zoom, 420))
 
 
 def draw_block(cv, t, i, ph, cam, plates):
@@ -266,7 +469,7 @@ def draw_block(cv, t, i, ph, cam, plates):
         spr = word_sprite(w['text'], word_kind(w), word_size(w, 'block'))
         bl = (1 - p) * 9 + out * 10
         s_ = blur_sprite(spr, bl * K) if bl > 0.6 else spr
-        gm = _mask(w['text'], word_size(w, 'block')).shape[0]
+        gm = _mask(w['text'], word_size(w, 'block'), word_kind(w)).shape[0]
         hdraw = s_.shape[0] / gm * gh * sc * slam * (1 + 0.2 * out)
         op = clamp(u / 0.05) * (1 - out)
         draw3d(cv, s_, pos[0], pos[1], pos[2], h=hdraw, rx=rx, ry=ry, rz=rz, cam=cam, opacity=op)
@@ -290,10 +493,12 @@ def draw_word(cv, t, i, ph, cam, plates, fixed=None):
     u = t - (w['t'] - 0.03)
     out = clamp((t - (ph['t_off'] - 0.06)) / 0.06)
     spr = word_sprite(w['text'], word_kind(w), word_size(w, 'word'))
-    gm = _mask(w['text'], word_size(w, 'word')).shape[0]
-    gh = glyph_box(w['text'], word_size(w, 'word'))[1]
+    gm = _mask(w['text'], word_size(w, 'word'), word_kind(w)).shape[0]
+    gh = glyph_box(w['text'], word_size(w, 'word'), word_kind(w))[1]
     p = e_out_back(clamp(u / 0.12), 2.2)
-    sc = lerp(1.25, 1.0, clamp(u / 0.12)) if u < 0.12 else 1.0
+    gw_ = glyph_box(w['text'], word_size(w, 'word'), word_kind(w))[0]
+    fit = min(1.0, 820 / max(gw_, 1))                     # long words never leave the frame
+    sc = (lerp(1.25, 1.0, clamp(u / 0.12)) if u < 0.12 else 1.0) * fit
     op = 1.0 - out
     if fixed is not None:                      # cutaways / chapter cards: centred, screen-fixed
         draw3d(cv, spr, fixed[0], fixed[1], 0, h=spr.shape[0] / gm * gh * sc, cam=en.Cam(), opacity=op)
@@ -376,7 +581,7 @@ def draw_box(cv, t, i, cam, plates):
 
 @functools.lru_cache(maxsize=None)
 def bang_sprite():
-    return word_sprite('!', 'gold', 170)
+    return word_sprite('!', 'goldsans', 170)
 
 
 def draw_bangs(cv, t, i, cam, plates):
@@ -387,7 +592,7 @@ def draw_bangs(cv, t, i, cam, plates):
         hx, hy, hs = head_at(i)
         out = clamp((t - (t_out - 0.12)) / 0.12)
         spr = bang_sprite()
-        gm = _mask('!', 170).shape[0]
+        gm = _mask('!', 170, 'goldsans').shape[0]
         bx, by = (hx + xoff, hy - hs * 0.78) if hs <= 330 else (hx + xoff + hs * 0.62, hy - hs * 0.28)
         for j, (dx, dy, rot, s_) in enumerate([(-0.42, -0.02, -16, 0.8), (0.0, -0.12, 0, 1.0), (0.42, -0.02, 16, 0.8)]):
             u = t - t_in - j * 0.07
