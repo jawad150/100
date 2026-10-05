@@ -449,7 +449,93 @@ def block_plan(pi):
                 maxw=min(900 / zoom, 560) * 0.85, maxh=min((1680 - top) / zoom, 420))
 
 
-def draw_block(cv, t, i, ph, cam, plates):
+# Instagram Reels safe area (design px, 1080x1920): clear of the top bar, the right-hand buttons
+# and the caption/audio strip at the bottom
+SAFE = (70, 250, 950, 1470)
+FACE_M = 22
+
+
+def face_rect(i, cam, xoff):
+    """Her face on screen (design px) incl. hair/chin margin."""
+    fbx, fby, fbw, fbh = face_box(i)
+    c = np.array([[fbx + xoff + dx * fbw / 2, fby + dy * fbh / 2, 0.0] for dx in (-1, 1) for dy in (-1, 1)])
+    q = en.project_pts(c, cam)[0]
+    return q[:, 0].min() - FACE_M, q[:, 1].min() - FACE_M, q[:, 0].max() + FACE_M, q[:, 1].max() + FACE_M
+
+
+def whip_shift(t, cam, xoff):
+    """Screen x offset a whip pan adds to this clip right now (fit as if the camera weren't whipping,
+    so captions slide out with her instead of being pulled back into frame)."""
+    xw = G.camera(t)[2].get('xw', 0.0)
+    if abs(xoff - xw) < 1e-3:
+        return 0.0
+    q = en.project_pts(np.array([[CX + xoff, CY, 0.0], [CX + xw, CY, 0.0]]), cam)[0]
+    return float(q[0, 0] - q[1, 0])
+
+
+def fit_shifted(rect, face, pref, s0, sw, lock=False):
+    r = (rect[0] - sw, rect[1], rect[2] - sw, rect[3])
+    f = (face[0] - sw, face[1], face[2] - sw, face[3])
+    return fit_rect(r, f, pref, s0, lock)
+
+
+def _hit(r, f):
+    return r[0] < f[2] and r[2] > f[0] and r[1] < f[3] and r[3] > f[1]
+
+
+def fit_rect(r, f, pref, s0=1.0, lock=False):
+    """Screen-space (dx, dy, scale about the rect centre) that keeps caption rect r off face rect f and
+    inside SAFE. pref: 'below' or +1/-1 (stay on that side of her face)."""
+    x0, y0, x1, y1 = r
+    s = min(s0, (SAFE[2] - SAFE[0]) / max(x1 - x0, 1), (SAFE[3] - SAFE[1]) / max(y1 - y0, 1))
+    for _ in range(10):
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        hw, hh = (x1 - x0) / 2 * s, (y1 - y0) / 2 * s
+        nx, ny = cx, cy
+        for mode in ([pref, 'below'] if pref != 'below' else ['below']):
+            nx, ny = cx, cy
+            if mode == 'below':
+                ny = max(ny, f[3] + hh)
+            elif mode > 0:
+                nx = max(nx, f[2] + hw)
+            else:
+                nx = min(nx, f[0] - hw)
+            nx = clamp(nx, SAFE[0] + hw, SAFE[2] - hw)
+            ny = clamp(ny, SAFE[1] + hh, SAFE[3] - hh)
+            if not _hit((nx - hw, ny - hh, nx + hw, ny + hh), f):
+                return nx - cx, ny - cy, s
+        if lock:                       # scale is fixed for the phrase: best placement at that size
+            break
+        s *= 0.88
+        if s < 0.45:
+            break
+    return nx - cx, ny - cy, s
+
+
+@functools.lru_cache(maxsize=None)
+def fit_scale(pi, key):
+    """One scale per phrase (blocks) or per word (single words): the smallest the fitter needs anywhere
+    in its time span, so captions only glide clear of her face and never pop in size."""
+    ph = G.phrases()[pi]
+    if key < 0:
+        a, b = ph['t_on'] + 0.02, ph['t_off'] - 0.02
+    else:
+        ws = [w for r in ph['rows'] for w in r]
+        a = ws[key]['t'] - 0.02
+        b = min(ws[key + 1]['t'] - 0.05 if key + 1 < len(ws) else a + 0.8, ph['t_off'] - 0.02)
+    fs = 1.0
+    n = max(2, int((b - a) * FPS * 2) + 1)                  # every half frame of the span
+    for j in range(n):
+        t = lerp(a, max(a, b), j / (n - 1))
+        cam, plates, _ = G.camera(t)
+        i = int(round(t * FPS))
+        r = (draw_block if key < 0 else draw_word)(None, t, i, ph, cam, plates, measure=True)
+        if r is not None:
+            fs = min(fs, r)
+    return fs
+
+
+def draw_block(cv, t, i, ph, cam, plates, measure=False):
     pi = ph['i']
     shot = G.shot_of(ph['t_on'] + 0.05)
     xoff = plate_xoff(plates, shot)
@@ -476,6 +562,28 @@ def draw_block(cv, t, i, ph, cam, plates):
     R = rotm(rx, ry, rz)
     base = np.array([ax + xoff, ay, -60.0])
     shift = {'L': 0.0, 'R': 1.0, 'C': 0.5}[align]
+    # footprint of the complete phrase on screen -> keep it off her face and inside the Reels safe area
+    layf, bwf, bhf = block_layout(pi, len(words))
+    scf = min(1.0, maxw / max(bwf, 1), maxh / max(bhf, 1))
+    pts = []
+    for (w, lx, ly, gw, gh, lw) in layf:
+        lx -= lw * shift
+        for qx, qy in ((lx, ly), (lx + gw, ly), (lx, ly + gh), (lx + gw, ly + gh)):
+            pts.append(base + R @ np.array([qx * scf, qy * scf, 0.0]))
+    q = en.project_pts(np.array(pts), cam)[0]
+    rect = (q[:, 0].min(), q[:, 1].min(), q[:, 0].max(), q[:, 1].max())
+    fdx, fdy, fs = fit_shifted(rect, face_rect(i, cam, xoff), 'below' if align == 'C' else side,
+                               1.0 if measure else fit_scale(pi, -1), whip_shift(t, cam, xoff),
+                               lock=not measure)
+    if measure:
+        return fs
+    if fdx or fdy or fs < 1:
+        ccx, ccy = (rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2
+        zq = G.person_depth(cam) - 60
+        cw = G.unproject(ccx, ccy, zq, cam)
+        cn = G.unproject(ccx + fdx, ccy + fdy, zq, cam)
+        base = cn + (base - cw) * fs           # scale about the footprint centre, then move
+        sc *= fs
     for n, (w, lx, ly, gw, gh, lw) in enumerate(lay):
         lx -= lw * shift                                  # align each line toward her (or centre it)
         if n < len(lay0) and k > 1:
@@ -510,7 +618,7 @@ def current_word(ph, t):
     return cur
 
 
-def draw_word(cv, t, i, ph, cam, plates, fixed=None):
+def draw_word(cv, t, i, ph, cam, plates, fixed=None, measure=False):
     w = current_word(ph, t)
     if w is None:
         return
@@ -550,8 +658,16 @@ def draw_word(cv, t, i, ph, cam, plates, fixed=None):
         sx = clamp(fx + side * (fbw * 0.75 * zoom + 40 + ww / 2), 60 + ww / 2, 1020 - ww / 2)
         sy = fy + fbh * 0.25 * zoom
         ry = -side * 10
-    pos = G.unproject(sx, sy, zq, cam)
-    draw3d(cv, spr, pos[0], pos[1], pos[2], h=hgt, ry=ry, cam=cam, opacity=op)
+    hh = gh * sc * fit_s / fit * zoom
+    rect = (sx - ww / 2, sy - hh / 2, sx + ww / 2, sy + hh / 2)
+    if measure:
+        return fit_shifted(rect, face_rect(i, cam, xoff), 'below' if side == 0 else side, 1.0,
+                           whip_shift(t, cam, xoff))[2]
+    widx = [id(x) for r in ph['rows'] for x in r].index(id(w))
+    fdx, fdy, fs = fit_shifted(rect, face_rect(i, cam, xoff), 'below' if side == 0 else side,
+                               fit_scale(ph['i'], widx), whip_shift(t, cam, xoff), lock=True)
+    pos = G.unproject(sx + fdx, sy + fdy, zq, cam)
+    draw3d(cv, spr, pos[0], pos[1], pos[2], h=hgt * fs, ry=ry, cam=cam, opacity=op)
 
 
 @functools.lru_cache(maxsize=None)
@@ -575,9 +691,9 @@ def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
         if not (ph['t_on'] <= tc < ph['t_off']):
             continue
         if insert:
-            draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1530))
+            draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
         elif card_k > 0.5:
-            draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1560))
+            draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
         elif ph['i'] in RT.BLOCKS:
             draw_block(cv, t, i, ph, cam, plates)
         else:

@@ -37,8 +37,8 @@ KEEP_ELEMENTS = {('target', 4.30), ('fed', 31.55)}
 
 # big condensed type behind her head (ref 1 "BETTER THAN" look): (t_in, t_out, text, sy, height, dz)
 BIG_TYPE = [
-    (49.10, 51.10, 'CRASH NAHI', 300, 108, 1200),
-    (63.30, 64.60, 'CORRECTION', 245, 104, 300),
+    (49.10, 51.10, 'CRASH NAHI', 345, 108, 1200),
+    (63.30, 64.60, 'CORRECTION', 330, 104, 300),
 ]
 
 # hook: ref-1 halo + condensed words split behind the head + light trails (no title block)
