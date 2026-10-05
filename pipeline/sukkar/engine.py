@@ -113,7 +113,7 @@ class Shot:
         self.k, self.ow, self.oh = ow / W, ow, oh
         if self.kind == "broll":
             vf = (f"crop={cw_i}:{ch_i}:{x}:{y},"
-                  f"scale={ow}:{oh}:flags=lanczos:in_color_matrix=bt709:in_range=pc:out_range=pc,"
+                  f"scale={ow}:{oh}:flags=lanczos:in_color_matrix=bt709:in_range={getattr(self, 'rng', 'pc')}:out_range=pc,"
                   f"format=rgb48le,lut3d=file={self.lut}:interp=tetrahedral")
         else:
             vf = (f"crop={cw_i}:{ch_i}:{x}:{y},"

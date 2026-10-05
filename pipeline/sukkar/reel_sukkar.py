@@ -63,17 +63,31 @@ T_B3_P2 = T["b3"] + p3[1]
 
 
 def lut(c):
-    return f"luts/{c}.cube"
+    return f"luts3/{c}.cube"
+
+
+def clip_path(clip):
+    for ext in (".MP4", ".mov"):
+        p = f"clips/{clip}{ext}"
+        if os.path.exists(p):
+            return p
+    raise FileNotFoundError(clip)
 
 
 def B(clip, t, cy, cw=2160, cx=1080, zoom=(1.0, 1.05), pan=((0, 0), (0, 0)), **kw):
-    return dict(kind="broll", src=f"{SRC}/{clip}.MP4", lut=lut(clip), t=t, crop=(cx, cy, cw),
-                zoom=zoom, pan=pan, label=f"{clip}@{t}", **kw)
+    p = clip_path(clip)
+    return dict(kind="broll", src=p, lut=lut(clip), t=t, crop=(cx, cy, cw), zoom=zoom, pan=pan,
+                label=f"{clip}@{t}", rng=("tv" if p.endswith(".mov") else "pc"), **kw)
+
+
+# the two interview stretches used, extracted frame-exact from "C8948 (1).mov" (start time in name)
+TH_EXTRACTS = (384, 440)
 
 
 def TH(src_t, framing="medium", zoom=(1.0, 1.02), **kw):
     crop = (2000, 1080, 2880) if framing == "medium" else (2070, 1000, 1800)
-    return dict(kind="th", src=f"{SRC}/C8948 (1).mov", lut=None, t=src_t, crop=crop, zoom=zoom,
+    base = next(b for b in TH_EXTRACTS if b <= src_t < b + 11.5)
+    return dict(kind="th", src=f"{SRC}/TH_{base}.mov", lut=None, t=src_t - base, crop=crop, zoom=zoom,
                 pan=((0, 0), (0, 0)), label=f"TH-{framing}@{src_t:.2f}", **kw)
 
 
@@ -82,31 +96,27 @@ def TH(src_t, framing="medium", zoom=(1.0, 1.02), **kw):
 TL = []
 t = 0.0
 open_specs = [
-    B("C8999", 4.3, 1350, 1500, zoom=(1.0, 1.04)),                 # gloves
-    B("C9017", 9.2, 1280, 1200, zoom=(1.04, 1.0)),                   # loupes / eyes
-    B("C8894", 1.3, 2400, 1400, zoom=(1.0, 1.05)),                  # instruments + glove
-    B("C9017", 0.5, 1350, 1300, cx=900, zoom=(1.0, 1.06), flash_in=2),        # headlight glare
-    B("C9019", 3.4, 1600, 1400, zoom=(1.05, 1.0)),                  # hands + forceps
-    B("C9028", 0.4, 1450, 1300, cx=600, zoom=(1.0, 1.04)),          # eye above mask
-    B("C8894", 19.9, 2450, 1400, zoom=(1.0, 1.05)),                 # hand grabs instrument
-    B("C8893", 15.9, 1350, 1300, zoom=(1.0, 1.05), flash_in=2),      # light glint
-    B("C9019", 11.2, 2750, 1300, zoom=(1.05, 1.0)),                 # hemostat
-    B("C8999", 43.8, 2200, 1500, zoom=(1.0, 1.05)),                 # instruments + pack
-    B("C9017", 16.8, 1250, 1300, zoom=(1.0, 1.05)),                  # loupes
-    B("C8893", 37.0, 1600, 1700, zoom=(1.0, 1.06), flash_out=3),     # movement
+    B("C9010", 1.5, 2600, 1600, zoom=(1.0, 1.05)),                  # gloved hands + instruments
+    B("C9015", 3.0, 1400, 1300, cx=900, zoom=(1.04, 1.0)),          # THE SUKE, loupes
+    B("C8891", 9.0, 1500, 1500, zoom=(1.0, 1.06)),                  # gold instruments + implant sizer
+    B("C8899", 1.0, 900, 2160, zoom=(1.0, 1.06), flash_in=2),        # OR ceiling light
+    B("C8879", 4.0, 1500, 1500, cx=1000, zoom=(1.05, 1.0)),         # IV drip
+    B("C8911", 4.0, 2000, 2000, zoom=(1.0, 1.05)),                  # patient monitor
+    B("C8875", 25.0, 2300, 1700, zoom=(1.0, 1.06)),                 # clamps + scissors on the tray
+    B("C8902", 4.0, 1300, 2000, zoom=(1.0, 1.05), flash_in=2),       # low angle under the OR lamp
+    B("C9010", 3.3, 2700, 1500, zoom=(1.05, 1.0)),                  # hands
+    B("C8905", 6.7, 1500, 1900, cx=1000, zoom=(1.0, 1.05)),         # profile, loupes
+    B("C8886", 3.9, 1300, 2000, cx=1200, zoom=(1.0, 1.05)),         # monitor waveforms
+    B("C8890", 27.3, 1700, 2160, zoom=(1.0, 1.06), flash_out=3),     # drape movement
 ]
 fr = 0
 for n, spec in zip(OPEN_FRAMES, open_specs):
     fr += n
     TL.append((fr / E.FPS, spec, ("cut", 0)))
 
-# space + section 1 (tight, intimate)
-TL.append((T["b1"] + 0.66, B("C8893", 2.0, 760, 2160, zoom=(1.02, 1.10)), ("dip", 6)))          # IV drip, surgeon soft
-TL.append((T["b1"] + 2.15, B("C9028", 0.15, 1450, 1500, cx=650, zoom=(1.0, 1.06)), ("dissolve", 10)))  # eye above mask
-TL.append((T["b1"] + 3.80, B("C9019", 3.0, 1650, 1600, zoom=(1.0, 1.05)), ("dissolve", 10)))  # hands
-TL.append((T["b1"] + bdur("b1") + 0.15, B("C8999", 10.4, 1500, 2000, zoom=(1.0, 1.05)), ("dissolve", 8)))  # implant prep
-TL.append((T["b2a"] + p2a[1] + 0.25, B("C9017", 9.0, 1250, 1450, zoom=(1.0, 1.08)), ("dissolve", 8)))   # loupes tight
-TL.append((T_P3 + 0.06, B("C8894", 15.4, 1450, 2160, zoom=(1.0, 1.05)), ("cut", 0)))              # him + observers
+# space + section 1: C8893 (IV drip, surgeon soft behind) then C9016 (profile, loupes, headlamp)
+TL.append((T["b1"] + 3.00, B("C8893", 25.74, 1300, 2160, zoom=(1.0, 1.06)), ("dip", 6)))
+TL.append((T_P3 + 0.06, B("C9016", 7.0, 1350, 2160, zoom=(1.0, 1.08)), ("dissolve", 12)))
 # section 2: interview reveal (lip sync), then him operating
 th1_start = T_P3 + 0.06
 TL.append((T["b2a"] + bdur("b2a") + 0.38, TH(V_P3 + H_MINUS_V + 0.06, "medium", zoom=(1.0, 1.03)), ("zoomblur", 10)))
@@ -148,6 +158,7 @@ def make_shot(spec, start_s, end_s):
     s = E.Shot(spec["src"], spec["t"], end_s - start_s, spec["crop"], kind=spec["kind"], lut=spec["lut"],
                zoom=spec["zoom"], pan=spec["pan"], label=spec["label"], **kw)
     s.reverse = spec.get("reverse", False)
+    s.rng = spec.get("rng", "pc")
     return s
 
 

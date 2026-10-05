@@ -8,10 +8,10 @@ The rendered reel is not committed here, because the repository is public and th
 
 | Time (s) | Section | Audio | Picture |
 |---|---|---|---|
-| 0.0–2.3 | Cold open | Natural OR sound only, space left for music | 12 flash cuts of 4–6 frames: gloves, loupes, instruments, headlamp glare, hands, eye above the mask, movement |
-| 2.3–3.3 | Breath | Room tone | IV drip sharp, surgeon soft behind it |
-| 3.3–8.6 | 1 | "…to see the cornea restore someone's sight, and I helped be a part of that." | Eye above the mask → hands with forceps → implant prep → loupes (slow dissolves) |
-| 9.3–14.8 | 2 | "I think the craft of plastic surgery… it's boundless. You're always getting better." | **Interview reveal** (lip-synced) → him operating → hands → him with the team (zoom-blur transitions) |
+| 0.0–2.3 | Cold open | SFX only (clinks, ticks, flash pops, monitor beeps), space left for music | 12 flash cuts of 4–6 frames from the second clips folder: gloved hands, THE SUKE cap with loupes, instruments with an implant sizer, OR ceiling light, IV drip, monitor, tray, low angle under the OR lamp, hands, loupes in profile, monitor waveforms, drape movement |
+| 2.3–3.3 | Breath | Hit and heartbeat | Dip into C8893: IV drip sharp, surgeon soft behind it |
+| 3.3–8.6 | 1 | "…to see the cornea restore someone's sight, and I helped be a part of that." | C8893 holds (the client's chosen range), then a slow dissolve into C9016: profile with loupes and headlamp |
+| 9.3–14.8 | 2 | "I think the craft of plastic surgery… it's boundless. You're always getting better." | C9016 continues, then the **interview reveal** (lip-synced) on "it's boundless" → him operating → hands → him with the team (zoom-blur transitions) |
 | 15.9–21.7 | 3 | "We're always still learning and chasing perfection." | Interview close-up (punch-in) → whip into a quickening montage of hands, loupes and instruments |
 | 21.7–35.0 | 4 (VO, C8951) | "What we've created here is a wonderful experience, not only for the patient, but for the staff… other doctors… which they love for their patients." | Light-leak flash → exterior with the clinic sign → atrium → staff preparing a room → observing doctors → lobby from above |
 | 35.0–38.7 | 5 (VO) | "Actually, I'd like to say that going to surgery is like a spa day for me…" | Dip back into the OR, slower: gloving → the mask going on (played in reverse) |
@@ -38,7 +38,19 @@ The B-roll is Sony S-Log3 / S-Gamut3.Cine, 10-bit 4:2:2, full range, as read fro
 
 `clipstats.py` measures each clip's exposure and near-neutral color. `clipgrades.py` turns those measurements into per-clip exposure and white-balance trims. The facility clips open up brighter for the reveal. Everything is baked into one 65³ LUT per clip, applied inside ffmpeg at 16-bit. The LUT matches the math to about 0.13 of an 8-bit code value on average.
 
-`bake_luts.py` also writes a 33³ **show LUT** for grading other S-Log3 clips from this shoot. A copy is in [`reel/sukkar/`](../../reel/sukkar/SukkarReel_SLog3-SGamut3Cine_to_Rec709_look.cube).
+`bake_luts.py` also writes a 33³ **show LUT** for grading other S-Log3 clips from this shoot. A copy is in [`reel/sukkar/`](../../reel/sukkar/SukkarReel_SLog3-SGamut3Cine_to_Rec709_look.cube). That LUT is the v1/v2 look; v3 uses the reference-matched per-clip LUTs below.
+
+### v3: matched to the client's graded example
+
+The client sent a graded example ("Color Grade Match") and a graded range of C8893. The v3 B-roll is fitted to that grade, shot by shot:
+
+1. **Find the sources.** `findsrc.py` finds each reference shot in its S-Log3 clip. It matches gradient structure, so the grade itself does not affect the match.
+2. **Collect matched pixels.** `fitlook.py` aligns each reference frame to its source frame with phase correlation and then an ECC affine refinement, and samples matched pixels from six shots.
+3. **Fit the grade per clip.** A free 3D LUT fitted to those samples gave posterised gloves and magenta highlights. Instead, `fitlook3.py` fits `grade.py`'s own colorist-style controls for each referenced clip: exposure, white balance, contrast, saturation, blue→teal rotation and split tints. It uses a robust loss and keeps the tints near neutral. The mean error is 4.7–12 8-bit code values.
+4. **Bake the LUTs.** `grade3.py` writes a 65³ LUT per clip.
+   - A referenced clip uses its own fit.
+   - Any other clip borrows the fit of the most similar referenced shot, plus an automatic exposure match: 60% of the difference (40% for facility shots), capped at ±0.9 stop.
+   - The ProRes `.mov` clips are tv-range S-Log3 transcodes, so the engine reads them with `in_range=tv`.
 
 ## Sound
 
@@ -55,7 +67,7 @@ The B-roll is Sony S-Log3 / S-Gamut3.Cine, 10-bit 4:2:2, full range, as read fro
   - Applies a downward expander keyed 24 dB below the speech level, so gaps go quiet.
   - Latency is measured as zero, so lip sync is unchanged.
 - **`sfx_sukkar.py`:** synthesises the whole SFX track, so it has no noise floor. Cues come from the edit list in `reel_sukkar.py`, so every cut lands on its frame:
-  - **cold open:** a glove snap, shutter ticks, steel clinks, flash pops and a riser
+  - **cold open:** steel clinks, shutter ticks, flash pops, monitor beeps and a riser, one per flash cut
   - **the cut into the breath:** a hit and a single heartbeat
   - **under the OR scenes:** a soft patient-monitor beep
   - **interview transitions:** whooshes and a low thump
@@ -84,4 +96,21 @@ python3 $P/reel_sukkar.py --plan                            # print the edit dec
 python3 $P/reel_sukkar.py --still 12.0,23.3                 # check frames
 python3 $P/reel_sukkar.py --all                             # mix + render -> out/sukkar_reel.mp4
 python3 $P/synccheck.py out/mix.wav                         # lip-sync check
+```
+
+v3 adds the clips from the two new folders and the reference grade:
+
+```bash
+python3 $P/compact_sheets.py                                # contact sheets of the new clips (srcB/ -> new/sheetsB/)
+python3 $P/cands.py '[["C9010.MP4",1.5,2600,1600,1080]]' out/cands.jpg   # 4:3 crop candidates for flash shots
+# the two interview stretches, extracted once (the reel reads src/TH_384.mov and src/TH_440.mov)
+for s in 384 440; do ffmpeg -ss $s -t 12 -i "src/C8948 (1).mov" -map 0:v:0 -map 0:a:0 -c:v libx264 -crf 8 \
+  -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a pcm_s16le src/TH_$s.mov; done
+python3 $P/findsrc.py REF.mp4 1.0 clips/C9019.MP4 0 30      # where a graded reference shot sits in its source
+python3 $P/fitlook.py && python3 $P/fitlook3.py             # matched pixels -> per-clip grade fits (look/fit3.json)
+python3 $P/edit_clips.py > look/edit_clips.json             # clip -> source times used in the edit
+python3 $P/grade3.py "$(cat look/edit_clips.json)"          # per-clip reference-matched LUTs -> luts3/
+REEL_TAG=sukkar_v3 python3 $P/reel_sukkar.py --all        # picture -> out/sukkar_v3_video.mp4
+python3 $P/clean_dialogue.py && python3 $P/sfx_sukkar.py && python3 $P/final_audio.py   # -> out/v3_preview.wav + MP3s
+ffmpeg -i out/sukkar_v3_video.mp4 -i out/v3_preview.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest out/sukkar_v3.mp4
 ```

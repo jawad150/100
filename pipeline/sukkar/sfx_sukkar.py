@@ -272,7 +272,8 @@ def cues():
         prev = end_s
     cut = [b[0] for b in bounds]      # start time of each shot
     # --- cold open: one accent per flash cut
-    kinds = ["snap", "tick", "clink", "flash", "tick", "tick", "clink", "flash", "clink", "clink", "tick", "whoosh"]
+    # hands, loupes, instruments, ceiling light, IV, monitor, tray, OR lamp, hands, loupes, monitor, drape
+    kinds = ["clink", "tick", "clink", "flash", "tick", "beep", "clink", "flash", "clink", "tick", "beep", "whoosh"]
     riser(0.0, 2.15, gain_db=-18)
     for i, k in enumerate(kinds):
         t = cut[i]
@@ -285,6 +286,8 @@ def cues():
             clink(t + 0.01, -15, pitch=rng.uniform(0.9, 1.15), pan=pan)
         elif k == "flash":
             flashpop(t, -13)
+        elif k == "beep":
+            beep(t + 0.01, -20)
         elif k == "whoosh":
             swell(2.22, dur=0.32, gain_db=-11)
     # cut to the breath (dip into the IV drip): the hit's tail is the space
@@ -296,10 +299,8 @@ def cues():
         fade = np.interp(t, [cut[12] + 0.75, R.T["b1"] + 1.0, R.T["b2a"] - 1.2, R.T["b2a"] - 0.3], [-36, -31, -31, -38])
         beep(t, fade)
         t += 0.91
-    whoosh(cut[13], dur=0.9, f_lo=150, f_hi=1500, gain_db=-30, pan=(-0.4, 0.4), peak_pos=0.5, air=0.5, body=0.4)
-    clink(cut[14] + 0.35, -27, pitch=1.05, pan=0.25)
-    rustle(cut[15] + 0.25, dur=0.8, gain_db=-30, lo=2500, hi=9000, density=90, pan=-0.2)   # packaging crinkle
-    whoosh(cut[16], dur=0.8, f_lo=150, f_hi=1500, gain_db=-30, pan=(0.4, -0.4), peak_pos=0.5, air=0.5, body=0.4)
+    # C8893 -> C9016 dissolve: a soft air move
+    whoosh(cut[13], dur=1.0, f_lo=150, f_hi=1500, gain_db=-29, pan=(-0.4, 0.4), peak_pos=0.5, air=0.5, body=0.4)
     # section 2: into / out of the interview, hands, team
     th1 = next(i for i, b in enumerate(bounds) if b[2].get("kind") == "th")
     whoosh(cut[th1], dur=0.62, gain_db=-17, pan=(-0.6, 0.6))
