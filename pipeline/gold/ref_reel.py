@@ -195,6 +195,8 @@ def _move_dur(seg):
     if prev is None:
         return 0.45
     order = {'WIDE': 0, 'MED': 1, 'MEDLOW': 1, 'CU': 2, 'ECU': 3}
+    if seg[2] == 'WIDE' and seg[0] > 75:          # closing pull-out to the wide: slow and gentle
+        return 1.25
     return 0.42 + 0.12 * abs(order[seg[2]] - order[prev[2]])
 
 
@@ -724,10 +726,13 @@ def render_insert(fi, t, ins, n):
             else:
                 fi3 = int(u * 24) % s3.n()
             fr = s3.frame(fi3)
-            sh = solid(cv2.GaussianBlur(fr[..., 3], (0, 0), 18 * K) * 0.6, (0, 0, 0, 1))
+            # soft drop shadow, padded so the blur is never clipped to the sprite's box
+            pd = int(54 * K)
+            sa = cv2.GaussianBlur(np.pad(fr[..., 3], pd), (0, 0), 18 * K) * 0.6
+            sh = solid(sa, (0, 0, 0, 1))
             p = e_out_expo(clamp(u / 0.3))
             hgt = (560 if name in ('arrow_crash', 'arrow_up', 'candles3d') else 780) * lerp(1.25, 1.0, p)
-            draw3d(cv, sh, CX + 24, 860, 20, h=hgt * 1.05, cam=cam)
+            draw3d(cv, sh, CX + 24, 860, 20, h=hgt * 1.05 * sa.shape[0] / fr.shape[0], cam=cam)
             draw3d(cv, fr, CX, 820, 0, h=hgt, ry=8 * math.sin(u * 1.5), cam=cam)
         draw_captions(cv, ts, fi, cam, [], insert=True, tc=t)
         acc += cv
