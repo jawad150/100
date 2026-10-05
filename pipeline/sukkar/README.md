@@ -1,6 +1,6 @@
 # Dr. Sukkar — Behind the Mask (hero reel)
 
-A 49-second hero reel at **1440×1080 (4:3)** and 23.976 fps. The size matches the reference reel. It is cut from a sit-down interview with surgical and facility B-roll. The interview audio tells the story and the B-roll builds around it. It runs: cold open → intimate OR → interview reveal → build → the facility opens up → back into the OR → hero hold → **DR. SUKKAR / BEHIND THE MASK**.
+A 49-second hero reel at **1440×1080 (4:3)** and 23.976 fps. The size matches the reference reel. It is cut from a sit-down interview with surgical and facility B-roll. The interview audio tells the story and the B-roll builds around it. It runs: cold open → intimate OR → interview reveal → build → the facility opens up → back into the OR → hero hold → **DR. SUKKAR / BEHIND THE MASK**. A 1080×1920 (9:16) reel-format cut is described [below](#916-cut-reel-format).
 
 The rendered reel is not committed here, because the repository is public and this is client footage. The pipeline below rebuilds it from the Dropbox source folder.
 
@@ -77,6 +77,19 @@ The client sent a graded example ("Color Grade Match") and a graded range of C88
   - **end card:** a cinematic boom with shimmer
 - **`final_audio.py`:** ducks the SFX about 5 dB under speech, gain-stages both stems to the same −16 LUFS mix, and writes `SFX`, `DIALOGUE_clean` and `PREVIEW` MP3s. Each is 49.17 s, so they line up with the picture at 0:00.
 
+## 9:16 cut (reel format)
+
+`reel916.py` and `engine916.py` re-cut the same dialogue timeline at **1080×1920**. Because the timeline is unchanged, the v3 audio (clean dialogue + SFX) lines up as-is.
+
+- **Cold open:** the same 12 flash cuts, full screen in black and white. The grade is a channel-mixed mono with an S-curve, plus heavier mono grain, slight gate flicker and a deeper vignette. A dip to black leads into the colour beat on C8893.
+- **On-camera lines (sections 1–3):** B-roll sits on top and the speaker below, joined by a soft vertical gradient. The B-roll is opaque above 45% of the height and gone by 61%.
+  - The speaker panel rises in on his first on-camera words and fades out after "chasing perfection".
+  - The short pause before section 3 plays full screen, because both sides of that gap have him talking.
+- **Two cameras:** the frontal camera (C8948, horizontal 4K, as in the client's mock-up) is the main angle. The side camera (the vertical C8950 export, whose audio is the dialogue) takes over at every dialogue edit, so splices never show as jump cuts. `synccheck916.py` correlates each panel segment's own camera audio with the dialogue track; all segments are within 1 ms.
+- **Voiceover lines (sections 4–6):** C8951 has no synced picture, so these play as full-screen B-roll.
+- **Finish:** halation, bloom, vignette and fine grain on the colour sections. The end card is reset for 9:16.
+- **Partial downloads:** `plan_vertical.py` and `plan_front.py` compute keyframe-aligned byte ranges, so `zipstream.py` saves only the seconds of the two interview files that the panel uses.
+
 ## Rebuild
 
 Run everything from a workspace folder containing `src/`. The source zip from Dropbox is larger than most free disks, so `zipstream.py` streams it and saves only what is needed. Large interview files can be saved as audio-only sparse files using the sample tables that a first pass captures.
@@ -113,4 +126,18 @@ python3 $P/grade3.py "$(cat look/edit_clips.json)"          # per-clip reference
 REEL_TAG=sukkar_v3 python3 $P/reel_sukkar.py --all        # picture -> out/sukkar_v3_video.mp4
 python3 $P/clean_dialogue.py && python3 $P/sfx_sukkar.py && python3 $P/final_audio.py   # -> out/v3_preview.wav + MP3s
 ffmpeg -i out/sukkar_v3_video.mp4 -i out/v3_preview.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest out/sukkar_v3.mp4
+```
+
+The 9:16 cut also needs picture from both interview cameras around the on-camera lines:
+
+```bash
+python3 $P/plan_vertical.py                                 # side camera ranges -> v916/plan_vertical.json
+curl -sSL "<link>" | python3 $P/zipstream.py v916/srcV '^$' v916/plan_vertical.json   # also captures C8948's header
+python3 $P/plan_front.py                                    # frontal camera ranges -> v916/plan_front.json
+curl -sSL "<link>" | python3 $P/zipstream.py v916/srcF '^$' v916/plan_front.json
+python3 $P/sheet_full.py                                    # full vertical frames of every B-roll shot (framing, privacy)
+python3 $P/reel916.py --plan                                # both tracks + full-screen window checks
+python3 $P/synccheck916.py out/v3_dialogue.wav              # speaker-panel lip sync
+REEL_TAG=sukkar_916 python3 $P/reel916.py --video           # -> out/sukkar_916_video.mp4
+bash $P/encode916.sh                                        # master + a review copy under 30 MiB
 ```
