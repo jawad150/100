@@ -206,7 +206,11 @@ KINDS = dict(impact=impact, hit_soft=hit_soft, boom=boom, whoosh=whoosh, whoosh_
 
 def main():
     os.makedirs(S + '/out', exist_ok=True)
-    for t, kind, g in TL.SFX:
+    cues = TL.SFX
+    if os.environ.get('CUES'):                        # e.g. the reference cut's cue sheet (ref_reel.py sfx)
+        import json
+        cues = json.load(open(os.environ['CUES']))
+    for t, kind, g in cues:
         KINDS[kind](max(t, 0.0), g)
     # original voice from the color-corrected render
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', S + '/src/color_correction.mp4', '-vn', '-ac', '2', '-ar',

@@ -179,6 +179,7 @@ def snap_values(t):
 
 
 SIDE_LOCKED = {0, 2, 3, 4, 5, 6}   # shots where her body touches / crosses the frame sides
+COVER_ALL = False                  # True when the plate is one layer: keep every frame edge covered
 
 
 def _cover(v, shot):
@@ -191,8 +192,8 @@ def _cover(v, shot):
         hw, hh = 540 / z, 960 / z
         ex, ey = (hw * c + hh * s_) * m, (hw * s_ + hh * c) * m
         cx, cy = 540 + v['x'], 960 + v['y']
-        ok = cy + ey <= 1920
-        if shot in SIDE_LOCKED:
+        ok = cy + ey <= 1920 and (not COVER_ALL or cy - ey >= 0)
+        if shot in SIDE_LOCKED or COVER_ALL:
             ok = ok and cx - ex >= 0 and cx + ex <= 1080
         if ok:
             break
@@ -537,6 +538,9 @@ def big_type(text, height):
     m = text_mask(text, TITLE_FONT, size, TITLE_TRACK)
     BIG_GLYPH_H[(text, height)] = m.shape[0]
     a = np.pad(m, int(130 * K))
+    if BIG_STYLE == 'flat':        # reference look: flat gold fill with a hot glow, no extrusion
+        g = cv2.GaussianBlur(a, (0, 0), 10 * K) * 0.8 + cv2.GaussianBlur(a, (0, 0), 34 * K) * 0.7
+        return over_spr(solid(np.clip(g, 0, 1), GOLD), solid(a, GOLD))
     return deep_style(a, 'gold', ext=max(6.0, height * 0.075), glow=1.0, bevel=2.4)
 
 
@@ -552,7 +556,7 @@ def big_scale(text, height, sz):
 @functools.lru_cache(maxsize=None)
 def neon_type(text, height):
     size = int(height * 1.32 * K)
-    a = text_mask(text, 'Cinzel-900', size, 0.04)
+    a = text_mask(text, NEON_FONT, size, 0.04)
     a = np.pad(a, int(40 * K))
     kk = int(9 * K) | 1
     k = np.ones((kk, kk), np.uint8)
@@ -567,8 +571,8 @@ def neon_type(text, height):
 @functools.lru_cache(maxsize=None)
 def gold_pill(text, size=34, outline=False):
     """Gold tag (outline) or solid gold label, built at output resolution."""
-    ts = gold_text(text, 'Cinzel-800', int(size * K), 0.06) if outline else \
-        text_sprite(text, 'Cinzel-900', int(size * K), INK, 0.06)
+    ts = gold_text(text, PILL_FONT, int(size * K), 0.06) if outline else \
+        text_sprite(text, PILL_FONT, int(size * K), INK, 0.06)
     th, tw = ts.shape[:2]
     px, py = (24, 14) if outline else (30, 18)
     w, h = int(tw + (2 * px - 6) * K), int(th + (2 * py - 6) * K)
@@ -775,7 +779,7 @@ def halo_spr():
 
 @functools.lru_cache(maxsize=None)
 def title_block(text):
-    ts = text_sprite(text, 'Cinzel-900', int(150 * K), INK, 0.02)
+    ts = text_sprite(text, BLOCK_FONT, int(150 * K), INK, 0.02)
     th, tw = ts.shape[:2]
     P, px, py = int(40 * K), int(34 * K), int(10 * K)
     w, h = tw + 2 * px, th + 2 * py
@@ -1068,6 +1072,7 @@ def phrases():
 
 
 TITLE_FONT, TITLE_TRACK = 'Cinzel-900', 0.02   # cinematic titles; captions stay General Sans
+PILL_FONT, NEON_FONT, BLOCK_FONT, BIG_STYLE = 'Cinzel-800', 'Cinzel-900', 'Cinzel-900', 'deep'
 CAP_STYLE = {True: ('GeneralSans-700', 104, GOLD), False: ('GeneralSans-600', 70, WHITE)}
 
 
