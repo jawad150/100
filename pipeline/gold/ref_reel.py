@@ -839,6 +839,7 @@ def render_insert(fi, t, ins, n):
         # dark room + spotlight disc behind the object (ref 2 cutaways)
         draw3d(cv, spot_sprite(), CX, 820, 200, h=1180, cam=cam, opacity=0.95)
         draw3d(cv, G.glow_spr(), CX, 820, 210, h=2200, cam=cam, opacity=0.35, mode='add')
+        draw_insert_dust(cv, ts, cam)
         s3 = G.seq(name) if kind == 'seq' else None
         if s3 is not None and s3.n():
             if name in ('arrow_crash', 'arrow_up', 'candles3d'):
@@ -858,10 +859,97 @@ def render_insert(fi, t, ins, n):
         acc += cv
     return acc / n
 
+# ---------------------------------------------------------------- ambient 3D depth: gold dust, rings, orbs
+
+
+@functools.lru_cache(maxsize=None)
+def bokeh_sprite():
+    """Out-of-focus gold speck: soft disc with a slightly brighter rim (lens bokeh)."""
+    n = int(64 * K)
+    ys, xs = np.mgrid[0:n, 0:n].astype(np.float32)
+    r = np.sqrt((xs - n / 2 + 0.5) ** 2 + (ys - n / 2 + 0.5) ** 2) / (n / 2)
+    a = np.clip((1 - r) / 0.18, 0, 1) * (0.55 + 0.45 * np.clip((r - 0.55) / 0.35, 0, 1))
+    a = cv2.GaussianBlur(a, (0, 0), 1.2 * K)
+    col = np.array([1.0, 0.78, 0.40], np.float32)
+    return np.concatenate([a[..., None] * col, a[..., None]], 2)
+
+
+@functools.lru_cache(maxsize=None)
+def shot_face(shot):
+    """Median face centre (design px, plate space) over a clip."""
+    c = TL.CUT_T + [TL.NFRAMES / FPS]
+    a, b = int(c[shot] * FPS), int(c[shot + 1] * FPS)
+    f = CAMF[a:b]
+    f = f[~np.isnan(f[:, 0])]
+    return (float(np.median(f[:, 0])), float(np.median(f[:, 1]))) if len(f) else (540.0, 640.0)
+
+
+@functools.lru_cache(maxsize=None)
+def dust(shot):
+    rng = np.random.default_rng(100 + shot)
+    n = 38
+    return dict(x=rng.uniform(-220, 1300, n), y=rng.uniform(-300, 2200, n), z=rng.uniform(250, 1500, n),
+                sz=rng.uniform(5, 20, n), v=rng.uniform(10, 34, n), ph=rng.uniform(0, 6.28, n),
+                sw=rng.uniform(8, 26, n))
+
+
+def _ring_frame(t, speed=1.0, off=0):
+    s3 = G.seq('ring3d')
+    return s3.frame(int(t * 24 * speed + off) % s3.n())
+
+
+def draw_ambient(cv, t, cam, plates, front=False):
+    """Depth layer that fills the empty stage: drifting gold dust behind her, slowly turning gold ring
+    gimbals and orbs on the empty side (behind her, defocused), a few big foreground bokeh at the edges."""
+    for shot, xoff in plates:
+        if not front:
+            d = dust(shot)
+            yy = (d['y'] - d['v'] * t + 300) % 2500 - 300                     # slow rise, wraps
+            xx = d['x'] + d['sw'] * np.sin(t * 0.4 + d['ph'])
+            tw = 0.55 + 0.45 * np.sin(t * 1.7 + d['ph'] * 3)
+            for j in range(len(yy)):
+                draw3d(cv, bokeh_sprite(), xx[j] + xoff, yy[j], d['z'][j], h=d['sz'][j] * (1 + d['z'][j] / 700),
+                       cam=cam, opacity=0.55 * tw[j], mode='add')
+            if t < HOOK_END or G.seq('ring3d').n() == 0:
+                continue
+            fx, fy = shot_face(shot)
+            side = 1 if fx < 540 else -1
+            if abs(fx - 540) < 60:
+                side = 1 if shot % 2 else -1
+            bob = math.sin(t * 0.9 + shot) * 18
+            # big ring gimbal high on the empty side, a smaller one low on the other side, deeper
+            for (dx, dy, z, h, blur, op, spd, off) in ((side * 400, -330, 700, 430, 2.0, 0.85, 0.6, 0),
+                                                         (-side * 430, 560, 1250, 300, 5.0, 0.6, 0.45, 20)):
+                fr = _ring_frame(t, spd, off)
+                fr = blur_sprite(fr, blur * K) if blur > 0.5 else fr
+                draw3d(cv, fr, fx + dx + xoff, fy + dy + bob, z, h=h, cam=cam, opacity=op,
+                       rz=6 * math.sin(t * 0.3 + shot))
+            orb = G.seq('orb3d')
+            if orb.n():
+                o = blur_sprite(orb.frame(0), 3.0 * K)
+                draw3d(cv, o, fx + side * 300 + xoff, fy + 260 - bob, 950, h=110, cam=cam, opacity=0.8)
+                draw3d(cv, o, fx - side * 360 + xoff, fy - 520 + bob * 0.6, 1450, h=80, cam=cam, opacity=0.6)
+        else:
+            rng = np.random.default_rng(7 + shot)
+            for j in range(5):
+                ex = rng.choice([rng.uniform(-60, 170), rng.uniform(910, 1140)])
+                ey = (rng.uniform(0, 2200) - (18 + 8 * j) * t) % 2300 - 150
+                op = 0.16 * (0.6 + 0.4 * math.sin(t * 0.8 + j))
+                draw3d(cv, bokeh_sprite(), ex + xoff, ey, -520, h=rng.uniform(90, 170), cam=cam, opacity=op, mode='add')
+
+
+def draw_insert_dust(cv, t, cam):
+    d = dust(99)
+    yy = (d['y'] - d['v'] * 1.6 * t + 300) % 2500 - 300
+    for j in range(0, len(yy), 2):
+        draw3d(cv, bokeh_sprite(), d['x'][j], yy[j], d['z'][j] * 0.5, h=d['sz'][j] * 1.2, cam=cam,
+               opacity=0.5 * (0.55 + 0.45 * math.sin(t * 2 + d['ph'][j])), mode='add')
+
 # ---------------------------------------------------------------- frame
 
 
 def draw_back(cv, t, cam, plates):
+    draw_ambient(cv, t, cam, plates)
     G._hook(cv, t, cam, 'back')
     G._big_types(cv, t, cam)
     for el in G.elements():
@@ -872,6 +960,7 @@ def draw_back(cv, t, cam, plates):
 
 
 def back_active(t):
+    return True                         # the ambient depth layer is always on
     if t < 3.6:
         return True
     if any(b[0] <= t < b[1] for b in RT.BIG_TYPE):
@@ -880,6 +969,7 @@ def back_active(t):
 
 
 def draw_front(cv, t, cam, plates):
+    draw_ambient(cv, t, cam, plates, front=True)
     for el in G.elements():
         if el.e['layer'] == 'front' and el.active(t):
             xo = plate_xoff(plates, el.shot)

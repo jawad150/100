@@ -648,6 +648,39 @@ def number(key):
     render_seq('num_' + key, 30, upd)
 
 
+def ring3d():
+    """Ambient gimbal of two thin gold rings (seamless loop) - floats in the empty side of frame."""
+    reset((520, 520), 40)
+    studio()
+    camera((0, -7, 0.4), (0, 0, 0), 60)
+    outer, inner = empty_root(), empty_root()
+    inner.parent = outer
+    for o, R, r in ((outer, 1.55, 0.07), (inner, 1.18, 0.05)):
+        bpy.ops.mesh.primitive_torus_add(major_radius=R, minor_radius=r, major_segments=160, minor_segments=24)
+        t = bpy.context.object
+        shade_smooth(t)
+        t.data.materials.append(gold(0.12))
+        t.parent = o
+
+    def upd(i, n):
+        ph = i / n * 2 * math.pi
+        outer.rotation_euler = (math.radians(62) + 0.25 * math.sin(ph), 0, ph)
+        inner.rotation_euler = (ph, 0, 0)
+    render_seq('ring3d', 48, upd)
+
+
+def orb3d():
+    """Small polished gold sphere for ambient depth."""
+    reset((300, 300), 48)
+    studio()
+    camera((0, -7, 0.4), (0, 0, 0), 60)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=1.6, segments=96, ring_count=48)
+    o = bpy.context.object
+    shade_smooth(o)
+    o.data.materials.append(gold(0.32))
+    render_seq('orb3d', 1, lambda i, n: None)
+
+
 if __name__ == '__main__':
     for a in sys.argv[1:]:
         if a == 'ingot':
@@ -676,6 +709,10 @@ if __name__ == '__main__':
             calendar('30sep', 'SEPTEMBER', '30')
         elif a == 'cal_oct':
             calendar('oct', 'OCTOBER', '25bp')
+        elif a == 'ring3d':
+            ring3d()
+        elif a == 'orb3d':
+            orb3d()
         elif a.startswith('num_'):
             number(a[4:])
         else:
