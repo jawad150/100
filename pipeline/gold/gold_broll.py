@@ -62,10 +62,11 @@ def bokeh_lights(n=22, y=(16, 24), seed=3, color=(1.0, 0.62, 0.26), strength=3):
         s.visible_shadow = False
 
 
-def key_lights(warm=1.0):
+def key_lights(warm=1.0, fill=True):
     w = (1.0, 0.80, 0.55)
     A.softbox((-3.5, -2.5, 4.5), (math.radians(45), 0, math.radians(-40)), (2.5, 2.5), 1500 * warm, w)
-    A.softbox((2.5, -5.0, 3.0), (math.radians(60), 0, math.radians(30)), (3, 2), 500, w)              # soft fill
+    if fill:
+        A.softbox((2.5, -5.0, 3.0), (math.radians(60), 0, math.radians(30)), (3, 2), 500, w)          # soft fill
     A.softbox((4.0, 3.0, 2.5), (math.radians(70), 0, math.radians(130)), (1.5, 5), 1400, (0.55, 0.85, 1.0))  # teal rim
     A.softbox((-4.0, 3.0, 2.0), (math.radians(80), 0, math.radians(-130)), (1.5, 5), 1100 * warm, w)        # gold rim
     A.panel((-2.6, -2.6, 3.4), (math.radians(50), 0, math.radians(-40)), (3.0, 0.4), 18)
@@ -172,7 +173,10 @@ def br_crash():
     floor()
     backdrop(color=(0.012, 0.008, 0.008, 1))
     bokeh_lights(color=(1.0, 0.25, 0.15), seed=5)
-    key_lights(0.8)
+    key_lights(0.8, fill=False)
+    for o in list(bpy.data.objects):                 # no reflection strips in this shot (they show on the floor)
+        if o.type == 'MESH' and o.name.startswith('Plane') and o.visible_camera is False:
+            bpy.data.objects.remove(o)
     red = A.mat('red', (0.35, 0.015, 0.01, 1), rough=0.22, coat=1.0, emission=(1.0, 0.06, 0.03, 1), estr=0.25)
     gld = A.gold(0.2)
     rng = random.Random(9)

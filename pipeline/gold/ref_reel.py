@@ -878,7 +878,7 @@ def insert_at(t):
     return None
 
 
-@functools.lru_cache(maxsize=24)
+@functools.lru_cache(maxsize=3)
 def broll_frame(name, idx, flip):
     import glob as _g
     fs = sorted(_g.glob(f'{S}/broll/{name}/*.png'))
@@ -895,6 +895,15 @@ def broll_count(name):
     return len(_g.glob(f'{S}/broll/{name}/*.png'))
 
 
+@functools.lru_cache(maxsize=None)
+def caption_shade():
+    y = np.arange(OH, dtype=np.float32)[:, None] / K
+    return (1 - 0.5 * np.exp(-((y - 1290) / 260) ** 2))[..., None].astype(np.float32)
+
+
+BROLL_CROP = {'br_crash': (1.36, 0.64, 0.37)}          # (zoom, centre x, centre y): frame the chart
+
+
 def render_broll(fi, t, ins):
     t_in, t_out, name = ins[:3]
     flip = len(ins) > 4 and ins[4]
@@ -904,8 +913,16 @@ def render_broll(fi, t, ins):
     u = t - t_in
     im = broll_frame(name, min(first + int(u * 30), n - 1), flip)
     z = 1.0 + 0.06 * (u / dur)                                   # continuous push across the clip
-    M = cv2.getRotationMatrix2D((OW / 2, OH / 2), 0.0, z)
+    cz, fx_, fy_ = BROLL_CROP.get(name, (1.0, 0.5, 0.5))
+    if flip:
+        fx_ = 1 - fx_
+    z *= cz
+    c = (OW * fx_, OH * fy_)
+    M = cv2.getRotationMatrix2D(c, 0.0, z)
+    M[0, 2] += OW / 2 - c[0]
+    M[1, 2] += OH / 2 - c[1]
     cv = cv2.warpAffine(im, M, (OW, OH), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    cv = cv * 0.88 * caption_shade()                             # keep captions readable on bright shots
     cam = en.Cam()
     draw_insert_dust(cv, t, cam)
     draw_captions(cv, t, fi, cam, [], insert=True, tc=t)
@@ -1218,7 +1235,7 @@ def _finish(cv, fi, t):
             for edge in (ins[0], ins[1]):
                 d = t - edge
                 if 0 <= d < 0.12:
-                    flash = max(flash, 0.30 * (1 - d / 0.12) ** 2)
+                    flash = max(flash, 0.16 * (1 - d / 0.12) ** 2)
     draw_leaks(cv, t)
     if flash > 0:
         cv += np.array([1.0, 0.8, 0.5], np.float32) * flash

@@ -18,19 +18,19 @@ INSERTS = [
     (13.02, 13.34, 'br_barfall', 'broll'),      # "3 bari wajahain hain" -> chapter 01
     (13.34, 13.62, 'br_coins', 'broll', 1),
     (21.10, 21.98, 'bond', 'seq'),              # "US government bonds"
-    (24.96, 25.30, 'br_bars', 'broll', 1),      # walk-in -> chapter 02 (dollar)
+    (24.96, 25.30, 'br_bars', 'broll'),      # walk-in -> chapter 02 (dollar)
     (25.30, 25.64, 'br_dollar', 'broll'),
     (27.62, 28.42, 'dollar3d', 'seq'),          # "Jab Dollar strong"
-    (30.34, 30.66, 'br_crash', 'broll', 1),     # "selling pressure" -> chapter 03 (Fed)
+    (30.34, 30.66, 'br_crash', 'broll'),     # "selling pressure" -> chapter 03 (Fed)
     (30.66, 30.96, 'br_fed', 'broll'),
     (33.05, 33.86, 'cal_oct', 'seq'),           # "October me 25"
-    (40.05, 40.40, 'br_fed', 'broll', 1),       # walk-in -> "Isi pressure mein"
+    (40.05, 40.40, 'br_coins', 'broll', 1),       # walk-in -> "Isi pressure mein"
     (40.40, 40.74, 'br_barfall', 'broll'),
     (41.86, 42.72, 'cal_28sep', 'seq'),         # "28 September"
     (46.56, 47.16, 'ingot', 'seq'),             # "tak aa gaya" (per ounce)
     (54.00, 54.92, 'cal_30sep', 'seq'),         # "30 September"
     (57.60, 58.52, 'arrow_up', 'seq'),          # "aur Gold wapas"
-    (64.30, 64.60, 'br_barfall', 'broll', 1),   # "correction hai" -> "Abhi market Fed ..."
+    (64.30, 64.60, 'br_crash', 'broll'),   # "correction hai" -> "Abhi market Fed ..."
     (64.60, 64.92, 'br_fed', 'broll'),
     (67.86, 68.42, 'br_barrels', 'broll'),      # "Middle East oil risk"
     (74.26, 75.02, 'shield', 'seq'),            # "risk manage"
