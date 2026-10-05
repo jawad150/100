@@ -15,6 +15,8 @@ OUT = S + '/out'
 CHUNKS = int(os.environ.get('CHUNKS', '24'))
 WORKERS = int(os.environ.get('WORKERS', '3'))   # ~3 GB per 4K worker (render + encoder)
 TOTAL = TL.NFRAMES
+RENDERER = os.environ.get('RENDERER', 'gold_reel.py')     # ref_reel.py = the reference-style cut
+NAME = os.environ.get('NAME', 'gold_reel')
 
 
 def run(k):
@@ -24,7 +26,7 @@ def run(k):
         return out
     t = time.time()
     for attempt in range(2):          # one retry (e.g. after an out-of-memory kill)
-        r = subprocess.run([sys.executable, 'gold_reel.py', 'range', str(f0), str(f1), out + '.tmp.mp4'], cwd=HERE,
+        r = subprocess.run([sys.executable, RENDERER, 'range', str(f0), str(f1), out + '.tmp.mp4'], cwd=HERE,
                            stdout=open(f'{OUT}/chunk_{k:02d}.log', 'w'), stderr=subprocess.STDOUT)
         if r.returncode == 0:
             os.replace(out + '.tmp.mp4', out)
@@ -45,16 +47,22 @@ if __name__ == '__main__':
     with open(f'{OUT}/concat.txt', 'w') as f:
         for o in outs:
             f.write(f"file '{o}'\n")
-    subprocess.run([sys.executable, 'gold_audio.py'], cwd=HERE, check=True)
-    master = f'{OUT}/gold_reel_4k.mp4'
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt',
-                    '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'slow',
-                    '-crf', '17', '-profile:v', 'high', '-level', '5.2', '-pix_fmt', 'yuv420p',
-                    '-r', '30000/1001', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '320k', '-shortest', master],
-                   check=True)
-    share = f'{OUT}/gold_reel_1080p.mp4'
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', master, '-vf', 'scale=1080:1920:flags=lanczos',
-                    '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
-                    '-movflags', '+faststart', '-c:a', 'copy', share], check=True)
+    env = dict(os.environ)
+    if RENDERER == 'ref_reel.py':
+        subprocess.run([sys.executable, RENDERER, 'sfx'], cwd=HERE, check=True)
+        env['CUES'] = S + '/work/ref_sfx.json'
+    subprocess.run([sys.executable, 'gold_audio.py'], cwd=HERE, check=True, env=env)
+    src = ['-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt', '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a']
+    master, share = f'{OUT}/{NAME}_4k.mp4', f'{OUT}/{NAME}_1080p.mp4'
+    for out, vf, rate, lvl, ab in ((master, [], ('34M', '45M', '68M'), '5.2', '320k'),
+                                   (share, ['-vf', 'scale=1080:1920:flags=lanczos'], ('8.5M', '12M', '17M'), '4.2', '256k')):
+        enc = ['-c:v', 'libx264', '-preset', 'medium', '-tune', 'film', '-b:v', rate[0], '-maxrate', rate[1],
+               '-bufsize', rate[2]]
+        log = f'{OUT}/x264_{os.path.basename(out)}'
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error'] + src + vf + enc + ['-pass', '1', '-passlogfile', log,
+                        '-an', '-f', 'mp4', '/dev/null'], check=True)
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error'] + src + vf + enc + ['-pass', '2', '-passlogfile', log,
+                        '-profile:v', 'high', '-level', lvl, '-pix_fmt', 'yuv420p', '-r', '30000/1001',
+                        '-movflags', '+faststart', '-c:a', 'aac', '-b:a', ab, '-shortest', out], check=True)
     for final in (master, share):
         print('final', final, round(os.path.getsize(final) / 1e6, 1), 'MB', f'{time.time() - t0:.0f}s', flush=True)
