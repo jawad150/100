@@ -1049,6 +1049,7 @@ def _full(fi, t, n, shutter):
         s_, k, u = G.section_k(ts)
         if s_ is not None and k > 0.001:
             cv = G.render_section(cv, ts, s_, k, u)
+            en._mips.clear()            # each sub-sample's full-frame card would otherwise stay cached (OOM at 4K)
         draw_overlay(cv, ts, fi, cam, plates, G.section_k(t)[1], tc=t)
         acc += cv
     return acc / n
