@@ -13,8 +13,11 @@ INSERTS = [
     (7.70, 8.55, 'candles3d', 'seq'),       # "Gold ne sharp retracement"
     (10.56, 11.42, 'arrow_crash', 'seq'),   # "sharply neeche"
     (21.10, 21.98, 'bond', 'seq'),          # "US government bonds"
+    (24.96, 25.64, 'coin_au', 'seq'),       # silent walk-in after "nahi deta" (covers the entry)
     (27.62, 28.42, 'dollar3d', 'seq'),      # "Jab Dollar strong"
+    (30.34, 30.96, 'arrow_crash', 'seq'),   # silent walk-in after "selling pressure" (covers the entry)
     (33.05, 33.86, 'cal_oct', 'seq'),       # "October me 25"
+    (40.05, 40.74, 'candles3d', 'seq'),     # silent walk-in before "Isi pressure" (covers the entry)
     (41.86, 42.72, 'cal_28sep', 'seq'),     # "28 September"
     (46.56, 47.16, 'ingot', 'seq'),         # "tak aa gaya" (per ounce)
     (54.00, 54.92, 'cal_30sep', 'seq'),     # "30 September"
@@ -40,3 +43,6 @@ BIG_TYPE = [
 
 # hook: ref-1 halo + condensed words split behind the head + light trails (no title block)
 HOOK_FLANK = [('SONA', 0.06, 0.94, 380, 260, 8), ('MEHNGA?', 0.94, 1.98, 380, 165, -8)]
+
+# chapter card 02 starts once she is in frame (the walk-in is covered by a cutaway)
+CARD2_IN = 25.66

@@ -28,6 +28,7 @@ G.COVER_ALL = True
 G.TITLE_FONT, G.TITLE_TRACK = 'Anton-400', 0.0          # replaced by KEY_FONT below
 G.PILL_FONT, G.NEON_FONT, G.BLOCK_FONT, G.BIG_STYLE = 'InterTight-800', 'Anton-400', 'InterTight-900', 'flat'
 G.TL.BIG_TYPE[:] = RT.BIG_TYPE
+G.TL.SECTIONS[1]['t_in'] = RT.CARD2_IN
 G.TL.HOOK['flank'] = RT.HOOK_FLANK
 G.TL.HOOK['block'] = (-9, -8, 'X', 0, 0, 0)          # no title block
 G.TL.PILLS[:] = []
@@ -351,10 +352,7 @@ def face_box(i):
 
 
 def plate_xoff(plates, shot):
-    d = dict(plates)
-    if shot in d:
-        return d[shot]
-    return d.get(max(d), 0.0) if len(d) == 1 else None   # phrase straddles a cut: ride the live shot
+    return dict(plates).get(shot, None)        # None: that clip is off screen, so is anything riding on it
 
 
 def word_kind(w):
@@ -495,11 +493,14 @@ def draw_block(cv, t, i, ph, cam, plates):
 
 
 def current_word(ph, t):
+    """The word being spoken; a word stays up until the next one, but clears after ~0.8 s of silence."""
     ws = [w for r in ph['rows'] for w in r]
     cur = None
     for w in ws:
         if w['t'] - 0.03 <= t:
             cur = w
+    if cur is not None and cur is ws[-1] and t - cur['t'] > 0.8:
+        return None
     return cur
 
 
@@ -520,8 +521,7 @@ def draw_word(cv, t, i, ph, cam, plates, fixed=None):
     if fixed is not None:                      # cutaways / chapter cards: centred, screen-fixed
         draw3d(cv, spr, fixed[0], fixed[1], 0, h=spr.shape[0] / gm * gh * sc, cam=en.Cam(), opacity=op)
         return
-    shot = G.shot_of(ph['t_on'] + 0.05)
-    xoff = plate_xoff(plates, shot)
+    xoff = plate_xoff(plates, G.shot_of(t))
     if xoff is None:
         return
     hx, hy, hs = head_at(i)
@@ -563,6 +563,8 @@ def word_side(pi):
 
 def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
     tc = t if tc is None else tc
+    if 0.1 < card_k < 0.9:
+        return
     for ph in G.phrases():
         if not (ph['t_on'] <= tc < ph['t_off']):
             continue
@@ -832,7 +834,7 @@ def _full(fi, t, n, shutter):
         s_, k, u = G.section_k(ts)
         if s_ is not None and k > 0.001:
             cv = G.render_section(cv, ts, s_, k, u)
-        draw_overlay(cv, ts, fi, cam, plates, k, tc=t)
+        draw_overlay(cv, ts, fi, cam, plates, G.section_k(t)[1], tc=t)
         acc += cv
     return acc / n
 
