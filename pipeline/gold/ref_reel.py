@@ -114,14 +114,14 @@ def shot_plan():
             typ, mot = 'MEDLOW', 'push'
         elif key:
             typ = 'CU' if last != 'CU' else 'ECU'
-            mot = 'crash' if n % 2 == 0 else 'push'
+            mot = 'push'
         else:
             typ = cycle[n % len(cycle)]
             if typ == last:
                 typ = cycle[(n + 1) % len(cycle)]
-            mot = ['push', 'pull', 'hold', 'zoomout'][n % 4] if typ != 'WIDE' else ['pull', 'push'][n % 2]
+            mot = ['push', 'pull', 'hold'][n % 3] if typ != 'WIDE' else ['pull', 'push'][n % 2]
         dutch = (2.8 if n % 2 else -2.8) if (key and typ in ('CU', 'ECU')) else 0.0
-        smooth = (n % 4 == 3) and not any(abs(a - c) < 1e-2 for c in cuts) and not entry   # fast zoom, not a cut
+        smooth = not any(abs(a - c) < 1e-2 for c in cuts)    # every reframe is a smooth camera move, never a cut
         side = -side
         plan.append((a, b, typ, mot, side, dutch, smooth))
         last = typ
@@ -185,7 +185,22 @@ def _plan_moving(t):
     if seg is None:
         return False
     t0, t1, typ, mot, side, dutch, smooth = seg
-    return (mot == 'crash' and t - t0 < 0.26) or (mot == 'zoomout' and t - t0 < 0.34) or (smooth and t - t0 < 0.3)
+    return smooth and t - t0 < _move_dur(seg)
+
+
+def _move_dur(seg):
+    """Length of the eased move into a framing: longer for big size changes (wide <-> close-up)."""
+    prev = _plan_at(seg[0] - 1e-3)
+    if prev is None:
+        return 0.45
+    order = {'WIDE': 0, 'MED': 1, 'MEDLOW': 1, 'CU': 2, 'ECU': 3}
+    return 0.42 + 0.12 * abs(order[seg[2]] - order[prev[2]])
+
+
+def _ease_move(x):
+    """Smooth start, quick middle, soft landing - like a motorised zoom/dolly."""
+    x = clamp(x)
+    return x * x * x * (x * (6 * x - 15) + 10)
 
 
 _orig_key_values = G._key_cam_values
@@ -199,12 +214,14 @@ def cine_cam_values(t):
     seg = _plan_at(t)
     z, x, y = _framing(seg, t)
     roll = seg[5]
-    if seg[6] and t - seg[0] < 0.3:                          # fast zoom from the previous framing
+    dur = _move_dur(seg) if seg[6] else 0.0
+    if seg[6] and t - seg[0] < dur:                          # glide from the previous framing (no hard cut)
         prev = _plan_at(seg[0] - 1e-3)
         if prev is not None:
-            z0, x0, y0 = _framing(prev, seg[0] - 1e-3)
-            q = e_inout_expo_(clamp((t - seg[0]) / 0.3))
-            z, x, y, roll = lerp(z0, z, q), lerp(x0, x, q), lerp(y0, y, q), lerp(prev[5], roll, q)
+            z0, x0, y0 = _framing(prev, t)                   # previous framing keeps following her too
+            q = _ease_move((t - seg[0]) / dur)
+            z = math.exp(lerp(math.log(z0), math.log(z), q))  # zoom eases in log space (feels linear)
+            x, y, roll = lerp(x0, x, q), lerp(y0, y, q), lerp(prev[5], roll, q)
     # operator: gentle handheld + a slow orbit feel
     x += 4 * math.sin(t * 0.83) + 2 * math.sin(t * 2.1 + 1)
     y += 3 * math.sin(t * 0.67 + 2)
@@ -508,9 +525,40 @@ def draw_word(cv, t, i, ph, cam, plates, fixed=None):
     if xoff is None:
         return
     hx, hy, hs = head_at(i)
-    y = hy + hs * (1.2 if hs < 330 else 0.95)
-    x = clamp(hx, 300, 780)
-    draw3d(cv, spr, x + xoff, y, -40, h=spr.shape[0] / gm * gh * sc, ry=-4, cam=cam, opacity=op)
+    side = word_side(ph['i'])
+    # placed in screen space around her tracked face, then lifted into the camera's 3D space so it
+    # rides on her: chest when she's centred, beside her head on the empty side when she's off-centre
+    zq = G.person_depth(cam) - 40
+    zoom = cam.focal / (cam.focal + zq)
+    (fx, fy), = en.project_pts(np.array([[hx + xoff, hy, 0.0]]), cam)[0]
+    fbx, fby, fbw, fbh = face_box(i)
+    room = 900 if side == 0 else 520
+    fit_s = min(1.0, room / max(gw_ * sc * zoom, 1))          # judged on screen, after the camera zoom
+    hgt = spr.shape[0] / gm * gh * sc * fit_s / fit
+    ww = gw_ * sc * fit_s * zoom
+    if side == 0:
+        sx = clamp(fx, 60 + ww / 2, 1020 - ww / 2)
+        sy = min(fy + fbh * zoom * 1.15, 1460)
+        ry = -4
+    else:
+        sx = clamp(fx + side * (fbw * 0.75 * zoom + 40 + ww / 2), 60 + ww / 2, 1020 - ww / 2)
+        sy = fy + fbh * 0.25 * zoom
+        ry = -side * 10
+    pos = G.unproject(sx, sy, zq, cam)
+    draw3d(cv, spr, pos[0], pos[1], pos[2], h=hgt, ry=ry, cam=cam, opacity=op)
+
+
+@functools.lru_cache(maxsize=None)
+def word_side(pi):
+    """0 when she sits near centre frame for this phrase, else the side (-1 left / +1 right) that is empty."""
+    ph = G.phrases()[pi]
+    ta = min(ph['t_on'] + 0.6, ph['t_off'] - 0.05)       # after the camera has settled into the framing
+    cam, plates, v = G.camera(ta)
+    hx, hy, hs = head_at(int(round(ta * FPS)))
+    (sx, sy), = en.project_pts(np.array([[hx, hy, 0.0]]), cam)[0]
+    if abs(sx - 540) < 85:
+        return 0
+    return -1 if sx > 540 else 1
 
 
 def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
