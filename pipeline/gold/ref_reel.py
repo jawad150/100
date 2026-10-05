@@ -31,6 +31,9 @@ G.TL.BIG_TYPE[:] = RT.BIG_TYPE
 G.TL.SECTIONS[1]['t_in'] = RT.CARD2_IN
 G.TL.HOOK['flank'] = RT.HOOK_FLANK
 G.TL.HOOK['block'] = (-9, -8, 'X', 0, 0, 0)          # no title block
+G.TL.HOOK['halo'] = (0.0, 0.0) + tuple(G.TL.HOOK['halo'][2:])   # no orange disc behind her: light rays instead
+G.TL.HOOK['trails'] = []
+G.TL.TRANSITIONS.pop(6, None)                         # the stool cut is one continuous locked wide shot
 G.TL.PILLS[:] = []
 G.TL.METERS[:] = []
 G.TL.INGOT_RAIN[:] = []
@@ -241,6 +244,13 @@ def cine_cam_values(t):
                 x += d * math.sin(u * 71)
                 y += d * math.cos(u * 59)
                 roll += d * 0.06 * math.sin(u * 47)
+    c0, c1 = RT.CONTINUITY                                   # locked wide: she walks out, stool stays, she walks in
+    if c0 - 0.5 < t < c1 + 0.5:
+        e = clamp((t - c0) / (c1 - c0))
+        wz = 1.04 + 0.06 * e * e * (3 - 2 * e)
+        w = min(_ease_move((t - (c0 - 0.5)) / 0.8), _ease_move((c1 + 0.5 - t) / 0.8))
+        z = math.exp(lerp(math.log(z), math.log(wz), w))
+        x, y, roll = lerp(x, 0.0, w), lerp(y, 0.0, w), lerp(roll, 0.0, w)
     if z > 1.45:                                             # soft ceiling: never uncomfortably tight on her face
         z = 1.45 + 0.17 * math.tanh((z - 1.45) / 0.17)
     v = dict(zoom=z, x=x, y=y, roll=roll, rx=0.0, ry=ry)
@@ -280,7 +290,10 @@ PLATE = Plate()
 
 def draw_plate(cv, i, cam, plates):
     for sh, xoff in plates:
-        draw3d(cv, PLATE.get(G.hold_frame(i, sh))['rgba'], CX + xoff, CY, 0, w=W, h=H, cam=cam)
+        fi = G.hold_frame(i, sh)
+        if sh == 5 and RT.EXIT[0] <= i / FPS < RT.EXIT[1]:
+            fi = RT.STOOL_FRAME                      # the stool is already there while she walks out
+        draw3d(cv, PLATE.get(fi)['rgba'], CX + xoff, CY, 0, w=W, h=H, cam=cam)
 
 
 def draw_person(cv, i, cam, plates):
@@ -367,10 +380,28 @@ def word_kind(w):
 
 def word_size(w, mode):
     if mode == 'word':
-        return 112 if w['gold'] else 92
+        return 112 if w['gold'] else 72
+    k = w.get('psc', 1.0)
     if w['gold']:
-        return 128
-    return 64 if w['text'].lower().strip('?!.,') in SMALL else 86
+        return int(round(128 * k))
+    return int(round((58 if w['text'].lower().strip('?!.,') in SMALL else 72) * k))
+
+
+def _phrase_scales():
+    """Size rhythm like the hook: key lines big, the next a touch smaller, plain lines small."""
+    n = 0
+    for ph in G.phrases():
+        ws = [w for r in ph['rows'] for w in r]
+        if any(w['gold'] for w in ws):
+            k = (1.08, 0.94, 1.0)[n % 3]
+            n += 1
+        else:
+            k = 0.86
+        for w in ws:
+            w['psc'] = k
+
+
+_phrase_scales()
 
 # ---------------------------------------------------------------- 3D word blocks
 
@@ -535,19 +566,27 @@ def fit_scale(pi, key):
     return fs
 
 
-def draw_block(cv, t, i, ph, cam, plates, measure=False):
+FIXED_PLAN = dict(side=1, align='C', dx=0.0, dy=0.0, maxw=760, maxh=460)
+
+
+def draw_block(cv, t, i, ph, cam, plates, measure=False, fixed=None):
     pi = ph['i']
-    shot = G.shot_of(ph['t_on'] + 0.05)
-    xoff = plate_xoff(plates, shot)
-    if xoff is None:
-        return
+    if fixed is None:
+        shot = G.shot_of(ph['t_on'] + 0.05)
+        xoff = plate_xoff(plates, shot)
+        if xoff is None:                    # line began just before a cut: it continues on the new clip
+            xoff = plate_xoff(plates, G.shot_of(t))
+        if xoff is None:
+            return
+    else:
+        xoff = 0.0
     words = [w for r in ph['rows'] for w in r]
     k = sum(1 for w in words if w['t'] - 0.03 <= t)
     if k == 0:
         return
-    plan = block_plan(pi)
+    plan = block_plan(pi) if fixed is None else FIXED_PLAN
     side, align = plan['side'], plan['align']
-    hx, hy, hs = head_at(i)
+    hx, hy, hs = head_at(i) if fixed is None else (fixed[0], fixed[1], 300.0)
     lay, bw, bh = block_layout(pi, k)
     lay0, bw0, bh0 = block_layout(pi, max(k - 1, 1))
     t_new = words[k - 1]['t'] - 0.03
@@ -559,8 +598,12 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False):
     ax, ay = hx + plan['dx'], hy + plan['dy']          # tracked: rides on her head every frame
     out = clamp((t - (ph['t_off'] - 0.12)) / 0.12)
     ry, rx, rz = (-side * 27.0, 8.0, -side * 3.0) if align != 'C' else (-side * 14.0, 12.0, 0.0)
+    life = clamp((t - ph['t_on']) / max(ph['t_off'] - ph['t_on'], 0.3))
+    ry += -side * 6.0 * (life - 0.5)                      # slow 3D drift: the block turns and dollies with the shot
+    if fixed is not None:
+        ry, rx, rz = 6.0 * (life - 0.5), 6.0, 0.0
     R = rotm(rx, ry, rz)
-    base = np.array([ax + xoff, ay, -60.0])
+    base = np.array([ax + xoff, ay, -60.0 - 70.0 * life])
     shift = {'L': 0.0, 'R': 1.0, 'C': 0.5}[align]
     # footprint of the complete phrase on screen -> keep it off her face and inside the Reels safe area
     layf, bwf, bhf = block_layout(pi, len(words))
@@ -572,14 +615,17 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False):
             pts.append(base + R @ np.array([qx * scf, qy * scf, 0.0]))
     q = en.project_pts(np.array(pts), cam)[0]
     rect = (q[:, 0].min(), q[:, 1].min(), q[:, 0].max(), q[:, 1].max())
-    fdx, fdy, fs = fit_shifted(rect, face_rect(i, cam, xoff), 'below' if align == 'C' else side,
-                               1.0 if measure else fit_scale(pi, -1), whip_shift(t, cam, xoff),
-                               lock=not measure)
+    if fixed is not None:
+        fdx, fdy, fs = fit_rect(rect, (-9e3, -9e3, -8e3, -8e3), 'below')
+    else:
+        fdx, fdy, fs = fit_shifted(rect, face_rect(i, cam, xoff), 'below' if align == 'C' else side,
+                                   1.0 if measure else fit_scale(pi, -1), whip_shift(t, cam, xoff),
+                                   lock=not measure)
     if measure:
         return fs
     if fdx or fdy or fs < 1:
         ccx, ccy = (rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2
-        zq = G.person_depth(cam) - 60
+        zq = (G.person_depth(cam) if fixed is None else -cam.z) - 60
         cw = G.unproject(ccx, ccy, zq, cam)
         cn = G.unproject(ccx + fdx, ccy + fdy, zq, cam)
         base = cn + (base - cw) * fs           # scale about the footprint centre, then move
@@ -602,6 +648,10 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False):
         hdraw = s_.shape[0] / gm * gh * sc * slam * (1 + 0.2 * out)
         op = clamp(u / 0.05) * (1 - out)
         draw3d(cv, s_, pos[0], pos[1], pos[2], h=hdraw, rx=rx, ry=ry, rz=rz, cam=cam, opacity=op)
+        if w['gold'] and 0 <= u < 0.45 and w is words[[id(x) for x in words].index(id(w))]:
+            a = (1 - u / 0.45) ** 2 * (1 - out)
+            draw3d(cv, streak_sprite(), pos[0], pos[1], pos[2] - 4, w=1100 * (0.7 + 0.5 * u / 0.45), h=26,
+                   cam=cam, opacity=0.75 * a, mode='add')
 
 # ---------------------------------------------------------------- single words (tracked to the chest)
 
@@ -691,7 +741,7 @@ def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
         if not (ph['t_on'] <= tc < ph['t_off']):
             continue
         if insert:
-            draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
+            draw_block(cv, tc, i, ph, cam, plates, fixed=(540, 1290))
         elif card_k > 0.5:
             draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
         elif ph['i'] in RT.BLOCKS:
@@ -828,8 +878,44 @@ def insert_at(t):
     return None
 
 
+@functools.lru_cache(maxsize=24)
+def broll_frame(name, idx, flip):
+    import glob as _g
+    fs = sorted(_g.glob(f'{S}/broll/{name}/*.png'))
+    im = cv2.imread(fs[min(idx, len(fs) - 1)])[..., ::-1]
+    if flip:
+        im = im[:, ::-1]
+    im = cv2.resize(im, (OW, OH), interpolation=cv2.INTER_CUBIC).astype(np.float32) / 255
+    bl = cv2.GaussianBlur(im, (0, 0), 1.2 * K)
+    return np.clip(im + 0.6 * (im - bl), 0, 1)                    # restore crispness after the upscale
+
+
+def broll_count(name):
+    import glob as _g
+    return len(_g.glob(f'{S}/broll/{name}/*.png'))
+
+
+def render_broll(fi, t, ins):
+    t_in, t_out, name = ins[:3]
+    flip = len(ins) > 4 and ins[4]
+    n = broll_count(name)
+    dur = t_out - t_in
+    first = max(0, n - int(math.ceil(dur * 30)))                 # land on the end of the move
+    u = t - t_in
+    im = broll_frame(name, min(first + int(u * 30), n - 1), flip)
+    z = 1.0 + 0.06 * (u / dur)                                   # continuous push across the clip
+    M = cv2.getRotationMatrix2D((OW / 2, OH / 2), 0.0, z)
+    cv = cv2.warpAffine(im, M, (OW, OH), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    cam = en.Cam()
+    draw_insert_dust(cv, t, cam)
+    draw_captions(cv, t, fi, cam, [], insert=True, tc=t)
+    return cv
+
+
 def render_insert(fi, t, ins, n):
-    t_in, t_out, name, kind = ins
+    t_in, t_out, name, kind = ins[:4]
+    if kind == 'broll':
+        return render_broll(fi, t, ins)
     acc = np.zeros((OH, OW, 3), np.float32)
     for j in range(n):
         ts = t + ((j + 0.5) / n - 0.5) * 0.5 / FPS if n > 1 else t
@@ -860,6 +946,39 @@ def render_insert(fi, t, ins, n):
     return acc / n
 
 # ---------------------------------------------------------------- ambient 3D depth: gold dust, rings, orbs
+
+
+@functools.lru_cache(maxsize=None)
+def streak_sprite():
+    """Anamorphic lens flare line: hot core, long soft gold-blue falloff."""
+    w, h = int(1100 * K), int(26 * K)
+    xs = np.linspace(-1, 1, w, dtype=np.float32)[None, :]
+    ys = np.linspace(-1, 1, h, dtype=np.float32)[:, None]
+    ax = np.exp(-np.abs(xs) * 3.2) * (1 - np.abs(xs)) ** 0.5
+    a = ax * np.exp(-(ys / 0.22) ** 2)
+    core = ax ** 3 * np.exp(-(ys / 0.08) ** 2)
+    col = a[..., None] * np.array([0.55, 0.62, 1.0], np.float32) * 0.6 + core[..., None] * np.array([1.0, 0.85, 0.6], np.float32)
+    return np.concatenate([col, np.clip(a + core, 0, 1)[..., None]], 2).astype(np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def rays_sprite():
+    """Soft volumetric light shafts fanning down from a source at the top (cinematic backlight)."""
+    w, h = int(700 * K), int(1000 * K)
+    ys, xs = np.mgrid[0:h, 0:w].astype(np.float32)
+    dx, dy = (xs - w / 2) / w, ys / h + 0.02
+    th = np.arctan2(dx, dy)
+    rng = np.random.default_rng(5)
+    beams = np.zeros_like(th)
+    for _ in range(9):
+        c, wd, a = rng.uniform(-0.5, 0.5), rng.uniform(0.015, 0.06), rng.uniform(0.4, 1.0)
+        beams += a * np.exp(-((th - c) / wd) ** 2)
+    r = np.sqrt(dx ** 2 + dy ** 2)
+    fall = np.clip(1 - r / 1.05, 0, 1) ** 1.6 * np.clip(r / 0.08, 0, 1)
+    a = np.clip(beams * fall * 0.55, 0, 1)
+    a = cv2.GaussianBlur(a, (0, 0), 6 * K)
+    col = np.array([0.85, 0.92, 1.0], np.float32)
+    return np.concatenate([a[..., None] * col, a[..., None]], 2)
 
 
 @functools.lru_cache(maxsize=None)
@@ -903,38 +1022,25 @@ def draw_ambient(cv, t, cam, plates, front=False):
     gimbals and orbs on the empty side (behind her, defocused), a few big foreground bokeh at the edges."""
     for shot, xoff in plates:
         if not front:
+            fx, fy = shot_face(shot)
+            ray_op = 0.42 if t < HOOK_END else 0.2
+            for j, (ox, rz0) in enumerate(((-230, 14), (260, -12))):
+                draw3d(cv, rays_sprite(), fx + ox + xoff, fy - 560, 700, h=2300,
+                       rz=rz0 + 3 * math.sin(t * 0.35 + j * 2), cam=cam,
+                       opacity=ray_op * (0.75 + 0.25 * math.sin(t * 0.9 + j)), mode='add')
             d = dust(shot)
             yy = (d['y'] - d['v'] * t + 300) % 2500 - 300                     # slow rise, wraps
             xx = d['x'] + d['sw'] * np.sin(t * 0.4 + d['ph'])
             tw = 0.55 + 0.45 * np.sin(t * 1.7 + d['ph'] * 3)
-            for j in range(len(yy)):
+            for j in range(0, len(yy), 2):
                 draw3d(cv, bokeh_sprite(), xx[j] + xoff, yy[j], d['z'][j], h=d['sz'][j] * (1 + d['z'][j] / 700),
-                       cam=cam, opacity=0.55 * tw[j], mode='add')
-            if t < HOOK_END or G.seq('ring3d').n() == 0:
-                continue
-            fx, fy = shot_face(shot)
-            side = 1 if fx < 540 else -1
-            if abs(fx - 540) < 60:
-                side = 1 if shot % 2 else -1
-            bob = math.sin(t * 0.9 + shot) * 18
-            # big ring gimbal high on the empty side, a smaller one low on the other side, deeper
-            for (dx, dy, z, h, blur, op, spd, off) in ((side * 400, -330, 700, 430, 2.0, 0.85, 0.6, 0),
-                                                         (-side * 430, 560, 1250, 300, 5.0, 0.6, 0.45, 20)):
-                fr = _ring_frame(t, spd, off)
-                fr = blur_sprite(fr, blur * K) if blur > 0.5 else fr
-                draw3d(cv, fr, fx + dx + xoff, fy + dy + bob, z, h=h, cam=cam, opacity=op,
-                       rz=6 * math.sin(t * 0.3 + shot))
-            orb = G.seq('orb3d')
-            if orb.n():
-                o = blur_sprite(orb.frame(0), 3.0 * K)
-                draw3d(cv, o, fx + side * 300 + xoff, fy + 260 - bob, 950, h=110, cam=cam, opacity=0.8)
-                draw3d(cv, o, fx - side * 360 + xoff, fy - 520 + bob * 0.6, 1450, h=80, cam=cam, opacity=0.6)
+                       cam=cam, opacity=0.42 * tw[j], mode='add')
         else:
             rng = np.random.default_rng(7 + shot)
-            for j in range(5):
-                ex = rng.choice([rng.uniform(-60, 170), rng.uniform(910, 1140)])
+            for j in range(3):
+                ex = rng.choice([rng.uniform(-60, 150), rng.uniform(930, 1140)])
                 ey = (rng.uniform(0, 2200) - (18 + 8 * j) * t) % 2300 - 150
-                op = 0.16 * (0.6 + 0.4 * math.sin(t * 0.8 + j))
+                op = 0.12 * (0.6 + 0.4 * math.sin(t * 0.8 + j))
                 draw3d(cv, bokeh_sprite(), ex + xoff, ey, -520, h=rng.uniform(90, 170), cam=cam, opacity=op, mode='add')
 
 
@@ -1062,6 +1168,21 @@ def _vignette():
     return (1 - 0.30 * np.clip(r, 0, 1.4) ** 2.4)[..., None].astype(np.float32)
 
 
+@functools.lru_cache(maxsize=None)
+def _grain():
+    g = np.random.default_rng(1).normal(0, 1, (OH // 2 + 64, OW // 2 + 64)).astype(np.float32)
+    return cv2.GaussianBlur(g, (0, 0), 0.6)
+
+
+def film_grain(cv, fi):
+    """Fine 35mm-style grain, strongest in the mids."""
+    r = np.random.default_rng(fi)
+    oy, ox = r.integers(0, 64, 2)
+    g = cv2.resize(_grain()[oy:oy + OH // 2, ox:ox + OW // 2], (OW, OH), interpolation=cv2.INTER_LINEAR)
+    lum = cv.mean(axis=2, keepdims=True)
+    return cv + (0.014 * g)[..., None] * (1.2 - lum) * (0.35 + lum)
+
+
 def cine_grade(cv):
     """Cinematic finishing layer: teal shadows / warm-gold highlights, filmic S-curve, rich mids,
     soft gold bloom on highlights, vignette."""
@@ -1092,6 +1213,12 @@ def _finish(cv, fi, t):
     s_, k, u = G.section_k(t)
     if s_ is not None and 0.0 < u < 0.25:
         flash = max(flash, 0.18 * (1 - u / 0.25))
+    for ins in RT.INSERTS:                       # b-roll cuts land on a hit: a quick exposure flash
+        if ins[3] == 'broll':
+            for edge in (ins[0], ins[1]):
+                d = t - edge
+                if 0 <= d < 0.12:
+                    flash = max(flash, 0.30 * (1 - d / 0.12) ** 2)
     draw_leaks(cv, t)
     if flash > 0:
         cv += np.array([1.0, 0.8, 0.5], np.float32) * flash
@@ -1099,6 +1226,7 @@ def _finish(cv, fi, t):
         kk = int(round(ca * K))
         cv = np.stack([np.roll(cv[..., 0], kk, axis=1), cv[..., 1], np.roll(cv[..., 2], -kk, axis=1)], 2)
     cv = cine_grade(cv)
+    cv = film_grain(cv, fi)
     fade = clamp((t - 78.9) / 0.5)
     if fade > 0:
         cv *= 1 - fade
@@ -1113,17 +1241,25 @@ def sfx_cues():
     for sc in TL.SECTIONS:
         out += [(sc['t_in'] - 0.5, 'riser', 0.35), (sc['t_in'] + 0.35, 'impact', 0.8),
                 (sc['t_in'] + 0.55, 'shimmer', 0.35), (sc['t_out'] - 0.2, 'whoosh', 0.55)]
-    for t_in, t_out, *_ in RT.INSERTS:
-        out += [(t_in - 0.06, 'swish', 0.55), (t_in, 'hit_soft', 0.45), (t_out - 0.06, 'swish', 0.45)]
+    prev_out = -9
+    for ins in RT.INSERTS:
+        t_in, t_out, kind = ins[0], ins[1], ins[3]
+        if kind == 'broll':                     # montage rhythm: whoosh into every cut, a hit on it
+            first = abs(t_in - prev_out) > 0.02
+            out += [(t_in - 0.14, 'whoosh', 0.5), (t_in, 'impact' if first else 'hit_soft', 0.75 if first else 0.6)]
+            if first and t_in > 0.5:
+                out.append((t_in - 0.45, 'riser', 0.25))
+        else:
+            out += [(t_in - 0.06, 'swish', 0.55), (t_in, 'hit_soft', 0.45), (t_out - 0.06, 'swish', 0.45)]
+        prev_out = t_out
     for t_in, t_out in RT.BANGS:
         out += [(t_in + j * 0.07, 'pop', 0.5) for j in range(3)]
     for t_in, t_out in RT.BOXES:
         out += [(t_in, 'click', 0.4), (t_in + 0.02, 'tick_run', 0.22)]
-    for ph in G.phrases():
-        if ph['i'] in RT.BLOCKS:
-            for w in (w for r in ph['rows'] for w in r):
-                if w['gold']:
-                    out.append((w['t'] - 0.06, 'swish', 0.28))
+    for ph in G.phrases():                      # one soft swish on each line's first keyword
+        g = [w for r in ph['rows'] for w in r if w['gold']]
+        if g:
+            out.append((g[0]['t'] - 0.06, 'swish', 0.22))
     for b in RT.BIG_TYPE:
         out.append((b[0], 'impact', 0.6))
     for fl in RT.HOOK_FLANK:
@@ -1134,7 +1270,7 @@ def sfx_cues():
     for k in range(1, len(TL.CAM)):
         if TL.CAM[k][7] and abs(TL.CAM[k][0] - TL.CAM[k - 1][0]) < 0.2:
             out.append((TL.CAM[k][0] - 0.06, 'swish', 0.3))
-    out += [(0.0, 'boom', 0.8), (0.0, 'shimmer', 0.4), (47.9, 'riser_long', 0.35), (51.42, 'boom', 0.6),
+    out += [(0.0, 'boom', 0.8), (0.0, 'shimmer', 0.4), (47.9, 'riser_long', 0.35), (53.5, 'shimmer', 0.3),
             (77.0, 'shimmer', 0.35)]
     return sorted(out)
 
