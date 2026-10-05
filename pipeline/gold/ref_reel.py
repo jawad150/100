@@ -70,8 +70,8 @@ for _k in range(len(TL.CUTS)):
         CAMF[_a:_b, _c] = _gf(np.interp(_idx, _idx[_ok], _seg[_ok, _c]), 12, mode='nearest')
 
 SHOT = {  # target on-screen face height (design px), face centre target (x offset from centre, y)
-    'WIDE': (None, 0, 0), 'MED': (300, 110, 640), 'MEDLOW': (280, 90, 900), 'CU': (470, 55, 760),
-    'ECU': (640, 0, 860),
+    'WIDE': (None, 0, 0), 'MED': (270, 100, 660), 'MEDLOW': (255, 85, 900), 'CU': (380, 50, 760),
+    'ECU': (460, 0, 820),
 }
 ENTRY_WIDE = [(25.09, 25.75), (30.43, 31.05), (40.17, 40.75), (51.42, 53.85)]   # she walks in / empty stage
 HOOK_END = TL.CUT_T[1]
@@ -92,7 +92,7 @@ def shot_plan():
     for b in bounds[1:]:
         hard = any(abs(b - c) < 1e-2 for c in cuts) or any(abs(b - e) < 1e-2 for w in ENTRY_WIDE for e in w) \
             or abs(b - 76.9) < 1e-3
-        if b - keep[-1] > 0.05 and (hard or b - keep[-1] >= 1.05):
+        if b - keep[-1] > 0.05 and (hard or b - keep[-1] >= 1.7):
             keep.append(b)
     keep.append(TL.NFRAMES / FPS + 0.1)
     keep = [b for j, b in enumerate(keep) if j == 0 or j == len(keep) - 1 or keep[j + 1] - b >= 0.35
@@ -160,13 +160,13 @@ def _framing(seg, t):
         z = 1.04
         tx, ty = fx, fy                       # no reframing: keep the face where it is in the plate
     else:
-        z = clamp(tgt_h / _seg_face_h(t0, t1), 1.04, 2.2 if typ == 'ECU' else 2.0)
+        z = clamp(tgt_h / _seg_face_h(t0, t1), 1.04, 1.75 if typ == 'ECU' else 1.6)
         tx = 540 + side * dx
     u = clamp((t - t0) / max(t1 - t0, 0.3))
     if mot == 'push':
-        z *= lerp(1.0, 1.10, e_inout_cubic(u))
+        z *= lerp(1.0, 1.06, e_inout_cubic(u))
     elif mot == 'pull':
-        z *= lerp(1.10, 1.0, e_inout_cubic(u))
+        z *= lerp(1.06, 1.0, e_inout_cubic(u))
     elif mot == 'crash':
         z *= lerp(0.72, 1.0, e_out_expo(clamp((t - t0) / 0.24))) * lerp(1.0, 1.05, u)
     elif mot == 'zoomout':
@@ -197,7 +197,8 @@ def _move_dur(seg):
     order = {'WIDE': 0, 'MED': 1, 'MEDLOW': 1, 'CU': 2, 'ECU': 3}
     if seg[2] == 'WIDE' and seg[0] > 75:          # closing pull-out to the wide: slow and gentle
         return 1.25
-    return 0.42 + 0.12 * abs(order[seg[2]] - order[prev[2]])
+    d = 0.85 + 0.18 * abs(order[seg[2]] - order[prev[2]])
+    return min(d, 0.8 * (seg[1] - seg[0]))
 
 
 def _ease_move(x):
@@ -234,11 +235,14 @@ def cine_cam_values(t):
         if tp - 0.05 <= t < tp + 0.9:
             u = t - tp
             if u >= 0:
-                z *= 1 + kick * math.exp(-u * 7)
-                d = math.exp(-u * 9) * amp
+                env = (1 - math.exp(-u * 18)) * math.exp(-u * 3.2)       # eased attack, slow release
+                z *= 1 + 0.55 * kick * env
+                d = math.exp(-u * 9) * amp * 0.5
                 x += d * math.sin(u * 71)
                 y += d * math.cos(u * 59)
                 roll += d * 0.06 * math.sin(u * 47)
+    if z > 1.45:                                             # soft ceiling: never uncomfortably tight on her face
+        z = 1.45 + 0.17 * math.tanh((z - 1.45) / 0.17)
     v = dict(zoom=z, x=x, y=y, roll=roll, rx=0.0, ry=ry)
     return G._cover(v, G.shot_of(t))
 
@@ -844,6 +848,32 @@ def _full(fi, t, n, shutter):
     return acc / n
 
 
+@functools.lru_cache(maxsize=None)
+def _vignette():
+    ys, xs = np.mgrid[0:OH, 0:OW].astype(np.float32)
+    r = np.sqrt(((xs - OW / 2) / (OW / 2)) ** 2 * 0.9 + ((ys - OH / 2) / (OH / 2)) ** 2 * 0.75)
+    return (1 - 0.30 * np.clip(r, 0, 1.4) ** 2.4)[..., None].astype(np.float32)
+
+
+def cine_grade(cv):
+    """Cinematic finishing layer: teal shadows / warm-gold highlights, filmic S-curve, rich mids,
+    soft gold bloom on highlights, vignette."""
+    cv = np.clip(cv, 0, 1)
+    lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
+    sh, hi = (1 - lum) ** 2, lum ** 2
+    cv = cv + sh * np.array([-0.020, 0.010, 0.032], np.float32) + hi * np.array([0.035, 0.012, -0.030], np.float32)
+    cv = np.clip(cv, 0, 1)
+    cv = cv + 0.30 * (cv * cv * (3 - 2 * cv) - cv)                        # filmic S-curve
+    lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
+    cv = lum + (cv - lum) * 1.10                                          # richer colour
+    small = cv2.resize(cv, (OW // 8, OH // 8), interpolation=cv2.INTER_AREA)
+    br = np.clip(small - 0.72, 0, None) * np.array([1.0, 0.78, 0.45], np.float32)
+    br = cv2.GaussianBlur(br, (0, 0), 6)
+    cv = cv + 0.55 * cv2.resize(br, (OW, OH), interpolation=cv2.INTER_LINEAR)
+    cv = cv * _vignette()
+    return 0.010 + 0.985 * np.clip(cv, 0, 1)                              # filmic black floor
+
+
 def _finish(cv, fi, t):
     flash, ca = 0.0, 0.0
     tr = G.transition_state(t)
@@ -861,6 +891,7 @@ def _finish(cv, fi, t):
     if ca > 0.05:
         kk = int(round(ca * K))
         cv = np.stack([np.roll(cv[..., 0], kk, axis=1), cv[..., 1], np.roll(cv[..., 2], -kk, axis=1)], 2)
+    cv = cine_grade(cv)
     fade = clamp((t - 78.9) / 0.5)
     if fade > 0:
         cv *= 1 - fade

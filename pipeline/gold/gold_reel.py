@@ -217,7 +217,7 @@ def transition_state(t):
     """Returns (kind, k, phase) when t is inside a transition window around cut k."""
     for k, (kind, d) in TL.TRANSITIONS.items():
         tc = TL.CUT_T[k]
-        pre, post_ = (0.24, 0.30) if kind != 'whip' else (0.22, 0.22)
+        pre, post_ = (0.34, 0.40) if kind != 'whip' else (0.30, 0.30)
         if tc - pre <= t < tc + post_:
             return kind, d, k, tc, pre, post_
     return None
@@ -236,18 +236,18 @@ def camera(t):
         kind, d, k, tc, pre, post_ = tr
         if kind == 'zoom':
             if t < tc:
-                v['zoom'] *= 1 + 1.7 * e_in_cubic(prog(t, tc - pre, tc))
+                v['zoom'] *= 1 + 1.1 * e_in_cubic(prog(t, tc - pre, tc))
             else:
-                v['zoom'] *= 1 + 0.9 * (1 - e_out_cubic(prog(t, tc, tc + post_)))
+                v['zoom'] *= 1 + 0.6 * (1 - e_out_cubic(prog(t, tc, tc + post_)))
         elif kind == 'spin':
             if t < tc:
                 p = e_in_cubic(prog(t, tc - pre, tc))
-                v['roll'] += 32 * d * p
-                v['zoom'] *= 1 + 0.9 * p
+                v['roll'] += 22 * d * p
+                v['zoom'] *= 1 + 0.55 * p
             else:
                 p = 1 - e_out_cubic(prog(t, tc, tc + post_))
-                v['roll'] -= 32 * d * p
-                v['zoom'] *= 1 + 0.9 * p
+                v['roll'] -= 22 * d * p
+                v['zoom'] *= 1 + 0.55 * p
         elif kind == 'whip':
             u = e_inout_cubic(prog(t, tc - pre, tc + post_))
             va, vb = base_cam_values(tc - pre), base_cam_values(tc + post_)
