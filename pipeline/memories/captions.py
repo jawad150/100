@@ -46,7 +46,8 @@ def glyph(ch, key, blur=0):
     if blur > 0:
         a = C.disc_blur(a, blur)
     # soft black drop shadow for legibility on bright plates
-    sh = np.clip(cv2.GaussianBlur(np.roll(a, 3, axis=0), (0, 0), 5 + blur * 0.5) * 0.75, 0, 0.8)
+    sh = np.clip(cv2.GaussianBlur(np.roll(a, 5, axis=0), (0, 0), 4 + blur * 0.5) * 0.95
+                 + cv2.GaussianBlur(np.roll(a, 9, axis=0), (0, 0), 14 + blur) * 0.65, 0, 0.92)
     if key:
         ys = np.clip((np.arange(h, dtype=np.float32) - pad) / max(asc, 1), 0, 1)[:, None, None]
         face = ORANGE_HI * (1 - ys) + ORANGE * ys
@@ -74,7 +75,20 @@ def advances(word, key):
     return tuple(out)
 
 
-def blit(cv, spr, ax, ay, x, y, rot, scale, op):
+@functools.lru_cache(maxsize=4000)
+def glow_sprite(ch, key):
+    """Soft additive glow of a glyph (same anchor as glyph(ch, key, 0))."""
+    spr, ax, ay = glyph(ch, key, 0)
+    a = spr[..., 3] * (spr[..., :3].max(2) > 0.02)
+    g = cv2.GaussianBlur(a, (0, 0), 9) * 0.7 + cv2.GaussianBlur(a, (0, 0), 22) * 0.5
+    col = ORANGE if key else np.float32([1.0, 0.78, 0.62])
+    out = np.zeros_like(spr)
+    out[..., :3] = g[..., None] * col
+    out[..., 3] = 0
+    return out, ax, ay
+
+
+def blit(cv, spr, ax, ay, x, y, rot, scale, op, mode='over'):
     """Place sprite so its anchor (ax, ay) lands on canvas (x, y), rotated (deg) and scaled."""
     if op <= 0.004:
         return
@@ -93,7 +107,10 @@ def blit(cv, spr, ax, ay, x, y, rot, scale, op):
     out = cv2.warpAffine(spr, M, (x1 - x0, y1 - y0), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
     out *= op
     reg = cv[y0:y1, x0:x1]
-    reg[..., :3] = out[..., :3] + reg[..., :3] * (1 - out[..., 3:4])
+    if mode == 'add':
+        reg[..., :3] += out[..., :3]
+    else:
+        reg[..., :3] = out[..., :3] + reg[..., :3] * (1 - out[..., 3:4])
 
 
 class Path:
@@ -177,12 +194,27 @@ class Phrase:
         self.lay = [(txt, t, key, s0 + ss, adv) for (txt, t, key, ss, adv) in lay]
         self.s0 = s0
 
+    def _scrim(self):
+        """Soft dark backing along the phrase (depth + legibility over bright plates), quarter res."""
+        if getattr(self, 'scrim', None) is None:
+            m = np.zeros((C.H // 4, C.W // 4), np.float32)
+            ss = np.linspace(self.s0 - 40, self.s0 + self.len + 40, 40)
+            x, y, _ = self.path.at(ss)
+            for xi, yi in zip(x, y):
+                cv2.circle(m, (int(xi / 4), int(yi / 4 - KEY_PX * 0.18 * self.k / 4)), int(KEY_PX * 0.95 * self.k / 4), 1.0, -1)
+            m = cv2.GaussianBlur(m, (0, 0), 14)
+            self.scrim = cv2.resize(np.clip(m * 1.2, 0, 1), (C.W, C.H), interpolation=cv2.INTER_LINEAR)[..., None]
+        return self.scrim
+
     def draw(self, cv, t):
         out_u = (t - self.t_out) / 0.55                               # exit: 0..1
         if out_u >= 1 or t < self.lay[0][1] - 0.4:
             return
         out_e = A.EXPO_IN(A.clamp(out_u)) if out_u > 0 else 0.0
         drift = out_e * 160 * self.k
+        vis = A.ramp(t, self.lay[0][1] - 0.3, self.lay[0][1] + 0.2) * (1 - A.clamp(out_u * 1.2))
+        if vis > 0.01:
+            cv[...] = cv * (1 - self._scrim() * 0.55 * vis)
         if self.line:
             spoken = [w for w in self.lay if t >= w[1] - 0.06]
             if spoken:
@@ -211,5 +243,8 @@ class Phrase:
                     x, y, ang = self.path.at(pen + a / 2)
                     r = math.radians(float(ang))
                     xp, yp = float(x) - math.cos(r) * a / 2, float(y) - math.sin(r) * a / 2
+                    gk = (0.35 + 1.6 * (1 - p)) * (1.4 if key else 0.8)       # glow flares while it animates in
+                    gs, gax, gay = glow_sprite(ch, key)
+                    blit(cv, gs, gax, gay, xp, yp, float(ang), sc, op * gk, mode='add')
                     blit(cv, spr, ax, ay, xp, yp, float(ang), sc, op)
                 pen += a

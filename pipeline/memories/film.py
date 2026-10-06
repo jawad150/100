@@ -822,6 +822,148 @@ def logo_spin(layers=('anim',)):
     W.camera((0, -2.8, 1.3), (0, 0, 1.3), lens=50, fstop=4)
     animate_render('logo_spin', 60)
 
+
+
+# ================================================================== animated hero shots (v2: real camera motion)
+def keyed_light(light, keys, attr='energy'):
+    """keys: [(frame, value)] with CONSTANT steps (lightning) or smooth (pulses)."""
+    for f, v in keys:
+        setattr(light.data, attr, v)
+        light.data.keyframe_insert(attr, frame=f)
+    ad = light.data.animation_data
+    if ad and ad.action:
+        for fc in _fcurves(ad.action):
+            for kp in fc.keyframe_points:
+                kp.interpolation = 'LINEAR'
+
+
+def floating_photos(center, n=10, seed=4, spread=(2.6, 2.6, 1.6), frames=132):
+    """Real 3D polaroids (memory photos) drifting around the hero."""
+    rnd = random.Random(seed)
+    srcs = [p for p in (OUT + '/c2_mj_portrait_full.png', OUT + '/c1_temple_bg.png') if os.path.exists(p)]
+    if not srcs:
+        return
+    mats = [photo_mat(p, 0.35) for p in srcs]
+    white = W.plain('polaroidwhite', (0.85, 0.83, 0.8), 0.6)
+    for i in range(n):
+        bpy.ops.mesh.primitive_plane_add(size=1)
+        card = bpy.context.object
+        card.scale = (0.26, 0.32, 1)
+        card.data.materials.append(white)
+        bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0.035, 0.001))
+        pic = bpy.context.object
+        pic.scale = (0.23, 0.23, 1)
+        pic.data.materials.append(mats[i % len(mats)])
+        pic.parent = card
+        pic.location = (0, 0.035 / 0.32, 0.002)
+        c = Vector(center) + Vector((rnd.uniform(-1, 1) * spread[0], rnd.uniform(-1, 1) * spread[1],
+                                     rnd.uniform(-0.3, 1) * spread[2]))
+        r0 = Vector((rnd.uniform(40, 130), rnd.uniform(-40, 40), rnd.uniform(0, 360)))
+        for f, k in ((1, 0.0), (frames, 1.0)):
+            card.location = c + Vector((0.15, -0.1, -0.35)) * k
+            card.rotation_euler = tuple(math.radians(a) for a in (r0 + Vector((25, 40, 60)) * k))
+            card.keyframe_insert('location', frame=f)
+            card.keyframe_insert('rotation_euler', frame=f)
+        put([card], 'hero')
+
+
+def project_track(cam, point, frames, path):
+    """Per-frame canvas position (1080x1920 px) of a world point, for compositor tracking (HUD reticle)."""
+    import json
+    from bpy_extras.object_utils import world_to_camera_view
+    sc = bpy.context.scene
+    out = {}
+    for f in range(1, frames + 1):
+        sc.frame_set(f)
+        co = world_to_camera_view(sc, cam, Vector(point))
+        out[f] = (co.x * 1080, (1 - co.y) * 1920, co.z)
+    json.dump(out, open(path, 'w'))
+
+
+@shot
+def h1_hook(layers=('anim',)):
+    """HOOK: camera rushes through the rain-dark ruins and arcs round the crouched hero, lightning strikes,
+    memory photos float through the frame -> ends on the mask (132 frames @60)."""
+    W.reset(20)
+    env_ruins(fogd=0.016)
+    gx, gy = HERO_RUINS
+    gz = ground(gx, gy)
+    arm, meshes, root = spidey('crouch', (gx, gy, gz), rot_z=15, wetness=1.0, look_pitch=4, look_yaw=-8)
+    head = bone_w(arm, 'head')
+    floating_photos(head + Vector((0, -1.2, -0.2)), n=12, frames=132)
+    # lightning: a huge cold area light behind the ruins, double strike + a late flash
+    flash = W.area((gx - 6, gy + 14, gz + 18), (gx, gy, gz), (0.6, 0.72, 1.0), 0, size=20, name='lightning')
+    keyed_light(flash, [(1, 0), (3, 26000), (6, 2000), (9, 30000), (13, 0), (70, 0), (72, 22000), (76, 0), (132, 0)])
+    red = W.area((gx + 2.5, gy - 0.5, gz + 0.4), (gx, gy, gz + 0.6), RED, 300, size=1.0, name='redpulse')
+    keyed_light(red, [(f, 260 + 160 * math.sin(f * 0.35)) for f in range(1, 133, 6)])
+    W.area((head.x - 1.0, head.y + 1.3, head.z + 0.8), head, MOON, 300, size=0.9, name='rim')
+    cam = W.camera((gx - 3, gy - 9, gz + 0.5), head, lens=30, fstop=2.0)
+    tgt_keys = []
+    k1 = pick_eye(head, -112, 7, 8.5)
+    k2 = pick_eye(head, -96, 9, 4.4)
+    k3 = pick_eye(head, -78, 2, 2.1)
+    keys = [(1, tuple(k1), head + Vector((0, 0, -0.35))),
+            (50, tuple(k2), head + Vector((0, 0, -0.12))),
+            (100, tuple(k3), head),
+            (132, (head.x + 0.35, head.y - 1.05, head.z - 0.02), head)]
+    tgt = key_cam(cam, keys)
+    cam.data.dof.focus_object = None
+    cam.data.dof.focus_distance = 5.0
+    for f, d in ((1, 9.5), (50, 4.8), (100, 2.4), (132, 1.1)):
+        cam.data.dof.focus_distance = d
+        cam.data.dof.keyframe_insert('focus_distance', frame=f)
+    cam.data.lens = 30
+    cam.data.keyframe_insert('lens', frame=1)
+    cam.data.lens = 42
+    cam.data.keyframe_insert('lens', frame=132)
+    project_track(cam, head, 132, OUT + '/h1_hook_head.json')
+    animate_render('h1_hook', 132)
+
+
+@shot
+def e3_anim(layers=('anim',)):
+    """Grief in the rain: slow arc + push towards the kneeling hero (90 frames @60)."""
+    W.reset(20)
+    env_ruins(fogd=0.016)
+    x, y = KNEEL_RUINS
+    gz = ground(x, y)
+    arm, meshes, root = spidey('kneel', (x, y, gz), rot_z=-20, wetness=1.0, head_down=35)
+    W.area((x + 2.5, y - 2.5, gz + 2.0), (x, y, gz + 0.8), (0.55, 0.65, 1.0), 260, size=2, name='moonkey')
+    red = W.area((x - 1.5, y + 1.8, gz + 1.2), (x, y, gz + 0.9), RED, 300, size=1, name='redrim')
+    keyed_light(red, [(f, 200 + 220 * (0.5 + 0.5 * math.sin(f * 0.21))) for f in range(1, 91, 5)])
+    tgt = Vector((x - 0.1, y, gz + 0.8))
+    e0 = pick_eye(tgt, -70, 6, 4.4)
+    e1 = pick_eye(tgt, -38, 3, 2.6)
+    cam = W.camera(e0, tgt, lens=40, fstop=2.0)
+    key_cam(cam, [(1, tuple(e0), tgt), (90, tuple(e1), tgt)])
+    cam.data.dof.focus_object = None
+    for f, d in ((1, (e0 - tgt).length), (90, (e1 - tgt).length)):
+        cam.data.dof.focus_distance = d
+        cam.data.dof.keyframe_insert('focus_distance', frame=f)
+    animate_render('e3_anim', 90)
+
+
+@shot
+def f1_anim(layers=('anim',)):
+    """Dawn burial: low dolly across the candles towards the kneeling hero (90 frames @60)."""
+    W.reset(20)
+    gx, gy, gz = landscape_grave()
+    spidey('kneel', (gx + 0.1, gy - 0.55, gz), rot_z=180, reach=0.6, head_down=30)
+    frame((gx - 0.05, gy + 0.35, gz + 0.1), rot=(75, 0, 180), height=0.28, photo=PHOTO if os.path.exists(PHOTO) else None)
+    tgt = Vector((gx, gy + 0.15, gz + 0.62))
+    e0 = pick_eye(tgt, 215, 3, 3.0)
+    e1 = pick_eye(tgt, 190, 5, 2.0)
+    rose(near_lens(e0, tgt, 0.55, -0.24, -0.2), rot=(0, 70, 30), height=0.45, cname='fg')
+    W.area((gx - 2.0, gy - 1.5, gz + 1.5), (gx, gy, gz + 0.6), (0.6, 0.7, 1.0), 120, size=2, name='dawnfill')
+    cam = W.camera(e0, tgt, lens=35, fstop=1.8)
+    key_cam(cam, [(1, tuple(e0), tgt), (90, tuple(e1), tgt)])
+    cam.data.dof.focus_object = None
+    for f, d in ((1, (e0 - tgt).length), (90, (e1 - tgt).length)):
+        cam.data.dof.focus_distance = d
+        cam.data.dof.keyframe_insert('focus_distance', frame=f)
+    animate_render('f1_anim', 90)
+
+
 if __name__ == '__main__':
     name = sys.argv[1]
     if len(sys.argv) > 2:

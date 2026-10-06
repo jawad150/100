@@ -379,29 +379,61 @@ def chroma_fringe(img, amount=1.6):
     return out
 
 
+def deep_glow(img, threshold=0.5, strength=0.55, tint=(1.0, 0.6, 0.55), sat_boost=1.0):
+    """After Effects 'Deep Glow'-style: bright, saturated pixels bloom in 4 octaves (8 -> 160 px)."""
+    rgb = img[..., :3]
+    lum = rgb.max(2, keepdims=True)
+    mn = rgb.min(2, keepdims=True)
+    satw = 1 + sat_boost * np.clip((lum - mn) / (lum + 1e-4), 0, 1)
+    hi = np.clip(rgb - threshold, 0, None) * satw
+    q = cv2.resize(hi, (W // 4, H // 4), interpolation=cv2.INTER_AREA)
+    acc = np.zeros_like(q)
+    for sig, w in ((2.0, 0.55), (6.0, 0.4), (14.0, 0.3), (36.0, 0.25)):
+        acc += cv2.GaussianBlur(q, (0, 0), sig) * w
+    acc = cv2.resize(acc, (W, H), interpolation=cv2.INTER_LINEAR)
+    img[..., :3] += acc * strength * np.asarray(tint, np.float32)
+    return img
+
+
+def god_rays(img, center, strength=0.35, threshold=0.6, length=0.35, n=10):
+    """Volumetric light shafts: bright areas smeared radially from a light source (quarter res)."""
+    q = cv2.resize(np.clip(img[..., :3] - threshold, 0, None), (W // 4, H // 4), interpolation=cv2.INTER_AREA)
+    cx, cy = center[0] / 4, center[1] / 4
+    acc = np.zeros_like(q)
+    for i in range(n):
+        s = 1 - length * i / n
+        M = np.float32([[s, 0, (1 - s) * cx], [0, s, (1 - s) * cy]])
+        acc += cv2.warpAffine(q, M, (W // 4, H // 4), flags=cv2.INTER_LINEAR) * (1 - i / n)
+    acc = cv2.GaussianBlur(acc / n, (0, 0), 2)
+    img[..., :3] += cv2.resize(acc, (W, H), interpolation=cv2.INTER_LINEAR) * strength * 4
+    return img
+
+
 def grade(img, look='spider', exposure=0.0, sat=1.0, contrast=1.0, vignette=0.55):
-    """Linear in -> display sRGB out (H, W, 3). Filmic shoulder + split toning."""
+    """Linear in -> display sRGB out. Filmic shoulder, dark cinematic split-tone: crushed blacks, deep blue
+    shadows, red/warm highlights (memory = warmer, dawn = red sunrise), selective saturation."""
     x = img[..., :3] * (2 ** exposure)
-    # filmic shoulder (soft clip highlights)
-    x = x / (1 + x * 0.18)
+    x = x / (1 + x * 0.22)
     s = to_srgb(np.clip(x, 0, 1))
-    if look == 'spider':                       # shadows -> deep blue, highlights -> warm red/magenta
-        lum = s @ np.array([0.2126, 0.7152, 0.0722], np.float32)
-        sh = np.clip(1 - lum / 0.45, 0, 1)[..., None]
-        hl = np.clip((lum - 0.55) / 0.45, 0, 1)[..., None]
-        s = s + sh * np.array([-0.012, 0.0, 0.035], np.float32) * 1.0 + hl * np.array([0.03, -0.01, -0.02], np.float32)
-    elif look == 'memory':                     # warm golden flashback
-        lum = s @ np.array([0.2126, 0.7152, 0.0722], np.float32)
-        sh = np.clip(1 - lum / 0.5, 0, 1)[..., None]
-        s = s + sh * np.array([0.02, 0.0, -0.01], np.float32) + np.array([0.02, 0.008, -0.025], np.float32)
-    elif look == 'orange':                     # brand end card
-        pass
+    lum = (s @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
+    sh = np.clip(1 - lum / 0.5, 0, 1) ** 1.4
+    hl = np.clip((lum - 0.45) / 0.55, 0, 1)
+    if look == 'spider':
+        s = s + sh * np.float32([-0.020, 0.004, 0.060]) + hl * np.float32([0.060, -0.012, -0.030])
+        g = s[..., 1:2]
+        s[..., 1:2] = g * 0.94 + lum * 0.06                      # mute greens
+    elif look == 'memory':
+        s = s + sh * np.float32([-0.010, 0.0, 0.045]) + hl * np.float32([0.045, 0.012, -0.035]) + np.float32([0.012, 0.0, -0.012])
+    elif look == 'dawn':
+        s = s + sh * np.float32([-0.015, 0.0, 0.055]) + hl * np.float32([0.060, 0.000, -0.040])
+    # crush blacks, gentle toe
+    if look != 'orange':
+        s = np.clip((s - 0.035) / 0.965, 0, 1) ** 1.06
     if sat != 1.0:
-        lum = (s @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
-        s = lum + (s - lum) * sat
+        l2 = (s @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
+        s = l2 + (s - l2) * sat
     if contrast != 1.0:
-        s = 0.5 + (s - 0.5) * contrast
-        s = np.clip(s, 0, 1)
+        s = np.clip(0.5 + (s - 0.5) * contrast, 0, 1)
         s = s * s * (3 - 2 * s) * (contrast - 1) * 0.5 + s * (1 - (contrast - 1) * 0.5)
     s = s * _vignette(vignette)
     return np.clip(s, 0, 1)

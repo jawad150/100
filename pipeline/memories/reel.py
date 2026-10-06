@@ -22,6 +22,7 @@ import comp as C  # noqa: E402
 import ending as E  # noqa: E402
 import fx  # noqa: E402
 import hud as U  # noqa: E402
+import saas_hook as SH  # noqa: E402
 from script import LINES  # noqa: E402
 
 FPS = C.FPS
@@ -31,12 +32,12 @@ WORK = C.ROOT + '/work'
 OUT = C.ROOT + '/out'
 T_END = 24.6
 
-SHOTS = [('a1', 0.00, 0.80), ('a2', 0.80, 1.55), ('a4', 1.55, 2.20), ('b2', 2.20, 3.40), ('b1', 3.40, 5.00),
+SHOTS = [('h1', 0.00, 2.20), ('b2', 2.20, 3.40), ('b1', 3.40, 5.00),
          ('a1b', 5.00, 6.30), ('dive', 6.30, 7.40), ('c1', 7.40, 9.40), ('c2', 9.40, 10.80), ('c3', 10.80, 12.30),
          ('d1', 12.30, 13.50), ('d2', 13.50, 14.50), ('d3', 14.50, 15.40), ('d4', 15.40, 15.90), ('e1', 15.90, 16.80),
          ('boom', 16.80, 17.20), ('e3', 17.20, 18.70), ('mont', 18.70, 19.70), ('f1', 19.70, 21.20),
          ('f2', 21.20, 22.60), ('g1', 22.60, T_END), ('end', T_END, DUR)]
-LOOK = dict(a1='spider', a2='spider', a4='spider', b2='spider', b1='spider', a1b='spider', dive='memory', c1='memory',
+LOOK = dict(h1='spider', a1='spider', a2='spider', a4='spider', b2='spider', b1='spider', a1b='spider', dive='memory', c1='memory',
             c2='memory', c3='memory', d1='spider', d2='spider', d3='spider', d4='spider', e1='spider', boom='spider',
             e3='spider', mont='spider', f1='dawn', f2='dawn', g1='dawn', end='orange')
 
@@ -112,10 +113,59 @@ def draw_polaroids(cv, cam, t, alpha=1.0, near_boost=False):
         C.draw_sprite3d(cv, q['key'], cam, tuple(p), (0.42, 0.5), rot, opacity=alpha)
 
 
-RAIN_SHOTS = {'a1', 'a2', 'a4', 'b2', 'b1', 'a1b', 'e3'}
+RAIN_SHOTS = {'h1', 'a1', 'a2', 'a4', 'b2', 'b1', 'a1b', 'e3'}
 
 
 # ================================================================== shots (cv, t global, u local)
+FG_RAIN = fx.drift_particles(70, 21, ((-1.2, -2.2, 0.35), (1.2, 2.2, 1.6)), (0.05, -1.6, 0.0))
+FG_EMBER = fx.drift_particles(60, 23, ((-1.0, -1.8, 0.35), (1.0, 1.8, 1.4)), (0.04, 0.35, 0.0))
+FG_DUST = fx.drift_particles(60, 25, ((-1.0, -1.8, 0.35), (1.0, 1.8, 1.5)), (0.03, 0.06, 0.0))
+FG_CAM = C.Cam(0, 0, 0, focus=6.0, aperture=0.045)
+
+
+def fg_depth(cv, t, kind):
+    """Cinematic foreground elements close to the lens: big defocused bokeh that the motion blur smears."""
+    cam = C.Cam(0.04 * A.wiggle(t, 0.4, 1, 31), 0.03 * A.wiggle(t, 0.35, 1, 32), 0, focus=6.0, aperture=0.045)
+    if kind == 'rain':
+        C.particles(cv, cam, FG_RAIN(t), 0.006, (0.55, 0.65, 1.0), 0.55)
+    elif kind == 'ember':
+        C.particles(cv, cam, FG_EMBER(t), 0.007, (1.0, 0.28, 0.05), 1.1)
+    elif kind == 'dust':
+        C.particles(cv, cam, FG_DUST(t), 0.005, (1.0, 0.7, 0.45), 0.7)
+    return cv
+
+
+FLY = None
+
+
+def fly_polaroids(cv, t, t0, n=3, seed=5):
+    """Polaroids whipping past right in front of the lens (heavy motion blur via the shutter samples)."""
+    global FLY
+    if FLY is None:
+        rng = np.random.default_rng(seed)
+        FLY = [dict(y=rng.uniform(-0.5, 0.5), z=rng.uniform(0.7, 1.3), d=rng.choice([-1, 1]), w=rng.uniform(-200, 200),
+                    off=i * 0.28) for i in range(n)]
+    pol = polaroids()
+    if not pol:
+        return cv
+    cam = C.Cam(0, 0, 0, focus=6.0, aperture=0.03)
+    for i, q in enumerate(FLY):
+        u = t - t0 - q['off']
+        if 0 < u < 0.55:
+            x = q['d'] * (-1.4 + 2.8 * A.SMOOTH(u / 0.55))
+            C.draw_sprite3d(cv, pol[i % len(pol)]['key'], cam, (x, q['y'], q['z']), (0.36, 0.43), (10, 25, q['w'] * u))
+    return cv
+
+
+def s_h1(cv, t, u):
+    clip_frame(cv, 'h1_hook', u)
+    fx.lightning(cv, t, 0.03, 0.8)
+    fx.lightning(cv, t, 1.19, 0.6)
+    fly_polaroids(cv, t, 0.45)
+    fg_depth(cv, t, 'rain')
+    return cv
+
+
 def s_a1(cv, t, u):
     # extreme close-up of the mask; lightning reveals it; slow push
     z = A.Track([(0, -0.35), (0.8, 0.25, A.EXPO_OUT)])(u)
@@ -145,10 +195,11 @@ def s_a4(cv, t, u):
 
 
 def s_b2(cv, t, u):
-    # close: his masked face looking down at the glowing photo; slow push + breathing
-    z = A.Track([(0, 0.0), (1.2, 0.35, A.SMOOTH)])(u)
-    cam = C.Cam(0.03 * math.sin(u * 1.3), 0.02 * math.sin(u * 0.9), z)
+    # close: his masked face looking down at the glowing photo; fast push-in + breathing, rain in front
+    z = A.Track([(0, -0.25), (0.5, 0.25, A.EXPO_OUT), (1.2, 0.5, A.SMOOTH)])(u)
+    cam = C.Cam(0.03 * math.sin(u * 1.3), 0.02 * math.sin(u * 0.9), z, roll=A.Track([(0, -3), (0.5, 0, A.EXPO_OUT)])(u))
     put_plate(cv, 'b2_hands', 'full', cam, 3.5)
+    fg_depth(cv, t, 'rain')
     return cv
 
 
@@ -204,6 +255,7 @@ def s_c2(cv, t, u):
     cam = C.Cam(0.04 * u, 0.0, z, focus=2.5, aperture=0.03)
     put_plate(cv, 'c2_mj_portrait', 'full', cam, 3.0)
     petals(cv, cam, t)
+    fg_depth(cv, t, 'dust')
     return cv
 
 
@@ -266,8 +318,10 @@ def s_d3(cv, t, u):
 
 
 def s_d4(cv, t, u):
-    z = A.Track([(0, 0.25), (0.5, 0.55, A.EXPO_OUT)])(u)
+    z = A.Track([(0, 0.25), (0.5, 0.75, A.EXPO_OUT)])(u)
     put_plate(cv, 'd4_goblin', 'full', C.Cam(0, 0, z, roll=A.wiggle(t, 2, 1.2, 4)), 3.0)
+    cv *= 1 + 0.35 * max(0.0, math.sin(t * 31)) * math.exp(-u * 3)      # flickering red
+    fg_depth(cv, t, 'ember')
     return cv
 
 
@@ -287,10 +341,15 @@ EMBERS = fx.drift_particles(160, 9, ((-3, -3, 1.0), (3, 3, 9)), (0.08, 0.45, 0.0
 
 
 def s_e3(cv, t, u):
-    z = A.Track([(0, -0.1), (1.5, 0.35, A.SMOOTH)])(u)
-    cam = C.Cam(0.06 * math.sin(u * 0.8), 0.0, z, focus=4.5, aperture=0.03)
-    put_plate(cv, 'e3_kneel', 'full', cam, 4.5)
+    if clip('e3_anim').files:
+        clip_frame(cv, 'e3_anim', u)
+        cam = C.Cam(0, 0, 0.2 * u, focus=4.5, aperture=0.03)
+    else:
+        z = A.Track([(0, -0.1), (1.5, 0.35, A.SMOOTH)])(u)
+        cam = C.Cam(0.06 * math.sin(u * 0.8), 0.0, z, focus=4.5, aperture=0.03)
+        put_plate(cv, 'e3_kneel', 'full', cam, 4.5)
     C.particles(cv, cam, EMBERS(t), 0.012, (1.0, 0.35, 0.06), 1.2)
+    fg_depth(cv, t, 'ember')
     return cv
 
 
@@ -316,9 +375,13 @@ def s_mont(cv, t, u):
 
 
 def s_f1(cv, t, u):
-    k = A.Track([(0, 0.0), (1.5, 1.0, A.SMOOTH)])(u)
-    cam = C.Cam(0.3 - 0.45 * k, 0.0, 0.1 + 0.35 * k, focus=3.0, aperture=0.025)
-    layered(cv, 'f1_grave', cam, d_bg=7, d_hero=3.0, d_fg=0.9)
+    if clip('f1_anim').files:
+        clip_frame(cv, 'f1_anim', u)
+    else:
+        k = A.Track([(0, 0.0), (1.5, 1.0, A.SMOOTH)])(u)
+        cam = C.Cam(0.3 - 0.45 * k, 0.0, 0.1 + 0.35 * k, focus=3.0, aperture=0.025)
+        layered(cv, 'f1_grave', cam, d_bg=7, d_hero=3.0, d_fg=0.9)
+    fg_depth(cv, t, 'ember')
     return cv
 
 
@@ -464,7 +527,7 @@ def shot_at(t):
 RAIN_CAM = C.Cam(0, 0, 0)
 
 # cut transitions: (time, kind, half-width s)
-TRANS = [(0.80, 'whip', 0.09), (1.55, 'zoom', 0.10), (2.20, 'flash', 0.06), (3.40, 'leak', 0.25), (5.00, 'whip', 0.08),
+TRANS = [(2.20, 'zoom', 0.10), (2.20, 'flash', 0.07), (3.40, 'leak', 0.25), (5.00, 'whip', 0.08),
          (7.40, 'leak', 0.35), (9.40, 'dissolve', 0.22), (10.80, 'whip', 0.08), (12.30, 'glitch', 0.12),
          (13.50, 'spin', 0.1), (15.90, 'zoom', 0.1), (17.20, 'flash', 0.08), (19.70, 'dip', 0.22),
          (21.20, 'dissolve', 0.25), (22.60, 'leak', 0.3)]
@@ -521,11 +584,30 @@ def transitions(cv, t):
     return cv
 
 
+HANDHELD = dict(h1=0.5, b2=1.0, b1=0.9, a1b=1.0, c1=0.6, c2=0.7, d4=1.4, boom=1.6, e3=0.6, f2=0.8, d3=0.8)
+
+
+def handheld(cv, t, k):
+    """Operator-held camera: low-frequency drift + micro jitter, slight overscan."""
+    amp = HANDHELD.get(k, 0.4)
+    dx = amp * (6 * A.wiggle(t, 0.45, 1, 41) + 1.2 * A.wiggle(t, 4.0, 1, 42))
+    dy = amp * (5 * A.wiggle(t, 0.4, 1, 43) + 1.0 * A.wiggle(t, 3.6, 1, 44))
+    rot = amp * 0.35 * A.wiggle(t, 0.3, 1, 45)
+    M = cv2.getRotationMatrix2D((C.W / 2, C.H / 2), rot, 1.035)
+    M[0, 2] += dx
+    M[1, 2] += dy
+    return cv2.warpAffine(cv, M, (C.W, C.H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT101)
+
+
 def draw(t):
     k, a, b = shot_at(t)
     cv = blank()
     DRAW[k](cv, t, t - a)
+    if k != 'end':
+        cv = handheld(cv, t, k)
     transitions(cv, t)
+    if t < 3.45:
+        SH.draw(cv, t)
     if k in RAIN_SHOTS:
         C.rain(cv, RAIN_CAM, t, n=650, opacity=0.25)
     if k != 'end':
@@ -539,7 +621,7 @@ def draw(t):
 def samples_for(t):
     k, a, b = shot_at(t)
     u = t - a
-    if k in ('dive', 'boom', 'mont', 'e1', 'd3'):
+    if k in ('dive', 'boom', 'mont', 'e1', 'd3', 'h1'):
         return 6
     if any(abs(t - T) < w for T, kind, w in TRANS if kind in ('whip', 'spin', 'zoom')):
         return 6
@@ -548,19 +630,28 @@ def samples_for(t):
     return 3
 
 
+EXPO = dict(h1=-0.1, b2=-0.3, b1=-0.2, a1b=-0.5, c1=-0.05, d4=-0.1, g1=-0.4, f2=-0.15, f1=-0.1)
+
+
 def finish_frame(f, t):
     k, a, b = shot_at(t)
-    f = C.bloom(f, 0.85, 0.35)
-    f = C.halation(f, 0.14)
+    ex = EXPO.get(k, 0.0)
+    rays = dict(c1=(300, 700), c2=(180, 520), c3=(250, 760), g1=(600, 820), f1=(780, 600), f2=(800, 500))
+    if k in rays:
+        f = C.god_rays(f, rays[k], 0.28 if LOOK[k] == 'memory' else 0.22)
+    f = C.deep_glow(f, 0.7, 0.45, (1.0, 0.55, 0.5) if LOOK[k] == 'spider' else (1.0, 0.7, 0.5))
+    f = C.halation(f, 0.16)
     if k not in ('end',):
         f = C.anamorphic(f, 1.4, 0.18, (0.35, 0.55, 1.0) if LOOK[k] != 'memory' else (1.0, 0.6, 0.3))
     look = LOOK[k]
     if look == 'dawn':
-        s = C.grade(f, 'memory', exposure=0.05, sat=1.05, contrast=1.06, vignette=0.6)
+        s = C.grade(f, 'dawn', exposure=-0.1 + ex, sat=1.08, contrast=1.14, vignette=0.75)
     elif look == 'orange':
         s = C.grade(f, 'orange', vignette=0.45)
+    elif look == 'memory':
+        s = C.grade(f, 'memory', exposure=-0.12 + ex, sat=1.06, contrast=1.12, vignette=0.75)
     else:
-        s = C.grade(f, look, exposure=0.0, sat=1.0 if look == 'spider' else 1.05, contrast=1.08, vignette=0.6)
+        s = C.grade(f, 'spider', exposure=-0.15 + ex, sat=1.1, contrast=1.15, vignette=0.8)
     # cut flashes / dips between shots (1 frame) are inside the shots; global fade in
     s *= A.ramp(t, 0.0, 0.05, A.LINEAR) * 0.0 + 1.0
     s = C.grain(s, t, 0.02)
