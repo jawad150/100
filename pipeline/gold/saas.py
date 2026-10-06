@@ -191,6 +191,19 @@ def icon(P, kind, x, y, s, col_dark=(0.06, 0.05, 0.03)):
     elif kind == 'drop':
         P.circle(c[0], y + s * 0.60, s * 0.20, col_dark)
         P.fillpoly([(c[0], y + s * 0.18), (c[0] - s * 0.18, y + s * 0.55), (c[0] + s * 0.18, y + s * 0.55)], col_dark)
+    elif kind == 'shield':
+        P.fillpoly([(x + s * 0.5, y + s * 0.16), (x + s * 0.80, y + s * 0.28), (x + s * 0.76, y + s * 0.58),
+                    (x + s * 0.5, y + s * 0.84), (x + s * 0.24, y + s * 0.58), (x + s * 0.20, y + s * 0.28)], col_dark)
+    elif kind == 'bell':
+        P.circle(c[0], y + s * 0.50, s * 0.22, col_dark)
+        P.rrect(x + s * 0.28, y + s * 0.50, s * 0.44, s * 0.18, s * 0.04, col_dark)
+        P.circle(c[0], y + s * 0.76, s * 0.07, col_dark)
+    elif kind == 'news':
+        for k in range(3):
+            P.poly([(x + s * 0.24, y + s * (0.34 + 0.16 * k)), (x + s * (0.76 - 0.12 * (k == 2)), y + s * (0.34 + 0.16 * k))],
+                   s * 0.08, col_dark)
+    elif kind == 'alert':
+        P.text(c[0], c[1] + 2, '!', 'Poppins-700', s * 0.6, col_dark, anchor='mm')
     elif kind == 'plus':
         P.poly([(c[0] - s * 0.2, c[1]), (c[0] + s * 0.2, c[1])], s * 0.09, col_dark)
         P.poly([(c[0], c[1] - s * 0.2), (c[0], c[1] + s * 0.2)], s * 0.09, col_dark)
@@ -485,10 +498,293 @@ def cues(inserts, cards):
             out += [(ins[0] - 0.12, 'whoosh', 0.55), (ins[0], 'hit_soft', 0.55), (ins[0] + 0.55, 'click', 0.4),
                     (ins[0] + 0.05, 'swish', 0.4)]
     for c in cards:
-        t_in, t_out, kind = c[:3]
+        t_in, t_out, kind, prm = c
         out += [(t_in + 0.02, 'pop', 0.4), (t_in + 0.1, 'swish', 0.3)]
-        if kind in ('ticker', 'gauge'):
+        if kind in ('ticker', 'gauge', 'compare'):
             out.append((t_in + 0.15, 'tick_run', 0.18))
-        if kind == 'button':
-            out += [(t_in + 0.52 * (t_out - t_in) - 0.02, 'click', 0.7), (t_in + 0.52 * (t_out - t_in), 'ching', 0.35)]
+        if kind == 'feed':
+            out += [(t_in + 0.35 * k, 'pop', 0.3) for k in range(1, 3)]
+        if kind in ('menu', 'badge', 'toggle'):
+            tc = t_in + prm.get('at', 0.55) * (t_out - t_in)
+            out += [(tc - 0.02, 'click', 0.7), (tc, 'ching', 0.3)]
     return out
+
+
+# ---------------------------------------------------------------- more talking-head widgets
+
+BADGE = {'down': ('\u25bc', RED), 'up': ('\u25b2', GREEN), 'teal': ('\u25b2', TEAL), 'gold': ('\u25b2', GOLD),
+         'ok': ('\u2713', GREEN), 'dot': ('\u25cf', TEAL)}
+
+
+def toast_card(u, kind, title, sub, badge):
+    """Notification toast (compact): icon chip, title, subtitle, status badge."""
+    w, h = 400, 150
+    P = Paint(w, h)
+    glass(P, 0, 0, w, h, 32)
+    chip(P, 20, 20, 72, kind)
+    P.text(108, 52, title, 'Poppins-600', 29, WHITE)
+    P.text(108, 88, sub, 'Inter-500', 23, (0.66, 0.67, 0.70))
+    sym, col = BADGE[badge]
+    a = ease(clamp((u - 0.25) / 0.3))
+    if a > 0:
+        cx_, cy_ = 46 + 10, 124
+        P.rrect(20, 108, 72, 30, 15, col, 0.18 * a)
+        if sym in ('\u25bc', '\u25b2'):
+            tri(P, 47, 115, 16, sym == '\u25b2', col)
+        else:
+            P.text(56, 124, sym, 'Poppins-700', 20, col, op=a, anchor='mm')
+    P.text(108, 128, 'now', 'Inter-500', 17, (0.48, 0.49, 0.52))
+    return P.sprite()
+
+
+def compare_card(u):
+    """Bonds vs Gold: bond yield bar grows, gold stays at 0% interest."""
+    w, h = 400, 300
+    P = Paint(w, h)
+    glass(P, 0, 0, w, h, 30)
+    chip(P, 22, 22, 44, 'chart', TEAL, (0.08, 0.45, 0.42))
+    P.text(80, 52, 'YIELD vs GOLD', 'Poppins-600', 20, (0.72, 0.72, 0.75), tracking=0.08)
+    rows = [('US Bonds', 0.82, TEAL, 'Yield up'), ('Gold', 0.035, GOLD, '0% interest')]
+    for k, (lab, v, col, tag) in enumerate(rows):
+        y = 112 + k * 92
+        P.text(24, y, lab, 'Poppins-600', 23, WHITE)
+        tw = P.text(w - 24, y, tag, 'Poppins-600', 18, col, anchor='rs')
+        if k == 0:
+            tri(P, w - 24 - tw - 22, y - 15, 14, True, col)
+        P.rrect(24, y + 18, w - 48, 22, 11, (1, 1, 1), 0.07)
+        q = ease(clamp((u - 0.15 - 0.15 * k) / 0.6))
+        bw = max(22, (w - 48) * v * q)
+        m = np.clip(0.5 - P.rrect_d(24, y + 18, bw, 22, 11), 0, 1)
+        P.over(m, col)
+        P.glow(m, col, 8, 0.6)
+    return P.sprite()
+
+
+def toggle_card(u, sw):
+    """'This drop is': segmented control slides from 'Structural crash' to 'Macro correction' at sw."""
+    w, h = 440, 196
+    P = Paint(w, h)
+    glass(P, 0, 0, w, h, 30)
+    P.text(24, 48, 'THIS DROP IS', 'Poppins-600', 20, (0.72, 0.72, 0.75), tracking=0.10)
+    x0, y0, sw_w, sh = 22, 76, w - 44, 92
+    P.rrect(x0, y0, sw_w, sh, 26, (1, 1, 1), 0.06)
+    q = ease(clamp((u - sw) / 0.35))
+    half = sw_w / 2
+    px = x0 + 6 + q * (half - 6)
+    col = tuple(lerp(RED[i], GOLD[i], q) for i in range(3))
+    m = np.clip(0.5 - P.rrect_d(px, y0 + 6, half - 6, sh - 12, 22), 0, 1)
+    P.over(m, P.vgrad(y0, y0 + sh, tuple(min(1, c * 1.1) for c in col), tuple(c * 0.7 for c in col)))
+    P.glow(m, col, 12, 0.6)
+    on, off = (0.07, 0.06, 0.05), (0.80, 0.80, 0.82)
+    c_l = tuple(lerp(on[i], off[i], q) for i in range(3))
+    c_r = tuple(lerp(off[i], on[i], q) for i in range(3))
+    P.text(x0 + half / 2, y0 + 40, 'Structural', 'Poppins-600', 22, c_l, anchor='ms')
+    P.text(x0 + half / 2, y0 + 68, 'crash', 'Poppins-600', 22, c_l, anchor='ms')
+    P.text(x0 + half * 1.5, y0 + 40, 'Macro', 'Poppins-600', 22, c_r, anchor='ms')
+    P.text(x0 + half * 1.5, y0 + 68, 'correction', 'Poppins-600', 22, c_r, anchor='ms')
+    if q > 0.6:                                     # strike through the rejected option
+        P.poly([(x0 + 26, y0 + sh / 2), (x0 + 26 + (half - 52) * ease((q - 0.6) / 0.4), y0 + sh / 2)], 2.5, RED, op=0.9)
+    return P.sprite()
+
+
+def menu_card(u, items, pick, pick_u):
+    """Trader's move: the hover follows the cursor down the list, the pick turns gold with a check."""
+    w = 400
+    rh = 82
+    h = 74 + rh * len(items)
+    P = Paint(w, h)
+    glass(P, 0, 0, w, h, 30)
+    P.text(24, 48, "TRADER'S MOVE", 'Poppins-600', 20, (0.72, 0.72, 0.75), tracking=0.10)
+    hov = lerp(0, pick, ease(clamp((u - 0.15) / max(pick_u - 0.2, 0.1))))
+    sel = ease(clamp((u - pick_u) / 0.2))
+    yh = 66 + hov * rh
+    m = np.clip(0.5 - P.rrect_d(12, yh, w - 24, rh - 6, 20), 0, 1)
+    P.over(m, (1, 1, 1), 0.07 * (1 - sel))
+    if sel > 0:
+        m = np.clip(0.5 - P.rrect_d(12, 66 + pick * rh, w - 24, rh - 6, 20), 0, 1)
+        P.over(m, P.vgrad(66 + pick * rh, 66 + (pick + 1) * rh, GOLD_HI, GOLD_LO), sel)
+        P.glow(m, GOLD, 14, 0.8 * sel)
+    for k, (kind, lab) in enumerate(items):
+        y = 66 + k * rh
+        col = WHITE if not (k == pick and sel > 0.5) else (0.07, 0.06, 0.05)
+        m = np.clip(0.5 - P.rrect_d(28, y + 16, 46, 46, 13), 0, 1)
+        P.over(m, (1, 1, 1), 0.08)
+        icon(P, kind, 28, y + 16, 46, col_dark=(0.78, 0.78, 0.8) if not (k == pick and sel > 0.5) else (0.07, 0.06, 0.05))
+        P.text(92, y + 48, lab, 'Poppins-600', 25, col)
+        if k == pick and sel > 0.5:
+            P.poly([(w - 66, y + 40), (w - 56, y + 50), (w - 38, y + 28)], 4, (0.07, 0.06, 0.05))
+    return P.sprite()
+
+
+def feed_card(u, items):
+    """News feed: headlines stack in one after another."""
+    w, rh = 400, 104
+    h = rh * len(items)
+    P = Paint(w, h)
+    for k, (kind, title, sub) in enumerate(items):
+        a = ease(clamp((u - 0.35 * k) / 0.35))
+        if a <= 0:
+            continue
+        y = k * rh + (1 - a) * 30
+        glass(P, 0, y, w, rh - 12, 24, edge=0.8 * a, fill_op=0.6 * a)
+        chip(P, 16, y + 16, 60, kind, glow=0.25 * a)
+        P.text(92, y + 44, title, 'Poppins-600', 26, WHITE, op=a)
+        P.text(92, y + 75, sub, 'Inter-500', 20, MUTED, op=a)
+    return P.sprite()
+
+
+def badge_card(u, ring='GOLD MARKET \u00b7 DAILY UPDATES \u00b7 ', cta='Follow'):
+    """Outro: gold Au coin with circular text rotating around it, and a Follow pill (cursor clicks it)."""
+    w, h = 420, 560
+    P = Paint(w, h)
+    cx, cy, r = w / 2, 200, 150
+    coin = np.clip(0.5 - P.rrect_d(cx - 92, cy - 92, 184, 184, 92), 0, 1)
+    P.over(coin, P.vgrad(cy - 92, cy + 92, GOLD_HI, GOLD_LO))
+    P.glow(coin, GOLD, 26, 1.0)
+    P.text(cx, cy + 4, 'Au', 'Poppins-700', 84, (0.07, 0.05, 0.03), anchor='mm')
+    P.arc(cx, cy, r + 26, 0, 360, 1.4, GOLD_HI, op=0.35)
+    rot = u * 70
+    f = en.font('Poppins-600', int(22 * K))
+    n = len(ring)
+    for j, ch in enumerate(ring):
+        ang = math.radians(rot + 360 * j / n - 90)
+        im = Image.new('L', (int(40 * K), int(40 * K)), 0)
+        ImageDraw.Draw(im).text((20 * K, 20 * K), ch, font=f, fill=255, anchor='mm')
+        im = im.rotate(-(rot + 360 * j / n), resample=Image.BICUBIC)
+        X, Y = P._xy(cx + r * math.cos(ang), cy + r * math.sin(ang))
+        x0_, y0_ = int(X - 20 * K), int(Y - 20 * K)
+        m = np.zeros((P.H, P.W), np.float32)
+        a = np.asarray(im, np.float32) / 255
+        m[y0_:y0_ + a.shape[0], x0_:x0_ + a.shape[1]] = a
+        P.over(m, (0.90, 0.88, 0.84))
+    # follow pill
+    click = 0.55
+    k = clamp((u - click) / 0.25)
+    pw, ph_, px, py = 260, 84, (w - 260) / 2, 420
+    if u >= click:
+        m = np.clip(0.5 - P.rrect_d(px, py, pw, ph_, ph_ / 2), 0, 1)
+        P.over(m, P.vgrad(py, py + ph_, GOLD_HI, GOLD_LO), ease(k))
+        P.glow(m, GOLD, 16, 0.9 * ease(k))
+    glass(P, px, py, pw, ph_, ph_ / 2, fill_op=0.6 * (1 - 0.8 * ease(k)))
+    txt = 'Following' if k > 0.5 else cta
+    P.text(w / 2, py + ph_ / 2 + 2, txt, 'Poppins-600', 30,
+           tuple(lerp(WHITE[i], 0.07, ease(k)) for i in range(3)), anchor='mm')
+    return P.sprite()
+
+# ---------------------------------------------------------------- fast full-screen SaaS clips
+
+
+SPARK = {'up': [0.82, 0.78, 0.80, 0.70, 0.72, 0.60, 0.55, 0.58, 0.44, 0.38, 0.30, 0.22, 0.12],
+         'down': [0.18, 0.22, 0.16, 0.28, 0.26, 0.38, 0.44, 0.40, 0.56, 0.62, 0.72, 0.80, 0.90]}
+
+
+def spark_panel(u, up):
+    w, h = 760, 820
+    P = Paint(w, h, pad=70)
+    glass(P, 0, 0, w, h, 44, fill_op=0.85, tint=(0.03, 0.033, 0.04))
+    chip(P, 36, 34, 64, 'au')
+    P.text(120, 78, 'XAU / USD', 'Poppins-600', 30, (0.78, 0.78, 0.8), tracking=0.08)
+    col = GREEN if up else RED
+    P.rrect(w - 200, 40, 164, 56, 28, col, 0.18)
+    tri(P, w - 182, 56, 22, up, col)
+    P.text(w - 150, 80, '+1.3%' if up else '-4.0%', 'Poppins-700', 26, col)
+    x0, y0, cw, ch = 40, 150, w - 80, h - 200
+    for k in range(5):
+        P.poly([(x0, y0 + ch * k / 4), (x0 + cw, y0 + ch * k / 4)], 1, (1, 1, 1), op=0.05)
+    ser = SPARK['up' if up else 'down']
+    pts = [(x0 + cw * k / (len(ser) - 1), y0 + ch * v) for k, v in enumerate(ser)]
+    d = ease(clamp(u / 0.8))
+    n = max(2, int(d * (len(pts) - 1)) + 1)
+    fr = d * (len(pts) - 1) - (n - 2)
+    vis = pts[:n - 1] + [(lerp(pts[n - 2][0], pts[n - 1][0], min(fr, 1)), lerp(pts[n - 2][1], pts[n - 1][1], min(fr, 1)))]
+    m = np.zeros((P.H, P.W), np.uint8)
+    area = vis + [(vis[-1][0], y0 + ch), (vis[0][0], y0 + ch)]
+    cv2.fillPoly(m, [np.int32([[(x + P.p) * K * 16, (y + P.p) * K * 16] for x, y in area])], 255, cv2.LINE_AA, shift=4)
+    fill = m.astype(np.float32) / 255 * np.clip(1 - (np.arange(P.H, dtype=np.float32)[:, None] / K - P.p - y0) / ch, 0, 1)
+    P.over(fill, GOLD, 0.3)
+    P.poly(vis, 5, GOLD_HI, glow=1.2)
+    ex, ey = vis[-1]
+    P.circle(ex, ey, 11, GOLD_HI)
+    P.circle(ex, ey, 11 + 14 * (0.5 + 0.5 * math.sin(u * 20)), GOLD, op=0.2)
+    return P.sprite()
+
+
+def render_spark(t, ins, up):
+    u = (t - ins[0]) / (ins[1] - ins[0])
+    cv = aurora(t, ((1.0, 0.55, 0.12), (0.12, 0.6, 0.4) if up else (0.6, 0.12, 0.08)))
+    spr = spark_panel(u * 1.15, up)
+    p = e_out_expo(clamp(u / 0.5))
+    draw3d(cv, spr, CX, 960, lerp(380, -40, p) - 60 * u, h=1100, rx=lerp(14, 6, p), ry=lerp(-24, -10, p),
+           cam=en.Cam(), opacity=clamp(u / 0.12))
+    return cv
+
+
+@functools.lru_cache(maxsize=12)
+def app_icon(kind, col):
+    s = 420
+    P = Paint(s, s, pad=90)
+    m = np.clip(0.5 - P.rrect_d(0, 0, s, s, 110), 0, 1)
+    P.over(m, P.vgrad(0, s, tuple(min(1, c * 1.2) for c in col), tuple(c * 0.5 for c in col)))
+    P.glow(m, col, 40, 1.0)
+    P.stroke(0, 0, s, s, 110, 3, (1, 1, 1), 0.5, grad=P.diag(1.0, 0.0))
+    icon(P, kind, 60, 60, s - 120)
+    return P.sprite()
+
+
+def render_icon(t, ins, kind, col):
+    """Glowing app-icon reveal with orbiting arcs and a light sweep."""
+    u = (t - ins[0]) / (ins[1] - ins[0])
+    cv = aurora(t, (col, (0.12, 0.45, 0.50)))
+    cam = en.Cam()
+    p = e_out_back(clamp(u / 0.45), 1.6)
+    ring = Paint(900, 900, pad=10)
+    a0 = u * 260
+    ring.arc(450, 450, 400, a0, a0 + 120, 3, GOLD_HI, op=0.8, glow=0.8)
+    ring.arc(450, 450, 340, -a0 * 1.4 + 180, -a0 * 1.4 + 250, 2, col, op=0.7, glow=0.6)
+    G.draw(cv, ring.sprite(), CX, 940, 1.0, 0, clamp(u / 0.2))
+    spr = app_icon(kind, col)
+    draw3d(cv, spr, CX, 940, lerp(500, 0, p), h=600 * lerp(0.6, 1.0, p), ry=lerp(-30, 0, p) + 8 * u, cam=cam,
+           opacity=clamp(u / 0.1))
+    return cv
+
+
+def render_stack(t, ins):
+    """Cascade of glass UI cards flying along a 3D diagonal (ref 4 image stack)."""
+    u = (t - ins[0]) / (ins[1] - ins[0])
+    cv = aurora(t)
+    cam = en.Cam()
+    items = [('au', 'Gold'), ('dollar', 'US Dollar'), ('bank', 'Fed'), ('chart', 'Yields'), ('drop', 'Oil'),
+             ('pct', 'Odds'), ('shield', 'Risk')]
+    for k, (kind, lab) in enumerate(items):
+        d = k - 1.5 - (len(items) - 3) * u
+        x = CX + d * 135
+        y = 960 - d * 190
+        z = 160 + d * 150
+        spr = stack_card(kind, lab)
+        draw3d(cv, spr, x, y, z, h=470, ry=-28, rx=10, rz=-8, cam=cam, opacity=clamp(1.3 - abs(d) * 0.22))
+    return cv
+
+
+@functools.lru_cache(maxsize=12)
+def stack_card(kind, lab):
+    w, h = 320, 380
+    P = Paint(w, h, pad=50)
+    glass(P, 0, 0, w, h, 36, fill_op=0.75)
+    chip(P, w / 2 - 70, 70, 140, kind)
+    P.text(w / 2, 300, lab, 'Poppins-600', 36, WHITE, anchor='ms')
+    return P.sprite()
+
+
+def render_clip(t, ins):
+    name = ins[2]
+    if name == 'saas_spark_up':
+        return render_spark(t, ins, True)
+    if name == 'saas_spark_down':
+        return render_spark(t, ins, False)
+    if name == 'saas_stack':
+        return render_stack(t, ins)
+    if name.startswith('saas_icon_'):
+        kind = name[len('saas_icon_'):]
+        col = {'dollar': GREEN, 'bank': GOLD, 'pct': GOLD, 'au': GOLD, 'chart': TEAL}.get(kind, GOLD)
+        return render_icon(t, ins, kind, col)
+    return None

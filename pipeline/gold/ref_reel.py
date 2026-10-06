@@ -361,7 +361,8 @@ def word_sprite_clean(text, kind, size):
     P = int(48 * K)
     a = np.pad(m, P)
     h, w = a.shape
-    sh = np.roll(cv2.GaussianBlur(a, (0, 0), 5 * K), int(3 * K), axis=0) * 0.5
+    sh = np.clip(np.roll(cv2.GaussianBlur(a, (0, 0), 3 * K), int(3 * K), axis=0) * 0.6
+                 + cv2.GaussianBlur(a, (0, 0), 14 * K) * 0.45, 0, 0.85)
     rgb = np.zeros((h, w, 3), np.float32)
     al = sh.copy()
     if kind == 'gold':
@@ -712,34 +713,12 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False, fixed=None):
         base = cn + (base - cw) * fs           # scale about the footprint centre, then move
         sc *= fs
     scS = scf * fs if (fdx or fdy or fs < 1) else scf
-    # glass card grows smoothly around the words as they are spoken (words sit in their final places)
-    box = None
-    for (w, lx, ly, gw, gh, lw) in layf:
-        p = SA.ease(clamp((t - (w['t'] - 0.03)) / 0.26))
-        if p <= 0:
-            continue
-        r_ = (lx - lw * shift, ly, lx - lw * shift + gw, ly + gh)
-        if box is None:
-            box = r_
-        else:
-            box = (lerp(box[0], min(box[0], r_[0]), p), lerp(box[1], min(box[1], r_[1]), p),
-                   lerp(box[2], max(box[2], r_[2]), p), lerp(box[3], max(box[3], r_[3]), p))
-    if box is None:
-        return
-    x0, y0, x1, y1 = box
-    px_, py_ = 30, 22
-    cw, ch = int(round((x1 - x0 + 2 * px_) / 4) * 4), int(round((y1 - y0 + 2 * py_) / 4) * 4)
     cin = SA.ease(clamp((t - ph['t_on']) / 0.28))
     cout = 1 - SA.ease(clamp((t - (ph['t_off'] - 0.16)) / 0.16))
-    cop = cin * cout
+    cop = cout
     if cop <= 0.01:
         return
-    lift = (1 - cin) * 14 + (1 - cout) * -8
-    cc = base + R @ np.array([(x0 + x1) / 2 * scS, ((y0 + y1) / 2 + lift) * scS, 0.0])
-    card = caption_card(pi, cw, ch)
-    hcard = card.shape[0] / K * scS * lerp(0.95, 1.0, cin)
-    frost(cv, card, cc[0], cc[1], cc[2] + 2, hcard, cam, cop, rx, ry, rz)
-    draw3d(cv, card, cc[0], cc[1], cc[2] + 2, h=hcard, rx=rx, ry=ry, rz=rz, cam=cam, opacity=cop)
+    lift = (1 - cout) * -8
     for n, (w, lx, ly, gw, gh, lw) in enumerate(layf):
         u = t - (w['t'] - 0.03)
         if u < 0:
@@ -1198,7 +1177,9 @@ def render_insert(fi, t, ins, n):
     if kind == 'saas':
         if name == 'saas_reasons':
             return SA.render_reasons(t, ins, 0)
-        return SA.render_carousel(t, ins, 65.10)
+        if name == 'saas_carousel':
+            return SA.render_carousel(t, ins, 65.10)
+        return SA.render_clip(t, ins)               # fast SaaS clips inside the montages
     acc = np.zeros((OH, OW, 3), np.float32)
     for j in range(n):
         ts = t + ((j + 0.5) / n - 0.5) * 0.5 / FPS if n > 1 else t
@@ -1377,7 +1358,10 @@ def nsub_at(t):
     return G.nsub_at(t)
 
 
-SAAS_BODY = {'ticker': (380, 250), 'gauge': (360, 330), 'button': (430, 104)}
+SAAS_BODY = {'ticker': (380, 250), 'gauge': (360, 330), 'button': (430, 104), 'toast': (400, 150),
+             'compare': (400, 300), 'toggle': (440, 196), 'menu': (400, 320), 'feed': (400, 312), 'badge': (420, 560)}
+TOP_KINDS = set()            # (top placement tried: her head sits too high in the frame - all widgets go beside her)
+CURSOR = {'menu': (0.5, (66 + 2 * 82 + 38) / 320), 'badge': (0.5, (420 + 42) / 560), 'button': (0.66, 0.55)}
 
 
 @functools.lru_cache(maxsize=None)
@@ -1398,7 +1382,10 @@ def widget_framing(ci, t):
     if np.isnan(fx):
         fx, fy = 540.0, 600.0
     z = clamp(250 / _seg_face_h(t_in, t_out), 1.12, 1.32) * lerp(1.0, 1.04, clamp((t - t_in) / (t_out - t_in)))
-    tx, ty = 540 - card_side(ci) * 170, 760
+    if RT.SAAS_CARDS[ci][2] in TOP_KINDS:
+        tx, ty = fx, 900                                     # keep her centred, a little lower: room on top
+    else:
+        tx, ty = 540 - card_side(ci) * 170, 760
     x = fx - 540 - (tx - 540) / z
     y = fy - 960 - (ty - 960) / z
     mx, my = 540 * (1 - 1 / z), 960 * (1 - 1 / z)
@@ -1412,7 +1399,20 @@ def _card_sprite(card, t):
         return SA.ticker_card(u / 1.2, prm['p0'], prm['p1'], prm['delta'], prm['up'], SA.TICK_SERIES[prm['series']]), 60
     if kind == 'gauge':
         return SA.gauge_card(u / 1.2, prm['v0'], prm['v1'], prm['label'], prm['sub']), 60
-    return SA.button_card(u / (t_out - t_in), prm['text'])
+    f = u / (t_out - t_in)
+    if kind == 'toast':
+        return SA.toast_card(u, prm['kind'], prm['title'], prm['sub'], prm['badge']), 60
+    if kind == 'compare':
+        return SA.compare_card(u / 1.4), 60
+    if kind == 'toggle':
+        return SA.toggle_card(f, prm['at']), 60
+    if kind == 'menu':
+        return SA.menu_card(f, prm['items'], prm['pick'], prm['at']), 60
+    if kind == 'feed':
+        return SA.feed_card(u, prm['items']), 60
+    if kind == 'badge':
+        return SA.badge_card(f), 60
+    return SA.button_card(f, prm['text'])
 
 
 def _card_anchor(ci, t, fi):
@@ -1440,8 +1440,12 @@ def card_layout(ci):
         sides.append(side)
         rooms.append((fr, side))
     side = card_side(ci)
+    if kind in TOP_KINDS:
+        bh = SAAS_BODY[kind][1]
+        room_h = float(np.median([fr[1] for fr, _ in rooms])) - 30 - SAFE[1]
+        return side, float(clamp(min((SAFE[2] - SAFE[0]) / bw, room_h / bh), 0.8, 1.45))
     room = float(np.median([((SAFE[2] - fr[2]) if side > 0 else (fr[0] - SAFE[0])) for fr, _ in rooms])) - 28
-    return side, float(clamp(room / bw, 0.72, 1.05))
+    return side, float(clamp(room / bw, 0.85, 1.2))
 
 
 def draw_captions_post(cv, fi, t):
@@ -1468,25 +1472,31 @@ def draw_saas_cards(cv, fi, t):
         bw, bh = SAAS_BODY[kind]
         sc_a, op, bl, lift = SA.card_scale(t - t_in, t_out - t_in)
         W_, H_ = bw * s, bh * s
-        x = fr[2] + 28 + W_ / 2 if side > 0 else fr[0] - 28 - W_ / 2
-        x = clamp(x, SAFE[0] + W_ / 2, SAFE[2] - W_ / 2)
-        y = clamp((fr[1] + fr[3]) / 2 - 30, SAFE[1] + H_ / 2, SAFE[3] - H_ / 2) + lift + 5 * math.sin(t * 1.4)
+        if kind in TOP_KINDS:                                # drops down from the top like a notification
+            x = clamp((fr[0] + fr[2]) / 2, SAFE[0] + W_ / 2, SAFE[2] - W_ / 2)
+            y = SAFE[1] + 14 + H_ / 2 - lift * 2.2 + 3 * math.sin(t * 1.4)
+        else:
+            x = fr[2] + 28 + W_ / 2 if side > 0 else fr[0] - 28 - W_ / 2
+            x = clamp(x, SAFE[0] + W_ / 2, SAFE[2] - W_ / 2)
+            y = clamp((fr[1] + fr[3]) / 2 - 30, SAFE[1] + H_ / 2, SAFE[3] - H_ / 2) + lift + 5 * math.sin(t * 1.4)
         spr, pd = _card_sprite(card, t)
         hd = spr.shape[0] / K * s * sc_a
-        ry, scam = -side * 13.0, en.Cam()
+        ry, scam = (0.0 if kind in TOP_KINDS else -side * 13.0), en.Cam()
         # frosted glass: blur what is behind the card body
         frost(cv, spr, x, y, 0, hd, scam, op, ry=ry)
         s_ = blur_sprite(spr, bl * K) if bl > 0.6 else spr
         draw3d(cv, s_, x, y, 0, h=hd * s_.shape[0] / spr.shape[0], ry=ry, cam=scam, opacity=op)
-        if kind == 'button':
+        if kind in CURSOR:                                   # cursor glides in and clicks
             u = (t - t_in) / (t_out - t_in)
-            px = x - W_ / 2 + W_ * SA.CLICK_PT[0]
-            py = y - H_ / 2 + H_ * SA.CLICK_PT[1]
-            q = SA.ease(clamp((u - 0.12) / 0.38))
-            cx_, cy_ = lerp(px + 260, px, q), lerp(py + 300, py, q)
-            if u > 0.5:
-                cx_, cy_ = px + 30 * SA.ease(clamp((u - 0.62) / 0.3)), py + 40 * SA.ease(clamp((u - 0.62) / 0.3))
-            press = 0.88 if 0.5 <= u < 0.56 else 1.0
+            at = prm.get('at', 0.52)
+            px = x - W_ / 2 + W_ * CURSOR[kind][0]
+            py = y - H_ / 2 + H_ * CURSOR[kind][1]
+            q = SA.ease(clamp((u - 0.10) / max(at - 0.14, 0.1)))
+            cx_, cy_ = lerp(px + side * -40 + 220, px, q), lerp(py + 300, py, q)
+            if u > at:
+                e2 = SA.ease(clamp((u - at - 0.1) / 0.3))
+                cx_, cy_ = px + 30 * e2, py + 40 * e2
+            press = 0.88 if at <= u < at + 0.06 else 1.0
             cs = SA.cursor_sprite()
             G.draw(cv, cs, cx_ + cs.shape[1] / K * 0.5 * press - 10, cy_ + cs.shape[0] / K * 0.5 * press - 10,
                    press * s, 0, op)
@@ -1638,10 +1648,10 @@ def sfx_cues():
     prev_out = -9
     for ins in RT.INSERTS:
         t_in, t_out, kind = ins[0], ins[1], ins[3]
-        if kind == 'saas':
+        if kind == 'saas' and ins[2] in ('saas_reasons', 'saas_carousel'):
             prev_out = t_out
             continue
-        if kind == 'broll':                     # montage rhythm: whoosh into every cut, a hit on it
+        if kind in ('broll', 'saas'):           # montage rhythm: whoosh into every cut, a hit on it
             first = abs(t_in - prev_out) > 0.02
             out += [(t_in - 0.14, 'whoosh', 0.5), (t_in, 'impact' if first else 'hit_soft', 0.75 if first else 0.6)]
             if first and t_in > 0.5:
