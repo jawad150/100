@@ -4,6 +4,10 @@ cd "$(dirname "$0")"
 W=../../workspace2
 until grep -q ALLDONE $W/work/render_queue.log 2>/dev/null; do sleep 30; done
 while pgrep -f "reel.py preview" > /dev/null; do sleep 10; done
+# cut-out layers rendered before the fog fix
+RES=1.0 SAMPLES=24 LAYERS=hero,fg python3 film.py a2_reveal >> $W/work/render_detail.log 2>&1
+RES=1.0 SAMPLES=24 LAYERS=hero,fg python3 film.py c1_temple >> $W/work/render_detail.log 2>&1
+echo "$(date -u +%H:%M:%S) re-rendered a2/c1 cut-outs" >> $W/work/finish.log
 echo "$(date -u +%H:%M:%S) composite start" >> $W/work/finish.log
 rm -rf $W/work/chunks
 python3 reel.py cues >> $W/work/finish.log 2>&1

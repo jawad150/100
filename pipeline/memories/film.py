@@ -396,9 +396,9 @@ def render_layers(name, layers, cam_lens=None):
         elif L == 'bg':
             setlayer(hide=('hero', 'fg'))
         elif L == 'hero':
-            setlayer(hide=('fg',), holdout=('env',))
+            setlayer(hide=('fg', 'fx'), holdout=('env',))       # no fog in the cut-out layers (bg carries it)
         elif L == 'fg':
-            setlayer(holdout=('env', 'hero'))
+            setlayer(hide=('fx',), holdout=('env', 'hero'))
         W.render(f'{pre}_{L}{suffix}.png')
 
 
