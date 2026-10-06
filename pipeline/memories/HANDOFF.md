@@ -5,8 +5,8 @@ Big media live in `workspace2/` (git-ignored) and are rebuilt by these steps; re
 pushed under `media/yaadein/` (Git LFS) once rendered, so they do not have to be re-rendered.
 
 ## What the reel is
-* 32 s, 1080x1920 @ 60 fps. Voice + music: `workspace2/src/audio_src.mp4`, which is the user's upload
-  (27.84 s). Re-upload it if it is missing.
+* 32 s, 1080x1920 @ 60 fps. Voice + music: `media/yaadein/audio_src.mp4`, which is the user's upload
+  (27.84 s). Copy it to `workspace2/src/audio_src.mp4` before building the sound.
 * Script and word timings: `script.py`. The theme is Spider-Man red/blue/black visuals, with captions in the
   creator's orange/black/white.
 * Ending: the creator's photo in a ring → full frame → orange/black gradient → `@jawad_mp4` → CTA
@@ -14,6 +14,8 @@ pushed under `media/yaadein/` (Git LFS) once rendered, so they do not have to be
   `workspace2/assets/user_photo.jpg`.** Until then, the hero mask portrait is used as a placeholder.
 
 ## Rebuild from scratch
+0. `mkdir -p ../../workspace2/src ../../workspace2/assets && cp ../../media/yaadein/audio_src.mp4 ../../workspace2/src/`
+   Save the creator's photo, if attached, as `../../workspace2/assets/user_photo.jpg`.
 1. `pip install bpy==5.0.1 opencv-python pillow scipy` (Blender as a Python module, Cycles CPU).
 2. Assets:
    * `bash fetch_drive.sh` downloads the user's Drive folder **spiderman**. The folder must be shared

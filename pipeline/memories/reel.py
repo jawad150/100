@@ -195,6 +195,7 @@ def s_c1(cv, t, u):
     cam = C.Cam(-0.25 + 0.5 * k, 0.05 * k, 0.4 * k, focus=6, aperture=0.015)
     layered(cv, 'c1_temple', cam, d_bg=10, d_hero=8, d_fg=1.2)
     petals(cv, cam, t)
+    fx.light_leak(cv, t, 0.18, seed=3)
     return cv
 
 
@@ -461,11 +462,69 @@ def shot_at(t):
 
 RAIN_CAM = C.Cam(0, 0, 0)
 
+# cut transitions: (time, kind, half-width s)
+TRANS = [(0.80, 'whip', 0.09), (1.55, 'zoom', 0.10), (2.20, 'flash', 0.06), (3.40, 'leak', 0.25), (5.00, 'whip', 0.08),
+         (7.40, 'leak', 0.35), (9.40, 'dissolve', 0.22), (10.80, 'whip', 0.08), (12.30, 'glitch', 0.12),
+         (13.50, 'spin', 0.1), (15.90, 'zoom', 0.1), (17.20, 'flash', 0.08), (19.70, 'dip', 0.22),
+         (21.20, 'dissolve', 0.25), (22.60, 'leak', 0.3)]
+
+
+def shot_draw(k, t):
+    for kk, a, b in SHOTS:
+        if kk == k:
+            cv = blank()
+            DRAW[k](cv, t, t - a)
+            return cv
+
+
+def transitions(cv, t):
+    for T, kind, w in TRANS:
+        dt = t - T
+        if abs(dt) > w:
+            continue
+        bump = math.exp(-(dt / (w * 0.45)) ** 2)
+        if kind == 'whip':
+            cv[...] = fx.whip(cv, 160 * bump, 0)
+            cv[...] = np.roll(cv, int(90 * bump * (-1 if dt < 0 else 1)), axis=1)
+        elif kind == 'spin':
+            M = cv2.getRotationMatrix2D((C.W / 2, C.H / 2), 25 * bump * (1 if dt < 0 else -1), 1 + 0.15 * bump)
+            cv[...] = cv2.warpAffine(cv, M, (C.W, C.H), borderMode=cv2.BORDER_REFLECT)
+            cv[...] = fx.radial_blur(cv, 0.06 * bump)
+        elif kind == 'zoom':
+            cv[...] = fx.radial_blur(cv, 0.22 * bump)
+            cv += 0.25 * bump
+        elif kind == 'flash':
+            cv += np.float32([1.0, 0.92, 0.88]) * 2.2 * bump
+        elif kind == 'leak':
+            fx.light_leak(cv, t, 1.2 * bump, colors=((1.0, 0.22, 0.04), (1.0, 0.55, 0.18)), seed=int(T * 10))
+        elif kind == 'glitch':
+            cv[...] = U.glitch(cv, 1.6 * bump, t, seed=int(T))
+        elif kind == 'dip':
+            cv *= 1 - 0.95 * bump
+        elif kind == 'dissolve' and dt < 0:
+            nxt = None
+            for kk, a, b in SHOTS:
+                if abs(a - T) < 1e-6:
+                    nxt = kk
+            if nxt:
+                mix = 0.5 * (1 + dt / w)
+                cv[...] = cv * (1 - mix) + shot_draw(nxt, t) * mix
+        elif kind == 'dissolve' and dt >= 0:
+            prv = None
+            for kk, a, b in SHOTS:
+                if abs(b - T) < 1e-6:
+                    prv = kk
+            if prv:
+                mix = 0.5 * (1 - dt / w)
+                cv[...] = cv * (1 - mix) + shot_draw(prv, t) * mix
+    return cv
+
 
 def draw(t):
     k, a, b = shot_at(t)
     cv = blank()
     DRAW[k](cv, t, t - a)
+    transitions(cv, t)
     if k in RAIN_SHOTS:
         C.rain(cv, RAIN_CAM, t, n=650, opacity=0.25)
     if k != 'end':
@@ -480,6 +539,8 @@ def samples_for(t):
     k, a, b = shot_at(t)
     u = t - a
     if k in ('dive', 'boom', 'mont', 'e1', 'd3'):
+        return 6
+    if any(abs(t - T) < w for T, kind, w in TRANS if kind in ('whip', 'spin', 'zoom')):
         return 6
     if u < 0.12 or b - t < 0.12:
         return 5
