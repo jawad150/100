@@ -357,25 +357,25 @@ def phrases():
     def sel(a, b):
         return [w for w in words if a <= w[1] < b]
     # Instagram safe area: x 70..950, y 250..1470 (bottom UI + right-hand buttons stay clear)
-    low = lambda y, amp=55: K.Path(K.bezier([(80, y), (320, y - amp), (640, y + amp), (945, y - 10)]))  # noqa: E731
-    high = lambda y, amp=45: K.Path(K.bezier([(80, y + 10), (360, y - amp), (660, y + amp), (945, y)]))  # noqa: E731
+    low = lambda y, amp=42: K.Path(K.bezier([(95, y), (330, y - amp), (640, y + amp), (930, y - 10)]))  # noqa: E731
+    high = lambda y, amp=40: K.Path(K.bezier([(95, y + 10), (360, y - amp), (660, y + amp), (930, y)]))  # noqa: E731
     P = [
-        (sel(0.7, 2.1), low(1270), 2.12),
-        (sel(2.1, 3.0), low(1410), 3.55),
-        (sel(3.8, 5.3), low(1340), 5.33),
-        (sel(5.3, 6.3), high(380), 6.30),
-        (sel(6.3, 6.5), K.Path(K.bezier([(240, 1000), (420, 940), (660, 1060), (850, 1000)])), 7.15),
-        (sel(8.2, 10.0), low(1350), 10.30),
-        (sel(10.4, 12.3), low(1420), 12.28),
-        (sel(12.3, 13.0), low(1340), 14.40),
-        (sel(14.5, 16.0), low(1350), 15.95),
-        (sel(19.7, 21.0), high(330), 20.98),
-        (sel(21.0, 22.5), high(470), 22.95),
+        (sel(0.7, 2.1), low(1200), 2.12),
+        (sel(2.1, 3.0), low(1320), 3.55),
+        (sel(3.8, 5.3), low(1300), 5.33),
+        (sel(5.3, 6.3), high(400), 6.30),
+        (sel(6.3, 6.5), K.Path(K.bezier([(270, 1000), (430, 950), (650, 1050), (810, 1000)])), 7.15),
+        (sel(8.2, 10.0), low(1310), 10.30),
+        (sel(10.4, 12.3), low(1320), 12.28),
+        (sel(12.3, 13.0), low(1300), 14.40),
+        (sel(14.5, 16.0), low(1310), 15.95),
+        (sel(19.7, 21.0), high(360), 20.98),
+        (sel(21.0, 22.5), high(490), 22.95),
     ]
     out = []
     for ws, path, t_out in P:
         if ws:
-            sc = 1.45 if len(ws) == 1 else 1.0
+            sc = 1.3 if len(ws) == 1 else 1.0
             out.append(K.Phrase(ws, path, t_out, scale=sc))
     return out
 
@@ -407,7 +407,7 @@ def hud_layer(cv, t, fr):
         s = A.spring(u, 1.8, 0.55)
         out = A.ramp(t, 4.95, 5.15, A.EXPO_IN)
         img = U.memory_card(u, PHOTO_KEY)
-        C.draw_img3d(cv, img, cam, (0.0, 0.98 + 0.3 * out, 3.0), (1.2, 1.2 * img.shape[0] / img.shape[1]),
+        C.draw_img3d(cv, img, cam, (0.0, 0.62 + 0.12 * out, 3.0), (1.15, 1.15 * img.shape[0] / img.shape[1]),
                      (0, (1 - s) * 70 + out * -40, (1 - s) * -8), opacity=min(1.0, u * 4) * (1 - out), glass=(fr, 1.0))
     # delete dialog + cursor (5.0 - 6.3)
     if 4.98 < t < 6.42:
@@ -416,13 +416,14 @@ def hud_layer(cv, t, fr):
         out = A.ramp(t, 6.24, 6.42, A.EXPO_IN)
         # cursor path: bottom-right -> Delete (hover) -> hesitates -> back to Cancel -> click
         # button centres on the 1.3 m wide dialog plane: Delete (+0.27, -0.24), Cancel (-0.27, -0.24)
-        cur = A.Track([(0.0, (0.85, -1.3)), (0.45, (0.30, -0.25), A.SMOOTH), (0.62, (0.25, -0.23)),
-                       (0.95, (0.29, -0.26), A.SMOOTH), (1.18, (-0.24, -0.24), A.EXPO), (1.44, (-0.24, -0.24))])(u)
-        hover = A.clamp(1 - math.hypot(cur[0] - 0.27, cur[1] + 0.24) / 0.1)
-        chover = A.clamp(1 - math.hypot(cur[0] + 0.25, cur[1] + 0.24) / 0.1)
+        # button centres on the 1.15 m dialog plane: Delete (+0.24, -0.21), Cancel (-0.24, -0.21)
+        cur = A.Track([(0.0, (0.55, -0.62)), (0.45, (0.27, -0.22), A.SMOOTH), (0.62, (0.22, -0.20)),
+                       (0.95, (0.26, -0.23), A.SMOOTH), (1.18, (-0.21, -0.21), A.EXPO), (1.44, (-0.21, -0.21))])(u)
+        hover = A.clamp(1 - math.hypot(cur[0] - 0.24, cur[1] + 0.21) / 0.09)
+        chover = A.clamp(1 - math.hypot(cur[0] + 0.22, cur[1] + 0.21) / 0.09)
         press = A.clamp(1 - abs(u - 1.26) / 0.06)
         img = U.delete_dialog(u, hover, 0, chover)
-        C.draw_img3d(cv, img, cam, (0, -0.1, 3.0), (1.3, 1.3 * img.shape[0] / img.shape[1]),
+        C.draw_img3d(cv, img, cam, (0, -0.1, 3.0), (1.15, 1.15 * img.shape[0] / img.shape[1]),
                      ((1 - s) * -50, (1 - s) * 12, 0), opacity=min(1.0, u * 5) * (1 - out), glass=(fr, 1.0))
         if u > 0.1:
             cs = U.cursor()
@@ -437,7 +438,7 @@ def hud_layer(cv, t, fr):
         s = A.spring(u, 1.6, 0.6)
         out = A.ramp(t, 15.45, 15.6)
         img = U.meter(u, val, 'KHUSHI', crash)
-        C.draw_img3d(cv, img, cam, (0.42 + 0.02 * A.ramp(t, 13.55, 13.9, A.SMOOTH), 0.98 - 0.42 * A.ramp(t, 13.55, 13.9, A.SMOOTH), 3.0), (0.48 * s, 0.48 * s), (0, -14, 0),
+        C.draw_img3d(cv, img, cam, (0.30, 0.66 - 0.46 * A.ramp(t, 13.55, 13.9, A.SMOOTH), 3.0), (0.46 * s, 0.46 * s), (0, -12, 0),
                      opacity=min(1.0, u * 4) * (1 - out), glass=(fr, 1.0))
     # truth check (13.7 - 15.4)
     if 13.7 < t < 15.5:
@@ -447,7 +448,7 @@ def hud_layer(cv, t, fr):
         s = A.spring(u, 1.8, 0.6)
         out = A.ramp(t, 15.35, 15.5)
         img = U.truth_check(u, prog, res)
-        C.draw_img3d(cv, img, cam, (-0.05, 1.12, 3.0), (1.15, 1.15 * img.shape[0] / img.shape[1]),
+        C.draw_img3d(cv, img, cam, (-0.05, 0.74, 3.0), (1.1, 1.1 * img.shape[0] / img.shape[1]),
                      ((1 - s) * 60, 0, 0), opacity=min(1.0, u * 4) * (1 - out), glass=(fr, 1.0))
     return cv
 
