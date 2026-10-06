@@ -47,6 +47,7 @@ KEY_FONT = next((n for n in ('GwynerCondensed-Italic', 'GwynerCondensed-BoldItal
 KIND = {'white': (CAP_FONT, -0.01, 0.92), 'gold': (KEY_FONT, 0.0, 1.32 if KEY_FONT.startswith('Gwyner') else 1.22),
         'goldsans': ('Poppins-700', -0.01, 1.0)}
 G.TITLE_FONT, G.TITLE_TRACK, G.NEON_FONT = KEY_FONT, 0.0, KEY_FONT
+import saas as SA
 TRACK = np.array(json.load(open(S + '/work/head_track.json')), np.float32)
 FACE = json.load(open(S + '/work/face_track.json'))     # OpenCV face boxes, smoothed (None where not found)
 SMALL = {'ke', 'ki', 'ko', 'ne', 'se', 'me', 'ya', 'yeh', 'ye', 'ka', 'par', 'aur', 'hai', 'hain', 'tak', 'jo',
@@ -253,6 +254,13 @@ def cine_cam_values(t):
         w = min(_ease_move((t - (c0 - 0.5)) / 0.8), _ease_move((c1 + 0.5 - t) / 0.8))
         z = math.exp(lerp(math.log(z), math.log(wz), w))
         x, y, roll = lerp(x, 0.0, w), lerp(y, 0.0, w), lerp(roll, 0.0, w)
+    for ci, c in enumerate(RT.SAAS_CARDS):                   # widgets: medium shot, her shifted aside for the card
+        a0, a1 = c[0] - 0.55, c[1] + 0.45
+        if a0 < t < a1:
+            wz, wx, wy = widget_framing(ci, t)
+            w = min(_ease_move((t - a0) / 0.7), _ease_move((a1 - t) / 0.7))
+            z = math.exp(lerp(math.log(z), math.log(wz), w))
+            x, y, roll = lerp(x, wx, w), lerp(y, wy, w), lerp(roll, 0.0, w)
     if z > 1.45:                                             # soft ceiling: never uncomfortably tight on her face
         z = 1.45 + 0.17 * math.tanh((z - 1.45) / 0.17)
     v = dict(zoom=z, x=x, y=y, roll=roll, rx=0.0, ry=ry)
@@ -344,6 +352,53 @@ def word_sprite(text, kind, size):
     g = cv2.GaussianBlur(a, (0, 0), 6 * K) * 0.22 + cv2.GaussianBlur(a, (0, 0), 20 * K) * 0.20
     out = over_spr(out, solid(np.clip(g, 0, 1), (1.0, 0.96, 0.88, 1)))
     return over_spr(out, solid(a, WHITE))
+
+
+@functools.lru_cache(maxsize=96)
+def word_sprite_clean(text, kind, size):
+    """SaaS caption type: Gwyner gold (gradient face, warm glow) / Poppins white, soft shadow, no extrusion."""
+    m = _mask(text, size, kind)
+    P = int(48 * K)
+    a = np.pad(m, P)
+    h, w = a.shape
+    sh = np.roll(cv2.GaussianBlur(a, (0, 0), 5 * K), int(3 * K), axis=0) * 0.5
+    rgb = np.zeros((h, w, 3), np.float32)
+    al = sh.copy()
+    if kind == 'gold':
+        for sg, op in ((3 * K, 0.55), (12 * K, 0.40)):
+            g = cv2.GaussianBlur(a, (0, 0), sg) * op
+            rgb += g[..., None] * np.array([1.0, 0.70, 0.24], np.float32)
+            al = np.clip(al + g * 0.6, 0, 1)
+        ys = np.linspace(0, 1, h, dtype=np.float32)[:, None, None]
+        face = np.array([1.0, 0.92, 0.60], np.float32) * (1 - ys) + np.array([0.93, 0.62, 0.20], np.float32) * ys
+    else:
+        g = cv2.GaussianBlur(a, (0, 0), 8 * K) * 0.14
+        rgb += g[..., None] * np.array([1.0, 0.95, 0.88], np.float32)
+        al = np.clip(al + g * 0.5, 0, 1)
+        face = np.broadcast_to(np.array([0.97, 0.96, 0.94], np.float32), (h, w, 3))
+    rgb = face * a[..., None] + rgb * (1 - a[..., None])
+    al = a + al * (1 - a)
+    return np.concatenate([rgb, al[..., None]], 2).astype(np.float32)
+
+
+@functools.lru_cache(maxsize=48)
+def caption_card(pi, cw, ch):
+    """Frosted glass card behind a caption line (size fixed per line)."""
+    P = SA.Paint(cw, ch, pad=60)
+    SA.glass(P, 0, 0, cw, ch, min(30, ch * 0.32), edge=0.75, fill_op=0.5)
+    return P.sprite()
+
+
+def frost(cv, spr, x, y, z, h, cam, op, rx=0, ry=0, rz=0):
+    """Blur what lies behind a glass sprite's body (its opaque core), so the glass reads as frosted."""
+    a = np.clip((spr[..., 3:4] - 0.4) / 0.3, 0, 1)
+    mcv = np.zeros_like(cv)
+    draw3d(mcv, np.concatenate([a, a, a, a], 2), x, y, z, h=h, rx=rx, ry=ry, rz=rz, cam=cam)
+    m = mcv[..., :1] * op * 0.92
+    if m.max() <= 0:
+        return
+    small = cv2.GaussianBlur(cv2.resize(cv, (OW // 8, OH // 8), interpolation=cv2.INTER_AREA), (0, 0), 2.2)
+    cv[:] = cv * (1 - m) + cv2.resize(small, (OW, OH), interpolation=cv2.INTER_LINEAR) * m
 
 
 def glyph_box(text, size, kind='white'):
@@ -493,7 +548,8 @@ def block_plan(pi):
         eq = sq[0] + side * gap * zq
         avail = min(avail, ((1030 - eq) if side > 0 else (eq - 50)) / zq)
         zoom = max(zoom, zq)
-    if avail >= 300 and hs <= 330:
+    in_card = any(c[0] - 0.3 < ph['t_off'] and ph['t_on'] < c[1] + 0.3 for c in RT.SAAS_CARDS)
+    if avail >= 300 and hs <= 330 and not in_card:
         top = scr[1] - hs * 0.34 * zoom
         return dict(side=side, align='L' if side > 0 else 'R', dx=side * gap, dy=-hs * 0.34,
                     maxw=min(avail * 0.8, 470), maxh=min((1660 - top) / zoom, 480))   # 0.8: perspective margin
@@ -633,11 +689,11 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False, fixed=None):
     # footprint of the complete phrase on screen -> keep it off her face and inside the Reels safe area
     layf, bwf, bhf = block_layout(pi, len(words))
     scf = min(1.0, maxw / max(bwf, 1), maxh / max(bhf, 1))
-    pts = []
-    for (w, lx, ly, gw, gh, lw) in layf:
-        lx -= lw * shift
-        for qx, qy in ((lx, ly), (lx + gw, ly), (lx, ly + gh), (lx + gw, ly + gh)):
-            pts.append(base + R @ np.array([qx * scf, qy * scf, 0.0]))
+    cx0 = min(lx - lw * shift for (w, lx, ly, gw, gh, lw) in layf) - 30     # glass card incl. padding
+    cx1 = max(lx - lw * shift + gw for (w, lx, ly, gw, gh, lw) in layf) + 30
+    cy0 = min(ly for (w, lx, ly, gw, gh, lw) in layf) - 22
+    cy1 = max(ly + gh for (w, lx, ly, gw, gh, lw) in layf) + 22
+    pts = [base + R @ np.array([qx * scf, qy * scf, 0.0]) for qx in (cx0, cx1) for qy in (cy0, cy1)]
     q = en.project_pts(np.array(pts), cam)[0]
     rect = (q[:, 0].min(), q[:, 1].min(), q[:, 0].max(), q[:, 1].max())
     if fixed is not None:
@@ -655,28 +711,57 @@ def draw_block(cv, t, i, ph, cam, plates, measure=False, fixed=None):
         cn = G.unproject(ccx + fdx, ccy + fdy, zq, cam)
         base = cn + (base - cw) * fs           # scale about the footprint centre, then move
         sc *= fs
-    for n, (w, lx, ly, gw, gh, lw) in enumerate(lay):
-        lx -= lw * shift                                  # align each line toward her (or centre it)
-        if n < len(lay0) and k > 1:
-            _, lx0, ly0, _, _, lw0 = lay0[n]
-            lx, ly = lerp(lx0 - lw0 * shift, lx, blend), lerp(ly0, ly, blend)
+    scS = scf * fs if (fdx or fdy or fs < 1) else scf
+    # glass card grows smoothly around the words as they are spoken (words sit in their final places)
+    box = None
+    for (w, lx, ly, gw, gh, lw) in layf:
+        p = SA.ease(clamp((t - (w['t'] - 0.03)) / 0.26))
+        if p <= 0:
+            continue
+        r_ = (lx - lw * shift, ly, lx - lw * shift + gw, ly + gh)
+        if box is None:
+            box = r_
+        else:
+            box = (lerp(box[0], min(box[0], r_[0]), p), lerp(box[1], min(box[1], r_[1]), p),
+                   lerp(box[2], max(box[2], r_[2]), p), lerp(box[3], max(box[3], r_[3]), p))
+    if box is None:
+        return
+    x0, y0, x1, y1 = box
+    px_, py_ = 30, 22
+    cw, ch = int(round((x1 - x0 + 2 * px_) / 4) * 4), int(round((y1 - y0 + 2 * py_) / 4) * 4)
+    cin = SA.ease(clamp((t - ph['t_on']) / 0.28))
+    cout = 1 - SA.ease(clamp((t - (ph['t_off'] - 0.16)) / 0.16))
+    cop = cin * cout
+    if cop <= 0.01:
+        return
+    lift = (1 - cin) * 14 + (1 - cout) * -8
+    cc = base + R @ np.array([(x0 + x1) / 2 * scS, ((y0 + y1) / 2 + lift) * scS, 0.0])
+    card = caption_card(pi, cw, ch)
+    hcard = card.shape[0] / K * scS * lerp(0.95, 1.0, cin)
+    frost(cv, card, cc[0], cc[1], cc[2] + 2, hcard, cam, cop, rx, ry, rz)
+    draw3d(cv, card, cc[0], cc[1], cc[2] + 2, h=hcard, rx=rx, ry=ry, rz=rz, cam=cam, opacity=cop)
+    for n, (w, lx, ly, gw, gh, lw) in enumerate(layf):
         u = t - (w['t'] - 0.03)
-        p = e_out_expo(clamp(u / 0.2))
-        slam = 1 + 1.5 * (1 - p)
-        local = np.array([(lx + gw / 2) * sc, (ly + gh / 2) * sc, 0.0])
+        if u < 0:
+            continue
+        lx -= lw * shift
+        p = SA.ease(clamp(u / 0.30))
+        local = np.array([(lx + gw / 2) * scS, (ly + gh / 2 + (1 - p) * 18 + lift) * scS, 0.0])
         pos = base + R @ local
-        pos[2] -= 420 * (1 - p)                           # flies in from near the lens
-        spr = word_sprite(w['text'], word_kind(w), word_size(w, 'block'))
-        bl = (1 - p) * 9 + out * 10
+        kind = word_kind(w)
+        size = word_size(w, 'block')
+        spr = word_sprite_clean(w['text'], kind, size)
+        bl = (1 - p) * 6
         s_ = blur_sprite(spr, bl * K) if bl > 0.6 else spr
-        gm = _mask(w['text'], word_size(w, 'block'), word_kind(w)).shape[0]
-        hdraw = s_.shape[0] / gm * gh * sc * slam * (1 + 0.2 * out)
-        op = clamp(u / 0.05) * (1 - out)
-        draw3d(cv, s_, pos[0], pos[1], pos[2], h=hdraw, rx=rx, ry=ry, rz=rz, cam=cam, opacity=op)
-        if w['gold'] and 0 <= u < 0.45 and w is words[[id(x) for x in words].index(id(w))]:
-            a = (1 - u / 0.45) ** 2 * (1 - out)
-            draw3d(cv, streak_sprite(), pos[0], pos[1], pos[2] - 4, w=1100 * (0.7 + 0.5 * u / 0.45), h=26,
-                   cam=cam, opacity=0.75 * a, mode='add')
+        gm = _mask(w['text'], size, kind).shape[0]
+        pop = 1 + (0.06 if w['gold'] else 0.0) * (1 - p)
+        hdraw = s_.shape[0] / gm * gh * scS * pop
+        draw3d(cv, s_, pos[0], pos[1], pos[2], h=hdraw, rx=rx, ry=ry, rz=rz, cam=cam, opacity=p * cop)
+        if w['gold'] and u < 0.5:
+            a = (1 - u / 0.5) ** 2 * cop
+            draw3d(cv, streak_sprite(), pos[0], pos[1], pos[2] - 4, w=900 * (0.7 + 0.5 * u / 0.5), h=20,
+                   cam=cam, opacity=0.35 * a, mode='add')
+
 
 # ---------------------------------------------------------------- single words (tracked to the chest)
 
@@ -765,14 +850,8 @@ def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
     for ph in G.phrases():
         if not (ph['t_on'] <= tc < ph['t_off']):
             continue
-        if insert:
-            draw_block(cv, tc, i, ph, cam, plates, fixed=(540, 1190))
-        elif card_k > 0.5:
+        if card_k > 0.5 and not insert:
             draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
-        elif ph['i'] in RT.BLOCKS:
-            draw_block(cv, t, i, ph, cam, plates)
-        else:
-            draw_word(cv, tc, i, ph, cam, plates)
 
 # ---------------------------------------------------------------- tracking box, "!!!", light leaks
 
@@ -864,14 +943,14 @@ def leak_sprite(c):
 
 
 def in_broll(t):
-    return any(i[3] == 'broll' and i[0] - 0.02 <= t < i[1] + 0.02 for i in RT.INSERTS)
+    return any(i[3] in ('broll', 'saas') and i[0] - 0.02 <= t < i[1] + 0.02 for i in RT.INSERTS)
 
 
 def leak_events():
     """Light leaks only on plain cuts and spotlight cutaways - b-roll cuts stay clean (flash + hit only)."""
     ev = [TL.CUT_T[k] for k in range(1, len(TL.CUT_T)) if not in_broll(TL.CUT_T[k])]
     for ins in RT.INSERTS:
-        if ins[3] != 'broll':
+        if ins[3] not in ('broll', 'saas'):
             ev += [ins[0], ins[1]]
     return ev
 
@@ -965,6 +1044,8 @@ def render_broll(fi, t, ins):
 
 
 def _raw_title(t, ins):
+    if ins[3] == 'saas':
+        return None                                     # the UI itself carries the words
     """Caption for a cutaway: just the gold keyword run being spoken (e.g. 'Middle East oil risk'),
     nothing for filler words. -> (text, time of its latest word, time it first appears) or None."""
     for ph in reversed(G.phrases()):                    # latest line first; a title holds to the cut (<= 0.45 s)
@@ -1114,6 +1195,10 @@ def render_insert(fi, t, ins, n):
     t_in, t_out, name, kind = ins[:4]
     if kind == 'broll':
         return render_broll(fi, t, ins)
+    if kind == 'saas':
+        if name == 'saas_reasons':
+            return SA.render_reasons(t, ins, 0)
+        return SA.render_carousel(t, ins, 65.10)
     acc = np.zeros((OH, OW, 3), np.float32)
     for j in range(n):
         ts = t + ((j + 0.5) / n - 0.5) * 0.5 / FPS if n > 1 else t
@@ -1289,13 +1374,122 @@ def draw_overlay(cv, t, i, cam, plates, card_k, tc=None):
 
 
 def nsub_at(t):
-    n = G.nsub_at(t)
+    return G.nsub_at(t)
+
+
+SAAS_BODY = {'ticker': (380, 250), 'gauge': (360, 330), 'button': (430, 104)}
+
+
+@functools.lru_cache(maxsize=None)
+def card_side(ci):
+    """+1: widget on the right (she is left of centre in the plate), -1: on the left."""
+    t_in, t_out = RT.SAAS_CARDS[ci][:2]
+    a, b = int(t_in * FPS), int(t_out * FPS)
+    fx = CAMF[a:b, 0]
+    fx = fx[~np.isnan(fx)]
+    return 1 if (np.median(fx) if len(fx) else 540) < 540 else -1
+
+
+def widget_framing(ci, t):
+    """Medium shot with her pushed to the side opposite the widget (slow push while it is up)."""
+    t_in, t_out = RT.SAAS_CARDS[ci][:2]
+    fi = int(clamp(round(t * FPS), 0, len(CAMF) - 1))
+    fx, fy, fw, fh = CAMF[fi]
+    if np.isnan(fx):
+        fx, fy = 540.0, 600.0
+    z = clamp(250 / _seg_face_h(t_in, t_out), 1.12, 1.32) * lerp(1.0, 1.04, clamp((t - t_in) / (t_out - t_in)))
+    tx, ty = 540 - card_side(ci) * 170, 760
+    x = fx - 540 - (tx - 540) / z
+    y = fy - 960 - (ty - 960) / z
+    mx, my = 540 * (1 - 1 / z), 960 * (1 - 1 / z)
+    return z, clamp(x, -mx, mx), clamp(y, -my, my)
+
+
+def _card_sprite(card, t):
+    t_in, t_out, kind, prm = card
+    u = t - t_in
+    if kind == 'ticker':
+        return SA.ticker_card(u / 1.2, prm['p0'], prm['p1'], prm['delta'], prm['up'], SA.TICK_SERIES[prm['series']]), 60
+    if kind == 'gauge':
+        return SA.gauge_card(u / 1.2, prm['v0'], prm['v1'], prm['label'], prm['sub']), 60
+    return SA.button_card(u / (t_out - t_in), prm['text'])
+
+
+def _card_anchor(ci, t, fi):
+    """Screen-space anchor beside her face on the empty side: (x, y, side, face rect) or None."""
+    cam, plates, v = G.camera(t)
+    xoff = plate_xoff(plates, G.shot_of(t))
+    if xoff is None:
+        return None
+    fr = face_rect(fi, cam, xoff)
+    return fr, cam
+
+
+@functools.lru_cache(maxsize=None)
+def card_layout(ci):
+    """(side, scale) fixed per widget: the empty side, and a size that fits there for the whole window."""
+    t_in, t_out, kind, prm = RT.SAAS_CARDS[ci]
+    bw = SAAS_BODY[kind][0]
+    sides, rooms = [], []
+    for tq in np.linspace(t_in, t_out, 12):
+        r = _card_anchor(ci, tq, int(round(tq * FPS)))
+        if r is None:
+            continue
+        fr, _ = r
+        side = 1 if (fr[0] + fr[2]) / 2 < 540 else -1
+        sides.append(side)
+        rooms.append((fr, side))
+    side = card_side(ci)
+    room = float(np.median([((SAFE[2] - fr[2]) if side > 0 else (fr[0] - SAFE[0])) for fr, _ in rooms])) - 28
+    return side, float(clamp(room / bw, 0.72, 1.05))
+
+
+def draw_captions_post(cv, fi, t):
+    """Caption lines on frosted glass cards, tracked to her in 3D (drawn on the finished frame)."""
+    s_, k, u = G.section_k(t)
+    if s_ is not None and k > 0.1:
+        return
+    cam, plates, v = G.camera(t)
     for ph in G.phrases():
-        if ph['t_on'] <= t < ph['t_off'] + 0.05:
-            for w in (w for r in ph['rows'] for w in r):
-                if -0.05 <= t - w['t'] < 0.22 and ph['i'] in RT.BLOCKS:
-                    return max(n, 5)
-    return n
+        if ph['t_on'] <= t < ph['t_off']:
+            draw_block(cv, t, fi, ph, cam, plates)
+
+
+def draw_saas_cards(cv, fi, t):
+    for ci, card in enumerate(RT.SAAS_CARDS):
+        t_in, t_out, kind, prm = card
+        if not (t_in <= t < t_out):
+            continue
+        r = _card_anchor(ci, t, fi)
+        if r is None:
+            continue
+        fr, cam = r
+        side, s = card_layout(ci)
+        bw, bh = SAAS_BODY[kind]
+        sc_a, op, bl, lift = SA.card_scale(t - t_in, t_out - t_in)
+        W_, H_ = bw * s, bh * s
+        x = fr[2] + 28 + W_ / 2 if side > 0 else fr[0] - 28 - W_ / 2
+        x = clamp(x, SAFE[0] + W_ / 2, SAFE[2] - W_ / 2)
+        y = clamp((fr[1] + fr[3]) / 2 - 30, SAFE[1] + H_ / 2, SAFE[3] - H_ / 2) + lift + 5 * math.sin(t * 1.4)
+        spr, pd = _card_sprite(card, t)
+        hd = spr.shape[0] / K * s * sc_a
+        ry, scam = -side * 13.0, en.Cam()
+        # frosted glass: blur what is behind the card body
+        frost(cv, spr, x, y, 0, hd, scam, op, ry=ry)
+        s_ = blur_sprite(spr, bl * K) if bl > 0.6 else spr
+        draw3d(cv, s_, x, y, 0, h=hd * s_.shape[0] / spr.shape[0], ry=ry, cam=scam, opacity=op)
+        if kind == 'button':
+            u = (t - t_in) / (t_out - t_in)
+            px = x - W_ / 2 + W_ * SA.CLICK_PT[0]
+            py = y - H_ / 2 + H_ * SA.CLICK_PT[1]
+            q = SA.ease(clamp((u - 0.12) / 0.38))
+            cx_, cy_ = lerp(px + 260, px, q), lerp(py + 300, py, q)
+            if u > 0.5:
+                cx_, cy_ = px + 30 * SA.ease(clamp((u - 0.62) / 0.3)), py + 40 * SA.ease(clamp((u - 0.62) / 0.3))
+            press = 0.88 if 0.5 <= u < 0.56 else 1.0
+            cs = SA.cursor_sprite()
+            G.draw(cv, cs, cx_ + cs.shape[1] / K * 0.5 * press - 10, cy_ + cs.shape[0] / K * 0.5 * press - 10,
+                   press * s, 0, op)
 
 
 def render_frame(fi):
@@ -1311,6 +1505,8 @@ def render_frame(fi):
             cv = _layered(fi, t, n, shutter)
         else:
             cv = _full(fi, t, n, shutter)
+        draw_captions_post(cv, fi, t)
+        draw_saas_cards(cv, fi, t)
     return _finish(cv, fi, t)
 
 
@@ -1412,7 +1608,7 @@ def _finish(cv, fi, t):
     if s_ is not None and 0.0 < u < 0.25:
         flash = max(flash, 0.18 * (1 - u / 0.25))
     for ins in RT.INSERTS:                       # b-roll cuts land on a hit: a quick exposure flash
-        if ins[3] == 'broll':
+        if ins[3] in ('broll', 'saas'):
             for edge in (ins[0], ins[1]):
                 d = t - edge
                 if 0 <= d < 0.12:
@@ -1442,6 +1638,9 @@ def sfx_cues():
     prev_out = -9
     for ins in RT.INSERTS:
         t_in, t_out, kind = ins[0], ins[1], ins[3]
+        if kind == 'saas':
+            prev_out = t_out
+            continue
         if kind == 'broll':                     # montage rhythm: whoosh into every cut, a hit on it
             first = abs(t_in - prev_out) > 0.02
             out += [(t_in - 0.14, 'whoosh', 0.5), (t_in, 'impact' if first else 'hit_soft', 0.75 if first else 0.6)]
@@ -1452,6 +1651,7 @@ def sfx_cues():
         prev_out = t_out
     for t_in, t_out in RT.BANGS:
         out += [(t_in + j * 0.07, 'pop', 0.5) for j in range(3)]
+    out += SA.cues([i for i in RT.INSERTS if i[3] == 'saas'], RT.SAAS_CARDS)
     for t_in, t_out in RT.BOXES:
         out += [(t_in, 'click', 0.4), (t_in + 0.02, 'tick_run', 0.22)]
     for ph in G.phrases():                      # one soft swish on each line's first keyword

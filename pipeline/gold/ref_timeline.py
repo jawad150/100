@@ -15,8 +15,7 @@ INSERTS = [
     (4.30, 4.62, 'br_coins', 'broll'),          # "opportunity zone?"
     (7.70, 8.55, 'candles3d', 'seq'),           # "Gold ne sharp retracement"
     (10.56, 11.42, 'arrow_crash', 'seq'),       # "sharply neeche"
-    (13.02, 13.34, 'br_barfall', 'broll'),      # "3 bari wajahain hain" -> chapter 01
-    (13.34, 13.62, 'br_coins', 'broll', 1),
+    (12.15, 13.62, 'saas_reasons', 'saas'),     # "3 bari wajahain": app panel lists the 3 reasons -> chapter 01
     (21.10, 21.98, 'bond', 'seq'),              # "US government bonds"
     (24.96, 25.30, 'br_bars', 'broll'),      # walk-in -> chapter 02 (dollar)
     (25.30, 25.64, 'br_dollar', 'broll'),
@@ -37,8 +36,7 @@ INSERTS = [
     (53.179, 53.564, 'br_coins', 'broll'),
     (53.564, 53.950, 'br_bars', 'broll'),
     (57.60, 58.52, 'arrow_up', 'seq'),          # "aur Gold wapas"
-    (64.30, 64.60, 'br_crash', 'broll'),   # "correction hai" -> "Abhi market Fed ..."
-    (64.60, 64.92, 'br_fed', 'broll'),
+    (64.30, 65.50, 'saas_carousel', 'saas'),    # "Abhi market Fed ke next move": glass carousel Fed / PCE / Oil
     (67.86, 68.42, 'br_barrels', 'broll'),      # "Middle East oil risk"
     (74.26, 75.02, 'shield', 'seq'),            # "risk manage"
 ]
@@ -69,3 +67,12 @@ EXIT = (50.30, 51.418)        # her exit in clip 5 is composited over clip 6's e
 STOOL_FRAME = 1548            # clean plate of the stool (clip 6, before she walks in)
 CONTINUITY = (50.30, 51.30)   # locked wide while she walks out (the montage covers the empty stage)
 MONTAGE_END = 53.95           # back on her, seated, as the next line starts
+
+# SaaS glass widgets beside her (ref 4); the camera eases out a little to give them room
+SAAS_CARDS = [
+    (37.05, 39.25, 'gauge', dict(v0=0.0, v1=0.65, label='60\u201370%', sub='October \u00b7 25 bp')),
+    (44.30, 46.50, 'ticker', dict(p0=4320, p1=4145, delta='4.0%', up=False, series='down')),
+    (55.35, 57.55, 'gauge', dict(v0=0.65, v1=0.40, label='40%', sub='30 September')),
+    (58.60, 60.65, 'ticker', dict(p0=4145, p1=4200, delta='1.3%', up=True, series='up')),
+    (70.55, 71.75, 'button', dict(text='Selective Buying')),
+]
