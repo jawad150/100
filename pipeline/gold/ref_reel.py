@@ -566,7 +566,7 @@ def fit_scale(pi, key):
     return fs
 
 
-FIXED_PLAN = dict(side=1, align='C', dx=0.0, dy=0.0, maxw=760, maxh=460)
+FIXED_PLAN = dict(side=1, align='C', dx=0.0, dy=0.0, maxw=760, maxh=270)   # bottom slot under the shot
 
 
 def draw_block(cv, t, i, ph, cam, plates, measure=False, fixed=None):
@@ -741,7 +741,7 @@ def draw_captions(cv, t, i, cam, plates, card_k=0.0, insert=False, tc=None):
         if not (ph['t_on'] <= tc < ph['t_off']):
             continue
         if insert:
-            draw_block(cv, tc, i, ph, cam, plates, fixed=(540, 1290))
+            draw_block(cv, tc, i, ph, cam, plates, fixed=(540, 1190))
         elif card_k > 0.5:
             draw_word(cv, tc, i, ph, cam, plates, fixed=(540, 1400))
         elif ph['i'] in RT.BLOCKS:
@@ -948,8 +948,8 @@ def render_insert(fi, t, ins, n):
         cv = np.zeros((OH, OW, 3), np.float32)
         cam = en.Cam(z=G.FOCAL * (1 - 1 / (1.0 + 0.05 * u)), rz=1.2 * math.sin(u * 2))
         # dark room + spotlight disc behind the object (ref 2 cutaways)
-        draw3d(cv, spot_sprite(), CX, 820, 200, h=1180, cam=cam, opacity=0.95)
-        draw3d(cv, G.glow_spr(), CX, 820, 210, h=2200, cam=cam, opacity=0.35, mode='add')
+        draw3d(cv, spot_sprite(), CX, 660, 200, h=980, cam=cam, opacity=0.95)
+        draw3d(cv, G.glow_spr(), CX, 660, 210, h=1900, cam=cam, opacity=0.35, mode='add')
         draw_insert_dust(cv, ts, cam)
         s3 = G.seq(name) if kind == 'seq' else None
         if s3 is not None and s3.n():
@@ -963,9 +963,9 @@ def render_insert(fi, t, ins, n):
             sa = cv2.GaussianBlur(np.pad(fr[..., 3], pd), (0, 0), 18 * K) * 0.6
             sh = solid(sa, (0, 0, 0, 1))
             p = e_out_expo(clamp(u / 0.3))
-            hgt = (560 if name in ('arrow_crash', 'arrow_up', 'candles3d') else 780) * lerp(1.25, 1.0, p)
-            draw3d(cv, sh, CX + 24, 860, 20, h=hgt * 1.05 * sa.shape[0] / fr.shape[0], cam=cam)
-            draw3d(cv, fr, CX, 820, 0, h=hgt, ry=8 * math.sin(u * 1.5), cam=cam)
+            hgt = (430 if name in ('arrow_crash', 'arrow_up', 'candles3d') else 540) * lerp(1.12, 1.0, p)
+            draw3d(cv, sh, CX + 24, 690, 20, h=hgt * 1.05 * sa.shape[0] / fr.shape[0], cam=cam)
+            draw3d(cv, fr, CX, 650, 0, h=hgt, ry=8 * math.sin(u * 1.5), cam=cam)
         draw_captions(cv, ts, fi, cam, [], insert=True, tc=t)
         acc += cv
     return acc / n
