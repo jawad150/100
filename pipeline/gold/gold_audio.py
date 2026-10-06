@@ -201,7 +201,7 @@ def riser_long(t0, g):
 
 KINDS = dict(impact=impact, hit_soft=hit_soft, boom=boom, whoosh=whoosh, whoosh_big=whoosh_big,
              whoosh_zoom=whoosh_zoom, swish=swish, ching=ching, tick_run=tick_run, click=click, pop=pop,
-             shimmer=shimmer, riser=riser, riser_long=riser_long)
+             shimmer=shimmer, riser=riser, riser_long=riser_long, tick=tick)
 
 
 def main():
