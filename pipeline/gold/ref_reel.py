@@ -581,6 +581,8 @@ def fit_scale(pi, key):
     n = max(2, int((b - a) * FPS * 2) + 1)                  # every half frame of the span
     for j in range(n):
         t = lerp(a, max(a, b), j / (n - 1))
+        if insert_at(t):                    # covered by a cutaway: the block isn't on screen then
+            continue
         cam, plates, _ = G.camera(t)
         i = int(round(t * FPS))
         r = (draw_block if key < 0 else draw_word)(None, t, i, ph, cam, plates, measure=True)
@@ -883,9 +885,9 @@ def draw_leaks(cv, t):
             a = math.exp(-abs(x) * (16 if x < 0 else 9))
             d = 1 if k % 2 else -1
             sweep = (x + 0.12) / 0.42
-            draw(cv, leak_sprite((1.0, 0.50, 0.12)), CX + d * (-700 + 1400 * sweep), CY - 300, 2.4, 0, 0.9 * a, 'add')
-            draw(cv, leak_sprite((1.0, 0.78, 0.40)), CX - d * (-500 + 1000 * sweep), CY + 420, 1.8, 0, 0.7 * a, 'add')
-            draw(cv, leak_sprite((1.0, 0.95, 0.85)), CX, CY, 3.0, 0, 0.35 * a * a, 'add')
+            draw(cv, leak_sprite((1.0, 0.50, 0.12)), CX + d * (-700 + 1400 * sweep), CY - 300, 2.4, 0, 0.5 * a, 'add')
+            draw(cv, leak_sprite((1.0, 0.78, 0.40)), CX - d * (-500 + 1000 * sweep), CY + 420, 1.8, 0, 0.38 * a, 'add')
+            draw(cv, leak_sprite((1.0, 0.95, 0.85)), CX, CY, 3.0, 0, 0.15 * a * a, 'add')
 
 # ---------------------------------------------------------------- spotlight cutaways
 
