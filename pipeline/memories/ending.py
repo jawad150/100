@@ -48,6 +48,27 @@ def _face(im8):
     return max(f, key=lambda b: b[2] * b[3]) if len(f) else None
 
 
+def _head(im8, face):
+    """Head centre x, top and bottom (photo px). The face box sits off the head when it is turned, so on a
+    plain backdrop the hair + face silhouette sets the centre; otherwise the face box does."""
+    fx, fy, fw, fh = face
+    bottom = fy + fh * 1.08                                      # chin / beard
+    hh = im8.shape[0] // 3                                       # top edge + upper sides (the body reaches the bottom)
+    border = np.concatenate([im8[:20].reshape(-1, 3), im8[:hh, :20].reshape(-1, 3), im8[:hh, -20:].reshape(-1, 3)])
+    if border.std(0).max() > 18:                                 # busy background: trust the face box
+        return fx + fw / 2, fy - 0.45 * fh, bottom
+    fg = (np.abs(im8.astype(np.int16) - np.median(border, 0)).max(2) > 28).astype(np.uint8)
+    fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    n, lab, st, _ = cv2.connectedComponentsWithStats(fg)
+    if n < 2:
+        return fx + fw / 2, fy - 0.45 * fh, bottom
+    fg = lab == 1 + np.argmax(st[1:, 4])
+    cols = fg[:, max(0, fx - fw // 4):fx + fw + fw // 4].any(1)
+    top = int(np.argmax(cols[:fy + 1])) if cols[:fy + 1].any() else int(fy - 0.45 * fh)
+    mids = [(xs.min() + xs.max()) / 2 for y in range(top, int(fy + fh), 4) if len(xs := np.where(fg[y])[0])]
+    return (float(np.median(mids)) if mids else fx + fw / 2), top, bottom
+
+
 @functools.lru_cache(maxsize=1)
 def _photo():
     p = PHOTO
@@ -76,15 +97,16 @@ def _photo():
     x0, y0 = (w - tw) // 2, max(0, (h - th) // 3)
     if face is not None:
         fx, fy, fw, fh = face
-        x0 = int(np.clip(fx + fw / 2 - tw / 2, 0, w - tw))
+        hx, htop, hbot = _head(im8, face)
+        x0 = int(np.clip(hx - tw / 2, 0, w - tw))
         y0 = int(np.clip(fy + fh / 2 - th * 0.45, 0, h - th))
     im = im[y0:y0 + th, x0:x0 + tw]
     k = C.W / tw
     im = cv2.resize(im, (C.W, C.H), interpolation=cv2.INTER_AREA)
     if face is None:
         frame = None
-    else:                                         # face box on the canvas: centre x, top y, height
-        frame = ((fx + fw / 2 - x0) * k, (fy - y0) * k, fh * k)
+    else:                                         # on the canvas: head centre x, head top/bottom, face top/height
+        frame = ((hx - x0) * k, (htop - y0) * k, (hbot - y0) * k, (fy - y0) * k, fh * k)
     return np.ascontiguousarray(C.to_lin(im)), frame
 
 
@@ -98,10 +120,10 @@ def framing():
     f = _photo()[1]
     if f is None:
         return C.W / 2, C.H * 0.40, 1.9, 0.42, C.W / 2, C.H * 0.38
-    fx, top, fs = f
+    hx, htop, hbot, top, fs = f
     z0 = float(np.clip(2 * R0 / (1.1 * fs), 0.6, 1.9))    # face + hairline fill the opening ring
-    s = float(np.clip(240 / (1.35 * fs), 0.15, 0.6))       # hair to beard inside the 120 px avatar
-    return fx, top + 0.42 * fs, z0, s, fx, top + 0.36 * fs
+    s = float(np.clip(0.92 * 240 / (hbot - htop), 0.15, 0.6))   # whole head inside the 120 px avatar
+    return hx, top + 0.42 * fs, z0, s, hx, (htop + hbot) / 2
 
 
 @functools.lru_cache(maxsize=1)
