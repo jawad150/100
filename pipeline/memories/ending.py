@@ -163,7 +163,7 @@ def username(cv, u):
     widths = [U._font('InterTight-800', px * U.SS).getlength(c) / U.SS for c in name]
     total = sum(widths) + 2 * (len(name) - 1)
     x = C.W / 2 - total / 2
-    base_y = 1135
+    base_y = 905
     for i, (ch, w) in enumerate(zip(name, widths)):
         lu = u - T_USER - i * 0.045
         if lu > 0:
@@ -186,7 +186,7 @@ def username(cv, u):
 
 def question(cv, u):
     """CTA question in white + orange keyword, each word gliding up with a focus pull."""
-    rows = [(Q1, 1290), (Q2, 1400)]
+    rows = [(Q1, 1055), (Q2, 1165)]
     k = 0
     for words, y in rows:
         sprs = []
@@ -212,7 +212,7 @@ def question(cv, u):
     if lu > 0:
         p = A.EXPO_OUT(A.clamp(lu / 0.8))
         spr, b = text_sprite(CTA2 + '  ↓', 'Inter-600', 38, (0.85, 0.83, 0.82), track=0.04)
-        place(cv, spr, C.W / 2 - spr.shape[1] / 2, 1500 - b + (1 - p) * 30, op=A.ramp(lu, 0, 0.4) * 0.9)
+        place(cv, spr, C.W / 2 - spr.shape[1] / 2, 1262 - b + (1 - p) * 30, op=A.ramp(lu, 0, 0.4) * 0.9)
 
 
 @functools.lru_cache(maxsize=64)
@@ -240,11 +240,11 @@ def follow(cv, u):
     k = 1.18 * (0.7 + 0.3 * s) * (1 - 0.05 * press) * (1 + 0.04 * max(0.0, math.sin(min(1.0, max(0.0, u - T_CLICK) * 3) * math.pi)))
     img2 = cv2.resize(img, None, fx=k / U.SS, fy=k / U.SS, interpolation=cv2.INTER_AREA)
     h, w = img2.shape[:2]
-    place_rgba(cv, img2, C.W / 2 - w / 2, 1660 - h / 2 + (1 - s) * 40, A.ramp(lu, 0, 0.3))
+    place_rgba(cv, img2, C.W / 2 - w / 2, 1405 - h / 2 + (1 - s) * 40, A.ramp(lu, 0, 0.3))
     # cursor glides in on a curved path, hesitates, clicks
     if u > T_CURSOR:
         cu = u - T_CURSOR
-        P0, P1, P2, P3 = np.float32([880, 1950]), np.float32([980, 1760]), np.float32([700, 1600]), np.float32([590, 1672])
+        P0, P1, P2, P3 = np.float32([880, 1700]), np.float32([980, 1500]), np.float32([700, 1340]), np.float32([590, 1417])
         q = A.SMOOTH(A.clamp(cu / (T_CLICK - T_CURSOR - 0.05)))
         pos = (1 - q) ** 3 * P0 + 3 * (1 - q) ** 2 * q * P1 + 3 * (1 - q) * q ** 2 * P2 + q ** 3 * P3
         cs = U.cursor()
@@ -310,7 +310,7 @@ def draw(cv, u, prev=None):
         s = A.spring(au, 1.9, 0.6)
         r = 120 * s
         if r > 1:
-            ay = 860
+            ay = 640
             small = cv2.resize(ph, (int(C.W * 0.42), int(C.H * 0.42)), interpolation=cv2.INTER_AREA)
             z = 1.0
             M = np.float32([[z, 0, C.W / 2 - small.shape[1] / 2], [0, z, ay - small.shape[0] * 0.38]])

@@ -355,20 +355,21 @@ def phrases():
 
     def sel(a, b):
         return [w for w in words if a <= w[1] < b]
-    low = lambda y, amp=60: K.Path(K.bezier([(70, y), (330, y - amp), (700, y + amp), (1010, y - 10)]))  # noqa: E731
-    high = lambda y, amp=50: K.Path(K.bezier([(70, y + 10), (380, y - amp), (720, y + amp), (1010, y)]))  # noqa: E731
+    # Instagram safe area: x 70..950, y 250..1470 (bottom UI + right-hand buttons stay clear)
+    low = lambda y, amp=55: K.Path(K.bezier([(80, y), (320, y - amp), (640, y + amp), (945, y - 10)]))  # noqa: E731
+    high = lambda y, amp=45: K.Path(K.bezier([(80, y + 10), (360, y - amp), (660, y + amp), (945, y)]))  # noqa: E731
     P = [
-        (sel(0.7, 2.1), low(1470), 2.12),
-        (sel(2.1, 3.0), low(1520), 3.55),
-        (sel(3.8, 5.3), low(1500), 5.33),
-        (sel(5.3, 6.3), high(400), 6.30),
+        (sel(0.7, 2.1), low(1330), 2.12),
+        (sel(2.1, 3.0), low(1350), 3.55),
+        (sel(3.8, 5.3), low(1340), 5.33),
+        (sel(5.3, 6.3), high(380), 6.30),
         (sel(6.3, 6.5), K.Path(K.bezier([(240, 1000), (420, 940), (660, 1060), (850, 1000)])), 7.15),
-        (sel(8.2, 10.0), low(1520), 10.30),
-        (sel(10.4, 12.3), low(1520), 12.28),
-        (sel(12.3, 13.0), low(1500), 14.40),
-        (sel(14.5, 16.0), low(1540), 15.95),
-        (sel(19.7, 21.0), high(420), 20.98),
-        (sel(21.0, 22.5), high(420), 22.95),
+        (sel(8.2, 10.0), low(1350), 10.30),
+        (sel(10.4, 12.3), low(1350), 12.28),
+        (sel(12.3, 13.0), low(1340), 14.40),
+        (sel(14.5, 16.0), low(1350), 15.95),
+        (sel(19.7, 21.0), high(400), 20.98),
+        (sel(21.0, 22.5), high(400), 22.95),
     ]
     out = []
     for ws, path, t_out in P:
