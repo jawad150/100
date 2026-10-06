@@ -186,7 +186,7 @@ def username(cv, u):
 
 def question(cv, u):
     """CTA question in white + orange keyword, each word gliding up with a focus pull."""
-    rows = [(Q1, 1055), (Q2, 1165)]
+    rows = [(Q1, 1040), (Q2, 1145)]
     k = 0
     for words, y in rows:
         sprs = []
@@ -212,7 +212,7 @@ def question(cv, u):
     if lu > 0:
         p = A.EXPO_OUT(A.clamp(lu / 0.8))
         spr, b = text_sprite(CTA2 + '  ↓', 'Inter-600', 38, (0.85, 0.83, 0.82), track=0.04)
-        place(cv, spr, C.W / 2 - spr.shape[1] / 2, 1262 - b + (1 - p) * 30, op=A.ramp(lu, 0, 0.4) * 0.9)
+        place(cv, spr, C.W / 2 - spr.shape[1] / 2, 1240 - b + (1 - p) * 30, op=A.ramp(lu, 0, 0.4) * 0.9)
 
 
 @functools.lru_cache(maxsize=64)
@@ -240,21 +240,21 @@ def follow(cv, u):
     k = 1.18 * (0.7 + 0.3 * s) * (1 - 0.05 * press) * (1 + 0.04 * max(0.0, math.sin(min(1.0, max(0.0, u - T_CLICK) * 3) * math.pi)))
     img2 = cv2.resize(img, None, fx=k / U.SS, fy=k / U.SS, interpolation=cv2.INTER_AREA)
     h, w = img2.shape[:2]
-    place_rgba(cv, img2, C.W / 2 - w / 2, 1405 - h / 2 + (1 - s) * 40, A.ramp(lu, 0, 0.3))
+    place_rgba(cv, img2, C.W / 2 - w / 2, 1360 - h / 2 + (1 - s) * 30, A.ramp(lu, 0, 0.3))
     # cursor glides in on a curved path, hesitates, clicks
     if u > T_CURSOR:
         cu = u - T_CURSOR
-        P0, P1, P2, P3 = np.float32([880, 1700]), np.float32([980, 1500]), np.float32([700, 1340]), np.float32([590, 1417])
+        P0, P1, P2, P3 = np.float32([860, 1400]), np.float32([900, 1330]), np.float32([700, 1300]), np.float32([590, 1372])
         q = A.SMOOTH(A.clamp(cu / (T_CLICK - T_CURSOR - 0.05)))
         pos = (1 - q) ** 3 * P0 + 3 * (1 - q) ** 2 * q * P1 + 3 * (1 - q) * q ** 2 * P2 + q ** 3 * P3
         cs = U.cursor()
         cs = cv2.resize(cs, None, fx=(0.9 - 0.08 * press) / U.SS, fy=(0.9 - 0.08 * press) / U.SS,
                         interpolation=cv2.INTER_AREA)
-        place_rgba(cv, cs, pos[0] - 9, pos[1] - 9, A.ramp(cu, 0, 0.2) * (1 - A.ramp(u, T_CLICK + 0.7, T_CLICK + 1.0)))
+        place_rgba(cv, cs, pos[0] - 9, pos[1] - 9, A.ramp(cu, 0, 0.25) * (1 - A.ramp(u, T_CLICK + 0.5, T_CLICK + 0.8)))
         if u > T_CLICK:                                   # click ripple
             ru = u - T_CLICK
             if ru < 0.6:
-                rr = 20 + 140 * A.EXPO_OUT(ru / 0.6)
+                rr = 16 + 52 * A.EXPO_OUT(ru / 0.6)
                 ring(cv, P3[0], P3[1], rr, 3, 1.0, k=(1 - ru / 0.6) * 0.8)
 
 

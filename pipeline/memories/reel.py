@@ -407,7 +407,7 @@ def hud_layer(cv, t, fr):
         s = A.spring(u, 1.8, 0.55)
         out = A.ramp(t, 4.95, 5.15, A.EXPO_IN)
         img = U.memory_card(u, PHOTO_KEY)
-        C.draw_img3d(cv, img, cam, (0.0, 0.62 + 0.12 * out, 3.0), (1.15, 1.15 * img.shape[0] / img.shape[1]),
+        C.draw_img3d(cv, img, cam, (0.0, 0.62 + 0.12 * out, 3.0), (1.08, 1.08 * img.shape[0] / img.shape[1]),
                      (0, (1 - s) * 70 + out * -40, (1 - s) * -8), opacity=min(1.0, u * 4) * (1 - out), glass=(fr, 1.0))
     # delete dialog + cursor (5.0 - 6.3)
     if 4.98 < t < 6.42:
@@ -416,14 +416,14 @@ def hud_layer(cv, t, fr):
         out = A.ramp(t, 6.24, 6.42, A.EXPO_IN)
         # cursor path: bottom-right -> Delete (hover) -> hesitates -> back to Cancel -> click
         # button centres on the 1.3 m wide dialog plane: Delete (+0.27, -0.24), Cancel (-0.27, -0.24)
-        # button centres on the 1.15 m dialog plane: Delete (+0.24, -0.21), Cancel (-0.24, -0.21)
-        cur = A.Track([(0.0, (0.55, -0.62)), (0.45, (0.27, -0.22), A.SMOOTH), (0.62, (0.22, -0.20)),
-                       (0.95, (0.26, -0.23), A.SMOOTH), (1.18, (-0.21, -0.21), A.EXPO), (1.44, (-0.21, -0.21))])(u)
-        hover = A.clamp(1 - math.hypot(cur[0] - 0.24, cur[1] + 0.21) / 0.09)
-        chover = A.clamp(1 - math.hypot(cur[0] + 0.22, cur[1] + 0.21) / 0.09)
+        # button centres on the 1.08 m dialog plane: Delete (+0.20, -0.20), Cancel (-0.24, -0.20)
+        cur = A.Track([(0.0, (0.48, -0.60)), (0.45, (0.23, -0.21), A.SMOOTH), (0.62, (0.18, -0.19)),
+                       (0.95, (0.22, -0.22), A.SMOOTH), (1.18, (-0.22, -0.20), A.EXPO), (1.44, (-0.22, -0.20))])(u)
+        hover = A.clamp(1 - math.hypot(cur[0] - 0.20, cur[1] + 0.20) / 0.09)
+        chover = A.clamp(1 - math.hypot(cur[0] + 0.23, cur[1] + 0.20) / 0.09)
         press = A.clamp(1 - abs(u - 1.26) / 0.06)
         img = U.delete_dialog(u, hover, 0, chover)
-        C.draw_img3d(cv, img, cam, (0, -0.1, 3.0), (1.15, 1.15 * img.shape[0] / img.shape[1]),
+        C.draw_img3d(cv, img, cam, (-0.02, -0.1, 3.0), (1.08, 1.08 * img.shape[0] / img.shape[1]),
                      ((1 - s) * -50, (1 - s) * 12, 0), opacity=min(1.0, u * 5) * (1 - out), glass=(fr, 1.0))
         if u > 0.1:
             cs = U.cursor()

@@ -157,6 +157,10 @@ class Phrase:
     """words: [(text, t, key)], path: Path, t_out: when it leaves."""
 
     def __init__(self, words, path, t_out, scale=1.0, line=True, enter=0.75, travel=70):
+        # auto-fit: a phrase longer than its path is scaled down (keeps it inside the safe area)
+        raw = sum(sum(advances(txt, key)) for txt, _, key in words) + WHITE_PX * SPACE * (len(words) - 1)
+        if raw * scale > path.L * 0.9:
+            scale = path.L * 0.9 / raw
         self.words, self.path, self.t_out, self.k = words, path, t_out, scale
         self.line, self.enter, self.travel = line, enter, travel
         # lay words out along the path, centred
