@@ -309,7 +309,7 @@ class Plate:
 
     def get(self, i):
         if i not in self.cache:
-            f = grade_plate(cv2.imread(f'{S}/{G.FRAMES_DIR}/{i:05d}.jpg')[..., ::-1].astype(np.float32) / 255.0)
+            f = cv2.imread(f'{S}/{G.FRAMES_DIR}/{i:05d}.jpg')[..., ::-1].astype(np.float32) / 255.0   # her CC, untouched
             Hs, Ws = f.shape[:2]
             m = cv2.resize(cv2.imread(f'{S}/matte/{i:05d}.png', 0), (Ws, Hs), interpolation=cv2.INTER_LINEAR)
             m = m.astype(np.float32)[..., None] / 255.0
@@ -1690,7 +1690,7 @@ def film_grain(cv, fi):
     oy, ox = r.integers(0, 64, 2)
     g = cv2.resize(_grain()[oy:oy + OH // 2, ox:ox + OW // 2], (OW, OH), interpolation=cv2.INTER_LINEAR)
     lum = cv.mean(axis=2, keepdims=True)
-    return cv + (0.005 * g)[..., None] * (1.2 - lum) * (0.35 + lum)      # whisper of grain: clarity first
+    return cv + (0.014 * g)[..., None] * (1.2 - lum) * (0.35 + lum)
 
 
 def cine_grade(cv):
@@ -1699,17 +1699,17 @@ def cine_grade(cv):
     cv = np.clip(cv, 0, 1)
     lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
     sh, hi = (1 - lum) ** 2, lum ** 2
-    cv = cv + sh * np.array([-0.010, 0.006, 0.018], np.float32) + hi * np.array([0.025, 0.010, -0.018], np.float32)
+    cv = cv + sh * np.array([-0.020, 0.010, 0.032], np.float32) + hi * np.array([0.035, 0.012, -0.030], np.float32)
     cv = np.clip(cv, 0, 1)
-    cv = cv + 0.16 * (cv * cv * (3 - 2 * cv) - cv)                        # gentle filmic S-curve
+    cv = cv + 0.30 * (cv * cv * (3 - 2 * cv) - cv)                        # filmic S-curve
     lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
-    cv = lum + (cv - lum) * 1.05
+    cv = lum + (cv - lum) * 1.10                                          # richer colour
     small = cv2.resize(cv, (OW // 8, OH // 8), interpolation=cv2.INTER_AREA)
     br = np.clip(small - 0.72, 0, None) * np.array([1.0, 0.78, 0.45], np.float32)
     br = cv2.GaussianBlur(br, (0, 0), 6)
-    cv = cv + 0.32 * cv2.resize(br, (OW, OH), interpolation=cv2.INTER_LINEAR)
-    cv = cv * (1 - 0.55 * (1 - _vignette()))                             # light vignette
-    return 0.004 + 0.994 * np.clip(cv, 0, 1)                              # clean blacks
+    cv = cv + 0.55 * cv2.resize(br, (OW, OH), interpolation=cv2.INTER_LINEAR)
+    cv = cv * _vignette()
+    return 0.010 + 0.985 * np.clip(cv, 0, 1)                              # filmic black floor
 
 
 def _finish(cv, fi, t):
