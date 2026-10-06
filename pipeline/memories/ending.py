@@ -40,8 +40,16 @@ T_CLICK = 6.05
 END = 7.4
 
 
+def _face(im8):
+    """Largest frontal face (x, y, w, h) in an 8-bit BGR image, or None."""
+    g = cv2.cvtColor(im8, cv2.COLOR_BGR2GRAY)
+    cc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    f = cc.detectMultiScale(g, 1.1, 5, minSize=(g.shape[1] // 8, g.shape[1] // 8))
+    return max(f, key=lambda b: b[2] * b[3]) if len(f) else None
+
+
 @functools.lru_cache(maxsize=1)
-def photo():
+def _photo():
     p = PHOTO
     if not os.path.exists(p):                     # until the creator's photo arrives: the hero portrait
         for q in (C.ROOT + '/plates3/a1_mask_full.png', C.ROOT + '/plates3/a1_mask_full_preview.png',
@@ -50,15 +58,50 @@ def photo():
                 p = q
                 break
     im = cv2.imread(p, cv2.IMREAD_COLOR)
+    im8 = im if im.dtype == np.uint8 else (im // 257).astype(np.uint8)
     im = im[..., ::-1].astype(np.float32) / (65535 if im.dtype == np.uint16 else 255)
-    # cover-crop to 9:16
+    # drop flat border rows at the bottom (scanner/export strips)
+    std = im8.reshape(im8.shape[0], -1).std(1)
+    b = im8.shape[0]
+    while b > im8.shape[0] * 0.8 and std[b - 1] < 8:
+        b -= 1
+    if b < im8.shape[0]:                          # plus the blended transition rows
+        b -= 3
+    im, im8 = im[:b], im8[:b]
+    face = _face(im8) if p == PHOTO else None
+    # cover-crop to 9:16, centred on the face when there is one
     h, w = im.shape[:2]
     tw = min(w, int(h * 9 / 16))
     th = min(h, int(w * 16 / 9))
     x0, y0 = (w - tw) // 2, max(0, (h - th) // 3)
+    if face is not None:
+        fx, fy, fw, fh = face
+        x0 = int(np.clip(fx + fw / 2 - tw / 2, 0, w - tw))
+        y0 = int(np.clip(fy + fh / 2 - th * 0.45, 0, h - th))
     im = im[y0:y0 + th, x0:x0 + tw]
+    k = C.W / tw
     im = cv2.resize(im, (C.W, C.H), interpolation=cv2.INTER_AREA)
-    return np.ascontiguousarray(C.to_lin(im))
+    if face is None:
+        frame = None
+    else:                                         # face box on the canvas: centre x, top y, height
+        frame = ((fx + fw / 2 - x0) * k, (fy - y0) * k, fh * k)
+    return np.ascontiguousarray(C.to_lin(im)), frame
+
+
+def photo():
+    return _photo()[0]
+
+
+def framing():
+    """Where the photo sits inside the ring and the avatar: (ring anchor x, y, ring start zoom,
+    avatar scale, avatar anchor x, y). Face-centred for the creator's photo, fixed for the placeholder."""
+    f = _photo()[1]
+    if f is None:
+        return C.W / 2, C.H * 0.40, 1.9, 0.42, C.W / 2, C.H * 0.38
+    fx, top, fs = f
+    z0 = float(np.clip(2 * R0 / (1.1 * fs), 0.6, 1.9))    # face + hairline fill the opening ring
+    s = float(np.clip(240 / (1.35 * fs), 0.15, 0.6))       # hair to beard inside the 120 px avatar
+    return fx, top + 0.42 * fs, z0, s, fx, top + 0.36 * fs
 
 
 @functools.lru_cache(maxsize=1)
@@ -272,6 +315,7 @@ def place_rgba(cv, img, x, y, op=1.0):
 def draw(cv, u, prev=None):
     """prev: canvas of the outgoing story shot (linear) for the opening iris."""
     ph = photo()
+    ax, ay0, z0, av_s, avx, avy = framing()
     # ---------------- background: previous shot darkening -> black / gradient
     grad = gradient(u)
     if prev is not None and u < T_EXPAND:
@@ -290,10 +334,11 @@ def draw(cv, u, prev=None):
         r = r_open + (R_full - R0) * ue
         cx = CX + (C.W / 2 - CX) * ue
         cy = CY + (C.H / 2 - CY) * ue
-        # photo inside the circle: starts pushed-in, zooms out as the circle opens
-        z = 1.9 - 0.9 * ue + 0.06 * (1 - A.ramp(u, 0, T_FULL, A.LINEAR)) - 0.04 * A.ramp(u, T_FULL, T_BURN + 0.6, A.LINEAR)
-        M = np.float32([[z, 0, cx - z * C.W / 2], [0, z, cy - z * C.H * 0.42 - (1 - ue) * 0 ]])
-        M[1, 2] = cy - z * (C.H * 0.40 * (1 - ue) + C.H * 0.5 * ue)
+        # photo inside the circle: framed on the face, settles to full frame as the circle opens
+        z = z0 + (1 - z0) * ue + 0.06 * (1 - A.ramp(u, 0, T_FULL, A.LINEAR)) - 0.04 * A.ramp(u, T_FULL, T_BURN + 0.6, A.LINEAR)
+        M = np.float32([[z, 0, 0], [0, z, 0]])
+        M[0, 2] = cx - z * (ax * (1 - ue) + C.W * 0.5 * ue)
+        M[1, 2] = cy - z * (ay0 * (1 - ue) + C.H * 0.5 * ue)
         warped = cv2.warpAffine(ph, M, (C.W, C.H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT101)
         m = circle_mask(cx, cy, max(r, 0))[..., None]
         burn = A.ramp(u, T_BURN, T_GRAD + 0.15, A.SMOOTH)
@@ -311,9 +356,8 @@ def draw(cv, u, prev=None):
         r = 120 * s
         if r > 1:
             ay = 640
-            small = cv2.resize(ph, (int(C.W * 0.42), int(C.H * 0.42)), interpolation=cv2.INTER_AREA)
-            z = 1.0
-            M = np.float32([[z, 0, C.W / 2 - small.shape[1] / 2], [0, z, ay - small.shape[0] * 0.38]])
+            small = cv2.resize(ph, (int(C.W * av_s), int(C.H * av_s)), interpolation=cv2.INTER_AREA)
+            M = np.float32([[1, 0, C.W / 2 - avx * av_s], [0, 1, ay - avy * av_s]])
             warped = cv2.warpAffine(small, M, (C.W, C.H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
             m = circle_mask(C.W / 2, ay, r)[..., None]
             cv[..., :3] = warped * m + cv[..., :3] * (1 - m)
