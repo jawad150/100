@@ -76,7 +76,7 @@ SHOT = {  # target on-screen face height (design px), face centre target (x offs
     'WIDE': (None, 0, 0), 'MED': (270, 100, 660), 'MEDLOW': (255, 85, 900), 'CU': (380, 50, 760),
     'ECU': (460, 0, 820),
 }
-ENTRY_WIDE = [(25.09, 25.75), (30.43, 31.05), (40.17, 40.75), (51.42, 53.85)]   # she walks in / empty stage
+ENTRY_WIDE = [(25.09, 25.75), (30.43, 31.05), (40.17, 40.75), (51.42, RT.MONTAGE_END)]   # she walks in / empty stage
 HOOK_END = TL.CUT_T[1]
 
 
@@ -110,6 +110,8 @@ def shot_plan():
         entry = any(e0 - 0.02 <= a < e1 - 0.02 for e0, e1 in ENTRY_WIDE)
         if a >= 76.85:
             typ, mot = 'WIDE', 'pull'                     # outro: pull out wide
+        elif abs(a - RT.MONTAGE_END) < 1e-2:
+            typ, mot = 'MED', 'push'                      # back from the montage: seated on the stool
         elif entry:
             typ, mot = 'WIDE', 'push'
         elif card:
@@ -125,10 +127,10 @@ def shot_plan():
                 typ = cycle[(n + 1) % len(cycle)]
             mot = ['push', 'pull', 'hold'][n % 3] if typ != 'WIDE' else ['pull', 'push'][n % 2]
         dutch = (2.8 if n % 2 else -2.8) if (key and typ in ('CU', 'ECU')) else 0.0
-        smooth = not any(abs(a - c) < 1e-2 for c in cuts)    # every reframe is a smooth camera move, never a cut
+        smooth = not any(abs(a - c) < 1e-2 for c in cuts + [RT.MONTAGE_END])   # smooth moves, except at cuts
         side = -side
         plan.append((a, b, typ, mot, side, dutch, smooth))
-        last = typ
+        last = typ if abs(a - RT.MONTAGE_END) > 1e-2 else 'CU'     # keep the CU/ECU rhythm after the montage
         n += 1
     return plan
 
@@ -1295,7 +1297,7 @@ def sfx_cues():
     for k in range(1, len(TL.CAM)):
         if TL.CAM[k][7] and abs(TL.CAM[k][0] - TL.CAM[k - 1][0]) < 0.2:
             out.append((TL.CAM[k][0] - 0.06, 'swish', 0.3))
-    out += [(0.0, 'boom', 0.8), (0.0, 'shimmer', 0.4), (47.9, 'riser_long', 0.35), (53.5, 'shimmer', 0.3),
+    out += [(0.0, 'boom', 0.8), (0.0, 'shimmer', 0.4), (47.9, 'riser_long', 0.35), (RT.MONTAGE_END, 'boom', 0.45),
             (77.0, 'shimmer', 0.35)]
     return sorted(out)
 

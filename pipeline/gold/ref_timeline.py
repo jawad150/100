@@ -28,7 +28,14 @@ INSERTS = [
     (40.40, 40.74, 'br_bars', 'broll'),
     (41.86, 42.72, 'cal_28sep', 'seq'),         # "28 September"
     (46.56, 47.16, 'ingot', 'seq'),             # "tak aa gaya" (per ounce)
-    (54.00, 54.92, 'cal_30sep', 'seq'),         # "30 September"
+    # last chapter: she walks out past the stool, a fast b-roll montage on hits, then she's seated and talking
+    (51.250, 51.636, 'br_crash', 'broll'),
+    (51.636, 52.021, 'br_barfall', 'broll'),
+    (52.021, 52.407, 'br_dollar', 'broll'),
+    (52.407, 52.793, 'br_fed', 'broll'),
+    (52.793, 53.179, 'br_barrels', 'broll'),
+    (53.179, 53.564, 'br_coins', 'broll'),
+    (53.564, 53.950, 'br_bars', 'broll'),
     (57.60, 58.52, 'arrow_up', 'seq'),          # "aur Gold wapas"
     (64.30, 64.60, 'br_crash', 'broll'),   # "correction hai" -> "Abhi market Fed ..."
     (64.60, 64.92, 'br_fed', 'broll'),
@@ -60,4 +67,5 @@ CARD2_IN = 25.66
 # last chapter: she walks out of frame, the stool stays, she walks back in from the other side and sits
 EXIT = (50.30, 51.418)        # her exit in clip 5 is composited over clip 6's empty-stool plate
 STOOL_FRAME = 1548            # clean plate of the stool (clip 6, before she walks in)
-CONTINUITY = (50.30, 53.85)   # one locked wide shot across the cut
+CONTINUITY = (50.30, 51.30)   # locked wide while she walks out (the montage covers the empty stage)
+MONTAGE_END = 53.95           # back on her, seated, as the next line starts
