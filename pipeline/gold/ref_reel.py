@@ -838,14 +838,22 @@ def leak_sprite(c):
     return np.concatenate([a[..., None] * col, a[..., None]], 2)
 
 
+def in_broll(t):
+    return any(i[3] == 'broll' and i[0] - 0.02 <= t < i[1] + 0.02 for i in RT.INSERTS)
+
+
 def leak_events():
-    ev = [TL.CUT_T[k] for k in range(1, len(TL.CUT_T))]
-    for t_in, t_out, *_ in RT.INSERTS:
-        ev += [t_in, t_out]
+    """Light leaks only on plain cuts and spotlight cutaways - b-roll cuts stay clean (flash + hit only)."""
+    ev = [TL.CUT_T[k] for k in range(1, len(TL.CUT_T)) if not in_broll(TL.CUT_T[k])]
+    for ins in RT.INSERTS:
+        if ins[3] != 'broll':
+            ev += [ins[0], ins[1]]
     return ev
 
 
 def draw_leaks(cv, t):
+    if in_broll(t):
+        return
     for k, tc in enumerate(leak_events()):
         x = t - tc
         if -0.12 <= x < 0.30:

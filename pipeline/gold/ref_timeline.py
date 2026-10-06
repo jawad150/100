@@ -21,11 +21,11 @@ INSERTS = [
     (24.96, 25.30, 'br_bars', 'broll'),      # walk-in -> chapter 02 (dollar)
     (25.30, 25.64, 'br_dollar', 'broll'),
     (27.62, 28.42, 'dollar3d', 'seq'),          # "Jab Dollar strong"
-    (30.34, 30.66, 'br_crash', 'broll'),     # "selling pressure" -> chapter 03 (Fed)
+    (30.34, 30.66, 'br_barfall', 'broll'),     # "selling pressure" -> chapter 03 (Fed)
     (30.66, 30.96, 'br_fed', 'broll'),
     (33.05, 33.86, 'cal_oct', 'seq'),           # "October me 25"
     (40.05, 40.40, 'br_coins', 'broll', 1),       # walk-in -> "Isi pressure mein"
-    (40.40, 40.74, 'br_barfall', 'broll'),
+    (40.40, 40.74, 'br_bars', 'broll'),
     (41.86, 42.72, 'cal_28sep', 'seq'),         # "28 September"
     (46.56, 47.16, 'ingot', 'seq'),             # "tak aa gaya" (per ounce)
     (54.00, 54.92, 'cal_30sep', 'seq'),         # "30 September"

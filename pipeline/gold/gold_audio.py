@@ -224,6 +224,9 @@ def main():
     duck = 1 - 0.5 * lp(lvl, 3, 1)
     fx = sfx / (np.abs(sfx).max() + 1e-9) * 0.55
     mix = voice + fx * duck[:, None]
+    stem = fx * duck[:, None]                             # SFX-only stem, exactly as it sits in the mix
+    from scipy.io import wavfile as _wf
+    _wf.write(S + '/out/sfx_stem.wav', SR, (np.clip(stem * 0.97 / (np.abs(stem).max() + 1e-9), -1, 1) * 32767).astype(np.int16))
     mix = np.tanh(mix * 1.1) / np.tanh(1.1)
     mix *= 0.97 / (np.abs(mix).max() + 1e-9)
     tmp = S + '/out/audio_raw.wav'
