@@ -1805,7 +1805,8 @@ def main():
         f0, f1, out = int(sys.argv[2]), int(sys.argv[3]), sys.argv[4]
         p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
                               '-s', f'{OW}x{OH}', '-r', '30000/1001', '-i', '-', '-c:v', 'libx264', '-preset', 'faster',
-                              '-crf', '11', '-pix_fmt', 'yuv420p', out], stdin=subprocess.PIPE)
+                              '-crf', '11', '-x264-params', 'rc-lookahead=8:sync-lookahead=0', '-threads', '2',
+                              '-pix_fmt', 'yuv420p', out], stdin=subprocess.PIPE)      # small lookahead: low memory
         for fi in range(f0, f1):
             p.stdin.write(render_frame(fi).tobytes())
             if fi % 20 == 0:
