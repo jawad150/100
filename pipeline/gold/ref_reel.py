@@ -403,6 +403,27 @@ def _phrase_scales():
             w['psc'] = k
 
 
+def _trim_to_voice():
+    """A line's caption leaves ~0.15 s after her voice stops (not when the next line starts)."""
+    from scipy.io import wavfile
+    sr, x = wavfile.read(f'{S}/src/voice16k.wav')
+    x = x.astype(np.float32)
+    x = x.mean(1) if x.ndim > 1 else x
+    hop = sr // 100
+    n = len(x) // hop
+    db = 20 * np.log10(np.sqrt((x[:n * hop].reshape(n, hop) ** 2).mean(1)) / (np.abs(x).max() + 1e-9) + 1e-6)
+    active = db > np.percentile(db, 95) - 30
+    for ph in G.phrases():
+        ws = [w for r in ph['rows'] for w in r]
+        last = ws[-1]['t']
+        j, lim = int(last * 100) + 5, int(ph['t_off'] * 100)
+        while j < lim and active[j:j + 15].any():         # 150 ms of silence ends the line
+            j += 1
+        if j < lim:
+            ph['t_off'] = max(last + 0.3, j / 100 + 0.15)
+
+
+_trim_to_voice()
 _phrase_scales()
 
 # ---------------------------------------------------------------- 3D word blocks
@@ -932,11 +953,159 @@ def render_broll(fi, t, ins):
     M[0, 2] += OW / 2 - c[0]
     M[1, 2] += OH / 2 - c[1]
     cv = cv2.warpAffine(im, M, (OW, OH), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
-    cv = cv * 0.88 * caption_shade()                             # keep captions readable on bright shots
+    cv = cv * 0.88
+    if has_title(ins):
+        cv = cv * band_shade(title_y(ins))                       # soft dark band behind the title
     cam = en.Cam()
     draw_insert_dust(cv, t, cam)
-    draw_captions(cv, t, fi, cam, [], insert=True, tc=t)
+    draw_insert_title(cv, t, ins)
     return cv
+
+
+def _raw_title(t, ins):
+    """Caption for a cutaway: just the gold keyword run being spoken (e.g. 'Middle East oil risk'),
+    nothing for filler words. -> (text, time of its latest word, time it first appears) or None."""
+    for ph in reversed(G.phrases()):                    # latest line first; a title holds to the cut (<= 0.45 s)
+        if not (ph['t_on'] <= t < ph['t_off'] + 0.45 and ph['t_off'] > ins[0]):
+            continue
+        ws = [w for r in ph['rows'] for w in r]
+        idx = [j for j, w in enumerate(ws) if w['gold'] and w['t'] - 0.03 <= t
+               and ins[0] - 0.35 <= w['t'] <= ins[1] - 0.2]
+        if not idx:
+            if t < ph['t_off']:
+                return None                             # a new line without keywords has started
+            continue
+        j = k = idx[-1]
+        while k > 0 and ws[k - 1]['gold']:
+            k -= 1
+        return ' '.join(w['text'] for w in ws[k:j + 1]), ws[j]['t'], max(ins[0], ws[k]['t'] - 0.03)
+    return None
+
+
+@functools.lru_cache(maxsize=None)
+def title_track(ins):
+    """Per cutaway: [(t0, t1, text, t_latest_word, t_appear)] with sub-0.15 s flashes dropped and the last
+    title held to the cut when the gap is short - no flicker."""
+    step = 1 / 240
+    segs = []
+    t = ins[0]
+    while t < ins[1]:
+        r = _raw_title(t, ins)
+        key = r[0] if r else None
+        if segs and segs[-1][2] == key:
+            segs[-1][1] = t + step
+            if r:
+                segs[-1][3] = r[1]
+        else:
+            segs.append([t, t + step, key, r[1] if r else 0, r[2] if r else 0])
+        t += step
+    segs = [g for g in segs if g[2] is None or g[1] - g[0] >= 0.15 or g is segs[-1]]
+    out = []
+    for g in segs:
+        if g[2] is None:
+            continue
+        if out and g[0] - out[-1][1] < 0.05:
+            out[-1][1] = g[0]
+        out.append(g)
+    if out and ins[1] - out[-1][1] < 0.3:
+        out[-1][1] = ins[1]
+    return [tuple(g) for g in out]
+
+
+def insert_title(t, ins):
+    for t0, t1, text, t_last, t_app in title_track(ins):
+        if t0 <= t < t1:
+            return text, min(t_last, t), max(t_app, t0)
+    return None
+
+
+@functools.lru_cache(maxsize=None)
+def has_title(ins):
+    return any(insert_title(ins[0] + q * (ins[1] - ins[0]), ins) for q in np.linspace(0, 0.98, 30))
+
+
+def _broll_small(ins, u):
+    """The b-roll frame at time-fraction u as it appears on screen, at 1/4 design size (for layout)."""
+    import glob as _g
+    t_in, t_out, name = ins[:3]
+    flip = len(ins) > 4 and ins[4]
+    fs = sorted(_g.glob(f'{S}/broll/{name}/*.png'))
+    n = len(fs)
+    first = max(0, n - int(math.ceil((t_out - t_in) * 30)))
+    im = cv2.imread(fs[min(first + int(u * (t_out - t_in) * 30), n - 1)])
+    if flip:
+        im = im[:, ::-1]
+    w, h = 270, 480
+    im = cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
+    cz, fx_, fy_ = BROLL_CROP.get(name, (1.0, 0.5, 0.5))
+    if flip:
+        fx_ = 1 - fx_
+    c = (w * fx_, h * fy_)
+    M = cv2.getRotationMatrix2D(c, 0.0, cz * (1 + 0.06 * u))
+    M[0, 2] += w / 2 - c[0]
+    M[1, 2] += h / 2 - c[1]
+    return cv2.warpAffine(im, M, (w, h), borderMode=cv2.BORDER_REFLECT)
+
+
+@functools.lru_cache(maxsize=None)
+def title_y(ins):
+    """Design-px row for a cutaway title: the calmest band of the shot (no objects under the text)."""
+    if ins[3] != 'broll':
+        return 1270.0                                   # under the spotlight disc
+    busy = 0
+    for u in (0.1, 0.5, 0.9):
+        im = _broll_small(ins, u)
+        lum = im.mean(2)
+        g = np.abs(cv2.Sobel(lum, cv2.CV_32F, 1, 0)) + np.abs(cv2.Sobel(lum, cv2.CV_32F, 0, 1))
+        busy = busy + cv2.GaussianBlur(lum + 2.5 * g, (0, 0), 3)
+    best, by = 1e9, 1290.0
+    for yc in (340, 450, 560, 1160, 1280, 1400):         # inside the Reels safe area
+        r0, r1 = int((yc - 85) / 4), int((yc + 85) / 4)
+        v = float(busy[r0:r1, 34:236].mean())
+        if v < best:
+            best, by = v, float(yc)
+    return by
+
+
+@functools.lru_cache(maxsize=None)
+def band_shade(yc):
+    y = np.arange(OH, dtype=np.float32)[:, None] / K
+    return (1 - 0.38 * np.exp(-((y - yc) / 150) ** 2))[..., None].astype(np.float32)
+
+
+@functools.lru_cache(maxsize=None)
+def hairline(w):
+    a = np.ones((int(3 * K), max(2, int(w * K))), np.float32)
+    xs = np.linspace(-1, 1, a.shape[1], dtype=np.float32)
+    a *= (1 - xs ** 2)[None, :] ** 0.6
+    return np.concatenate([a[..., None] * np.array([1.0, 0.78, 0.40], np.float32), a[..., None]], 2)
+
+
+def draw_insert_title(cv, t, ins):
+    r = insert_title(t, ins)
+    if r is None:
+        return
+    text, t_last, t_first = r
+    yc = title_y(ins)
+    cam = en.Cam()
+    size = 118
+    spr = word_sprite(text, 'gold', size)
+    gw, gh = glyph_box(text, size, 'gold')
+    gm = _mask(text, size, 'gold').shape[0]
+    fit = min(1.0, 780 / max(gw, 1))
+    u, v = t - t_first, max(0.0, t - t_last)
+    p = e_out_expo(clamp(u / 0.4))
+    sc = fit * lerp(1.12, 1.0, p) * (1 + 0.045 * math.exp(-v * 14))     # settles in; a small pulse per new word
+    bl = (1 - clamp(u / 0.22)) * 9
+    s_ = blur_sprite(spr, bl * K) if bl > 0.6 else spr
+    draw3d(cv, s_, CX, yc, 0, h=s_.shape[0] / gm * gh * sc, cam=cam, opacity=clamp(u / 0.12))
+    q = e_out_cubic(clamp((u - 0.1) / 0.45))
+    if q > 0.01:
+        lw = gw * sc * 1.08 * q
+        draw3d(cv, hairline(int(lw)), CX, yc + gh * sc * 0.62, 0, w=lw, h=3, cam=cam, opacity=0.8)
+    if u < 0.45:
+        draw3d(cv, streak_sprite(), CX, yc, -4, w=1100 * (0.7 + 0.5 * u / 0.45), h=26, cam=cam,
+               opacity=0.65 * (1 - u / 0.45) ** 2, mode='add')
 
 
 def render_insert(fi, t, ins, n):
@@ -968,7 +1137,7 @@ def render_insert(fi, t, ins, n):
             hgt = (430 if name in ('arrow_crash', 'arrow_up', 'candles3d') else 540) * lerp(1.12, 1.0, p)
             draw3d(cv, sh, CX + 24, 690, 20, h=hgt * 1.05 * sa.shape[0] / fr.shape[0], cam=cam)
             draw3d(cv, fr, CX, 650, 0, h=hgt, ry=8 * math.sin(u * 1.5), cam=cam)
-        draw_captions(cv, ts, fi, cam, [], insert=True, tc=t)
+        draw_insert_title(cv, t, ins)
         acc += cv
     return acc / n
 
