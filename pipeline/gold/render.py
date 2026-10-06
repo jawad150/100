@@ -54,8 +54,8 @@ if __name__ == '__main__':
     subprocess.run([sys.executable, 'gold_audio.py'], cwd=HERE, check=True, env=env)
     src = ['-f', 'concat', '-safe', '0', '-i', f'{OUT}/concat.txt', '-i', f'{OUT}/audio.wav', '-map', '0:v', '-map', '1:a']
     master, share = f'{OUT}/{NAME}_4k.mp4', f'{OUT}/{NAME}_1080p.mp4'
-    for out, vf, rate, lvl, ab in ((master, [], ('34M', '45M', '68M'), '5.2', '320k'),
-                                   (share, ['-vf', 'scale=1080:1920:flags=lanczos'], ('8.5M', '12M', '17M'), '4.2', '256k')):
+    for out, vf, rate, lvl, ab in ((master, [], ('45M', '60M', '90M'), '5.2', '320k'),
+                                   (share, ['-vf', 'scale=1080:1920:flags=lanczos'], ('12M', '16M', '24M'), '4.2', '256k')):
         enc = ['-c:v', 'libx264', '-preset', 'medium', '-tune', 'film', '-b:v', rate[0], '-maxrate', rate[1],
                '-bufsize', rate[2]]
         log = f'{OUT}/x264_{os.path.basename(out)}'

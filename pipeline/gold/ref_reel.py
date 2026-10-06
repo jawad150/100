@@ -48,6 +48,7 @@ KIND = {'white': (CAP_FONT, -0.01, 0.92), 'gold': (KEY_FONT, 0.0, 1.32 if KEY_FO
         'goldsans': ('Poppins-700', -0.01, 1.0)}
 G.TITLE_FONT, G.TITLE_TRACK, G.NEON_FONT = KEY_FONT, 0.0, KEY_FONT
 import saas as SA
+import snake as SN
 TRACK = np.array(json.load(open(S + '/work/head_track.json')), np.float32)
 FACE = json.load(open(S + '/work/face_track.json'))     # OpenCV face boxes, smoothed (None where not found)
 SMALL = {'ke', 'ki', 'ko', 'ne', 'se', 'me', 'ya', 'yeh', 'ye', 'ka', 'par', 'aur', 'hai', 'hain', 'tak', 'jo',
@@ -278,13 +279,37 @@ G.snap_values = lambda t: (G.SNAP_NEUTRAL, _plan_moving(t))
 # ---------------------------------------------------------------- plate (untouched color grade)
 
 
+LUMA = np.array([0.2126, 0.7152, 0.0722], np.float32)
+
+
+def grade_plate(f):
+    """Footage grade (ref 6 look): brighter mids with open highlights, mid-tone clarity, crisp fine
+    detail, vibrance that leaves skin natural. Radii scale with resolution."""
+    W = f.shape[1]
+    f = np.clip(f, 0, 1) ** 0.80                                        # exposure: lift the mids
+    hi = np.clip((f - 0.22) / 0.55, 0, 1)
+    f = f + 0.24 * hi * hi * (3 - 2 * hi) * (1 - f)                     # open, glossy highlights
+    lum = f @ LUMA
+    base = cv2.GaussianBlur(lum, (0, 0), 0.008 * W)
+    lum2 = lum + 0.55 * (4 * lum * (1 - lum)) * (lum - base)            # clarity (local contrast in the mids)
+    f = f * (np.clip(lum2, 0, 1.2) / (lum + 1e-4))[..., None]
+    bl = cv2.GaussianBlur(f, (0, 0), 0.0007 * W)
+    f = f + 0.65 * (f - bl)                                             # fine detail
+    lum = (f @ LUMA)[..., None]
+    sat = f.max(2, keepdims=True) - f.min(2, keepdims=True)
+    warm = np.clip((f[..., :1] - f[..., 2:3]) / 0.25, 0, 1)             # skin is warm: boost it less
+    vib = 1 + 0.42 * (1 - np.clip(sat / 0.55, 0, 1)) * (1 - 0.45 * warm)
+    f = lum + (f - lum) * vib
+    return np.clip(f, 0, 1).astype(np.float32)
+
+
 class Plate:
     def __init__(self):
         self.cache = {}
 
     def get(self, i):
         if i not in self.cache:
-            f = cv2.imread(f'{S}/{G.FRAMES_DIR}/{i:05d}.jpg')[..., ::-1].astype(np.float32) / 255.0
+            f = grade_plate(cv2.imread(f'{S}/{G.FRAMES_DIR}/{i:05d}.jpg')[..., ::-1].astype(np.float32) / 255.0)
             Hs, Ws = f.shape[:2]
             m = cv2.resize(cv2.imread(f'{S}/matte/{i:05d}.png', 0), (Ws, Hs), interpolation=cv2.INTER_LINEAR)
             m = m.astype(np.float32)[..., None] / 255.0
@@ -1448,15 +1473,96 @@ def card_layout(ci):
     return side, float(clamp(room / bw, 0.85, 1.2))
 
 
+def _phrase_face(ph, t, fi, cam, plates):
+    xoff = plate_xoff(plates, G.shot_of(ph['t_on'] + 0.05))
+    if xoff is None:
+        xoff = plate_xoff(plates, G.shot_of(t))
+    return None if xoff is None else face_rect(fi, cam, xoff)
+
+
+def _clear_of_face(path, fr, k):
+    """No glyph of a line on this path may enter her face box (checks the text body side of the curve)."""
+    x, y = path.p[::4, 0], path.p[::4, 1]
+    d = np.gradient(path.p[::4], axis=0)
+    ang = np.arctan2(d[:, 1], d[:, 0])
+    ux, uy = np.sin(ang), -np.cos(ang)                  # glyph 'up' direction for this tangent
+    m = 8
+    for h in (0.0, SN.GOLD_PX * k * 0.45, SN.GOLD_PX * k * 0.9):
+        px, py = x + ux * h, y + uy * h
+        if np.any((px > fr[0] + m) & (px < fr[2] - m) & (py > fr[1] + m) & (py < fr[3] - m)):
+            return False
+    return True
+
+
+def _in_safe(path, k, outward=True):
+    x, y = path.p[:, 0], path.p[:, 1]
+    m = SN.GOLD_PX * k * (1.0 if outward else 0.2)
+    return x.min() >= SAFE[0] - 4 and x.max() <= SAFE[2] + 4 and y.min() - m >= SAFE[1] and y.max() + 20 <= SAFE[3]
+
+
+@functools.lru_cache(maxsize=None)
+def snake_choice(pi):
+    """How a line is laid out, fixed for the line: (path kind, side, size factor, word rows)."""
+    ph = G.phrases()[pi]
+    words = [w for r in ph['rows'] for w in r]
+    k0 = words[0].get('psc', 1.0)
+    times = [tq for tq in np.linspace(ph['t_on'] + 0.05, max(ph['t_on'] + 0.06, ph['t_off'] - 0.05), 6)
+             if not insert_at(tq)]
+    if not times:
+        return ('wave', 1, k0, tuple(tuple(r) for r in ph['rows']))
+    frs = []
+    for tq in times:
+        cam, plates, v = G.camera(tq)
+        fr = _phrase_face(ph, tq, int(round(tq * FPS)), cam, plates)
+        if fr is not None:
+            frs.append(fr)
+    if not frs:
+        return ('wave', 1, k0, tuple(tuple(r) for r in ph['rows']))
+    fcx = np.median([(f[0] + f[2]) / 2 for f in frs])
+    side = 1 if fcx < 540 else -1
+    widget = any(c[0] - 0.4 < ph['t_off'] and ph['t_on'] < c[1] + 0.4 for c in RT.SAAS_CARDS)
+    base = ['arc', 'side', 'smile', 'diag']
+    prefs = base[pi % 4:] + base[:pi % 4]
+    if widget:
+        prefs = ['smile', 'diag']                       # the widget owns the side and the top
+    dside = side if pi % 2 else -side
+    for kind in prefs:
+        for k in (k0, k0 * 0.88, k0 * 0.78):
+            L = SN.text_len(words, KEY_FONT, k)
+            ok = True
+            for fr in frs:
+                path = SN.make_path(kind, fr, dside if kind == 'diag' else side, k=k)
+                if L > path.L * 0.9 or not _in_safe(path, k, outward=kind in ('arc', 'side')) \
+                        or not _clear_of_face(path, fr, k):
+                    ok = False
+                    break
+            if ok:
+                return (kind, dside if kind == 'diag' else side, k, (tuple(words),))
+    rows = tuple(tuple(r) for r in ph['rows'])
+    for k in (k0, k0 * 0.9, k0 * 0.8, k0 * 0.7, k0 * 0.62):
+        ok = True
+        for fr in frs:
+            for gi, r in enumerate(rows):
+                path = SN.make_path('wave', fr, side, gi, len(rows), k)
+                if SN.text_len(r, KEY_FONT, k) > path.L * 0.92 or not _in_safe(path, k, outward=False):
+                    ok = False
+        if ok:
+            return ('wave', side, k, rows)
+    return ('wave', side, k0 * 0.62, rows)
+
+
 def draw_captions_post(cv, fi, t):
-    """Caption lines on frosted glass cards, tracked to her in 3D (drawn on the finished frame)."""
+    """Snake captions (ref 5): the line flows along a curve around her, tracked every frame."""
     s_, k, u = G.section_k(t)
     if s_ is not None and k > 0.1:
         return
     cam, plates, v = G.camera(t)
     for ph in G.phrases():
         if ph['t_on'] <= t < ph['t_off']:
-            draw_block(cv, t, fi, ph, cam, plates)
+            fr = _phrase_face(ph, t, fi, cam, plates)
+            if fr is not None:
+                kind, side, kk, rows = snake_choice(ph['i'])
+                SN.draw_phrase(cv, t, ph, fr, (kind, side, kk, [list(r) for r in rows]), KEY_FONT)
 
 
 def draw_saas_cards(cv, fi, t):
@@ -1584,7 +1690,7 @@ def film_grain(cv, fi):
     oy, ox = r.integers(0, 64, 2)
     g = cv2.resize(_grain()[oy:oy + OH // 2, ox:ox + OW // 2], (OW, OH), interpolation=cv2.INTER_LINEAR)
     lum = cv.mean(axis=2, keepdims=True)
-    return cv + (0.014 * g)[..., None] * (1.2 - lum) * (0.35 + lum)
+    return cv + (0.005 * g)[..., None] * (1.2 - lum) * (0.35 + lum)      # whisper of grain: clarity first
 
 
 def cine_grade(cv):
@@ -1593,17 +1699,17 @@ def cine_grade(cv):
     cv = np.clip(cv, 0, 1)
     lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
     sh, hi = (1 - lum) ** 2, lum ** 2
-    cv = cv + sh * np.array([-0.020, 0.010, 0.032], np.float32) + hi * np.array([0.035, 0.012, -0.030], np.float32)
+    cv = cv + sh * np.array([-0.010, 0.006, 0.018], np.float32) + hi * np.array([0.025, 0.010, -0.018], np.float32)
     cv = np.clip(cv, 0, 1)
-    cv = cv + 0.30 * (cv * cv * (3 - 2 * cv) - cv)                        # filmic S-curve
+    cv = cv + 0.16 * (cv * cv * (3 - 2 * cv) - cv)                        # gentle filmic S-curve
     lum = (cv @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
-    cv = lum + (cv - lum) * 1.10                                          # richer colour
+    cv = lum + (cv - lum) * 1.05
     small = cv2.resize(cv, (OW // 8, OH // 8), interpolation=cv2.INTER_AREA)
     br = np.clip(small - 0.72, 0, None) * np.array([1.0, 0.78, 0.45], np.float32)
     br = cv2.GaussianBlur(br, (0, 0), 6)
-    cv = cv + 0.55 * cv2.resize(br, (OW, OH), interpolation=cv2.INTER_LINEAR)
-    cv = cv * _vignette()
-    return 0.010 + 0.985 * np.clip(cv, 0, 1)                              # filmic black floor
+    cv = cv + 0.32 * cv2.resize(br, (OW, OH), interpolation=cv2.INTER_LINEAR)
+    cv = cv * (1 - 0.55 * (1 - _vignette()))                             # light vignette
+    return 0.004 + 0.994 * np.clip(cv, 0, 1)                              # clean blacks
 
 
 def _finish(cv, fi, t):
