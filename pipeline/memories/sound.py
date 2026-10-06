@@ -55,7 +55,7 @@ def bp(x, lo, hi, order=2):
     return signal.lfilter(b, a, x, axis=0)
 
 
-def sweep(x, f0, f1, curve=1.0, q=1.3, blocks=64):
+def bandsweep(x, f0, f1, curve=1.0, q=1.3, blocks=64):
     """Band-pass sweep f0 -> f1 by filtering short overlapping blocks (fast, smooth)."""
     n = len(x)
     out = np.zeros(n)
@@ -131,13 +131,13 @@ def impact(d=2.2):
     return reverb(sub + nz + crack, 0.3, 1.8)
 
 
-def whoosh(d=0.6, f0=200, f1=4200, pan=(-0.7, 0.7), peak=0.6):
+def whoosh(d=0.6, f0=200, f1=4200, sweep=(-0.7, 0.7), peak=0.6):
     n = int(d * SR)
-    y = sweep(rng.normal(0, 1, n), f0, f1, curve=1.2)
+    y = bandsweep(rng.normal(0, 1, n), f0, f1, curve=1.2)
     p = np.linspace(0, 1, n)
     env = np.where(p < peak, (p / peak) ** 2, ((1 - p) / (1 - peak)) ** 1.5)
     y = norm(y * env)
-    pp = pan[0] + (pan[1] - pan[0]) * p
+    pp = sweep[0] + (sweep[1] - sweep[0]) * p
     return np.stack([y * np.sqrt(0.5 * (1 - pp)) * 1.4, y * np.sqrt(0.5 * (1 + pp)) * 1.4], 1)
 
 
@@ -156,7 +156,7 @@ def reverse_swell(d=1.8):
 def riser(d=2.4):
     n = int(d * SR)
     p = np.linspace(0, 1, n)
-    nz = norm(sweep(rng.normal(0, 1, n), 200, 7000, curve=2.0))
+    nz = norm(bandsweep(rng.normal(0, 1, n), 200, 7000, curve=2.0))
     f = 90 * (8 ** (p ** 1.6))
     tone = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.35 + np.sin(2 * np.pi * np.cumsum(f * 1.5) / SR) * 0.2
     x = (nz * 0.8 + tone) * (p ** 2.2)
@@ -284,7 +284,61 @@ def tape_stop(src, d=0.6):
     return (src[i] * (1 - fr) + src[i + 1] * fr) * (1 - p[:, None] ** 3)
 
 
-VOICES = dict(braam=braam, sub_drop=sub_drop, impact=impact, whoosh=whoosh, whoosh_slow=whoosh_slow,
+def chimes(d=4.0, n=9):
+    """Soft wind chimes (pentatonic metal tones with long decays)."""
+    t = tt(d)
+    x = np.zeros(len(t))
+    notes = [1046.5, 1174.7, 1318.5, 1568.0, 1760.0, 2093.0]
+    for k in range(n):
+        t0 = rng.uniform(0, d * 0.75)
+        i = int(t0 * SR)
+        f = notes[rng.integers(0, len(notes))]
+        dd = tt(min(2.2, d - t0))
+        tone = (np.sin(2 * np.pi * f * dd) + 0.4 * np.sin(2 * np.pi * f * 2.76 * dd) + 0.2 * np.sin(2 * np.pi * f * 5.4 * dd))
+        tone *= np.exp(-dd * 2.2) * rng.uniform(0.25, 0.7)
+        x[i:i + len(tone)] += tone[:len(x) - i]
+    return reverb(x * 0.3, 0.45, 2.4, 8000)
+
+
+def wind(d=5.0):
+    n = int(d * SR)
+    x = np.stack([lp(rng.normal(0, 1, n), 700), lp(rng.normal(0, 1, n), 700)], 1)
+    mod = 0.55 + 0.45 * np.sin(2 * np.pi * np.linspace(0, d, n) * 0.23 + 1.0) * np.sin(2 * np.pi * np.linspace(0, d, n) * 0.07)
+    env = np.clip(np.linspace(0, 1, n) * 3, 0, 1) * np.clip((1 - np.linspace(0, 1, n)) * 3, 0, 1)
+    return norm(x * (mod * env)[:, None]) * 0.6
+
+
+def blade(d=1.4):
+    """Metallic 'shing': inharmonic ringing partials + a bright scrape."""
+    t = tt(d)
+    x = np.zeros(len(t))
+    for f, a in ((2310, 1.0), (3570, 0.6), (5120, 0.4), (6890, 0.25), (1460, 0.35)):
+        x += np.sin(2 * np.pi * f * t * (1 + 0.002 * np.sin(2 * np.pi * 5 * t))) * a * np.exp(-t * 2.5)
+    scrape = hp(rng.normal(0, 1, len(t)), 4000) * np.exp(-t * 9) * np.clip(t / 0.03, 0, 1)
+    return reverb(norm(x) * 0.6 + scrape * 0.5, 0.35, 1.8, 10000)
+
+
+def tinnitus(d=1.8, f=3600):
+    t = tt(d)
+    return np.sin(2 * np.pi * f * t) * np.exp(-t * 1.6) * np.clip(t / 0.05, 0, 1) * 0.35
+
+
+def buzz(d=0.45):
+    t = tt(d)
+    x = signal.square(2 * np.pi * 110 * t) * 0.5 + signal.square(2 * np.pi * 116 * t) * 0.5
+    return lp(x, 1800) * np.exp(-t * 3) * np.clip(t / 0.01, 0, 1) * 0.6
+
+
+def rope(d=1.2, n=3):
+    out = np.zeros((int(d * SR) + SR, 2))
+    for k in range(n):
+        w = whoosh(0.35, 300, 2600, (-0.6 + 1.2 * (k % 2), 0.6 - 1.2 * (k % 2)), 0.55)
+        i = int(k * d / n * SR)
+        out[i:i + len(w)] += w
+    return out
+
+
+VOICES = dict(chimes=chimes, wind=wind, blade=blade, tinnitus=tinnitus, buzz=buzz, rope=rope, braam=braam, sub_drop=sub_drop, impact=impact, whoosh=whoosh, whoosh_slow=whoosh_slow,
               reverse_swell=reverse_swell, riser=riser, glass=glass, thunder=thunder, fire=fire,
               heartbeat=heartbeat, glitch=glitch, thwip=thwip, click=click, pop=pop, ticks=ticks, shimmer=shimmer)
 
@@ -312,32 +366,55 @@ def bar_length(x, lo=3.15, hi=3.45, ref=(24.4, 27.7)):
     return bl, best
 
 
+def _spec(x):
+    m = x.mean(1)
+    f, t, S = signal.stft(m, SR, nperseg=4096, noverlap=4096 - 960)
+    S = np.log1p(np.abs(S[:400]) * 30)
+    return S, SR / 960
+
+
+def best_continuation(x, t_end, lo=23.0, hi=None, win=1.2):
+    """Earlier time p whose preceding `win` s sound most like the `win` s before t_end (spectral cosine)."""
+    S, fps = _spec(x)
+    hi = hi or (t_end - 1.0)
+    ref = S[:, int((t_end - win) * fps):int(t_end * fps)]
+    best, bp = -1, lo
+    beat = 0.8245                                   # tempo of the track (onset autocorrelation)
+    cands = [q for k in range(3, 9) for q in np.arange(t_end - k * beat - 0.06, t_end - k * beat + 0.06, 1 / fps)
+             if lo <= q <= hi]
+    for p in cands:
+        cand = S[:, int((p - win) * fps):int((p - win) * fps) + ref.shape[1]]
+        if cand.shape != ref.shape:
+            continue
+        c = float(np.sum(cand * ref) / (np.linalg.norm(cand) * np.linalg.norm(ref) + 1e-9))
+        if c > best:
+            best, bp = c, p
+    return bp, best
+
+
 def extended_music(x, dur, fade=(30.7, 32.0)):
-    """Continue the track past its end by repeating whole bars of its (voice-free) tail."""
+    """Continue the track past its end: jump back to the point whose sound best matches the end,
+    crossfade, and play on from there (repeat if needed)."""
     n = int(dur * SR)
-    L, c = bar_length(x)
-    print(f'bar {L:.3f}s corr {c:.2f}')
     out = np.zeros((n, 2))
     m = min(len(x), n)
     out[:m] = x[:m]
-    end = len(x) / SR
-    xf = int(0.08 * SR)
-    t = end
-    shift = L
-    while t < dur:
+    t = len(x) / SR
+    xf = int(0.12 * SR)
+    src_end = len(x) / SR
+    while t < dur - 0.01:
+        p, c = best_continuation(x, src_end if t >= src_end else t)
+        print(f'continue {t:.2f}s from {p:.2f}s (similarity {c:.3f})')
         i0 = int(t * SR)
-        if n - i0 <= xf:
+        s0 = int(p * SR)
+        seg = x[s0:]
+        L = min(len(seg), n - i0)
+        if L <= xf:
             break
-        src0 = int((t - shift) * SR)
-        seg = x[src0:min(len(x), src0 + (n - i0))]
-        if len(seg) <= xf:
-            shift += L
-            continue
-        ramp = np.linspace(0, 1, xf)[:, None]
-        out[i0 - xf:i0] = out[i0 - xf:i0] * (1 - ramp) + x[src0 - xf:src0] * ramp
-        out[i0:i0 + len(seg)] = seg
-        t += (len(seg) - xf) / SR
-        shift += L
+        ramp = np.linspace(0, 1, xf)[:, None] ** 0.5
+        out[i0 - xf:i0] = out[i0 - xf:i0] * (1 - ramp) + x[s0 - xf:s0] * ramp
+        out[i0:i0 + L] = seg[:L]
+        t += L / SR
     a, b = int(fade[0] * SR), int(fade[1] * SR)
     g = np.ones(n)
     g[a:b] = np.cos(np.linspace(0, np.pi / 2, b - a)) ** 2
@@ -351,8 +428,8 @@ def build(cues, dur, out_dir=None, music_gain=1.0, duck_db=4.0):
     bus = Bus(dur)
     for c in cues:
         t0, kind, g = c[0], c[1], c[2]
-        kw = c[3] if len(c) > 3 else {}
-        pan = kw.pop('pan', 0.0) if kw else 0.0
+        kw = dict(c[3]) if len(c) > 3 else {}
+        pan = kw.pop('pan', 0.0)
         if kind == 'rain_bed':
             x = rain_bed(kw.get('d', 4.0))
         else:
@@ -365,8 +442,11 @@ def build(cues, dur, out_dir=None, music_gain=1.0, duck_db=4.0):
     env = np.pad(env, (0, max(0, bus.N - len(env))))[:bus.N]
     lvl = np.clip(env / (np.percentile(env, 95) + 1e-9), 0, 1)
     duck = 1 - (1 - 10 ** (-duck_db / 20)) * lp(lvl, 3, 1)
-    fx = bus.x / (np.abs(bus.x).max() + 1e-9) * 0.6 * duck[:, None]
-    mix = music * music_gain + fx
+    fx = bus.x / (np.abs(bus.x).max() + 1e-9) * 0.85 * duck[:, None]
+    # sidechain: the music dips (up to ~4 dB) under big hits so impacts punch through
+    fenv = lp(np.abs(fx).mean(1), 12, 1)
+    side = 1 - 0.37 * np.clip(fenv / (np.percentile(fenv, 99.5) + 1e-9), 0, 1)
+    mix = music * music_gain * side[:, None] + fx
     wavfile.write(out_dir + '/sfx_stem.wav', SR, (np.clip(norm(fx, 0.97), -1, 1) * 32767).astype(np.int16))
     mix = np.tanh(mix * 1.15) / np.tanh(1.15)
     mix = norm(mix, 0.97)

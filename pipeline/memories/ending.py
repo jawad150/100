@@ -42,8 +42,15 @@ END = 7.4
 
 @functools.lru_cache(maxsize=1)
 def photo():
-    p = PHOTO if os.path.exists(PHOTO) else os.path.join(C.ROOT, 'assets', 'user_photo_placeholder.png')
-    im = cv2.imread(p)[..., ::-1].astype(np.float32) / 255
+    p = PHOTO
+    if not os.path.exists(p):                     # until the creator's photo arrives: the hero portrait
+        for q in (C.ROOT + '/plates3/a1_mask_full.png', C.ROOT + '/plates3/a1_mask_full_preview.png',
+                  os.path.join(C.ROOT, 'assets', 'user_photo_placeholder.png')):
+            if os.path.exists(q):
+                p = q
+                break
+    im = cv2.imread(p, cv2.IMREAD_COLOR)
+    im = im[..., ::-1].astype(np.float32) / (65535 if im.dtype == np.uint16 else 255)
     # cover-crop to 9:16
     h, w = im.shape[:2]
     tw = min(w, int(h * 9 / 16))

@@ -23,7 +23,7 @@ ORANGE_HI = np.array([1.0, 0.62, 0.20], np.float32)
 ORANGE = np.array([1.0, 0.36, 0.02], np.float32)
 WHITE = np.array([0.97, 0.96, 0.95], np.float32)
 LINE = np.array([1.0, 0.45, 0.08], np.float32)
-SPACE = 0.30
+SPACE = 0.42
 
 
 @functools.lru_cache(maxsize=32)
@@ -156,7 +156,7 @@ def _guide(cv, path, s0, s1, off, op):
 class Phrase:
     """words: [(text, t, key)], path: Path, t_out: when it leaves."""
 
-    def __init__(self, words, path, t_out, scale=1.0, line=True, enter=0.75, travel=110):
+    def __init__(self, words, path, t_out, scale=1.0, line=True, enter=0.75, travel=70):
         self.words, self.path, self.t_out, self.k = words, path, t_out, scale
         self.line, self.enter, self.travel = line, enter, travel
         # lay words out along the path, centred
