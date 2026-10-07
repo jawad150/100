@@ -54,7 +54,9 @@ SHOT LIST (time s | beat | shot: content | camera | transition | SFX)
                       camera orbits yaw -6 -> +4.5 deg | - | pop + impact_soft + sparkle, 6 tag pops, swish + tap per turn
 20.217        b31     the ring flies apart, the heart SPIN-MORPHS into the 3D shield | | morph | whoosh_fast, glass_tap
 20.217-22.174 b31-34  TRUST: 3D shield + glass check pills "Independent Fostering Agency" (b31.5) · "Cultural Matching
-                      Specialists" (b32) · "Rated Good by Ofsted" (b32.5) | drift | - | check_ding x3
+                      Specialists" (b32) · "Rated Good by Ofsted" (b32.5); from b33.25 the stack lifts out (pills
+                      staggered, then the shield: rise + scale + blur + fade, gone by 22.07) | drift | eased dissolve
+                      into the end world 22.05-22.27 | check_ding x3, swish, whoosh
 22.174-26.000 b34-    END: the sprout pops up; b34.5 its two top leaves fly into the logo's inner leaves (land b35.5)
                       while logo_full.png (940 px wide) assembles (mark spring, wordmark wipe, F-leaf) and a MAGENTA->
                       ORANGE sunset blooms up from the bottom; tagline "Nurture • Develop • Grow" (60 px) types on;
@@ -253,6 +255,8 @@ def add_leaves(sc, t, world, t_ref=0.0, speed=0.55, op=1.0):
 
 
 def add_orbs(sc, t, specs, op=1.0):
+    if specs is _END_ORBS:
+        specs = [(nm, P, w) for nm, P, w in _end_orbs_world()]
     """specs: (name, world (x, y, z), width) -> softly bobbing glossy orbs (depth layers)."""
     E = _env()
     for k, (nm, (x, y, z), w) in enumerate(specs):
@@ -287,7 +291,7 @@ MONTAGE = [('c01', 9.40, (0.50, 0.45), 1.00), ('c08', 1.00, (0.50, 0.27), 1.00),
 def hook_cam(t):
     """Close, low camera on the seed (0-2 s) that cranes up and pulls back as the sprout grows (2-5.2 s)."""
     u = ease('inout_cubic')(K.clamp((t - T_GROW + 0.1) / 1.9))
-    dist = K.lerp(860.0, 1450.0, u) - 70.0 * K.ramp(t, 3.9, T_NUR + 0.3, 'inout_sine')
+    dist = K.lerp(860.0, 1450.0, u) - 95.0 * K.ramp(t, 3.3, T_NUR + 0.5, 'inout_sine')
     tgt_y = K.lerp(GY - 175.0, GY - 560.0, u)
     pitch = K.lerp(12.0, 5.0, u)
     land = K.impulse(t, T_IMPACT, decay=9.0)
@@ -404,12 +408,19 @@ def draw_ground_fx(cv, cam, t):
         K.draw_plane(cv, A['ripple'], cam, (0.0, GY, 0.0), w, rot=(90.0, 0.0, 0.0), opacity=0.9 * op)
 
 
+def montage_shot(t):
+    """Montage shot index for a (sub-)sample time: taken from the centre of the frame the sample belongs to (the
+    180 deg shutter spans < 1 frame), so a frame's motion-blur samples never mix two shots across a hard cut."""
+    tf = round(t * K.FPS) / K.FPS
+    return int(min(5, max(0, (tf - T_IMPACT) // FLASH)))
+
+
 def iris_radius(t):
     """Hook iris radius: springs open on the impact (overshoot), kicks on each cut, the last two flashes burst wider,
     then it snaps closed into the seed on b3."""
     if t < T_IMPACT or t >= T_GROW:
         return 0.0
-    i = min(5, int((t - T_IMPACT) / FLASH))
+    i = montage_shot(t)
     tc = T_IMPACT + i * FLASH
     grow = K.spring(t - T_IMPACT, freq=3.0, damping=0.5)
     burst = 1.0 + 0.07 * K.ramp(t, T_IMPACT + 4 * FLASH, T_IMPACT + 4 * FLASH + 0.12, 'out_back') \
@@ -431,7 +442,7 @@ def draw_iris(cv, cam, t):
     r = iris_radius(t)
     if r < 2:
         return
-    i = min(5, int((t - T_IMPACT) / FLASH))
+    i = montage_shot(t)
     tc = T_IMPACT + i * FLASH
     cid, src0, ctr, zm = MONTAGE[i]
     clip = F.Clip(cid)
@@ -520,14 +531,18 @@ def scene_hook(t):
 
 def draw_hook_type(cv, t):
     Ty = _type()
+    br = 1.0 + 0.016 * K.ramp(t, 2.6, T_NUR + 0.4, 'inout_sine')      # the copy breathes with the slow push
+    br = 1.0 if br < 1.0005 else br
+    dk = dict(scale=br) if br != 1.0 else None
+    ys = [232.0 + (y - 232.0) * br for y in (Y_L1, Y_L2, Y_L3, Y_L4)]   # grows down from the top safe line
     # "A small / beginning" rises in during the fall; "can change the / direction of a life." on beats 4 and 5
-    glyph_anim(Ty['l1'], 'rise', cv, t, 540, Y_L1, t0=-0.22, stagger=0.045, dur=0.6, dist=0.35, blur=10, scale0=0.92)
-    glyph_anim(Ty['l2'], 'rise', cv, t, 540, Y_L2, t0=-0.02, stagger=0.04, dur=0.6, dist=0.35, blur=10, scale0=0.92)
+    glyph_anim(Ty['l1'], 'rise', cv, t, 540, ys[0], draw_kw=dk, t0=-0.22, stagger=0.045, dur=0.6, dist=0.35, blur=10, scale0=0.92)
+    glyph_anim(Ty['l2'], 'rise', cv, t, 540, ys[1], draw_kw=dk, t0=-0.02, stagger=0.04, dur=0.6, dist=0.35, blur=10, scale0=0.92)
     if t >= B(4) - 0.05:
-        glyph_anim(Ty['l3'], 'rise', cv, t, 540, Y_L3, t0=B(4) - 0.05, stagger=0.03, dur=0.55, dist=0.4, blur=8,
+        glyph_anim(Ty['l3'], 'rise', cv, t, 540, ys[2], draw_kw=dk, t0=B(4) - 0.05, stagger=0.03, dur=0.55, dist=0.4, blur=8,
                    scale0=0.95)
     if t >= B(5) - 0.05:
-        glyph_anim(Ty['l4'], 'rise', cv, t, 540, Y_L4, t0=B(5) - 0.05, stagger=0.03, dur=0.55, dist=0.4, blur=8,
+        glyph_anim(Ty['l4'], 'rise', cv, t, 540, ys[3], draw_kw=dk, t0=B(5) - 0.05, stagger=0.03, dur=0.55, dist=0.4, blur=8,
                    scale0=0.95)
 
 
@@ -541,6 +556,7 @@ D_UP = B(14)                            # 9.130 DEVELOP glides up
 D_CHIPS = B(15)                         # 9.783 chips on 16ths
 D_CLICK = B(17)                         # 11.087 puzzle click
 WORD_Y = 760.0
+OVERSCAN = 1.05                         # footage plates cover the frame with 5 % to spare (no edge on landing frames)
 PILL_Y0, SUB_Y0 = 572.0, 928.0          # chapter pill / sub pill around the word
 PILL_Y1, SUB_Y1 = 300.0, 1392.0         # ... and over the full-frame footage (clear of the faces)
 HOUSE_Y = 1268.0                        # NURTURE's glossy 3D object
@@ -548,7 +564,7 @@ GSPROUT_Y = 1712.0                      # GROW's sprout (soil point)
 
 # plates: (clip, source in-point, playback speed, focus (u, v) in the source, width at rest)
 P_NUR = ('c01', 8.70, 0.85, (0.50, 0.43), 1290.0)
-P_NUR_END = ((0.58, 0.44), (540.0, 960.0))          # full-frame framing after the zoom: girl + right mum
+P_NUR_END = ((0.58, 0.50), (720.0, 960.0))          # full-frame framing after the zoom: the girl is the subject
 P_DEV = ('c14', 2.60, 0.85, (0.49, 0.38), 1180.0)    # brief: c02 (see notes)
 P_GRO = ('c17', 8.70, 0.85, (0.44, 0.42), 1260.0)
 P_C16 = ('c16', 4.60, 0.70, (0.64, 0.34))
@@ -716,15 +732,17 @@ def scene_nurture(t):
             foc = (K.lerp(spec[3][0], fu, ep), K.lerp(spec[3][1], fv, ep))
             px_, py_ = K.lerp(cx, ex, ep), K.lerp(cy, ey, ep)
             p0 = spec[4] * 1.025
-            p1 = X.cover_width(F.Clip(spec[0]), (fu, fv), ex, ey) * 1.02
+            p1 = X.cover_width(F.Clip(spec[0]), (fu, fv), ex, ey) * OVERSCAN
             pw = p0 * (p1 / p0) ** ep
+            cov = X.cover_width(F.Clip(spec[0]), foc, px_, py_) * OVERSCAN     # the U's inside covers the frame
+            pw = K.lerp(pw, max(pw, cov), K.ramp(zu, 0.70, 0.92, 'inout_sine'))
             foot = plate_at(spec, t, t0, px_, py_, pw, focus=foc)
             vt.draw(cv, foot, **z)
             K.zoom_blur(cv, 0.12 * ease('in_cubic')(zu) * (1 - K.ramp(zu, 0.92, 1.0)))
     else:
         (fu, fv), (ex, ey) = P_NUR_END
-        drift = K.ramp(t, N_Z1 - 0.2, T_DEV + 0.4, 'inout_sine')
-        pw = X.cover_width(F.Clip(spec[0]), (fu, fv), ex, ey) * (1.02 + 0.05 * drift)
+        drift = K.ramp(t, N_Z1, T_DEV + 0.4, 'out_sine')
+        pw = X.cover_width(F.Clip(spec[0]), (fu, fv), ex, ey) * (OVERSCAN + 0.03 * drift)
         cv = plate_at(spec, t, t0, ex, ey, pw, focus=(fu, fv))
         cv[..., 3] = 1.0
         K.over(cv, _scrim_full())
@@ -744,9 +762,9 @@ def _scrim_full():
 
 
 # ---------------------------------------------------------------------------------------------- DEVELOP
-DEV_Y0, DEV_Y1 = 800.0, 400.0
+DEV_Y0, DEV_Y1 = 800.0, 418.0
 SUBD_Y, CHIP_Y, PUZ_Y, LABEL_Y = 548.0, 686.0, 1020.0, 1352.0
-CHIP_SIZE, CHIP_H = 42, 88
+CHIP_SIZE, CHIP_H = 40, 84
 
 
 def scene_develop(t):
@@ -757,7 +775,7 @@ def scene_develop(t):
     sc.render(cv)
     vt = A['vt_d']
     s_in, op, bl = word_entrance(t, t0)
-    up = ease('inout_cubic')(K.ramp(t, D_UP - 0.12, D_UP + 0.36, 'linear'))
+    up = ease('inout_sine')(K.ramp(t, D_UP - 0.25, D_UP + 0.50, 'linear'))     # gentle: ~800 px/s peak
     cy = K.lerp(DEV_Y0, DEV_Y1, up)
     sw_ = K.lerp(1.0, 0.86, up) * s_in
     pw = P_DEV[4] * sw_ ** 0.6
@@ -767,13 +785,13 @@ def scene_develop(t):
                               (985 - 50 * up, cy + 80 * sw_, 0.16, 145, 0)], op)
     vt.draw(cv, foot, 540.0, cy, scale=sw_, opacity=op, blur=bl, sweep=sweep if 0 < sweep < 1 else None)
     po = K.ramp(t, t0 + 0.12, t0 + 0.5, 'out_back')
-    A['pill2'].draw(cv, 540, cy - 180 * sw_, scale=0.8 + 0.2 * po, opacity=K.ramp(t, t0 + 0.12, t0 + 0.3), snap=False)
-    so = K.ramp(t, D_UP + 0.30, D_UP + 0.80, 'out_expo')
+    A['pill2'].draw(cv, 540, cy - 150 * sw_, scale=0.8 + 0.2 * po, opacity=K.ramp(t, t0 + 0.12, t0 + 0.3), snap=False)
+    so = K.ramp(t, D_UP + 0.42, D_UP + 0.90, 'out_expo')
     if so > 0:
-        A['sub_d'].draw(cv, 540, SUBD_Y + 26 * (1 - so), opacity=K.ramp(t, D_UP + 0.30, D_UP + 0.50), snap=False)
+        A['sub_d'].draw(cv, 540, SUBD_Y + 26 * (1 - so), opacity=K.ramp(t, D_UP + 0.42, D_UP + 0.60), snap=False)
     chips = A['chips']
     ws = [ui.chip_size(c, size=CHIP_SIZE, h=CHIP_H)[0] for c in chips]
-    gap = 16
+    gap = 12
     x = 540 - (sum(ws) + gap * (len(ws) - 1)) / 2
     for i, (c, w) in enumerate(zip(chips, ws)):
         tc = D_CHIPS + i * BEAT / 4
@@ -843,8 +861,10 @@ def scene_grow(t):
             sc_ = z['scale']
             ox, oy = z['x'], z['y']
             ep = ease('in_cubic')(zu)
-            p1 = X.cover_width(c16, (fu, fv), 540.0, 960.0) * 1.02
+            p1 = X.cover_width(c16, (fu, fv), 540.0, 960.0) * OVERSCAN
             pw16 = p1 * 0.45 * (1 / 0.45) ** ep
+            cov = X.cover_width(c16, (fu, fv), ox, oy) * OVERSCAN               # the O's hole covers the frame
+            pw16 = K.lerp(pw16, max(pw16, cov), K.ramp(zu, 0.70, 0.92, 'inout_sine'))
             portal = X.plate(c16, P_C16[1] + (t - G_Z0) * P_C16[2], ox, oy, pw16, focus=(fu, fv), look='airy',
                              region=True)
             rx, ry = 74.0 * sc_, 88.0 * sc_
@@ -859,8 +879,8 @@ def scene_grow(t):
             vt.draw(cv, foot, **z)
             K.zoom_blur(cv, 0.12 * ease('in_cubic')(zu) * (1 - K.ramp(zu, 0.92, 1.0)))
     else:
-        drift = K.ramp(t, G_Z1 - 0.2, T_KIND + 0.4, 'inout_sine')
-        pw = X.cover_width(c16, (fu, fv), 540.0, 960.0) * (1.02 + 0.05 * drift)
+        drift = K.ramp(t, G_Z1, T_KIND + 0.4, 'out_sine')
+        pw = X.cover_width(c16, (fu, fv), 540.0, 960.0) * (OVERSCAN + 0.05 * drift)
         cv = X.plate(c16, P_C16[1] + (t - G_Z0) * P_C16[2], 540.0, 960.0, pw, focus=(fu, fv), look='airy')
         cv[..., 3] = 1.0
         K.over(cv, _scrim_full())
@@ -884,6 +904,8 @@ KH_Y = (330.0, 442.0, 554.0)            # headline lines
 SHIELD_XY = (540.0, 640.0)
 TRUST_Y = (1004.0, 1136.0, 1268.0)
 TRUST_T = (B(31.5), B(32), B(32.5))     # 20.543, 20.870, 21.196
+TRUST_OUT = B(33.25)                    # 21.685: the trust stack lifts out (pills staggered, then the shield)
+END_XF = (T_END - 0.12, T_END + 0.10)   # eased dissolve trust world -> end world (nothing left to vanish)
 SITE = [('Short-term', '03-short-term-everyday-connection.webp'), ('Long-term', '04-long-term-family-belonging.webp'),
         ('Emergency', '05-emergency-a-calm-welcome.webp'), ('Respite', '06-respite-outdoor-play.webp'),
         ('Siblings', '07-siblings-growing-together.webp'), ('Teenagers', '08-teenagers-time-to-talk.webp')]
@@ -942,6 +964,12 @@ def ring_dial(t):
     return phase, squash
 
 
+def trust_out(t, i):
+    """0..1 exit of trust item i (0-2 pills, 3 = shield): lift + scale up + blur + fade, all done by T_END - 0.1."""
+    t0 = TRUST_OUT + 0.055 * i
+    return K.ramp(t, t0, t0 + 0.28, 'in_cubic')
+
+
 def heart_pop(t):
     """Heart scale factor: pops from the iris size (0.78) with spring overshoot as the c16 iris lands."""
     if t < T_KIND - 0.04:
@@ -978,11 +1006,14 @@ def scene_kinds(t):
             yaw = 14 * math.sin((t - T_KIND) * 1.3) * (1 - mo) + 40 * mo
             img = A['heart'].at_yaw(yaw)
             K.draw(c, img, gx, gy + 8 * math.sin(t * 1.5), scale=0.60 * k * pop * (1 - 0.35 * mo), opacity=1 - mo)
-        if mo > 0:
-            simg = A['shield'].at_yaw(-40 * (1 - mo) + 10 * math.sin((t - T_TRUST) * 1.2) * mo)
-            K.draw(c, A['pink'], gx, gy, scale=1.4, opacity=0.18 * mo)
-            K.draw(c, _env()['shadow'], gx, gy + 265, scale=(1.15, 0.15), opacity=0.22 * mo)
-            K.draw(c, simg, gx, gy + 6 * math.sin(t * 1.4), scale=0.72 * (0.6 + 0.4 * mo), opacity=mo)
+        so = trust_out(t, 3)
+        if mo > 0 and so < 1:
+            simg = A['shield'].at_yaw(-40 * (1 - mo) + 10 * math.sin((t - T_TRUST) * 1.2) * mo + 30 * so)
+            vis = mo * (1 - so)
+            sy_ = gy + 6 * math.sin(t * 1.4) - 110 * so
+            K.draw(c, A['pink'], gx, sy_, scale=1.4 * (1 + 0.3 * so), opacity=0.18 * vis)
+            K.draw(c, _env()['shadow'], gx, gy + 265, scale=(1.15, 0.15), opacity=0.22 * vis)
+            K.draw(c, simg, gx, sy_, scale=0.72 * (0.6 + 0.4 * mo) * (1 + 0.25 * so), opacity=vis, blur=12.0 * so)
     if t < T_TRUST + 0.1:
         enter = [K.ramp(t, TAG_T0 + i * BEAT / 2, TAG_T0 + i * BEAT / 2 + 0.35, 'linear') for i in range(6)]
         phase, squash = ring_dial(t)
@@ -1006,9 +1037,11 @@ def scene_kinds(t):
             if t < tt - 0.01:
                 continue
             sp = K.spring(t - tt, freq=2.3, damping=0.5)
-            out = K.ramp(t, T_END - 0.20 + 0.04 * i, T_END + 0.16 + 0.04 * i, 'in_cubic')
-            p_.draw(cv, 540, y + 90 * (1 - sp) + 260 * out, scale=0.9 + 0.1 * sp,
-                    opacity=K.ramp(t, tt, tt + 0.1) * (1 - out))
+            out = trust_out(t, i)
+            if out >= 1:
+                continue
+            p_.draw(cv, 540, y + 90 * (1 - sp) - 120 * out, scale=(0.9 + 0.1 * sp) * (1 + 0.10 * out),
+                    opacity=K.ramp(t, tt, tt + 0.1) * (1 - out), blur=10.0 * out)
     return cv
 
 
@@ -1079,11 +1112,12 @@ def iris_to_heart(cv, t, inner):
 # ---------------------------------------------------------------------------------------------- END
 # T_END: trust exits, the sprout pops up; B35 two top leaves fly into the logo's inner leaves (land B36), the logo
 # assembles on ivory while a MAGENTA->ORANGE sunset blooms up from the bottom; tagline types on; B37 CTA pill.
-LOGO_W = 940.0                          # lockup width (tagline row excluded; the tagline is typed big)
+LOGO_W = 925.0                          # lockup width (tagline row excluded; the tagline is typed big)
 LOGO_Y = 670.0                          # compact stack centred on ~y 915: logo 540-800, tagline, CTA, contact
 TAGLINE_Y = 896.0
 CTA_Y, CONTACT_Y = 1100.0, 1300.0
 CTA_H, CTA_SIZE = 124, 46
+STACK_CY = 925.0                        # centre of the end stack (breathing push pivot)
 E_SPROUT_Y = 1430.0
 SUN_TOP0, SUN_TOP1 = 1960.0, 1060.0     # sunset horizon (alpha 0 line) start / end: CTA rides the bright horizon
 E_FLY0, E_LAND = B(34.5), B(35.5)       # 22.500 -> 23.152 leaves fly into the logo
@@ -1185,9 +1219,41 @@ def logo_xy(cx_logo, cy_logo, p):
     return cx_logo - W_ / 2 + p[0], cy_logo - H_ / 2 + p[1]
 
 
+_END_ORBS = []          # sentinel: add_orbs() resolves it to _end_orbs_world()
 _END_LEAVES = [  # (x, y, on-screen width, blur px, leaf frame, rot, drift phase): depth around the logo stack
-    (968, 448, 150, 1.5, 16, 35, 0.0), (104, 930, 128, 2.5, 0, -40, 1.3), (972, 1010, 104, 3.5, 40, 120, 2.1),
+    (968, 410, 150, 1.5, 16, 35, 0.0), (84, 1012, 120, 2.5, 0, -40, 1.3), (972, 1010, 104, 3.5, 40, 120, 2.1),
     (86, 1530, 330, 11.0, 20, -25, 0.7), (1010, 1690, 260, 9.0, 4, 150, 2.6)]
+
+
+# end-card orbs live above / below the logo stack (screen positions at the end camera, depth -> bokeh size)
+_END_ORBS_SCR = [('orb_peach', 150, 300, 2600.0, 120), ('orb_mag', 930, 1580, 2900.0, 90),
+                 ('orb_torus', 860, 330, 900.0, 120)]
+
+
+@functools.lru_cache(maxsize=1)
+def _end_orbs_world():
+    cam0 = end_cam(T_END + 1.5)
+    return [(nm, tuple(unproject(cam0, x, y, d)), w * d / cam0.focal) for nm, x, y, d, w in _END_ORBS_SCR]
+
+
+@functools.lru_cache(maxsize=1)
+def _stack_keepout():
+    """(H, W) multiplier: 0 inside the logo stack box (x 60-1020, y 520-1340), feathered 40 px, 1 outside."""
+    yy, xx = np.mgrid[0:K.H, 0:K.W].astype(np.float32)
+    dx = np.maximum(np.maximum(60.0 - xx, xx - 1020.0), 0.0)
+    dy = np.maximum(np.maximum(520.0 - yy, yy - 1340.0), 0.0)
+    inside = (xx >= 60) & (xx <= 1020) & (yy >= 520) & (yy <= 1340)
+    m = np.clip(np.sqrt(dx * dx + dy * dy) / 40.0, 0, 1)
+    m[inside] = 0.0
+    m.setflags(write=False)
+    return m
+
+
+def end_motes(cv, cam, t):
+    """Motes on the end card, masked out of the logo stack box (no specks parked in the copy / logo)."""
+    tmp = np.zeros_like(cv)
+    _env()['motes'].draw(tmp, cam, t)
+    cv[..., :3] += tmp[..., :3] * _stack_keepout()[..., None]
 
 
 def end_leaves(cv, t, op=1.0):
@@ -1226,9 +1292,9 @@ def scene_end(t):
     sun = ease('inout_cubic')(K.ramp(t, E_FLY0, E_FLY0 + 1.0, 'linear'))
     cv = airy_bg(t, cam, rays=1.0 - 0.5 * sun)
     sc = K.Scene(cam)
-    add_orbs(sc, t, _K_ORBS[:3])
-    sc.particles(_env()['motes'], t)
+    add_orbs(sc, t, _END_ORBS)
     sc.render(cv)
+    end_motes(cv, cam, t)
     # sunset rises from the bottom; its horizon settles just under the CTA
     if sun > 0:
         top = K.lerp(SUN_TOP0, SUN_TOP1, sun)
@@ -1254,15 +1320,20 @@ def scene_end(t):
         K.draw(cv, _env()['shadow'], 540, E_SPROUT_Y + 4, scale=(0.75 * grow, 0.12), opacity=0.22 * (1 - fade))
         K.draw(cv, img, 540, E_SPROUT_Y + 40 * fade, scale=ss * max(grow, 0.01) * (1 - 0.15 * fade),
                anchor=(piv[0] / sp.size[0], piv[1] / sp.size[1]), opacity=1 - fade, blur=6 * fade)
+    # the settled stack breathes: a 1.5 % slow push about its centre once the CTA has landed
+    bz = 1.0 + 0.015 * K.ramp(t, E_CTA + 0.35, DUR + 0.3, 'inout_sine')
+
+    def Y(y):
+        return STACK_CY + (y - STACK_CY) * bz
     # logo assembly: mark springs in, wordmark wipes in
     lp = K.spring(t - E_FLY0, freq=2.2, damping=0.55) if t >= E_FLY0 else 0.0
     if lp > 0:
         op = K.ramp(t, E_FLY0, E_FLY0 + 0.15)
-        mark_s = 0.7 + 0.3 * lp
-        K.draw(cv, L['mark'], 540, LOGO_Y, scale=mark_s, opacity=op, blur=4 * (1 - min(lp, 1.0)))
+        mark_s = (0.7 + 0.3 * lp) * bz
+        K.draw(cv, L['mark'], 540, Y(LOGO_Y), scale=mark_s, opacity=op, blur=4 * (1 - min(lp, 1.0)))
         wp = K.ramp(t, E_FLY0 + 0.10, E_FLY0 + 0.50, 'out_expo')
         if wp > 0:
-            _wipe_draw(cv, L['word'], 540, LOGO_Y, wp, scale=mark_s)
+            _wipe_draw(cv, L['word'], 540, Y(LOGO_Y), wp, scale=mark_s)
     # flying leaves (from the sprout's top leaves to the logo's inner leaves)
     land = t >= E_LAND
     E = _env()
@@ -1287,21 +1358,21 @@ def scene_end(t):
         gl = K.impulse(t, E_LAND, decay=6.0)
         for key in ('leafL', 'leafR', 'leafF'):
             px, py = logo_xy(540, LOGO_Y, L[key + '_c'])
-            K.draw(cv, L[key], 540, LOGO_Y, opacity=K.ramp(t, E_LAND, E_LAND + 0.06))
+            K.draw(cv, L[key], 540, Y(LOGO_Y), scale=bz, opacity=K.ramp(t, E_LAND, E_LAND + 0.06))
             if gl > 0.02:
                 K.draw(cv, _hook_assets()['halo'], px, py, scale=0.9, opacity=0.6 * gl, mode='add')
     lsw = K.ramp(t, 24.05, 24.95, 'inout_sine')
     if 0 < lsw < 1:
-        _logo_sweep(cv, L, lsw)
+        _logo_sweep(cv, L, lsw, Y(LOGO_Y), bz)
     # tagline types on
     if t >= E_TYPE0:
-        L['tagline'].typewriter(cv, t, 540, TAGLINE_Y, t0=E_TYPE0, cps=40, caret=False)
+        L['tagline'].typewriter(cv, t, 540, Y(TAGLINE_Y), t0=E_TYPE0, cps=40, caret=False, scale=bz)
     # CTA: gradient pill pops on the beat, cursor glides in and clicks on the next 8th, light sweep
     cp = K.spring(t - E_CTA, freq=2.4, damping=0.5) if t >= E_CTA else 0.0
     if cp > 0:
         spr = cta_sprite(t)
-        csc = 0.80 + 0.20 * cp
-        cy_ = CTA_Y + 34 * (1 - cp)
+        csc = (0.80 + 0.20 * cp) * bz
+        cy_ = Y(CTA_Y) + 34 * (1 - cp)
         K.draw(cv, L['cta_ring'], 540, cy_, scale=csc * (1 - 0.05 * K.impulse(t, E_CLICK, decay=9.0, attack=0.04)),
                opacity=K.ramp(t, E_CTA, E_CTA + 0.08))
         ui.place(cv, spr, 540, cy_, scale=csc, opacity=K.ramp(t, E_CTA, E_CTA + 0.08))
@@ -1309,7 +1380,7 @@ def scene_end(t):
         if 0 < sw < 1:
             cta_sweep(cv, spr, 540, cy_, csc, sw)
         co = K.ramp(t, E_CTA + 0.18, E_CTA + 0.60, 'out_expo')
-        L['contact'].draw(cv, 540, CONTACT_Y + 24 * (1 - co), opacity=co, snap=False)
+        L['contact'].draw(cv, 540, Y(CONTACT_Y) + 24 * (1 - co), scale=bz, opacity=co, snap=False)
     if E_CTA + 0.06 <= t < E_CLICK + 0.62:
         g = ease('out_cubic')(K.ramp(t, E_CTA + 0.06, E_CLICK - 0.02, 'linear'))
         cx_ = K.lerp(905.0, 650.0, g)
@@ -1335,7 +1406,7 @@ def _logo_alpha():
     return np.clip(a, 0, 1).astype(np.float32)
 
 
-def _logo_sweep(cv, L, u):
+def _logo_sweep(cv, L, u, y=None, scale=1.0):
     """Diagonal white light band across the logo (emissive, masked by the logo's alpha)."""
     a = _logo_alpha()
     h, w = a.shape
@@ -1344,7 +1415,7 @@ def _logo_sweep(cv, L, u):
     band = np.exp(-(d / 40.0) ** 2) * a * 0.38
     spr = np.zeros((h, w, 4), np.float32)
     spr[..., :3] = band[..., None] * np.array([1.0, 0.95, 0.9], np.float32)
-    K.draw(cv, spr, 540, LOGO_Y)
+    K.draw(cv, spr, 540, LOGO_Y if y is None else y, scale=scale)
 
 
 def _wipe_draw(cv, spr, x, y, u, scale=1.0):
@@ -1435,11 +1506,17 @@ def draw(t):
             iris_to_heart(base, t, cv)
             cv = base
         return cv
-    if t < T_END:
+    if t < END_XF[0]:
         cv = scene_kinds(t)
         if t < T_KIND + 0.07:
             iris_to_heart(cv, t, scene_grow(t))
         return cv
+    if t < END_XF[1]:                          # eased dissolve: the trust stack has already left
+        a = scene_kinds(t)
+        b = scene_end(t)
+        k = np.float32(ease('inout_sine')(K.ramp(t, END_XF[0], END_XF[1], 'linear')))
+        a += (b - a) * k
+        return a
     return scene_end(t)
 
 
@@ -1487,7 +1564,9 @@ def samples(t):
     fast = [(0.0, T_IMPACT + 0.08, 5), (T_NUR - WIPE_HALF, T_NUR + WIPE_HALF, 5),
             (N_Z1 - 0.32, N_Z1 + 0.04, 7), (T_DEV - 0.17, T_DEV + 0.23, 7), (T_GRO - 0.15, T_GRO + 0.05, 5),
             (G_Z1 - 0.32, G_Z1 + 0.04, 7), (T_KIND - 0.31, T_KIND + 0.05, 5), (T_TRUST - 0.32, T_TRUST + 0.26, 5),
-            (E_FLY0, E_LAND + 0.03, 5), (E_CTA, E_CLICK + 0.05, 5)]
+            (E_FLY0, E_LAND + 0.03, 5), (E_CTA, E_CLICK + 0.05, 5), (D_UP - 0.27, D_UP + 0.52, 7),
+            (TRUST_OUT - 0.02, END_XF[1] + 0.02, 5)] + [(ts - 0.02, ts + 0.33, 5) for ts in RING_STEPS] + \
+        [(tt - 0.02, tt + 0.25, 5) for tt in TRUST_T]
     for a_, b_, n in fast:
         if a_ <= t <= b_:
             return n
@@ -1546,7 +1625,7 @@ def cues():
     q(T_DEV + 0.05, 'impact_soft', -7)
     q(T_DEV + 0.20, 'pop', -9, 0.0)
     q(D_UP, 'swish_small', -8, 0.0)
-    q(D_UP + 0.32, 'swish_small', -12, 0.1)
+    q(D_UP + 0.44, 'swish_small', -12, 0.1)
     for i in range(4):
         q(D_CHIPS + i * BEAT / 4, 'bubble_pop', -6, -0.45 + 0.3 * i, params=dict(pitch=0.95 + 0.08 * i))
     q(D_CLICK - 0.18, 'whoosh_fast', -10, 0.0)
@@ -1582,6 +1661,7 @@ def cues():
     for i, tt in enumerate(TRUST_T):
         q(tt, 'check_ding', -6, (-0.15, 0.0, 0.15)[i], params=dict(pitch=1.0 + 0.06 * i))
     # ---- END: sprout, leaves fly into the logo, sunset, tagline types, CTA
+    q(TRUST_OUT + 0.22, 'swish_small', -8, 0.0, params=dict(direction=-1))   # trust stack lifts out
     q(T_END, 'whoosh_fast', -7, 0.0, params=dict(direction=1))
     q(T_END + 0.05, 'leaf_rustle', -6, 0.0, params=dict(dur=0.9))
     q(T_END + 0.06, 'bubble_pop', -10, 0.0, params=dict(pitch=0.8))

@@ -26,35 +26,47 @@ SHOT LIST (t in s; B = beat)
                           copy with >= 68 px clearance (front coins pass under, back coins over; _check_coin_ring).
                           Cam.orbit push-in 1700 -> 1460, yaw 7 -> -4 (easy ease). Exit: whip pan on B11.
                           SFX slot_tick (start 2.39), cash_kaching + coin_ring B8, pop B9, whip B11.
- C  5.156-12.656 B11-B27  ALLOWANCE CALCULATOR. Perspective glass app window "Allowance calculator" / "Weekly allowance
-                          per child". Whip-in to an isometric close-up (orbit yaw 24, pitch 14) that eases to front by
-                          B16. Hand cursor clicks chips 0-4, 5-10, 11-14, 15+ on B12..B15: each glossy 3D bar grows
-                          (out_back) to 447.60 / 473.17 / 515.52 / 554.02 and glows while active, values count up;
-                          back to 0-4 on B16. Camera pulls back to the hold framing by B17.5; the cursor drags "Weeks of
-                          care" 1 -> 52 (B17.5 -> B20) while the gold total above rolls 447.60 x weeks and lands on
-                          GBP 23,275.20 on B20; caption "Estimated allowance . 52 weeks . one child aged 0-4"; fine
-                          print in the window (32 px, two lines, ~30 px on screen). Hold with slow push, rack focus
-                          total -> window, glints on B24. Exit: a big coin wipes across the lens on B27.
+ C  5.156-12.656 B11-B27  ALLOWANCE CALCULATOR. Perspective glass app window (840 x 1010) "Allowance calculator" /
+                          "Weekly allowance per child". Whip-in to an isometric view of the WHOLE window (orbit yaw
+                          -19, pitch 11) that eases to the 1:1 front hold by B16.4: the window never leaves x 70..1010
+                          nor enters the like/share column (_check_calc, every frame). Hand cursor clicks chips 0-4,
+                          5-10, 11-14, 15+ on B12..B15 (hotspot below the label; a local glow at the fingertip): each
+                          glossy 3D bar grows (out_back) to 447.60 / 473.17 / 515.52 / 554.02 and glows while active,
+                          values count up; back to 0-4 on B16. The cursor drags "Weeks of care" 1 -> 52 (B17.5 ->
+                          B20) while the gold total above rolls 447.60 x weeks and lands on GBP 23,275.20 on B20 (local
+                          hot glow behind it); caption "Estimated allowance . 52 weeks . one child aged 0-4"; fine
+                          print in the window (32 px, two lines). Hold at 1:1 (UI text 34-38 px on screen), tiny push,
+                          rack focus total -> window, glints on B24. Exit: a big coin wipes across the lens on B27.
                           SFX glass_tap, ui_click + bar_grow on B12..B15, click B16, slider_drag (start B17.5),
                           cash_kaching + coins_burst B20, shimmer, coin_flip + whoosh_by B27.
  D  12.656-17.344 B27-B37 SUPPORT ORBIT. Glossy 3D house (house night) rises; headline "Plus support around / your
-                          household" (B27.5 / B28); amber grid floor. Tilted elliptical ring of 5 two-line glass tags
-                          (icons): the ring indexes 72 deg on each beat so every tag pops in at the FRONT on B28..B32
+                          household" (B27.5 / B28); amber grid floor. A tilted ring of 5 two-line glass tags with
+                          explicit slots: front-left, front-right, front-centre (below the house) and back-right,
+                          back-left (ABOVE the roof), so the parked ring shows all five readable. Tags pop on B28..B32
                           (Supervising social worker, Ongoing training, Advice outside normal hours, Foster carer
-                          community, Education & health help), then drifts; back half dim + blurred (+DOF). Tags stay
-                          inside x 70..1010 and y <= 1480 with no tag overlaps (_check_orbit). Orbit cam yaw 10 -> -8.
-                          Exit: push into the glowing heart door, zoom-through on B37. SFX impact_soft, pops on
-                          B28..B32, riser + air_zoom -> B37.
+                          community, Education & health help): front tags slide in along the ring, back tags rise out
+                          from behind the roof; local glow on each pop. Readable 3.3 / 2.9 / 2.4 / 1.9 / 1.4 s; inside
+                          x 70..1010, y 490..1480, never in the like/share column, no overlaps, clear of the house
+                          (_check_orbit, every frame). Orbit cam yaw 7 -> -6. Exit: ONE continuous push (look-at target
+                          glides to the door heart while the orbit distance shrinks, in_expo) into the glowing door,
+                          zoom-through on B37. SFX impact_soft, pops on B28..B32, riser + air_zoom -> B37.
  E  17.344-20.156 B37-B43 HEART BEAT. Full-bleed c12 (src 3.4 s, centre 0.62/0.44, ramp 0.85 -> 0.36x slow-mo), golden
-                          density grade, bottom scrim, bokeh + dust in front. "Recognition" (150 px) rises on B38, "for
-                          a skilled role." (92 px) on B39, light sweep B39.6-B41.3. Exit: light-leak flash wipe on B43.
-                          SFX heartbeat x2, swishes, shimmer, reverse_swell -> B43.
- F  20.156-24.000 B43-end END CARD. A coin is tossed up spinning; edge-on on B44 it becomes the 3D logo mark
-                          (logo_mark3d night_anim swing-in, then a slow float) with a flash and a halo burst. Wordmark
-                          (logo_full_onDark crop) B45, "NURTURE . DEVELOP . GROW" B45.5, pill CTA "Discuss your
-                          estimate ->" B46, "0161 241 1332 . organicfostering.co.uk" B46.5, disclaimer B47; the cursor
-                          clicks the CTA on B48 (22.5) and leaves; every element settled from 22.33: hold 1.67 s.
-                          SFX flash_hit, coin_flip, logo_sting hit B44, sparkle, pop B46, ui_click B48.
+                          density grade, darker bottom scrim, bokeh + dust in front. "Recognition" (150 px) rises on
+                          B38, "for a skilled role." (92 px) on B39: per-glyph rise draws the face only, the glow + scrim
+                          come from the whole block with their own continuous ramp (no pop when the rise settles).
+                          Light sweep B39.6-B41.3. Exit: light-leak wipe on B43. SFX heartbeat x2, swishes, shimmer.
+ F  20.156-24.000 B43-end END CARD. A coin is tossed up spinning (spin blur); edge-on on B44 it becomes the 3D logo
+                          mark (logo_mark3d night_anim swing-in, then a slow float) over a dark plum pool + magenta halo
+                          (the orange children / heart read crisply), magenta ring burst. Wordmark (logo_full_onDark
+                          crop) B44.5, "NURTURE . DEVELOP . GROW" B45, pill CTA "Discuss your estimate ->" B45.5, phone
+                          . URL B45.75, disclaimer B46; the cursor enters from the right at button height, clicks the
+                          arrow on B46.5 (21.80) and leaves the same way (gone by 22.35, ripple done by 22.40): clean
+                          settled hold 22.40-24.0 (1.6 s). Dust is masked out of the copy area.
+                          SFX flash_hit, coin_flip, logo_sting hit B44, sparkle, pop B45.5, ui_click B46.5.
+
+FLASH POLICY: no full-frame flash on UI clicks, chip clicks, tag pops, number landings or the CTA click (local glows /
+ripples at the interaction point). Transition hits (B1, title slams, B5, B11 whip, B27 wipe, B37 door, B43, B44) use
+_hot(): an exposure push before the post (blacks stay black; the warm bloom does the rest), never core.post(flash=).
 
 Render-module contract: DUR, LOOK, BPM, draw(t) (pure), post(cv, t), samples(t), cues(), prewarm(); BED.
 samples(t): 3 normally; 5-7 on the coin fly-in, tunnel, slams, zoom-throughs, the B11 whip, the B27 coin wipe,
@@ -62,9 +74,12 @@ the ring indexing, the door push and the coin toss (mean 3.67 per frame).
 Measured (1 core, worker caches FOSTER_S3_CACHE_MB=448 FOSTER_TYPE_CACHE_MB=256): hook 3.5 s/frame (5-7 samples),
 orbit 1.5 s (3) / 2.7 s (5); preview mean 0.82 s/frame (1 sample); worker peak RSS 1.7-2.2 GB.
 Final master: cd pipeline/fostering && FOSTER_NICE=10 python3 render.py reel2 --workers 4
-Dev helpers: reel2_dev.py (labelled still strips), _check_coin_ring(), _check_orbit().
+SFX: build with `python3 reel2_dev.py sfx` (-18 LUFS, -2.0 dBTP ceiling so the AAC mux stays <= -1.5 dBTP); render.py
+only remixes (at its default -1.5 ceiling) when reel2.py is newer than workspace3/audio/reel2_sfx.wav.
+Dev helpers: reel2_dev.py (strip / frames / stats / sfx), _check_coin_ring(), _check_calc(), _check_orbit().
 Toolkit workarounds (kept local): ui.glass_card(shadow=0) crashes (built with a shadow, skipped at draw time);
-ui.button glow clipped at its sprite bounds (_feather()).
+ui.button glow clipped at its sprite bounds (_feather()); core.post(flash=) lifts blacks (_hot() instead);
+Glyphs glow/scrim pop at the per-glyph -> block hand-off (halo drawn separately from the block).
 """
 import functools
 import math
@@ -118,6 +133,48 @@ def _hot(cv, a):
     UI clicks / pops / landings never call this: they get local glows at the interaction point."""
     if a > 1e-3:
         cv[..., :3] *= np.float32(1.0 + 3.0 * a)
+    return cv
+
+
+def _spin_spr(asset, ang, rate, t, step=2.0, max_n=10):
+    """Spin-blurred coin frame: the average of n at_yaw frames across this sub-sample's share of the 180-degree
+    shutter (rate in deg/s), so fast flips read as a smooth spin blur instead of stepped ghost copies whose
+    reeded edges stack into a lattice (QA)."""
+    span = abs(rate) * (0.5 / K.FPS) / max(1, samples(t))
+    n = int(min(max_n, math.ceil(span / step)))
+    if n <= 1:
+        return asset.at_yaw(ang % 360.0)
+    acc = None
+    for j in range(n):
+        f = asset.at_yaw((ang + ((j + 0.5) / n - 0.5) * span * (1 if rate >= 0 else -1)) % 360.0)
+        if acc is None:
+            acc = f.astype(np.float32, copy=True)
+        else:
+            acc += f
+    acc *= np.float32(1.0 / n)
+    return acc
+
+
+@functools.lru_cache(maxsize=4)
+def _copy_mask(rects, soft=60.0):
+    """(H, W, 1) mask: 0 inside the given screen rects (copy areas), soft 1 outside (particles stay off copy)."""
+    m = np.ones((K.H, K.W), np.float32)
+    yy = np.arange(K.H, dtype=np.float32)[:, None]
+    xx = np.arange(K.W, dtype=np.float32)[None, :]
+    for (x0, y0, x1, y1) in rects:
+        dx = np.maximum(np.maximum(x0 - xx, xx - x1), 0)
+        dy = np.maximum(np.maximum(y0 - yy, yy - y1), 0)
+        d = np.sqrt(dx * dx + dy * dy)
+        m = np.minimum(m, np.clip(d / soft, 0, 1))
+    return m[..., None]
+
+
+def _particles_masked(cv, parts, cam, t, rects, opacity=1.0):
+    """Draw particles (additive dust) everywhere except near copy (so no speck parks next to a word and reads
+    as punctuation)."""
+    layer = np.zeros_like(cv)
+    parts.draw(layer, cam, t, opacity=opacity)
+    cv[..., :3] += layer[..., :3] * _copy_mask(tuple(rects))
     return cv
 
 
@@ -225,11 +282,12 @@ def _scene_coin(t):
     z = K.lerp(420.0, -1180.0, e)
     pos = (K.lerp(30.0, 0.0, u), K.lerp(40.0, 0.0, u) - 18.0 * math.sin(math.pi * u), z)
     ang = 720.0 * (1.0 - u) ** 1.6
+    rate = 720.0 * 1.6 * (1.0 - u) ** 0.6 / T_TUN
     W = 700.0
     sc.billboard(A['warm'], (pos[0], pos[1], z + 420.0), W * 2.4, mode='add', opacity=0.9)
     sc.billboard(A['halo'], (pos[0], pos[1], z + 60.0), W * 1.25, mode='add', opacity=0.75 * (1 - 0.6 * u),
                  rot=t * 40.0)
-    sc.billboard(A['coin'].at_yaw(ang), pos, W, rot=K.lerp(-16.0, 0.0, K.EASE['out_cubic'](u)))
+    sc.billboard(_spin_spr(A['coin'], ang, -rate, t), pos, W, rot=K.lerp(-16.0, 0.0, K.EASE['out_cubic'](u)))
     # far defocused coins (depth layer behind), each tumbling
     for i in range(6):
         th = i * 1.047 + 0.4
@@ -344,6 +402,7 @@ def _num_assets():
     d['chip'] = T.render('Ages 0–4', 'glass_pill', px=52, pill_tint=('ORANGE', 1.5), pill_tint_amount=0.5)
     d['coin'] = S3.get('coin_gbp', 'night', mode='spin', scale=0.45)
     d['coin_big'] = S3.get('coin_gbp', 'night', mode='spin', scale=0.6)
+    d['hot'] = K.radial(256, K.C['AMBER'] * 1.3, power=2.4)
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.5, power=2.2)
     d['dust'] = K.Particles(160, seed=31, bright=0.9, colors=[K.C['AMBER'], K.C['ORANGE'], K.C['PEACH']])
     return d
@@ -434,9 +493,11 @@ def _scene_number(t):
     A = _num_assets()
     cam = _num_cam(t)
     land = K.impulse(t, NUM_ROLL[1], decay=6.0)
-    cv = K.background('amber', t, cam, boost=0.15 + 0.45 * land, center=(0.62, 0.3), rim=0.6, intensity=0.75)
+    cv = K.background('amber', t, cam, boost=0.15 + 0.1 * land, center=(0.62, 0.3), rim=0.6, intensity=0.75)
     sc = K.Scene(cam)
-    sc.billboard(A['warm'], (0.0, -40.0, 500.0), 1900.0, mode='add', opacity=0.55 + 0.4 * land)
+    sc.billboard(A['warm'], (0.0, -40.0, 500.0), 1900.0, mode='add', opacity=0.55 + 0.1 * land)
+    if land > 0.02:                                   # landing on B8: a local hot glow behind the number only
+        sc.billboard(A['hot'], (0.0, NUM_Y[0], 60.0), 1150.0, mode='add', opacity=0.7 * land, dof=False)
     # counter (odometer roll, per-digit motion blur) + caption + chip, on the focus plane
     trk = _num_trk()
     val, vel = float(trk(t)), float(trk.vel(t))
@@ -520,13 +581,14 @@ def _check_coin_ring(step=1.0 / 30):
 
 
 # ================================================================================================ C. CALCULATOR
-WIN_W, WIN_H = 860, 1040
-WIN_C = (0.0, 24.0, 120.0)                     # world centre of the window (hold cam = default Cam)
+WIN_W, WIN_H = 840, 1010
+WIN_C = (-40.0, 15.0, 0.0)                     # hold: 1:1 scale, screen x 80..920 (clear of the like/share column),
+                                               # y 470..1480 (UI text at its design px: >= 34, fine print 32)
 CLICKS = (B(12), B(13), B(14), B(15), B(16))   # chip clicks: 0-4, 5-10, 11-14, 15+, back to 0-4
 DRAG = (B(17.5), B(20))                        # weeks slider 1 -> 52 (total lands on B20)
-TOT_P = (0.0, -642.0, 0.0)                     # total counter (screen y ~318 in the hold)
-CAP_P = (0.0, -528.0, 0.0)                     # caption under it
-SUB_Y, CHIP_Y, CHART_Y, CHART_H, SLIDER_Y, FINE_Y = 238, 272, 368, 316, 670, (966, 1006)
+TOT_P = (0.0, -660.0, 0.0)                     # total counter (screen y ~300 in the hold)
+CAP_P = (0.0, -546.0, 0.0)                     # caption under it (y ~414)
+SUB_Y, CHIP_Y, CHART_Y, CHART_H, SLIDER_Y, FINE_Y = 238, 272, 372, 290, 612, (930, 970)
 CHIP_PX = 36                                   # chip text px (34 x 0.93 on screen would be < 34)
 SLIDER_KY = SLIDER_Y + 168                    # knob / track centre (ui.slider_knob y)
 
@@ -560,6 +622,7 @@ def _calc_assets():
     d['dust'] = K.Particles(150, seed=3, bright=0.85, colors=[K.C['AMBER'], K.C['ORANGE'], K.C['PEACH']])
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.5, power=2.2)
     d['scrim'] = K.radial(512, (0.0, 0.0, 0.0), power=1.4)
+    d['hot'] = K.radial(256, K.C['AMBER'] * 1.3, power=2.4)
     return d
 
 
@@ -620,13 +683,17 @@ def _calc_face(t):
     return f
 
 
+# camera keys (seconds after T_CALC, (target x, y, z, orbit dist, yaw, pitch, roll)): an isometric view of the WHOLE
+# window (kept inside x 70..1010 and out of the like/share column, see _check_calc) easing to the 1:1 front hold
+CALC_KEYS = [(0.0, (-62.0, 10.0, 0.0, 1496.0, -19.3, 11.2, 1.1)),
+             (CLICKS[2] - T_CALC, (-37.0, 6.0, 0.0, 1526.0, -8.4, 6.7, 0.6)),
+             (CLICKS[4] + 0.2 - T_CALC, (0.0, 0.0, 0.0, 1500.0, 0.0, 0.0, 0.0)),
+             (DRAG[1] + 0.3 - T_CALC, (0.0, 0.0, 0.0, 1496.0, 0.0, 0.15, 0.0)),
+             (T_ORB - T_CALC, (0.0, -2.0, 0.0, 1490.0, -0.2, 0.3, 0.15))]
+
+
 def _calc_cam(t):
-    keys = [(T_CALC, (-20.0, -10.0, 120.0, 1060.0, 24.0, 14.0, -2.5)),
-            (CLICKS[4], (0.0, 30.0, 120.0, 1180.0, 5.0, 4.0, -0.5)),
-            (DRAG[0], (0.0, 0.0, 0.0, 1500.0, 0.0, 0.0, 0.0)),
-            (DRAG[1] + 0.3, (0.0, 0.0, 0.0, 1500.0, 0.0, 0.2, 0.0)),
-            (T_ORB, (0.0, -8.0, 0.0, 1460.0, -1.6, 1.0, 0.3))]
-    trk = K.Track(keys, ease=K.EASE['easy_ease'])
+    trk = K.Track([(T_CALC + dt, v) for dt, v in CALC_KEYS], ease=K.EASE['easy_ease'])
     tx, ty, tz, dist, yaw, pitch, roll = [float(v) for v in trk(t)]
     w = _num_whip(t)                                         # arrival half of the whip from scene B
     yaw += -34.0 * min(0.0, w) * -1.0 if w < 0 else 0.0
@@ -691,12 +758,26 @@ def _calc_wipe(t):
 
 
 def _draw_wipe(cv, t, A_coin):
+    """Big coin wiping across the lens. It moves up to ~11000 px/s, so each motion-blur sample is itself drawn
+    as m sub-steps averaged in a scratch layer (no stepped ghost copies), with a spin-blurred sprite."""
     w = _calc_wipe(t)
     if w is None:
         return
-    x, y, wd, ang, u = w
-    spr = A_coin.at_yaw(ang)
-    K.draw(cv, spr, x, y, scale=wd / spr.shape[1], rot=-35.0)
+    span = (0.5 / K.FPS) / max(1, samples(t))
+    m = 6
+    layer = None
+    for j in range(m):
+        tj = t + ((j + 0.5) / m - 0.5) * span
+        wj = _calc_wipe(tj)
+        if wj is None:
+            continue
+        x, y, wd, ang, u = wj
+        spr = _spin_spr(A_coin, ang, 900.0, t, step=4.0, max_n=3)
+        if layer is None:
+            layer = np.zeros_like(cv)
+        K.draw(layer, spr, x, y, scale=wd / spr.shape[1], rot=-35.0, mode='add', opacity=1.0 / m)
+    if layer is not None:
+        K.over(cv, layer)
 
 
 def _scene_calc(t):
@@ -709,7 +790,9 @@ def _scene_calc(t):
     sc = K.Scene(cam)
     win = A['win']
     face = _calc_face(t)
-    sc.billboard(A['warm'], (0.0, 300.0, 900.0), 2200.0, mode='add', opacity=0.5 + 0.3 * land)
+    sc.billboard(A['warm'], (0.0, 300.0, 900.0), 2200.0, mode='add', opacity=0.5 + 0.08 * land)
+    if land > 0.02:                                   # total lands on B20: local hot glow behind it only
+        sc.billboard(A['hot'], (0.0, TOT_P[1], 60.0), 1200.0, mode='add', opacity=0.7 * land, dof=False)
     sc.custom(WIN_C, lambda c, cm: win.plane(c, cm, WIN_C, WIN_W, (0.0, 0.0, 0.0), face=face, shadow=0.8))
     # total counter + caption above the window (appear for the drag)
     tin = K.ramp(t, CLICKS[4] + 0.2, DRAG[0] - 0.05, 'out_expo')
@@ -742,6 +825,9 @@ def _scene_calc(t):
     xy, press, click, op = _cursor_xy(t)
     if op > 0.01:
         sxy = win.screen(cam, WIN_C, WIN_W, (0.0, 0.0, 0.0), float(xy[0]), float(xy[1]), z=-40.0)
+        g = sum(K.impulse(t, c, decay=10.0) for c in CLICKS + (DRAG[0],))
+        if g > 0.02:                                  # click: a small warm glow at the fingertip, not a frame flash
+            K.draw(cv, A['hot'], sxy[0], sxy[1], scale=0.75, mode='add', opacity=0.5 * min(g, 1.0) * op)
         ui.draw_cursor(cv, sxy[0], sxy[1], 'hand', 84, press=press, click=click, opacity=op, look='amber')
     _draw_wipe(cv, t, A['coin'])
     w = _num_whip(t)
@@ -763,12 +849,12 @@ def _post_calc(cv, t):
 TAGS = ((('Supervising', 'social worker'), 'user'), (('Ongoing', 'training'), 'graduation'),
         (('Advice outside', 'normal hours'), 'clock'), (('Foster carer', 'community'), 'users'),
         (('Education &', 'health help'), 'book'))
-HOUSE_P = (0.0, -150.0, 0.0)
-HOUSE_W = 470.0
+HOUSE_P = (0.0, -140.0, 0.0)
+HOUSE_W = 450.0
 DOOR_UV = (360.0 / 720.0, 470.0 / 720.0)       # heart on the door, in sprite uv (yaw 0)
 # Tag ring: explicit slot angles (deg; -90 = front centre, +90 = back centre, hidden behind the house: unused).
 # Back slots sit ABOVE the roof and front slots BELOW the house, so the parked ring shows all five tags readable.
-RING = dict(center=(0.0, -150.0, 0.0), rx=205.0, rz=545.0, tilt=62.0, roll=0.0)
+RING = dict(center=(0.0, -150.0, 0.0), rx=205.0, rz=545.0, tilt=66.0, roll=0.0)
 SLOTS = (-150.0, -30.0, -90.0, 30.0, 150.0)     # per TAGS entry: front-left, front-right, front-centre, back-R, back-L
 ENTER_FROM = (50.0, -45.0, 0.0, 0.0, 0.0)      # ring-angle offset each front tag slides in from
 ENTER_RISE = (0.0, 0.0, 40.0, 90.0, 90.0)       # world px a tag rises while popping (back tags rise out from
@@ -923,7 +1009,7 @@ def _scene_orbit(t):
         if zz <= 0:
             draw_tag(cv, k, en, P, zz)
     # headline (2D overlay, top safe zone)
-    for key, t0, y in (('h1', B(27.5), 318.0), ('h2', B(28) + 0.05, 432.0)):
+    for key, t0, y in (('h1', B(27.5), 282.0), ('h2', B(28) + 0.05, 396.0)):
         r = K.ramp(t, t0, t0 + 0.55, 'out_expo')
         if r <= 0:
             continue
@@ -959,13 +1045,20 @@ def _heart_assets():
     d = {}
     d['clip'] = F.Clip('c12')
     d['ramp'] = F.SpeedRamp([(0.0, 0.85), (0.6, 0.36, 'inout_sine'), (3.2, 0.36)], src0=HEART_SRC0)
-    d['rec'] = T.Glyphs('Recognition', 'flat', px=150, fill='IVORY', glow=0.6, glow_color=('ORANGE', 2.2),
-                        glow_radii=(0.04, 0.14, 0.4), glow_weights=(0.8, 0.55, 0.35), scrim=0.55)
-    d['role'] = T.Glyphs('for a skilled role.', 'flat', px=92, fill='PEACH', glow=0.5, glow_color=('ORANGE', 2.0),
-                         glow_radii=(0.05, 0.18, 0.45), glow_weights=(0.8, 0.5, 0.3), scrim=0.5)
+    # Seamless hand-off (QA: glow pop when the rise settled): the per-glyph rise draws the FACE only; the glow and
+    # scrim are drawn from the whole block (glow parts) with their own continuous opacity, so nothing changes at
+    # the moment Glyphs switches from per-glyph sprites to the exact settled block.
+    rec_kw = dict(px=150, fill='IVORY', glow=0.6, glow_color=('ORANGE', 2.2), glow_radii=(0.04, 0.14, 0.4),
+                  glow_weights=(0.8, 0.55, 0.35), scrim=0.78, scrim_size=0.62)
+    role_kw = dict(px=92, fill='PEACH', glow=0.5, glow_color=('ORANGE', 2.0), glow_radii=(0.05, 0.18, 0.45),
+                   glow_weights=(0.8, 0.5, 0.3), scrim=0.72, scrim_size=0.62)
+    d['rec'] = T.Glyphs('Recognition', 'flat', **dict(rec_kw, glow=0.0, scrim=0.0))
+    d['role'] = T.Glyphs('for a skilled role.', 'flat', **dict(role_kw, glow=0.0, scrim=0.0))
+    d['rec_halo'] = T.render('Recognition', 'flat', **rec_kw)
+    d['role_halo'] = T.render('for a skilled role.', 'flat', **role_kw)
     hh = 1000
     yy = np.linspace(0.0, 1.0, hh, dtype=np.float32)[:, None]
-    a = (np.clip((yy - 0.02) / 0.55, 0, 1) ** 1.1 * 0.88).astype(np.float32) * np.ones((1, K.W), np.float32)
+    a = (np.clip((yy - 0.02) / 0.5, 0, 1) ** 1.0 * 0.92).astype(np.float32) * np.ones((1, K.W), np.float32)
     col = (K.C['NIGHT_0'] * 0.6 + K.C['PLUM'] * 0.05).astype(np.float32)
     d['scrim'] = np.dstack([a[..., None] * col, a]).astype(np.float32)
     d['dust'] = K.Particles(120, seed=51, bright=1.0, size=(1.4, 4.5),
@@ -994,9 +1087,15 @@ def _scene_heart(t):
     A['dust'].draw(cv, cam, t, opacity=0.8)
     out = K.ramp(t, T_END - 0.3, T_END, 'in_cubic')
     sw = K.ramp(t, B(39.6), B(41.3), 'inout_sine')
-    A['rec'].rise(cv, t, 540, REC_Y[0], t0=REC_T[0], stagger=0.03, dur=0.7, dist=0.45,
-                  opacity=1 - out, sweep=sw if 0 < sw < 1 else None, sweep_kw=dict(width=0.12, strength=1.5))
-    A['role'].rise(cv, t, 540, REC_Y[1], t0=REC_T[1], stagger=0.025, dur=0.6, dist=0.45, opacity=1 - out)
+    for key, t0, y, stg, dur in (('rec', REC_T[0], REC_Y[0], 0.03, 0.7), ('role', REC_T[1], REC_Y[1], 0.025, 0.6)):
+        if t < t0:
+            continue
+        g = A[key]
+        t_end = t0 + stg * (g.n - 1) + dur
+        h = K.ramp(t, t0, t_end, 'inout_sine') * (1 - out)        # halo: continuous, independent of the hand-off
+        A[key + '_halo'].draw(cv, 540, y, opacity=h, parts=('glow',), snap=False)
+        g.rise(cv, t, 540, y, t0=t0, stagger=stg, dur=dur, dist=0.45, opacity=1 - out,
+               sweep=sw if key == 'rec' and 0 < sw < 1 else None, sweep_kw=dict(width=0.12, strength=1.5))
     return cv
 
 
@@ -1013,7 +1112,9 @@ def _post_heart(cv, t):
 T_SWAP = B(44)                                 # coin edge-on -> logo mark
 LOGO_XY, LOGO_S = (540.0, 560.0), 0.62
 WM_Y, TAG_Y, BTN_Y, PH_Y, DIS_Y = 905.0, 1084.0, 1255.0, 1374.0, 1434.0
-T_WM, T_TAG, T_BTN, T_PH, T_DIS, T_CLICK = B(45), B(45.5), B(46), B(46.5), B(47), B(48)
+# copy builds on the 16th/8th grid; CTA click on B46.5; cursor gone + ripple done by ~22.35 -> clean hold >= 1.6 s
+T_WM, T_TAG, T_BTN, T_PH, T_DIS, T_CLICK = B(44.5), B(45), B(45.5), B(45.75), B(46), B(46.5)
+END_COPY = ((150, 250, 930, 1110), (190, 1180, 890, 1460))     # logo + wordmark + tagline, CTA + phone + disclaimer
 
 
 @functools.lru_cache(maxsize=1)
@@ -1044,9 +1145,12 @@ def _end_assets():
     d['tag'] = S.sprite()
     d['ph'] = T.render('0161 241 1332  \u00b7  organicfostering.co.uk', 'ui', px=36, fill='IVORY')
     d['dis'] = T.render(FINE, 'ui', px=30, fill='PEACH', font='Poppins-Regular')
-    d['halo'] = K.glow(K.ring(300, 4, K.C['AMBER'] * 2.0), K.C['ORANGE'], (10, 30, 80), 1.2)
     d['halo2'] = K.glow(K.ring(300, 3, K.C['HOT_PINK'] * 1.4), K.C['MAGENTA'], (10, 30, 70), 1.0)
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.6, power=2.0)
+    # behind the logo mark: a dark plum pool + a magenta halo, so the ORANGE children / heart read crisply (QA)
+    d['plum'] = K.radial(512, K.C['NIGHT_0'] * 0.6 + K.C['PLUM'] * 0.12, power=1.1)
+    d['mglow'] = K.radial(512, K.C['MAGENTA'] * 0.55, power=2.6)
+    d['halo'] = K.glow(K.ring(300, 4, K.C['HOT_PINK'] * 1.8), K.C['MAGENTA'], (10, 30, 80), 1.1)
     d['dust'] = K.Particles(150, seed=71, bright=0.9, colors=[K.C['AMBER'], K.C['ORANGE'], K.C['PEACH']])
     return d
 
@@ -1077,7 +1181,8 @@ def _end_logo(t, A):
     if t < T_SWAP:
         u = K.clamp((t - T_END) / (T_SWAP - T_END))
         ang = 450.0 * K.EASE['out_cubic'](u)
-        spr = A['coin'].at_yaw(ang % 360.0)
+        rate = 450.0 * 3.0 * (1.0 - u) ** 2 / (T_SWAP - T_END)
+        spr = _spin_spr(A['coin'], ang, rate, t)
         return spr, K.lerp(0.48, 0.78, K.EASE['out_cubic'](u)), (0.5, 0.5)
     fr = (t - T_SWAP) * 30.0 * 1.45
     an = A['anim']
@@ -1099,23 +1204,27 @@ def _scene_end(t):
     cam = K.Cam(pos=(K.wiggle(t, 0.3, 6, seed=81), K.wiggle(t, 0.3, 5, seed=82), K.lerp(-1500.0, -1440.0,
                 K.EASE['easy_ease'](K.clamp((t - T_END) / (DUR - T_END))))), aperture=24, focus_dist=1500.0)
     sw_ = K.impulse(t, T_SWAP, decay=4.0)
-    cv = K.background('amber', t, cam, boost=0.2 + 0.5 * sw_, center=(0.5, 0.28), rim=0.35, intensity=0.75)
+    cv = K.background('amber', t, cam, boost=0.2 + 0.3 * sw_, center=(0.72, 0.86), rim=0.35, intensity=0.75)
     sc = K.Scene(cam)
     for i, P in enumerate(((-1400.0, -1050.0, 2800.0), (1450.0, -600.0, 3100.0), (-1450.0, 700.0, 3000.0),
                            (1400.0, 1300.0, 2700.0))):
         sc.billboard(A['coin_s'].at_yaw((t * 100.0 + 80.0 * i) % 360.0), P, 300.0, rot=20.0 * i, opacity=0.7)
-    sc.particles(A['dust'], t)
     sc.render(cv)
-    # glow + halo rings behind the logo
+    _particles_masked(cv, A['dust'], cam, t, END_COPY)
     lx, ly = LOGO_XY
     rise = K.ramp(t, T_END, T_SWAP, 'out_cubic')
     cy = K.lerp(1700.0, ly, rise)
-    K.draw(cv, A['warm'], lx, ly, scale=2.6, mode='add', opacity=0.55 + 0.5 * sw_)
-    hr = K.ramp(t, T_SWAP - 0.05, T_WM - 0.05, 'out_cubic')      # halo burst, gone before the wordmark arrives
+    # warm glow follows the rising coin, then hands over to a plum pool + magenta halo behind the logo mark
+    lg = K.ramp(t, T_SWAP - 0.1, T_SWAP + 0.3, 'inout_sine')
+    K.draw(cv, A['warm'], lx, cy, scale=2.0, mode='add', opacity=0.55 * (1 - lg))
+    if lg > 0:
+        K.draw(cv, A['plum'], lx, ly, scale=2.05, opacity=0.85 * lg)
+        K.draw(cv, A['mglow'], lx, ly, scale=1.9, mode='add', opacity=(0.55 + 0.4 * sw_) * lg)
+    hr = K.ramp(t, T_SWAP - 0.05, T_SWAP + 0.6, 'out_cubic')      # magenta halo burst on the swap
     if 0 < hr < 1:
         fo = (1 - hr) ** 1.5
-        K.draw(cv, A['halo'], lx, ly, scale=K.lerp(0.5, 1.5, hr), mode='add', opacity=0.9 * fo, rot=t * 20.0)
-        K.draw(cv, A['halo2'], lx, ly, scale=K.lerp(0.4, 1.8, hr), mode='add', opacity=0.6 * fo)
+        K.draw(cv, A['halo'], lx, ly, scale=K.lerp(0.5, 1.6, hr), mode='add', opacity=0.85 * fo, rot=t * 20.0)
+        K.draw(cv, A['halo2'], lx, ly, scale=K.lerp(0.4, 1.9, hr), mode='add', opacity=0.6 * fo)
     spr, sc_, an = _end_logo(t, A)
     pop = 1.0 + 0.05 * K.impulse(t, T_SWAP, decay=6.0)
     K.draw(cv, spr, lx, cy, scale=sc_ * pop, anchor=an, rot=K.lerp(-12.0, 0.0, rise) if t < T_SWAP else 0.0)
@@ -1132,7 +1241,7 @@ def _scene_end(t):
         pop = K.spring(t - T_BTN, freq=2.6, damping=0.5)
         hover = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1)
         press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04)
-        rip = t - T_CLICK if t >= T_CLICK else None
+        rip = 1.5 * (t - T_CLICK) if t >= T_CLICK else None      # ripple done 0.6 s after the click
         btn = _feather(ui.button('Discuss your estimate', hover=0.6 * hover, press=press, ripple=rip,
                                  ripple_at=(0.88, 0.55), look='amber'))
         ui.place(cv, btn, 540, BTN_Y, scale=K.lerp(0.6, 1.0, pop), opacity=K.ramp(t, T_BTN, T_BTN + 0.12))
@@ -1143,11 +1252,12 @@ def _scene_end(t):
     if r > 0:
         A['dis'].draw(cv, 540, DIS_Y, opacity=0.9 * K.ramp(t, T_DIS, T_DIS + 0.3))
     if t >= T_CLICK - 0.75:
-        trk = K.Track([(T_CLICK - 0.75, (900.0, 1720.0), 'out_cubic'), (T_CLICK - 0.08, (812.0, 1262.0), 'hold'),
-                       (T_CLICK + 0.45, (812.0, 1262.0), 'inout_cubic'), (T_CLICK + 1.2, (1010.0, 1230.0))])
+        # enters from the right at button height, clicks the arrow, leaves the same way (never crosses the copy)
+        trk = K.Track([(T_CLICK - 0.75, (1180.0, 1290.0), 'out_cubic'), (T_CLICK - 0.06, (812.0, 1262.0), 'hold'),
+                       (T_CLICK + 0.12, (812.0, 1262.0), 'in_cubic'), (T_CLICK + 0.6, (1180.0, 1300.0))])
         x, y = trk(t)
         press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04)
-        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.55) * (1 - K.ramp(t, T_CLICK + 0.55, T_CLICK + 0.95))
+        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.5) * (1 - K.ramp(t, T_CLICK + 0.3, T_CLICK + 0.55))
         if cop > 0.01:
             ui.draw_cursor(cv, x, y, 'hand', 84, press=press, click=(t - T_CLICK) if t >= T_CLICK else None,
                            opacity=cop, look='amber')
@@ -1352,10 +1462,12 @@ def _check_orbit(step=1.0 / 30, t0=None, t1=None, verbose=False):
             if en >= 1 and fade > 0.95:
                 readable[k] += step
             where = (round(float(t), 2), k)
+            if t > ZOOM[0]:
+                continue                    # the push into the door: tags fade out while leaving the frame
             upd('safe', min(r[0] - 70, 1010 - r[2], r[1] - 490, 1480 - r[3]), where)
             if r[3] >= 1050:
                 upd('like', 930 - r[2], where)
-            if zz > 0:
+            if zz > 0 and t > B(28 + k) + 0.5:      # while rising, back tags are meant to be hidden by the roof
                 g = max(hbox[0] - r[2], r[0] - hbox[2], hbox[1] - r[3], r[1] - hbox[3])
                 upd('house', g, where)
         for a in range(len(rects)):
@@ -1369,3 +1481,44 @@ def _check_orbit(step=1.0 / 30, t0=None, t1=None, verbose=False):
     if verbose:
         print(out)
     return out
+
+
+def _check_calc(step=1.0 / 30, t0=None, t1=None, cam_fn=None, verbose=False):
+    """Dev check for scene C over every frame: window body outline inside x 70..1010 and y 0..1920, and x <= 930
+    wherever the outline is at y 1050..1700 (like/share column); the total + caption inside the safe zone; and
+    the smallest on-screen chip-text size (px) while the chips are being clicked. Returns worst margins (px)."""
+    A = _calc_assets()
+    win = A['win']
+    cam_fn = cam_fn or _calc_cam
+    o = win.outline()
+    t0 = T_CALC + 0.27 if t0 is None else t0
+    t1 = T_ORB - 0.22 if t1 is None else t1
+    worst = dict(x=(1e9, None), like=(1e9, None), top=(1e9, None), bottom=(1e9, None), chip_px=(1e9, None),
+                 total=(1e9, None))
+    chips = [(x_, CHIP_Y + 36) for x_ in A['chip_x']]
+
+    def upd(key, v, t):
+        if v < worst[key][0]:
+            worst[key] = (round(float(v), 1), round(float(t), 2))
+    for t in np.arange(t0, t1, step):
+        cam = cam_fn(t)
+        xy = np.array([win.screen(cam, WIN_C, WIN_W, (0.0, 0.0, 0.0), float(px), float(py)) for px, py in o])
+        upd('x', min(xy[:, 0].min() - 70, 1010 - xy[:, 0].max()), t)
+        upd('top', xy[:, 1].min() - 0, t)
+        upd('bottom', 1920 - xy[:, 1].max(), t)
+        m = (xy[:, 1] >= 1050) & (xy[:, 1] <= 1700)
+        if m.any():
+            upd('like', 930 - xy[m, 0].max(), t)
+        if t < CLICKS[4] + 0.3:
+            for (cx, cy) in chips:
+                a = win.screen(cam, WIN_C, WIN_W, (0.0, 0.0, 0.0), cx, cy - 18)
+                b = win.screen(cam, WIN_C, WIN_W, (0.0, 0.0, 0.0), cx, cy + 18)
+                upd('chip_px', math.hypot(*(np.asarray(b) - np.asarray(a))), t)
+        if t > CLICKS[4] + 0.3:
+            for P, hw, hh in ((TOT_P, 430.0, 60.0), (CAP_P, 455.0, 22.0)):
+                q, d = cam.project(np.array([P]))
+                k = cam.focal / d[0]
+                upd('total', min(q[0][0] - hw * k - 70, 1010 - q[0][0] - hw * k, q[0][1] - hh * k - 230), t)
+    if verbose:
+        print(worst)
+    return worst

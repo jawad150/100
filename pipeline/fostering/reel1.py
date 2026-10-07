@@ -92,6 +92,9 @@ BED, BED_GAIN_DB = 'room_tone', -30.0
 
 # section starts, all on the 120 BPM grid (beat n at n * 0.5 s from t = 0)
 T_HOOK, T_Q, T_LIST, T_DOCK, T_PAY, T_END = 0.5, 2.5, 5.5, 11.5, 18.5, 21.0
+# hard cuts switch half a frame early: the 180-degree shutter samples of frame n span n/30 +- 1/120, so a switch at
+# n/30 - 1/60 falls between two frames' shutters and the cut frame never ghosts the outgoing shot / word
+HALF = 0.5 / K.FPS
 
 
 def _lazy():
@@ -208,7 +211,7 @@ WHIP_DIR = {1: 1, 3: -1, 7: 1}
 # sized so that inside y 1050..1700 every right edge stays <= ~910 (brief 3.2: like/share column at x > 930)
 WORDS = [('A SAFE\nHOME.', 190), ('EVERYDAY\nCARE.', 142), ('A PLACE', 180), ('TO\nBELONG.', 165)]
 WORD_Y = [1300, 1300, 1330, 1300]
-WORD_X = [530.0, 515.0, 515.0, 520.0]
+WORD_X = [530.0, 508.0, 512.0, 520.0]
 WHIP_HALF = 0.06                      # a whip spans tc - 0.06 .. tc + 0.06
 
 
@@ -245,7 +248,7 @@ def _hook_shake(t):
     """Camera shake from the word slams (on the beats)."""
     dx = dy = rot = 0.0
     for i in range(4):
-        tb = T_HOOK + i * BEAT
+        tb = T_HOOK + i * BEAT - HALF
         a = K.impulse(t, tb, decay=9.0)
         if a > 1e-3:
             sx, sy, sr = K.shake(t, 22.0 * a, 16.0, seed=3 + i)
@@ -272,7 +275,7 @@ def _flash_sprite(k, t, extra_zoom=1.0):
 def s_hook(t):
     A = _common()
     H = _hook_assets()
-    k = int(np.clip((t - T_HOOK) // HOOK_DT, 0, 7))
+    k = int(np.clip((t + HALF - T_HOOK) // HOOK_DT, 0, 7))
     tc_in, tc_out = _cut_t(k), _cut_t(k + 1)
     cv = None
     # whip transition window (both frames side by side, the pair slides past the lens)
@@ -301,16 +304,20 @@ def s_hook(t):
     cam = _static_cam(t)
     A['fg_bokeh'].draw(cv, cam, t, opacity=0.55)
     # slammed word of this beat
-    i = int(np.clip((t - T_HOOK) // BEAT, 0, 3))
-    tb = T_HOOK + i * BEAT
+    i = int(np.clip((t + HALF - T_HOOK) // BEAT, 0, 3))
+    tb = T_HOOK + i * BEAT - HALF                         # slam starts with the cut frame's shutter
     sx, sy, sr = _hook_shake(t)
     g = H['words'][i]
     sc = min(1.0, 930.0 / g.w)
+    # slam = a heavy drop from above (accelerating, motion-blurred by the sub-samples) + a small scale punch; the
+    # punch is capped per word so even the overshoot frames keep the right edge <= 925 (like/share column)
+    s0 = max(1.0, min(1.25, (925.0 - WORD_X[i] - 14.0) * 2.0 / g.w))
+    drop = -170.0 * (1.0 - K.ramp(t, tb, tb + 0.1, 'in_cubic'))
     # dark scrim behind the word: lands with the slam (a touch larger while the word overshoots)
     sp = K.spring(max(t - tb, 0.0) / 0.42 * 0.45, 3.2, 0.45) if t >= tb else 0.0      # Glyphs.slam's own spring
-    K.draw(cv, H['scrims'][i], WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6, scale=sc * (1.2 - 0.2 * sp),
+    K.draw(cv, H['scrims'][i], WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6 + drop, scale=sc * (1.12 - 0.12 * sp),
            opacity=K.ramp(t, tb, tb + 0.05))
-    g.slam(cv, t, WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6, t0=tb, s0=1.4, dur=0.42, scale=sc, rot=sr,
+    g.slam(cv, t, WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6 + drop, t0=tb, s0=s0, dur=0.42, scale=sc, rot=sr,
            smear=False)
     # light-leak sweep across the whip cuts at 1.25 and 2.25
     for tc in (_cut_t(3), _cut_t(7)):
@@ -640,12 +647,14 @@ def post_list(cv, t):
 
 
 # =============================================================================================== 4. SUPPORT DOCK
-# footage per tile: (clip, source in-point, crop centre, zoom, speed). c03: both children's faces stay inside the slot
-# over source 2.35..3.35 s, hence the slow 0.4x play
-TILES = [('Full Training', 'Preparation & ongoing learning', 'MAGENTA', 'grad_cap', ('c03', 2.45, (0.61, 0.45), 1.0, 0.4)),
+# footage per tile: (clip, source in-point, crop centre, zoom, speed, push-in per s). c03: both children's faces sit
+# fully inside the narrow slot only over source ~2.40..2.62 s (the boy then drifts out right), hence the 0.1x hold
+TILES = [('Full Training', 'Preparation & ongoing learning', 'MAGENTA', 'grad_cap',
+          ('c03', 2.40, (0.645, 0.45), 1.0, 0.1, 0.0)),
          ('Ongoing Support', 'Your supervising social worker', 'HOT_PINK', 'chat_bubble',
-          ('c04', 1.0, (0.5, 0.4), 1.1, 0.9)),
-         ('Weekly Allowance', 'From £447.60 a week per child', 'ORANGE', 'coin_gbp', ('c10', 17.4, (0.6, 0.42), 1.1, 0.9))]
+          ('c04', 1.0, (0.5, 0.4), 1.1, 0.9, 0.03)),
+         ('Weekly Allowance', 'From £447.60 a week per child', 'ORANGE', 'coin_gbp',
+          ('c10', 17.4, (0.6, 0.42), 1.1, 0.9, 0.03))]
 TILE_W, TILE_H, TILE_GAP = 264, 560, 18
 FOCUS_GROW, FOCUS_Z = 0.06, -30.0
 DOCK_X = 492.0                                # row centre: every tile text stays at x <= ~915 (like/share column)
@@ -791,10 +800,10 @@ def s_dock(t):
         mix = K.ramp(t, tf - 0.1, tf + 0.3, 'out_cubic') * (1 - K.ramp(t, tf + 1.85, tf + 2.2, 'inout_cubic')
                                                              if i < 2 else 1.0)
         if mix > 0.01:
-            cid, src, cen, mz, spd = TILES[i][4]
+            cid, src, cen, mz, spd, push = TILES[i][4]
             sx_, sy_, sw_, sh_, sr_ = tile.meta['slot']
-            media = F.Clip(cid).get(src + (t - tf) * spd, sw_, sh_, center=cen, zoom=mz + 0.03 * max(t - tf, 0.0),
-                                    look='neon')
+            media = F.Clip(cid).get(src + max(t - tf, -0.1) * spd, sw_, sh_, center=cen,
+                                    zoom=mz + push * max(t - tf, 0.0), look='neon')
         light = K.ramp(t, tf + 0.15, tf + 0.95, 'inout_sine')
         face = ui.dock_face(tile, focus=w, sweep=((t - T_DOCK) * 0.3 + i * 0.33) % 1.0)
         if media is not None:
@@ -813,10 +822,10 @@ def s_dock(t):
         sx_, sy_, sw_, sh_, sr_ = tile.meta['slot']
         k = TILE_W * s / tile.w
         slot_c = (px + (sx_ + sw_ / 2 - tile.w / 2) * k, P[1] + (sy_ + sh_ / 2 - tile.h / 2) * k, pz - 20)
-        corner = (px + (-tile.w / 2 + 50) * k, P[1] + (-tile.h / 2 - 50) * k, pz - 110)     # above the top edge
+        corner = (px, P[1] + (-tile.h / 2 - 66) * k, pz - 110)     # centred above the tile: never over the footage
         lift = mix
         ipos = tuple(slot_c[j] * (1 - lift) + corner[j] * lift for j in range(3))
-        iw = K.lerp(sw_ * 0.78, 122.0, lift) * k * (ic.size[0] / (ic.bbox[2] - ic.bbox[0]))
+        iw = K.lerp(sw_ * 0.78, 112.0, lift) * k * (ic.size[0] / (ic.bbox[2] - ic.bbox[0]))
         sc.billboard(spr, ipos, iw, opacity=K.ramp(tin, 0.2, 0.6))
     # hand cursor hovers the focused tile's footage (hover drives focus)
     sc.billboard(A['bokeh'], (-520.0, 640.0, -950.0), 260, mode='add', opacity=0.5)
@@ -1155,35 +1164,37 @@ def s_void(t):
 
 # =============================================================================================== contract
 def draw(t):
-    if t < T_HOOK:
+    t_cut = t + HALF                                      # section dispatch (see HALF)
+    if t_cut < T_HOOK:
         return s_cold(t)
-    if t < T_Q:
+    if t_cut < T_Q:
         return s_hook(t)
-    if t < T_LIST:
+    if t_cut < T_LIST:
         return s_question(t)
-    if t < T_DOCK:
+    if t_cut < T_DOCK:
         return s_list(t)
-    if t < T_PAY:
+    if t_cut < T_PAY:
         return s_dock(t)
-    if t < T_END:
+    if t_cut < T_END:
         return s_payoff(t)
     return s_end(t)
 
 
 def post(cv, t):
-    if t < T_HOOK:
+    t_cut = t + HALF
+    if t_cut < T_HOOK:
         f = _blip(t, T_HOOK, rise=0.03, decay=16.0)
         return _post(cv, t, hot=0.9 * f, footage=K.ramp(t, 0.3, 0.5),
                       chroma=1.8 + 3.0 * K.impulse(t, 0.0, decay=6.0))
-    if t < T_Q:
+    if t_cut < T_Q:
         return post_hook(cv, t)
-    if t < T_LIST:
+    if t_cut < T_LIST:
         return post_question(cv, t)
-    if t < T_DOCK:
+    if t_cut < T_DOCK:
         return post_list(cv, t)
-    if t < T_PAY:
+    if t_cut < T_PAY:
         return post_dock(cv, t)
-    if t < T_END:
+    if t_cut < T_END:
         return post_payoff(cv, t)
     return post_end(cv, t)
 
