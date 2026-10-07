@@ -136,6 +136,7 @@ BX = BADGE[0] + 20 + AV_R              # avatar centre x inside the badge
 Y_HEAD = (455, 560, 680)
 Y_CTA = 1140
 SUBLINE = 'Follow for more cinematic stories'
+HEADLINE = (('KAUNSI YAAD', 78, False), ('BHULANA SABSE', 78, False), ('MUSHKIL HAI?', 96, True))   # (text, px, orange)
 AVATAR_FALLBACK = os.path.join(C.ROOT, 'assets', 'avatar_from_genjutsu.png')
 
 
@@ -403,8 +404,7 @@ def draw(cv, u, prev=None):
         spr, b = text_sprite(SUBLINE, 'Inter-600', 28, (0.72, 0.69, 0.65))
         place(cv, spr, tx + (1 - p) * 40, BADGE[2] + 44 - b, op=A.ramp(lu, 0, 0.35))
     # ---------------- headline (question)
-    lines = (('KAUNSI YAAD', 78, False), ('BHULANA SABSE', 78, False), ('MUSHKIL HAI?', 96, True))
-    for i, ((txt, px, grad), y) in enumerate(zip(lines, Y_HEAD)):
+    for i, ((txt, px, grad), y) in enumerate(zip(HEADLINE, Y_HEAD)):
         lu = u - T_Q - i * 0.14
         if lu > 0:
             p = A.EXPO_OUT(A.clamp(lu / 0.8))
