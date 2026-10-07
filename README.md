@@ -1,3 +1,80 @@
+# Organic Fostering: three cinematic SaaS-style reels
+
+These are three vertical reels (1080×1920, 30 fps) for [organicfostering.co.uk](https://organicfostering.co.uk/). They're built from the client's Drive footage ("fostering", 19 clips), the brand colours, logo and fonts from the website, and 3D elements rendered in Blender. The audio is **SFX only**; the client adds music.
+
+Each reel has four files in [`reel/organic_fostering/`](reel/organic_fostering/):
+
+| Reel | Instagram-ready (22 Mbps) | Master (CRF 14, Git LFS) | SFX stem | Music tempo |
+|---|---|---|---|---|
+| 1 · **Could You?** (26 s, night neon) | `organic_fostering_reel1_could_you.mp4` | `…_could_you_master.mp4` | `organic_fostering_reel1_sfx_stem.wav` | **120 BPM** |
+| 2 · **Financial Support** (24 s, amber dashboard) | `organic_fostering_reel2_financial_support.mp4` | `…_financial_support_master.mp4` | `organic_fostering_reel2_sfx_stem.wav` | **128 BPM** |
+| 3 · **Nurture · Develop · Grow** (26 s, light organic) | `organic_fostering_reel3_nurture_develop_grow.mp4` | `…_nurture_develop_grow_master.mp4` | `organic_fostering_reel3_sfx_stem.wav` | **92 BPM** |
+
+Each reel also has a cover image (`…_cover.jpg`).
+
+**Adding music:** every cut and slam sits on the tempo grid above, with beat 1 at 0.00 s. A track at that tempo, starting on its downbeat at 0 s, will lock to the edit. The SFX are mixed to −18 LUFS integrated with a true peak of −1.5 dBTP or lower (Reel 2 is −2 dBTP), which leaves headroom for music. The stems are 48 kHz 24-bit WAVs if you want to remix them.
+
+## The three reels
+- **Reel 1, "Could You?"**, night neon (magenta glows, neon glass UI).
+  - **Hook:** a heartbeat iris, then 8 beat-synced footage flashes with slammed 3D words: "A SAFE HOME. / EVERYDAY CARE. / A PLACE / TO BELONG."
+  - **The question:** a 3D "?" and "Could **YOU** be a Foster Carer?".
+  - **Eligibility checklist:** a glass app ticks off spare bedroom, time & flexibility, single or in a relationship, rent or own your home, and no previous experience needed, ending on "You could be a great fit".
+  - **"Support is part of the role."** A dock of glass tiles: Full Training, Ongoing Support, and Weekly Allowance from £447.60.
+  - **Payoff:** a piggyback slow-mo with "Open your home. Change a child's life."
+  - **End card:** the 3D logo, a "Start your enquiry" click, the phone and URL, and a "Rated Good by Ofsted" badge.
+- **Reel 2, "Financial Support"**, amber dashboard (gold 3D coins, data viz).
+  - **Hook:** a 3D £ coin flips into the lens, footage cards fly through a tunnel, and "Financial Support" slams in.
+  - **Weekly rate:** a counter rolls to £447.60 a week per child while coins orbit.
+  - **Allowance calculator app:** age chips and a 3D bar chart showing £447.60, £473.17, £515.52 and £554.02. A weeks slider drags to 52 and the total lands on £23,275.20, with the website's disclaimer.
+  - **Support:** a ring of support tags around a 3D house.
+  - **"Recognition for a skilled role."**
+  - **End card:** a coin flips into the 3D logo, with "Discuss your estimate".
+- **Reel 3, "Nurture · Develop · Grow"**, light and organic (ivory and peach, 3D leaves).
+  - **Hook:** a glowing seed drops, and a montage plays in an iris.
+  - **Growth:** a 3D sprout grows under "A small beginning can change the direction of a life."
+  - **Three chapters:** each word has footage playing inside the letters, then the camera zooms through into the footage.
+    - **NURTURE:** a 3D house.
+    - **DEVELOP:** culture, faith, language and identity chips, with 3D puzzle pieces for Cultural Matching Specialists.
+    - **GROW:** the sprout.
+  - **Kinds of care:** an orbit dial of six fostering-type photo tags around a 3D heart.
+  - **Trust pills:** a 3D shield with the trust statements.
+  - **End card:** the sprout's leaves fly into the logo over a sunset, with "Start your enquiry".
+
+**Copy:** all of it comes from the website or the client's ads, including the allowance figures and the disclaimer. The ad's "£2,500" figure isn't used because its unit (week, month or one-off) wasn't stated. Tell us what it covers and it can go in.
+
+## How it's built ([`pipeline/fostering/`](pipeline/fostering/))
+- [`BRIEF.md`](pipeline/fostering/BRIEF.md) holds the creative brief, the storyboards and the engineering contract.
+- [`TOOLKIT.md`](pipeline/fostering/TOOLKIT.md) is the API cheat-sheet for the toolkit modules below.
+
+| File | What it does |
+|---|---|
+| `core.py` | Linear-light compositor: 3D camera and planes with depth of field, real sub-frame motion blur, glows, light leaks, particles, the looks, finishing, and the ffmpeg writer |
+| `footage.py` | Time-remapped, frame-blended clip access and the per-look grades |
+| `type3d.py` | 3D extruded, deep-glow, light-sweep, video-in-type and kinetic glyph typography |
+| `ui.py` | SaaS glass UI kit |
+| `assets3d_icons.py`, `assets3d_hero.py` | Blender (Cycles) renders of the 3D elements: heart, house, £ coin, shield, check tile, star badge, chat bubble, grad cap, key, phone, orbs, the extruded logo, "?", "£", the sprout growth, leaf, seed, puzzle pair and blocks |
+| `sprites3d.py` | Loads the 3D renders at runtime |
+| `audio.py` | Synthesized SFX library and the cue-sheet mixer |
+| `reel1.py`, `reel2.py`, `reel3.py` | The three timelines |
+| `render.py` | Parallel renderer |
+
+Every final render was QA'd frame by frame by independent reviewers, and each finding was verified by a second agent before it was fixed.
+
+Rebuild:
+
+```bash
+pip install bpy numpy opencv-python-headless pillow scipy cairosvg fonttools
+# workspace3/: frames/cXX (ffmpeg JPEG sequences of the Drive clips, 4K scaled to 1920 tall) + frames/manifest.json,
+#              fonts/ (Nunito, Poppins, Caveat), brand/ (logo PNG/SVG from the website), site_img/ (website photos)
+cd pipeline/fostering
+python3 assets3d_icons.py heart house coin_gbp shield_check grad_cap chat_bubble key_heart check_tile star_badge orbs pin_phone
+python3 assets3d_hero.py logo_mark3d question pound_glyph sprout leaf seed puzzle_pair blocks
+python3 render.py reel1 --workers 4          # likewise reel2 (add --no-sfx-build after `python3 reel2_dev.py sfx`), reel3
+python3 render.py reel1 --stills 1.0,8.1 ; python3 render.py reel1 --sheet 48   # previews
+```
+
+---
+
 # Gold market reel — black × gold motion graphics (Rida)
 
 **Final video:** [`reel/gold_reel_4k.mp4`](reel/gold_reel_4k.mp4) is the native 4K master (2160×3840, 29.97 fps, 79.4 s, 34 Mbps, 340 MB, stored with Git LFS). [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4) is the 1080p copy (87 MB). The synced Roman Urdu captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).
