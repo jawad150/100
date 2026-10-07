@@ -1,7 +1,161 @@
-"""audio.py: procedural SFX library (no music), cue-sheet mixer, BS.1770 loudness and stem export for the
+"""audio.py: procedural SFX library (NO MUSIC), cue-sheet mixer, BS.1770 loudness and stem export for the
 Organic Fostering reels. Everything is synthesised in numpy/scipy at 48 kHz stereo float, deterministic (seeded).
+Importing has no side effects (no files, no rendering); sounds render lazily and are cached.
 
-Placeholder docstring: replaced below by the generated catalog (see _DOC at the end of the module).
+CONVENTIONS
+    SR = 48000. A sound is an Sfx: a float32 (N, 2) ndarray with .hit (seconds from its start to the designed
+    hit/peak), .name and .dur. Hit means: impacts/clicks = the transient; whooshes = the loudest point (the pass);
+    risers / reverse swells = the END (they land on the hit); swells that track a motion (bar_grow, slider_drag,
+    grow_swell, slot_tick) = the end of the motion (cue those with align='start' at the motion start).
+    LEVELS ARE PRE-BALANCED: each sound is calibrated so its max momentary loudness (400 ms, K-weighted) equals
+    REF_LUFS (-20) + a designed per-sound offset (impacts loud, UI quiet; see Mmax in the catalog), peaks <= -1
+    dBFS. So gain_db=0 is the right starting point everywhere; nudge +-3 dB. The final mix is normalised anyway.
+    Every sound: DC/subsonic high-pass, click-free edges (raised-cosine fades, generators taper to exactly 0),
+    trailing silence trimmed. Low-end sounds carry psychoacoustic harmonics (bass_enhance) so they still read on
+    phone speakers (<= 7 dB loss through a 250 Hz high-pass, measured).
+
+LIBRARY (all keyword params optional; seed=0 for every sound; 'dur' and 'duration' are interchangeable)
+    sound(name, **params) -> cached read-only Sfx (copy before editing)      e.g. sound('riser', duration=1.6)
+    heartbeat(n=2, bpm=62) ... any catalog name is also a plain function returning a fresh Sfx
+    hit_offset(name, **params) -> seconds;  names(category=None) -> list;  params_of(name) -> {param: default}
+    resolve(name) -> library name (ALIASES: whoosh, boom, impact, hit, click, tick, ding, chime, coin, kaching,
+        swell, flash, drop, glitch, swish, slide, snap, plip, grow, sting, zoom, shutter, rustle, by, heart, ...)
+    SOUNDS[name] -> dict(fn, category, character, use, send)   categories: impact transition ui money texture bed
+
+MIXER
+    rep = mix(cues, dur, out_wav=None, stem_wav=None, bed=None, bed_gain_db=-30, *, target_lufs=-18,
+              tp_ceiling=-1.5, auto_duck=True, room_send=True, glue=True, vary=True, bits=24, split_stems=False,
+              tail_fade=0.4, verbose=True)
+      cue = {'t': 2.45, 'name': 'impact_big', 'gain_db': 0, 'pan': 0, 'align': 'hit' | 'start', 'params': {},
+             optional: 'seed', 'rate' (speed/pitch x, hit scales), 'lp'/'hp' (Hz), 'width' (0 mono..1..2 wide),
+             'dur' (truncate s, faded), 'send_db' (room-reverb send override)}; tuples (t, name, gain_db, pan) ok.
+      align='hit' (default) puts the sound's designed hit exactly on t (risers END on t, whooshes PEAK on t);
+      align='start' starts the sound at t. Repeats of a sound get seeds 0..3 in turn (vary) so they never sound
+      machine-gunned. Chain: duck_under (cluster auto-gain) -> shared 'studio' room send (per-category level)
+      -> gentle bus glue (2:1, soft knee, ~2 dB on the biggest hits) -> bed (anchored, sidechain-ducked 5 dB under
+      the SFX) -> loudness normalisation to target_lufs (BS.1770-4, gated) + 4x-oversampled true-peak lookahead
+      limiter (soft knee), iterated until |I - target| < 0.05 LU and TP <= tp_ceiling - 0.05.
+      Writes out_wav (48 kHz, 24-bit, or bits=16 TPDF-dithered) for muxing and stem_wav (48 kHz 24-bit, same
+      audio); split_stems=True also writes <stem>_fx.wav and <stem>_bed.wav (same gain curve, they sum to the mix).
+      bed: None | 'room_tone' | {'name', 't0', 't1', 'gain_db' (relative to bed_gain_db), 'fade', 'offset',
+           'params'} | list of those. bed_gain_db=-30 puts the bed at about -40 LUFS in the master (target + gain
+           + 8), i.e. felt more than heard; -24 = present, -36 = subliminal.
+      rep: integrated_lufs, true_peak_dbtp, sample_peak_dbfs, lra_lu, max_momentary_lufs, max_short_term_lufs,
+           limiter_max_gr_db, limiter_pct_over_1db, comp_max_gr_db, bed_lufs, placed (per-cue start/hit/gain/
+           duck_db/warn: 'hit before 0 s' | 'tail cut at end'), files, audio (float32 master). Printed by
+           report_text(rep).
+    duck_under(cues, window=0.09, strength=0.75, max_cut_db=8, under_impact_db=1.5) -> new cues with gain_db
+        reduced where several cues hit within +-window (priority impact > transition > money > texture > ui;
+        one equal neighbour -2.3 dB, three -4.5 dB) and smaller cues just after an impact -1.5 dB. mix() applies it.
+    sidechain(x, key, depth_db=4, attack=0.03, release=0.45) -> x ducked under key (used for the bed)
+    on_beats(name, bpm, beats, offset=0, **cue) -> cues on the BPM grid; callables get the beat index
+    build_reel('reel1') -> mixes pipeline/fostering/reel1.py: DUR, cues() and optional BED / BED_GAIN_DB; writes
+        AUDIO/reel1_sfx.wav (render.py muxes this automatically) and AUDIO/reel1_sfx_stem.wav (24-bit stem).
+    mix_overview(rep, 'x.png', title) -> PNG: spectrogram, waveform, momentary-loudness curve, cue hit ticks.
+
+ANALYSIS / DSP (public helpers)
+    loudness(x) integrated LUFS (BS.1770-4 K-weighting + gates, verified against ffmpeg ebur128 to 0.1 LU);
+    true_peak(x) dBTP (4x); momentary_max(x, win=0.4); loudness_curve(x); loudness_range(x) LRA;
+    stats(x, hit) -> dur/peak/rms/crest/Mmax/dc/edges/corr;  qc(x, hit) -> list of problems (empty = clean)
+    reverb(x, preset, wet_db, dry=1) with generated stereo IRs: make_ir(rt60, predelay, damp, er, lo_cut, ...),
+        presets REVERBS: room, studio, dark, plate, hall, air, outdoor;  reverb_circular() for loops
+    noise_band(d, rng, fc, bw, width, comb) time-varying spectral band noise; modal(); fm_bell(); osc(); pan();
+    width(); decorrelate(); transient(); bass_enhance(); lp/hp/bp/reson/eq; kweight(); read_wav(path)
+    spectro_image(x, w, h, hit, title, sub) -> PIL image; catalog_sheets(items, 'path_%d.png')
+
+CATALOG  (dur = rendered length incl. tail at default params, hit = hit offset s, Mmax = max momentary LUFS)
+ name            dur    hit    Mmax  character -> best use
+ IMPACT
+ heartbeat      2.36  0.006   -23   lub-dub, muffled sub thump + felt click, phone harmonics (n, bpm) -> R1 cold
+                                    open, emotional beats; heartbeat(n=1) for a single beat
+ impact_big     6.17  0.003   -16   deep cinematic boom: 33 Hz sub sweep, kick punch, crack, hall bloom, rumble
+                                    tail (tail=1 scales) -> the question slam, title slams (pair with riser)
+ impact_soft    1.27  0.006   -23   gentle felt thump, soft air puff, short room -> soft landings, R3 hits
+ sub_drop       2.40  0.010   -22   sub pitch-drop 90 -> 28 Hz with audible harmonics (dur) -> under smash cuts
+ flash_hit      2.01  0.100   -19   0.1 s reverse hiss suck -> crack, thump, metallic zing, plate bloom -> flash
+                                    frames / montage cuts on the beat
+ logo_sting     9.54  0.420   -20   0.42 s airy swell -> soft impact + shimmer + warm bell bloom + 4.6 s air
+                                    tail (tone=1 pitch) -> every end-card logo resolve
+ TRANSITION
+ whip           0.78  0.210   -23   very fast bright "fwip" 600 Hz -> 5.2 kHz + faint zip (direction +-1) ->
+                                    whip pans, smash cuts, hook montage
+ whoosh_fast    1.17  0.420   -23   quick airy rush with low body and sizzle, panning -> cards flying in, windows
+ whoosh_slow    4.27  1.200   -25   big soft swell of air, jet-flanged, hall tail -> slow reveals, camera moves
+ whoosh_by      1.53  0.770   -24   physically modelled doppler pass (dur, speed m/s, dist m, direction): per-ear
+                                    delay, air absorption, whistle bands drop in pitch -> R2 card tunnel, orbits
+ swish_small    0.66  0.140   -31   small soft high swish -> chips, tags, cursor moves
+ air_zoom       1.53  0.620   -22   zoom-through air rush, jet flange, pressure swell, wide at the hit -> R3 zoom
+                                    through the letter U, iris transitions
+ riser          2.00  2.000   -24   noise sweep 250 Hz -> 9 kHz + rising tremolo tone + air rush; ENDS on the hit
+                                    (duration) -> into end cards / the question / any slam
+ reverse_swell  1.50  1.500   -24   reversed hall bloom of a soft hit + bright air; ENDS on the hit (duration)
+ downlifter     4.08  0.010   -25   falling sweep 7 kHz -> 150 Hz + descending tone + soft boom (dur) -> exits
+ UI
+ glitch_short   0.60  0.000   -28   tasteful micro-grain stutter, stereo scattered -> data flickers, glitch cuts
+ ui_click       0.50  0.001   -29   crisp soft glassy click + low tock (pitch) -> cursor clicks, button presses
+ ui_tick        0.40  0.000   -33   tiny high glassy tick (pitch) -> list items, progress ticks
+ ui_hover       1.78  0.120   -35   soft airy breath + faint rising glint -> hover/focus, tile enlarge
+ typing         1.36  0.002   -32   n soft laptop keys, human timing (n, cps) -> type-on text
+ pop            0.60  0.002   -28   round "bloop" pop (pitch) -> chips/tags/icons popping in
+ bubble_pop     0.59  0.001   -29   liquid Minnaert bubble (pitch) -> playful pops, R3 chips
+ check_ding     2.67  0.002   -27   soft two-note glassy confirmation E6 -> B6 (pitch) -> checklist ticks
+ toggle_on      0.56  0.001   -30   two-stage switch + rising glint -> toggles, chip selection
+ toast_chime    3.02  0.002   -27   warm rounded two-tone G5 -> D6 + air lift (pitch) -> toasts, success
+ glass_tap      1.84  0.001   -30   tap on a glass pane, beating glass modes (pitch) -> glass cards landing
+ card_slide     0.94  0.361   -30   friction slide then soft "thup" (dur) -> carousel tiles docking
+ puzzle_click   0.61  0.060   -26   satisfying plastic snap + latch + low thock -> R3 puzzle pieces
+ camera_shutter 0.56  0.001   -28   mirror click, whirr, shutter close -> photo cards, freeze frames
+ slider_drag    1.55  1.000   -32   detent ticks rising with the value + friction + stop click (duration,
+                                    detents); hit = stop -> R2 weeks slider (align='start')
+ bar_grow       2.55  0.800   -30   rising soft tonal glide + air, wooden tock at full height (duration, pitch:
+                                    map bar height -> pitch); hit = end -> R2 bars, progress rings (align='start')
+ MONEY
+ coin_flip      2.66  0.001   -27   metallic thumb flick then spinning shimmer slowing down -> R2 coin flips
+ coin_ring      3.35  0.000   -28   bright gold coin strike, beating plate modes (pitch) -> coin lands, £ figure
+ coins_burst    2.42  0.001   -25   cascade of ~26 coins thinning out, wide (n) -> money bursts
+ cash_kaching   3.92  0.120   -24   lever "ka", bright bell "ching" (hit), soft drawer + coins -> R2 total lands
+ slot_tick      1.75  1.200   -30   n rolling-digit ticks decelerating to a landing click (n, dur, ease 'out' |
+                                    'linear'); hit = landing -> R2 counters (align='start' at roll start)
+ TEXTURE
+ shimmer        3.07  0.020   -30   sparkling 3 - 11 kHz grain cloud + plate wash (dur) -> light sweeps, glints
+ sparkle        2.01  0.002   -31   a few bright FM twinkles -> stars, badges, check icons glowing
+ ripple         5.77  0.030   -30   airy circular shimmer: moving comb + rotating pan + soft pings (dur) -> R3
+                                    ripple ring, iris/ring wipes
+ seed_plip      1.81  0.002   -27   water-drop plip (rising chirp) + soft thud + splash -> R3 seed landing
+ grow_swell     4.22  2.500   -28   organic rising swell: breathy air, woody resonances gliding up, rustle
+                                    building, peaks at the end (duration) -> R3 sprout growth (align='start')
+ leaf_rustle    1.64  0.300   -33   crinkly leaf grains under a soft swell (dur) -> leaves unfolding/drifting
+ BED (seamless loops, tiled by mix(bed=...); normalised to integrated -20 LUFS; hit 0)
+ room_tone     16.00  -        warm interior: soft low-mid air, HVAC-like body, slow breathing (dur) -> R1/R2
+ night_air     20.00  -        dark airy hum: noise drone bands at 62/124 Hz (no mains tone), distant wind,
+                                    faint high air (dur) -> very subtle floor for the dark reels
+ outdoor_birds 24.00  -        breeze gusts + sparse synthesised birdsong (chirps, trills, two-note whistles)
+                                    at various distances (dur, birds level) -> R3
+
+EXAMPLE (reel module)
+    import audio as A
+    DUR, BPM = 26.0, 120
+    BED, BED_GAIN_DB = 'room_tone', -30
+    def cues():
+        c = [dict(t=0.02, name='heartbeat', params=dict(n=1)),
+             dict(t=0.45, name='reverse_swell', params=dict(duration=0.45)), dict(t=0.45, name='flash_hit')]
+        c += A.on_beats('whip', BPM * 2, range(1, 9), offset=0.45 - 0.25, gain_db=-3,
+                        params=dict(direction=1), pan=lambda b: 0.4 * (-1) ** b)
+        c += [dict(t=2.45, name='riser', params=dict(duration=1.6)), dict(t=2.45, name='impact_big'),
+              dict(t=2.45, name='sub_drop'), dict(t=21.0, name='riser', params=dict(duration=2.0)),
+              dict(t=21.0, name='logo_sting'), dict(t=5.6, name='slot_tick', align='start', params=dict(n=12))]
+        return c
+    # python3 audio.py reel reel1   -> workspace3/audio/reel1_sfx.wav (+ _stem.wav), report printed
+    rep = A.mix(cues(), DUR, 'mix.wav', 'stem.wav', bed=BED); A.mix_overview(rep, 'mix.png', 'reel1')
+
+CLI
+    python3 audio.py selftest              -> out/selftest/audio_sheet_{1,2,3}.png (spectrogram grids),
+        audio_catalog.wav (every sound in sequence + the beds), audio_demo_r1.wav/.png (reel-1 style cue sheet),
+        loudness report incl. an ffmpeg ebur128 cross-check
+    python3 audio.py reel reel1            -> AUDIO/reel1_sfx.wav + AUDIO/reel1_sfx_stem.wav
+    python3 audio.py mix cues.json 26 out.wav [stem.wav] [bed]
+    python3 audio.py play riser '{"duration": 1.5}' [out.wav]   -> wav + spectrogram png
+    python3 audio.py catalog               -> printed catalog
 """
 import functools
 import json
@@ -317,9 +471,11 @@ def osc(f, phase=0.0):
     return np.sin(phase + TWO_PI * np.cumsum(f) / SR)
 
 
-def modal(d, freqs, taus, amps, rng=None, split=0.0, contact=0.0004, t0=0.0):
-    """Modal resonator bank: sum of exponentially decaying sines (struck glass, metal, plastic).
-    split (Hz): each mode becomes a doublet split by +-split/2 (slow beating, like real coins and bells).
+def modal(d, freqs, taus, amps, rng=None, split=0.0, contact=0.0004, t0=0.0, split_mix=0.4, rand_phase=False):
+    """Modal resonator bank: sum of exponentially decaying sines (struck glass, metal, plastic). Modes start
+    at zero phase (velocity excitation: no onset step) unless rand_phase.
+    split (Hz): each mode becomes a doublet split by ~split (slow partial beating, like real coins and bells);
+    split_mix = level of the second component (0.4 -> about +-40 % beating depth, never a full tremolo).
     contact: raised-cosine onset of the mallet/contact time (softer = longer = duller)."""
     t = _t(d)
     u = np.maximum(t - t0, 0.0)
@@ -328,13 +484,13 @@ def modal(d, freqs, taus, amps, rng=None, split=0.0, contact=0.0004, t0=0.0):
     am = np.asarray(amps, dtype=np.float64)
     keep = fr < SR * 0.45
     fr, tau, am = fr[keep], tau[keep], am[keep]
-    ph = rng.uniform(0, TWO_PI, len(fr)) if rng is not None else np.zeros(len(fr))
+    ph = rng.uniform(0, TWO_PI, len(fr)) if (rng is not None and rand_phase) else np.zeros(len(fr))
     x = np.zeros(len(t))
     for f, ta, a, p0 in zip(fr, tau, am, ph):
         e = np.exp(-u / ta)
         if split:
             s = split * (0.6 + 0.8 * (rng.random() if rng is not None else 0.5))
-            x += a * e * 0.5 * (np.sin(TWO_PI * (f - s / 2) * u + p0) + np.sin(TWO_PI * (f + s / 2) * u + p0 * 1.3))
+            x += a * e * (np.sin(TWO_PI * f * u + p0) + split_mix * np.sin(TWO_PI * (f + s) * u + p0)) / (1 + split_mix)
         else:
             x += a * e * np.sin(TWO_PI * f * u + p0)
     on = _ar(t, contact, 1e9, t0)
@@ -378,6 +534,21 @@ def decorrelate(x, rng, amount=0.5, ms=12.0):
         wet = signal.fftconvolve(x[:, c], h)[:len(x)]
         out[:, c] = x[:, c] * math.sqrt(1 - amount * 0.5) + wet * math.sqrt(amount * 0.5) * (1 if c == 0 else -1)
     return out
+
+
+def bass_enhance(x, amount=0.8, fc=110.0, band=(120.0, 650.0), drive=3.5):
+    """Psychoacoustic bass (phone-speaker translation): harmonics of the sub band (< fc) generated by
+    asymmetric saturation, band-limited to `band` and mixed in, so small speakers imply the missing
+    fundamental. Harmonics track the sub envelope (they fade with it)."""
+    lo = lp(lp(x, fc, 2), fc, 2)
+    env = np.abs(signal.hilbert(lo, axis=0))
+    env = lp(env, 40.0, 2)
+    floor = np.max(env) * 1e-3
+    u = np.clip(lo / np.maximum(env, floor), -1.5, 1.5)          # ~unit-amplitude sub waveform
+    h = _asat(u, drive, 0.25) * env                             # fixed harmonic spectrum, linear in level
+    h = bp(h - np.mean(h, axis=0), band[0], band[1], 2)
+    h = lp(h, band[1], 2)
+    return x + amount * h
 
 
 # ------------------------------------------------------------------------------------------- dynamics bits
@@ -717,6 +888,7 @@ def heartbeat(n=2, bpm=62.0, seed=0):
             th = _thump(0.5, fe * r.uniform(0.97, 1.03), 42.0, 0.022, 0.075, r, attack=0.004, drive=2.6,
                         noise=0.55, noise_lp=220.0, click=0.18, click_band=(250.0, 1100.0))
             _add(x, th * amp * r.uniform(0.94, 1.0), k * period + off + 0.002)
+    x = bass_enhance(x, 1.8, fc=120.0, band=(170.0, 600.0), drive=7.0)
     x = lp(x, 1100, 2)
     st = reverb(x, 'dark', wet_db=-15)
     return _finish(st, 0.006, -3.0, 'heartbeat')
@@ -740,6 +912,7 @@ def impact_big(seed=0, tail=1.0):
     am = 1 + 0.25 * np.sin(TWO_PI * 1.3 * t + 1.0) * np.sin(TWO_PI * 0.55 * t)
     rum = rum * (_ar(t, 0.06, 1.25 * tail) * am)[:, None]
     mono = 0.95 * sub + 0.55 * punch + 0.30 * body + 0.22 * thoom + 0.20 * crack + 0.08 * tick
+    mono = bass_enhance(mono, 0.9, fc=100.0, band=(170.0, 800.0), drive=7.0)
     st = _st(mono) + 0.08 * air + 0.16 * rum
     st = _taper(transient(st, 3.0), sec=1.6)
     wet = reverb(lp(hp(st, 140), 5500, 2) * 0.9, 'hall', wet_db=-3.0 + 2 * (tail - 1), dry=0.0)
@@ -756,10 +929,10 @@ def impact_soft(seed=0):
     r = _rng(seed, 'impact_soft')
     d = 1.6
     t = _t(d)
-    th = _thump(d, 56.0, 46.0, 0.03, 0.17, r, attack=0.006, drive=1.8, noise=0.45, noise_lp=500.0)
+    th = _thump(d, 62.0, 48.0, 0.03, 0.12, r, attack=0.006, drive=2.0, noise=0.45, noise_lp=500.0)
     felt = _unit(bp(r.standard_normal(len(t)), 180, 900)) * _ar(t, 0.003, 0.035) * 0.25
     puff = noise_band(d, r, [(0, 1600), (1, 700)], bw=1.2, width=0.6) * _ar(t, 0.006, 0.07)[:, None] * 0.12
-    st = _st(th + felt) + puff
+    st = _st(bass_enhance(th, 1.1, fc=110.0, band=(170.0, 700.0), drive=6.0) + felt) + puff
     st = reverb(st, 'studio', wet_db=-11, send_hp=150)
     return _finish(st, 0.006, -3.0, 'impact_soft')
 
@@ -774,6 +947,7 @@ def sub_drop(seed=0, dur=2.4):
     env = _ar(t, 0.008, 0.75 * dur / 2.4) * (1 - _ar(t, 0.0, 1e9, dur - 0.25) * np.clip((t - dur + 0.25) / 0.25, 0, 1))
     s = osc(f) * env
     x = 0.85 * _sat(s, 2.2) + 0.25 * _asat(s, 3.0, 0.2)
+    x = bass_enhance(x, 1.3, fc=100.0, band=(150.0, 600.0), drive=8.0)
     puff = _unit(lp(r.standard_normal(len(t)), 380, 2)) * _ar(t, 0.003, 0.05) * 0.18
     st = _st(x + puff)
     return _finish(st, 0.01, -2.0, 'sub_drop')
@@ -810,7 +984,8 @@ def logo_sting(seed=0, tone=1.0):
     sw_env = np.where(t < pre, (t / pre) ** 2.4, np.exp(-(t - pre) / 0.05))
     swell = noise_band(d, r, [(0, 900), (pre / d, 6000), (1, 6000)], bw=1.1, width=0.8) * sw_env[:, None] * 0.3
     th = np.zeros(len(t))
-    _add(th, _thump(2.5, 40.0, 60.0, 0.04, 0.45, r, attack=0.005, drive=1.6, noise=0.35, noise_lp=400), pre)
+    _add(th, bass_enhance(_thump(2.5, 40.0, 60.0, 0.04, 0.45, r, attack=0.005, drive=1.6, noise=0.35,
+                                 noise_lp=400), 0.7), pre)
     # bell bloom: warm consonant partial set (single stinger, not a chord pad) with slow bloom and chorus
     f0 = 523.25 * tone
     parts = [(0.5, 0.35, 2.4), (1.0, 1.0, 2.2), (2.0, 0.42, 1.6), (2.76, 0.16, 1.1), (3.0, 0.20, 1.2),
@@ -859,9 +1034,9 @@ def _whoosh(d, hit, r, fc, bw, k_rise, tau, pan_from, pan_to, body=0.35, body_fc
 @_register('transition', 'very fast bright "fwip": band sweep 600 -> 5.2 kHz, low body, faint zip, L -> R',
            'whip pans, smash cuts, hook montage transitions', send=-18)
 def whip(seed=0, direction=1):
-    """Whip (~0.45 s). hit = 0.26 s (peak). direction -1 pans R -> L."""
+    """Whip (~0.75 s incl. room). hit = 0.21 s (peak). direction -1 pans R -> L."""
     r = _rng(seed, 'whip')
-    d, hit = 0.46, 0.26
+    d, hit = 0.42, 0.21
     ph = hit / d
     st = _whoosh(d, hit, r, [(0, 650), (ph * 0.7, 1500), (ph, 5200), (1, 2600)],
                  [(0, 1.1), (ph, 0.75), (1, 1.2)], 3.2, 0.038, -0.65 * direction, 0.7 * direction, body=0.45,
@@ -1005,6 +1180,9 @@ def reverse_swell(duration=1.5, seed=0):
     src += modal(src_d, [1800, 2950, 4400, 6600], [0.2, 0.15, 0.1, 0.07], [1, .7, .5, .3], r) * 0.25
     wet = reverb(src, 'hall', wet_db=0.0, dry=0.0, rt60=max(1.6, d * 1.3), predelay=0.0, build=0.005)
     n = _n(d)
+    env = _smooth(np.abs(wet).max(1), 0.01)
+    i0 = int(np.argmax(env[:_n(0.2)]))
+    wet = wet[i0:]
     seg = wet[:n] if len(wet) >= n else np.pad(wet, ((0, n - len(wet)), (0, 0)))
     st = seg[::-1].copy()
     st *= (np.linspace(0, 1, n) ** 1.3)[:, None]
@@ -1088,7 +1266,7 @@ def ui_tick(seed=0, pitch=1.0):
     d = 0.08
     x = _click(d, r, (4000, 12000), 0.0009, [(3800 * pitch, 0.007, 0.6), (6100 * pitch, 0.004, 0.3)])
     st = reverb(x, 'room', wet_db=-22)
-    return _finish(st, 0.0003, -13.0, 'ui_tick', fin=0.0002)
+    return _finish(st, 0.0003, -13.0, 'ui_tick', fin=0.0004)
 
 
 @_register('ui', 'soft airy breath with a faint rising sine glint', 'hover states, focus changes, tile '
@@ -1321,7 +1499,7 @@ def coin_ring(seed=0, pitch=1.0):
     d = 3.0
     x = _coin_ring(d, r, 2750 * pitch * r.uniform(0.98, 1.02), tau0=0.75, hard=1.0)
     st = reverb(decorrelate(x, r, 0.3), 'plate', wet_db=-13)
-    return _finish(st, 0.0003, -8.0, 'coin_ring', fin=0.0002)
+    return _finish(st, 0.0004, -8.0, 'coin_ring', fin=0.0004)
 
 
 @_register('money', 'cascade of ~26 coins: dense clatter that thins out, panned wide', 'money bursts, totals '
@@ -1356,8 +1534,10 @@ def cash_kaching(seed=0):
         _add(x, _st(_click(0.03, r, (2500, 8000), 0.001, [(2800 + 300 * k, 0.004, 0.3)]) * 0.18), 0.03 + 0.016 * k)
     f0 = 2350.0
     bell = modal(d - hit, [f0, f0 * 2.01, f0 * 2.74, f0 * 3.98, f0 * 5.41],
-                 [0.95, 0.55, 0.38, 0.22, 0.13], [1.0, 0.45, 0.35, 0.18, 0.1], r, split=3.0, contact=0.0003)
-    bell += 0.5 * modal(d - hit, [f0 * 1.003, f0 * 2.74 * 1.002], [0.8, 0.35], [0.5, 0.2], r, t0=0.004)
+                 [0.95, 0.55, 0.38, 0.22, 0.13], [1.0, 0.45, 0.35, 0.18, 0.1], r, split=2.2, split_mix=0.3,
+                 contact=0.0003)
+    tb = _t(d - hit)
+    bell += _unit(hp(r.standard_normal(len(tb)), 5000)) * _ar(tb, 0.0002, 0.005) * 0.12      # the "ch"
     _add(x, decorrelate(bell, r, 0.3), hit)
     sl = noise_band(0.26, r, [(0, 600), (1, 1800)], 1.0, width=0.4) * _swell(_t(0.26), 0.2, 1.5, 0.02)[:, None]
     _add(x, sl * 0.10, 0.26)
@@ -1508,7 +1688,7 @@ def seed_plip(seed=0):
     thud = _thump(0.4, 66.0, 50.0, 0.02, 0.07, r, attack=0.003, drive=1.6, noise=0.5, noise_lp=450)
     spl = _unit(bp(r.standard_normal(len(t)), 2000, 7000)) * _ar(t, 0.0004, 0.014)
     x = 0.8 * plip + spl * 0.07
-    _add(x, thud * 0.55, 0.004)
+    _add(x, bass_enhance(thud, 0.8) * 0.55, 0.004)
     st = reverb(decorrelate(x, r, 0.2), 'plate', wet_db=-12)
     st = reverb(st, 'outdoor', wet_db=-16)
     return _finish(st, 0.002, -7.0, 'seed_plip', fin=0.0003)
@@ -1722,6 +1902,46 @@ _PRIORITY = dict(impact=4, transition=3, money=2, texture=1.5, ui=1, bed=0)
 
 
 # ============================================================================================ cached access
+ALIASES = dict(whoosh='whoosh_fast', boom='impact_big', impact='impact_big', hit='impact_soft', thud='impact_soft',
+               click='ui_click', tick='ui_tick', hover='ui_hover', ding='check_ding', check='check_ding',
+               chime='toast_chime', toast='toast_chime', coin='coin_ring', kaching='cash_kaching',
+               swell='reverse_swell', reverse='reverse_swell', shutter='camera_shutter', rustle='leaf_rustle',
+               zoom='air_zoom', flash='flash_hit', drop='sub_drop', glitch='glitch_short', swish='swish_small',
+               slide='card_slide', snap='puzzle_click', plip='seed_plip', grow='grow_swell', sting='logo_sting',
+               bubble='bubble_pop', toggle='toggle_on', slider='slider_drag', slot='slot_tick', bar='bar_grow',
+               by='whoosh_by', passby='whoosh_by', heart='heartbeat')
+
+
+_WARNED = set()
+
+
+def resolve(name, fuzzy=True):
+    """Library name for a sound name or alias. With fuzzy, an unknown 'word_word' name falls back to its first
+    or last word as a name/alias (e.g. 'whoosh_in' -> whoosh_fast, 'impact_glass' -> impact_big) with a printed
+    warning; otherwise KeyError listing the valid names."""
+    if name in SOUNDS:
+        return name
+    if name in ALIASES:
+        return ALIASES[name]
+    if fuzzy and isinstance(name, str):
+        parts = name.lower().replace('-', '_').split('_')
+        for cand in (parts[0], parts[-1], '_'.join(parts[:2])):
+            if cand in SOUNDS or cand in ALIASES:
+                got = cand if cand in SOUNDS else ALIASES[cand]
+                if name not in _WARNED:
+                    print('audio: unknown sound %r -> using %r' % (name, got))
+                    _WARNED.add(name)
+                return got
+    raise KeyError('unknown sound %r; known: %s (aliases: %s)' % (name, ', '.join(SOUNDS), ', '.join(ALIASES)))
+
+
+def params_of(name):
+    """Parameter names (and defaults) accepted by a sound."""
+    import inspect
+    sig = inspect.signature(SOUNDS[resolve(name)]['fn'])
+    return {k: v.default for k, v in sig.parameters.items()}
+
+
 def _key(params):
     return tuple(sorted((k, tuple(v) if isinstance(v, list) else v) for k, v in (params or {}).items()))
 
@@ -1735,8 +1955,14 @@ def _sound_cached(name, key):
 
 def sound(name, **params):
     """Cached render of a library sound -> read-only Sfx (float32 (N, 2), .hit). Copy before editing."""
-    if name not in SOUNDS:
-        raise KeyError('unknown sound %r; known: %s' % (name, ', '.join(sorted(SOUNDS))))
+    name = resolve(name)
+    acc = params_of(name)
+    for a, b in (('dur', 'duration'), ('duration', 'dur')):        # either spelling works everywhere
+        if a in params and a not in acc and b in acc:
+            params[b] = params.pop(a)
+    bad = set(params) - set(acc)
+    if bad:
+        raise TypeError('%s() got unknown params %s; accepted: %s' % (name, sorted(bad), params_of(name)))
     return _sound_cached(name, _key(params))
 
 
@@ -1754,20 +1980,34 @@ def _norm_cue(c):
     if isinstance(c, (list, tuple)):
         c = dict(zip(('t', 'name', 'gain_db', 'pan'), c))
     c = dict(c)
+    if 'name' not in c and 'sfx' in c:
+        c['name'] = c.pop('sfx')
     c.setdefault('gain_db', 0.0)
     c.setdefault('pan', 0.0)
     c.setdefault('align', 'hit')
     c.setdefault('params', {})
-    if c['name'] not in SOUNDS:
-        raise KeyError('cue %r: unknown sound %r' % (c, c['name']))
+    c['name'] = resolve(c['name'])
     return c
 
 
-def duck_under(cues, window=0.09, strength=1.0, max_cut_db=8.0, under_impact_db=2.0, impact_window=0.35):
+def on_beats(name, bpm, beats, offset=0.0, **cue):
+    """Cues on a BPM grid: on_beats('whip', 120, range(1, 9), offset=0.45, gain_db=-3) -> list of cue dicts
+    with t = offset + beat * 60 / bpm (hit-aligned by default). Extra keys (gain_db, pan, params...) copy into
+    every cue; a callable value is called with the beat index (e.g. pan=lambda b: 0.4 * (-1) ** b)."""
+    out = []
+    for b in beats:
+        c = {k: (v(b) if callable(v) else v) for k, v in cue.items()}
+        c.update(t=offset + b * 60.0 / bpm, name=name)
+        out.append(c)
+    return out
+
+
+def duck_under(cues, window=0.09, strength=0.75, max_cut_db=8.0, under_impact_db=1.5, impact_window=0.35):
     """Auto-gain for dense clusters (returns a NEW cue list; 'duck_db' records the cut applied).
     For each cue, every other cue of equal or higher priority (impact > transition > money > texture > ui)
     whose hit lies within +-window counts as a competitor (weighted by closeness); the cue is cut by
-    strength * 10*log10(1 + n) dB (one equal neighbour -> -3 dB, three -> -6 dB), capped at max_cut_db.
+    strength * 10*log10(1 + n) dB (default 0.75: one equal neighbour -> -2.3 dB, three -> -4.5 dB), capped at
+    max_cut_db.
     Lower-priority cues whose hit falls within impact_window after an impact's hit lose a further
     under_impact_db so the boom keeps its punch."""
     cs = [_norm_cue(c) for c in cues]
@@ -1796,7 +2036,7 @@ def sidechain(x, key, depth_db=4.0, attack=0.03, release=0.45, thresh_rel_db=-26
     """Duck x under key: gain reduction up to depth_db as the key's 50 ms level rises from
     (key max + thresh_rel_db) to (key max - 6 dB). Smooth attack/release (control-rate one-pole)."""
     k = _mono(np.abs(_st(key)))
-    lvl = db(np.sqrt(uniform_filter1d(k ** 2, int(0.05 * SR)) + 1e-20))
+    lvl = db(np.sqrt(np.maximum(uniform_filter1d(k ** 2, int(0.05 * SR)), 1e-20)))
     top = np.max(lvl)
     amt = np.clip((lvl - (top + thresh_rel_db)) / (-6.0 - thresh_rel_db), 0, 1)
     gr = _ballistics(-depth_db * amt, attack, release)
@@ -1823,7 +2063,7 @@ def _ballistics(target_db, attack, release, block=32):
 def compressor_gain(x, thresh_db=-16.0, ratio=2.2, knee_db=8.0, attack=0.012, release=0.18, rms=0.012):
     """Gentle bus-glue compressor -> gain curve in dB (<= 0). Feed-forward RMS detector, soft knee."""
     p = np.square(_st(x)).max(1)
-    lvl = 10 * np.log10(uniform_filter1d(p, max(1, int(rms * SR))) + 1e-20)
+    lvl = 10 * np.log10(np.maximum(uniform_filter1d(p, max(1, int(rms * SR))), 1e-20))
     over = lvl - thresh_db
     gr = np.where(over <= -knee_db / 2, 0.0,
                   np.where(over >= knee_db / 2, -(over * (1 - 1 / ratio)),
@@ -1831,14 +2071,21 @@ def compressor_gain(x, thresh_db=-16.0, ratio=2.2, knee_db=8.0, attack=0.012, re
     return _ballistics(gr, attack, release)
 
 
-def limiter_gain(x, ceiling_db=-1.5, lookahead=0.0015, release=0.08, knee_db=1.5):
-    """True-peak lookahead limiter -> linear gain curve (<= 1). Peaks are detected on the 4x oversampled
-    signal; soft knee; the gain ramps down over the lookahead so it is fully reduced at every peak."""
+def tp_envelope(x):
+    """Per-sample true-peak envelope (max |x| over the 4x oversampled neighbourhood of each sample)."""
     x = _st(x)
     n = len(x)
     os_ = np.abs(signal.resample_poly(x, 4, 1, axis=0)).max(1)
     os_ = maximum_filter1d(os_, 9)
-    pk = np.maximum(os_[::4][:n], np.abs(x).max(1))
+    return np.maximum(os_[::4][:n], np.abs(x).max(1))
+
+
+def limiter_gain(x, ceiling_db=-1.5, lookahead=0.0015, release=0.08, knee_db=1.5, pk=None):
+    """True-peak lookahead limiter -> linear gain curve (<= 1). Peaks are detected on the 4x oversampled
+    signal (or pass pk = tp_envelope(x) precomputed); soft knee; the gain ramps down over the lookahead so it
+    is fully reduced at every peak."""
+    if pk is None:
+        pk = tp_envelope(x)
     over = db(pk) - ceiling_db
     k = knee_db
     gr = np.where(over <= -k / 2, 0.0, np.where(over >= k / 2, -over, -((over + k / 2) ** 2) / (2 * k)))
@@ -1983,37 +2230,60 @@ def mix(cues, dur, out_wav=None, stem_wav=None, bed=None, bed_gain_db=-30.0, *, 
     fx *= g_fx
     gr_comp = np.zeros(N)
     if glue and np.any(fx):
-        gr_comp = compressor_gain(fx, thresh_db=target_lufs + 4.0)
+        gr_comp = compressor_gain(fx, thresh_db=target_lufs + 8.0, ratio=2.0)
         fx *= undb(gr_comp)[:, None]
     if bedbus is not None:
-        bed_ref = loudness(bedbus) if np.any(bedbus) else -120
-        bedbus *= undb(target_lufs + bed_gain_db + BED_ANCHOR_DB - bed_ref)
-        bedbus = sidechain(bedbus, fx, depth_db=5.0)
+        if np.any(fx):
+            bedbus = sidechain(bedbus, fx, depth_db=5.0)
         if tail_fade:
             bedbus = _fade(bedbus, 0.003, tail_fade)
-    # ---- loudness normalisation + true-peak limiting (iterate: the limiter costs a little loudness)
-    total = fx + (bedbus if bedbus is not None else 0.0)
-    G = target_lufs - loudness(total)
-    ceil = tp_ceiling - 0.25
-    for it in range(8):
-        y = total * undb(G)
-        gl = limiter_gain(y, ceil)
-        y = y * gl[:, None]
-        L1, tp = loudness(y), true_peak(y)
-        if tp > tp_ceiling - 0.05:
-            ceil -= (tp - (tp_ceiling - 0.1))
-            continue
-        if abs(L1 - target_lufs) < 0.05:
+        bed_ref = loudness(bedbus) if np.any(bedbus) else -120
+        bedbus *= undb(target_lufs + bed_gain_db + BED_ANCHOR_DB - bed_ref)
+    # ---- loudness normalisation + true-peak limiting. Only the SFX bus gain G is solved (secant iteration) so
+    # the bed stays at its anchor; the limiter (gain gl) acts on the sum and is applied to both buses.
+    bed0 = bedbus if bedbus is not None else np.zeros_like(fx)
+    pk_fx = tp_envelope(fx)
+    pk_bed = tp_envelope(bed0) if bedbus is not None else 0.0
+    G = 0.0
+    ceil = tp_ceiling - 0.2
+    def _eval(g, c):
+        gl_ = limiter_gain(None, c, pk=pk_fx * undb(g) + pk_bed)
+        y_ = (fx * undb(g) + bed0) * gl_[:, None]
+        return y_, gl_, loudness(y_)
+
+    for attempt in range(4):
+        lo = hi = best = None                       # bracketed regula falsi / bisection on G (loudness is
+        for it in range(28):                        # monotonic in G but steps where gated blocks flip)
+            y, gl, L1 = _eval(G, ceil)
+            if best is None or abs(L1 - target_lufs) < abs(best[2] - target_lufs):
+                best = (G, gl, L1, y)
+            if abs(L1 - target_lufs) < 0.03 or not np.any(fx):
+                break
+            if L1 < target_lufs:
+                lo = (G, L1)
+            else:
+                hi = (G, L1)
+            if lo and hi:
+                if hi[0] - lo[0] < 1e-3:
+                    break
+                Gn = lo[0] + (target_lufs - lo[1]) * (hi[0] - lo[0]) / max(hi[1] - lo[1], 1e-6)
+                G = Gn if (lo[0] + 0.05 * (hi[0] - lo[0]) < Gn < hi[0] - 0.05 * (hi[0] - lo[0]) and it % 3 != 2) \
+                    else 0.5 * (lo[0] + hi[0])
+            else:
+                G += float(np.clip(target_lufs - L1, -24, 24))
+        G, gl, L1, y = best
+        tp = true_peak(y)
+        if tp <= tp_ceiling - 0.05:
             break
-        G += target_lufs - L1
-    gain = undb(G) * gl
-    fx_out = fx * gain[:, None]
-    bed_out = bedbus * gain[:, None] if bedbus is not None else None
+        ceil -= tp - (tp_ceiling - 0.1)
+    fx_out = fx * (undb(G) * gl)[:, None]
+    bed_out = bedbus * gl[:, None] if bedbus is not None else None
     master = fx_out + (bed_out if bed_out is not None else 0.0)
     rep = dict(dur=dur, cues=len(cs), integrated_lufs=round(loudness(master), 2), true_peak_dbtp=round(true_peak(master), 2),
                sample_peak_dbfs=round(float(db(np.max(np.abs(master)))), 2), lra_lu=round(loudness_range(master), 2),
                max_momentary_lufs=round(momentary_max(master), 2), max_short_term_lufs=round(momentary_max(master, 3.0), 2),
-               limiter_max_gr_db=round(float(-db(np.min(gl))), 2), comp_max_gr_db=round(float(-np.min(gr_comp)), 2),
+               limiter_max_gr_db=round(max(0.0, float(-db(np.min(gl)))), 2), comp_max_gr_db=round(float(-np.min(gr_comp)), 2),
+               limiter_pct_over_1db=round(100.0 * float(np.mean(gl < undb(-1.0))), 2),
                bed=bed_info, bed_lufs=round(loudness(bed_out), 2) if bed_out is not None else None,
                placed=placed, files={})
     if out_wav:
@@ -2038,8 +2308,9 @@ def report_text(rep):
     s = ['SFX mix  %.2fs  %d cues' % (rep['dur'], rep['cues']),
          '  integrated %.2f LUFS | true peak %.2f dBTP | sample peak %.2f dBFS | LRA %.1f LU' % (
              rep['integrated_lufs'], rep['true_peak_dbtp'], rep['sample_peak_dbfs'], rep['lra_lu']),
-         '  max momentary %.1f LUFS | max short-term %.1f LUFS | limiter max GR %.1f dB | glue max GR %.1f dB' % (
-             rep['max_momentary_lufs'], rep['max_short_term_lufs'], rep['limiter_max_gr_db'], rep['comp_max_gr_db'])]
+         '  max momentary %.1f LUFS | max short-term %.1f LUFS | limiter max GR %.1f dB (>1 dB for %.2f %% of the '
+         'time) | glue max GR %.1f dB' % (rep['max_momentary_lufs'], rep['max_short_term_lufs'], rep['limiter_max_gr_db'],
+                                          rep['limiter_pct_over_1db'], rep['comp_max_gr_db'])]
     if rep.get('bed'):
         s.append('  bed: %s  (%.1f LUFS in master)' % (', '.join(b['name'] for b in rep['bed']), rep['bed_lufs']))
     w = [p for p in rep['placed'] if p['warn']]
@@ -2058,7 +2329,7 @@ def build_reel(reel, out_dir=None, **kw):
     mod = importlib.import_module(reel)
     out_dir = out_dir or AUDIO
     cues = mod.cues()
-    bed = getattr(mod, 'BED', None)
+    bed = kw.pop('bed', getattr(mod, 'BED', None))
     kw.setdefault('bed_gain_db', getattr(mod, 'BED_GAIN_DB', -30.0))
     return mix(cues, float(mod.DUR), os.path.join(out_dir, '%s_sfx.wav' % reel),
                os.path.join(out_dir, '%s_sfx_stem.wav' % reel), bed=bed, **kw)
@@ -2245,10 +2516,9 @@ def selftest():
     # demo cue sheet in the style of reel 1's opening (exercise align='hit', ducking and the room bed)
     demo = [dict(t=0.02, name='heartbeat', params=dict(n=1)), dict(t=0.45, name='reverse_swell', params=dict(duration=0.45)),
             dict(t=0.45, name='flash_hit')]
-    for k in range(8):
-        demo.append(dict(t=0.45 + 0.25 * k, name='whip', gain_db=-3, pan=0.4 * (-1) ** k, params=dict(direction=(-1) ** k)))
-        if k % 2 == 0:
-            demo.append(dict(t=0.45 + 0.25 * k, name='flash_hit', gain_db=-4))
+    demo += on_beats('whip', 240, range(1, 9), offset=0.2, gain_db=-3, pan=lambda b: 0.4 * (-1) ** b,
+                     params=lambda b: dict(direction=(-1) ** b))
+    demo += on_beats('flash_hit', 120, range(1, 4), offset=0.45, gain_db=-4)
     demo += [dict(t=2.45, name='riser', params=dict(duration=1.6)), dict(t=2.45, name='impact_big'),
              dict(t=2.45, name='sub_drop'), dict(t=3.2, name='whoosh_slow'), dict(t=4.0, name='shimmer', gain_db=-2)]
     for k in range(5):
@@ -2286,6 +2556,11 @@ def _ffmpeg_ebur128(path):
     if not i:
         return None
     return float(i[-1]), float(p[-1]) if p else float('nan')
+
+
+def mix_overview(rep, path, title=''):
+    """PNG of a mix() report: spectrogram + waveform + momentary loudness curve (-18 line) + cue hit ticks."""
+    return _mix_overview(rep, path, title)
 
 
 def _mix_overview(rep, path, title):

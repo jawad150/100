@@ -1949,8 +1949,9 @@ def build_sprout(variant, q):
         else:
             g, amp = 1.0, 1.0
             ph = 2 * math.pi * sway_t / 48.0
+            # every term is offset so that sway frame 0 == the rest pose (== grow frame 119)
             sw = 0.045 * math.sin(ph)
-            swy = 0.03 * math.sin(ph + 1.1)
+            swy = 0.03 * (math.sin(ph + 1.1) - math.sin(1.1))
             lf = T + 10
         Vst, Nst = S.stem_mesh(g, amp, sw, swy)
         me = stem.data
@@ -1984,10 +1985,10 @@ def build_sprout(variant, q):
             twist = math.radians(L_['twist'] * e_lin)
             tilt = math.radians(L_['tilt'] * e_lin)
             if sway_t is not None:
-                ph = 2 * math.pi * sway_t / 48.0 + (0.6 if 'r' in L_['name'][-1] else 0.0) + \
-                    (0.0 if 'top' in L_['name'] else 1.7)
-                ang += math.radians(3.0 * math.sin(ph))
-                tilt += math.radians(2.5 * math.sin(ph + 0.8))
+                off = (0.6 if 'r' in L_['name'][-1] else 0.0) + (0.0 if 'top' in L_['name'] else 1.7)
+                ph = 2 * math.pi * sway_t / 48.0
+                ang += math.radians(3.0 * (math.sin(ph + off) - math.sin(off)))
+                tilt += math.radians(2.5 * (math.sin(ph + off + 0.8) - math.sin(off + 0.8)))
             Vd, Nd = S.leaf_deform(L_['src'], fold)
             o = L_['obj']
             o.data.vertices.foreach_set('co', Vd.astype(np.float32).ravel())
