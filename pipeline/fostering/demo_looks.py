@@ -55,6 +55,10 @@ def _lazy():
 
 
 # =============================================================================================== NEON
+YOU_STYLE = dict(px=250, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=0.92, env=0.0, ambient=0.74,
+                 spec=0.65, depth=0.24, angle=-70, persp=0.08, side=(('#9A1066', 1.0), ('#22041C', 1.0)), side_key=0.5,
+                 side_ambient=0.35, side_rim=0.25, edge_rim=0.8, rim_color=('HOT_PINK', 1.4), glow=0.4,
+                 glow_color=('MAGENTA', 1.6))
 _NEON_TXT = dict(could=(0.45, -150.0), you=(0.72, 30.0), bea=(1.0, 205.0), fc=(1.12, 345.0))
 
 
@@ -64,8 +68,7 @@ def _neon_assets():
     d = {}
     d['could'] = T.render('Could', 'flat', px=104, fill='IVORY', glow=0.55, glow_color=('MAGENTA', 2.2),
                           glow_radii=(0.05, 0.18, 0.45), glow_weights=(0.8, 0.5, 0.3))
-    d['you'] = T.render('YOU', 'extrude3d', px=250, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35,
-                        fill_gain=1.25, depth=0.16, glow=0.55, glow_color=('MAGENTA', 1.6))
+    d['you'] = T.render('YOU', 'extrude3d', **YOU_STYLE)
     d['bea'] = T.render('be a', 'flat', px=96, fill='IVORY', glow=0.5, glow_color=('MAGENTA', 2.0),
                         glow_radii=(0.05, 0.18, 0.45), glow_weights=(0.8, 0.5, 0.3))
     d['fc'] = T.render('Foster Carer?', 'deep_glow', px=122, glow_color=('ORANGE', 2.5),
@@ -102,9 +105,11 @@ def scene_neon(u, whip=0.0):
     # far plate: c01 inside a tilted neon glass card (bokeh DOF from depth)
     card = A['card']
     media = A['clip'].get(4.0 + u * 0.8, card.w, card.h, zoom=1.08 + 0.02 * u, look='neon')
+    media[..., :3] *= np.float32(0.72)                  # sit the far plate back: dimmer than the hero layer
     face = ui.media_face(card, media, sweep=(0.15 + u * 0.32) % 1.0)
-    cpos = (-330.0, -560.0, 1750.0)
-    sc.custom(cpos, lambda c, cm: card.plane(c, cm, cpos, 600, rot=(4.0, -24.0, 5.0), face=face, shadow=0.6))
+    cpos = (-860.0, -1540.0, 2700.0)
+    sc.custom(cpos, lambda c, cm: card.plane(c, cm, cpos, 820, rot=(4.0, -26.0, 6.0), face=face, shadow=0.6,
+                                             opacity=0.9, dof_scale=2.2, blur=1.5))
     # light ring portal behind the "?"
     ring_op = K.ramp(u, 0.55, 1.1, 'out_cubic')
     rs = 0.82 + 0.18 * K.ramp(u, 0.55, 1.3, 'out_expo') + 0.02 * math.sin(u * 2.1)
@@ -168,7 +173,7 @@ _TOTAL = 23275.20
 def _amber_assets():
     F, S3, T, ui = _lazy()
     d = {}
-    d['win'] = ui.app_window(w=860, h=930, look='amber', header='Allowance calculator',
+    d['win'] = ui.app_window(w=820, h=1010, look='amber', header='Allowance calculator',
                              sub='Weekly allowance per child', icons=('home', 'pound', 'chart', 'calendar',
                                                                       'settings'), active=1)
     d['counter'] = T.Counter('gold', px=150)
@@ -197,13 +202,13 @@ def _amber_face(u):
         win.put(f, c, cx - 24, y - 24)
         cx += c.shape[1] - 48 + 16
     grow = [K.ramp(u, 0.3 + 0.16 * i, 1.0 + 0.16 * i, 'out_back') for i in range(4)]
-    bars = ui.bar_chart(_VALS, _LABELS, grow=grow, active=0.0, w=sw, h=420, look='amber', depth=12)
-    win.put(f, bars, x - 32, y + 100 - 32)
+    bars = ui.bar_chart(_VALS, _LABELS, grow=grow, active=0.0, w=sw, h=310, look='amber', depth=12)
+    win.put(f, bars, x - 32, y + 96 - 32)
     v = K.ramp(u, 0.9, 1.7, 'inout_cubic')
     wk = int(round(K.lerp(1, 52, v)))
     sl = ui.slider(v, w=sw - 80, look='amber', label='%d weeks' % wk, ticks=[(0, '1'), (1, '52')])
-    win.put(f, sl, x, y + 540)
-    ui.put_text(f, win.pad + x, win.pad + y + 820, 'Rates may vary by region and are subject to change.', 30,
+    win.put(f, sl, x + 40, y + 385)
+    ui.put_text(f, win.pad + x, win.pad + y + sh - 6, 'Rates may vary by region and are subject to change.', 30,
                 'body', ui.LOOKS['amber'].text2, 'ls', max_w=sw)
     return f
 
@@ -217,29 +222,29 @@ def scene_amber(u, whip=0.0):
     # the app window, tilted (isometric-ish), lower half of the frame
     win = A['win']
     face = _amber_face(u)
-    wpos, wrot = (40.0, 300.0, 160.0), (9.0, 13.0, -1.5)
-    sc.custom(wpos, lambda c, cm: win.plane(c, cm, wpos, 860, rot=wrot, face=face))
+    wpos, wrot = (30.0, 255.0, 150.0), (9.0, 13.0, -1.5)
+    sc.custom(wpos, lambda c, cm: win.plane(c, cm, wpos, 790, rot=wrot, face=face))
     # the counter: odometer roll with per-digit motion blur, floating in front of the window
     trk = K.Track([(_ROLL[0], 0.0, 'out_expo'), (_ROLL[1], _TOTAL)])
     val, vel = float(trk(u)), float(trk.vel(u))
     cnt = A['counter']
-    cpos = (0.0, -470.0, 0.0)
+    cpos = (0.0, -560.0, 0.0)
     pop = 1.0 + 0.06 * land
     sc.custom(cpos, lambda c, cm: cnt.sprite(val, vel).draw_plane(c, cm, cpos, scale=pop, dof=False))
     lab = A['label']
-    lpos = (0.0, -335.0, -10.0)
+    lpos = (0.0, -432.0, -10.0)
     sc.custom(lpos, lambda c, cm: lab.draw_plane(c, cm, lpos, opacity=K.ramp(u, 0.5, 0.9), dof=False))
     # 3D coins orbiting the number: tilted ellipse, front lower, back higher (back ones defocus)
     coin = A['coin']
     n = 6
     for i in range(n):
         th = 2 * math.pi * (i / n + 0.05 * u + 0.07)
-        x = 600.0 * math.cos(th)
+        x = 610.0 * math.cos(th)
         z = 300.0 * math.sin(th)
-        y = -470.0 - 0.78 * z
+        y = -560.0 - 1.22 * z                          # tilted ring: front coins pass below the number
         ent = K.ramp(u, 0.1 + 0.07 * i, 0.7 + 0.07 * i, 'out_back')
         spr = coin.at_yaw((u * 140.0 + i * 61.0) % 360.0)
-        sc.billboard(spr, (x, y, z), 190 * ent, rot=-12 + 8 * math.sin(th))
+        sc.billboard(spr, (x, y, z), 175 * ent, rot=-12 + 8 * math.sin(th))
     sc.particles(A['dust'], u)
     sc.render(cv)
     return cv
@@ -257,7 +262,7 @@ def post_amber(cv, u, extra=None):
 def _airy_assets():
     F, S3, T, ui = _lazy()
     d = {}
-    d['vt'] = T.VideoType('NURTURE', px=200, tracking=-0.01, look='light')
+    d['vt'] = T.VideoType('NURTURE', px=190, tracking=-0.01, look='light')     # ~916 px wide: inside x 70..1010
     d['clip'] = F.Clip('c11')
     d['sub'] = T.render('A safe home & everyday care', 'ui_ink', px=42)
     d['pill'] = T.render('01 / 03', 'glass_pill_light', px=40)
@@ -271,11 +276,12 @@ def _airy_assets():
     return d
 
 
-# (world pos at u=0, fall speed px/s, phase, width) - three depth layers
-_LEAVES = [((-430.0, -720.0, 650.0), 38.0, 0.10, 150.0), ((450.0, -260.0, 900.0), 30.0, 0.55, 140.0),
-           ((330.0, -900.0, 2600.0), 22.0, 0.30, 150.0), ((-300.0, 120.0, 2900.0), 20.0, 0.80, 140.0),
-           ((-520.0, 820.0, -820.0), 55.0, 0.40, 210.0), ((560.0, -640.0, -760.0), 60.0, 0.70, 190.0),
-           ((120.0, -1180.0, 1600.0), 26.0, 0.20, 120.0)]
+# leaves in SCREEN terms at u=0: (x, y, camera depth, on-screen width px, fall px/s, leaf frame at the hero moment,
+# roll deg) -> three depth layers: near (big, defocused), the focus plane (sharp), far (small, soft)
+_LEAVES = [(150, 1430, 640, 330, 34, 22, -20), (955, 290, 700, 270, 38, 3, 30),
+           (880, 1150, 1500, 125, 26, 44, 15), (190, 330, 1500, 112, 22, 20, -35),
+           (770, 205, 3400, 82, 14, 46, 60), (320, 1020, 3600, 72, 12, 2, -50), (965, 1530, 3300, 72, 15, 24, 10)]
+_TYPE_W = (0.0, -324.0, 0.0)                  # world anchor of the NURTURE block (lands near screen y 640)
 
 
 def airy_cam(u, whip=0.0):
@@ -284,47 +290,65 @@ def airy_cam(u, whip=0.0):
                  yaw=K.lerp(1.2, -0.8, e) + whip, pitch=K.wiggle(u, 0.25, 0.3, seed=8), aperture=30, focus_dist=1500.0)
 
 
+def unproject(cam, sx, sy, depth):
+    """World point that `cam` sees at screen px (sx, sy) and camera depth `depth` (place things by layout)."""
+    pc = np.array([(sx - K.CX) * depth / cam.focal, (sy - K.CY) * depth / cam.focal, depth])
+    return cam.R @ pc + cam.pos
+
+
+@functools.lru_cache(maxsize=1)
+def _leaf_world():
+    cam0 = airy_cam(0.0)
+    return [(unproject(cam0, x, y, d), w * d / cam0.focal, vy * d / cam0.focal, fr, rl)
+            for (x, y, d, w, vy, fr, rl) in _LEAVES]
+
+
 def scene_airy(u, whip=0.0):
     _, _, T, ui = _lazy()
     A = _airy_assets()
     cam = airy_cam(u, whip)
     cv = K.background('airy', u, cam)
     sc = K.Scene(cam)
-    # far leaves first (scene sorts by depth anyway)
-    leaf, leaf_s = A['leaf'], A['leaf_s']
-    for (p0, vy, ph, w) in _LEAVES:
-        x = p0[0] + 40.0 * math.sin(u * 0.9 + ph * 6.0)
-        y = p0[1] + vy * u
-        spr = (leaf_s if p0[2] > 2000 else leaf).at_time(u * 0.55 + ph * 1.6, fps=30)
-        sc.billboard(spr, (x, y, p0[2]), w, rot=25.0 * math.sin(u * 0.7 + ph * 9))
+    leaf = A['leaf']
+    leaf_s = A['leaf_s']
+    hu = HERO_U['airy']
+    for k, (P, w, vy, fr, rl) in enumerate(_leaf_world()):
+        x = P[0] + 0.06 * w * math.sin(u * 0.9 + k * 1.7)
+        y = P[1] + vy * (u - hu)
+        # tumble at 0.55x speed, phased so the hero moment shows a broad (not edge-on) leaf
+        tt = (fr / 30.0) + (u - hu) * 0.55
+        spr = (leaf_s if P[2] > 1500 else leaf).at_time(tt, fps=30)
+        sc.billboard(spr, (x, y, P[2]), w, rot=rl + 12.0 * math.sin(u * 0.7 + k))
     # sprout on the ivory surface, with a soft contact shadow
     sp = A['sprout']
-    base = (0.0, 620.0, 120.0)
+    base = (0.0, 760.0, 120.0)
 
     def draw_sprout(c, cm):
         xy, z = cm.project(np.array([base]))
         k = cm.focal / z[0]
-        K.draw(c, A['shadow'], xy[0][0], xy[0][1] + 8 * k, scale=(1.1 * k, 0.16 * k), opacity=0.22)
+        K.draw(c, A['shadow'], xy[0][0], xy[0][1] + 6 * k, scale=(1.0 * k, 0.15 * k), opacity=0.22)
         img = sp.at_time(u)
         piv = sp.pivot
-        K.draw(c, img, xy[0][0], xy[0][1], scale=0.6 * k, anchor=(piv[0] / sp.size[0], piv[1] / sp.size[1]),
+        K.draw(c, img, xy[0][0], xy[0][1], scale=0.62 * k, anchor=(piv[0] / sp.size[0], piv[1] / sp.size[1]),
                blur=cm.coc(z[0]) * 0.5)
     sc.custom(base, draw_sprout)
 
     # video-in-type + pill + sub on the focus plane (2D, drawn as one depth item)
     def draw_type(c, cm):
-        cx, cy = cm.project(np.array([[0.0, -140.0, 0.0]]))[0][0]
+        cx, cy = cm.project(np.array([_TYPE_W]))[0][0]
         vt = A['vt']
         s_in = K.ramp(u, 0.0, 0.9, 'out_expo')
         sc_ = K.lerp(1.12, 1.0, s_in) * (1.0 + 0.01 * u)
-        foot = A['clip'].get(1.0 + 0.85 * u, K.W, K.H, zoom=1.06 + 0.015 * u, look='airy')
+        # c11 is all beige (jumper, teddy, wall): grade it 'natural' (more contrast than 'airy') and frame the
+        # hands / fur so the letters read as photographic texture against the ivory paper
+        foot = A['clip'].get(2.0 + 0.6 * u, K.W, K.H, center=(0.5, 0.32), zoom=1.15 + 0.02 * u, look='natural')
         sweep = K.ramp(u, 1.15, 2.0, 'inout_sine')
         vt.draw(c, foot, cx, cy, scale=sc_, opacity=K.ramp(u, 0.0, 0.25), sweep=sweep if 0 < sweep < 1 else None)
         po = K.ramp(u, 0.25, 0.7, 'out_back')
-        A['pill'].draw(c, cx, cy - 210, scale=0.85 + 0.15 * po, opacity=K.ramp(u, 0.25, 0.45))
+        A['pill'].draw(c, cx, cy - 205, scale=0.85 + 0.15 * po, opacity=K.ramp(u, 0.25, 0.45))
         so = K.ramp(u, 0.45, 1.0, 'out_expo')
-        A['sub'].draw(c, cx, cy + 165 + 30 * (1 - so), opacity=so, snap=False)
-    sc.custom((0.0, -140.0, 0.0), draw_type)
+        A['sub'].draw(c, cx, cy + 160 + 30 * (1 - so), opacity=so, snap=False)
+    sc.custom(_TYPE_W, draw_type)
     sc.particles(A['motes'], u)
     sc.render(cv)
     return cv

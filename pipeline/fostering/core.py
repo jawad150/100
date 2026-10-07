@@ -2467,7 +2467,11 @@ def background(look='neon', t=0.0, cam=None, center=None, boost=0.0, dots=1.0, r
         aw = 0.34
         arcw = np.exp(-(((ang - mid + math.pi) % (2 * math.pi) - math.pi) / aw) ** 2)
         k = ri * rim * intensity
-        atmo = np.exp(-np.maximum(d, 0) / (0.035 * H)) * (d > -0.004 * H) * 0.55
+        # the glow stops just inside the planet; the cut is a ramp ~3 low-res px wide (a hard step on the 1/8
+        # grid upsampled to 8 px stair-steps that crawled under camera moves); the full-res rim line below
+        # gives the crisp edge
+        inside = np.clip((d + 0.004 * H) / (0.0125 * H) + 0.5, 0, 1)
+        atmo = np.exp(-np.maximum(d, 0) / (0.035 * H)) * (inside * inside * (3 - 2 * inside)) * 0.55
         halo = (atmo * arcw * (0.7 + 0.5 * nz2))[..., None] * C[c0] * k
         f3 += halo
         body = np.clip(-d / (0.06 * H), 0, 1)[..., None]
