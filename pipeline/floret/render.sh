@@ -3,7 +3,8 @@
 cd "$(dirname "$0")"
 W=../../workspace4
 LOG=$W/work/render.log
-until grep -q ALLDONE $W/work/b3d.log; do sleep 10; done
+until grep -q ALLDONE $W/work/b3d2.log; do sleep 10; done
+rm -rf $W/work/chunks
 echo "$(date -u +%H:%M:%S) START" >> $LOG
 python3 audio_floret.py >> $LOG 2>&1
 python3 floret.py render 4 >> $LOG 2>&1
