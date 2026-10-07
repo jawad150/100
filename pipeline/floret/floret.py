@@ -388,7 +388,7 @@ def f1(cv, t, u, d):
     s = (1.0 + 0.04 * u / d) * (1 + 0.9 * out)
     lg = b3d('logo', 1 + max(0.0, u - 0.12) * 30)
     if lg is not None:
-        blit(cv, with_reflection(lg), S / 2, 545 - 140 * out, s=s * 1.02, op=1 - out, blur=out * 10)
+        blit(cv, with_reflection(lg), S / 2, 520 - 140 * out, s=s * 1.3, op=1 - out, blur=out * 10)
     else:
         spr = logo_sprite(380, bars_p, arrow_p, sheen)
         blit(cv, spr, S / 2, 500 - 140 * out, s=s, op=1 - out, blur=out * 10)
@@ -602,11 +602,25 @@ def f4(cv, t, u, d):
 # ------------------------------------------------------------------ frame 5: PSX x PMEX
 @functools.lru_cache(maxsize=4)
 def badge(label, sub):
-    p = U.Paint(380, 230, pad=30)
-    gcard(p, 0, 0, 380, 230, 34, k=1.4)
-    p.text(label, 190, 128, 'Rubik-800', 96 if len(label) < 4 else 84, WHITE_S, 1.0, anchor='c')
-    p.text(sub, 190, 182, 'Rubik-400', 19, MUTED_S, 1.0, anchor='c', track=0.04)
-    return p.result()
+    """White plate with the exchange's official logo (psx.com.pk lockup / PMEX emblem), gold-lit edge."""
+    W_, H_ = 400, 270
+    p = U.Paint(W_, H_, pad=30)
+    m = p.rrect(0, 0, W_, H_, 34, hexs('fbfaf7'), 1.0)
+    p.glow(np.clip(0.5 - (np.abs(p.sdf_rrect(0, 0, W_, H_, 34)) - 1), 0, 1), GOLD_S, 8, 0.9)
+    p.stroke(0, 0, W_, H_, 34, 2, GOLD_S, 0.9)
+    del m
+    if label == 'PMEX':
+        p.text('PMEX', 180, 126, 'Rubik-800', 64, hexs('cc1721'), 1.0)
+        p.text('Pakistan Mercantile', 184, 166, 'Rubik-500', 20, hexs('5b5b5b'), 1.0)
+        p.text('Exchange', 184, 192, 'Rubik-500', 20, hexs('5b5b5b'), 1.0)
+    res = half(p.result())
+    if label == 'PSX':
+        lg = C.load(ASSETS + '/psx_logo_full.png')
+        blit(res, lg, 30 + W_ / 2, 30 + H_ / 2, s=(H_ - 40) / lg.shape[0])
+    else:
+        lg = C.load(ASSETS + '/pmex_emblem.png')
+        blit(res, lg, 30 + 98, 30 + H_ / 2, s=150 / lg.shape[0])
+    return res
 
 
 @functools.lru_cache(maxsize=4)
@@ -629,7 +643,7 @@ def f5(cv, t, u, d):
         p = A.EXPO_OUT(A.clamp((u - 0.15) / 0.9))
         sgn = -1 if i == 0 else 1
         x = S / 2 + sgn * (265 + (1 - p) * 360)
-        put3d(cv, badge(lab, sub), x, 470, 400, rot=(0, -sgn * 22 * (1 - p) - sgn * 8, 0), op=A.ramp(u, 0.15, 0.5) * o)
+        put3d(cv, badge(lab, sub), x, 470, 420, rot=(0, -sgn * 22 * (1 - p) - sgn * 8, 0), op=A.ramp(u, 0.15, 0.5) * o)
     # x mark flash + data link
     xu = u - 0.75
     if xu > 0:
@@ -944,7 +958,7 @@ def f10(cv, t, u, d):
         ar = A.EXPO(A.clamp((lu - 0.35) / 0.5))
         lg = b3d('logo', 1 + lu * 30 * 1.25)
         if lg is not None:
-            blit(cv, with_reflection(lg), S / 2, 520, s=0.9 + 0.02 * lu / 3)
+            blit(cv, with_reflection(lg), S / 2, 470, s=1.15 + 0.02 * lu / 3)
         else:
             spr = logo_sprite(300, bars_p, ar, (lu - 1.25) / 0.7)
             blit(cv, spr, S / 2, 480, s=1.0 + 0.02 * lu / 3)
@@ -952,17 +966,17 @@ def f10(cv, t, u, d):
         if wu > 0:
             p = A.EXPO_OUT(A.clamp(wu / 1.0))
             wm, base, _ = tsprite('FLORET CAPITALS', 'Rubik-700', 70, 'w', round(0.6 - 0.4 * p, 2))
-            blit(cv, wm, S / 2, 735, op=A.ramp(wu, 0, 0.5), blur=(1 - p) * 5)
+            blit(cv, wm, S / 2, 770, op=A.ramp(wu, 0, 0.5), blur=(1 - p) * 5)
             sh = (wu - 0.9) / 0.8
             if 0 < sh < 1:
                 wl, _, _ = tsprite('FLORET CAPITALS', 'Rubik-700', 70, 'g', 0.2)
                 band = np.exp(-((np.arange(wl.shape[1]) - wl.shape[1] * (sh * 1.4 - 0.2)) / 60.0) ** 2)[None, :, None]
-                blit(cv, wl * band, S / 2, 735, mode='add', op=1.2)
+                blit(cv, wl * band, S / 2, 770, mode='add', op=1.2)
         su = lu - 1.1
         if su > 0:
             p = A.EXPO_OUT(A.clamp(su / 0.8))
             url, _, _ = tsprite('floretcapitals.com', 'Rubik-500', 30, 'gold', 0.08)
-            blit(cv, url, S / 2, 830 + (1 - p) * 16, op=A.ramp(su, 0, 0.4) * 0.95)
+            blit(cv, url, S / 2, 862 + (1 - p) * 16, op=A.ramp(su, 0, 0.4) * 0.95)
     # end fade
     cv *= 1 - A.ramp(u, d - 0.35, d, A.EASY)
 
