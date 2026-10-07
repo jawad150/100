@@ -106,6 +106,28 @@ def _ease(t, t0, t1, e='out_expo'):
     return K.ramp(t, t0, t1, e)
 
 
+def _post(cv, t, hot=0.0, kick=0.0, **kw):
+    """Finishing without K.flash (its additive ivory term lifts the blacks into a grey veil). hot = a cut 'flash
+    frame' as an exposure push + bloom (multiplicative: blacks stay black, highlights blow out hot); kick = a warm
+    bloom-only lift for slams (adds light only where there already is light)."""
+    L = K.LOOKS[LOOK]
+    if hot > 1e-3:
+        kw['exposure'] = kw.get('exposure', 0.0) + 1.45 * hot
+    if hot > 1e-3 or kick > 1e-3:
+        kw['bloom'] = kw.get('bloom', L['bloom']) * (1.0 + 0.9 * hot + 0.6 * kick)
+        kw['halation'] = kw.get('halation', L['halation']) + 0.10 * kick + 0.06 * hot
+    return K.post(cv, LOOK, t, **kw)
+
+
+def _swell(t, t0, rise=0.15, decay=4.0):
+    """Smooth 0..1 kick: eases up over `rise` (no one-frame pop), then decays exponentially."""
+    if t < t0:
+        return 0.0
+    if t < t0 + rise:
+        return K.EASE['inout_sine'](K.clamp((t - t0) / rise))
+    return math.exp(-(t - t0 - rise) * decay)
+
+
 def _blip(t, t0, rise=0.012, decay=14.0):
     """Sharp 0..1 pulse peaking at t0 (a flash frame on the cut), symmetric-ish attack."""
     if t < t0 - rise:
@@ -183,8 +205,10 @@ HOOK_DT = 0.25
 # cut INTO flash k (k = 0..7) and the smash out at 2.5: 'flash' on the beats (word slams), whips / zoom on the &s
 CUTS = ['flash', 'whip', 'flash', 'whip', 'flash', 'zoom', 'flash', 'whip', 'smash']
 WHIP_DIR = {1: 1, 3: -1, 7: 1}
-WORDS = [('A SAFE\nHOME.', 190), ('EVERYDAY\nCARE.', 170), ('A PLACE', 200), ('TO BELONG.', 150)]
-WORD_Y = [1300, 1300, 1330, 1330]
+# sized so that inside y 1050..1700 every right edge stays <= ~910 (brief 3.2: like/share column at x > 930)
+WORDS = [('A SAFE\nHOME.', 190), ('EVERYDAY\nCARE.', 142), ('A PLACE', 180), ('TO\nBELONG.', 165)]
+WORD_Y = [1300, 1300, 1330, 1300]
+WORD_X = [530.0, 515.0, 515.0, 520.0]
 WHIP_HALF = 0.06                      # a whip spans tc - 0.06 .. tc + 0.06
 
 
@@ -283,10 +307,10 @@ def s_hook(t):
     g = H['words'][i]
     sc = min(1.0, 930.0 / g.w)
     # dark scrim behind the word: lands with the slam (a touch larger while the word overshoots)
-    sp = K.spring(max(t - tb, 0.0) / 0.42 * 0.45, 3.2, 0.45) if t >= tb else 0.0
-    K.draw(cv, H['scrims'][i], K.CX + sx * 0.6, WORD_Y[i] + sy * 0.6, scale=sc * (1.3 - 0.3 * sp),
+    sp = K.spring(max(t - tb, 0.0) / 0.42 * 0.45, 3.2, 0.45) if t >= tb else 0.0      # Glyphs.slam's own spring
+    K.draw(cv, H['scrims'][i], WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6, scale=sc * (1.2 - 0.2 * sp),
            opacity=K.ramp(t, tb, tb + 0.05))
-    g.slam(cv, t, K.CX + sx * 0.6, WORD_Y[i] + sy * 0.6, t0=tb, s0=1.75, dur=0.42, scale=sc, rot=sr,
+    g.slam(cv, t, WORD_X[i] + sx * 0.6, WORD_Y[i] + sy * 0.6, t0=tb, s0=1.4, dur=0.42, scale=sc, rot=sr,
            smear=False)
     # light-leak sweep across the whip cuts at 1.25 and 2.25
     for tc in (_cut_t(3), _cut_t(7)):
@@ -306,13 +330,14 @@ def post_hook(cv, t):
         whip = max(whip, 1.0 - K.clamp(abs(t - _cut_t(kk)) / WHIP_HALF))
     zoom = max(0.0, 1.0 - abs(t - _cut_t(5)) / 0.1)
     slam = max(K.impulse(t, T_HOOK + i * BEAT, decay=10.0) for i in range(4))
-    return K.post(cv, LOOK, t, footage=1.0, flash=fl, chroma=1.8 + 8.0 * whip + 6.0 * zoom + 4.0 * slam)
+    return _post(cv, t, hot=fl, kick=slam, footage=1.0, chroma=1.8 + 8.0 * whip + 6.0 * zoom + 4.0 * slam)
 
 
 # =============================================================================================== 2. THE QUESTION
 # scene-local u = t - T_Q. "?" flies in 0 -> 0.5 (lands on beat 6, 3.0 s); words on the eighth-note grid.
 Q_TXT = dict(could=(0.75, -150.0), you=(1.0, 32.0), bea=(1.25, 210.0), fc=(1.5, 352.0))
 Q_SWEEP = (1.55, 2.45)
+Q_X = dict(could=-10.0, you=-10.0, bea=-10.0, fc=-28.0)     # world x: keeps the block clear of x > 930 (y >= 1050)
 YOU_STYLE = dict(px=250, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=0.92, env=0.0,
                  ambient=0.74, spec=0.65, depth=0.24, angle=-70, persp=0.08, side=(('#9A1066', 1.0), ('#22041C', 1.0)),
                  side_key=0.5, side_ambient=0.35, side_rim=0.25, edge_rim=0.8, rim_color=('HOT_PINK', 1.4), glow=0.45,
@@ -328,7 +353,7 @@ def _q_assets():
     d['could'] = T.render('Could', 'flat', px=112, fill='IVORY', glow=0.55, glow_color=('MAGENTA', 2.2), **soft)
     d['you'] = T.render('YOU', 'extrude3d', **YOU_STYLE)
     d['bea'] = T.render('be a', 'flat', px=100, fill='IVORY', glow=0.5, glow_color=('MAGENTA', 2.0), **soft)
-    d['fc'] = T.render('Foster Carer?', 'deep_glow', px=132, glow_color=('ORANGE', 2.5),
+    d['fc'] = T.render('Foster Carer?', 'deep_glow', px=124, glow_color=('ORANGE', 2.5),
                        inner_glow_color=('AMBER', 1.25))
     d['q'] = S3.get('question', 'night', mode='spin', scale=0.6)        # <= ~600 px on screen
     d['card'] = ui.glass_card(600, 820, r=48, look='neon', rim=1.2, glow=1.0, rim_angle=-60)
@@ -356,8 +381,8 @@ def s_question(t):
     C = _common()
     u = t - T_Q
     cam = _q_cam(u, t)
-    land = K.impulse(u, 0.5, decay=6.0)
-    cv = K.background('neon', u + 3.0, cam, boost=0.55 * K.impulse(u, 0.0, decay=4.0) + 0.35 * land +
+    land = _swell(u, 0.5, rise=0.08, decay=6.0)
+    cv = K.background('neon', u + 3.0, cam, boost=0.55 * K.impulse(u, 0.0, decay=4.0) + 0.2 * land +
                       0.15 * K.beat_pulse(t, BPM, decay=5.0), center=(0.72, 0.24))
     sc = K.Scene(cam)
     # far plate: c01 inside a tilted neon glass card (bokeh DOF from depth)
@@ -390,16 +415,16 @@ def s_question(t):
             continue
         op = K.ramp(u, t0, t0 + 0.2, 'out_cubic')
         ts = A[key]
-        pos = (0.0, y + 70.0 * (1 - pr), -40.0 + 180.0 * (1 - pr))
+        pos = (Q_X[key], y + 70.0 * (1 - pr), -40.0 + 180.0 * (1 - pr))
         sc.custom(pos, lambda c, cm, ts=ts, pos=pos, op=op, pr=pr: ts.draw_plane(
             c, cm, pos, rot=(0, 0, 0), scale=1.0, opacity=op, blur=7.0 * (1 - pr)))
     you_u = Q_TXT['you'][0]
     if u >= you_u:
         sp = K.spring(u - you_u, freq=2.4, damping=0.42)
-        s = 1.8 + (1.0 - 1.8) * sp
+        s = 1.35 + (1.0 - 1.35) * sp                     # overshoot stays clear of "Could" above
         op = K.ramp(u, you_u, you_u + 0.04)
         sweep = K.ramp(u, Q_SWEEP[0], Q_SWEEP[1], 'inout_sine')
-        pos = (0.0, Q_TXT['you'][1], -60.0)
+        pos = (Q_X['you'], Q_TXT['you'][1], -60.0)
         ts = A['you']
         sc.custom(pos, lambda c, cm: ts.draw_plane(c, cm, pos, scale=s, opacity=op, sweep=sweep if 0 < sweep < 1
                                                    else None, sweep_kw=dict(width=0.12, strength=1.7)))
@@ -417,12 +442,12 @@ def s_question(t):
 def post_question(cv, t):
     u = t - T_Q
     slam = K.impulse(u, Q_TXT['you'][0], decay=7.0)
-    land = K.impulse(u, 0.5, decay=6.0)
+    land = _swell(u, 0.5, rise=0.08, decay=6.0)
     fly = K.ramp(u, 0.0, 0.2) * (1 - K.ramp(u, 0.3, 0.5))
     wd = K.ramp(t, T_LIST - WHIP_DOWN, T_LIST, 'in_cubic')
     smash = _blip(t, T_Q, rise=0.02, decay=32.0)
-    return K.post(cv, LOOK, t, flash=0.95 * smash + 0.2 * slam + 0.1 * land,
-                  chroma=1.8 + 7 * fly + 5 * slam + 9 * wd + 6 * smash)
+    return _post(cv, t, hot=0.95 * smash, kick=0.8 * slam + 0.4 * land,
+                 chroma=1.8 + 7 * fly + 5 * slam + 9 * wd + 6 * smash)
 
 
 # =============================================================================================== 3. CHECKLIST
@@ -466,10 +491,10 @@ def _lcam_solve(cx, cy, sx, sy, sc):
 
 def _lcam_pos(t):
     g = K.ramp(t, 6.3, 9.7, 'inout_sine')                        # dolly progress along the rows
-    dolly = _lcam_solve(284, 280 + 480 * g, 272, 790 + 260 * g, K.lerp(1.14, 1.19, g))
+    dolly = _lcam_solve(284, 280 + 480 * g, 250, 790 + 260 * g, K.lerp(1.11, 1.15, g))
     if t < 6.3:
         a = K.ramp(t, T_LIST, 6.3, 'out_cubic')
-        return _lcam_solve(284, 280, 285, 760, 1.10) * (1 - a) + dolly * a
+        return _lcam_solve(284, 280, 262, 760, 1.08) * (1 - a) + dolly * a
     full = _lcam_solve(480, 640, K.lerp(588, 592, K.ramp(t, 10.75, T_DOCK)), K.lerp(880, 872, K.ramp(t, 10.75, T_DOCK)),
                        K.lerp(0.985, 0.975, K.ramp(t, 10.75, T_DOCK, 'out_sine')))
     a = K.ramp(t, 9.75, 10.75, 'easy_ease')
@@ -533,8 +558,7 @@ def s_list(t):
     A = _list_assets()
     C = _common()
     cam = _list_cam(t)
-    cv = K.background('neon', t, cam, boost=0.12 * K.beat_pulse(t, BPM, decay=5.0) + 0.3 * K.impulse(t, RING_POP, 4.0),
-                      center=(0.75, 0.3), rim=0.6)
+    cv = K.background('neon', t, cam, boost=0.1 * K.beat_pulse(t, BPM, decay=5.0), center=(0.75, 0.3), rim=0.6)
     win = A['win']
     face = _list_face(t)
     sc = K.Scene(cam)
@@ -612,23 +636,26 @@ def _cursor_state(t, cam):
 def post_list(cv, t):
     arrive = 1.0 - K.ramp(t, T_LIST, T_LIST + 0.45, 'out_expo')
     wo = K.ramp(t, T_DOCK - WHIP_OUT, T_DOCK, 'in_cubic')
-    tick = max(K.impulse(t, tk, decay=10.0) for tk in TICKS)
-    return K.post(cv, LOOK, t, chroma=1.8 + 8 * arrive + 9 * wo, flash=0.05 * tick + 0.18 * K.impulse(t, RING_POP, 6.0))
+    return _post(cv, t, chroma=1.8 + 8 * arrive + 9 * wo)
 
 
 # =============================================================================================== 4. SUPPORT DOCK
-TILES = [('Full Training', 'Preparation & ongoing learning', 'MAGENTA', 'grad_cap', ('c03', 4.6, (0.42, 0.5))),
-         ('Ongoing Support', 'Your supervising social worker', 'HOT_PINK', 'chat_bubble', ('c04', 1.0, (0.5, 0.4))),
-         ('Weekly Allowance', 'From £447.60 a week per child', 'ORANGE', 'coin_gbp', ('c10', 17.4, (0.6, 0.42)))]
-TILE_W, TILE_H, TILE_GAP = 280, 560, 22
-FOCUS_GROW, FOCUS_Z = 0.08, -50.0
+# footage per tile: (clip, source in-point, crop centre, zoom, speed). c03: both children's faces stay inside the slot
+# over source 2.35..3.35 s, hence the slow 0.4x play
+TILES = [('Full Training', 'Preparation & ongoing learning', 'MAGENTA', 'grad_cap', ('c03', 2.45, (0.61, 0.45), 1.0, 0.4)),
+         ('Ongoing Support', 'Your supervising social worker', 'HOT_PINK', 'chat_bubble',
+          ('c04', 1.0, (0.5, 0.4), 1.1, 0.9)),
+         ('Weekly Allowance', 'From £447.60 a week per child', 'ORANGE', 'coin_gbp', ('c10', 17.4, (0.6, 0.42), 1.1, 0.9))]
+TILE_W, TILE_H, TILE_GAP = 264, 560, 18
+FOCUS_GROW, FOCUS_Z = 0.06, -30.0
+DOCK_X = 492.0                                # row centre: every tile text stays at x <= ~915 (like/share column)
 FOCUS_T = [12.5, 14.5, 16.5]                  # focus moves on beats 25, 29, 33 (2 s per tile)
 DOCK_Y = 1030.0                               # tile centre (screen y at z = 0)
 HEAD_T = 11.5
 ZOOM_OUT = 0.28                               # push into the last tile's footage: T_PAY - 0.28 .. T_PAY
 
 
-def _dock_tile(title, sub, accent, w=TILE_W, h=TILE_H, title_size=38, sub_size=30, max_sub=3):
+def _dock_tile(title, sub, accent, w=TILE_W, h=TILE_H, title_size=38, sub_size=29, max_sub=3):
     """ui.dock_tile variant (built here, the toolkit's is left untouched): 3 subtitle lines instead of 2 so the
     subtitles keep >= 30 px inside a 292 px tile (three tiles + the focus enlargement fit the 940 px safe width).
     meta['icon'] = None: the glossy 3D icon is drawn as its own billboard (it lifts out of the tile on focus)."""
@@ -639,8 +666,8 @@ def _dock_tile(title, sub, accent, w=TILE_W, h=TILE_H, title_size=38, sub_size=3
     p = base.pad
     S = ui.Surf(f.shape[1], f.shape[0], f)
     ac = ui.col(accent)
-    tl = ui.wrap(title, title_size, 'ui', w - 44)[:2]
-    sl = ui.wrap(sub, sub_size, 'body', w - 44)[:max_sub]
+    tl = ui.wrap(title, title_size, 'ui', w - 40)[:2]
+    sl = ui.wrap(sub, sub_size, 'body', w - 40)[:max_sub]
     text_h = 24 + 2 * (title_size + 8) + 8 + max_sub * (sub_size + 10) + 20     # same slot on every tile
     sx, sy, sw = 18, 18, w - 36
     sh = int(h - sy - text_h)
@@ -656,11 +683,11 @@ def _dock_tile(title, sub, accent, w=TILE_W, h=TILE_H, title_size=38, sub_size=3
                    weight=lambda xs, ys: np.clip(1.2 - (ys - p - sy) / sh, 0.2, 1))
     y = sy + sh + 24 + title_size * 0.78
     for ln in tl:
-        ui.put_text(f, p + 22, p + y, ln, title_size, 'ui', L.text, 'ls')
+        ui.put_text(f, p + 20, p + y, ln, title_size, 'ui', L.text, 'ls')
         y += title_size + 8
     y += 8 + sub_size * 0.2
     for ln in sl:
-        ui.put_text(f, p + 22, p + y, ln, sub_size, 'body', L.text2, 'ls')
+        ui.put_text(f, p + 20, p + y, ln, sub_size, 'body', L.text2, 'ls')
         y += sub_size + 10
     return ui.derive_panel(base, f, {'slot': (sx, sy, sw, sh, sr), 'accent': tuple(ac), 'icon': None})
 
@@ -703,7 +730,7 @@ def _tile_layout(t):
     sc = [1.0 + FOCUS_GROW * w + _pop(t, FOCUS_T[i]) for i, w in enumerate(ws)]
     widths = [TILE_W * s for s in sc]
     total = sum(widths) + 2 * TILE_GAP
-    x = K.CX - total / 2
+    x = DOCK_X - total / 2
     out = []
     for i in range(3):
         out.append((x + widths[i] / 2, sc[i], ws[i]))
@@ -715,7 +742,7 @@ def _dock_cam(t):
     """Orbit around the tile row (the tiles stay framed inside the safe width while the glow plate behind and the
     bokeh in front slide past: a truck with parallax), whip-pan arrival, then a push into tile 3's footage."""
     arrive = 1.0 - K.ramp(t, T_DOCK, T_DOCK + 0.45, 'out_expo')
-    yaw = K.lerp(-5.0, 5.0, K.ramp(t, T_DOCK + 0.3, T_PAY - 0.3, 'inout_sine')) + 0.6 * math.sin((t - T_DOCK) * 0.7)
+    yaw = K.lerp(-3.0, 1.5, K.ramp(t, T_DOCK + 0.3, T_PAY - 0.3, 'inout_sine')) + 0.4 * math.sin((t - T_DOCK) * 0.7)
     dist = 1500.0 - 40.0 * K.ramp(t, T_DOCK, T_PAY, 'inout_sine')
     cam = K.Cam.orbit((0.0, 0.0, 0.0), dist, yaw=yaw, pitch=K.wiggle(t, 0.22, 0.3, seed=12), aperture=30)
     cam = K.Cam(pos=cam.pos, yaw=cam.yaw - 17.0 * arrive, pitch=cam.pitch, roll=0.0, aperture=30,
@@ -747,7 +774,7 @@ def s_dock(t):
     # headline
     hp = K.ramp(t, HEAD_T, HEAD_T + 0.7, 'out_expo')
     if hp > 0:
-        hpos = (0.0, 470.0 - K.CY + 60 * (1 - hp), 60.0 + 200 * (1 - hp))
+        hpos = (DOCK_X - K.CX + 20.0, 470.0 - K.CY + 60 * (1 - hp), 60.0 + 200 * (1 - hp))
         sweep = K.ramp(t, 12.3, 13.2, 'inout_sine')
         hd = A['head']
         sc.custom(hpos, lambda c, cm: hd.draw_plane(c, cm, hpos, opacity=K.ramp(t, HEAD_T, HEAD_T + 0.25),
@@ -764,9 +791,10 @@ def s_dock(t):
         mix = K.ramp(t, tf - 0.1, tf + 0.3, 'out_cubic') * (1 - K.ramp(t, tf + 1.85, tf + 2.2, 'inout_cubic')
                                                              if i < 2 else 1.0)
         if mix > 0.01:
-            cid, src, cen = TILES[i][4]
+            cid, src, cen, mz, spd = TILES[i][4]
             sx_, sy_, sw_, sh_, sr_ = tile.meta['slot']
-            media = F.Clip(cid).get(src + (t - tf) * 0.9, sw_, sh_, center=cen, zoom=1.1 + 0.03 * (t - tf), look='neon')
+            media = F.Clip(cid).get(src + (t - tf) * spd, sw_, sh_, center=cen, zoom=mz + 0.03 * max(t - tf, 0.0),
+                                    look='neon')
         light = K.ramp(t, tf + 0.15, tf + 0.95, 'inout_sine')
         face = ui.dock_face(tile, focus=w, sweep=((t - T_DOCK) * 0.3 + i * 0.33) % 1.0)
         if media is not None:
@@ -785,7 +813,7 @@ def s_dock(t):
         sx_, sy_, sw_, sh_, sr_ = tile.meta['slot']
         k = TILE_W * s / tile.w
         slot_c = (px + (sx_ + sw_ / 2 - tile.w / 2) * k, P[1] + (sy_ + sh_ / 2 - tile.h / 2) * k, pz - 20)
-        corner = (px + (-tile.w / 2 + 40) * k, P[1] + (-tile.h / 2 + 34) * k, pz - 110)
+        corner = (px + (-tile.w / 2 + 50) * k, P[1] + (-tile.h / 2 - 50) * k, pz - 110)     # above the top edge
         lift = mix
         ipos = tuple(slot_c[j] * (1 - lift) + corner[j] * lift for j in range(3))
         iw = K.lerp(sw_ * 0.78, 122.0, lift) * k * (ic.size[0] / (ic.bbox[2] - ic.bbox[0]))
@@ -845,8 +873,7 @@ def _dock_cursor(t, cam, lay):
 def post_dock(cv, t):
     arrive = 1.0 - K.ramp(t, T_DOCK, T_DOCK + 0.45, 'out_expo')
     zo = K.ramp(t, T_PAY - ZOOM_OUT, T_PAY, 'in_expo')
-    foc = max(K.impulse(t, tf, decay=8.0) for tf in FOCUS_T)
-    return K.post(cv, LOOK, t, chroma=1.8 + 8 * arrive + 8 * zo, flash=0.06 * foc + 0.9 * zo ** 3)
+    return _post(cv, t, hot=0.9 * zo ** 3, chroma=1.8 + 8 * arrive + 8 * zo)
 
 
 # =============================================================================================== 5. PAYOFF
@@ -859,9 +886,9 @@ def _pay_assets():
     F, S3, T, ui = _lazy()
     d = {}
     d['ramp'] = F.SpeedRamp([(T_PAY, 1.0), (T_PAY + 0.2, 0.6, 'inout_sine'), (T_END, 0.6)], src0=3.6)
-    d['l1'] = T.Glyphs('Open your home.', 'flat', px=112, fill='IVORY', glow=0.6, glow_color=('MAGENTA', 2.4),
+    d['l1'] = T.Glyphs('Open your home.', 'flat', px=96, fill='IVORY', glow=0.6, glow_color=('MAGENTA', 2.4),
                        glow_radii=(0.05, 0.18, 0.45), glow_weights=(0.85, 0.55, 0.35))
-    d['l2'] = T.Glyphs("Change a\nchild's life.", 'deep_glow', px=150, line_height=1.02, glow_color=('ORANGE', 2.5),
+    d['l2'] = T.Glyphs("Change a\nchild\u2019s life.", 'deep_glow', px=150, line_height=1.02, glow_color=('ORANGE', 2.5),
                        inner_glow_color=('AMBER', 1.25))
     # bottom gradient scrim (NIGHT_0, 0 at y 700 -> 0.9 from y 1400 down), plum-tinted
     y = np.arange(K.H, dtype=np.float32)
@@ -897,10 +924,10 @@ def s_payoff(t):
     A['bokeh'].draw(cv, cam, t, opacity=0.7)
     # type: lead-in line rises, the hero line slams up; light sweeps run across both
     s1 = K.ramp(t, PAY_L1 + 0.45, PAY_L1 + 1.15, 'inout_sine')
-    A['l1'].rise(cv, t, K.CX, 1110, t0=PAY_L1, stagger=0.03, dur=0.6, sweep=s1 if 0 < s1 < 1 else None,
+    A['l1'].rise(cv, t, 515.0, 1112, t0=PAY_L1, stagger=0.03, dur=0.6, sweep=s1 if 0 < s1 < 1 else None,
                  sweep_kw=dict(width=0.12, strength=1.4))
     s2 = K.ramp(t, PAY_L2 + 0.5, PAY_L2 + 1.25, 'inout_sine')
-    A['l2'].rise(cv, t, K.CX, 1328, t0=PAY_L2, stagger=0.025, dur=0.55, dist=0.35, scale0=1.15,
+    A['l2'].rise(cv, t, 515.0, 1328, t0=PAY_L2, stagger=0.025, dur=0.55, dist=0.35, scale0=1.15,
                  sweep=s2 if 0 < s2 < 1 else None, sweep_kw=dict(width=0.12, strength=1.4))
     if arrive > 0.05:
         K.zoom_blur(cv, 0.2 * arrive ** 1.5)
@@ -914,7 +941,7 @@ def s_payoff(t):
 def post_payoff(cv, t):
     arrive = _blip(t, T_PAY, rise=0.02, decay=20.0)
     out = K.ramp(t, T_END - PAY_OUT, T_END, 'in_expo')
-    return K.post(cv, LOOK, t, footage=1.0 - 0.6 * out, flash=0.85 * arrive + 0.9 * out ** 2,
+    return _post(cv, t, hot=0.85 * arrive + 0.9 * out ** 2, footage=1.0 - 0.6 * out,
                   chroma=1.8 + 6 * arrive + 6 * out)
 
 
@@ -1022,14 +1049,15 @@ def s_end(t):
     C = _common()
     u = t - T_END
     cam = _end_cam(t)
-    land = K.impulse(t, T_END + 0.55, decay=4.0)
-    cv = K.background('neon', t, cam, boost=0.5 * K.impulse(t, T_END, decay=3.0) + 0.25 * land +
-                      0.2 * K.impulse(t, CLICK_T, decay=4.0), center=(0.78, 0.94), rim=0.8)
+    land = _swell(t, T_END + 0.35, rise=0.4, decay=1.5)              # the mark settles: glow eases in, then relaxes
+    cv = K.background('neon', t, cam, boost=0.5 * K.impulse(t, T_END, decay=3.0) + 0.2 * land,
+                      center=(0.78, 0.94), rim=0.8)
     sc = K.Scene(cam)
     ly = LOGO_Y - K.CY
     # volumetric glow + magenta/orange glow rings behind the mark
-    sc.billboard(A['glow'], (0.0, ly + 80.0, 700.0), 1700, mode='add', opacity=0.22 + 0.25 * land)
-    rp = K.ramp(t, T_END + 0.1, T_END + 0.9, 'out_expo')
+    sc.billboard(A['glow'], (0.0, ly + 80.0, 700.0), 1700, mode='add',
+                 opacity=(0.22 + 0.25 * land) * K.ramp(t, T_END, T_END + 0.5, 'out_cubic'))
+    rp = K.ramp(t, T_END + 0.1, T_END + 1.0, 'inout_sine')
     if rp > 0:
         # magenta/orange glow rings: tilted ellipses orbiting behind the mark (the conic colours spin)
         sc.plane(A['ring'], (0.0, ly + 120.0, 140.0), 940.0 * (0.6 + 0.4 * rp), rot=(-74.0, 0.0, u * 40.0),
@@ -1114,8 +1142,7 @@ def _draw_wiped(cv, spr, cx, cy, scale, p, soft=0.18):
 
 def post_end(cv, t):
     arrive = _blip(t, T_END, rise=0.02, decay=20.0)
-    click = K.impulse(t, CLICK_T, decay=8.0)
-    return K.post(cv, LOOK, t, flash=0.7 * arrive + 0.08 * click, chroma=1.8 + 5 * arrive)
+    return _post(cv, t, hot=0.7 * arrive, chroma=1.8 + 5 * arrive)
 
 
 # =============================================================================================== placeholder
@@ -1146,7 +1173,7 @@ def draw(t):
 def post(cv, t):
     if t < T_HOOK:
         f = _blip(t, T_HOOK, rise=0.03, decay=16.0)
-        return K.post(cv, LOOK, t, flash=0.9 * f, footage=K.ramp(t, 0.3, 0.5),
+        return _post(cv, t, hot=0.9 * f, footage=K.ramp(t, 0.3, 0.5),
                       chroma=1.8 + 3.0 * K.impulse(t, 0.0, decay=6.0))
     if t < T_Q:
         return post_hook(cv, t)
