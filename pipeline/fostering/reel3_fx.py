@@ -133,7 +133,7 @@ def composite_region(cv, spr, x0, y0, alpha=None, opacity=1.0):
 
 def _plate_rot(clip, t_src, cx, cy, width, focus, look, W, H, rot):
     """Rotated plate (canvas-sized). Same mapping as plate() plus a clockwise rotation about the focus point."""
-    sw, sh = clip.w, clip.h
+    sw = clip.w
     scale = float(width) / sw
     r = 1
     while r < 8 and scale * r * 2 <= 1.0:

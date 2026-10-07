@@ -1209,8 +1209,6 @@ def scene_end(t):
         gl = K.impulse(t, E_LAND, decay=6.0)
         for key in ('leafL', 'leafR', 'leafF'):
             px, py = logo_xy(540, LOGO_Y, L[key + '_c'])
-            pk = K.spring(t - E_LAND - (0.08 if key == 'leafF' else 0.0), freq=2.6, damping=0.45)
-            W_, H_ = L['size']
             K.draw(cv, L[key], 540, LOGO_Y, opacity=K.ramp(t, E_LAND, E_LAND + 0.06))
             if gl > 0.02:
                 K.draw(cv, _hook_assets()['halo'], px, py, scale=0.9, opacity=0.6 * gl, mode='add')
@@ -1296,12 +1294,6 @@ def whip_shift(cv, dy):
     cv[...] = cv2.warpAffine(cv, M, (cv.shape[1], cv.shape[0]), flags=cv2.INTER_LINEAR,
                              borderMode=cv2.BORDER_REFLECT101)
     return cv
-
-
-# =============================================================================================== stubs
-def scene_stub(t):
-    cam = K.Cam(aperture=20)
-    return airy_bg(t, cam)
 
 
 # =============================================================================================== contract
