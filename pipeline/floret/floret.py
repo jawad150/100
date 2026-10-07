@@ -381,7 +381,7 @@ def background(t, grid=1.0, cam=(0.0, 0.0, 1.0)):
 
 # ------------------------------------------------------------------ frame 1: logo reveal
 def f1(cv, t, u, d):
-    out = A.EXPO_IN(A.clamp((u - (d - 0.4)) / 0.4))
+    out = A.EXPO_IN(A.clamp((u - (d - 0.34)) / 0.34))
     bars_p = [A.clamp((u - 0.35 - 0.13 * i) / 0.5) for i in range(4)]
     arrow_p = A.EXPO(A.clamp((u - 0.95) / 0.65))
     sheen = (u - 1.9) / 0.7
@@ -440,13 +440,13 @@ def chip(txt, w=None):
 
 
 def f2(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     ch = chip('FLORET CAPITALS')
     p = A.EXPO_OUT(A.clamp((u - 0.1) / 0.7))
     blit(cv, ch, S / 2, 390 - (1 - p) * 30, op=A.ramp(u, 0.1, 0.4) * (1 - out), blur=(1 - p) * 4)
     kt = KText([[("Pakistan's", 'Rubik-700', 82, 'w'), ('Leading', 'Rubik-700', 82, 'w')],
                 [('Brokerage', 'Rubik-800', 104, 'g'), ('House', 'Rubik-800', 104, 'g')]], 600)
-    kt.draw(cv, t, FRAMES[1][1] + 0.2, FRAMES[1][2] - 0.05)
+    kt.draw(cv, t, FRAMES[1][1] + 0.2, FRAMES[1][2] - 0.34)
     pr = A.EXPO(A.clamp((u - 0.4) / 2.0))
     card = chart_card(int(round(pr * 40)))
     put3d(cv, card, S / 2, 930 + 30 * (1 - pr), 1000, rot=(-38, 0, 0), op=A.ramp(u, 0.3, 0.8) * (1 - out) * 0.9)
@@ -483,7 +483,7 @@ def pak_map():
 
 
 def f3(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     spr, cities, size = pak_map()
     mp = A.EXPO_OUT(A.clamp(u / 1.0))
     mx, my, ms = S / 2 + 20, 660, 0.78
@@ -532,7 +532,7 @@ def f3(cv, t, u, d):
     blit(cv, num, S / 2, 250, s=pop, op=o, blur=(1 - A.clamp((u - 0.3) / 0.5)) * 6 + out * 10)
     kt = KText([[('Active', 'Rubik-700', 70, 'w'), ('Clients', 'Rubik-700', 70, 'w')],
                 [('Nationwide', 'Rubik-500', 54, 'gold')]], 1085)
-    kt.draw(cv, t, FRAMES[2][1] + 0.9, FRAMES[2][2] - 0.05)
+    kt.draw(cv, t, FRAMES[2][1] + 0.9, FRAMES[2][2] - 0.34)
 
 
 # ------------------------------------------------------------------ frame 4: one platform, multiple markets
@@ -583,10 +583,10 @@ def mini_card(label, seed, sub=''):
 
 
 def f4(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     kt = KText([[('One', 'Rubik-700', 80, 'w'), ('Platform.', 'Rubik-700', 80, 'w')],
                 [('Multiple', 'Rubik-800', 92, 'g'), ('Markets.', 'Rubik-800', 92, 'g')]], 255)
-    kt.draw(cv, t, FRAMES[3][1] + 0.15, FRAMES[3][2] - 0.05)
+    kt.draw(cv, t, FRAMES[3][1] + 0.15, FRAMES[3][2] - 0.34)
     tab = min(3, int(max(0, u - 0.9) / 0.55))
     pr = A.EXPO(A.clamp((u - 0.5 - tab * 0.55) / 0.9)) if tab == 0 else A.EXPO(A.clamp((u - 0.9 - tab * 0.55) / 0.5))
     img = dashboard(tab, int(round(pr * 30)))
@@ -637,7 +637,7 @@ def check_chip(word):
 
 
 def f5(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     o = 1 - A.EXPO_IN(out)
     for i, (lab, sub) in enumerate((('PSX', 'Pakistan Stock Exchange'), ('PMEX', 'Pakistan Mercantile Exchange'))):
         p = A.EXPO_OUT(A.clamp((u - 0.15) / 0.9))
@@ -708,7 +708,7 @@ def commodity_card(kind, icon=True):
 
 
 def f6(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     o = 1 - A.EXPO_IN(out)
     T0 = FRAMES[5][1]
     words = [('Gold.', 'g'), ('Silver.', 's'), ('Crude Oil.', 'w'), ('And More.', 'g')]
@@ -717,7 +717,7 @@ def f6(cv, t, u, d):
     for i, ((w, col), s0) in enumerate(zip(words, starts)):
         kt = KText([[(w, 'Rubik-800', 96, col)]], 360 + i * 150, x=110, align='l')
         hl = 1.0 if i == cur or u > 2.9 else 0.38
-        kt.draw(cv, t, T0 + s0, FRAMES[5][2] - 0.05, op=hl)
+        kt.draw(cv, t, T0 + s0, FRAMES[5][2] - 0.34, op=hl)
     kinds = ['gold', 'silver', 'oil', 'more']
     for i in range(4):
         cu = u - starts[i] - 0.05
@@ -781,13 +781,13 @@ def ticker_card(tk, sec, seed):
 
 
 def f7(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     o = 1 - A.EXPO_IN(out)
     T0 = FRAMES[6][1]
     kt = KText([[('From', 'Rubik-500', 58, 'w'), ('Global', 'Rubik-700', 58, 'w'), ('Commodities', 'Rubik-700', 58, 'g')],
                 [('to', 'Rubik-500', 58, 'w'), ("Pakistan's", 'Rubik-700', 58, 'w'), ('Leading', 'Rubik-700', 58, 'w'),
                  ('Companies', 'Rubik-700', 58, 'g')]], 235)
-    kt.draw(cv, t, T0 + 0.1, FRAMES[6][2] - 0.05, stagger=0.05)
+    kt.draw(cv, t, T0 + 0.1, FRAMES[6][2] - 0.34, stagger=0.05)
     gp = A.EXPO_OUT(A.clamp((u - 0.2) / 1.0))
     globe(cv, 330 - (1 - gp) * 60, 690, 230 * (0.85 + 0.15 * gp), u * 0.45 + 0.5, A.ramp(u, 0.2, 0.7) * o)
     for i, (tk, sec, sd) in enumerate(ROWS):
@@ -844,14 +844,14 @@ def icon_disc(kind):
 
 
 def f8(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     o = 1 - A.EXPO_IN(out)
     T0 = FRAMES[7][1]
     rows = [('Expert', 'Insights.', 'bulb'), ('Smarter', 'Decisions.', 'target'), ('Built on', 'Trust.', 'shield')]
     sh = b3d('shield', 1 + max(0.0, u) * 30 * 0.95)
     if sh is not None:
         q = A.EXPO_OUT(A.clamp(u / 0.9))
-        blit(cv, sh, S / 2, 245 + 10 * math.sin(u * 1.6), s=0.95 * (0.8 + 0.2 * q), op=A.ramp(u, 0, 0.4) * o, blur=(1 - q) * 6)
+        blit(cv, sh, S / 2, 260 + 10 * math.sin(u * 1.6), s=1.9 * (0.8 + 0.2 * q), op=A.ramp(u, 0, 0.4) * o, blur=(1 - q) * 6)
     for i, (a, b, ic) in enumerate(rows):
         y = 540 + i * 175
         cu = u - 0.2 - i * 0.55
@@ -861,7 +861,7 @@ def f8(cv, t, u, d):
         blit(cv, icon_disc(ic), 215, y, s=1.2 * (0.6 + 0.4 * A.BACK_OUT(A.clamp(cu / 0.6))), op=A.ramp(cu, 0, 0.25) * o,
              rot=(1 - p) * -40)
         kt = KText([[(a, 'Rubik-700', 74, 'w'), (b, 'Rubik-800', 74, 'g')]], y + 4, x=320, align='l')
-        kt.draw(cv, t, T0 + 0.25 + i * 0.55, FRAMES[7][2] - 0.05)
+        kt.draw(cv, t, T0 + 0.25 + i * 0.55, FRAMES[7][2] - 0.34)
         # connector line down to the next row
         if i < 2:
             lu = A.EXPO_OUT(A.clamp((cu - 0.35) / 0.5))
@@ -885,7 +885,7 @@ def tile(i):
 
 
 def f9(cv, t, u, d):
-    out = A.clamp((u - (d - 0.05)) / 0.4)
+    out = A.clamp((u - (d - 0.34)) / 0.34)
     o = 1 - A.EXPO_IN(out)
     z0 = u * 5.0 + A.EXPO_IN(A.clamp(u / d)) * 4
     cam = C.Cam(0.15 * math.sin(u * 0.8), 0, z0, roll=4 * math.sin(u * 0.6), F=F, focus=z0 + 4.0, aperture=0.008)
@@ -925,7 +925,7 @@ def f9(cv, t, u, d):
     g = np.exp(-(((xx - S / 2) / 520.0) ** 2 + ((yy - 610) / 200.0) ** 2)).astype(np.float32)
     cv[..., :3] *= 1 - 0.75 * g[..., None] * A.ramp(u, 0.1, 0.6)
     cv[..., 3] = np.clip(cv[..., 3] + 0.75 * g * A.ramp(u, 0.1, 0.6), 0, 1)
-    kt.draw(cv, t, FRAMES[8][1] + 0.25, FRAMES[8][2] - 0.05)
+    kt.draw(cv, t, FRAMES[8][1] + 0.25, FRAMES[8][2] - 0.34)
 
 
 # ------------------------------------------------------------------ frame 10: THINK BIGGER. THINK FLORET.
