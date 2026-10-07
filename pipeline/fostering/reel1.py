@@ -155,13 +155,13 @@ def _static_cam(t, aperture=40):
 
 
 # =============================================================================================== 0. COLD OPEN
-IRIS_C = (540.0, 860.0)
+IRIS_C = (540.0, 815.0)
 
 
 def _iris_r(t):
     """Iris radius: spark on the heartbeat (t=0), opens to 360 px, a pulse on the 'dub' (0.30), then blows wide
     into the first montage cut at 0.5."""
-    r = 360.0 * K.ramp(t, 0.02, 0.32, 'out_expo')
+    r = 385.0 * K.ramp(t, 0.02, 0.32, 'out_expo')
     r += 26.0 * K.impulse(t, 0.0, decay=10.0) + 34.0 * K.impulse(t, 0.30, decay=9.0)
     r += 1150.0 * K.ramp(t, 0.36, 0.5, 'in_cubic')
     return r
@@ -176,8 +176,8 @@ def s_cold(t):
     r = _iris_r(t)
     cx, cy = IRIS_C
     if r > 2:
-        foot = F.Clip('c01').get(0.25 + t * 0.9, K.W, K.H, center=(0.48, 0.40), zoom=1.32 - 0.12 * t,
-                                 look='neon')
+        foot = F.Clip('c01').get(0.25 + t * 0.9, K.W, K.H, center=(0.49, 0.42), zoom=1.03 + 0.08 * t,
+                                 look='neon')         # zoom ~1.04: the whole face (smile included) sits in the ring
         yy, xx = np.ogrid[0:K.H, 0:K.W]
         d = np.sqrt((xx.astype(np.float32) - cx) ** 2 + (yy.astype(np.float32) - cy) ** 2)
         m = np.clip((r - d) / 3.0 + 0.5, 0, 1)
@@ -198,7 +198,7 @@ HOOK = [('c12', 4.15, (0.635, 0.535), 1.08),    # mum + boy laughing (faces lift
         ('c08', 1.80, (0.50, 0.50), 1.05),      # piggyback, both smiling to camera
         ('c14', 9.50, (0.42, 0.46), 1.08),      # baby lifted + kiss
         ('c00', 1.15, (0.40, 0.525), 1.06),     # tent, girl to camera
-        ('c16', 2.35, (0.60, 0.42), 1.06),      # dog kennel, leaves in front
+        ('c16', 0.50, (0.60, 0.25), 1.45),      # kennel: faces only (the green foreground leaf is cropped out)
         ('c02', 4.25, (0.38, 0.46), 1.16),      # toddler stacking blocks
         ('c11', 4.45, (0.56, 0.48), 1.08)]      # mum + child + teddy
 HOOK_DT = 0.25
@@ -1095,19 +1095,19 @@ def s_end(t):
                blur=4.0 * (1 - tp))
     # CTA pill: springs in, hover glow when the cursor arrives, press + ripple on the click (beat 48)
     if t >= CTA_T:
-        sp = K.spring(t - CTA_T, freq=2.6, damping=0.45)
+        sp = K.lerp(0.72, 1.0, K.ramp(t, CTA_T, CTA_T + 0.4, 'out_back'))
         hover = K.ramp(t, CLICK_T - 0.35, CLICK_T - 0.1, 'out_cubic')
         press = K.impulse(t, CLICK_T - 0.02, decay=8.0) if t >= CLICK_T - 0.02 else 0.0
         btn = ui.button('Start your enquiry', hover=round(hover * 10) / 10, press=round(press * 20) / 20,
                         ripple=(t - CLICK_T) if t >= CLICK_T else None, look='neon')
-        ui.place(cv, btn, K.CX, sy(CTA_Y), scale=max(sp, 0.01) * k, opacity=K.ramp(t, CTA_T, CTA_T + 0.08))
+        ui.place(cv, btn, K.CX, sy(CTA_Y), scale=sp * k, opacity=K.ramp(t, CTA_T, CTA_T + 0.18, 'out_cubic'))
     if t >= CONTACT_T:
         cp = K.ramp(t, CONTACT_T, CONTACT_T + 0.5, 'out_expo')
         A['contact'].draw(cv, K.CX, sy(CONTACT_Y) + 24 * (1 - cp), opacity=K.ramp(t, CONTACT_T, CONTACT_T + 0.25),
                           scale=k, snap=False)
     if t >= BADGE_T:
-        bp = K.spring(t - BADGE_T, freq=2.4, damping=0.5)
-        A['badge'].draw(cv, K.CX, sy(BADGE_Y), scale=max(bp, 0.01) * k, opacity=K.ramp(t, BADGE_T, BADGE_T + 0.1))
+        bp = K.lerp(0.75, 1.0, K.ramp(t, BADGE_T, BADGE_T + 0.4, 'out_back'))
+        A['badge'].draw(cv, K.CX, sy(BADGE_Y), scale=bp * k, opacity=K.ramp(t, BADGE_T, BADGE_T + 0.18, 'out_cubic'))
     # cursor: glides in from the lower right, clicks the CTA on beat 48, rests beside it
     if t >= CLICK_T - 0.75:
         a = K.ramp(t, CLICK_T - 0.75, CLICK_T - 0.08, 'out_cubic')
@@ -1197,8 +1197,10 @@ def samples(t):
                    (T_PAY - ZOOM_OUT - 0.02, T_PAY + 0.35), (T_END - PAY_OUT - 0.02, T_END + 0.3)):
         if a_ <= t <= b_:
             return 7
+    if CTA_T <= t <= BADGE_T + 0.45 or WM_T <= t <= WM_T + 0.5:
+        return 7                                             # end-card pops: no stepped ghost copies
     for a_, b_ in ((T_HOOK, T_Q), (T_Q, T_Q + 0.6), (T_Q + 0.95, T_Q + 1.2), (T_DOCK, T_DOCK + 0.95),
-                   (T_END, T_END + 0.9), (CTA_T, CTA_T + 0.3)):
+                   (T_END, T_END + 0.9)):
         if a_ <= t <= b_:
             return 5
     return 3

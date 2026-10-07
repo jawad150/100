@@ -111,6 +111,16 @@ def _ss(e0, e1, x):
     return K.smoothstep(e0, e1, x)
 
 
+def _hot(cv, a):
+    """Transition flash as HOT EXPOSURE (call before K.post): light is multiplied, so blacks stay black and the
+    post's warm bloom turns the pushed highlights into a hot amber bloom. Replaces core.post(flash=...), whose
+    additive ivory term lifted the blacks into a grey-lavender veil (QA: YMIN 15 -> 29..53 on clicks).
+    UI clicks / pops / landings never call this: they get local glows at the interaction point."""
+    if a > 1e-3:
+        cv[..., :3] *= np.float32(1.0 + 3.0 * a)
+    return cv
+
+
 # ================================================================================================ A. HOOK
 TUN_CARDS = [('c12', 3.0, (0.60, 0.42)), ('c04', 1.4, (0.47, 0.38)), ('c09', 3.4, (0.45, 0.42)),
              ('c14', 10.6, (0.38, 0.40)), ('c05', 3.0, (0.55, 0.40)), ('c13', 6.5, (0.66, 0.42)),
@@ -304,7 +314,7 @@ def _post_hook(cv, t):
     if T_TUN <= t < T_TITLE + 0.3:
         # flash + chroma pulse on every 8th through the tunnel
         p = sum(K.impulse(t, T_TUN + B(0.5) * k, decay=14.0) for k in range(1, 4))
-        fl += 0.14 * p
+        fl += 0.10 * p
         ch += 4.0 + 6.0 * p * (t < T_TITLE)
         if B(2.5) < t < T_TITLE:
             K.zoom_blur(cv, 0.06 * K.ramp(t, B(2.5), T_TITLE, 'in_expo'))
@@ -314,7 +324,8 @@ def _post_hook(cv, t):
         K.zoom_blur(cv, 0.12 * z)
         fl += 0.8 * K.ramp(t, T_NUM - 0.08, T_NUM, 'in_expo')
     foot = 0.5 if T_TUN <= t < T_TITLE else 0.0
-    return K.post(cv, LOOK, t, flash=fl, chroma=ch, footage=foot)
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, chroma=ch, footage=foot)
 
 
 # ================================================================================================ B. THE NUMBER
@@ -473,10 +484,10 @@ def _scene_number(t):
 
 
 def _post_number(cv, t):
-    land = K.impulse(t, NUM_ROLL[1], decay=6.0)
-    fl = 0.9 * K.impulse(t, T_NUM, decay=9.0) + 0.16 * land + 0.5 * K.impulse(t, T_CALC, decay=12.0) * (t >= T_CALC)
+    fl = 0.9 * K.impulse(t, T_NUM, decay=9.0)                 # landing on B8: local glow only (scene)
     w = abs(_num_whip(t))
-    return K.post(cv, LOOK, t, flash=fl, chroma=1.6 + 9.0 * w)
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, chroma=1.6 + 9.0 * w)
 
 
 def _check_coin_ring(step=1.0 / 30):
@@ -693,8 +704,7 @@ def _scene_calc(t):
     A = _calc_assets()
     cam = _calc_cam(t)
     land = K.impulse(t, DRAG[1], decay=6.0)
-    beat = K.beat_pulse(t, BPM, decay=7.0) * (CLICKS[0] - 0.1 < t < CLICKS[4] + 0.3)
-    cv = K.background('amber', t, cam, boost=0.15 + 0.2 * beat + 0.4 * land, center=(0.28, 0.2), rim=0.0,
+    cv = K.background('amber', t, cam, boost=0.15 + 0.15 * land, center=(0.28, 0.2), rim=0.0,
                       intensity=0.8)
     sc = K.Scene(cam)
     win = A['win']
@@ -741,25 +751,30 @@ def _scene_calc(t):
 
 
 def _post_calc(cv, t):
-    land = K.impulse(t, DRAG[1], decay=6.0)
-    clicks = sum(K.impulse(t, c, decay=12.0) for c in CLICKS)
     w = abs(_num_whip(t))
-    fl = 0.18 * land + 0.04 * clicks + 0.5 * K.impulse(t, T_CALC, decay=12.0)
     wp = _calc_wipe(t)
+    fl = 0.5 * K.impulse(t, T_CALC, decay=12.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0)
     ch = 1.6 + 9.0 * w + (6.0 * math.sin(math.pi * wp[4]) if wp else 0.0)
-    return K.post(cv, LOOK, t, flash=fl, chroma=ch)
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, chroma=ch)
 
 
 # ================================================================================================ D. SUPPORT ORBIT
 TAGS = ((('Supervising', 'social worker'), 'user'), (('Ongoing', 'training'), 'graduation'),
         (('Advice outside', 'normal hours'), 'clock'), (('Foster carer', 'community'), 'users'),
         (('Education &', 'health help'), 'book'))
-HOUSE_P = (0.0, 30.0, 0.0)
-HOUSE_W = 640.0
+HOUSE_P = (0.0, -150.0, 0.0)
+HOUSE_W = 470.0
 DOOR_UV = (360.0 / 720.0, 470.0 / 720.0)       # heart on the door, in sprite uv (yaw 0)
-ORB = dict(center=(0.0, 100.0, 0.0), radius=(260.0, 300.0), tilt=48.0, roll=-12.0, speed=0.045)
+# Tag ring: explicit slot angles (deg; -90 = front centre, +90 = back centre, hidden behind the house: unused).
+# Back slots sit ABOVE the roof and front slots BELOW the house, so the parked ring shows all five tags readable.
+RING = dict(center=(0.0, -150.0, 0.0), rx=205.0, rz=545.0, tilt=62.0, roll=0.0)
+SLOTS = (-150.0, -30.0, -90.0, 30.0, 150.0)     # per TAGS entry: front-left, front-right, front-centre, back-R, back-L
+ENTER_FROM = (50.0, -45.0, 0.0, 0.0, 0.0)      # ring-angle offset each front tag slides in from
+ENTER_RISE = (0.0, 0.0, 40.0, 90.0, 90.0)       # world px a tag rises while popping (back tags rise out from
+                                                # behind the roof: they are drawn before the house)
 ORB_TGT = (0.0, 0.0, 0.0)
-ORB_YAW = (10.0, -8.0)
+ORB_YAW = (7.0, -6.0)
 ZOOM = (B(35.5), T_HEART)                      # push into the glowing door -> c12
 
 
@@ -795,6 +810,7 @@ def _orb_assets():
     d['h2'] = T.render('your household', 'gold', px=116)
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.6, power=2.0)
     d['door'] = K.radial(512, K.C['AMBER'] * 2.5, power=1.6)
+    d['pop'] = K.radial(300, K.C['AMBER'] * 1.2, power=2.2)
     d['shadow'] = K.radial(400, K.C['NIGHT_0'] * 0.0, power=1.6)
     d['scrim'] = K.radial(512, (0.0, 0.0, 0.0), power=1.3)
     d['dust'] = K.Particles(170, seed=41, bright=0.9, colors=[K.C['AMBER'], K.C['ORANGE'], K.C['PEACH']])
@@ -803,33 +819,20 @@ def _orb_assets():
 
 
 def _orb_cam(t):
+    """Orbit camera, then ONE continuous push into the door: the look-at target glides to the door heart and the
+    orbit distance shrinks (in_expo starts with zero velocity, so there is no jump at ZOOM[0])."""
     e = K.EASE['easy_ease'](K.clamp((t - T_ORB) / (ZOOM[0] - T_ORB)))
     z = K.ramp(t, ZOOM[0], ZOOM[1], 'in_expo')
-    door = _door_world(t)
-    base = K.Cam.orbit(ORB_TGT, K.lerp(1560.0, 1470.0, e), yaw=K.lerp(ORB_YAW[0], ORB_YAW[1], e),
-                       pitch=K.lerp(9.0, 5.5, e) + K.wiggle(t, 0.3, 0.4, seed=31), aperture=18,
-                       focus_dist=1560.0 - 300.0 * math.cos(math.radians(48.0)))
-    if z <= 0:
-        return base
-    # push toward the heart on the door (camera position lerps toward it, keeps looking at it)
-    tgt = np.array(door)
-    pos = base.pos + (tgt - base.pos) * (0.93 * z)
-    fwd = tgt - pos
-    fwd = fwd / np.linalg.norm(fwd)
-    yaw = math.degrees(math.atan2(fwd[0], fwd[2]))
-    pitch = -math.degrees(math.asin(fwd[1]))
-    return K.Cam(pos=pos, yaw=yaw, pitch=pitch, aperture=18 * (1 - z), focus_dist=float(np.linalg.norm(tgt - pos)))
-
-
-def _orb_phase(t):
-    """Ring phase (turns): indexes 1/5 turn on each beat so tag k pops in at the front on B(28 + k), then drifts."""
-    ph = 0.5
-    for k in range(1, len(TAGS)):
-        ph -= 0.2 * K.ramp(t, B(27 + k) + 0.12, B(28 + k) - 0.04, 'inout_cubic')
-    ph -= 0.02 * K.ramp(t, T_ORB, B(28), 'linear') - 0.02
-    tau, T0 = max(0.0, t - B(32) - 0.1), 0.7                # drift eases in (no linear start)
-    ph -= ORB['speed'] * (tau * tau / (2 * T0) if tau < T0 else tau - T0 / 2)
-    return ph
+    s_ = K.ramp(t, ZOOM[0], ZOOM[1], 'inout_sine')
+    d0 = K.lerp(1560.0, 1480.0, e)
+    f0 = d0 + 40.0
+    tgt = np.asarray(ORB_TGT, np.float64)
+    if s_ > 0:
+        tgt = tgt + (np.asarray(_door_world(t)) - tgt) * s_
+    dist = K.lerp(d0, 110.0, z)
+    return K.Cam.orbit(tuple(tgt), dist, yaw=K.lerp(ORB_YAW[0], ORB_YAW[1], e),
+                       pitch=K.lerp(8.0, 5.0, e) + K.wiggle(t, 0.3, 0.35, seed=31), aperture=12.0 * (1 - z),
+                       focus_dist=K.lerp(f0, dist, s_))
 
 
 def _house_yaw(t):
@@ -847,8 +850,25 @@ def _door_world(t):
     return (P[0] + (DOOR_UV[0] - 0.5) * HOUSE_W, P[1] + (DOOR_UV[1] - 0.5) * HOUSE_W, P[2] - 30.0)
 
 
+def _tag_state(k, t):
+    """(enter 0..1, ring angle deg) of tag k: pops on B(28 + k), sliding into its slot along the ring; then the
+    whole ring drifts a few degrees (eased) so the orbit keeps breathing."""
+    t0 = B(28 + k) - 0.06
+    en = K.ramp(t, t0, t0 + 0.42)
+    sl = K.ramp(t, t0, t0 + 0.55, 'out_cubic')
+    drift = 5.0 * K.EASE['inout_sine'](K.clamp((t - B(28)) / (ZOOM[0] - B(28)))) - 2.5
+    return en, SLOTS[k] + ENTER_FROM[k] * (1 - sl) + drift
+
+
+def _tag_world(k, t):
+    en, ang = _tag_state(k, t)
+    P, z = _ring_xyz(math.radians(ang), RING)
+    P = np.asarray(P, np.float64).reshape(3).copy()
+    P[1] += ENTER_RISE[k] * (1.0 - K.ramp(t, B(28 + k) - 0.06, B(28 + k) + 0.5, 'out_cubic'))
+    return en, P, float(np.asarray(z).reshape(-1)[0])
+
+
 def _scene_orbit(t):
-    _, _, _, ui = _lazy()
     A = _orb_assets()
     cam = _orb_cam(t)
     z = K.ramp(t, ZOOM[0], ZOOM[1], 'in_expo')
@@ -857,30 +877,51 @@ def _scene_orbit(t):
     K.grid_floor(cv, cam, y=520.0, spacing=170.0, extent=4200.0, color=K.C['AMBER'], opacity=0.3 * (1 - z), width=1.3)
     sc = K.Scene(cam)
     hp = _house_pos(t)
-    sc.billboard(A['warm'], (hp[0], hp[1] + 60.0, 600.0), 2000.0, mode='add', opacity=0.6)
-    # far coins drifting behind (depth)
+    sc.billboard(A['warm'], (hp[0], hp[1] + 60.0, 600.0), 1800.0, mode='add', opacity=0.6)
     for i, P in enumerate(((-1150.0, -80.0, 2700.0), (1150.0, 40.0, 2900.0), (-950.0, 480.0, 3200.0),
                            (980.0, 560.0, 2600.0))):
         sc.billboard(A['coin'].at_yaw((t * 120.0 + 70.0 * i) % 360.0), P, 260.0, rot=15.0 * i, opacity=0.75)
     sc.particles(A['dust'], t)
     sc.render(cv)
-    enter = [K.ramp(t, B(28 + i) - 0.02, B(28 + i) + 0.38) for i in range(len(TAGS))]
     fade = 1.0 - K.ramp(t, ZOOM[0], ZOOM[0] + 0.45, 'in_cubic')
-    phase = _orb_phase(t)
-    hspr = A['house'].at_yaw(_house_yaw(t))
-    glow_k = K.ramp(t, ZOOM[0], ZOOM[1], 'in_cubic')
+    head = math.radians(-90.0) + 2 * math.pi * 0.16 * (t - T_ORB)
+    lo = K.ramp(t, T_ORB + 0.2, B(28), 'out_cubic') * fade
+    tags = []
+    for k in range(len(TAGS)):
+        en, P, zz = _tag_world(k, t)
+        if en > 0 and fade > 0.01:
+            tags.append((cam.depth(P), k, en, P, zz))
+    tags.sort(key=lambda r: -r[0])
+    pn = A['tags']
 
-    def mid(c):
-        K.draw_billboard(c, hspr, cam, hp, HOUSE_W)
-        if glow_k > 0:
-            dw = _door_world(t)
-            K.draw_billboard(c, A['door'], cam, dw, 260.0 * (1 + 2.5 * glow_k), mode='add', opacity=glow_k, dof=False)
-    if fade > 0.01:
-        ui.orbit_ring(cv, cam, A['tags'], phase=phase, center=ORB['center'], radius=ORB['radius'], tilt=ORB['tilt'],
-                      roll=ORB['roll'], look='amber', mid=mid, back_blur=4.0, back_scale=0.8, enter=enter,
-                      opacity=fade)
-    else:
-        mid(cv)
+    def draw_tag(c, k, en, P, zz):
+        back = zz > 0
+        s_ = 0.62 + 0.38 * K.EASE['out_back'](min(en, 1.0))
+        op = min(1.0, en * 2.0) * fade * (0.92 if back else 1.0)
+        pnl = pn[k]
+        pnl.plane(c, cam, tuple(P), pnl.w * s_, (cam.pitch, cam.yaw, cam.roll), opacity=op, dof=True,
+                  shadow=0.7 * (0.6 if back else 1.0))
+        g = K.impulse(t, B(28 + k), decay=7.0)                     # pop: local glow at the tag, not a frame flash
+        if g > 0.02:
+            xy, d = cam.project(P[None, :])
+            K.draw(c, A['pop'], xy[0][0], xy[0][1], scale=pnl.w * cam.focal / d[0] / 300.0, mode='add',
+                   opacity=0.55 * g * fade)
+
+    if lo > 0:
+        _orbit_line(cv, cam, RING, 'back', 0.7 * lo, head)
+    for (d, k, en, P, zz) in tags:
+        if zz > 0:
+            draw_tag(cv, k, en, P, zz)
+    K.draw_billboard(cv, A['house'].at_yaw(_house_yaw(t)), cam, hp, HOUSE_W)
+    gk = K.ramp(t, ZOOM[0], ZOOM[1], 'in_cubic')
+    if gk > 0:
+        K.draw_billboard(cv, A['door'], cam, _door_world(t), 200.0 * (1 + 2.5 * gk), mode='add', opacity=gk,
+                         dof=False)
+    if lo > 0:
+        _orbit_line(cv, cam, RING, 'front', 0.9 * lo, head)
+    for (d, k, en, P, zz) in tags:
+        if zz <= 0:
+            draw_tag(cv, k, en, P, zz)
     # headline (2D overlay, top safe zone)
     for key, t0, y in (('h1', B(27.5), 318.0), ('h2', B(28) + 0.05, 432.0)):
         r = K.ramp(t, t0, t0 + 0.55, 'out_expo')
@@ -900,8 +941,9 @@ def _post_orbit(cv, t):
     z = K.ramp(t, ZOOM[1] - 0.12, ZOOM[1], 'in_expo')
     wp = _calc_wipe(t)
     ch = 1.6 + (6.0 * math.sin(math.pi * wp[4]) if wp else 0.0) + 6.0 * z
-    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + 1.0 * z + 0.05 * sum(K.impulse(t, B(28 + i), 12.0) for i in range(5))
-    return K.post(cv, LOOK, t, flash=fl, chroma=ch)
+    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0) + 1.0 * z
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, chroma=ch)
 
 
 # ================================================================================================ E. HEART BEAT
@@ -963,7 +1005,8 @@ def _post_heart(cv, t):
     if lk > 0:
         K.light_leak(cv, t, strength=1.2 * lk, seed=7, sweep=K.ramp(t, T_END - 0.35, T_END + 0.2, 'inout_sine'))
     fl = 0.65 * K.impulse(t, T_HEART, decay=11.0) + 0.9 * K.ramp(t, T_END - 0.1, T_END, 'in_expo')
-    return K.post(cv, LOOK, t, footage=1.0, flash=fl, leak=0.12, leak_seed=3, vignette=0.55)
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, footage=1.0, leak=0.12, leak_seed=3, vignette=0.55)
 
 
 # ================================================================================================ F. END CARD
@@ -1112,12 +1155,12 @@ def _scene_end(t):
 
 
 def _post_end(cv, t):
-    fl = 0.9 * K.impulse(t, T_END, decay=8.0) + 0.45 * K.impulse(t, T_SWAP, decay=7.0) + \
-        0.06 * K.impulse(t, T_CLICK, decay=10.0)
-    lk = 1.0 - K.ramp(t, T_END, T_END + 0.35)
+    fl = 0.9 * K.impulse(t, T_END, decay=10.0) + 0.3 * K.impulse(t, T_SWAP, decay=8.0)   # CTA click: local only
+    lk = 1.0 - K.ramp(t, T_END, T_END + 0.12, 'out_cubic')     # leak tail ends on the cut (no veil on the void)
     if lk > 0:
-        K.light_leak(cv, t, strength=1.0 * lk, seed=7, sweep=K.ramp(t, T_END - 0.35, T_END + 0.2, 'inout_sine'))
-    return K.post(cv, LOOK, t, flash=fl, chroma=1.6 + 4.0 * K.impulse(t, T_SWAP, decay=8.0))
+        K.light_leak(cv, t, strength=0.8 * lk, seed=7, sweep=K.ramp(t, T_END - 0.35, T_END + 0.2, 'inout_sine'))
+    _hot(cv, fl)
+    return K.post(cv, LOOK, t, chroma=1.6 + 4.0 * K.impulse(t, T_SWAP, decay=8.0))
 
 
 # ================================================================================================ dispatch
@@ -1269,48 +1312,60 @@ def cues():
     return c
 
 
-def _check_orbit(step=1.0 / 15, orb=None, verbose=False):
-    """Dev check for scene D: (min margin to the x 70..1010 safe band, min gap between visible tag rects,
-    min gap to the headline bottom y 470) in px over the orbit section (negative = violation)."""
-    import ui
+def _check_orbit(step=1.0 / 30, t0=None, t1=None, verbose=False):
+    """Dev check for scene D over every frame: returns dict of worst margins (px; negative = violation):
+    safe = inside x 70..1010 / y 490..1480 (below the headline), like = right edge <= 930 when the tag reaches
+    y >= 1050, gap = min gap between visible tags, house = gap between back tags and the house sprite bbox,
+    plus per-tag readable seconds (fully entered, fade > 0.95)."""
+    import sprites3d as S3
     A = _orb_assets()
-    R = dict(ORB, **(orb or {}))
-    worst = [1e9, 1e9, 1e9]
-    where = [None, None, None]
-    n = len(TAGS)
-    for t in np.arange(B(28), ZOOM[0], step):
+    hs = S3.get('house', 'night')
+    bx0, by0, bx1, by1 = hs.bbox
+    worst = dict(safe=(1e9, None), like=(1e9, None), gap=(1e9, None), house=(1e9, None))
+    readable = [0.0] * len(TAGS)
+    t0 = B(28) if t0 is None else t0
+    t1 = ZOOM[0] + 0.45 if t1 is None else t1
+
+    def upd(key, v, where):
+        if v < worst[key][0]:
+            worst[key] = (round(float(v), 1), where)
+    for t in np.arange(t0, t1, step):
         cam = _orb_cam(t)
-        phase = _orb_phase(t)
-        ang = 2 * math.pi * (np.arange(n) / n + phase) + math.pi / 2
-        P, z = ui._orbit_points(ang, R['radius'], R['tilt'], R['roll'])
-        Pw = P + np.asarray(R['center'])
-        zr = np.max(np.abs(z))
+        fade = 1.0 - K.ramp(t, ZOOM[0], ZOOM[0] + 0.45, 'in_cubic')
+        hp = _house_pos(t)
+        hxy, hd = cam.project(np.array([hp]))
+        k_ = cam.focal / hd[0] * HOUSE_W / hs.size[0]
+        hcx, hcy = hxy[0]
+        hbox = (hcx + (bx0 - hs.size[0] / 2) * k_, hcy + (by0 - hs.size[1] / 2) * k_,
+                hcx + (bx1 - hs.size[0] / 2) * k_, hcy + (by1 - hs.size[1] / 2) * k_)
         rects = []
-        for i in range(n):
-            if t < B(28 + i) + 0.3:
+        for k in range(len(TAGS)):
+            en, P, zz = _tag_world(k, t)
+            if en <= 0.3 or fade < 0.3:
                 continue
-            back = (z[i] / zr + 1) / 2
-            s = 1 + (0.8 - 1) * back
-            xy, d = cam.project(Pw[i:i + 1])
-            k = cam.focal / d[0]
-            pn = A['tags'][i]
-            w_, h_ = pn.w * s * k, pn.h * s * k
-            rects.append((i, xy[0][0] - w_ / 2, xy[0][1] - h_ / 2, xy[0][0] + w_ / 2, xy[0][1] + h_ / 2, back))
-        for (i, x0, y0, x1, y1, bk) in rects:
-            m = min(x0 - 70, 1010 - x1)
-            if bk < 0.75 and m < worst[0]:
-                worst[0], where[0] = m, (round(t, 2), i)
-            if min(y0 - 470, 1480 - y1) < worst[2]:
-                worst[2], where[2] = min(y0 - 470, 1480 - y1), (round(t, 2), i)
+            xy, d = cam.project(P[None, :])
+            sc_ = (0.62 + 0.38 * K.EASE['out_back'](min(en, 1.0))) * cam.focal / d[0]
+            pnl = A['tags'][k]
+            w_, h_ = pnl.w * sc_, pnl.h * sc_
+            r = (xy[0][0] - w_ / 2, xy[0][1] - h_ / 2, xy[0][0] + w_ / 2, xy[0][1] + h_ / 2)
+            rects.append((k, r, zz > 0))
+            if en >= 1 and fade > 0.95:
+                readable[k] += step
+            where = (round(float(t), 2), k)
+            upd('safe', min(r[0] - 70, 1010 - r[2], r[1] - 490, 1480 - r[3]), where)
+            if r[3] >= 1050:
+                upd('like', 930 - r[2], where)
+            if zz > 0:
+                g = max(hbox[0] - r[2], r[0] - hbox[2], hbox[1] - r[3], r[1] - hbox[3])
+                upd('house', g, where)
         for a in range(len(rects)):
-            for b in range(a + 1, len(rects)):
-                i, ax0, ay0, ax1, ay1, abk = rects[a]
-                j, bx0, by0, bx1, by1, bbk = rects[b]
-                gx = max(bx0 - ax1, ax0 - bx1)
-                gy = max(by0 - ay1, ay0 - by1)
-                g = max(gx, gy)
-                if g < worst[1]:
-                    worst[1], where[1] = g, (round(t, 2), i, j)
+            for b_ in range(a + 1, len(rects)):
+                ka, ra, _ = rects[a]
+                kb, rb, _ = rects[b_]
+                g = max(rb[0] - ra[2], ra[0] - rb[2], rb[1] - ra[3], ra[1] - rb[3])
+                upd('gap', g, (round(float(t), 2), ka, kb))
+    out = dict(worst)
+    out['readable_s'] = [round(r, 2) for r in readable]
     if verbose:
-        print(where)
-    return [round(w) for w in worst], where
+        print(out)
+    return out
