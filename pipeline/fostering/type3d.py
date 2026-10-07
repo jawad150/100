@@ -1,114 +1,143 @@
-"""type3d.py: cinematic typography for the Organic Fostering reels (3D extrude, deep glow, light sweep, neon,
-gradient, ink-on-ivory, glass pills, video-in-type, kinetic per-glyph animators, orbit text, slot counters).
+"""type3d.py: cinematic typography for the Organic Fostering reels: 3D extrusion with bevel lighting, deep glow,
+light sweeps, neon, brand gradient, ink-on-ivory, glass pills, footage-in-letters with zoom-throughs, per-glyph
+kinetic animators, 3D orbit rings and slot/odometer counters.
 
-All sprites follow core's convention: premultiplied LINEAR float32 RGBA. Text is laid out with real kerning
-(raqm / GPOS), rasterised 2-3x supersampled with sub-pixel glyph positions and area-downsampled, and every
-static part (masks, bevel lighting, extrusion, glows) is cached, so per-frame work is only warping cached
-layers (+ a cheap band for light sweeps). Importing has no side effects. Self-test: python3 type3d.py selftest
+Sprites follow core's convention: premultiplied LINEAR float32 RGBA. Text is laid out with real kerning (raqm /
+GPOS, ligatures off), rasterised 2x (3x below 56 px) with sub-pixel glyph positions and area-downsampled; every
+static part (masks, bevel lighting, extrusion, glows) is cached in a byte-budget LRU (env FOSTER_TYPE_CACHE_MB,
+default 400), so per-frame work is warping cached layers (+ one cheap band for a light sweep). Hero words build
+in ~0.3-1.2 s once per process (call them in prewarm()); draws cost ~2-25 ms. Import has no side effects.
+Self-test: python3 type3d.py selftest  (writes workspace3/out/selftest/type3d_*.png)
 
-UNITS AND FRAMES
-    A "block" is a laid-out text. Block coords are 1x canvas px with (0, 0) at the top-left of the text box:
-    x spans the ink of the widest line, y spans cap-top of the first line to the baseline of the last line,
-    so anchor (.5, .5) centres caps text optically (descenders hang below the box, glows/extrusion around it).
-    All Style lengths are in em (multiples of the font px) so a style works at any size.
-    Colour specs everywhere: 'MAGENTA' (core.C name), '#B7006E' (sRGB hex), (r, g, b) linear, or
-    ('ORANGE', 1.8) = colour x gain. Gradient specs: ('MAGENTA', 'ORANGE') or ((0, c0), (0.6, c1), (1, c2)).
+UNITS, FRAMES, COLOURS
+    A "block" is laid-out text. Block coords = 1x canvas px, origin at the top-left of the TEXT BOX: x spans the
+    ink of the widest line, y spans cap-top of line 1 to the baseline of the last line. So anchor (.5, .5)
+    centres caps optically; descenders, glows, extrusions and shadows extend outside the box.
+    Style lengths are in em (multiples of the font px) so a style scales with px.
+    Colour spec: 'MAGENTA' (core.C name) | '#B7006E' (sRGB hex) | (r, g, b) linear | ('ORANGE', 1.8) = x gain.
+    Gradient spec: ('MAGENTA', 'ORANGE') or ((0, c0), (0.6, c1), (1, c2)); angle uses core's convention
+    (degrees CCW from +x: 0 = left->right, -90 = top->bottom, 35 = the brand sunset diagonal).
 
-FONTS
-    Aliases: 'display' Nunito-Black, 'display2' Nunito-ExtraBold, 'ui' Poppins-SemiBold, 'ui_bold' Poppins-Bold,
-    'body' Poppins-Regular, 'medium' Poppins-Medium, 'hand' Caveat-Bold (or any ttf basename in workspace3/fonts).
-    font(name, px) -> cached PIL font (raqm);  '->' arrow and check mark are drawn as vector glyphs (U+2192, U+2713).
-    layout(text, font='display', px=160, tracking=0, line_height=1.08, align='center', max_width=0) -> Layout
-        .w .h (text box), .cap, .lines, .glyphs[i] (ch, x, base, ink=(x0,y0,x1,y1), line), .ink, .text_width()
-    measure(text, style) -> (w, h) of the text box in px (cheap, no rasterising).
+FONTS / LAYOUT
+    Aliases: 'display' Nunito-Black, 'display2' Nunito-ExtraBold, 'display_bold' Nunito-Bold, 'ui' Poppins-
+    SemiBold, 'ui_bold' Poppins-Bold, 'body' Poppins-Regular, 'medium' Poppins-Medium, 'hand' Caveat-Bold, or
+    any ttf basename in workspace3/fonts. '\u2192' (->) and '\u2713' (check) are drawn as vector glyphs matched
+    to the font's stem weight (the brand fonts lack them).
+    font(name, px) -> cached PIL font.  measure(text, style, **kw) -> (w, h) text box, no rasterising.
+    layout(text, font, px, tracking=0, line_height=1.08, align='center'|'left'|'right', max_width=0 (px, wraps
+    words)) -> Layout: .w .h .cap .ink .lines [(x0, x1, baseline)] .glyphs [_G(ch, i, line, x, base, adv, ink)]
 
-STYLES  (frozen dataclass Style; presets in STYLES; style('extrude3d', px=200, fill=('MAGENTA', 'ORANGE')))
-    'flat'        plain face (any fill), the base of everything.
-    'ui' / 'ui_ink' Poppins SemiBold 40 px IVORY / INK for UI copy and fine print (crisp at 28-46 px).
-    'extrude3d'   real-looking 3D: perspective-converging extrusion (depth, angle, persp) with side shading
-                  from the contour normals (key + coloured rim light, darkening with depth), bevelled front
-                  face from SDF normals (Blinn-Phong key/spec, rim light, environment reflection banding),
-                  face gradient fill, inner shadow, soft drop/contact shadow and a little glow.
-    'gold'        extrude3d in amber gold (reel 2).   'chrome': white-hot chrome face with a horizon band.
-    'deep_glow'   white-hot core, inner colour bleed, 4-radius wide outer glow (+ optional dark scrim).
-    'neon'        glowing tube outline with a white-hot centre line and halo.
-    'gradient'    brand gradient fill MAGENTA -> ORANGE (fill_angle), glossy soft bevel, shadow.
-    'ink_soft'    INK on ivory: soft long shadow, subtle plum 3D lip, top-edge highlight, slight bloom.
-    'glass_pill'  / 'glass_pill_light': text in a frosted glass capsule (frost, rim light, sheen, shadow).
-    Key Style fields (em unless noted): font, px, tracking, line_height, align, max_width (px), fill, fill_angle,
-    fill_gain, face, bevel, profile ('round'|'soft'|'chamfer'), light (x right, y down, z to viewer), ambient,
-    spec, shininess, rim, rim_color, rim_dir, env, env_horizon, inner_shadow(_color/_size/_offset), inner_glow
-    (_color/_size), depth, angle (deg CCW from +x the extrusion recedes to; -90 = straight down), persp, side
-    (None = darker face colour | colour | (near, far)), side_gain, side_falloff, side_key, side_rim, stroke,
-    stroke_color, tube, tube_color, tube_core, glow, glow_color, glow_radii, glow_weights, shadow, shadow_color,
-    shadow_offset, shadow_blur, long_shadow, long_shadow_len, long_shadow_angle, long_shadow_color, long_shadow_blur,
-    scrim, scrim_color, scrim_size, pill, pill_color, pill_pad, pill_radius, pill_rim, pill_frost, pill_shadow,
-    pill_tint, gamma (coverage exponent; >1 thins light-on-dark text).
+STYLES  (frozen dataclass Style; presets in STYLES; style(name_or_Style, **overrides); st.but(**overrides))
+    'flat'        plain face (any colour / gradient fill).
+    'ui', 'ui_ink' Poppins SemiBold 40 px IVORY / INK (ui_ink thickens coverage for dark-on-light) - fine print
+                  stays crisp down to 28 px.
+    'extrude3d'   real-looking 3D: perspective-converging extrusion whose sides are shaded from the contour
+                  normals (key light, viewer-facing ratio, depth gradient, coloured far-edge rim light), a bevelled
+                  front face from SDF normals (Lambert key, grazing Blinn-Phong spec, coloured rim light, chrome
+                  environment banding), face gradient, inner shadow, drop shadow, soft glow. side=None derives the
+                  sides from the face colour (plum-tinted), so gradient faces ('MAGENTA'->'ORANGE') just work.
+    'chrome'      white chrome: sky / dark horizon line / peach ground reflection, orange rim, plum sides.
+    'gold'        amber-gold chrome extrusion (reel 2 hero and totals).
+    'deep_glow'   white-hot core, coloured inner bleed, 5-radius wide outer glow. Add scrim=0.75-0.85 for a dark
+                  soft backing over bright footage (legibility).
+    'neon'        glowing tube outline with a white-hot centre line, faint glass fill and halo (neon_flicker(t)).
+    'gradient'    brand gradient fill MAGENTA -> HOT_PINK -> ORANGE at 35 deg, glossy soft bevel, shadow, glow.
+    'ink_soft'    INK on ivory: soft long shadow, subtle plum 3D lip, bevel highlight, slight white bloom.
+    'glass_pill' / 'glass_pill_light'  text in a frosted capsule (frost, dark veil / white body, top sheen,
+                  rim light, tinted bottom glow, soft shadow). pill_box = capsule rect in block coords.
+    Style fields (lengths in em): font px tracking line_height align max_width(px) ss gamma | face fill
+    fill_angle fill_gain | bevel profile('chamfer'|'round'|'soft') light ambient spec shininess spec_color
+    spec_light rim rim_color rim_dir env env_horizon env_ground inner_shadow(_color,_size,_offset)
+    inner_glow(_color,_size) | depth angle(deg the extrusion recedes toward, CCW from +x; -64 = down, a bit right)
+    persp side side_gain side_tint side_falloff side_key side_ambient side_rim edge_rim | stroke stroke_color
+    tube tube_color tube_core tube_fill | glow glow_color glow_radii glow_weights glow_src('face'|'all') |
+    shadow shadow_color shadow_offset shadow_blur long_shadow(_len,_angle,_color,_blur) scrim scrim_color
+    scrim_size | pill pill_dark pill_color pill_pad pill_radius pill_rim pill_frost pill_shadow
+    pill_shadow_color pill_tint pill_tint_amount.  Use tuples (not numpy arrays) for colours inside a Style.
 
 RENDER + DRAW
-    ts = render('Could YOU', 'extrude3d', px=200)  -> TextSprite (cached by text + style + frame)
-        ts.w, ts.h, ts.layout, ts.layers (Layer: spr, box (block coords), res, mode, frost, part)
-        ts.draw(cv, x, y, anchor=(.5, .5), scale=1, rot=0, opacity=1, blur=0, sweep=None, sweep_kw=None)
-            anchor is relative to the TEXT BOX (not the padded sprite); scale 1 + rot 0 snaps to whole px.
-        ts.draw_quad(cv, quad, ...)            quad = screen corners [TL, TR, BR, BL] of the text box
-        ts.draw_plane(cv, cam, center, rot=(rx, ry, rz), scale=1, anchor=(.5, .5), dof=True, ...)
-            3D plane through core.draw_plane; scale = world units per text px (1 -> native size at z=0).
-        ts.sprite / ts.sprite_anchor(anchor) -> one merged sprite + core.draw anchor fraction (for UI cards)
-    light_sweep(ts, u, width=0.16, angle=-24, color='WHITE', strength=1.4, face=0.55, bevel=1.8, halo=0.3)
-        -> TextSprite holding one additive layer aligned with ts; or simply ts.draw(..., sweep=u).
-        u in [0, 1]: band enters at u=0 and has fully left at u=1. Face/bevel masks are cached, so it costs
-        one exp() over the face region (~2-6 ms for a hero word).
-        e.g. ts.draw(cv, 540, 900, sweep=K.ramp(t, 1.2, 2.0, 'inout_sine'))
+    ts = render(text, style='flat', frame=None, **overrides) -> TextSprite (cached on text + Style + frame)
+        ts.w, ts.h (text box), ts.layout, ts.style, ts.layers [Layer(spr, box, res, mode, frost, part)] drawn in
+        order pill -> glow -> back -> front -> sweep; ts.bounds() union box; ts.pill_box.
+        ts.draw(cv, x, y, anchor=(.5, .5), scale=1, rot=0, opacity=1, blur=0, sweep=None, sweep_kw=None,
+                parts=None) -> bbox.  anchor is relative to the TEXT BOX ((0, .5) = left-centre, also 'left',
+                'right', 'top', 'baseline', 'tl', 'bl'); scale may be (sx, sy); rot degrees clockwise;
+                scale 1 + rot 0 snaps to whole px (razor sharp).
+        ts.draw_quad(cv, quad, ...)   quad = screen corners [TL, TR, BR, BL] of the text box (perspective).
+        ts.draw_plane(cv, cam, center, rot=(rx, ry, rz), scale=1, anchor=(.5, .5), dof=True, sweep=None, ...)
+            3D plane via core.draw_plane (DOF / near clipping); scale = world units per text px.
+        ts.sprite / ts.sprite_anchor(anchor) -> one merged sprite + the core.draw anchor fraction for it
+            (to bake text into UI cards); ts.merged() -> that as a Layer.
+    light_sweep(ts, u, width=0.09, angle=-32, color='WHITE', strength=1.25, face=0.5, bevel=1.6, halo=0.22)
+        -> TextSprite with one additive layer aligned to ts; or ts.draw(..., sweep=u, sweep_kw={...}).
+        u in [0, 1]: the band enters at u=0 and has fully left at u=1; angle = direction it travels (deg CCW
+        from +x, so -32 runs left->right, slightly down: a diagonal band). Masked to face + bevel; face/bevel
+        masks are cached so a frame costs one exp() over the face (~5-12 ms for a hero word).
+        e.g. you.draw(cv, 540, 900, sweep=K.ramp(t, 1.0, 1.9, 'inout_sine'))
 
-KINETIC (per-glyph)
-    g = Glyphs('A SAFE HOME.', 'deep_glow', px=150)        # glyph sprites rendered in the block's frame, so
-                                                            # gradients / sweeps stay continuous across glyphs
-    g.rise(cv, t, x, y, t0=0, stagger=0.035, dur=0.7, dist=0.45, blur=10, scale0=0.9, order='ltr')
-    g.slam(cv, t, x, y, t0=0, s0=1.6, dur=0.45, smear=True)  scale 1.6 -> 1 spring overshoot + smear
-    g.typewriter(cv, t, x, y, t0=0, cps=16, caret=True)
-    g.wipe(cv, t, x, y, t0=0, dur=0.6, angle=0, soft=0.12, edge=1.0)   soft mask wipe + bright edge
-    g.track(cv, t, x, y, t0=0, dur=0.9, amount=0.45, blur=8)           tracking expand / contract in
+KINETIC (per-glyph; glyph sprites are rendered in the block's frame so gradients and sweeps stay continuous,
+         and a settled block is drawn from the exact whole-block sprite)
+    g = Glyphs('A SAFE HOME.', 'deep_glow', px=130, scrim=0.8)
+    g.rise(cv, t, x, y, t0=0, stagger=0.035, dur=0.7, dist=0.45, blur=10, scale0=0.9, order='ltr'|'rtl'|
+           'center'|'random')                                  per-glyph rise + blur-in + scale
+    g.slam(cv, t, x, y, t0=0, s0=1.6, dur=0.45, freq=3.2, damping=0.45, stagger=0, smear=True)
+                                                               1.6 -> 1 spring overshoot + exact motion smear
+    g.typewriter(cv, t, x, y, t0=0, cps=16, caret=True)        pop-on chars + blinking caret
+    g.wipe(cv, t, x, y, t0=0, dur=0.6, angle=0, soft=0.12, edge=1.0)   soft mask wipe + bright leading edge
+    g.track(cv, t, x, y, t0=0, dur=0.9, amount=0.45, blur=8)   tracking expand: spread glyphs settle in
     g.flip(cv, t, x, y, t0=0, stagger=0.05, dur=0.6, from_angle=-100)  3D rotateX per glyph (draw_quad)
-    g.scramble(cv, t, x, y, t0=0, dur=0.7, stagger=0.04, rate=22)      decode effect
-    g.fade_out(...) via out_t0=, out_dur=, out_dist= on any animator (lifts, blurs and fades out).
-    Common draw kwargs: anchor=(.5, .5), scale=1, rot=0, opacity=1, tilt=(rx, ry, rz) deg (3D tilt of the whole
-    block, perspective focal=1600), sweep=None|u, mblur=0 (extra sub-samples of the animator, a smear).
-    Low level: states, blk = g.anim('rise', t, **kw); g.render(cv, states, x, y, block=blk, **draw_kw)
-    g.boxes() -> per-glyph boxes in block coords; g.block -> whole-block TextSprite (used when settled).
+    g.scramble(cv, t, x, y, t0=0, dur=0.7, stagger=0.04, rate=22, charset=None)  decode effect
+    Any animator also takes out_t0=, out_dur=0.4, out_dist=0.3, out_blur=8 (lift, blur and fade out).
+    Draw kwargs for all: anchor=(.5, .5), scale=1, rot=0, opacity=1, blur=0, tilt=(rx, ry, rz) (3D tilt of the
+    whole block, perspective focal=1600), sweep=None|u, sweep_kw, mblur=0|n|'auto' (+ mspan seconds: averaged
+    sub-samples = motion smear on top of render_frame's own blur).
+    Low level: states, blk = g.anim('rise', t, **kw); g.render(cv, states, x, y, block=blk, **draw_kw);
+    GlyphState(dx, dy, z, sx, sy, rot, rx, ry, opacity, blur, alt, sweep); g.boxes(); g.glyph(k); g.block.
 
 ORBIT TEXT
-    ot = OrbitText('IDEAS IN MOTION • ', 'flat', px=64, radius=420, tilt=18, roll=-8, fill=True)
-    ot.draw(cv, cam, center=(0, 0, 0), t=t, spin=24, part='all'|'back'|'front', back_opacity=0.35,
-            back_blur=5, dof=True)   # glyphs on a tilted 3D ring facing outward; the back half is seen from
-                                     # behind (mirrored), dimmer and blurred. Depth-sorted.
-    ot.add_to_scene(sc, center, t, spin=...)   # per-glyph items into a core.Scene for depth interleaving
+    ot = OrbitText('NURTURE \u2022 DEVELOP \u2022 GROW \u2022 ', 'flat', px=56, radius=380, tilt=14, roll=-8,
+                   fill=True, **style_overrides)   # tilt: ring plane tipped toward camera (deg); fill=True
+        repeats the text round the ring; fill='IVORY' (a colour) sets the text colour and repeats; repeat=False
+        draws it once.
+    ot.draw(cv, cam, center=(0, 0, 0), t=t, spin=20, phase=0, part='all'|'back'|'front', back_opacity=0.35,
+            back_blur=5, dof=True, opacity=1, scale=1, sweep=None)
+        glyphs stand on a 3D circle facing outward, depth-sorted; the back half is seen from behind (mirrored),
+        dimmer and blurred. Draw part='back', then your 3D object, then part='front'.  ~1 ms per glyph.
+    ot.add_to_scene(sc, center, t, spin=...) registers each glyph in a core.Scene for full depth interleaving.
 
-COUNTER
-    cnt = Counter('gold', px=170, prefix='£', decimals=2)          # tabular cells, cached digit sprites
-    cnt.draw(cv, value, x, y, anchor=(.5, .5), scale=1, vel=0)  # odometer roll; vel = value units / s
-    cnt.slot(cv, t, 23275.20, x, y, t0=0, dur=1.4, stagger=0.09, spins=2)  # slot-machine reels landing
-    cnt.sprite(value, vel=0) -> TextSprite (draw it on a 3D plane etc.)
-    Per-digit vertical motion blur from the digit's own speed; leading digits grow in smoothly.
+COUNTER (tabular figures; the style's glow is applied once to the composed number)
+    cnt = Counter('gold', px=150, prefix='\u00a3', suffix='', decimals=2, sep=',', point='.')
+    cnt.draw(cv, value, x, y, anchor=(.5, .5), scale=1, vel=0)  odometer roll; vel = value units per second
+        (e.g. track.vel(t)) gives per-digit vertical motion blur; leading digits grow in smoothly.
+    cnt.slot(cv, t, 23275.20, x, y, t0=0, dur=1.4, stagger=0.09, spins=2, order='rtl')  slot reels land with a
+        small overshoot.  cnt.sprite(value, vel) / cnt.slot_sprite(...) -> TextSprite (e.g. for draw_plane);
+        cnt.width(value).  ~20-90 ms per frame while rolling, ~20 ms settled.
+    Tip: K.Track([(0, 0, 'out_expo'), (2.0, 23275.20)]) - a key's ease applies from that key to the next.
 
 VIDEO IN TYPE
-    vt = VideoType('NURTURE', px=250, tracking=-0.01)
-    vt.draw(cv, footage_sprite, x, y, anchor=(.5, .5), scale=1, lock='screen'|'text', rim=1, back=1, sweep=None)
-        footage_sprite: lock='screen' -> a canvas-sized sprite (e.g. clip.get(t, 1080, 1920)) seen through the
-        letters (zoom-throughs then end on that full-frame footage); lock='text' -> any sprite, cover-fitted to
-        the text box and moving with it.
-    vt.mask_canvas(x, y, anchor, scale, rot) -> (H, W) alpha of the letters on the canvas
-    vt.zoom_point(char='U', kind='stroke'|'counter') -> (bx, by) block coords (thickest stroke point or the
-        centre of the counter / bowl);  vt.zoom(u, point, x, y, s1=40, target=(540, 960)) -> dict(x, y, anchor,
-        scale) to splat into vt.draw(...) for a zoom-through.
+    vt = VideoType('NURTURE', px=200, tracking=-0.01, look='dark'|'light', rim_style=None, back_style=None)
+    vt.draw(cv, footage, x, y, anchor=(.5, .5), scale=1, rot=0, opacity=1, lock='screen'|'text', rim=1, back=1,
+            sweep=None)   footage seen through the letters, with a bevel/inner-shadow rim overlay and an
+        extruded back layer. lock='screen': footage is a canvas-sized sprite (clip.get(t, 1080, 1920)), fixed
+        on screen, so a zoom-through ends exactly on that full-frame footage; lock='text': any sprite,
+        cover-fitted to the text box, moving with it.
+    vt.mask_canvas(x, y, anchor, scale, rot) -> (H, W) alpha of the letters (for custom composites).
+    vt.zoom_point(char='U', index=None, kind='stroke'|'counter') -> (bx, by) block coords: the thickest point of
+        that letter's ink (zoom INTO the footage) or the centre of its counter / bowl (zoom THROUGH the hole).
+    vt.zoom(u, point, x, y, anchor=(.5, .5), s0=1, s1=40, target=(540, 960), ease='in_expo') -> dict(x, y,
+        anchor, scale): splat into vt.draw(cv, footage, **z). Scale grows exponentially while the point glides
+        to the target; pair it with K.zoom_blur for the transition.
 
 EXAMPLES
     import core as K, type3d as T
     cv = K.background('neon', t)
-    T.render('Could', 'flat', px=120).draw(cv, 540, 700)
-    you = T.render('YOU', 'extrude3d', px=240, fill=('MAGENTA', 'ORANGE'), fill_angle=35)
+    T.render('Could', 'flat', px=120, glow=0.5, glow_color=('MAGENTA', 2)).draw(cv, 540, 700)
+    you = T.render('YOU', 'extrude3d', px=240, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=1.2)
     you.draw(cv, 540, 900, scale=K.lerp(1.3, 1, K.ramp(t, 0, .5)), sweep=K.ramp(t, .6, 1.4, 'inout_sine'))
-    T.Glyphs('Foster Carer?', 'deep_glow', px=130, glow_color=('ORANGE', 2)).rise(cv, t, 540, 1100, t0=0.8)
-    T.Counter('gold', px=150).draw(cv, track(t), 540, 960, vel=track.vel(t))
+    T.Glyphs('Foster Carer?', 'deep_glow', px=120, glow_color=('ORANGE', 2.4)).rise(cv, t, 540, 1100, t0=0.8)
+    T.render('Start your enquiry \u2192', 'glass_pill', px=44).draw(cv, 540, 1450)
+    trk = K.Track([(0, 0, 'out_expo'), (2, 447.60)]); T.Counter('gold', px=150).draw(cv, trk(t), 540, 960,
+                                                                                    vel=trk.vel(t))
 """
 import collections
 import dataclasses
@@ -427,11 +456,13 @@ class Style:
     spec: float = 0.0
     shininess: float = 30.0
     spec_color: object = 'WHITE'
+    spec_light: tuple = (-0.55, -0.75, 0.4)
     rim: float = 0.0
     rim_color: object = 'ORANGE'
     rim_dir: tuple = (0.8, 0.6)
     env: float = 0.0
     env_horizon: float = 0.56
+    env_ground: object = 'PEACH'
     inner_shadow: float = 0.0
     inner_shadow_color: object = 'PLUM'
     inner_shadow_size: float = 0.03
@@ -445,10 +476,12 @@ class Style:
     persp: float = 0.0
     side: object = None
     side_gain: float = 0.42
+    side_tint: object = '#8E1E68'
     side_falloff: float = 0.6
     side_key: float = 0.55
     side_ambient: float = 0.35
     side_rim: float = 0.8
+    edge_rim: float = 0.0
     # outline / neon
     stroke: float = 0.0
     stroke_color: object = 'WHITE'
@@ -474,9 +507,10 @@ class Style:
     long_shadow_blur: float = 0.05
     scrim: float = 0.0
     scrim_color: object = 'NIGHT_0'
-    scrim_size: float = 0.35
+    scrim_size: float = 0.5
     # glass pill
     pill: float = 0.0
+    pill_dark: float = 0.0
     pill_color: object = 'WHITE'
     pill_pad: tuple = (0.75, 0.55)
     pill_radius: float = -1.0
@@ -494,27 +528,29 @@ class Style:
 STYLES = {
     'flat': Style(name='flat'),
     'ui': Style(name='ui', font='Poppins-SemiBold', px=40, fill='IVORY', tracking=0.005),
-    'ui_ink': Style(name='ui_ink', font='Poppins-SemiBold', px=40, fill='INK', tracking=0.005),
+    'ui_ink': Style(name='ui_ink', font='Poppins-SemiBold', px=40, fill='INK', tracking=0.005, gamma=0.82),
     'extrude3d': Style(
         name='extrude3d', fill=((0.0, '#FFFFFF'), (0.5, '#F3EEF3'), (1.0, '#D8CEDA')), fill_gain=0.94,
         bevel=0.03, profile='chamfer', ambient=0.42, spec=1.0, shininess=28, rim=1.0, rim_color=('HOT_PINK', 1.5),
         env=0.25, inner_shadow=0.18, inner_shadow_color='PLUM', depth=0.15, angle=-64, persp=0.05,
-        side=(('#9C1F72', 1.0), ('#22061F', 1.0)), side_falloff=0.0, side_key=0.35, side_ambient=0.3,
-        side_rim=0.2, glow=0.3, glow_color=('MAGENTA', 1.4), glow_radii=(0.15, 0.45), glow_weights=(0.6, 0.45),
+        side=None, side_gain=0.5, side_falloff=0.0, side_key=0.35, side_ambient=0.3,
+        side_rim=0.2, edge_rim=0.9, glow=0.3, glow_color=('MAGENTA', 1.4), glow_radii=(0.15, 0.45), glow_weights=(0.6, 0.45),
         glow_src='all', shadow=0.55, shadow_offset=(0.02, 0.12), shadow_blur=0.09),
     'gold': Style(
-        name='gold', fill=((0.0, '#FFF4DC'), (0.42, '#FFC86E'), (0.62, '#F59A2C'), (1.0, '#FFB866')),
-        fill_gain=1.05, bevel=0.034, profile='round', ambient=0.5, spec=1.2, shininess=40, rim=0.8,
-        rim_color=('HOT_PINK', 1.4), env=0.45, env_horizon=0.6, inner_shadow=0.25, inner_shadow_color='#7A2A00',
-        depth=0.14, angle=-66, persp=0.10, side=(('#C9560C', 1.0), ('#3B1102', 1.0)), side_falloff=0.0,
-        side_key=0.5, side_ambient=0.4, side_rim=1.0, glow=0.3, glow_color=('ORANGE', 1.6), glow_src='all',
+        name='gold', fill=((0.0, '#FFF1D2'), (0.45, '#FFC46A'), (1.0, '#F08A1E')), fill_gain=1.05,
+        bevel=0.03, profile='chamfer', ambient=0.45, spec=1.0, shininess=30, rim=0.7,
+        rim_color=('#FFD9A0', 1.3), env=0.5, env_horizon=0.58, env_ground='#FFB15C', inner_shadow=0.22,
+        inner_shadow_color='#7A2A00', depth=0.14, angle=-66, persp=0.05, side=(('#9A3A06', 1.0), ('#1E0802', 1.0)),
+        side_falloff=0.0, side_key=0.4, side_ambient=0.32, side_rim=0.15, edge_rim=0.8, glow=0.3,
+        glow_color=('ORANGE', 1.5), glow_radii=(0.15, 0.45), glow_weights=(0.6, 0.45), glow_src='all',
         shadow=0.55, shadow_offset=(0.02, 0.12), shadow_blur=0.09),
     'chrome': Style(
-        name='chrome', fill=((0.0, '#FFFFFF'), (0.5, '#FFF6FB'), (1.0, '#E8DDE6')), fill_gain=1.25,
-        bevel=0.04, profile='round', ambient=0.45, spec=1.4, shininess=50, rim=1.2, rim_color=('ORANGE', 1.8),
-        env=0.75, env_horizon=0.55, inner_shadow=0.15, depth=0.12, angle=-70, persp=0.12,
-        side=(('#7D1E63', 1.0), ('#140516', 1.0)), side_falloff=0.0, side_rim=1.2, glow=0.35,
-        glow_color=('MAGENTA', 1.8), glow_src='all', shadow=0.5, shadow_offset=(0.0, 0.1)),
+        name='chrome', fill=((0.0, '#FFFFFF'), (1.0, '#F4EEF4')), fill_gain=1.0, bevel=0.03, profile='round',
+        ambient=0.45, spec=1.2, shininess=40, rim=1.0, rim_color=('ORANGE', 1.6), env=0.85, env_horizon=0.55,
+        env_ground='#FF9A6A', inner_shadow=0.12, depth=0.13, angle=-68, persp=0.05,
+        side=(('#8E1E68', 1.0), ('#16051A', 1.0)), side_falloff=0.0, side_key=0.35, side_ambient=0.3,
+        side_rim=0.15, edge_rim=1.0, glow=0.3, glow_color=('MAGENTA', 1.6), glow_radii=(0.15, 0.45),
+        glow_weights=(0.6, 0.45), glow_src='all', shadow=0.5, shadow_offset=(0.0, 0.1)),
     'deep_glow': Style(
         name='deep_glow', fill=((0.0, '#FFFFFF'), (1.0, '#FFF1F8')), fill_gain=1.55, inner_glow=0.75,
         inner_glow_color=('HOT_PINK', 1.3), inner_glow_size=0.045, glow=1.0, glow_color=('MAGENTA', 2.8),
@@ -530,23 +566,24 @@ STYLES = {
     'ink_soft': Style(
         name='ink_soft', fill=((0.0, '#3C2740'), (1.0, '#2A1A2D')), bevel=0.018, profile='soft', ambient=0.8,
         spec=0.5, shininess=20, depth=0.03, angle=-55, side=(('#6E2A60', 1.0), ('#4A1A44', 1.0)),
-        side_falloff=0.0, side_key=0.4, side_ambient=0.7, side_rim=0.0, long_shadow=0.16,
-        long_shadow_len=0.5, long_shadow_angle=-52, long_shadow_color='#7A4A6A', long_shadow_blur=0.04,
+        side_falloff=0.0, side_key=0.4, side_ambient=0.7, side_rim=0.0, long_shadow=0.38,
+        long_shadow_len=0.65, long_shadow_angle=-52, long_shadow_color='#8A5070', long_shadow_blur=0.04,
         glow=0.22, glow_color=('WHITE', 0.5), glow_radii=(0.12, 0.35), glow_weights=(0.7, 0.5),
         shadow=0.16, shadow_color='#5B2E52', shadow_offset=(0.01, 0.035), shadow_blur=0.035),
     'glass_pill': Style(
-        name='glass_pill', font='Poppins-SemiBold', px=40, fill='IVORY', tracking=0.01, pill=0.13,
-        pill_pad=(0.8, 0.62), pill_rim=0.55, pill_frost=16, pill_shadow=0.4, pill_tint='MAGENTA',
-        pill_tint_amount=0.35),
+        name='glass_pill', font='Poppins-SemiBold', px=40, fill='IVORY', tracking=0.01, pill=0.07,
+        pill_dark=0.42, pill_pad=(0.8, 0.62), pill_rim=0.85, pill_frost=18, pill_shadow=0.45,
+        pill_tint=('MAGENTA', 1.4), pill_tint_amount=0.45),
     'glass_pill_light': Style(
-        name='glass_pill_light', font='Poppins-SemiBold', px=40, fill='INK', tracking=0.01, pill=0.55,
-        pill_pad=(0.8, 0.62), pill_rim=0.9, pill_frost=10, pill_shadow=0.16, pill_shadow_color='#5B2E52',
-        pill_tint='PEACH', pill_tint_amount=0.4),
+        name='glass_pill_light', font='Poppins-SemiBold', px=40, fill='INK', tracking=0.01, pill=0.5,
+        pill_dark=0.0, pill_pad=(0.8, 0.62), pill_rim=1.0, pill_frost=12, pill_shadow=0.14,
+        pill_shadow_color='#5B2E52', pill_tint='PEACH', pill_tint_amount=0.35),
 }
 
 
-def style(spec='flat', **kw):
-    """Style from a preset name / Style / None plus overrides: style('extrude3d', px=220, depth=0.2)."""
+def style(spec='flat', /, **kw):
+    """Style from a preset name / Style / None plus overrides: style('extrude3d', px=220, depth=0.2).
+    (spec is positional-only, so the Style field `spec` (specular) can be overridden too: style('gold', spec=0.6).)"""
     if spec is None:
         base = STYLES['flat']
     elif isinstance(spec, Style):
@@ -595,7 +632,7 @@ class _LRU:
         self.bytes = 0
 
 
-_CACHE = _LRU(int(os.environ.get('FOSTER_TYPE_CACHE_MB', '700')))
+_CACHE = _LRU(int(os.environ.get('FOSTER_TYPE_CACHE_MB', '400')))
 
 
 def clear_cache():
@@ -639,6 +676,12 @@ def _down(a, ss):
         return a
     h, w = a.shape[:2]
     return cv2.resize(a, (w // ss, h // ss), interpolation=cv2.INTER_AREA)
+
+
+def _sstep(e0, e1, x):
+    """Array-friendly smoothstep."""
+    x = np.clip((np.asarray(x, np.float32) - e0) / (e1 - e0), 0, 1)
+    return x * x * (3 - 2 * x)
 
 
 def _premul(rgb, a):
@@ -758,8 +801,8 @@ class TextSprite:
         return out
 
     # ---------------------------------------------------------------- sweep
-    def sweep_layer(self, u, width=0.16, angle=-24.0, color='WHITE', strength=1.4, face=0.55, bevel=1.8,
-                    halo=0.3, frame=None):
+    def sweep_layer(self, u, width=0.09, angle=-32.0, color='WHITE', strength=1.25, face=0.5, bevel=1.6,
+                    halo=0.22, frame=None):
         """Additive specular band layer at progress u (see light_sweep)."""
         if self.face is None or u is None or u <= 0 or u >= 1:
             return None
@@ -768,28 +811,27 @@ class TextSprite:
         key = (angle, box)
         sm = self._sweep_cache.get(key)
         if sm is None:
-            a = math.radians(angle + 90.0)        # band moves along (cos(angle), -sin(angle)) ... rotated basis
             dx, dy = math.cos(math.radians(angle)), -math.sin(math.radians(angle))
-            ext = abs(FW / 2 * dx) + abs(FH / 2 * dy)
+            ext = abs(FW / 2 * dx) + abs(FH / 2 * dy)            # half extent of the frame along the travel
             X = np.arange(box[0], box[2], dtype=np.float32) + 0.5 + fx - FW / 2
             Y = np.arange(box[1], box[3], dtype=np.float32) + 0.5 + fy - FH / 2
-            sm = ((X[None, :] * dx + Y[:, None] * dy) / max(ext, 1e-6) * 0.5 + 0.5).astype(np.float32)
+            sm = (X[None, :] * dx + Y[:, None] * dy).astype(np.float32)          # px along the travel
             nz = (fa > 0.003) | (bw > 0.003)
             ys, xs = np.nonzero(nz)
             crop = (ys.min(), ys.max() + 1, xs.min(), xs.max() + 1) if len(ys) else (0, 1, 0, 1)
             y0, y1, x0, x1 = crop
             sm = (sm[y0:y1, x0:x1], (fa * face)[y0:y1, x0:x1].astype(np.float32),
-                  (bw * bevel)[y0:y1, x0:x1].astype(np.float32), crop)
+                  (bw * bevel)[y0:y1, x0:x1].astype(np.float32), crop, ext)
             self._sweep_cache[key] = sm
-            del a
-        s, fw_, bw_, crop = sm
-        wn = width * self.style.px / max(FW, 1.0)               # band half-width in frame-normalised units
-        wn = max(wn, 0.02)
-        pos = -2.2 * wn + u * (1 + 4.4 * wn)
-        dd = (s - pos) / wn
-        band = np.exp(-dd * dd)
+        s, fw_, bw_, crop, ext = sm
+        wpx = max(1.0, width * self.style.px)
+        reach = ext + 2.2 * wpx * (1 + 3 * halo)
+        pos = -reach + u * 2 * reach
+        dd = (s - np.float32(pos)) * np.float32(1 / wpx)
+        dd2 = dd * dd
+        band = np.exp(-dd2)
         if halo > 0:
-            band += np.float32(halo) * np.exp(-dd * dd * 0.12)
+            band += np.float32(halo) * np.exp(dd2 * np.float32(-1 / 16))
         k = band * (fw_ + bw_ * band)
         c = col(color) * np.float32(strength)
         spr = np.zeros(k.shape + (4,), np.float32)
@@ -809,6 +851,11 @@ class TextSprite:
             _draw_layers_affine(out, self.layers, M, 1.0, 0.0, None)
             self._merged = (out, (bx0, by0, bx1, by1))
         return self._merged[0]
+
+    def merged(self):
+        """The merged sprite as a single Layer (block-coords box), e.g. for many small 3D glyph quads."""
+        spr = self.sprite
+        return Layer(spr, self._merged[1], 1.0, 'over', 0.0, 'front')
 
     def sprite_anchor(self, anchor=(0.5, 0.5)):
         """core.draw anchor fraction for .sprite that corresponds to a text-box anchor."""
@@ -876,31 +923,34 @@ def _build_layout(lay, st, frame):
     fx, fy, FW, FH = frame
     dep = st.depth * L
     bev = st.bevel * L
-    ext = [3.0, dep * (1.05 + st.persp) + 3, st.stroke * L + 2, st.tube * L + 2]
+    pad_f = int(math.ceil(max(3.0, st.stroke * L + 2, st.tube * L + 2,
+                              4.0 if (st.inner_shadow > 0 or st.inner_glow > 0) else 0.0))) + 2
+    ext = [float(pad_f), dep * (1.05 + st.persp) + 3]
     if st.shadow > 0:
         ext.append(max(abs(st.shadow_offset[0]), abs(st.shadow_offset[1])) * L + 3 * st.shadow_blur * L + dep)
     if st.long_shadow > 0:
         ext.append(st.long_shadow_len * L * 1.1 + 3 * st.long_shadow_blur * L * 2.5)
-    if st.inner_shadow > 0 or st.inner_glow > 0:
-        ext.append(4.0)
-    pad = int(math.ceil(max(ext))) + 2
+    pad = max(pad_f, int(math.ceil(max(ext))) + 2)
     ix0, iy0, ix1, iy1 = lay.ink
     region = (int(math.floor(ix0)) - pad, int(math.floor(iy0)) - pad, int(math.ceil(ix1)) + pad,
               int(math.ceil(iy1)) + pad)
+    region_f = (int(math.floor(ix0)) - pad_f, int(math.floor(iy0)) - pad_f, int(math.ceil(ix1)) + pad_f,
+                int(math.ceil(iy1)) + pad_f)
     rx0, ry0, rx1, ry1 = region
-    A = _raster(lay, ss, region)
+    fx0, fy0 = region_f[0], region_f[1]
+    A = _raster(lay, ss, region_f)
     if st.gamma != 1.0:
         A = A ** np.float32(st.gamma)
     Hs, Ws = A.shape
     # frame coords of ss pixel centres
-    Xs = (np.arange(Ws, dtype=np.float32) + 0.5) / ss + rx0 + fx
-    Ys = (np.arange(Hs, dtype=np.float32) + 0.5) / ss + ry0 + fy
-    need_sdf = bev > 0 or st.tube > 0 or st.stroke > 0 or dep > 0 or st.rim > 0
+    Xs = (np.arange(Ws, dtype=np.float32) + 0.5) / ss + fx0 + fx
+    Ys = (np.arange(Hs, dtype=np.float32) + 0.5) / ss + fy0 + fy
+    need_sdf = bev > 0 or st.tube > 0 or st.stroke > 0
     d = _sdf(A) / np.float32(ss) if need_sdf else None          # 1x px units
     gx = gy = None
     if d is not None:
         gx, gy = _grad(d)                                        # unit, pointing inward
-    Lv = _norm3(st.light)
+    Lv = [float(v) for v in _norm3(st.light)]
     layers = []
     face_alpha = None
     bevel_w = None
@@ -926,7 +976,7 @@ def _build_layout(lay, st, frame):
             lam = st.ambient + (1 - st.ambient) * np.clip(ndl, 0, None) / Lv[2]
             rgb *= lam[..., None].astype(np.float32)
             if st.spec > 0:
-                Hv = _norm3(Lv + np.array([0, 0, 1.0]))
+                Hv = [float(v) for v in _norm3(_norm3(st.spec_light) + np.array([0, 0, 1.0]))]
                 ndh = np.clip(nx * Hv[0] + ny * Hv[1] + nz * Hv[2], 0, 1)
                 base = Hv[2] ** st.shininess
                 sp = np.clip(ndh ** st.shininess - base, 0, None) / max(1 - base, 1e-6)
@@ -943,15 +993,20 @@ def _build_layout(lay, st, frame):
         if st.env > 0:
             # chrome environment: sky above a horizon line, a dark band under it, warm floor bounce; reflected
             # through the bevel normals so the bands bend around the letter edges
-            v = (Ys - fy - ry0 * 0 - 0.0)
             v = _line_v(lay, Ys - fy)
-            vv = v[:, None] + (0.0 if nx is None else 0.35 * (2 * nz * ny))
+            vv = v[:, None] + (np.float32(0.0) if nx is None else np.float32(0.45) * (2 * nz * ny))
             hz = st.env_horizon
-            sky = 0.22 * np.clip((hz - vv) / max(hz, 1e-3), 0, 1) ** 0.7
-            band = -0.55 * np.exp(-((vv - hz - 0.035) / 0.07) ** 2)
-            floor = 0.12 * np.clip((vv - hz - 0.12) / 0.4, 0, 1)
-            em = 1 + st.env * (sky + band + floor)
-            rgb *= np.asarray(em, np.float32)[..., None]
+            tsky = np.clip((hz - vv) / max(hz, 1e-3), 0, 1)
+            sky = 0.9 + 0.4 * tsky ** 0.8
+            below = np.clip((vv - hz) / max(1.15 - hz, 1e-3), 0, 1)
+            gc = col(st.env_ground)
+            gc = gc / max(float(gc.max()), 1e-6)
+            grd = (0.38 + 0.62 * below[..., None] ** 0.7) * gc
+            k = _sstep(hz - 0.012, hz + 0.012, vv)[..., None]
+            E = sky[..., None] * (1 - k) + grd * k
+            dark = np.exp(-((vv - hz - 0.025) / 0.045) ** 2)[..., None]
+            E = E * (1 - 0.7 * dark)
+            rgb *= (1 + st.env * (E - 1)).astype(np.float32)
         if st.inner_glow > 0:
             sg = st.inner_glow_size * L * ss
             ig = np.clip(_blur(1 - A, sg) * 1.6, 0, 1) * A
@@ -985,18 +1040,27 @@ def _build_layout(lay, st, frame):
         face_alpha = np.maximum(ta, 0 if face_alpha is None else face_alpha)
         bevel_w = ta * prof
     front1 = _down(front, ss)
-    A1 = _down(A, ss)
-    h1, w1 = A1.shape
-    layers.append(Layer(front1, region, 1.0, 'over', 0.0, 'front'))
+    A1f = _down(A, ss)
+    layers.append(Layer(front1, region_f, 1.0, 'over', 0.0, 'front'))
     if face_alpha is not None:
-        fa1 = _down(face_alpha, ss) if face_alpha is not A else A1
+        fa1 = _down(face_alpha, ss) if face_alpha is not A else A1f
         bw1 = _down(bevel_w, ss) if bevel_w is not None else np.zeros_like(fa1)
-        face = (region, fa1.astype(np.float32), bw1.astype(np.float32))
+        face = (region_f, fa1.astype(np.float32), bw1.astype(np.float32))
     else:
         face = None
+    # 1x coverage on the big (back) region
+    h1, w1 = ry1 - ry0, rx1 - rx0
+    A1 = np.zeros((h1, w1), np.float32)
+    ox_, oy_ = fx0 - rx0, fy0 - ry0
+    A1[oy_:oy_ + A1f.shape[0], ox_:ox_ + A1f.shape[1]] = A1f
+    if face is not None:
+        FA = np.zeros((h1, w1), np.float32)
+        FA[oy_:oy_ + A1f.shape[0], ox_:ox_ + A1f.shape[1]] = face[1]
+    else:
+        FA = A1
     # ------------------------------------------------------------------ back: extrusion + shadows
     back = np.zeros((h1, w1, 4), np.float32)
-    union = A1.copy() if st.face else (face[1].copy() if face else A1.copy())
+    union = A1.copy() if st.face else FA.copy()
     if dep > 0:
         ang = math.radians(st.angle)
         ux, uy = math.cos(ang), -math.sin(ang)
@@ -1018,8 +1082,10 @@ def _build_layout(lay, st, frame):
                        (np.arange(h1) + 0.5 + ry0 + fy).astype(np.float32), FW, FH)
         sst = _stops(st.side) if st.side is not None else None
         if st.side is None:
-            near = Ff * np.float32(st.side_gain)
-            far = near * np.float32(1 - st.side_falloff)
+            # auto: a darker, plum-tinted version of the face colour (works for any fill / gradient)
+            tint = col(st.side_tint)
+            near = Ff * np.float32(st.side_gain * 0.55) + tint * np.float32(0.45)
+            far = Ff * np.float32(0.05) + col('#1A0518') * np.float32(1 - st.side_falloff)
         elif sst is None:
             near = np.broadcast_to(col(st.side), (h1, w1, 3))
             far = near * np.float32(1 - st.side_falloff)
@@ -1044,6 +1110,13 @@ def _build_layout(lay, st, frame):
         # dark occlusion right under the face lip so the face pops off the side
         occ = np.clip(_blur(A1, 1.2) * 1.0, 0, 1)
         ext_a[..., :3] *= (1 - 0.35 * occ * (1 - A1))[..., None]
+        if st.edge_rim > 0:
+            # rim light catching the far silhouette edge of the extrusion (thin coloured line)
+            ea = ext_a[..., 3]
+            wv = max(1.2, 0.012 * L)
+            edge = np.clip(ea - _shift(ea, ux * wv, uy * wv), 0, 1) * np.clip(1 - _shift(A1, 0, 0) * 1.0, 0, 1)
+            edge = _blur(edge, 0.6)
+            ext_a[..., :3] += (edge * st.edge_rim)[..., None] * col(st.rim_color)
         union = 1 - (1 - union) * (1 - ext_a[..., 3])
         back = ext_a
     if st.long_shadow > 0:
@@ -1059,8 +1132,7 @@ def _build_layout(lay, st, frame):
         layers.append(Layer(back, region, 1.0, 'over', 0.0, 'back'))
     # ------------------------------------------------------------------ glow / scrim (low-res layer)
     if st.glow > 0 or st.scrim > 0:
-        layers.extend(_glow_layers(st, L, region, union if st.glow_src == 'all' else
-                                   (face[1] if face is not None else A1), A1))
+        layers.extend(_glow_layers(st, L, region, union if st.glow_src == 'all' else FA, A1))
     # ------------------------------------------------------------------ glass pill
     pill_box = None
     if st.pill > 0:
@@ -1088,20 +1160,26 @@ def _over_into_under(dst, src):
 
 
 def _long_shadow(A, length, angle, blur):
-    """Soft long shadow: max of shifted copies with a linear fade, penumbra widening with distance."""
+    """Soft long shadow: max of shifted copies with a fade, penumbra widening with distance (half res)."""
+    h, w = A.shape
+    q = 2 if length > 30 else 1
+    As = cv2.resize(A, (max(1, w // q), max(1, h // q)), interpolation=cv2.INTER_AREA) if q > 1 else A
+    ln, bl = length / q, blur / q
     a = math.radians(angle)
     ux, uy = math.cos(a), -math.sin(a)
-    n = max(4, int(length / 1.0))
+    n = max(4, int(ln / 0.9))
     bands = 3
-    acc = np.zeros_like(A)
+    acc = np.zeros_like(As)
     for b in range(bands):
-        mx = np.zeros_like(A)
+        mx = np.zeros_like(As)
         i0, i1 = b * n // bands, (b + 1) * n // bands
         for i in range(max(1, i0), i1 + 1):
             f = i / n
-            mx = np.maximum(mx, _shift(A, ux * length * f, uy * length * f) * np.float32((1 - f) ** 1.6))
-        acc = np.maximum(acc, _blur(mx, blur * (0.6 + 1.6 * b)))
-    return np.clip(acc * (1 - A * 0.0), 0, 1)
+            mx = np.maximum(mx, _shift(As, ux * ln * f, uy * ln * f) * np.float32((1 - f) ** 1.5))
+        acc = np.maximum(acc, _blur(mx, bl * (0.6 + 1.6 * b)))
+    if q > 1:
+        acc = cv2.resize(acc, (w, h), interpolation=cv2.INTER_LINEAR)
+    return np.clip(acc, 0, 1)
 
 
 def _glow_layers(st, L, region, src_alpha, A1):
@@ -1112,18 +1190,17 @@ def _glow_layers(st, L, region, src_alpha, A1):
     for s_, w_ in zip(sig, wts):
         res = 1.0 if s_ < 5 else (0.5 if s_ < 16 else 0.25)
         groups.setdefault(res, []).append((s_, w_))
-    if st.scrim > 0:
-        groups.setdefault(0.25, [])
     out = []
+    if st.scrim > 0:
+        out.append(_glow_one(st, L, region, src_alpha, A1, [], 0.25, scrim=True))
     for res in sorted(groups, reverse=True):
-        items = groups[res]
-        out.append(_glow_one(st, L, region, src_alpha, A1, items, res, scrim=(res == 0.25 and st.scrim > 0)))
+        out.append(_glow_one(st, L, region, src_alpha, A1, groups[res], res, scrim=False))
     return out
 
 
 def _glow_one(st, L, region, src_alpha, A1, items, res, scrim):
     rx0, ry0, rx1, ry1 = region
-    smax = max([s_ for s_, _ in items] + [st.scrim_size * L * 0.8 if scrim else 0.0])
+    smax = max([s_ for s_, _ in items] + [st.scrim_size * L * 2.6 if scrim else 0.0])
     q = int(round(1 / res))
     pg = int(math.ceil(2.8 * smax)) + 4
     pg = pg + (-pg) % q
@@ -1140,9 +1217,10 @@ def _glow_one(st, L, region, src_alpha, A1, items, res, scrim):
         a1[pg:pg + h1, pg:pg + w1] = A1
         a1s = cv2.resize(a1, (W2 // q, H2 // q), interpolation=cv2.INTER_AREA) if q > 1 else a1
         r = st.scrim_size * L * res
-        k = max(3, int(r * 0.6) | 1)
-        dil = cv2.dilate(a1s, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k)))
-        sa = np.clip(_blur(dil, r * 0.55) * 1.15, 0, 1) * st.scrim
+        k = max(3, int(r * 2.6) | 1)
+        kh = max(3, int(r * 2.4) | 1)
+        dil = cv2.dilate(a1s, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, kh)))
+        sa = np.clip(_blur(dil, r * 1.25) * 1.35, 0, 1) ** 0.75 * st.scrim
         out[..., :3] = col(st.scrim_color) * sa[..., None]
         out[..., 3] = sa
     if items and st.glow > 0:
@@ -1176,21 +1254,25 @@ def _pill_layers(st, lay):
         out.append(Layer(_premul(np.broadcast_to(col(st.pill_shadow_color), a.shape + (3,)), sh), box, 1.0,
                          'over', 0.0, 'pill'))
     base = col(st.pill_color)
-    # body: translucent fill brighter at the top (sheen), tinted glow along the bottom inner edge
-    sheen = np.clip(1 - yy, 0, 1)[:, None] ** 1.5
-    fill_a = st.pill * (0.75 + 0.5 * sheen)
-    rgb = np.broadcast_to(base, a.shape + (3,)) * np.float32(1.0)
-    rgb = rgb * (fill_a * a)[..., None]
-    alpha = (fill_a * a).astype(np.float32)
+    # body: darkening veil (pill_dark) + light added by the glass (pill), brighter toward the top (sheen),
+    # a soft specular band under the top edge, a tinted glow along the bottom inner edge and a rim light
+    inner = np.clip(-sdf / max(0.5 * bh, 1), 0, 1)
+    sheen = np.clip(1 - yy, 0, 1)[:, None] ** 1.6
+    spec = np.exp(-((yy - 0.16) / 0.09) ** 2)[:, None] * np.clip(1 - np.abs(xx - 0.5) * 2.0, 0, 1)[None, :] ** 0.6
+    light = st.pill * (0.55 + 0.7 * sheen) + 0.10 * spec * (st.pill_rim > 0)
+    rgb = (base[None, None, :] * (light * a)[..., None]).astype(np.float32)
+    alpha = np.clip(st.pill_dark + (st.pill if st.pill_dark <= 0 else 0.0) * (0.75 + 0.5 * sheen), 0, 1) * a
+    alpha = alpha.astype(np.float32)
     if st.pill_tint is not None:
-        inner = np.clip(-sdf / (0.35 * bh), 0, 1)
-        tg = np.exp(-((1 - yy) / 0.35) ** 2)[:, None] * (1 - inner) ** 1.5 * a * st.pill_tint_amount
+        tg = np.exp(-((1 - yy) / 0.32) ** 2)[:, None] * (1 - inner) ** 1.2 * a * st.pill_tint_amount
         rgb = rgb + col(st.pill_tint)[None, None, :] * tg[..., None]
     if st.pill_rim > 0:
-        stroke = np.clip(1.4 - np.abs(sdf + 0.9), 0, 1)
-        rimg = (0.35 + 0.65 * np.clip(1 - yy * 1.3, 0, 1)[:, None] * np.clip(1.15 - xx * 0.6, 0, 1)[None, :])
-        rk = stroke * rimg * st.pill_rim
-        rgb = rgb * (1 - rk[..., None]) + col('WHITE') * rk[..., None] * 1.1
+        stroke = np.clip(1.5 - np.abs(sdf + 1.0), 0, 1)
+        top = np.clip(1 - yy * 1.25, 0, 1)[:, None]
+        left = np.clip(1.2 - xx * 0.7, 0, 1)[None, :]
+        rimg = 0.22 + 0.78 * (top * left) ** 1.2
+        rk = (stroke * rimg * st.pill_rim).astype(np.float32)
+        rgb = rgb * (1 - rk[..., None]) + col('WHITE') * rk[..., None] * 1.15
         alpha = np.maximum(alpha, rk * 0.9)
     body = np.dstack([rgb, alpha]).astype(np.float32)
     out.append(Layer(body, box, 1.0, 'over', float(st.pill_frost), 'pill'))
@@ -1348,7 +1430,7 @@ class Glyphs:
             out.append(GlyphState(sx=s, sy=s, opacity=p, dy=(1 - p) * 0.05 * self.style.px))
         blk = {}
         if caret:
-            nvis = int(np.clip(math.floor((t - t0) * cps) + 1, 0, len(self.layout.glyphs)))
+            nvis = int(np.clip(math.ceil((t - t0) * cps - 1e-6), 0, len(self.layout.glyphs)))
             done = (t - t0) * cps >= len(self.layout.glyphs)
             blk['caret'] = (nvis, done, t)
         return out, blk
@@ -1404,16 +1486,34 @@ class Glyphs:
     def _run(self, kind, cv, t, x, y, kw):
         dkw = {k: kw.pop(k) for k in list(kw) if k in self.DRAW_KEYS}
         mbl = dkw.pop('mblur', 0)
+        span = dkw.pop('mspan', None)
         if kind == 'slam' and kw.pop('smear', True):
-            mbl = max(mbl, 5)
-            dkw.setdefault('mspan', 2.2 / K.FPS)
-        if mbl and mbl > 1:
-            span = dkw.pop('mspan', 1.0 / K.FPS)
-            subs = [self.anim(kind, t - span * (1 - (j + 0.5) / mbl), **dict(kw)) for j in range(int(mbl))]
-            return self._render_avg(cv, subs, x, y, **dkw)
-        dkw.pop('mspan', None)
+            mbl = max(mbl, 1) if mbl else 'auto'
+            span = span or 2.2 / K.FPS
+        if mbl:
+            span = span or 1.0 / K.FPS
+            if mbl == 'auto':
+                a = self.anim(kind, t, **dict(kw))
+                b = self.anim(kind, t - span, **dict(kw))
+                px = self._motion_px(a, b) * (dkw.get('scale', 1.0) if not isinstance(dkw.get('scale', 1.0),
+                                                                                          tuple) else 1.0)
+                mbl = int(np.clip(px / 2.5, 1, 24))
+            if mbl > 1:
+                subs = [self.anim(kind, t - span * (1 - (j + 0.5) / mbl), **dict(kw)) for j in range(int(mbl))]
+                return self._render_avg(cv, subs, x, y, **dkw)
         states, blk = self.anim(kind, t, **kw)
         return self.render(cv, states, x, y, block=blk, **dkw)
+
+    def _motion_px(self, a, b):
+        """Rough max screen displacement (px) between two animator results (for adaptive smear samples)."""
+        (sa, ba), (sb, bb) = a, b
+        R = max(self.w, self.h) / 2
+        m = abs(ba.get('scale', 1.0) - bb.get('scale', 1.0)) * R
+        m = max(m, abs(ba.get('dx', 0) - bb.get('dx', 0)), abs(ba.get('dy', 0) - bb.get('dy', 0)))
+        for p, q in zip(sa, sb):
+            m = max(m, abs(p.dx - q.dx), abs(p.dy - q.dy), abs(p.sx - q.sx) * self.style.px,
+                    abs(p.rx - q.rx) * 0.01 * self.style.px)
+        return m
 
     def rise(self, cv, t, x, y, **kw):
         """Staggered per-glyph rise with blur-in and scale (t0, stagger, dur, dist em, blur, scale0, order)."""
@@ -1445,20 +1545,29 @@ class Glyphs:
 
     # ---------------------------------------------------------------- rendering
     def _render_avg(self, cv, subs, x, y, **dkw):
-        tmp = np.zeros_like(cv)
+        """Motion smear: composite each sub-sample normally into its own (lazily zeroed) buffer, average the
+        premultiplied results, then lay the average over the canvas (exact temporal box filter)."""
+        acc = np.zeros_like(cv)
         bb = None
-        w = 1.0 / len(subs)
+        w = np.float32(1.0 / len(subs))
         for states, blk in subs:
-            b = self.render(tmp, states, x, y, block=blk, _accum=w, **dkw)
+            tmp = np.zeros_like(cv)
+            b = self.render(tmp, states, x, y, block=blk, **dkw)
+            if b is None:
+                continue
+            x0, y0, x1, y1 = [int(v) for v in b]
+            acc[y0:y1, x0:x1] += tmp[y0:y1, x0:x1] * w
             bb = _bb_union(bb, b)
         if bb is None:
             return None
         x0, y0, x1, y1 = [int(v) for v in bb]
-        K.over(cv[y0:y1, x0:x1], tmp[y0:y1, x0:x1])
+        K.over(cv[y0:y1, x0:x1], acc[y0:y1, x0:x1])
         return bb
 
     def render(self, cv, states, x, y, block=None, anchor=(0.5, 0.5), scale=1.0, rot=0.0, opacity=1.0, tilt=None,
                focal=1600.0, sweep=None, sweep_kw=None, blur=0.0, _accum=None):
+        # (_accum is ignored: smears composite each sub-sample normally, see _render_avg)
+        _accum = None
         """Draw glyph states with the block anchor at (x, y). tilt=(rx, ry, rz) tilts the block in 3D."""
         blk = dict(block or {})
         scale = scale * blk.get('scale', 1.0)
@@ -1473,6 +1582,19 @@ class Glyphs:
         Rt = _rotm(*tilt) if tilt is not None and any(abs(v) > 1e-6 for v in tilt) else None
         all_id = all(s.identity() for s in states)
         wipe = blk.get('wipe')
+        # ---- settled but tilted: the block is planar, so map its box corners (exact homography)
+        if all_id and Rt is not None and wipe is None and _accum is None:
+            q = self._project_box(x, y, ax, ay, scale, rot, Rt, focal)
+            bb = self.block.draw_quad(cv, q, opacity=op_k, blur=blur, sweep=sweep, sweep_kw=sweep_kw)
+            if 'caret' in blk:
+                Hm = cv2.getPerspectiveTransform(np.float32([[0, 0], [self.w, 0], [self.w, self.h], [0, self.h]]),
+                                                 np.float32(q)).astype(np.float64)
+
+                def mp(P, Hm=Hm):
+                    c = np.c_[P, np.ones(len(P))] @ Hm.T
+                    return c[:, :2] / c[:, 2:3]
+                bb = _bb_union(bb, self._caret(cv, blk['caret'], mp, op_k, mode_over))
+            return bb
         # ---- settled: draw the exact whole-block sprite
         if all_id and Rt is None:
             ts = self.block
@@ -1491,10 +1613,21 @@ class Glyphs:
                 bb = _bb_union(bb, self._caret(cv, blk['caret'], lambda p: p @ M[:, :2].T + M[:, 2], op_k,
                                                mode_over))
             return bb
-        # ---- per glyph
-        if wipe is not None:
-            Rt = Rt                                              # wipe on glyphs: emulate by per-glyph opacity
+        # ---- per glyph (a block pill, if any, is drawn first with the block transform)
         boxes = self.boxes()
+        if self.style.pill > 0:
+            pls = [L for L in self.block.layers if L.part == 'pill']
+            pop = float(np.mean([st_.opacity for st_ in states])) if states else 1.0
+            if Rt is None:
+                cr0, sr0 = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+                M = np.array([[cr0 * scale, -sr0 * scale, x - (cr0 * ax - sr0 * ay) * scale],
+                              [sr0 * scale, cr0 * scale, y - (sr0 * ax + cr0 * ay) * scale]])
+                _draw_layers_affine(cv, pls, M, op_k * pop, blur, None if _accum is None else 'add')
+            else:
+                q = self._project_box(x, y, ax, ay, scale, rot, Rt, focal)
+                Hm = cv2.getPerspectiveTransform(np.float32([[0, 0], [self.w, 0], [self.w, self.h], [0, self.h]]),
+                                                 np.float32(q)).astype(np.float64)
+                _draw_layers_h(cv, pls, Hm, op_k * pop, blur, None if _accum is None else 'add')
         cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
         bb = None
         jobs = []
@@ -1506,6 +1639,10 @@ class Glyphs:
             if st_.alt is not None:
                 ts = self.alt_glyph(st_.alt)
                 off = (gc[0] - ts.w / 2, gy0)
+                fit = min(1.0, (gx1 - gx0 + 0.12 * self.style.px) / max(ts.w, 1.0))
+                if fit < 1:
+                    st_ = GlyphState(st_.dx, st_.dy, st_.z, st_.sx * fit, st_.sy, st_.rot, st_.rx, st_.ry,
+                                     st_.opacity, st_.blur, st_.alt, st_.sweep, st_.mask)
             else:
                 ts = self.glyph(k)
                 off = (gx0, gy0)
@@ -1554,13 +1691,22 @@ class Glyphs:
                     r = K.draw_quad(cv, L.spr, q, opacity=op_k * gop, mode=m, blur=blur + st_.blur,
                                     frost=L.frost if _accum is None else 0.0)
                     bb = _bb_union(bb, r)
-        if self.style.pill > 0:
-            pass
         if 'caret' in blk:
             M = np.array([[cr * scale, -sr * scale, x - (cr * ax - sr * ay) * scale],
                           [sr * scale, cr * scale, y - (sr * ax + cr * ay) * scale]])
             bb = _bb_union(bb, self._caret(cv, blk['caret'], lambda p: p @ M[:, :2].T + M[:, 2], op_k, mode_over))
         return bb
+
+    def _project_box(self, x, y, ax, ay, scale, rot, Rt, focal):
+        """Screen quad of the block box under block tilt Rt (perspective focal), scale and rot."""
+        P = np.array([[0, 0, 0], [self.w, 0, 0], [self.w, self.h, 0], [0, self.h, 0]], np.float64)
+        P[:, 0] -= ax
+        P[:, 1] -= ay
+        V = P @ Rt.T
+        f = focal / np.maximum(focal + V[:, 2], 1e-3)
+        X, Y = V[:, 0] * f * scale, V[:, 1] * f * scale
+        c, s = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        return np.c_[x + X * c - Y * s, y + X * s + Y * c]
 
     def _caret(self, cv, info, mapper, opacity, mode):
         nvis, done, t = info
@@ -1638,12 +1784,12 @@ def _wipe_layers(ts, layers, p, angle, soft, edge):
             X = box[0] + np.arange(ww, dtype=np.float32) + 0.5 - ts.w / 2
             Y = box[1] + np.arange(hh, dtype=np.float32) + 0.5 - ts.h / 2
             s = (X[None, :] * dx + Y[:, None] * dy) / max(ext, 1e-6) * 0.5 + 0.5
-            band = np.exp(-((s - pos) / max(soft * 0.35, 1e-3)) ** 2).astype(np.float32)
+            band = np.exp(-((s - pos + soft * 0.35) / max(soft * 0.22, 1e-3)) ** 2).astype(np.float32)
             fa = ts.face[1]
             fb = ts.face[0]
             fa_c = fa[box[1] - fb[1]:box[3] - fb[1], box[0] - fb[0]:box[2] - fb[0]]
             spr = np.zeros((hh, ww, 4), np.float32)
-            spr[..., :3] = (band * fa_c * 1.6 * edge)[..., None] * col('WHITE')
+            spr[..., :3] = (band * fa_c * 0.9 * edge)[..., None] * col('WHITE')
             out.append(Layer(spr, box, 1.0, 'add', 0.0, 'sweep'))
     return out
 
@@ -1655,7 +1801,14 @@ class OrbitText:
     roll: in-plane screen roll of the ring (degrees, clockwise). fill=True repeats the text to wrap the
     full circle with even spacing."""
 
-    def __init__(self, text, st='flat', radius=420.0, tilt=16.0, roll=0.0, fill=True, gap=0.0, **kw):
+    def __init__(self, text, st='flat', radius=420.0, tilt=16.0, roll=0.0, fill=True, gap=0.0, repeat=None, **kw):
+        # fill: True/False = repeat the text round the ring (legacy meaning); any other value is the Style fill
+        # colour (and the text repeats). repeat= overrides the repeat flag explicitly.
+        if not isinstance(fill, (bool, np.bool_)) and fill is not None:
+            kw['fill'] = fill
+            fill = True
+        if repeat is not None:
+            fill = bool(repeat)
         self.g = Glyphs(text, st, **kw)
         self.radius, self.tilt, self.roll = float(radius), float(tilt), float(roll)
         lay = self.g.layout
@@ -1679,18 +1832,16 @@ class OrbitText:
                 s += a
             s += gap * lay.px * k
 
-    def _basis(self):
-        return _rotm(-(90 - self.tilt) * 0 + self.tilt, 0, self.roll)
-
     def items(self, cam, center=(0, 0, 0), t=0.0, spin=20.0, phase=0.0, scale=1.0):
-        """[(depth, draw_fn(cv, cam), facing)] for every glyph (unsorted)."""
+        """Per-glyph ring placement (unsorted): [(depth, glyph index, P, T, U, facing, box)] with world
+        position P, tangent T, up U and facing = cos(angle between the glyph normal and the camera)."""
         R = _rotm(self.tilt, 0, self.roll)
         C = np.asarray(center, np.float64)
         out = []
         boxes = self.g.boxes()
         for gi, th0 in self.slots:
             th = th0 - math.radians(spin * t + phase)
-            P = C + R @ np.array([self.radius * math.sin(th), 0.0, -self.radius * math.cos(th)])
+            P = C + R @ np.array([self.radius * scale * math.sin(th), 0.0, -self.radius * scale * math.cos(th)])
             T = R @ np.array([math.cos(th), 0.0, math.sin(th)])
             U = R @ np.array([0.0, -1.0, 0.0])
             N = R @ np.array([math.sin(th), 0.0, -math.cos(th)])
@@ -1724,7 +1875,12 @@ class OrbitText:
         if dof and cam.aperture > 0:
             bl += 0.5 * float(cam.coc(depth))
         bb = None
-        for L in ts._layers(None, sweep if facing > 0 else None, None):
+        layers = [ts.merged()]
+        if sweep is not None and facing > 0:
+            sl = ts.sweep_layer(sweep)
+            if sl is not None:
+                layers.append(sl)
+        for L in layers:
             C = L.corners()
             loc_x = (C[:, 0] + gx0 - gcx) * scale
             loc_y = (C[:, 1] + gy0 - gcy) * scale
@@ -1755,27 +1911,39 @@ def smooth01(x):
 # =============================================================================================== counter
 class Counter:
     """Tabular-figure number renderer with odometer / slot-machine digit rolls and per-digit vertical motion
-    blur (see module docstring). fmt: thousands separator sep, decimal point, `decimals` places."""
+    blur (see module docstring). The style's glow is applied once to the composed number."""
 
-    def __init__(self, st='flat', prefix='£', suffix='', decimals=2, sep=',', point='.', min_int=1,
-                 window=0.62, **kw):
+    def __init__(self, st='flat', prefix='\u00a3', suffix='', decimals=2, sep=',', point='.', min_int=1, **kw):
         self.style = style(st, **kw)
         self.prefix, self.suffix, self.decimals = prefix, suffix, decimals
         self.sep, self.point, self.min_int = sep, point, min_int
         s = self.style
+        self._ds = s.but(glow=0.0, scrim=0.0)
         fn = font_name(s.font)
-        self.digit = [render(str(d), s) for d in range(10)]
+        self._glyph = {}
+        for d in '0123456789':
+            self._prep(d)
         advs = [_gmet(fn, str(d))[0] * s.px / _REF for d in range(10)]
         self.cell = max(advs) + s.tracking * s.px
-        self.cap = self.digit[0].h
-        self.window = window
-        self._chars = {}
+        self.cap = render('0', self._ds).h
+        # vertical ink extent of the digits relative to the cap box (extrusion / shadow hang below)
+        ys = [self._glyph[d][2] for d in '0123456789']
+        self.top = min(y for y, _ in ys)
+        self.bot = max(y for _, y in ys)
+        self.pitch = self.cap * ((self.bot - self.top) + 0.12)
 
-    def _char(self, ch):
-        ts = self._chars.get(ch)
-        if ts is None:
-            ts = self._chars[ch] = render(ch, self.style)
-        return ts
+    def _prep(self, ch):
+        g = self._glyph.get(ch)
+        if g is None:
+            ts = render(ch, self._ds)
+            spr = ts.sprite
+            an = ts.sprite_anchor((0.5, 0.5))
+            # visible ink extent (rows with alpha) in cap units relative to the cap-box top
+            rows = np.nonzero(spr[..., 3].max(1) > 0.02)[0]
+            r0, r1 = (rows[0], rows[-1] + 1) if len(rows) else (0, spr.shape[0])
+            y_top = 0.5 * ts.h - an[1] * spr.shape[0]
+            g = self._glyph[ch] = (spr, an, ((y_top + r0) / ts.h, (y_top + r1) / ts.h))
+        return g
 
     def _adv(self, ch):
         s = self.style
@@ -1787,12 +1955,10 @@ class Counter:
         ip = int(math.floor(v + 1e-9))
         nint = max(self.min_int, len(str(ip)) if ndig is None else ndig)
         slots = []
-        if self.prefix:
-            for ch in self.prefix:
-                slots.append(('char', ch, self._adv(ch), 1.0))
-        for j in range(nint - 1, -1, -1):
-            k = j                                        # power of ten of this integer digit
-            pres = 1.0 if (k == 0 or ndig is not None) else K.smoothstep(0.86, 1.0, v / (10 ** k))
+        for ch in self.prefix:
+            slots.append(('char', ch, self._adv(ch), 1.0))
+        for k in range(nint - 1, -1, -1):
+            pres = 1.0 if (k == 0 or ndig is not None) else float(_sstep(0.86, 1.0, v / (10 ** k)))
             slots.append(('digit', k + self.decimals, self.cell, pres))
             if k > 0 and k % 3 == 0 and self.sep:
                 slots.append(('char', self.sep, self._adv(self.sep), pres))
@@ -1804,8 +1970,12 @@ class Counter:
             slots.append(('char', ch, self._adv(ch), 1.0))
         return slots
 
+    def width(self, value):
+        return sum(w * p for _, _, w, p in self._slots(value))
+
     def sprite(self, value, vel=0.0, wheels=None, ndig=None):
-        """TextSprite of the number. wheels: optional {power: (position 0..10, speed digits/s)} override."""
+        """TextSprite of the number. vel: value units / s (motion blur). wheels: optional {power: (pos 0..10,
+        speed digits/s)} overriding the odometer (used by slot())."""
         v = max(0.0, float(value))
         N = v * 10 ** self.decimals
         dN = abs(vel) * 10 ** self.decimals
@@ -1813,24 +1983,25 @@ class Counter:
         tot = sum(w * p for _, _, w, p in slots)
         s = self.style
         cap = self.cap
-        g0 = self.digit[0]
-        bx0, by0, bx1, by1 = g0.bounds()
-        mx = int(math.ceil(max(-bx0, bx1 - g0.w, 4)))
-        my = int(math.ceil(max(-by0, by1 - cap, 4)))
+        mx = int(math.ceil(0.25 * s.px + s.depth * s.px)) + 4
+        my0 = int(math.ceil(max(0.0, -self.top) * cap)) + 4
+        my1 = int(math.ceil(max(0.0, self.bot - 1) * cap)) + 4
         Wt = int(math.ceil(tot)) + 2 * mx
-        Ht = int(math.ceil(cap)) + 2 * my
+        Ht = int(math.ceil(cap)) + my0 + my1
         out = np.zeros((Ht, Wt, 4), np.float32)
         x = float(mx)
         expo = 0.5 / K.FPS
+        yy = (np.arange(Ht, dtype=np.float32) + 0.5 - my0) / cap
+        w0, w1 = self.top - 0.03, self.bot + 0.03
+        win = (_sstep(w0, w0 + 0.12, yy) * (1 - _sstep(w1 - 0.12, w1, yy))).astype(np.float32)
         for kind, pay, wd, pres in slots:
             w_eff = wd * pres
             if pres <= 1e-3:
                 continue
+            cx = x + w_eff / 2
             if kind == 'char':
-                ts = self._char(pay)
-                cx = x + w_eff / 2
-                spr = ts.sprite
-                K.draw(out, spr, cx, my + cap / 2, anchor=ts.sprite_anchor((0.5, 0.5)), opacity=pres)
+                spr, an, _ = self._prep(pay)
+                K.draw(out, spr, cx, my0 + cap / 2, anchor=an, opacity=pres)
             else:
                 k = pay
                 if wheels is not None and k in wheels:
@@ -1838,46 +2009,49 @@ class Counter:
                 else:
                     wk = N / 10 ** k
                     spd = dN / 10 ** k
-                    if spd * expo > 0.35:
+                    if spd * expo > 0.3:
                         p = wk % 10.0
                     else:
-                        r = N % (10 ** k) if k > 0 else 0.0
-                        f = np.clip(r - (10 ** k - 1), 0, 1) if k > 0 else (wk % 1.0)
+                        r = (N % (10 ** k)) if k > 0 else 0.0
+                        f = float(np.clip(r - (10 ** k - 1), 0, 1)) if k > 0 else (wk % 1.0)
                         p = (math.floor(wk) % 10) + f
                         if k > 0 and 0 < f < 1:
-                            spd = dN
-                col_ = np.zeros((Ht, int(math.ceil(w_eff)) + 2 * mx, 4), np.float32)
-                cxc = mx + w_eff / 2
+                            spd = max(spd, dN)
+                cw = int(math.ceil(w_eff)) + 2 * mx
+                colb = np.zeros((Ht, cw, 4), np.float32)
+                ccx = mx + w_eff / 2
                 a = int(math.floor(p)) % 10
                 fr = p - math.floor(p)
                 for dd, off in ((a, -fr), ((a + 1) % 10, 1 - fr), ((a - 1) % 10, -fr - 1)):
-                    yy = my + cap / 2 + off * cap * 1.25
-                    if abs(off) > 1.3:
+                    if abs(off) > 1.2:
                         continue
-                    ts = self.digit[dd]
-                    K.draw(col_, ts.sprite, cxc, yy, anchor=ts.sprite_anchor((0.5, 0.5)))
-                sig = min(cap * 0.5, spd * expo * cap * 1.25 * 0.5)
+                    spr, an, _ = self._prep(str(dd))
+                    K.draw(colb, spr, ccx, my0 + cap / 2 + off * self.pitch, anchor=an)
+                sig = min(cap * 0.26, spd * expo * self.pitch * 0.5)
                 if sig > 0.6:
-                    col_ = cv2.GaussianBlur(col_, (1, 0), sigmaX=0.01, sigmaY=sig) if False else \
-                        cv2.GaussianBlur(col_, (1, int(sig * 6) | 1), sigmaX=0, sigmaY=sig)
-                yy = (np.arange(Ht, dtype=np.float32) + 0.5 - my) / cap
-                win = (K.smoothstep(-self.window, -self.window + 0.35, yy) *
-                       (1 - K.smoothstep(1 + self.window - 0.35, 1 + self.window, yy))).astype(np.float32)
-                col_ *= (win * pres)[:, None, None]
-                x0i = int(round(x - mx + (w_eff - w_eff) / 2))
-                xs0, xs1 = max(0, x0i), min(Wt, x0i + col_.shape[1])
+                    colb = cv2.GaussianBlur(colb, (1, int(sig * 6) | 1), sigmaX=0, sigmaY=sig)
+                if sig > 0.6:
+                    sf = 0.12 + 0.9 * sig / cap                 # softer window edges while spinning fast
+                    wv = (_sstep(w0, w0 + sf, yy) * (1 - _sstep(w1 - sf, w1, yy))).astype(np.float32)
+                else:
+                    wv = win
+                colb *= (wv * pres)[:, None, None]
+                x0i = int(round(x - mx))
+                xs0, xs1 = max(0, x0i), min(Wt, x0i + cw)
                 if xs1 > xs0:
-                    _over_into(out[:, xs0:xs1], col_[:, xs0 - x0i:xs1 - x0i])
+                    _over_into(out[:, xs0:xs1], colb[:, xs0 - x0i:xs1 - x0i])
             x += w_eff
         lay = _CounterLayout(tot, cap)
-        L = Layer(out, (-mx, -my, -mx + Wt, -my + Ht), 1.0, 'over', 0.0, 'front')
-        return TextSprite(lay, s, [L], None)
+        box = (-mx, -my0, -mx + Wt, -my0 + Ht)
+        layers = [Layer(out, box, 1.0, 'over', 0.0, 'front')]
+        if s.glow > 0:
+            layers.extend(_glow_layers(s, s.px, box, out[..., 3], out[..., 3]))
+        return TextSprite(lay, s, layers, None)
 
     def draw(self, cv, value, x, y, anchor=(0.5, 0.5), scale=1.0, rot=0.0, vel=0.0, opacity=1.0, blur=0.0,
              ndig=None):
         """Odometer: draw `value` (vel = value units per second for the per-digit motion blur)."""
-        return self.sprite(value, vel, ndig=ndig).draw(cv, x, y, anchor, scale, rot, opacity, blur,
-                                                        snap=False)
+        return self.sprite(value, vel, ndig=ndig).draw(cv, x, y, anchor, scale, rot, opacity, blur, snap=False)
 
     def slot(self, cv, t, target, x, y, t0=0.0, dur=1.4, stagger=0.09, spins=2, order='rtl', anchor=(0.5, 0.5),
              scale=1.0, opacity=1.0, ease='out_cubic'):
@@ -1895,14 +2069,14 @@ class Counter:
         for k in range(nd):
             rank = k if order == 'rtl' else nd - 1 - k
             ts_ = t0 + rank * stagger
-            u = np.clip((t - ts_) / dur, 0, 1)
+            u = float(np.clip((t - ts_) / dur, 0, 1))
             tgt = (N // 10 ** k) % 10
             total = spins * 10 + tgt
             p = total * float(e(u))
-            spd = (total * (float(e(min(1, u + 0.01))) - float(e(u))) / (0.01 * dur)) if u < 1 else 0.0
+            spd = (total * (float(e(min(1.0, u + 0.01))) - float(e(u))) / (0.01 * dur)) if u < 1 else 0.0
             if u >= 1:
                 tl = t - (ts_ + dur)
-                p = total + 0.18 * math.exp(-tl * 9) * math.sin(tl * 30) if tl < 0.6 else total
+                p = total + (0.12 * math.exp(-tl * 10) * math.sin(tl * 32) if tl < 0.5 else 0.0)
             wheels[k] = (p % 10.0, abs(spd))
         return self.sprite(v, 0.0, wheels=wheels, ndig=nint)
 
@@ -1920,7 +2094,7 @@ class VideoType:
     """Footage seen through giant letters (+ rim/bevel overlay and a back layer). See module docstring."""
 
     def __init__(self, text, font='Nunito-Black', px=250.0, tracking=-0.01, rim_style=None, back_style=None,
-                 line_height=1.0):
+                 line_height=1.0, look='dark'):
         fn = font_name(font)
         self.text = text
         self.px = px
@@ -1935,15 +2109,21 @@ class VideoType:
         rim_style = rim_style or base.but(
             name='video_rim', fill='WHITE', bevel=0.03, profile='round', ambient=1.0, spec=0.0, rim=0.0)
         self.rim = _rim_overlay(text, rim_style)
+        if back_style is None and look == 'light':
+            back_style = base.but(name='video_back_light', fill='INK', depth=0.06, angle=-70, persp=0.05,
+                                  side=(('#7A2E68', 1.0), ('#3A1436', 1.0)), side_rim=0.35, side_key=0.5,
+                                  side_ambient=0.5, rim_color=('PEACH', 1.0), edge_rim=0.5, side_falloff=0.0,
+                                  shadow=0.28, shadow_color='#5B2E52', shadow_offset=(0.0, 0.08),
+                                  shadow_blur=0.09, long_shadow=0.22, long_shadow_len=0.4,
+                                  long_shadow_color='#8A5070')
         back_style = back_style or base.but(name='video_back', fill='NIGHT_0', depth=0.07, angle=-70, persp=0.06,
-                                            side=(('#3A0F35', 1.0), ('#0B0310', 1.0)), side_rim=0.9,
-                                            rim_color=('ORANGE', 1.2), side_falloff=0.0, shadow=0.5,
+                                            side=(('#4A1242', 1.0), ('#0B0310', 1.0)), side_rim=0.45,
+                                            edge_rim=0.9, rim_color=('ORANGE', 1.3), side_falloff=0.0, shadow=0.5,
                                             shadow_offset=(0.0, 0.08), shadow_blur=0.08, glow=0.35,
                                             glow_color=('MAGENTA', 1.5), glow_src='all')
         bt = render(text, back_style)
         self.back = TextSprite(bt.layout, bt.style, [L_ for L_ in bt.layers if L_.part in ('back', 'glow')], None)
-        self.face = TextSprite(self.layout, base, [], (L.box, self.mask, self.rim.face[2] if self.rim.face else
-                                                       np.zeros_like(self.mask)))
+        self.face = TextSprite(self.layout, base, [], self.rim.face)
 
     def _M(self, x, y, anchor, scale, rot):
         ax, ay = anchor[0] * self.w, anchor[1] * self.h
@@ -1972,7 +2152,6 @@ class VideoType:
             bb = _bb_union(bb, _draw_layers_affine(cv, self.back.layers, M, opacity * back, blur, None))
         q = Layer(self._mask4, self.mask_box).corners() @ M[:, :2].T + M[:, 2]
         if lock == 'screen':
-            tmp = np.zeros_like(cv[..., :1].repeat(4, 2)) if False else None
             x0 = int(max(0, math.floor(q[:, 0].min()) - 2))
             y0 = int(max(0, math.floor(q[:, 1].min()) - 2))
             x1 = int(min(cv.shape[1], math.ceil(q[:, 0].max()) + 2))
@@ -2034,7 +2213,8 @@ class VideoType:
             dt = cv2.distanceTransform(np.pad(ink.astype(np.uint8), 1), cv2.DIST_L2, cv2.DIST_MASK_PRECISE)[1:-1, 1:-1]
         # prefer the horizontal centre of the glyph on ties (symmetric letters)
         hh, ww = dt.shape
-        bias = 1 - 0.02 * np.abs(np.arange(ww) - ww / 2)[None, :] / max(ww, 1)
+        bias = (1 - 0.03 * np.abs(np.arange(ww) - ww / 2)[None, :] / max(ww, 1)
+                - 0.03 * np.abs(np.arange(hh) - hh / 2)[:, None] / max(hh, 1))
         iy, ix = np.unravel_index(np.argmax(dt * bias), dt.shape)
         return float(x0 + ix + 0.5), float(y0 + iy + 0.5)
 
@@ -2079,8 +2259,8 @@ def _rim_overlay(text, st):
         rd /= np.linalg.norm(rd)
         rimk = (1 - nz) * np.clip(nx * rd[0] + ny * rd[1], 0, None) * A
         edge = np.clip(1.2 - np.abs(d) * ss, 0, 1) * 0.0
-        inner = _blur(1 - _shift(A, 0, 0.03 * L * ss), 0.05 * L * ss) * A * 0.55
-        dark = np.clip(lo * 0.5 + inner, 0, 0.85)
+        inner = _blur(1 - _shift(A, 0, 0.03 * L * ss), 0.05 * L * ss) * A * 0.42
+        dark = np.clip(lo * 0.45 + inner, 0, 0.7)
         rgb = (col('WHITE') * (hi * 1.3)[..., None] + col(('HOT_PINK', 1.4)) * (rimk * 1.2)[..., None]
                + col('WHITE') * edge[..., None])
         # premultiplied: darkening via alpha with black, light via emissive rgb
@@ -2093,64 +2273,264 @@ def _rim_overlay(text, st):
 
 
 # =============================================================================================== self-test
-def _u8(cv, t=0.0):
-    return K.to_srgb8(cv, t)
+_SAMPLE_ROWS = {
+    'night': [
+        ('extrude3d', 'Could YOU', dict(px=168, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=1.2),
+         0.62),
+        ('chrome', 'NURTURE', dict(px=150), 0.4),
+        ('deep_glow', 'Financial Support', dict(px=100), None),
+        ('neon', 'Start your enquiry', dict(px=86, font='Nunito-ExtraBold'), None),
+        ('gradient', 'Foster Carer?', dict(px=118), None),
+        ('extrude3d', '\u00a323,275.20', dict(px=120), 0.3),
+        ('glass_pill', 'Start your enquiry \u2192', dict(px=44), None),
+        ('ui', 'Rates may vary by region and are subject to change.', dict(px=30, font='Poppins-Regular'), None),
+    ],
+    'amber': [
+        ('gold', 'Financial Support', dict(px=118), 0.55),
+        ('gold', '\u00a323,275.20', dict(px=150), 0.3),
+        ('deep_glow', 'NURTURE', dict(px=140, glow_color=('ORANGE', 2.6), inner_glow_color=('AMBER', 1.3)), None),
+        ('neon', 'Start your enquiry', dict(px=86, font='Nunito-ExtraBold', tube_color=('ORANGE', 1.6),
+                                            glow_color=('ORANGE', 2.2)), None),
+        ('gradient', 'Could YOU', dict(px=130, fill=('ORANGE', 'AMBER'), fill_angle=90,
+                                       glow_color=('ORANGE', 1.2)), None),
+        ('glass_pill', 'Ages 0\u20134', dict(px=42, font='Poppins-Medium', pill_tint=('ORANGE', 1.4)), None),
+        ('ui', 'Estimated allowance \u00b7 52 weeks \u00b7 one child aged 0\u20134', dict(px=32), None),
+        ('ui', 'Rates may vary by region and are subject to change.', dict(px=28, font='Poppins-Regular',
+                                                                          fill='PEACH'), None),
+    ],
+    'ivory': [
+        ('ink_soft', 'NURTURE', dict(px=190), 0.5),
+        ('ink_soft', 'A small beginning', dict(px=104), None),
+        ('gradient', 'Financial Support', dict(px=104, shadow=0.22, shadow_color='#7A3A5A', glow=0.0), 0.55),
+        ('extrude3d', 'Could YOU', dict(px=130, fill=('MAGENTA', 'ORANGE'), fill_angle=35, fill_gain=1.15, glow=0.0,
+                                        shadow=0.22, shadow_color='#5B2E52', side=(('#C23A84', 1.0),
+                                                                                  ('#6E1A52', 1.0))), 0.4),
+        ('neon', '\u00a323,275.20', dict(px=96, font='Nunito-ExtraBold', tube=0.06, tube_color=('MAGENTA', 1.0),
+                                          tube_core=0.35, glow=0.25, glow_color=('HOT_PINK', 0.8)), None),
+        ('deep_glow', 'Start your enquiry', dict(px=84, fill=('INK',), fill_gain=1.0, inner_glow=0.0, glow=0.55,
+                                                 glow_color=('PEACH', 1.0), glow_radii=(0.06, 0.2, 0.5)), None),
+        ('glass_pill_light', 'Start your enquiry \u2192', dict(px=44), None),
+        ('ui_ink', 'Rates may vary by region and are subject to change.', dict(px=30, font='Poppins-Regular'),
+         None),
+    ],
+}
 
 
-def _sheet(look, bgcol=None):
-    if bgcol is not None:
-        return K.new_canvas(bgcol)
-    return K.background(look, 0.6)
+def _row_extent(ts):
+    b = [L.box for L in ts.layers if L.part in ('front', 'back')]
+    if ts.pill_box is not None:
+        b.append(ts.pill_box)
+    b = np.array(b, np.float64)
+    return b[:, 1].min(), b[:, 3].max()
 
 
-def _selftest_styles(look, name, out):
-    """One 1080x1920 sheet: every style on one background."""
+def _styles_sheet(look, name, out):
+    """One 1080x1920 sheet: every style on one background with real copy (+ a light sweep on hero rows)."""
     cv = K.background(look, 0.8, intensity=0.9)
-    light = look == 'airy'
-    y = 250
     rows = []
-    if not light:
-        rows = [
-            ('extrude3d', 'Could YOU', dict(px=170, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35), 0.55),
-            ('extrude3d', 'NURTURE', dict(px=150), 0.45),
-            ('gold' if look == 'amber' else 'chrome', '£23,275.20', dict(px=130), 0.5),
-            ('deep_glow', 'Financial Support', dict(px=96, glow_color=('ORANGE', 2.4) if look == 'amber'
-                                                    else ('MAGENTA', 2.6),
-                                                    inner_glow_color=('AMBER', 1.3) if look == 'amber'
-                                                    else ('HOT_PINK', 1.3)), None),
-            ('neon', 'Start your enquiry', dict(px=86, font='Nunito-ExtraBold'), None),
-            ('gradient', 'Foster Carer?', dict(px=120), None),
-            ('glass_pill', 'Start your enquiry →', dict(px=44), None),
-            ('ui', 'Rates may vary by region and are subject to change.', dict(px=30, font='Poppins-Regular'),
-             None),
-        ]
-    else:
-        rows = [
-            ('ink_soft', 'A small beginning', dict(px=120), None),
-            ('ink_soft', 'NURTURE', dict(px=200), 0.5),
-            ('gradient', 'Financial Support', dict(px=104, shadow=0.22, shadow_color='#7A3A5A', glow=0.0), None),
-            ('extrude3d', '£23,275.20', dict(px=120, fill=('MAGENTA', 'ORANGE'), fill_angle=35, glow=0.0,
-                                                  shadow=0.25, shadow_color='#5B2E52', rim=0.5), 0.5),
-            ('deep_glow', 'Could YOU', dict(px=130, fill=('INK',), fill_gain=1.0, inner_glow=0.0, glow=0.6,
-                                            glow_color=('PEACH', 1.0), glow_radii=(0.06, 0.2, 0.5)), None),
-            ('neon', 'Nurture. Develop. Grow.', dict(px=80, font='Nunito-ExtraBold', tube_color=('MAGENTA', 1.2),
-                                                     glow=0.55, glow_color=('HOT_PINK', 1.2)), None),
-            ('glass_pill_light', 'Start your enquiry →', dict(px=44), None),
-            ('ui_ink', 'Rates may vary by region and are subject to change.', dict(px=30, font='Poppins-Regular'),
-             None),
-        ]
-    for sty, text, kw, sweep in rows:
+    for sty, text, kw, sweep in _SAMPLE_ROWS[name]:
         ts = render(text, sty, **kw)
-        b = ts.bounds()
-        hh = ts.h
-        y += max(0, -b[1]) * 0.35 + 20
-        cy = y + hh / 2
-        ts.draw(cv, 540, cy, sweep=sweep)
-        y = cy + hh / 2 + max(0, b[3] - ts.h) * 0.5 + 40
+        rows.append((ts, sweep) + _row_extent(ts))
+    tot = sum(r[3] - r[2] for r in rows)
+    gap = max(18.0, (1920 - 150 - tot) / (len(rows) + 1))
+    y = 75 + gap
+    for ts, sweep, e0, e1 in rows:
+        ts.draw(cv, 540, y - e0 + ts.h / 2, sweep=sweep)
+        y += (e1 - e0) + gap
     cv = K.post(cv, look, 0.8)
-    u8 = _u8(cv)
     path = os.path.join(out, f'type3d_styles_{name}.png')
+    K._write_u8(path, K.to_srgb8(cv, 0.8))
+    return path
+
+
+def _label(u8, text, x=10, y=26, sc=0.6):
+    cv2.putText(u8, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, sc, (0, 0, 0), 3, cv2.LINE_AA)
+    cv2.putText(u8, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, sc, (255, 255, 255), 1, cv2.LINE_AA)
+    return u8
+
+
+def _sweep_strip(out):
+    ts = render('YOU', 'extrude3d', px=230, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=1.2)
+    ts2 = render('NURTURE', 'chrome', px=120)
+    tiles = []
+    times = []
+    for u in (0.12, 0.3, 0.45, 0.6, 0.75, 0.9):
+        cv = K.background('neon', 0.5)[700:1220, 160:920].copy()
+        import time
+        t0 = time.perf_counter()
+        ts.draw(cv, 380, 200, sweep=u)
+        ts2.draw(cv, 380, 430, sweep=u)
+        times.append(time.perf_counter() - t0)
+        tiles.append(_label(K.to_srgb8(cv), f'sweep u={u:.2f}'))
+    img = np.concatenate([np.concatenate(tiles[:3], 1), np.concatenate(tiles[3:], 1)], 0)
+    path = os.path.join(out, 'type3d_sweep.png')
+    K._write_u8(path, img)
+    print('sweep draw (2 words, cached masks) %.1f ms/frame' % (1000 * np.mean(times[1:])))
+    return path
+
+
+def _kinetic_strip(out):
+    import time
+    anims = [('rise', 'A SAFE HOME.', dict(st='deep_glow', px=96), dict(t0=0.0)),
+             ('slam', 'EVERYDAY CARE.', dict(st='extrude3d', px=88, fill=('MAGENTA', 'ORANGE'), fill_angle=35,
+                                             fill_gain=1.2), dict(t0=0.02)),
+             ('typewriter', 'Start your enquiry', dict(st='ui', px=52), dict(t0=0.0, cps=16)),
+             ('wipe', 'Foster Carer?', dict(st='gradient', px=96), dict(t0=0.0, dur=0.7)),
+             ('track', 'NURTURE', dict(st='neon', px=96), dict(t0=0.0, dur=0.9)),
+             ('flip', 'TO BELONG.', dict(st='chrome', px=96), dict(t0=0.0, tilt=(18, -12, 0))),
+             ('scramble', '\u00a3447.60 a week', dict(st='ui', px=64, font='Poppins-Bold'), dict(t0=0.0, dur=0.5))]
+    times = [0.1, 0.22, 0.38, 0.6, 1.3]
+    rows = []
+    for name, text, skw, akw in anims:
+        g = Glyphs(text, **skw)
+        tiles = []
+        for t in times:
+            cv = K.new_canvas(K.C['NIGHT_1'], 520, 190)
+            K.draw(cv, K.radial(380, K.C['PLUM'] * 0.8), 260, 95, scale=(1.6, 0.6))
+            t0 = time.perf_counter()
+            getattr(g, name)(cv, t, 260, 95, scale=min(1.0, 470 / g.w), **akw)
+            dt = time.perf_counter() - t0
+            tiles.append(_label(K.to_srgb8(cv), f'{name}  t={t:.2f}  {dt * 1000:.0f} ms', sc=0.45, y=18))
+        rows.append(np.concatenate(tiles, 1))
+    img = np.concatenate(rows, 0)
+    path = os.path.join(out, 'type3d_kinetic.png')
+    K._write_u8(path, img)
+    return path
+
+
+def _orbit_counter_sheet(out):
+    import time
+    cv = K.background('amber', 1.0)
+    # orbit ring around a glowing orb (back half, orb, front half)
+    ot = OrbitText('SUPERVISING SOCIAL WORKER \u2022 ONGOING TRAINING \u2022 ', 'flat', px=46, radius=360, tilt=13,
+                   roll=-7, fill='IVORY', glow=0.6, glow_color=('ORANGE', 1.8), glow_radii=(0.06, 0.2),
+                   glow_weights=(0.8, 0.5))
+    cam = K.Cam(pos=(0, -90, -1500), pitch=-3.5, aperture=35)
+    ot.draw(cv.copy(), cam, (0, -330, 0), t=0.0, spin=18)          # warm the glyph cache
+    t0 = time.perf_counter()
+    ot.draw(cv, cam, (0, -330, 0), t=1.0, spin=18, part='back')
+    orb = K.glow(K.disc(110, K.C['AMBER'] * 1.6), K.C['ORANGE'], (16, 50, 120), 1.2)
+    K.draw_billboard(cv, orb, cam, (0, -330, 0), 260 * orb.shape[1] / 220)
+    ot.draw(cv, cam, (0, -330, 0), t=1.0, spin=18, part='front')
+    t_orbit = time.perf_counter() - t0
+    # counters
+    cnt = Counter('gold', px=118)
+    cnt.draw(cv.copy(), 1234.5, 540, 900)
+    tr = K.Track([(0, 0.0, 'out_expo'), (2.0, 23275.20)])
+    t0 = time.perf_counter()
+    for i, tt in enumerate((0.25, 0.7, 2.2)):
+        cnt.draw(cv, float(tr(tt)), 540, 980 + i * 190, vel=float(tr.vel(tt)), scale=0.92)
+    t_cnt = (time.perf_counter() - t0) / 3
+    c2 = Counter('flat', px=96, fill='IVORY', glow=0.5, glow_color=('ORANGE', 1.6), glow_radii=(0.05, 0.2),
+                 glow_weights=(0.7, 0.4))
+    c2.slot(cv, 0.75, 447.60, 300, 1580, t0=0.0, dur=1.0, scale=0.8)
+    c2.slot(cv, 2.0, 447.60, 780, 1580, t0=0.0, dur=1.0, scale=0.8)
+    render('/ week per child', 'ui', px=34, fill='PEACH').draw(cv, 780, 1660)
+    cv = K.post(cv, 'amber', 1.0)
+    u8 = K.to_srgb8(cv, 1.0)
+    _label(u8, f'orbit {t_orbit * 1000:.0f} ms   counter {t_cnt * 1000:.0f} ms/frame', y=40, sc=0.8)
+    path = os.path.join(out, 'type3d_orbit_counter.png')
     K._write_u8(path, u8)
+    return path
+
+
+def _video_sheet(out):
+    import time
+    import footage as F
+    vt = VideoType('NURTURE', px=200, tracking=-0.01, look='light')
+    clip = F.Clip('c11')
+    fg = clip.get(2.0, K.W, K.H, look='airy')
+    pt = vt.zoom_point('U', kind='stroke')
+    tiles = []
+    for u in (0.0, 0.35, 0.6, 0.8, 0.93, 1.0):
+        cv = K.background('airy', 0.5)
+        t0 = time.perf_counter()
+        z = vt.zoom(u, pt, 540, 900, s1=34)
+        vt.draw(cv, fg, sweep=0.5 if u == 0 else None, **z)
+        render('A safe home & everyday care', 'ui_ink', px=40).draw(cv, 540, 1030, opacity=1 - min(1, u * 3))
+        dt = time.perf_counter() - t0
+        u8 = K.to_srgb8(K.post(cv, 'airy', 0.5), 0.5)
+        tiles.append(_label(cv2.resize(u8, (360, 640), interpolation=cv2.INTER_AREA),
+                            f'zoom u={u:.2f} {dt * 1000:.0f}ms', sc=0.5))
+    img = np.concatenate(tiles, 1)
+    cv = K.background('neon', 0.5)
+    fg2 = F.Clip('c01').get(4.0, K.W, K.H, look='neon')
+    vt2 = VideoType('GROW', px=300, tracking=0.0)
+    vt2.draw(cv, fg2, 540, 960, sweep=0.55)
+    VideoType('NURTURE', px=200, tracking=-0.01).draw(cv, fg, 540, 1350, lock='text', scale=0.9)
+    u8 = K.to_srgb8(K.post(cv, 'neon', 0.5), 0.5)[700:1550]
+    img2 = cv2.resize(u8, (img.shape[1], int(u8.shape[0] * img.shape[1] / u8.shape[1])), interpolation=cv2.INTER_AREA)
+    path = os.path.join(out, 'type3d_video.png')
+    K._write_u8(path, np.concatenate([img, img2], 0))
+    return path
+
+
+def _plane_sheet(out):
+    """3D placement: draw_plane with perspective + DOF, a tilted kinetic block and a far defocused line."""
+    cv = K.background('neon', 1.2)
+    cam = K.Cam(pos=(0, 0, -1500), yaw=0, pitch=1, aperture=45, focus_dist=1500)
+    rot = (4, -16, 0)
+    ts = render('Could', 'flat', px=120, fill='IVORY', glow=0.5, glow_color=('MAGENTA', 2.0),
+                glow_radii=(0.05, 0.2), glow_weights=(0.7, 0.4))
+    you = render('YOU', 'extrude3d', px=240, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, fill_gain=1.2)
+    fc = render('Foster Carer?', 'deep_glow', px=104, glow_color=('ORANGE', 2.4), inner_glow_color=('AMBER', 1.2))
+    far = render('Nurture. Develop. Grow.', 'flat', px=90, fill='PEACH')
+    far.draw_plane(cv, cam, (-80, -900, 2200), rot=rot, opacity=0.8)
+    ts.draw_plane(cv, cam, (-150, -330, 250), rot=rot)
+    you.draw_plane(cv, cam, (0, -80, 0), rot=rot, sweep=0.4)
+    render('be a', 'flat', px=80, fill='IVORY').draw_plane(cv, cam, (-170, 150, -40), rot=rot)
+    fc.draw_plane(cv, cam, (0, 330, -80), rot=rot)
+    g = Glyphs('Support is part of the role.', 'ui', px=46)
+    g.rise(cv, 0.9, 540, 1500, tilt=(28, -16, 0), t0=0.0)
+    cv = K.post(cv, 'neon', 1.2)
+    path = os.path.join(out, 'type3d_3d.png')
+    K._write_u8(path, K.to_srgb8(cv, 1.2))
+    return path
+
+
+def _hook_sheet(out):
+    """Legibility over busy footage: slammed deep-glow / extruded hook words with a dark scrim, a multi-line
+    question block and a glass pill over full-bleed graded footage."""
+    import footage as F
+    tiles = []
+    specs = [('c12', 3.0, 'A SAFE HOME.', 'deep_glow', dict(px=128, scrim=0.8), 0.12),
+             ('c10', 15.0, 'EVERYDAY CARE.', 'extrude3d', dict(px=118, scrim=0.8), 1.2),
+             ('c08', 4.0, 'Could YOU\nbe a\nFoster Carer?', 'deep_glow',
+              dict(px=120, glow_color=('ORANGE', 2.4), inner_glow_color=('AMBER', 1.2), scrim=0.75,
+                   line_height=1.12), 1.2)]
+    for cid, ts_, text, sty, kw, t in specs:
+        cv = F.Clip(cid).get(ts_, K.W, K.H, look='neon')
+        cv = cv.copy()
+        g = Glyphs(text, sty, **kw)
+        if '\n' in text:
+            g.rise(cv, t, 540, 900, t0=0.0, stagger=0.03)
+        else:
+            g.slam(cv, t, 540, 900, t0=0.0)
+        render('Start your enquiry \u2192', 'glass_pill', px=44).draw(cv, 540, 1450)
+        cv = K.post(cv, 'neon', t)
+        tiles.append(cv2.resize(K.to_srgb8(cv, t), (540, 960), interpolation=cv2.INTER_AREA))
+    path = os.path.join(out, 'type3d_hook.png')
+    K._write_u8(path, np.concatenate(tiles, 1))
+    return path
+
+
+def _fineprint_sheet(out):
+    rows = [('ui', 'Rates may vary by region and are subject to change.', 28, 'Poppins-Regular'),
+            ('ui', 'Your supervising social worker', 34, 'Poppins-Medium'),
+            ('ui', 'Preparation & ongoing learning', 40, 'Poppins-SemiBold'),
+            ('ui', '0161 241 1332 \u00b7 organicfostering.co.uk', 46, 'Poppins-SemiBold')]
+    tiles = []
+    for look, sty_fill in (('neon', 'IVORY'), ('airy', 'INK')):
+        cv = K.background(look, 0.5)[400:760, :].copy()
+        y = 50
+        for _, text, px, fnt in rows:
+            ts = render(text, 'ui', px=px, font=fnt, fill=sty_fill)
+            ts.draw(cv, 60, y, anchor=(0, 0.5))
+            y += px * 2.0
+        u8 = K.to_srgb8(cv)
+        tiles.append(cv2.resize(u8[:, :760], None, fx=1.5, fy=1.5, interpolation=cv2.INTER_NEAREST))
+    path = os.path.join(out, 'type3d_fineprint.png')
+    K._write_u8(path, np.concatenate(tiles, 0))
     return path
 
 
@@ -2159,10 +2539,22 @@ def selftest():
     out = K.SELFTEST
     os.makedirs(out, exist_ok=True)
     paths = []
-    t0 = time.time()
     for look, name in (('neon', 'night'), ('amber', 'amber'), ('airy', 'ivory')):
-        paths.append(_selftest_styles(look, name, out))
-    print('styles %.1fs' % (time.time() - t0))
+        t0 = time.time()
+        paths.append(_styles_sheet(look, name, out))
+        print('  %s sheet %.1fs (builds included)' % (name, time.time() - t0))
+    for fn in (_sweep_strip, _kinetic_strip, _orbit_counter_sheet, _video_sheet, _plane_sheet, _hook_sheet,
+               _fineprint_sheet):
+        t0 = time.time()
+        paths.append(fn(out))
+        print('  %s %.1fs' % (fn.__name__, time.time() - t0))
+    # per-frame cost of cached draws
+    cv = K.new_canvas(K.C['NIGHT_1'])
+    ts = render('Could YOU', 'extrude3d', px=168)
+    t0 = time.perf_counter()
+    for i in range(10):
+        ts.draw(cv, 540, 900, scale=1.0 + 0.01 * i, sweep=0.1 * i)
+    print('  hero extrude3d draw + sweep at scale != 1: %.1f ms' % ((time.perf_counter() - t0) * 100))
     return paths
 
 

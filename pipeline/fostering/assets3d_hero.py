@@ -8,8 +8,11 @@ rim back-right + ORANGE kicker back-left over a dark plum world with two coloure
 
 CLI
 ---
-    python3 assets3d_hero.py <name> [<name> ...] [--preview] [--variant night|day] [--mode yaw|anim|spin|sway|glow]
-                             [--frames 0,30,59] [--samples N]
+    python3 assets3d_hero.py <name> [<name> ...] [--preview] [--variant night|day] [--mode M] [--frames 0,30,59]
+                             [--samples N]
+        M is a builder mode key: logo_mark3d yaw|anim, question yaw|spin, pound_glyph yaw, sprout grow|sway,
+        leaf spin, seed static|glow, puzzle_pair yaw|anim, blocks yaw (all modes of one asset share a camera,
+        so re-render them together when the geometry/animation changes).
     python3 assets3d_hero.py all [--preview]      # every asset / variant / mode (priority order)
     python3 assets3d_hero.py sheet                # contact sheets of the finals -> out/selftest/assets3d_hero_contact_*.png
     python3 assets3d_hero.py previewsheet         # contact sheet of the --preview renders
@@ -2358,9 +2361,10 @@ def selftest():
     # 2) shape sheet
     tiles = []
 
-    def show(sd, title, lo=-1.0, hi=1.0, extra=None, n=260):
+    def show(sd, title, cx=0.0, cy=0.0, half=1.0, extra=None, n=260):
+        lo, hi = -half, half
         xs = np.linspace(lo, hi, n)
-        X, Y = np.meshgrid(xs, xs[::-1])
+        X, Y = np.meshgrid(xs + cx, xs[::-1] + cy)
         d = sd(X, Y, order=1)
         img = np.zeros((n, n, 3), np.uint8)
         img[:] = (40, 12, 30)
@@ -2372,17 +2376,17 @@ def selftest():
             img[extra(X, Y)] = (74, 224, 168)
         cv2.putText(img, title, (6, 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (240, 230, 240), 1, cv2.LINE_AA)
         tiles.append(img)
-    show(part_sdf([p for p in L['parts'] if p['name'] == 'ring_o'][0], L), 'logo ring_o', -1.25, 0.35)
-    show(part_sdf([p for p in L['parts'] if p['name'] == 'girl'][0], L), 'logo girl', -0.85, 0.05)
+    show(part_sdf([p for p in L['parts'] if p['name'] == 'ring_o'][0], L), 'logo ring_o', -0.43, 0.0, 0.82)
+    show(part_sdf([p for p in L['parts'] if p['name'] == 'girl'][0], L), 'logo girl', -0.42, -0.2, 0.42)
     lm, base, _, LP = leaf_local_mask('leaf_top', 400)
     px = 2.0 / LP
-    show(SDF2.from_mask(lm, px, origin=(-base[0] * px, base[1] * px), up=1), 'leaf (local frame)', -1.2, 2.2)
+    show(SDF2.from_mask(lm, px, origin=(-base[0] * px, base[1] * px), up=1), 'leaf (local frame)', 0.0, 1.0, 1.2)
     sdm, _ = puzzle_sdf({'r': 'tab', 't': 'tab', 'b': 'blank', 'l': 'flat'})
-    show(sdm, 'jigsaw magenta', -0.9, 0.9)
+    show(sdm, 'jigsaw magenta', 0.0, 0.0, 0.9)
     c = Canvas2D((-0.4, -0.4, 0.4, 0.4), 0.002)
     c.poly(star_pts(0.31, 0.15))
     c.round(r_open=0.035)
-    show(c.sdf(), 'star symbol', -0.45, 0.45)
+    show(c.sdf(), 'star symbol', 0.0, 0.0, 0.45)
     cv2.imwrite(os.path.join(SELFTEST, 'assets3d_hero_shapes.png'), np.concatenate(tiles, 1))
     # 3) tiny renders into a temp dir
     global OUT3D, PREVIEW3D
