@@ -10,12 +10,13 @@ SHOT LIST (time s | beat | shot: content | camera | transition | SFX)
                       the ivory surface (contact shadow + glow on the ground); "A small / beginning" (ink_soft 150 px,
                       crisp 3D ink with soft long shadow) rises per glyph from frame 0 | low close camera (dist 860,
                       pitch 12), drift | - | shimmer, reverse_swell -> b1
- 0.652        b1      IMPACT: squash, 4 ripple rings expand on the ground plane (perspective), flash; a circular iris
-                      (glass rim MAGENTA->ORANGE) grows from the seed (r 0 -> 335 px) | shake | flash |
-                      seed_plip + impact_soft + ripple + swish
+ 0.652        b1      IMPACT: squash, 4 ripple rings expand on the ground plane (perspective), flash; a big circular
+                      iris (thin glowing PEACH->MAGENTA ring) springs open from the seed to ~820 px (overshoot ~950)
+                      | shake | flash | seed_plip + impact_soft + ripple + swish + whoosh
  0.652-1.957  b1-b3   IRIS BURST MONTAGE: 6 flashes x a triplet 8th (0.2174 s): c01 9.4 s, c08 1.0, c12 11.4, c15 4.4,
-                      c10 19.7, c17 8.9 (faces centred); punch-zoom 1.10 -> 1.0 + flash frame per cut, rim kick |
-                      static | cuts inside the iris | swish_small + ui_tick per cut
+                      c10 19.7, c17 8.9 (faces centred); punch-in 1.22 -> 1.0 + flash frame per cut, rim kick; the last
+                      two flashes burst wider (+7 %, +9 %) before the iris snaps closed | static | cuts inside the
+                      iris | swish_small + ui_tick per cut
  1.957        b3      iris collapses back into the seed (flash) | | iris close | reverse_swell, impact_soft, sparkle
  1.957-5.217  b3-b8   GROWTH: the 3D sprout grows from the seed point (sprout/day anim -> day_sway), copy completes:
                       "can change the / direction of a life." (96 px) on b4 / b5; leaves drift | crane up + pull back
@@ -45,19 +46,24 @@ SHOT LIST (time s | beat | shot: content | camera | transition | SFX)
 13.696-15.000 b21-b23 GROW footage: full-frame c16 (woman + child, foreground leaves), scrim, pills | Ken Burns |
                       IRIS CLOSE into the heart (15.0) | leaf_rustle, glass_tap
 15.000-20.217 b23-b31 KINDS OF CARE: glossy 3D heart pops out of the iris; headline "Different children / need different
-                      / kinds of care" (96 px) rises on b23.5; tilted 3D orbit ring (tilt 38 deg, roll +20 deg; reel 2
-                      uses 48 / -12) of six glass IMAGE tags (site photos): Short-term · Long-term · Emergency ·
-                      Respite · Siblings · Teenagers, popping on 8ths from b24, depth sorted, back ones smaller /
-                      blurred | camera orbits yaw -9 -> +7 deg | - | pop + impact_soft + sparkle, 6 tag pops, whoosh_by
+                      / kinds of care" (96 px) rises on b23.5; a steep, near face-on orbit "dial" (tilt 66, roll +6
+                      deg; reel 2 uses a flatter 48 / -12 ring) of six glass IMAGE tags (site photos, 92 px thumbnails
+                      in a white ring, 40 px labels): Short-term · Long-term · Emergency · Respite · Siblings ·
+                      Teenagers pop on 8ths from b24; front tag big, sides ~0.85, back ones 0.5 + blurred / dimmed;
+                      from b27 the dial turns one tag per beat (0.3 s, tags squash mid-turn so none collide) |
+                      camera orbits yaw -6 -> +4.5 deg | - | pop + impact_soft + sparkle, 6 tag pops, swish + tap per turn
 20.217        b31     the ring flies apart, the heart SPIN-MORPHS into the 3D shield | | morph | whoosh_fast, glass_tap
-20.217-22.174 b31-b34 TRUST: 3D shield + glass check pills "Independent Fostering Agency" (b31.5) · "Cultural Matching
+20.217-22.174 b31-34  TRUST: 3D shield + glass check pills "Independent Fostering Agency" (b31.5) · "Cultural Matching
                       Specialists" (b32) · "Rated Good by Ofsted" (b32.5) | drift | - | check_ding x3
-22.174-26.000 b34-    END: trust exits, the sprout pops up; b35 its two top leaves fly into the logo's inner leaves
-                      (land on b36) while logo_full.png assembles (mark pop, wordmark wipe, F-leaf pop) and a MAGENTA->
-                      ORANGE sunset blooms up from the bottom; tagline "Nurture • Develop • Grow" types on; b36.5 CTA glass
-                      pill "Start your enquiry →" + "0161 241 1332 · organicfostering.co.uk" (white on magenta); fully
-                      settled by ~24.4 s, hold to 26.0 (1.6 s) | slow push | - | whoosh, leaf_rustle, swishes, riser +
-                      logo_sting on b36, typing, pop + glass_tap on b36.5
+22.174-26.000 b34-    END: the sprout pops up; b34.5 its two top leaves fly into the logo's inner leaves (land b35.5)
+                      while logo_full.png (940 px wide) assembles (mark spring, wordmark wipe, F-leaf) and a MAGENTA->
+                      ORANGE sunset blooms up from the bottom; tagline "Nurture • Develop • Grow" (60 px) types on;
+                      b36 brand CTA pill "Start your enquiry →" (MAGENTA->ORANGE gradient, white Poppins SemiBold
+                      46 px, glow, white rim) pops, the hand cursor glides in and CLICKS on b36.5 (press + ripple),
+                      light sweep; "0161 241 1332 · organicfostering.co.uk" (38 px, white + shadow on the sunset).
+                      Compact stack y ~540-1315; drifting 3D leaves around it; settled by ~24.4 s, light sweep across
+                      the logo, hold to 26.0 | slow push | - | whoosh, leaf_rustle, swishes, riser + logo_sting on
+                      b35.5, typing, pop on b36, ui_click + sparkle on b36.5
 BED: outdoor_birds at -31 dB (felt, not heard). Mix: audio.build_reel('reel3') -> workspace3/audio/reel3_sfx.wav
 (+ _stem.wav), -18 LUFS, <= -1.5 dBTP.
 
@@ -272,6 +278,7 @@ SPROUT_S = 0.70                             # sprout sprite scale at 1 px / worl
 Y_L1, Y_L2, Y_L3, Y_L4 = 285, 447, 612, 714
 
 # hook montage: (clip, source in-point, square-crop centre, zoom)
+IRIS_R = 410.0                              # hook iris radius at rest (820 px across)
 MONTAGE = [('c01', 9.40, (0.50, 0.45), 1.00), ('c08', 1.00, (0.50, 0.27), 1.00),
            ('c12', 11.40, (0.48, 0.36), 1.00), ('c15', 4.40, (0.50, 0.42), 1.00),
            ('c10', 19.70, (0.55, 0.42), 1.05), ('c17', 8.90, (0.42, 0.33), 1.25)]
@@ -305,25 +312,24 @@ def _hook_assets():
     hi = np.pad(hi, ((pad, pad), (pad, pad), (0, 0)))
     d['ripple'] = (r + hi * 0.8).astype(np.float32)
     d['ripple_r'] = 200.0
-    d['iris_rim'] = _iris_rim(340)
+    d['iris_rim'] = _iris_rim(IRIS_R)
     d['trail'] = _trail()
     return d
 
 
 def _iris_rim(r):
-    """Glassy iris rim: white inner edge + MAGENTA->ORANGE gradient band with a soft glow (premultiplied)."""
-    band = K.ring(r + 7, 10.0, (1, 1, 1))
+    """Thin glowing iris ring: PEACH -> HOT_PINK -> MAGENTA band (4 px) + fine white inner line + soft glow."""
+    band = K.ring(r + 3, 4.5, (1, 1, 1))
     n = band.shape[0]
-    g = K.gradient(n, n, [C['MAGENTA'], C['HOT_PINK'], C['ORANGE']], angle=35)
+    g = K.gradient(n, n, [C['PEACH'], C['HOT_PINK'], C['MAGENTA']], angle=35)
     spr = np.zeros_like(band)
-    spr[..., :3] = band[..., 3:4] * g * 1.15
+    spr[..., :3] = band[..., 3:4] * g * 1.3
     spr[..., 3] = band[..., 3]
-    inner = K.ring(r, 2.2, C['WHITE'] * 1.5)
+    inner = K.ring(r, 1.4, C['WHITE'] * 1.6)
     p = (n - inner.shape[0]) // 2
     inner = np.pad(inner, ((p, n - inner.shape[0] - p), (p, n - inner.shape[0] - p), (0, 0)))
     spr = spr * (1 - inner[..., 3:4]) + inner
-    out = K.glow(spr, K.mix(C['HOT_PINK'], C['ORANGE'], 0.4), (6, 18, 44), 0.55)
-    return out
+    return K.glow(spr, K.mix(C['HOT_PINK'], C['PEACH'], 0.35), (5, 14, 36), 0.85)
 
 
 def _trail():
@@ -398,44 +404,55 @@ def draw_ground_fx(cv, cam, t):
         K.draw_plane(cv, A['ripple'], cam, (0.0, GY, 0.0), w, rot=(90.0, 0.0, 0.0), opacity=0.9 * op)
 
 
+def iris_radius(t):
+    """Hook iris radius: springs open on the impact (overshoot), kicks on each cut, the last two flashes burst wider,
+    then it snaps closed into the seed on b3."""
+    if t < T_IMPACT or t >= T_GROW:
+        return 0.0
+    i = min(5, int((t - T_IMPACT) / FLASH))
+    tc = T_IMPACT + i * FLASH
+    grow = K.spring(t - T_IMPACT, freq=3.0, damping=0.5)
+    burst = 1.0 + 0.07 * K.ramp(t, T_IMPACT + 4 * FLASH, T_IMPACT + 4 * FLASH + 0.12, 'out_back') \
+        + 0.09 * K.ramp(t, T_IMPACT + 5 * FLASH, T_IMPACT + 5 * FLASH + 0.10, 'out_back')
+    kick = 1.0 + (0.035 * K.impulse(t, tc, decay=14.0) if i > 0 else 0.0)
+    cl = K.ramp(t, T_GROW - 0.15, T_GROW, 'in_expo')
+    return IRIS_R * grow * burst * kick * (1 - cl)
+
+
 def draw_iris(cv, cam, t):
-    """Burst montage inside a circular iris growing from the seed (6 flashes of a triplet 8th)."""
+    """Burst montage inside a big circular iris springing open from the seed (6 flashes of a triplet 8th)."""
     if t < T_IMPACT or t >= T_GROW:
         return
     A = _hook_assets()
     xy, _ = cam.project(np.array([[0.0, GY - 46.0, 0.0]]))
-    cx, cy = float(xy[0][0]), float(xy[0][1]) - 70.0 * K.ramp(t, T_IMPACT, T_IMPACT + 0.3, 'out_expo') * (
-        1 - K.ramp(t, T_GROW - 0.16, T_GROW, 'in_expo'))
-    i = min(5, int((t - T_IMPACT) / FLASH))
-    tc = T_IMPACT + i * FLASH
-    op = K.ramp(t, T_IMPACT, T_IMPACT + 0.3, 'out_expo')
-    cl = K.ramp(t, T_GROW - 0.16, T_GROW, 'in_expo')
-    kick = 0.05 * K.impulse(t, tc, decay=14.0) if i > 0 else 0.0
-    r = 335.0 * op * (1 - cl) * (1 + kick)
+    lift = ease('out_expo')(K.ramp(t, T_IMPACT, T_IMPACT + 0.25, 'linear')) * (1 - K.ramp(t, T_GROW - 0.15, T_GROW,
+                                                                                           'in_expo'))
+    cx, cy = float(xy[0][0]), float(xy[0][1]) - 70.0 * lift
+    r = iris_radius(t)
     if r < 2:
         return
+    i = min(5, int((t - T_IMPACT) / FLASH))
+    tc = T_IMPACT + i * FLASH
     cid, src0, ctr, zm = MONTAGE[i]
     clip = F.Clip(cid)
     D = int(math.ceil(2 * r + 6))
-    zp = zm * (1.0 + 0.10 * (1 - K.ramp(t, tc, tc + FLASH, 'out_cubic')))
+    zp = zm * (1.0 + 0.22 * (1 - K.ramp(t, tc, tc + FLASH, 'out_cubic')))       # punch-in per flash
     img = clip.get(src0 + (t - tc) * 0.6, D, D, center=ctr, zoom=zp, look='airy')
     fl = K.impulse(t, tc, decay=26.0, attack=0.01)
     if fl > 0.01:
-        img[..., :3] = img[..., :3] * (1 + 1.6 * fl) + 0.35 * fl
+        img[..., :3] = img[..., :3] * (1 + 1.4 * fl) + 0.3 * fl
     a, x0, y0 = X.circle_alpha(cx, cy, r, soft=1.2)
     if a is None:
         return
     ox, oy = int(round(cx - D / 2)), int(round(cy - D / 2))
-    # align the square crop to the alpha box
     h, w = a.shape
     full = np.zeros((h, w, 4), np.float32)
     sx0, sy0 = x0 - ox, y0 - oy
     sx1, sy1 = min(D, sx0 + w), min(D, sy0 + h)
     full[0:sy1 - sy0, 0:sx1 - sx0] = img[sy0:sy1, sx0:sx1]
-    # soft drop shadow under the iris disc
-    K.draw(cv, _env()['shadow'], cx, cy + r * 0.9, scale=(r / 140.0, r / 700.0), opacity=0.25)
+    K.draw(cv, _env()['shadow'], cx, cy + r * 0.92, scale=(r / 140.0, r / 700.0), opacity=0.25)
     X.composite_region(cv, full, x0, y0, alpha=a)
-    K.draw(cv, A['iris_rim'], cx, cy, scale=r / 340.0, opacity=min(1.0, op * 1.2))
+    K.draw(cv, A['iris_rim'], cx, cy, scale=r / IRIS_R, opacity=min(1.0, K.ramp(t, T_IMPACT, T_IMPACT + 0.08) * 1.1))
 
 
 def draw_sprout(cv, cam, t):
@@ -547,7 +564,7 @@ def _chap():
         d['pill%d' % i] = T.render('0%d / 03' % i, 'glass_pill_light', px=44)
     d['sub_n'] = T.render('A safe home & everyday care', 'glass_pill_light', px=44)
     d['sub_d'] = T.render('Matching that sees the whole child', 'ui_ink', px=50)
-    d['sub_g'] = T.render('Steady care and a sense of belonging', 'glass_pill_light', px=36)
+    d['sub_g'] = T.render('Steady care and a sense of belonging', 'glass_pill_light', px=38, pill_pad=(0.5, 0.62))
     d['chips'] = ['Culture', 'Faith', 'Language', 'Identity']
     d['puzzle'] = S3.get('puzzle_pair', 'day', mode='anim')
     d['label'] = ui.tag('Cultural Matching Specialists', look='airy', size=42, h=104, icon_name='puzzle',
@@ -859,6 +876,10 @@ def scene_grow(t):
 # TRUST  T_TRUST..T_END  : the ring flies apart, the heart spin-morphs into a 3D shield, three check pills stack in
 HEART_W = (0.0, 270.0, 0.0)             # world centre of the heart / ring
 TAG_T0 = B(24)                          # first tag pops; then one per 8th note
+RING_TILT, RING_ROLL = 66.0, 6.0        # steep, near face-on ring, rolled +6 deg (reel 2: 48 deg / -12 deg)
+RING_R = (255.0, 340.0)                 # (verified: no front-tag overlaps, safe x, clear of headline / like column)
+TAG_SIZE, TAG_H = 40, 108               # front tag: 92 px thumbnail, 40 px label
+RING_STEPS = (B(27), B(28), B(29), B(30))   # the dial turns one tag (60 deg) per beat, 0.30 s, then rests
 KH_Y = (330.0, 442.0, 554.0)            # headline lines
 SHIELD_XY = (540.0, 640.0)
 TRUST_Y = (1004.0, 1136.0, 1268.0)
@@ -876,8 +897,8 @@ def _kinds():
     d['h3'] = T.Glyphs('kinds of care', 'ink_soft', px=96)
     tags = []
     for lab, nm in SITE:
-        th = F.still(nm, 150, 150, look='airy', center=(0.5, 0.4))
-        tags.append(ui.tag(lab, th, look='airy', size=34, h=84, thumb_key=nm))
+        th = F.still(nm, 200, 200, look='airy', center=(0.5, 0.4))
+        tags.append(ui.tag(lab, th, look='airy', size=TAG_SIZE, h=TAG_H, thumb_key=nm))   # thumb = TAG_H - 16
     d['tags'] = tags
     d['heart'] = S3.get('heart', 'day')
     d['shield'] = S3.get('shield_check', 'day')
@@ -889,10 +910,10 @@ def _kinds():
 
 def kinds_cam(t):
     u = ease('easy_ease')(K.clamp((t - T_KIND + 0.3) / (T_END - T_KIND + 0.3)))
-    yaw = K.lerp(-15.0, 11.0, u) + K.wiggle(t, 0.2, 0.6, seed=31)
+    yaw = K.lerp(-6.0, 4.5, u) + K.wiggle(t, 0.2, 0.6, seed=31)
     pitch = K.lerp(11.0, 4.0, u) + K.wiggle(t, 0.22, 0.4, seed=32)
     dist = K.lerp(1640.0, 1420.0, u)
-    tgt = (HEART_W[0], HEART_W[1] + 60.0, HEART_W[2])           # ring centred just above mid-frame
+    tgt = (HEART_W[0], HEART_W[1] - 80.0, HEART_W[2])           # heart / ring sit a little below mid-frame
     return K.Cam.orbit(tgt, dist, yaw=yaw, pitch=pitch, aperture=22, focus_dist=dist - 200.0)
 
 
@@ -906,6 +927,19 @@ _K_ORBS = [('orb_peach', (-600.0, -1050.0, 2500.0), 170), ('orb_mag', (640.0, 90
 @functools.lru_cache(maxsize=1)
 def _k_leaf_world():
     return leaves_world(_K_LEAVES, kinds_cam(T_KIND))
+
+
+def ring_dial(t):
+    """Orbit 'dial': rests with Short-term front-centre while the tags pop in, then turns one tag per beat
+    (RING_STEPS, 0.30 s inout_cubic) through Long-term, Emergency, Respite, Siblings; tags squash mid-turn so the
+    two front tags passing each other never collide (30 %). Returns (phase in turns, size factor)."""
+    phase, squash = 0.5, 1.0
+    for ts in RING_STEPS:
+        u = K.ramp(t, ts, ts + 0.30, 'linear')
+        phase -= ease('inout_cubic')(u) / 6.0
+        squash -= 0.36 * math.sin(math.pi * u)
+    phase += 0.012 * math.sin((t - T_KIND) * 1.3)              # a breath of sway at rest
+    return phase, squash
 
 
 def heart_pop(t):
@@ -951,10 +985,11 @@ def scene_kinds(t):
             K.draw(c, simg, gx, gy + 6 * math.sin(t * 1.4), scale=0.72 * (0.6 + 0.4 * mo), opacity=mo)
     if t < T_TRUST + 0.1:
         enter = [K.ramp(t, TAG_T0 + i * BEAT / 2, TAG_T0 + i * BEAT / 2 + 0.35, 'linear') for i in range(6)]
-        phase = 0.06 + (t - T_KIND) * 0.058 + 0.10 * (1 - math.exp(-2.5 * max(0.0, t - T_KIND))) + 0.35 * ring_out ** 2
-        rad = (342.0 * (1 + 0.9 * ring_out), 330.0 * (1 + 0.9 * ring_out))
-        image_ring(cv, cam, A['tags'], phase, HEART_W, rad, 38.0, 20.0, mid=hero, enter=enter,
-                   opacity=1 - ring_out, wave=0.0)
+        phase, squash = ring_dial(t)
+        phase += 0.35 * ring_out ** 2
+        rad = (RING_R[0] * (1 + 0.9 * ring_out), RING_R[1] * (1 + 0.9 * ring_out))
+        image_ring(cv, cam, A['tags'], phase, HEART_W, rad, RING_TILT, RING_ROLL, mid=hero, enter=enter,
+                   opacity=1 - ring_out, wave=0.0, back_scale=0.50, depth_pow=1.3, size=squash)
     else:
         hero(cv)
     # headline (rises in on the off-beat, lifts out before the morph)
@@ -989,7 +1024,7 @@ def _ring_points(angles, radius, tilt, roll):
 
 
 def image_ring(cv, cam, panels, phase, center, radius, tilt, roll, mid=None, enter=None, opacity=1.0, wave=48.0,
-               back_scale=0.80, back_dim=0.68, back_blur=3.0):
+               back_scale=0.80, back_dim=0.68, back_blur=3.0, depth_pow=1.0, size=1.0):
     """Orbit ring of glass image tags (like ui.orbit_ring, which has no per-item offsets): neighbouring tags are
     alternately raised / lowered by `wave` world units, so two tags passing the front side by side never overlap.
     Depth sorted; back half smaller, dimmer, blurred (+ camera DOF); thin ring line; mid() drawn between halves."""
@@ -1015,7 +1050,7 @@ def image_ring(cv, cam, panels, phase, center, radius, tilt, roll, mid=None, ent
         if e <= 0:
             continue
         pnl = panels[idx]
-        sc = (1 + (back_scale - 1) * back) * (0.6 + 0.4 * K.EASE['out_back'](min(e, 1.0)))
+        sc = size * (back_scale + (1 - back_scale) * (1 - back) ** depth_pow) * (0.6 + 0.4 * K.EASE['out_back'](min(e, 1.0)))
         op = opacity * (1 + (back_dim - 1) * back) * min(1.0, e * 2)
         pnl.plane(cv, cam, Pw[idx], pnl.w * sc, rot, opacity=op, dof=True, blur=back_blur * back ** 1.5,
                   shadow=0.7 * (1 - back * 0.6))
@@ -1037,22 +1072,24 @@ def iris_to_heart(cv, t, inner):
     a, x0, y0 = X.circle_alpha(cx, cy, r, soft=1.5)
     if a is not None:
         X.composite_region(cv, inner[y0:y0 + a.shape[0], x0:x0 + a.shape[1]], x0, y0, alpha=a, opacity=fade)
-    K.draw(cv, _hook_assets()['iris_rim'], cx, cy, scale=r / 340.0, opacity=K.ramp(u, 0.0, 0.3) * fade)
+    K.draw(cv, _hook_assets()['iris_rim'], cx, cy, scale=r / IRIS_R, opacity=K.ramp(u, 0.0, 0.3) * fade)
     return cv
 
 
 # ---------------------------------------------------------------------------------------------- END
 # T_END: trust exits, the sprout pops up; B35 two top leaves fly into the logo's inner leaves (land B36), the logo
 # assembles on ivory while a MAGENTA->ORANGE sunset blooms up from the bottom; tagline types on; B37 CTA pill.
-LOGO_W = 920.0
-LOGO_Y = 730.0                          # centre of the lockup (tagline row excluded)
-TAGLINE_Y = 944.0
-CTA_Y, CONTACT_Y = 1404.0, 1532.0
-E_SPROUT_Y = 1560.0
-SUN_TOP0, SUN_TOP1 = 1960.0, 1050.0     # sunset horizon (alpha 0 line) start / end
-E_FLY0, E_LAND = B(35), B(36)           # 22.826 -> 23.478
-E_TYPE0 = B(36) + 0.10
-E_CTA = B(36.5)                         # 23.804
+LOGO_W = 940.0                          # lockup width (tagline row excluded; the tagline is typed big)
+LOGO_Y = 670.0                          # compact stack centred on ~y 915: logo 540-800, tagline, CTA, contact
+TAGLINE_Y = 896.0
+CTA_Y, CONTACT_Y = 1100.0, 1300.0
+CTA_H, CTA_SIZE = 124, 46
+E_SPROUT_Y = 1430.0
+SUN_TOP0, SUN_TOP1 = 1960.0, 1060.0     # sunset horizon (alpha 0 line) start / end: CTA rides the bright horizon
+E_FLY0, E_LAND = B(34.5), B(35.5)       # 22.500 -> 23.152 leaves fly into the logo
+E_TYPE0 = B(35.5) + 0.06                # tagline types 23.21 -> 23.81
+E_CTA = B(36)                           # 23.478 CTA pops
+E_CLICK = B(36.5)                       # 23.804 cursor click / press ripple
 
 
 @functools.lru_cache(maxsize=1)
@@ -1098,34 +1135,38 @@ def _logo():
         ys, xs_ = np.nonzero(comps[kname])
         d[kname + '_c'] = (float(xs_.mean()) * sc, float(ys.mean()) * sc)
         d[kname + '_h'] = float(ys.max() - ys.min()) * sc
-    d['tagline'] = T.Glyphs('Nurture • Develop • Grow', 'flat', px=58, font='Nunito-ExtraBold',
+    d['tagline'] = T.Glyphs('Nurture • Develop • Grow', 'flat', px=60, font='Nunito-ExtraBold',
                             fill=('MAGENTA', 'ORANGE'), fill_angle=0, shadow=0.12, shadow_color='#5B2E52',
                             shadow_offset=(0.0, 0.04), shadow_blur=0.05)
-    d['cta'] = T.render('Start your enquiry →', 'glass_pill_light', px=50, fill='INK', pill_tint='WHITE',
-                        pill_tint_amount=0.2, pill_shadow=0.3)
     d['contact'] = T.render('0161 241 1332  ·  organicfostering.co.uk', 'ui', px=38, fill='WHITE',
-                            shadow=0.45, shadow_color='#5B174F', shadow_offset=(0.0, 0.05), shadow_blur=0.12)
+                            shadow=0.55, shadow_color='#4A0E3E', shadow_offset=(0.0, 0.05), shadow_blur=0.10)
     d['sunset'] = _sunset()
+    d['bl_pink'] = K.radial(512, K.mix(C['HOT_PINK'], C['ORANGE'], 0.25), power=1.6)
+    d['bl_plum'] = K.radial(512, K.mix(C['PLUM'], C['MAGENTA'], 0.3), power=1.4)
+    rw, rh = ui.button_size('Start your enquiry', CTA_H, CTA_SIZE)
+    ring = K.rrect_alpha(rw + 10, rh + 10, (rh + 10) / 2, 12) - np.pad(K.rrect_alpha(rw, rh, rh / 2, 0), 17)
+    ring = np.clip(ring, 0, 1)
+    d['cta_ring'] = np.dstack([ring[..., None] * np.ones(3, np.float32) * 1.05, ring * 0.9]).astype(np.float32)
     return d
 
 
 def _sunset():
     """Sunset bloom sprite (1080 x 1100, drawn with its top row on the horizon line): transparent at the horizon,
-    AMBER -> ORANGE -> HOT_PINK -> MAGENTA -> PLUM going down (soft 360 px alpha ramp, slight 35 deg warmth)."""
+    AMBER -> ORANGE -> HOT_PINK -> MAGENTA -> PLUM going down (260 px alpha ramp, slight 35 deg warmth)."""
     import cv2
     w, h = 270, 275
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     y = yy * 4.0                        # canvas px below the horizon
     x = xx / w
-    stops = [(0.0, C['AMBER'] * 1.1), (170.0, C['ORANGE']), (400.0, C['HOT_PINK']), (620.0, C['MAGENTA']),
-             (1100.0, K.mix(C['MAGENTA'], C['PLUM'], 0.6))]
+    stops = [(0.0, C['AMBER'] * 1.1), (90.0, C['ORANGE']), (200.0, C['HOT_PINK']), (330.0, C['MAGENTA']),
+             (1100.0, K.mix(C['MAGENTA'], C['PLUM'], 0.55))]
     col = np.zeros((h, w, 3), np.float32)
     for (p0, c0), (p1, c1) in zip(stops[:-1], stops[1:]):
         m = (y >= p0) & (y <= p1)
         f = np.clip((y - p0) / (p1 - p0), 0, 1)[..., None]
         col = np.where(m[..., None], c0 * (1 - f) + c1 * f, col)
     col *= (1 + 0.10 * (x - 0.5))[..., None] * np.array([1.0, 1.0, 1.0], np.float32)
-    a = np.clip(y / 380.0, 0, 1)
+    a = np.clip(y / 260.0, 0, 1)
     a = a * a * (3 - 2 * a)
     spr = np.zeros((h, w, 4), np.float32)
     spr[..., :3] = col * a[..., None]
@@ -1144,27 +1185,65 @@ def logo_xy(cx_logo, cy_logo, p):
     return cx_logo - W_ / 2 + p[0], cy_logo - H_ / 2 + p[1]
 
 
+_END_LEAVES = [  # (x, y, on-screen width, blur px, leaf frame, rot, drift phase): depth around the logo stack
+    (968, 448, 150, 1.5, 16, 35, 0.0), (104, 930, 128, 2.5, 0, -40, 1.3), (972, 1010, 104, 3.5, 40, 120, 2.1),
+    (86, 1530, 330, 11.0, 20, -25, 0.7), (1010, 1690, 260, 9.0, 4, 150, 2.6)]
+
+
+def end_leaves(cv, t, op=1.0):
+    E = _env()
+    for k, (x, y, w, bl, fr, rot, ph) in enumerate(_END_LEAVES):
+        spr = E['leaf'].at_time(fr / 30.0 + (t - T_END) * 0.35, fps=30)
+        K.draw(cv, spr, x + 14 * math.sin(t * 0.7 + ph), y + 18 * math.sin(t * 0.55 + 2 * ph), scale=w / 420.0,
+               rot=rot + 10 * math.sin(t * 0.8 + ph), blur=bl, opacity=op)
+
+
+def cta_sprite(t):
+    """Brand CTA: MAGENTA -> ORANGE gradient pill, white Poppins SemiBold 46 px + arrow, soft glow; hover lifts once
+    it lands, cursor press + ripple on E_CLICK."""
+    hov = K.ramp(t, E_CTA + 0.15, E_CTA + 0.4, 'out_cubic')
+    press = K.impulse(t, E_CLICK, decay=9.0, attack=0.04)
+    rip = (t - E_CLICK) if t >= E_CLICK else None
+    return ui.button('Start your enquiry', hover=hov, press=press, ripple=rip, ripple_at=(0.64, 0.56), look='airy',
+                     h=CTA_H, size=CTA_SIZE)
+
+
+def cta_sweep(cv, spr, x, y, scale, u):
+    """Diagonal white light band across the CTA (emissive, masked by the pill's alpha)."""
+    a = spr[..., 3]
+    h, w = a.shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    d = xx + 0.5 * yy - K.lerp(-150.0, w + 150.0, u)
+    band = np.exp(-(d / 34.0) ** 2) * np.clip(a, 0, 1) * 0.55
+    sw = np.zeros((h, w, 4), np.float32)
+    sw[..., :3] = band[..., None]
+    K.draw(cv, sw, x, y, scale=scale)
+
+
 def scene_end(t):
     L = _logo()
     cam = end_cam(t)
-    sun = ease('inout_cubic')(K.ramp(t, E_FLY0, E_FLY0 + 1.1, 'linear'))
+    sun = ease('inout_cubic')(K.ramp(t, E_FLY0, E_FLY0 + 1.0, 'linear'))
     cv = airy_bg(t, cam, rays=1.0 - 0.5 * sun)
     sc = K.Scene(cam)
     add_orbs(sc, t, _K_ORBS[:3])
-    add_leaves(sc, t, [w for w in _k_leaf_world() if w[0][2] > 1000], t_ref=T_KIND)
     sc.particles(_env()['motes'], t)
     sc.render(cv)
-    # sunset rises from the bottom (horizon edge from y 1920 -> ~1180)
+    # sunset rises from the bottom; its horizon settles just under the CTA
     if sun > 0:
         top = K.lerp(SUN_TOP0, SUN_TOP1, sun)
         K.draw(cv, L['sunset'], 540, top, anchor=(0.5, 0.0), opacity=1.0)
-        # the low sun: a soft white-amber glow sitting on the horizon + warm haze above it
-        K.draw(cv, _hook_assets()['halo'], 540 + 60 * math.sin(t * 0.3), top + 300, scale=(3.6, 1.5),
-               opacity=0.32 * sun, mode='add')
-        K.draw(cv, _hook_assets()['halo2'], 540, top + 160, scale=(8.0, 1.6), opacity=0.16 * sun, mode='add')
-    # sprout pops up, its top leaves fly into the logo, then it fades back into the sunset
+        # texture: a hot-pink bloom low in the middle, plum falloff in the corners, the low sun on the horizon
+        K.draw(cv, L['bl_pink'], 540 + 80 * math.sin(t * 0.4), top + 560, scale=(3.4, 1.6), opacity=0.45 * sun)
+        K.draw(cv, L['bl_plum'], -40, top + 820, scale=(2.6, 2.0), opacity=0.55 * sun)
+        K.draw(cv, L['bl_plum'], 1120, top + 760, scale=(2.6, 2.0), opacity=0.50 * sun)
+        K.draw(cv, _hook_assets()['halo'], 540 + 50 * math.sin(t * 0.3), top + 70, scale=(4.6, 1.3),
+               opacity=0.34 * sun, mode='add')
+        K.draw(cv, _hook_assets()['halo2'], 540, top + 20, scale=(8.0, 1.6), opacity=0.14 * sun, mode='add')
+    end_leaves(cv, t, K.ramp(t, T_END - 0.2, T_END + 0.4))
+    # sprout pops up, its two top leaves fly into the logo, then it melts into the sunset
     sp = _hook_assets()['sway']
-    grow = K.spring(t - (T_END - 0.05), freq=2.0, damping=0.5) if t >= T_END - 0.05 else 0.0
+    grow = K.spring(t - (T_END - 0.08), freq=2.4, damping=0.5) if t >= T_END - 0.08 else 0.0
     fade = K.ramp(t, E_FLY0 + 0.05, E_LAND - 0.05, 'inout_sine')
     ss = 0.62
     if grow > 0 and fade < 1:
@@ -1175,13 +1254,13 @@ def scene_end(t):
         K.draw(cv, _env()['shadow'], 540, E_SPROUT_Y + 4, scale=(0.75 * grow, 0.12), opacity=0.22 * (1 - fade))
         K.draw(cv, img, 540, E_SPROUT_Y + 40 * fade, scale=ss * max(grow, 0.01) * (1 - 0.15 * fade),
                anchor=(piv[0] / sp.size[0], piv[1] / sp.size[1]), opacity=1 - fade, blur=6 * fade)
-    # logo assembly
-    lp = K.spring(t - E_FLY0, freq=2.0, damping=0.55) if t >= E_FLY0 else 0.0
+    # logo assembly: mark springs in, wordmark wipes in
+    lp = K.spring(t - E_FLY0, freq=2.2, damping=0.55) if t >= E_FLY0 else 0.0
     if lp > 0:
         op = K.ramp(t, E_FLY0, E_FLY0 + 0.15)
         mark_s = 0.7 + 0.3 * lp
         K.draw(cv, L['mark'], 540, LOGO_Y, scale=mark_s, opacity=op, blur=4 * (1 - min(lp, 1.0)))
-        wp = K.ramp(t, E_FLY0 + 0.12, E_FLY0 + 0.55, 'out_expo')
+        wp = K.ramp(t, E_FLY0 + 0.10, E_FLY0 + 0.50, 'out_expo')
         if wp > 0:
             _wipe_draw(cv, L['word'], 540, LOGO_Y, wp, scale=mark_s)
     # flying leaves (from the sprout's top leaves to the logo's inner leaves)
@@ -1189,22 +1268,21 @@ def scene_end(t):
     E = _env()
     for key, feat, side in (('leafL', 'leaf_top_l', -1), ('leafR', 'leaf_top_r', 1)):
         tx, ty = logo_xy(540, LOGO_Y, L[key + '_c'])
-        if t < E_FLY0:
+        if t < E_FLY0 or land:
             continue
-        if not land:
-            u = (t - E_FLY0) / (E_LAND - E_FLY0)
-            fx, fy = sp.features[feat]
-            piv = sp.pivot
-            sx0 = 540 + (fx - piv[0]) * ss
-            sy0 = E_SPROUT_Y + (fy - piv[1]) * ss
-            e = ease('inout_cubic')(u)
-            arc = math.sin(math.pi * e) * 170
-            x = K.lerp(sx0, tx, e) + side * arc
-            y = K.lerp(sy0, ty, e) - 0.4 * arc
-            size = K.lerp(150.0, L[key + '_h'] * 1.15, e)
-            spr = E['leaf'].at_time(0.53 + 1.2 * e * side, fps=30)
-            K.draw(cv, spr, x, y, scale=size / 420.0, rot=side * (40 - 400 * e) * (1 - e) + side * 25 * e,
-                   opacity=1.0 - 0.3 * K.ramp(u, 0.85, 1.0))
+        u = (t - E_FLY0) / (E_LAND - E_FLY0)
+        fx, fy = sp.features[feat]
+        piv = sp.pivot
+        sx0 = 540 + (fx - piv[0]) * ss
+        sy0 = E_SPROUT_Y + (fy - piv[1]) * ss
+        e = ease('inout_cubic')(u)
+        arc = math.sin(math.pi * e) * 170
+        x = K.lerp(sx0, tx, e) + side * arc
+        y = K.lerp(sy0, ty, e) - 0.4 * arc
+        size = K.lerp(150.0, L[key + '_h'] * 1.15, e)
+        spr = E['leaf'].at_time(0.53 + 1.2 * e * side, fps=30)
+        K.draw(cv, spr, x, y, scale=size / 420.0, rot=side * (40 - 400 * e) * (1 - e) + side * 25 * e,
+               opacity=1.0 - 0.3 * K.ramp(u, 0.85, 1.0))
     if land:
         gl = K.impulse(t, E_LAND, decay=6.0)
         for key in ('leafL', 'leafR', 'leafF'):
@@ -1212,21 +1290,34 @@ def scene_end(t):
             K.draw(cv, L[key], 540, LOGO_Y, opacity=K.ramp(t, E_LAND, E_LAND + 0.06))
             if gl > 0.02:
                 K.draw(cv, _hook_assets()['halo'], px, py, scale=0.9, opacity=0.6 * gl, mode='add')
-    # light sweep across the settled logo
-    lsw = K.ramp(t, B(37.5), B(39), 'inout_sine')
+    lsw = K.ramp(t, 24.05, 24.95, 'inout_sine')
     if 0 < lsw < 1:
         _logo_sweep(cv, L, lsw)
     # tagline types on
     if t >= E_TYPE0:
-        g = L['tagline']
-        g.typewriter(cv, t, 540, TAGLINE_Y, t0=E_TYPE0, cps=40, caret=False)
-    # CTA pill + contact
+        L['tagline'].typewriter(cv, t, 540, TAGLINE_Y, t0=E_TYPE0, cps=40, caret=False)
+    # CTA: gradient pill pops on the beat, cursor glides in and clicks on the next 8th, light sweep
     cp = K.spring(t - E_CTA, freq=2.4, damping=0.5) if t >= E_CTA else 0.0
     if cp > 0:
-        L['cta'].draw(cv, 540, CTA_Y + 40 * (1 - cp), scale=0.85 + 0.15 * cp, opacity=K.ramp(t, E_CTA, E_CTA + 0.1),
-                      sweep=K.ramp(t, E_CTA + 0.5, E_CTA + 1.2, 'inout_sine') if E_CTA + 0.5 < t < E_CTA + 1.2 else None)
-        co = K.ramp(t, E_CTA + 0.15, E_CTA + 0.6, 'out_expo')
+        spr = cta_sprite(t)
+        csc = 0.80 + 0.20 * cp
+        cy_ = CTA_Y + 34 * (1 - cp)
+        K.draw(cv, L['cta_ring'], 540, cy_, scale=csc * (1 - 0.05 * K.impulse(t, E_CLICK, decay=9.0, attack=0.04)),
+               opacity=K.ramp(t, E_CTA, E_CTA + 0.08))
+        ui.place(cv, spr, 540, cy_, scale=csc, opacity=K.ramp(t, E_CTA, E_CTA + 0.08))
+        sw = K.ramp(t, E_CLICK + 0.16, E_CLICK + 0.70, 'inout_sine')
+        if 0 < sw < 1:
+            cta_sweep(cv, spr, 540, cy_, csc, sw)
+        co = K.ramp(t, E_CTA + 0.18, E_CTA + 0.60, 'out_expo')
         L['contact'].draw(cv, 540, CONTACT_Y + 24 * (1 - co), opacity=co, snap=False)
+    if E_CTA + 0.06 <= t < E_CLICK + 0.62:
+        g = ease('out_cubic')(K.ramp(t, E_CTA + 0.06, E_CLICK - 0.02, 'linear'))
+        cx_ = K.lerp(905.0, 650.0, g)
+        cy2 = K.lerp(1330.0, CTA_Y + 14, g)
+        fo = 1 - K.ramp(t, E_CLICK + 0.32, E_CLICK + 0.62, 'in_cubic')
+        ui.draw_cursor(cv, cx_ + 18 * K.ramp(t, E_CLICK + 0.2, E_CLICK + 0.6), cy2 + 26 * K.ramp(t, E_CLICK + 0.2,
+                       E_CLICK + 0.6), 'hand', 86, press=K.impulse(t, E_CLICK, decay=9.0, attack=0.04),
+                       click=t - E_CLICK, opacity=K.ramp(t, E_CTA + 0.06, E_CTA + 0.16) * fo, look='airy')
     return cv
 
 
@@ -1396,7 +1487,7 @@ def samples(t):
     fast = [(0.0, T_IMPACT + 0.08, 5), (T_NUR - WIPE_HALF, T_NUR + WIPE_HALF, 5),
             (N_Z1 - 0.32, N_Z1 + 0.04, 7), (T_DEV - 0.17, T_DEV + 0.23, 7), (T_GRO - 0.15, T_GRO + 0.05, 5),
             (G_Z1 - 0.32, G_Z1 + 0.04, 7), (T_KIND - 0.31, T_KIND + 0.05, 5), (T_TRUST - 0.32, T_TRUST + 0.26, 5),
-            (E_FLY0, E_LAND + 0.03, 5)]
+            (E_FLY0, E_LAND + 0.03, 5), (E_CTA, E_CLICK + 0.05, 5)]
     for a_, b_, n in fast:
         if a_ <= t <= b_:
             return n
@@ -1425,6 +1516,8 @@ def cues():
     q(T_IMPACT, 'impact_soft', -4)
     q(T_IMPACT + 0.01, 'ripple', -4, params=dict(dur=2.4))
     q(T_IMPACT + 0.06, 'swish_small', -7, -0.1)
+    q(T_IMPACT + 0.12, 'whoosh_fast', -9, 0.0)
+    q(T_IMPACT + 5 * FLASH, 'reverse_swell', -12, params=dict(duration=0.2))
     for k in range(1, 6):
         q(T_IMPACT + k * FLASH, 'swish_small', -6, 0.35 * (-1) ** k, params=dict(direction=(-1) ** k))
         q(T_IMPACT + k * FLASH, 'ui_tick', -12, -0.2 * (-1) ** k, params=dict(pitch=0.9 + 0.05 * k))
@@ -1478,7 +1571,9 @@ def cues():
     q(B(23.5), 'swish_small', -9, 0.0)
     for i in range(6):
         q(TAG_T0 + i * BEAT / 2, 'pop', -7, (-0.4, 0.4, -0.2, 0.3, -0.35, 0.2)[i], params=dict(pitch=0.9 + 0.06 * i))
-    q(B(28), 'whoosh_by', -14, 0.0, params=dict(dur=2.0, speed=20.0, dist=3.0, direction=1))
+    for k, ts in enumerate(RING_STEPS):                      # the dial turns one tag per beat
+        q(ts + 0.15, 'swish_small', -8, (-0.3, 0.3)[k % 2], params=dict(direction=(-1, 1)[k % 2]))
+        q(ts + 0.30, 'glass_tap', -11, 0.0, params=dict(pitch=1.0 + 0.05 * k))
     q(T_TRUST - 0.05, 'whoosh_fast', -4, 0.2)
     # ---- TRUST: heart spin-morphs into the shield, three check pills
     q(T_TRUST, 'glass_tap', -4)
@@ -1497,7 +1592,8 @@ def cues():
     q(E_LAND + 0.02, 'sparkle', -7, 0.1)
     q(E_TYPE0, 'typing', -11, 0.0, align='start', params=dict(n=20, cps=36.0))
     q(E_CTA, 'pop', -5, 0.0, params=dict(pitch=1.05))
-    q(E_CTA + 0.02, 'glass_tap', -9, 0.0)
-    q(E_CTA + 0.25, 'swish_small', -12, 0.0)
-    q(E_CTA + 0.55, 'shimmer', -14, 0.0, params=dict(dur=0.9))
+    q(E_CLICK - 0.12, 'swish_small', -13, 0.25)
+    q(E_CLICK, 'ui_click', -2, 0.1)
+    q(E_CLICK + 0.01, 'sparkle', -10, 0.1)
+    q(E_CLICK + 0.25, 'shimmer', -14, 0.0, params=dict(dur=0.9))
     return c
