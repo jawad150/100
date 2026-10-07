@@ -373,7 +373,7 @@ def background(t, grid=1.0, cam=(0.0, 0.0, 1.0)):
     P = P.copy()
     P[:, 1] += 0.25 * np.sin(t * 0.3 + ph)
     P[:, 0] += 0.2 * np.sin(t * 0.21 + ph * 1.3) + cam[0] * 0.5
-    P[:, 2] = (P[:, 2] - t * 0.35 - 2.5) % 14 + 2.5
+    P[:, 2] = (P[:, 2] - t * 0.35 - 4.0) % 12.5 + 4.0
     tw = 0.5 + 0.5 * np.sin(t * 2.0 + ph * 5)
     C.particles(cv, C.Cam(0, 0, 0, F=F, focus=6.0, aperture=0.05), P, r, GOLD_HI, opacity=0.35 + 0.65 * tw, glow=1.3)
     return cv
@@ -719,29 +719,20 @@ def f6(cv, t, u, d):
         hl = 1.0 if i == cur or u > 2.9 else 0.38
         kt.draw(cv, t, T0 + s0, FRAMES[5][2] - 0.05, op=hl)
     kinds = ['gold', 'silver', 'oil', 'more']
-    for i in range(3, -1, -1):
+    for i in range(4):
         cu = u - starts[i] - 0.05
         if cu <= 0:
             continue
         p = A.EXPO_OUT(A.clamp(cu / 0.8))
-        back = sum(1 for s0 in starts[i + 1:] if u >= s0 + 0.05)          # newer cards push this one back
-        bk = A.EXPO_OUT(A.clamp((u - (starts[i + back] if back else 0) - 0.05) / 0.7)) if back else 0
-        depth_i = back - 1 + bk if back else 0
-        fan = A.EXPO_OUT(A.clamp((u - 2.95) / 0.8))
-        y = 610 - depth_i * 95
-        x = 860 + depth_i * 20
-        dz = depth_i * 0.9
-        # final fan-out
-        y = y * (1 - fan) + (330 + i * 210) * fan
-        x = x * (1 - fan) + (880 + (i % 2) * 40) * fan
-        dz = dz * (1 - fan)
-        co = A.ramp(cu, 0, 0.35) * o * (1 - 0.25 * min(depth_i, 2) * (1 - fan))
+        x, y = 880 + (i % 2) * 40, 330 + i * 200
+        co = A.ramp(cu, 0, 0.35) * o * (1.0 if i == cur or u > 2.9 else 0.7)
         has3d = b3d(OBJ3D[kinds[i]], 1) is not None
-        put3d(cv, commodity_card(kinds[i], not has3d), x + (1 - p) * 260, y, 400, rot=(6, -24 + 10 * fan, 0), dz=dz, op=co)
+        xx = x + (1 - p) * 320
+        put3d(cv, commodity_card(kinds[i], not has3d), xx, y, 380, rot=(4, -20 + 6 * p, 0), op=co)
         if has3d:
             ob = b3d(OBJ3D[kinds[i]], 1 + (t - T0 - starts[i]) * 30 * 1.1, pingpong=True)
-            sc = (0.62 if kinds[i] != 'more' else 0.42) * (1 - 0.18 * min(depth_i, 2) * (1 - fan)) * (0.7 + 0.3 * A.BACK_OUT(A.clamp(cu / 0.7)))
-            blit(cv, ob, x + (1 - p) * 300 - 108 + depth_i * 4, y - 30, s=sc, op=co)
+            sc = (0.6 if kinds[i] != 'more' else 0.42) * (0.75 + 0.25 * A.BACK_OUT(A.clamp(cu / 0.7)))
+            blit(cv, ob, xx - 100, y - 22, s=sc, op=co)
 
 
 # ------------------------------------------------------------------ frame 7: global commodities -> PSX companies
@@ -897,12 +888,12 @@ def f9(cv, t, u, d):
     out = A.clamp((u - (d - 0.05)) / 0.4)
     o = 1 - A.EXPO_IN(out)
     z0 = u * 5.0 + A.EXPO_IN(A.clamp(u / d)) * 4
-    cam = C.Cam(0.15 * math.sin(u * 0.8), 0, z0, roll=4 * math.sin(u * 0.6), F=F, focus=z0 + 4.0, aperture=0.05)
+    cam = C.Cam(0.15 * math.sin(u * 0.8), 0, z0, roll=4 * math.sin(u * 0.6), F=F, focus=z0 + 4.0, aperture=0.008)
     items = []
     for k in range(40):
         z = 3 + k * 1.15
-        for j, (x, y, ry, rx) in enumerate(((-2.6, 0.9, 62, 0), (-2.6, -0.4, 62, 0), (2.6, 0.9, -62, 0), (2.6, -0.4, -62, 0),
-                                            (-1.0, -1.8, 0, -70), (1.0, -1.8, 0, -70))):
+        for j, (x, y, ry, rx) in enumerate(((-2.0, 0.75, 58, 0), (-2.0, -0.35, 58, 0), (2.0, 0.75, -58, 0), (2.0, -0.35, -58, 0),
+                                            (-0.8, -1.4, 0, -70), (0.8, -1.4, 0, -70))):
             items.append((z, x, y, ry, rx, (k * 7 + j * 3) % 10))
     for z, x, y, ry, rx, ti in sorted(items, key=lambda q: -q[0]):
         dz = z - z0
@@ -924,7 +915,7 @@ def f9(cv, t, u, d):
             continue
         fade = A.clamp((14 - dz) / 4) * A.clamp((dz - 0.6) / 0.8)
         try:
-            C.draw_img3d(cv, ob, cam, (x, y, z), (0.9, 0.9), (0, 0, 15 * k), opacity=fade * o)
+            C.draw_img3d(cv, ob, cam, (x, y, z), (0.75, 0.75), (0, 0, 15 * k), opacity=fade * o)
         except cv2.error:
             pass
     kt = KText([[('More', 'Rubik-700', 96, 'w'), ('Markets.', 'Rubik-700', 96, 'w')],
