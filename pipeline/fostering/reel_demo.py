@@ -139,7 +139,9 @@ def samples(t):
 
 
 def cues():
-    return [{'t': 0.12, 'sfx': 'whoosh_in', 'gain_db': -3},
-            {'t': LAND, 'sfx': 'impact_glass', 'gain_db': 0},
-            {'t': LAND + 0.02, 'sfx': 'sub_drop', 'gain_db': -4},
-            {'t': 2.0, 'sfx': 'shimmer', 'gain_db': -8}]
+    """SFX cue sheet with audio.py catalog names (align='hit': the whoosh peaks as the card lands)."""
+    return [{'t': LAND, 'name': 'whoosh_fast', 'gain_db': -3},
+            {'t': LAND, 'name': 'impact_soft', 'gain_db': 0},
+            {'t': LAND, 'name': 'glass_tap', 'gain_db': -4},
+            {'t': LAND + 0.02, 'name': 'sub_drop', 'gain_db': -4},
+            {'t': 1.1, 'name': 'shimmer', 'gain_db': -8}]

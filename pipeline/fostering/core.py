@@ -132,6 +132,7 @@ BACKGROUNDS / FINISHING
         bloom_tint, halation, anamorphic, anamorphic_color, vignette, chroma, grain, black_tint, plus extras
         flash, flash_color, fade, fade_color, leak, leak_seed, leak_colors.
         e.g. post(cv, 'neon', t, flash=0.6 * impulse(t, 2.45), chroma=1.8 + 10 * whip)
+        footage=0..1 for frames dominated by bright full-bleed footage (keeps whites clean, no milky bloom haze).
 
 RENDER LOOP / ENCODE
     render_frame(draw_fn, t, samples=3, shutter=0.5) -> average of draw_fn(t_i) over sub-frame times
@@ -1038,6 +1039,9 @@ def _level(spr, k, b):
     lh, lw = base.shape[:2]
     if b <= 0:
         return base, 0, lw / sw, lh / sh
+    # a sigma beyond the level's own size only flattens it further; clamping keeps the cache key and the
+    # padding bounded when a sprite is drawn near-zero-sized (blur / scale -> huge, e.g. a scale-0 pop-in)
+    b = min(b, _sigma_bucket(max(lw, lh) + 8.0))
     sig = _bucket_sigma(b)
     p = int(math.ceil(sig * 3.0)) + 1
 
@@ -1169,6 +1173,11 @@ def _warp_homography(canvas, spr, Hc, poly, opacity=1.0, mode='over', blur_px=0.
     poly: (N, 2) screen polygon of the visible part (used for bbox, and as a mask when clip_poly).
     blur_map: optional (x0, y0, map) per-pixel blur sigma (screen px) with blur_levels (list of sigmas)."""
     sh, sw = spr.shape[:2]
+    if not np.isfinite(poly).all():
+        return None
+    px_, py_ = poly[:, 0], poly[:, 1]
+    if 0.5 * abs(float(np.dot(px_, np.roll(py_, -1)) - np.dot(py_, np.roll(px_, -1)))) < 0.02:
+        return None                                   # degenerate / sub-pixel footprint: nothing visible
     pad_px = 2 + int(math.ceil(3 * max(blur_px, max(blur_levels) if blur_levels else 0.0)))
     x0 = int(math.floor(poly[:, 0].min())) - pad_px
     y0 = int(math.floor(poly[:, 1].min())) - pad_px
@@ -1618,16 +1627,21 @@ class Scene:
             return float(p)
         return self.cam.depth(p)
 
+    # NOTE: the stored closures capture the camera, never `self`: a Scene -> items -> lambda -> Scene cycle kept
+    # every frame's sprites (blended 3D frames, faces, footage) alive until a rare cyclic GC pass (GBs per worker)
     def plane(self, spr, center, width, **kw):
-        self.items.append((self._depth(center), lambda cv: draw_plane(cv, spr, self.cam, center, width, **kw)))
+        cam = self.cam
+        self.items.append((self._depth(center), lambda cv: draw_plane(cv, spr, cam, center, width, **kw)))
         return self
 
     def billboard(self, spr, pos, width, **kw):
-        self.items.append((self._depth(pos), lambda cv: draw_billboard(cv, spr, self.cam, pos, width, **kw)))
+        cam = self.cam
+        self.items.append((self._depth(pos), lambda cv: draw_billboard(cv, spr, cam, pos, width, **kw)))
         return self
 
     def custom(self, pos_or_depth, fn):
-        self.items.append((self._depth(pos_or_depth), lambda cv: fn(cv, self.cam)))
+        cam = self.cam
+        self.items.append((self._depth(pos_or_depth), lambda cv: fn(cv, cam)))
         return self
 
     def particles(self, parts, t, opacity=1.0):
@@ -2535,9 +2549,18 @@ def post(canvas, look='neon', t=0.0, **ov):
     """Per-look finishing stack, in place: exposure, bloom + halation (one shared 1/4-res pass), optional
     anamorphic streaks / light leak / flash / fade, vignette, black tint, edge chroma, grain. Returns the
     canvas (alpha set to 1). Override any LOOKS[look] key: post(cv, 'neon', t, chroma=6, flash=0.4, leak=0.5).
-    Extra keys: flash_color, fade_color, leak_seed, leak_colors, anamorphic_color, bloom_knee."""
+    Extra keys: flash_color, fade_color, leak_seed, leak_colors, anamorphic_color, bloom_knee.
+    footage=0..1: frame dominated by bright footage (full-bleed montage, payoff shots): raises the bloom threshold
+    to 0.85 and eases bloom / halation so whites stay clean instead of a milky haze (blend it over transitions)."""
     cfg = dict(LOOKS[look])
     cfg.update(ov)
+    fk = float(cfg.pop('footage', 0.0) or 0.0)
+    if fk > 0:
+        # bright full-bleed footage: the void-tuned bloom (threshold ~0.42) blooms white walls into a milky haze
+        fk = min(fk, 1.0)
+        cfg['bloom_threshold'] = lerp(cfg.get('bloom_threshold', 0.8), max(cfg.get('bloom_threshold', 0.8), 0.85), fk)
+        cfg['bloom'] = lerp(cfg.get('bloom', 0.0), min(cfg.get('bloom', 0.0), 0.35), fk)
+        cfg['halation'] = cfg.get('halation', 0.0) * (1 - 0.6 * fk)
     h, w = canvas.shape[:2]
     if cfg.get('exposure'):
         k = float(2 ** cfg['exposure'])

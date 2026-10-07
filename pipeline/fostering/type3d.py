@@ -106,7 +106,9 @@ ORBIT TEXT
     ot.add_to_scene(sc, center, t, spin=...) registers each glyph in a core.Scene for full depth interleaving.
 
 COUNTER (tabular figures; the style's glow is applied once to the composed number)
-    cnt = Counter('gold', px=150, prefix='\u00a3', suffix='', decimals=2, sep=',', point='.')
+    cnt = Counter('gold', px=150, prefix='\u00a3', suffix='', decimals=2, sep=',', point='.', blur_cap=0.12)
+        blur_cap = max per-digit motion blur (sigma, fraction of the cap height): 0.12 keeps spinning digits legible
+        as gold streaks; 0.26 = the old physically flat 'barcode' look at full speed.
     cnt.draw(cv, value, x, y, anchor=(.5, .5), scale=1, vel=0)  odometer roll; vel = value units per second
         (e.g. track.vel(t)) gives per-digit vertical motion blur; leading digits grow in smoothly.
     cnt.slot(cv, t, 23275.20, x, y, t0=0, dur=1.4, stagger=0.09, spins=2, order='rtl')  slot reels land with a
@@ -1547,16 +1549,19 @@ class Glyphs:
     def _render_avg(self, cv, subs, x, y, **dkw):
         """Motion smear: composite each sub-sample normally into its own (lazily zeroed) buffer, average the
         premultiplied results, then lay the average over the canvas (exact temporal box filter)."""
+        # one scratch canvas + one accumulator for all sub-samples; only the touched bbox is cleared / summed
+        # (the old version allocated two full 1080x1920 float buffers per sub-sample: ~33 MB each, x24 on a slam)
         acc = np.zeros_like(cv)
+        tmp = np.zeros_like(cv)
         bb = None
         w = np.float32(1.0 / len(subs))
         for states, blk in subs:
-            tmp = np.zeros_like(cv)
             b = self.render(tmp, states, x, y, block=blk, **dkw)
             if b is None:
                 continue
             x0, y0, x1, y1 = [int(v) for v in b]
             acc[y0:y1, x0:x1] += tmp[y0:y1, x0:x1] * w
+            tmp[y0:y1, x0:x1] = 0.0
             bb = _bb_union(bb, b)
         if bb is None:
             return None
@@ -1566,9 +1571,8 @@ class Glyphs:
 
     def render(self, cv, states, x, y, block=None, anchor=(0.5, 0.5), scale=1.0, rot=0.0, opacity=1.0, tilt=None,
                focal=1600.0, sweep=None, sweep_kw=None, blur=0.0, _accum=None):
-        # (_accum is ignored: smears composite each sub-sample normally, see _render_avg)
-        _accum = None
         """Draw glyph states with the block anchor at (x, y). tilt=(rx, ry, rz) tilts the block in 3D."""
+        _accum = None          # (ignored: smears composite each sub-sample normally, see _render_avg)
         blk = dict(block or {})
         scale = scale * blk.get('scale', 1.0)
         opacity = opacity * blk.get('opacity', 1.0)
@@ -1615,6 +1619,7 @@ class Glyphs:
             return bb
         # ---- per glyph (a block pill, if any, is drawn first with the block transform)
         boxes = self.boxes()
+        pill_bb = None
         if self.style.pill > 0:
             pls = [L for L in self.block.layers if L.part == 'pill']
             pop = float(np.mean([st_.opacity for st_ in states])) if states else 1.0
@@ -1622,14 +1627,14 @@ class Glyphs:
                 cr0, sr0 = math.cos(math.radians(rot)), math.sin(math.radians(rot))
                 M = np.array([[cr0 * scale, -sr0 * scale, x - (cr0 * ax - sr0 * ay) * scale],
                               [sr0 * scale, cr0 * scale, y - (sr0 * ax + cr0 * ay) * scale]])
-                _draw_layers_affine(cv, pls, M, op_k * pop, blur, None if _accum is None else 'add')
+                pill_bb = _draw_layers_affine(cv, pls, M, op_k * pop, blur, None if _accum is None else 'add')
             else:
                 q = self._project_box(x, y, ax, ay, scale, rot, Rt, focal)
                 Hm = cv2.getPerspectiveTransform(np.float32([[0, 0], [self.w, 0], [self.w, self.h], [0, self.h]]),
                                                  np.float32(q)).astype(np.float64)
-                _draw_layers_h(cv, pls, Hm, op_k * pop, blur, None if _accum is None else 'add')
+                pill_bb = _draw_layers_h(cv, pls, Hm, op_k * pop, blur, None if _accum is None else 'add')
         cr, sr = math.cos(math.radians(rot)), math.sin(math.radians(rot))
-        bb = None
+        bb = pill_bb
         jobs = []
         for k, (g, st_) in enumerate(zip(self.items, states)):
             if st_.opacity <= 1e-3:
@@ -1913,9 +1918,14 @@ class Counter:
     """Tabular-figure number renderer with odometer / slot-machine digit rolls and per-digit vertical motion
     blur (see module docstring). The style's glow is applied once to the composed number."""
 
-    def __init__(self, st='flat', prefix='\u00a3', suffix='', decimals=2, sep=',', point='.', min_int=1, **kw):
+    def __init__(self, st='flat', prefix='\u00a3', suffix='', decimals=2, sep=',', point='.', min_int=1,
+                 blur_cap=0.12, **kw):
         self.style = style(st, **kw)
         self.prefix, self.suffix, self.decimals = prefix, suffix, decimals
+        # max per-digit vertical blur sigma as a fraction of the cap height. Physically a wheel spinning faster
+        # than ~1 digit per shutter averages into a flat bar (the old fixed 0.26 looked like a barcode); 0.12 keeps
+        # every digit legible as a gold streak, the usual motion-design cheat.
+        self.blur_cap = float(blur_cap)
         self.sep, self.point, self.min_int = sep, point, min_int
         s = self.style
         self._ds = s.but(glow=0.0, scrim=0.0)
@@ -2027,7 +2037,7 @@ class Counter:
                         continue
                     spr, an, _ = self._prep(str(dd))
                     K.draw(colb, spr, ccx, my0 + cap / 2 + off * self.pitch, anchor=an)
-                sig = min(cap * 0.26, spd * expo * self.pitch * 0.5)
+                sig = min(cap * self.blur_cap, spd * expo * self.pitch * 0.5)
                 if sig > 0.6:
                     colb = cv2.GaussianBlur(colb, (1, int(sig * 6) | 1), sigmaX=0, sigmaY=sig)
                 if sig > 0.6:

@@ -2423,9 +2423,16 @@ def tag_size(text, size=34, h=84, thumb=False, icon_name=None):
 def tag(text, thumb=None, look='neon', size=34, h=84, icon_name=None, accent=None, rim=0.5, thumb_key=None):
     """Glass pill tag -> Panel: text with an optional rounded thumbnail (any sprite; pass a stable thumb_key
     string so it caches) or icon. Used by orbit_ring(); also good for chips that need real frost."""
-    key = thumb_key if thumb_key is not None else (id(thumb) if thumb is not None else None)
+    key = thumb_key if thumb_key is not None else (_content_key(thumb) if thumb is not None else None)
     return _tag_cached(text, look, float(size), int(h), icon_name, _key(accent), float(rim), key,
                        _ThumbBox(thumb))
+
+
+def _content_key(spr):
+    """Stable cache key from a sprite's content (shape + a strided pixel sample hash). Replaces the old id()
+    fallback, which could be reused by a different array after garbage collection (wrong thumbnail)."""
+    a = np.ascontiguousarray(np.asarray(spr)[::7, ::7])
+    return ('px', a.shape, hash(a.tobytes()))
 
 
 class _ThumbBox:

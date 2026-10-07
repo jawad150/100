@@ -3,6 +3,7 @@ previews and the final parallel-chunked H.264 master.
 
     python3 render.py reel1 [--stills 1.0,5.5,...] [--sheet N] [--preview] [--range a b]
                             [--workers 4] [--samples k] [--crf 14] [--audio PATH | --no-audio] [--jpg]
+                            [--sfx] [--no-sfx-build]
     python3 render.py selftest      # typical-frame benchmark + demo stills -> out/selftest/render_*.png
 
 REEL MODULE CONTRACT (pure functions of t; no state carried between calls, frames render out of order
@@ -24,14 +25,22 @@ MODES (outputs in workspace3/out/<reel>/)
     (default)          full render: contiguous frame chunks across --workers spawn processes, each writing a
                        yuv444 crf 8 intermediate; concatenated and muxed with audio/<reel>_sfx.wav when it
                        exists -> <reel>.mp4 (crf 14, preset slow, +faststart) and <reel>_share.mp4.
-    Per-frame timing statistics are printed and saved to render_stats.json.
+    SFX: when the reel has cues(), audio/<reel>_sfx.wav is (re)mixed automatically with audio.build_reel if it
+         is missing or older than the reel module (--sfx forces it, --no-sfx-build disables it, --audio PATH
+         uses a given wav as is). The mix is SFX only (no music), -18 LUFS, <= -1.5 dBTP.
+    Per-frame timing statistics (and the workers' peak memory) are printed and saved to render_stats.json.
+    Workers are spawned processes (concurrent.futures): if one dies (e.g. OOM-killed) the unfinished chunks are
+    retried with one worker fewer instead of hanging. Worker cache defaults: FOSTER_S3_CACHE_MB=448, and with 3+
+    workers FOSTER_TYPE_CACHE_MB=256 (explicit env settings win).
 
 Python API (used by tests / other tools):
     render_still(mod, t, samples=None) -> uint8 (H, W, 3)
     load_reel('reel_demo') -> module
     benchmark_typical(n=6, look='neon') -> seconds per typical single-sample frame on one core
+    run_jobs(fn, jobs, workers) -> results in order (robust spawn pool); ensure_sfx(mod, reel, force=False)
 """
 import argparse
+import gc
 import importlib
 import json
 import math
@@ -119,6 +128,8 @@ def _chunk_job(job):
             t0 = time.time()
             u8 = render_still(mod, t, job['samples'])
             fw.write(u8)
+            if k % 8 == 7:
+                gc.collect()            # safety net: frees any per-frame reference cycles in reel code
             dt = time.time() - t0
             times.append((fi, t, dt, _samples(mod, t, job['samples'])))
             if (k + 1) % job['report'] == 0 or k + 1 == len(job['frames']):
@@ -126,7 +137,15 @@ def _chunk_job(job):
                 eta = el / (k + 1) * (len(job['frames']) - k - 1)
                 print('%s frame %d/%d  t=%.2fs  %.2fs/frame  eta %.0fs' % (
                     wtag, k + 1, len(job['frames']), t, el / (k + 1), eta), flush=True)
-    return {'chunk': job['chunk'], 'path': job['path'], 'times': times}
+    return {'chunk': job['chunk'], 'path': job['path'], 'times': times, 'max_rss_mb': _max_rss_mb()}
+
+
+def _max_rss_mb():
+    try:
+        import resource
+        return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0)
+    except Exception:
+        return None
 
 
 def _still_job(job):
@@ -145,10 +164,43 @@ def _ff(cmd):
     return r
 
 
-def _pool(workers):
+def _worker_env(workers):
+    """Per-worker defaults inherited by the spawned processes (explicit env settings win). Every worker holds its
+    own caches, so with 3-4 workers they are trimmed to keep the pool inside the ~14 GB memory limit."""
     os.environ.setdefault('FOSTER_CV_THREADS', '1')
-    ctx = mp.get_context('spawn')
-    return ctx.Pool(workers)
+    if workers > 1:
+        os.environ.setdefault('FOSTER_S3_CACHE_MB', '448')        # sprites3d decoded frames (default 768)
+    if workers > 2:
+        os.environ.setdefault('FOSTER_TYPE_CACHE_MB', '256')      # type3d sprites (default 400)
+
+
+def run_jobs(fn, jobs, workers):
+    """Run fn(job) for every job in `workers` spawned processes and return the results in job order. Unlike
+    multiprocessing.Pool (which waits forever when a worker is OOM-killed), a dead worker raises
+    BrokenProcessPool here: the unfinished jobs are retried with one worker fewer (in-process at 1)."""
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    from concurrent.futures.process import BrokenProcessPool
+    results = {}
+    pending = list(range(len(jobs)))
+    w = max(1, min(int(workers), len(jobs)))
+    while pending:
+        if w <= 1:
+            for i in pending:
+                results[i] = fn(jobs[i])
+            break
+        _worker_env(w)
+        try:
+            with ProcessPoolExecutor(max_workers=w, mp_context=mp.get_context('spawn')) as ex:
+                futs = {ex.submit(fn, jobs[i]): i for i in pending}
+                for f in as_completed(futs):
+                    results[futs[f]] = f.result()
+            pending = []
+        except BrokenProcessPool:
+            pending = [i for i in pending if i not in results]
+            w -= 1
+            print('!! a render worker died (out of memory?) - retrying %d job(s) with %d worker(s)' % (
+                len(pending), w), flush=True)
+    return [results[i] for i in range(len(jobs))]
 
 
 def _stats(times, wall, label):
@@ -205,14 +257,7 @@ def _render_video(reel, frames, out_path, fps_out, crf, preset, pix_fmt, workers
              'preset': preset, 'pix_fmt': pix_fmt, 'samples': samples,
              'report': max(1, min(15, len(ch) // 4 or 1))} for i, ch in enumerate(chunks)]
     t0 = time.time()
-    results = []
-    if workers <= 1:
-        for j in jobs:
-            results.append(_chunk_job(j))
-    else:
-        with _pool(workers) as pool:
-            for r in pool.imap_unordered(_chunk_job, jobs):
-                results.append(r)
+    results = run_jobs(_chunk_job, jobs, workers)
     wall = time.time() - t0
     results.sort(key=lambda r: r['chunk'])
     lst = os.path.join(parts_dir, 'list.txt')
@@ -221,7 +266,12 @@ def _render_video(reel, frames, out_path, fps_out, crf, preset, pix_fmt, workers
             f.write("file '%s'\n" % os.path.abspath(r['path']))
     _ff(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', lst, '-c', 'copy', out_path])
     times = [x for r in results for x in r['times']]
-    return _stats(times, wall, label)
+    st = _stats(times, wall, label)
+    rss = [r.get('max_rss_mb') for r in results if r.get('max_rss_mb')]
+    if rss:
+        st['worker_max_rss_mb'] = max(rss)
+        print('   worker peak memory: %d MB' % max(rss))
+    return st
 
 
 def _vtags():
@@ -289,12 +339,7 @@ def do_stills(reel, times, samples, workers, outdir, jpg=False):
     sd = os.path.join(outdir, 'stills')
     os.makedirs(sd, exist_ok=True)
     jobs = [{'reel': reel, 't': t, 'samples': samples} for t in times]
-    res = []
-    if workers > 1 and len(jobs) > 1:
-        with _pool(min(workers, len(jobs))) as pool:
-            res = pool.map(_still_job, jobs)
-    else:
-        res = [_still_job(j) for j in jobs]
+    res = run_jobs(_still_job, jobs, workers)
     paths = []
     for t, u8, dt in res:
         p = os.path.join(sd, '%s_%06.2f.png' % (reel, t))
@@ -312,11 +357,7 @@ def do_sheet(reel, n, samples, workers, outdir, dur, bpm=None):
     times = [(k + 0.5) * dur / n for k in range(n)]
     jobs = [{'reel': reel, 't': t, 'samples': samples} for t in times]
     t0 = time.time()
-    if workers > 1:
-        with _pool(min(workers, n)) as pool:
-            res = pool.map(_still_job, jobs)
-    else:
-        res = [_still_job(j) for j in jobs]
+    res = run_jobs(_still_job, jobs, workers)
     cols = int(math.ceil(math.sqrt(n * 1.6)))
     cols = min(cols, n)
     rows = int(math.ceil(n / cols))
@@ -351,6 +392,8 @@ def main(argv=None):
     ap.add_argument('--no-audio', action='store_true')
     ap.add_argument('--jpg', action='store_true')
     ap.add_argument('--no-share', action='store_true')
+    ap.add_argument('--sfx', action='store_true', help='rebuild audio/<reel>_sfx.wav from cues() first')
+    ap.add_argument('--no-sfx-build', action='store_true', help='never (re)build the SFX mix automatically')
     a = ap.parse_args(argv)
 
     os.environ.setdefault('FOSTER_CV_THREADS', '1' if a.workers > 1 else '2')
@@ -364,6 +407,8 @@ def main(argv=None):
     audio = None
     if not a.no_audio:
         audio = a.audio or os.path.join(K.AUDIO, '%s_sfx.wav' % reel)
+        if not a.audio and not a.no_sfx_build:
+            audio = ensure_sfx(mod, reel, force=a.sfx) or audio
         if not os.path.exists(audio):
             audio = None
     did = False
@@ -423,6 +468,31 @@ def main(argv=None):
                                                        'r_frame_rate', 'color_space', 'sample_rate', 'nb_frames')})
         if not os.environ.get('FOSTER_KEEP_PARTS'):
             shutil.rmtree(parts, ignore_errors=True)
+
+
+def ensure_sfx(mod, reel, force=False):
+    """Mix workspace3/audio/<reel>_sfx.wav (+ _stem.wav) from the reel's cues() with audio.build_reel when it
+    is missing, older than the reel module (cues changed) or force=True. Returns the wav path or None."""
+    import core as K
+    if not hasattr(mod, 'cues'):
+        return None
+    wav = os.path.join(K.AUDIO, '%s_sfx.wav' % reel)
+    src = getattr(mod, '__file__', None)
+    existed = os.path.exists(wav)
+    stale = (not existed) or bool(src and os.path.getmtime(src) > os.path.getmtime(wav))
+    if not (force or stale):
+        return wav
+    import audio as A
+    os.makedirs(K.AUDIO, exist_ok=True)
+    t0 = time.time()
+    rep = A.build_reel(reel, verbose=False)
+    print('SFX mix (%s) -> %s  %.2f LUFS  %.2f dBTP  (%.1fs)' % (
+        'forced' if force else ('missing' if not existed else 'cues changed'), wav,
+        rep['integrated_lufs'], rep['true_peak_dbtp'], time.time() - t0))
+    for p in rep.get('placed', []):
+        if p.get('warn'):
+            print('   cue warning: %s at %.2fs: %s' % (p.get('name'), p.get('t', 0.0), p['warn']))
+    return wav
 
 
 def _save_stats(outdir, label, st):

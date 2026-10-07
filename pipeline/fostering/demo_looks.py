@@ -39,6 +39,7 @@ LOOK = 'neon'
 BPM = 120
 BEAT = 60.0 / BPM
 CUT1, CUT2 = 1.5, 2.5                      # on the 120 BPM grid (beats 3 and 5)
+AMBER_U0, AMBER_RATE = 0.25, 1.9           # amber scene time = AMBER_U0 + (t - CUT1) * AMBER_RATE
 HERO_U = {'neon': 1.8, 'amber': 2.45, 'airy': 1.62}
 BED = [{'name': 'room_tone', 't0': 0.0, 't1': CUT2 + 0.2, 'gain_db': 0.0, 'fade': 0.3},
        {'name': 'outdoor_birds', 't0': CUT2 - 0.1, 't1': DUR, 'gain_db': 2.0, 'fade': 0.4}]
@@ -376,7 +377,7 @@ def _seg(t):
     if t < CUT1:
         return 'neon', t
     if t < CUT2:
-        return 'amber', 0.25 + (t - CUT1) * 1.6
+        return 'amber', AMBER_U0 + (t - CUT1) * AMBER_RATE
     return 'airy', 0.35 + (t - CUT2) * 0.85
 
 
@@ -399,10 +400,10 @@ def draw(t):
 def post(cv, t):
     look, u = _seg(t)
     w = abs(_whip(t))
-    f2 = K.impulse(t, CUT2, decay=7.0, attack=0.08) + K.ramp(t, CUT2 - 0.12, CUT2, 'in_expo') * (t < CUT2)
+    f2 = K.impulse(t, CUT2, decay=10.0, attack=0.06) + K.ramp(t, CUT2 - 0.12, CUT2, 'in_expo') * (t < CUT2)
     extra = dict(chroma=1.8 + 9.0 * w)
     f1 = K.impulse(t, CUT1, decay=10.0)
-    fl = 0.5 * f1 + 1.1 * f2
+    fl = 0.5 * f1 + 0.85 * f2
     if fl > 1e-3:
         extra['flash'] = fl
     cv = post_look(look, cv, u, **extra)
@@ -443,9 +444,9 @@ def cues():
         dict(t=CUT1, name='flash_hit', gain_db=-6),
         dict(t=CUT1 + 0.04, name='coin_flip', gain_db=-6),
         dict(t=CUT1 + 0.03, name='bar_grow', gain_db=-8, align='start', params=dict(duration=0.7)),
-        dict(t=CUT1 + (_ROLL[0] - 0.25) / 1.6, name='slot_tick', gain_db=-4, align='start',
-             params=dict(n=14, dur=(_ROLL[1] - _ROLL[0]) / 1.6)),
-        dict(t=CUT1 + (_ROLL[1] - 0.25) / 1.6, name='cash_kaching', gain_db=-3),             # total lands
+        dict(t=CUT1 + (_ROLL[0] - AMBER_U0) / AMBER_RATE, name='slot_tick', gain_db=-4, align='start',
+             params=dict(n=14, dur=(_ROLL[1] - _ROLL[0]) / AMBER_RATE)),
+        dict(t=CUT1 + (_ROLL[1] - AMBER_U0) / AMBER_RATE, name='cash_kaching', gain_db=-3),  # total lands
         dict(t=CUT2, name='air_zoom', gain_db=-2),                                           # flash / zoom
         dict(t=CUT2, name='impact_soft', gain_db=-4),
         dict(t=CUT2 + 0.22, name='pop', gain_db=-6, pan=-0.1),                               # 01 / 03 pill
@@ -483,17 +484,11 @@ def render_heroes(samples=3, out_dir=None, looks=('neon', 'amber', 'airy')):
 
 
 def build_and_render_clip(workers=4):
-    """SFX mix -> render.py full render (muxes the wav) -> verification report."""
-    import json
-    import subprocess
-    import audio as AU
+    """render.py full render with --sfx (mixes cues() + BED into audio/demo_looks_sfx.wav and muxes it), then
+    verifies the master (streams, duration, loudness). Returns verify_master's report."""
     import render
-    rep = AU.build_reel('demo_looks', verbose=False)
-    print('SFX: %.2f LUFS  %.2f dBTP  -> %s' % (rep['integrated_lufs'], rep['true_peak_dbtp'],
-                                                ', '.join(rep.get('files', []))))
-    render.main(['demo_looks', '--workers', str(workers)])
-    out = os.path.join(K.OUT, 'demo_looks', 'demo_looks.mp4')
-    return verify_master(out)
+    render.main(['demo_looks', '--workers', str(workers), '--sfx'])
+    return verify_master(os.path.join(K.OUT, 'demo_looks', 'demo_looks.mp4'))
 
 
 def verify_master(path, dur=DUR):

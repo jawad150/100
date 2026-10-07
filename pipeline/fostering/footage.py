@@ -286,9 +286,11 @@ GRADES = {
     # wb: linear-light channel gains; exposure: stops; contrast: slope at pivot (display space);
     # black: lift of the black point towards black_tint (sRGB colour); tints: display-space offsets
     # weighted by shadow / highlight luminance (mids stay neutral so skin stays natural).
-    'neon': dict(wb=(1.02, 1.0, 0.97), exposure=0.0, contrast=1.18, pivot=0.40, black=0.035,
-                 black_tint=(0.36, 0.09, 0.31), shadow_tint=(0.026, -0.010, 0.032),
-                 highlight_tint=(0.018, 0.004, -0.016), sat=1.05, shoulder=0.92),
+    # neon: integration pass pushed contrast + plum blacks / magenta-orange split a step further (brief: "rich
+    # contrast, warm skin, plum shadows, magenta/orange split-toning"); skin checked on c01 / c08 / c10 / c12
+    'neon': dict(wb=(1.03, 1.0, 0.97), exposure=-0.06, contrast=1.26, pivot=0.40, black=0.05,
+                 black_tint=(0.40, 0.08, 0.34), shadow_tint=(0.040, -0.014, 0.046),
+                 highlight_tint=(0.026, 0.008, -0.020), sat=1.07, shoulder=0.90),
     'amber': dict(wb=(1.07, 1.0, 0.88), exposure=0.05, contrast=1.12, pivot=0.40, black=0.03,
                   black_tint=(0.30, 0.14, 0.06), shadow_tint=(0.022, 0.008, -0.012),
                   highlight_tint=(0.030, 0.006, -0.030), sat=1.04, shoulder=0.92),

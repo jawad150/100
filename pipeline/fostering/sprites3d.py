@@ -9,7 +9,8 @@ Blender renderer write the same layout):
 
 Every image returned is an (H, W, 4) float32 array of PREMULTIPLIED LINEAR-light RGBA, the
 compositor's pixel convention (core.hexlin space). Frames are decoded lazily and kept in a
-process-wide byte-budgeted LRU cache (env FOSTER_SPRITE_CACHE_MB, default 768 MB per process).
+process-wide byte-budgeted LRU cache (env FOSTER_S3_CACHE_MB, default 768 MB per process; render.py
+workers default to 448 MB).
 
 Quick reference
 ---------------
@@ -175,7 +176,9 @@ class _LRU:
         return dict(items=len(self.d), mb=round(self.bytes / 1048576, 1), hits=self.hits, misses=self.misses)
 
 
-CACHE = _LRU(float(os.environ.get('FOSTER_SPRITE_CACHE_MB', '768')))
+# own env name: FOSTER_SPRITE_CACHE_MB is also core.py's mip/blur cache budget (default 256), so setting it
+# changed both. FOSTER_S3_CACHE_MB wins; the shared name is still honoured when it is the only one set.
+CACHE = _LRU(float(os.environ.get('FOSTER_S3_CACHE_MB', os.environ.get('FOSTER_SPRITE_CACHE_MB', '768'))))
 DEFAULT_INTERP = os.environ.get('FOSTER_SPRITE_INTERP', 'blend')
 
 
