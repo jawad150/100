@@ -452,7 +452,7 @@ def phrases():
         amp = 34 if n > 1 else 18
         path = K.Path(K.bezier([(x0, y + 8), (x0 + (x1 - x0) * 0.3, y - amp), (x0 + (x1 - x0) * 0.62, y + amp), (x1, y - 6)]))
         nxt = starts[i + 1] - 0.12 if i + 1 < len(LINES) else T_END - 0.3
-        t_out = min(nxt, LINE_END[i] + D + 1.5)
+        t_out = max(LINE_END[i] + D + 0.1, min(nxt - 0.63, LINE_END[i] + D + 1.5))   # gone before the next enters
         out.append(K.Phrase(words, path, t_out, scale=1.25 if n == 1 else 1.0))
     return out
 
