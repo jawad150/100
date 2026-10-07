@@ -1,8 +1,9 @@
 """Floret Capitals - cinematic SaaS motion-graphics spot (Lahore concert sponsorship), 1248x1248 @ 60 fps.
 
-Gold #e49f38 / black / white, Rubik (the floretcapitals.com brand font). Glass UI cards placed as 3D planes,
-kinetic type that rises through a slot mask, gold deep glow, a perspective data grid, gold dust, camera
-pushes and true shutter motion blur.
+Look: near-black stage lit by slow liquid colour blooms, real liquid-glass panels (edge lensing, chromatic
+dispersion, frosted core, specular rim, soft shadow) that refract whatever glows behind them, glossy rim-lit
+Blender objects, text orbiting objects in 3D, and General Sans typography (light / semibold pairings,
+tracked micro-labels) revealed letter by letter with blur, tracking and light sweeps.
 
 python3 floret.py still <t> [<t> ...]   -> workspace4/work/stills/*.jpg
 python3 floret.py render [workers]      -> workspace4/work/video.mp4
@@ -31,43 +32,56 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', 'workspace4'))
 ASSETS, WORK, OUT = ROOT + '/assets', ROOT + '/work', ROOT + '/out'
 F = 1340.0                                   # focal length (px) of the UI camera
 SS = U.SS
+CAM = C.Cam(0, 0, 0, F=F)
+
+# General Sans weights
+XL, L, R, M, SB, B = (f'GeneralSans-{w}' for w in (200, 300, 400, 500, 600, 700))
 
 
 def hexs(h):
     return np.float32([int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)])
 
 
-# sRGB (for Paint) and linear (for the canvas) brand colours
-GOLD_S, GOLD_HI_S, GOLD_LO_S = hexs('e49f38'), hexs('f9d184'), hexs('a8661b')
-WHITE_S, MUTED_S, SILVER_S, DARK_S = hexs('f6f4f0'), hexs('8d8a85'), hexs('dfe3ea'), hexs('0b0a09')
-GOLD, GOLD_HI, GOLD_LO = C.to_lin(GOLD_S), C.to_lin(GOLD_HI_S), C.to_lin(GOLD_LO_S)
-WHITE, MUTED, SILVER = C.to_lin(WHITE_S), C.to_lin(MUTED_S), C.to_lin(SILVER_S)
+# sRGB (for Paint) and linear (for the canvas) colours
+GOLD_S, GOLD_HI_S, GOLD_LO_S, CHAMP_S = hexs('e49f38'), hexs('f7d08a'), hexs('b06a1c'), hexs('fff1d6')
+WHITE_S, MUTED_S, DIM_S, DARK_S = hexs('f5f3ef'), hexs('8e8b86'), hexs('5c5a57'), hexs('0b0a09')
+GOLD, GOLD_HI, GOLD_LO, CHAMP = (C.to_lin(c) for c in (GOLD_S, GOLD_HI_S, GOLD_LO_S, CHAMP_S))
+WHITE, MUTED = C.to_lin(WHITE_S), C.to_lin(MUTED_S)
+# bloom light colours (linear)
+BL_GOLD, BL_AMBER, BL_BLUE, BL_GREEN = C.to_lin(hexs('e8a040')), C.to_lin(hexs('ff6a14')), C.to_lin(hexs('2f63ff')), \
+    C.to_lin(hexs('19b36e'))
+BL_RED, BL_ICE, BL_VIOLET = C.to_lin(hexs('e8262f')), C.to_lin(hexs('a9c8ff')), C.to_lin(hexs('7b4dff'))
 
 # ------------------------------------------------------------------ timeline (s)
 FRAMES = [('f1', 0.0, 3.8), ('f2', 3.8, 6.8), ('f3', 6.8, 10.2), ('f4', 10.2, 13.4), ('f5', 13.4, 16.6),
           ('f6', 16.6, 20.6), ('f7', 20.6, 24.4), ('f8', 24.4, 27.8), ('f9', 27.8, 30.6), ('f10', 30.6, 36.0)]
 DUR = FRAMES[-1][2]
 NF = int(round(DUR * FPS))
-OVL = 0.35                                    # each frame keeps drawing this long past its end (exit anim)
+EXIT = 0.42                                   # every scene clears in its last EXIT s, before the next enters
+
+
+def exit_p(u, d):
+    return A.EXPO_IN(A.clamp((u - (d - EXIT)) / EXIT))
 
 
 # ------------------------------------------------------------------ sprites
-@functools.lru_cache(maxsize=1024)
+@functools.lru_cache(maxsize=2048)
 def tsprite(txt, font, px, col='w', track=0.0):
-    """Text -> premultiplied linear RGBA sprite (padded), baseline y, advance width."""
+    """Text -> premultiplied linear RGBA sprite (padded 26 px), baseline y, advance width."""
     m, base = U.text_mask(txt, font, px, track)
     m = cv2.resize(m, (max(1, m.shape[1] // SS), max(1, m.shape[0] // SS)), interpolation=cv2.INTER_AREA)
     P = 26
     m = np.pad(m, P)
     h = m.shape[0]
     base = base / SS + P
-    if col in ('g', 's'):
-        top, bot = base - px * 0.75, base
+    if col in ('g', 'wg', 's'):
+        top, bot = base - px * 0.74, base + px * 0.05
         v = np.clip((np.arange(h, dtype=np.float32) - top) / max(bot - top, 1), 0, 1)[:, None, None]
-        hi, mid, lo = (GOLD_HI, GOLD, GOLD_LO) if col == 'g' else (C.to_lin(hexs('ffffff')), SILVER, C.to_lin(hexs('9aa1ab')))
-        c = np.where(v < 0.5, hi + (mid - hi) * (v / 0.5), mid + (lo - mid) * ((v - 0.5) / 0.5))
+        hi, mid, lo = {'g': (CHAMP, GOLD_HI, GOLD), 'wg': (C.to_lin(hexs('ffffff')), WHITE, GOLD_HI),
+                       's': (C.to_lin(hexs('ffffff')), C.to_lin(hexs('dfe3ea')), C.to_lin(hexs('9aa1ab')))}[col]
+        c = np.where(v < 0.45, hi + (mid - hi) * (v / 0.45), mid + (lo - mid) * ((v - 0.45) / 0.55))
     else:
-        c = {'w': WHITE, 'm': MUTED, 'gold': GOLD}[col][None, None]
+        c = {'w': WHITE, 'm': MUTED, 'gold': GOLD, 'hi': GOLD_HI, 'dim': C.to_lin(DIM_S)}[col][None, None]
     rgb = c * m[..., None]
     return np.dstack([rgb, m]).astype(np.float32), base, m.shape[1] - 2 * P
 
@@ -76,20 +90,16 @@ def blur_spr(spr, sig):
     return cv2.GaussianBlur(spr, (0, 0), sig) if sig >= 0.6 else spr
 
 
-def blit(cv, spr, x, y, ax=0.5, ay=0.5, s=1.0, op=1.0, rot=0.0, blur=0.0, clip=None, mode='over'):
-    """Composite a premultiplied RGBA sprite so its (ax, ay) fraction lands on (x, y). clip=(y0, y1) canvas rows."""
-    if op <= 0.003 or s <= 0.01:
+def blit_M(cv, spr, M, op=1.0, mode='over', blur=0.0):
+    """Composite a premultiplied RGBA sprite through the 2x3 affine M (sprite px -> canvas px)."""
+    if op <= 0.003:
         return
     spr = blur_spr(spr, blur)
     h, w = spr.shape[:2]
-    M = cv2.getRotationMatrix2D((w * ax, h * ay), rot, s)
-    M[0, 2] += x - w * ax
-    M[1, 2] += y - h * ay
+    M = np.float32(M).copy()
     cs = np.float32([[0, 0, 1], [w, 0, 1], [w, h, 1], [0, h, 1]]) @ M.T
     x0, y0 = np.floor(cs.min(0)).astype(int)
     x1, y1 = np.ceil(cs.max(0)).astype(int) + 1
-    if clip is not None:
-        y0, y1 = max(y0, int(clip[0])), min(y1, int(clip[1]))
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(S, x1), min(S, y1)
     if x1 <= x0 or y1 <= y0:
         return
@@ -102,21 +112,22 @@ def blit(cv, spr, x, y, ax=0.5, ay=0.5, s=1.0, op=1.0, rot=0.0, blur=0.0, clip=N
         return
     a = out[..., 3:4]
     reg[..., :3] = out[..., :3] + reg[..., :3] * (1 - a)
-    if reg.shape[2] == 4:
-        reg[..., 3:4] = a + reg[..., 3:4] * (1 - a)
 
 
-def put3d(cv, img, cx, cy, wpx, rot=(0, 0, 0), depth=4.0, op=1.0, blur=0.0, dz=0.0):
-    """Place an RGBA card as a 3D plane whose centre lands on screen (cx, cy) and is wpx wide at rest."""
-    cam = C.Cam(0, 0, 0, F=F)
-    k = depth / F
-    h = img.shape[0] / img.shape[1] * wpx
-    C.draw_img3d(cv, img, cam, ((cx - S / 2) * k, -(cy - S / 2) * k, depth + dz), (wpx * k, h * k), tuple(rot),
-                 opacity=op, blur=blur)
+def blit(cv, spr, x, y, ax=0.5, ay=0.5, s=1.0, op=1.0, rot=0.0, blur=0.0, mode='over', sx=1.0):
+    """Composite a sprite so its (ax, ay) fraction lands on (x, y); s = scale, sx = extra horizontal scale."""
+    if op <= 0.003 or s <= 0.01:
+        return
+    h, w = spr.shape[:2]
+    r = math.radians(-rot)
+    c, sn = math.cos(r), math.sin(r)
+    Ml = np.float64([[c * s * sx, -sn * s], [sn * s * sx, c * s]])
+    off = np.float64([x, y]) - Ml @ np.float64([w * ax, h * ay])
+    blit_M(cv, spr, np.c_[Ml, off], op, mode, blur)
 
 
 def half(img):
-    """Paint results are supersampled (SS x): bring them to 1x for 2D blits."""
+    """Paint results are supersampled (SS x): bring them to 1x."""
     return cv2.resize(img, (img.shape[1] // SS, img.shape[0] // SS), interpolation=cv2.INTER_AREA)
 
 
@@ -127,11 +138,6 @@ def poly(p, pts, col, op=1.0):
     return m
 
 
-def gcard(p, x, y, w, h, r=26, op=1.0, k=1.0):
-    """Dark glass card with a gold-lit hairline edge."""
-    return U.glass_panel(p, x, y, w, h, r, edge=(GOLD_S * 1.05, GOLD_S * 0.25), op=op, edge_k=0.55 * k)
-
-
 def walk(seed, n=48, drift=0.6, vol=1.0):
     rng = np.random.default_rng(seed)
     v = np.cumsum(rng.normal(drift / n * 3, vol / math.sqrt(n), n))
@@ -139,16 +145,20 @@ def walk(seed, n=48, drift=0.6, vol=1.0):
     return v / max(v.max(), 1e-6)
 
 
-def spark(p, x, y, w, h, seed, prog=1.0, col=GOLD_S, width=2.4, fill=True, drift=0.6):
+def spark(p, x, y, w, h, seed, prog=1.0, col=GOLD_S, width=2.4, fill=True, drift=0.6, dot=True):
     v = walk(seed, drift=drift)
     n = max(2, int(round(len(v) * prog)))
-    pts = [(x + w * i / (len(v) - 1), y + h * (1 - v[i])) for i in range(n)]
+    xs = np.linspace(x, x + w, len(v))
+    pts = [(xs[i], y + h * (1 - v[i])) for i in range(n)]
     if fill and n > 2:
         m = poly(p, pts + [(pts[-1][0], y + h), (x, y + h)], col, 0.0)
-        g = np.clip(1 - (p._yy - p.X(y)) / (h * SS), 0, 1)
-        p.add(m * g, col, 0.22)
-    p.line(pts, width, col, 1.0)
-    p.circle(pts[-1][0], pts[-1][1], width * 1.6, WHITE_S, 1.0)
+        g = np.clip(1 - (p._yy - p.X(y)) / (h * SS), 0, 1) ** 1.5
+        p.add(m * g, col, 0.28)
+    lm = p.line(pts, width, col, 1.0)
+    p.glow(lm, col, 5, 0.5)
+    if dot:
+        p.circle(pts[-1][0], pts[-1][1], width * 2.4, col, 0.25)
+        p.circle(pts[-1][0], pts[-1][1], width * 1.3, CHAMP_S, 1.0)
     return pts[-1]
 
 
@@ -157,302 +167,462 @@ B3D_N = dict(logo=120, goldbar=96, silverbar=96, barrel=96, coin=96, shield=96)
 B3D_SCALE = dict(logo=0.6)
 
 
+def _b3d_path(job, f):
+    for d in ('b3d2', 'b3d'):                                 # relit v2 set first, v1 as fallback
+        p = f'{ROOT}/{d}/{job}/{f:04d}.png'
+        if os.path.exists(p):
+            return p
+    return None
+
+
 def b3d(job, fpos, pingpong=False):
-    """Premultiplied linear RGBA of a Blender element at fractional 30 fps frame fpos (1-based), frame-blended;
-    None if that sequence has not been rendered."""
+    """Premultiplied linear RGBA of a Blender element at fractional 30 fps frame fpos (1-based), frame-blended."""
     n = B3D_N[job]
     if pingpong:
         fpos = 1 + abs(((fpos - 1) % (2 * (n - 1))) - (n - 1))
     fpos = min(max(fpos, 1.0), float(n))
     f0 = int(math.floor(fpos))
     w = fpos - f0
-    paths = [f'{ROOT}/b3d/{job}/{f:04d}.png' for f in (f0, min(n, f0 + 1))]
-    if not all(os.path.exists(p) for p in paths):
+    p0, p1 = _b3d_path(job, f0), _b3d_path(job, min(n, f0 + 1))
+    if p0 is None:
         return None
     sc = B3D_SCALE.get(job, 0.5)
-    a = C.load(paths[0], sc)
-    if w < 0.02 or paths[1] == paths[0]:
+    a = C.load(p0, sc)
+    if w < 0.02 or p1 is None or p1 == p0:
         return a
-    return a * (1 - w) + C.load(paths[1], sc) * w
+    return a * (1 - w) + C.load(p1, sc) * w
 
 
-def with_reflection(spr, k=0.22, length=0.35):
-    """Glossy-floor reflection under a sprite (flipped, fading)."""
-    h = spr.shape[0]
-    ys, xs = np.where(spr[..., 3] > 0.05)
-    if len(ys) == 0:
-        return spr
-    bottom = ys.max()
-    L = int(h * length)
-    ref = spr[max(0, bottom - L):bottom + 1][::-1].copy()
-    fade = np.linspace(1, 0, ref.shape[0], dtype=np.float32)[:, None, None] ** 1.6 * k
-    ref = cv2.GaussianBlur(ref * fade, (0, 0), 2.5)
-    out = np.zeros((max(h, bottom + 1 + ref.shape[0]) + 4, spr.shape[1], 4), np.float32)
-    out[:h] = spr
-    seg = out[bottom + 3:bottom + 3 + ref.shape[0]]
-    C.over(seg, ref[:seg.shape[0]])
-    return out
+def hero(cv, spr, x, y, s=1.0, op=1.0, blur=0.0, glow=BL_GOLD, glow_k=1.0, rim=0.9, reflect=0.0):
+    """Product shot of a 3D sprite: coloured light bloom behind, hot rim light around the silhouette."""
+    if spr is None or op <= 0.003:
+        return
+    h, w = spr.shape[:2]
+    a = spr[..., 3]
+    if glow_k > 0:                                            # bloom behind (quarter res)
+        q = cv2.resize(a, (w // 4, h // 4), interpolation=cv2.INTER_AREA)
+        q = cv2.GaussianBlur(q, (0, 0), w / 4 * 0.12)
+        g = cv2.resize(q, (w, h))
+        gl = np.dstack([g[..., None] * glow * 0.55 * glow_k, g * 0]).astype(np.float32)
+        blit(cv, gl, x, y, s=s * 1.25, op=op, mode='add')
+    if rim > 0:                                               # rim: alpha edge, lit from above
+        er = cv2.erode(a, np.ones((5, 5), np.uint8))
+        edge = np.clip(a - er, 0, 1)
+        yy = np.linspace(1.0, 0.35, h, dtype=np.float32)[:, None]
+        edge = cv2.GaussianBlur(edge * yy, (0, 0), 1.2)
+        rimspr = np.dstack([edge[..., None] * CHAMP * rim, edge * 0]).astype(np.float32)
+    if reflect > 0:
+        ys = np.where(a.max(1) > 0.05)[0]
+        if len(ys):
+            bot = ys.max()
+            L = int(h * 0.3)
+            ref = spr[max(0, bot - L):bot + 1][::-1]
+            fade = np.linspace(1, 0, ref.shape[0], dtype=np.float32)[:, None, None] ** 1.8 * reflect
+            ref = cv2.GaussianBlur(ref * fade, (0, 0), 3)
+            blit(cv, ref, x, y + (bot - h / 2 + 4) * s, ay=0.0, s=s, op=op, blur=blur)
+    blit(cv, spr, x, y, s=s, op=op, blur=blur)
+    if rim > 0:
+        blit(cv, rimspr, x, y, s=s, op=op, blur=blur, mode='add')
+
+
+# ------------------------------------------------------------------ liquid glass
+GP = 64                                       # padding around a glass card (room for shadow + rim glow)
+
+
+@functools.lru_cache(maxsize=64)
+def glass_geo(w, h, r, bevel=26):
+    """Card-local geometry of a rounded-rect glass slab (with GP padding):
+    (inside, lens, nx, ny) and (rim, shadow, sheen) planes."""
+    W2, H2 = w + 2 * GP, h + 2 * GP
+    yy, xx = np.mgrid[0:H2, 0:W2].astype(np.float32) + 0.5
+    qx = np.abs(xx - W2 / 2) - (w / 2 - r)
+    qy = np.abs(yy - H2 / 2) - (h / 2 - r)
+    d = np.sqrt(np.maximum(qx, 0) ** 2 + np.maximum(qy, 0) ** 2) + np.minimum(np.maximum(qx, qy), 0) - r
+    gy, gx = np.gradient(cv2.GaussianBlur(d, (0, 0), 1.0))
+    n = np.sqrt(gx ** 2 + gy ** 2) + 1e-6
+    nx, ny = gx / n, gy / n
+    inside = np.clip(0.5 - d, 0, 1)
+    tt = np.clip(-d / bevel, 0, 1)
+    lens = ((1 - tt) ** 2.2) * inside
+    rim = np.exp(-((d + 1.3) / 1.0) ** 2)
+    sh = cv2.GaussianBlur(inside, (0, 0), 20)
+    sh = np.roll(sh, 18, axis=0)
+    sheen = inside * np.clip(1 - (yy - GP) / (h * 0.55), 0, 1) ** 2
+    return (np.dstack([inside, lens, nx, ny]).astype(np.float32), np.dstack([rim, sh, sheen]).astype(np.float32))
+
+
+def card_matrix(wb, hb, cx, cy, wpx, rot=(0, 0, 0), depth=4.0, dz=0.0):
+    """Homography: card sprite px (body wb x hb + GP padding) -> canvas px, body wpx wide at rest on (cx, cy)."""
+    k = wpx / wb * depth / F
+    W2, H2 = wb + 2 * GP, hb + 2 * GP
+    ctr = ((cx - S / 2) * depth / F, -(cy - S / 2) * depth / F, depth + dz)
+    pts, d = CAM.project(C.plane_corners(ctr, (W2 * k, H2 * k), tuple(rot)))
+    if d.min() < 0.05:
+        return None, None
+    Mx = cv2.getPerspectiveTransform(np.float32([[0, 0], [W2, 0], [W2, H2], [0, H2]]), pts.astype(np.float32))
+    return Mx, pts
+
+
+def glass(cv, wb, hb, r, cx, cy, wpx, rot=(0, 0, 0), depth=4.0, dz=0.0, op=1.0, content=None, refr=16.0, frost=9.0,
+          dark=0.80, tint=None, rim_col=None, rim_k=0.0, spec=1.0, shadow=0.6, cblur=0.0, bevel=26):
+    """Liquid-glass slab: refracts and frosts the canvas behind it, chromatic edge dispersion, specular rim,
+    top sheen, soft drop shadow, optional coloured neon rim glow; then the card content on top."""
+    if op <= 0.003:
+        return
+    Mx, pts = card_matrix(wb, hb, cx, cy, wpx, rot, depth, dz)
+    if Mx is None:
+        return
+    pad = 40
+    bx0, by0 = int(max(0, pts[:, 0].min() - pad)), int(max(0, pts[:, 1].min() - pad))
+    bx1, by1 = int(min(S, pts[:, 0].max() + pad)), int(min(S, pts[:, 1].max() + pad))
+    if bx1 - bx0 < 4 or by1 - by0 < 4:
+        return
+    T = np.array([[1, 0, -bx0], [0, 1, -by0], [0, 0, 1]], np.float64) @ Mx
+    sz = (bx1 - bx0, by1 - by0)
+    g1, g2 = glass_geo(wb, hb, r, bevel)
+    G1 = cv2.warpPerspective(g1, T, sz, flags=cv2.INTER_LINEAR, borderValue=0)
+    G2 = cv2.warpPerspective(g2, T, sz, flags=cv2.INTER_LINEAR, borderValue=0)
+    ins, lens, nx, ny = (G1[..., i] for i in range(4))
+    rim, sh, sheen = (G2[..., i] for i in range(3))
+    scale = math.sqrt(abs(np.linalg.det(Mx[:2, :2])))           # local px per card px (approx)
+    reg = cv[by0:by1, bx0:bx1]
+    reg[..., :3] *= (1 - shadow * sh * op * (1 - ins))[..., None]
+    base = reg[..., :3].copy()
+    fro = cv2.GaussianBlur(base, (0, 0), max(0.6, frost * scale))
+    mix = np.clip(lens * 0.75, 0, 1)[..., None]
+    src = fro * (1 - mix) + base * mix
+    hh, ww = ins.shape
+    yy, xx = np.mgrid[0:hh, 0:ww].astype(np.float32)
+    D = refr * scale * lens
+    out = np.empty_like(base)
+    for ch, kc in enumerate((1.0, 1.18, 1.36)):                  # dispersion: blue bends most
+        out[..., ch] = cv2.remap(src[..., ch], xx + nx * D * kc, yy + ny * D * kc, cv2.INTER_LINEAR,
+                                 borderMode=cv2.BORDER_REFLECT)
+    out *= dark
+    if tint is not None:
+        out += np.asarray(tint, np.float32) * ins[..., None]
+    Lx, Ly = -0.5, -0.866                                        # key light from the top-left
+    ndl = nx * Lx + ny * Ly
+    sp = rim * (np.clip(ndl, 0, 1) ** 1.4 * 1.5 + np.clip(-ndl, 0, 1) ** 2 * 0.45 + 0.16) * spec
+    out += sp[..., None] * C.to_lin(hexs('fff6e8'))
+    out += (lens ** 2 * 0.05 + lens ** 3 * np.clip(ndl, 0, 1) * 0.22)[..., None] * spec
+    out += (sheen * 0.035 * spec)[..., None]
+    m = (ins * op)[..., None]
+    reg[..., :3] = reg[..., :3] * (1 - m) + out * m
+    if rim_col is not None and rim_k > 0:                        # neon rim light bleeding out of the edge
+        rg = rim * np.clip(ndl * 0.6 + 0.6, 0.15, 1)
+        glow = rg * 1.2 + cv2.GaussianBlur(rg, (0, 0), 5 * scale) * 6 + cv2.GaussianBlur(rg, (0, 0), 18 * scale) * 10
+        reg[..., :3] += glow[..., None] * np.asarray(rim_col, np.float32) * rim_k * op
+    if content is not None:
+        cw = cv2.warpPerspective(content, T, sz, flags=cv2.INTER_LINEAR, borderValue=0)
+        if cblur >= 0.6:
+            cw = cv2.GaussianBlur(cw, (0, 0), cblur)
+        C.over(reg, cw * op)
+
+
+def new_card(w, h):
+    return U.Paint(w, h, pad=GP)
+
+
+def card_img(p):
+    return half(p.result())
 
 
 # ------------------------------------------------------------------ logo
-@functools.lru_cache(maxsize=1)
-def logo_parts():
+@functools.lru_cache(maxsize=8)
+def logo_flat(width):
+    """The Floret mark (gold bars + silver arrow) as a flat sprite `width` px wide (for UI chrome)."""
     im = cv2.imread(ASSETS + '/logo.png', cv2.IMREAD_UNCHANGED).astype(np.float32) / 255
     a = im[..., 3]
-    rgb = im[..., 2::-1]
     ys, xs = np.where(a > 0.02)
-    y0, y1, x0, x1 = ys.min() - 6, ys.max() + 7, xs.min() - 6, xs.max() + 7
-    a, rgb = a[y0:y1, x0:x1], rgb[y0:y1, x0:x1]
-    sat = rgb.max(2) - rgb.min(2)
-    gold = a * (sat > 0.2)
-    arrow = a * (sat <= 0.2)
-    n, lab, st, _ = cv2.connectedComponentsWithStats((gold > 0.5).astype(np.uint8))
-    idx = sorted(range(1, n), key=lambda i: -st[i, 4])[:4]
-    idx.sort(key=lambda i: st[i, 0])
-    bars = []
-    for i in idx:
-        reg = cv2.dilate((lab == i).astype(np.uint8), np.ones((5, 5), np.uint8)).astype(np.float32)
-        bars.append((gold * reg, st[i, 1], st[i, 1] + st[i, 3]))
-    return bars, arrow
+    im = im[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    hgt = int(round(im.shape[0] * width / im.shape[1]))
+    im = cv2.resize(im, (width, hgt), interpolation=cv2.INTER_AREA)
+    rgb = C.to_lin(im[..., 2::-1]) * im[..., 3:4]
+    return np.pad(np.dstack([rgb, im[..., 3]]).astype(np.float32), ((4, 4), (4, 4), (0, 0)))
 
 
+# ------------------------------------------------------------------ typography
+class Title:
+    """One line of type built from segments [(text, font, px, col)]; revealed letter by letter
+    (blur -> sharp, rise, tracking settles), exits with a quick blur-up; optional light sweep."""
+
+    def __init__(self, segs, x, y, align='c', gap=0.28, track=0.0):
+        self.chars = []
+        X = 0.0
+        for k, (text, font, px, col) in enumerate(segs):
+            f = U._font(font, px * SS)
+            for i, ch in enumerate(text):
+                if ch != ' ':
+                    self.chars.append((ch, font, px, col, X + f.getlength(text[:i]) / SS + i * px * track))
+            X += f.getlength(text) / SS + (len(text) - 1) * px * track + (px * gap if k < len(segs) - 1 else 0)
+        self.width = X
+        self.x0 = x - X / 2 if align == 'c' else (x - X if align == 'r' else x)
+        self.y = y
+        self.px = max(s[2] for s in segs)
+
+    def draw(self, cv, t, t_in, t_out=1e9, stagger=0.024, dur=0.95, op=1.0, sweep=0.55, dy=0.0, s=1.0):
+        n = len(self.chars)
+        xc = self.x0 + self.width / 2
+        bx = None
+        if sweep is not None:
+            su = (t - t_in - sweep - n * stagger * 0.5) / 0.9
+            if 0 < su < 1:
+                bx = self.x0 - 120 + (self.width + 240) * A.EASY(su)
+        for i, (ch, font, px, col, xo) in enumerate(self.chars):
+            u = t - t_in - i * stagger
+            if u <= 0:
+                continue
+            p = A.EXPO_OUT(A.clamp(u / dur))
+            q = A.EXPO_IN(A.clamp((t - t_out - i * 0.008) / 0.38)) if t > t_out else 0.0
+            o = A.ramp(u, 0, dur * 0.45) * (1 - q) * op
+            if o <= 0.003:
+                continue
+            spr, base, adv = tsprite(ch, font, px, col)
+            x = self.x0 + xo
+            x = xc + (x - xc) * (1 + 0.06 * (1 - p)) * s
+            y = self.y + dy + (1 - p) * px * 0.30 - q * px * 0.25
+            yy = S / 2 + (y - S / 2) * s if s != 1.0 else y
+            bl = (1 - p) * 9 + q * 9
+            blit(cv, spr, x - 26 * s, yy, ax=0, ay=base / spr.shape[0], s=s, op=o, blur=bl)
+            if bx is not None:
+                k = math.exp(-((x + adv / 2 - bx) / (px * 1.1)) ** 2)
+                if k > 0.02:
+                    blit(cv, spr, x - 26 * s, yy, ax=0, ay=base / spr.shape[0], s=s, op=o * k * 0.9, mode='add')
+
+
+def kicker(cv, txt, x, y, t, t_in, t_out=1e9, col='gold', px=17, op=1.0, lines=True):
+    """Tracked micro-label with hairlines either side (e.g. '—  FLORET CAPITALS  —')."""
+    u = t - t_in
+    if u <= 0:
+        return
+    p = A.EXPO_OUT(A.clamp(u / 1.0))
+    q = A.EXPO_IN(A.clamp((t - t_out) / 0.38)) if t > t_out else 0.0
+    o = A.ramp(u, 0, 0.5) * (1 - q) * op
+    spr, base, adv = tsprite(txt.upper(), M, px, col, round(0.34 + 0.18 * (1 - p), 2))
+    blit(cv, spr, x, y, ay=base / spr.shape[0], op=o, blur=(1 - p) * 4 + q * 6)
+    if lines:
+        L = 46 * p
+        w = spr.shape[1] / 2 - 26 + 18
+        for sgn in (-1, 1):
+            ln = np.zeros((6, int(L) + 2, 4), np.float32)
+            ln[2:4, :, :3] = GOLD * 0.9
+            ln[2:4, :, 3] = 0.9
+            blit(cv, ln, x + sgn * (w + L / 2), y - px * 0.36, op=o)
+
+
+# ------------------------------------------------------------------ orbit text
 @functools.lru_cache(maxsize=8)
-def logo_layers(width):
-    """Shaded logo pieces at `width` px: bar sprites (RGBA) with their top/bottom rows, arrow sprite + coords."""
-    bars, arrow = logo_parts()
-    k = width / arrow.shape[1]
-    sz = (width, int(round(arrow.shape[0] * k)))
-    h = sz[1]
-    yy = np.arange(h, dtype=np.float32)[:, None, None] / h
-    out = []
-    for m, t, b in bars:
-        mm = cv2.resize(m, sz, interpolation=cv2.INTER_AREA)
-        col = GOLD_HI + (GOLD_LO - GOLD_HI) * np.clip((yy - 0.35) / 0.55, 0, 1)
-        edge = np.clip(mm - np.roll(mm, 3, axis=0), 0, 1)                 # lit top edge
-        rgb = col * mm[..., None] + edge[..., None] * C.to_lin(np.float32([1, 0.92, 0.75])) * 0.6
-        out.append((np.dstack([rgb, mm]).astype(np.float32), t * k, b * k))
-    am = cv2.resize(arrow, sz, interpolation=cv2.INTER_AREA)
-    xx = np.arange(sz[0], dtype=np.float32)[None, :]
-    g = np.clip(xx / sz[0], 0, 1)[..., None]
-    col = C.to_lin(np.float32([0.80, 0.80, 0.82])) * (1 - g) + C.to_lin(np.float32([1, 1, 1])) * g
-    ar = np.dstack([col * am[..., None], am]).astype(np.float32)
-    ys, xs = np.where(am > 0.3)
-    s = (xs - xs.min()) / (xs.max() - xs.min())              # progress coordinate along the arrow (left -> right)
-    coord = np.full(am.shape, 2.0, np.float32)
-    yyg, xxg = np.mgrid[0:sz[1], 0:sz[0]]
-    coord = np.clip((xxg - xs.min()) / (xs.max() - xs.min()), 0, 1).astype(np.float32)
-    del s
-    return out, ar, coord
+def _orbit_layout(text, font, px, col):
+    f = U._font(font, px * SS)
+    adv = np.float32([f.getlength(ch) / SS for ch in text])
+    cum = np.cumsum(adv) - adv / 2
+    return adv, cum, float(adv.sum())
 
 
-def logo_sprite(width, bars_p, arrow_p, sheen=None):
-    """Assemble the logo: bars grow from their base (bars_p list 0..1), arrow draws left->right (arrow_p)."""
-    bars, ar, coord = logo_layers(width)
-    h, w = ar.shape[:2]
-    out = np.zeros((h + 60, w + 60, 4), np.float32)
-    o = out[30:30 + h, 30:30 + w]
-    for (spr, top, bot), p in zip(bars, bars_p):
-        if p <= 0:
+def orbit(cv, text, font, px, col, cx, cy, R, spin, side, tilt=68.0, roll=-14.0, op=1.0, reveal=1.0, back=0.3):
+    """Text on a ring in 3D around (cx, cy): ring radius R px, tilted `tilt` deg from face-on, rolled in plane.
+    side='back' draws the far half (dim, soft), side='front' the near half - draw an object in between."""
+    if op <= 0.003:
+        return
+    adv, cum, tot = _orbit_layout(text, font, px, col)
+    sa, ca = math.sin(math.radians(90 - tilt)), math.cos(math.radians(90 - tilt))
+    rr = math.radians(roll)
+    cr, sr = math.cos(rr), math.sin(rr)
+    D = R * 4.5
+    for i, ch in enumerate(text):
+        if ch == ' ':
             continue
-        pe = A.BACK_OUT(min(1.0, p))
-        hh = (bot - top)
-        cut = bot - hh * pe
-        rows = (np.arange(h, dtype=np.float32) >= cut)[:, None, None]
-        # squash-stretch: shift the bar down by the missing height
-        sh = int(round(hh * (1 - pe)))
-        s2 = np.roll(spr, sh, axis=0) if sh else spr
-        C.over(o, s2 * rows)
-    if arrow_p > 0:
-        front = arrow_p * 1.08
-        m = np.clip((front - coord) / 0.04, 0, 1)[..., None]
-        C.over(o, ar * m)
-        if arrow_p < 1.0:                                      # hot drawing head
-            head = np.exp(-((coord - front) / 0.03) ** 2)[..., None] * ar[..., 3:4]
-            o[..., :3] += head * GOLD_HI * 3.0
-    if sheen is not None and 0 < sheen < 1:
-        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-        band = np.exp(-(((xx - w * (sheen * 1.6 - 0.3)) + (yy - h / 2) * 0.55) / (w * 0.07)) ** 2)
-        o[..., :3] += band[..., None] * o[..., 3:4] * 1.4
-    return out
+        frac = cum[i] / tot
+        if frac > reveal:
+            continue
+        th = spin + frac * 2 * math.pi
+        X, Z = R * math.sin(th), R * math.cos(th)                # Z > 0: towards the viewer
+        if (Z > 0) != (side == 'front'):
+            continue
+        Y = Z * sa                                               # tilt: near side sits lower
+        Zc = Z * ca
+        k = D / (D - Zc)
+        x, y = X * k, Y * k
+        tx, ty = math.cos(th) * k, -math.sin(th) * sa * k        # tangent d/dth
+        x, y = x * cr - y * sr, x * sr + y * cr
+        tx, ty = tx * cr - ty * sr, tx * sr + ty * cr
+        ang = math.degrees(math.atan2(ty, tx))
+        face = abs(math.cos(th)) ** 0.5
+        spr, base, a = tsprite(ch, font, px, col)
+        depthk = 0.5 + 0.5 * (Z / R)
+        o = op * (back + (1 - back) * depthk) if Z > 0 else op * back * (0.6 + 0.4 * (1 + Z / R))
+        blit(cv, spr, cx + x, cy + y, ax=0.5, ay=(base - px * 0.36) / spr.shape[0], s=k, sx=max(0.25, face),
+             rot=-ang, op=o, blur=0.0 if Z > 0 else 1.2)
 
 
-# ------------------------------------------------------------------ kinetic type
-class KText:
-    """Lines of words [(word, font, px, col)], centred (or left-aligned at x). Words rise through a slot mask."""
-
-    def __init__(self, lines, cy, x=S / 2, align='c', lead=1.12):
-        self.rows = []
-        ys = []
-        tot = sum(max(w[2] for w in ln) * lead for ln in lines)
-        y = cy - tot / 2
-        for ln in lines:
-            px = max(w[2] for w in ln)
-            y += px * lead * 0.82
-            ws = []
-            for word, font, wpx, col in ln:
-                spr, base, adv = tsprite(word, font, wpx, col, 0.0)
-                ws.append([spr, base, adv, wpx])
-            gap = px * 0.26
-            width = sum(w[2] for w in ws) + gap * (len(ws) - 1)
-            xx = x - width / 2 if align == 'c' else x
-            for w in ws:
-                w.append(xx)
-                xx += w[2] + gap
-            self.rows.append((ws, y, px))
-            ys.append(y)
-            y += px * lead * 0.18
-
-    def draw(self, cv, t, t_in, t_out=1e9, stagger=0.07, dur=0.85, line_delay=0.18, s=1.0, op=1.0, slot=True,
-             highlight=None):
-        k = 0
-        for li, (ws, y, px) in enumerate(self.rows):
-            for wi, (spr, base, adv, wpx, xx) in enumerate(ws):
-                u = t - t_in - k * stagger - li * line_delay
-                k += 1
-                if u <= 0:
-                    continue
-                p = A.EXPO_OUT(A.clamp(u / dur))
-                q = A.EXPO_IN(A.clamp((t - t_out - k * 0.025) / 0.42)) if t > t_out else 0.0
-                dy = (1 - p) * wpx * 0.9 - q * wpx * 0.45
-                o = A.ramp(u, 0, dur * 0.4) * (1 - q) * op
-                if highlight is not None:
-                    o *= highlight(li, wi)
-                bl = (1 - p) * 6 + q * 8
-                X = S / 2 + (xx - S / 2) * s
-                Y = S / 2 + (y - S / 2) * s
-                clip = (0, Y + wpx * 0.32 * s) if slot and p < 0.999 else None
-                blit(cv, spr, X - 26 * s, Y + dy * s, ax=0, ay=base / spr.shape[0], s=s, op=o, blur=bl, clip=clip)
+# ------------------------------------------------------------------ background: liquid colour blooms
+# per scene: (colour, x, y, radius, intensity, phase)  - all in frame fractions
+BLOOMS = {
+    'f1': [(BL_GOLD, 0.50, 0.44, 0.26, 0.75, 0.0), (BL_AMBER, 0.56, 0.58, 0.16, 0.45, 1.3), (BL_BLUE, 0.12, 0.10, 0.22, 0.16, 2.0)],
+    'f2': [(BL_GOLD, 0.50, 0.86, 0.32, 0.65, 0.4), (BL_BLUE, 0.88, 0.16, 0.24, 0.20, 1.0), (BL_AMBER, 0.20, 0.70, 0.16, 0.25, 2.4)],
+    'f3': [(BL_GOLD, 0.52, 0.58, 0.30, 0.55, 0.2), (BL_GREEN, 0.14, 0.18, 0.22, 0.26, 1.7), (BL_BLUE, 0.90, 0.85, 0.20, 0.18, 0.8)],
+    'f4': [(BL_GOLD, 0.30, 0.70, 0.30, 0.55, 0.1), (BL_BLUE, 0.84, 0.48, 0.26, 0.30, 2.2), (BL_VIOLET, 0.70, 0.95, 0.18, 0.22, 1.1)],
+    'f5': [(BL_GREEN, 0.28, 0.40, 0.22, 0.55, 0.6), (BL_RED, 0.72, 0.40, 0.22, 0.50, 1.9), (BL_GOLD, 0.50, 0.80, 0.26, 0.40, 0.3)],
+    'f6': [(BL_GOLD, 0.50, 0.62, 0.30, 0.55, 0.9), (BL_AMBER, 0.20, 0.30, 0.18, 0.22, 2.6), (BL_BLUE, 0.85, 0.25, 0.20, 0.22, 0.2)],
+    'f7': [(BL_BLUE, 0.26, 0.58, 0.28, 0.48, 1.4), (BL_GOLD, 0.72, 0.62, 0.28, 0.50, 0.5), (BL_VIOLET, 0.10, 0.92, 0.16, 0.18, 2.1)],
+    'f8': [(BL_GOLD, 0.50, 0.40, 0.28, 0.75, 0.7), (BL_AMBER, 0.50, 0.50, 0.14, 0.40, 1.6), (BL_BLUE, 0.88, 0.88, 0.20, 0.20, 2.8)],
+    'f9': [(BL_GOLD, 0.50, 0.50, 0.22, 0.65, 0.3), (BL_BLUE, 0.50, 0.50, 0.40, 0.20, 1.2)],
+    'f10': [(BL_GOLD, 0.50, 0.98, 0.42, 0.70, 0.0), (BL_AMBER, 0.50, 1.02, 0.26, 0.60, 1.0), (BL_BLUE, 0.15, 0.12, 0.22, 0.14, 2.3)],
+}
+QL = 156                                       # bloom field resolution
 
 
-# ------------------------------------------------------------------ background
+@functools.lru_cache(maxsize=1)
+def _qgrid():
+    yy, xx = np.mgrid[0:QL, 0:QL].astype(np.float32) / QL
+    return yy, xx
+
+
 @functools.lru_cache(maxsize=1)
 def _bg_base():
     yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
-    r = np.hypot(xx - S / 2, (yy - S * 0.46) * 1.05) / S
-    base = np.exp(-(r / 0.55) ** 2)[..., None] * C.to_lin(hexs('0e0b07')) + C.to_lin(hexs('030303'))
-    return base.astype(np.float32)
+    r = np.hypot(xx - S / 2, yy - S * 0.5) / S
+    return (np.exp(-(r / 0.6) ** 2)[..., None] * C.to_lin(hexs('0b0a0a')) + C.to_lin(hexs('030304'))).astype(np.float32)
 
 
 @functools.lru_cache(maxsize=1)
 def _dust():
     rng = np.random.default_rng(7)
-    n = 170
-    return np.c_[rng.uniform(-7, 7, n), rng.uniform(-5, 5, n), rng.uniform(2.5, 16, n)], rng.uniform(0.004, 0.012, n), \
+    n = 110
+    return np.c_[rng.uniform(-7, 7, n), rng.uniform(-5, 5, n), rng.uniform(2.5, 16, n)], rng.uniform(0.004, 0.010, n), \
         rng.uniform(0, 6.28, n)
 
 
-def background(t, grid=1.0, cam=(0.0, 0.0, 1.0)):
+def scene_weight(t, a, b):
+    return A.ramp(t, a - 0.35, a + 0.55, A.EASY) * (1 - A.ramp(t, b - 0.25, b + 0.45, A.EASY))
+
+
+BOOST = {}                                     # per-frame bloom intensity overrides set by scenes
+
+
+def background(t):
     cv = _bg_base().copy()
-    # drifting gold aurora (quarter res)
-    q = np.zeros((S // 4, S // 4), np.float32)
-    yy, xx = np.mgrid[0:S // 4, 0:S // 4].astype(np.float32)
-    for i, (ax, ay, sp, r) in enumerate(((0.25, 0.25, 0.11, 0.30), (0.78, 0.68, 0.08, 0.34), (0.55, 0.05, 0.06, 0.25))):
-        cx = (ax + 0.10 * math.sin(t * sp * 6.28 + i)) * S / 4
-        cy = (ay + 0.08 * math.cos(t * sp * 5.1 + i * 2)) * S / 4
-        q += np.exp(-(((xx - cx) ** 2 + (yy - cy) ** 2) / (2 * (r * S / 4) ** 2)))
-    cv += cv2.resize(q, (S, S))[..., None] * GOLD * 0.010
-    # perspective data grid on the floor
-    if grid > 0.01:
-        cx, cy, z = cam
-        cam3 = C.Cam(cx * 0.4, 0.6 + cy * 0.3, 0, F=F)
-        m = np.zeros((S, S), np.float32)
-        off = (t * 0.9) % 1.0
-        for zi in range(2, 34):
-            zz = zi - off
-            a = np.clip(1 - zz / 34, 0, 1) ** 1.6
-            P, d = cam3.project(np.array([[-30, -1.6, zz], [30, -1.6, zz]]))
-            cv2.line(m, tuple(np.int32(P[0] * 8)), tuple(np.int32(P[1] * 8)), float(a), 1, cv2.LINE_AA, shift=3)
-        for xi in range(-24, 25):
-            P, d = cam3.project(np.array([[xi, -1.6, 1.2], [xi, -1.6, 34]]))
-            cv2.line(m, tuple(np.int32(P[0] * 8)), tuple(np.int32(P[1] * 8)), 0.55, 1, cv2.LINE_AA, shift=3)
-        hor = np.clip((np.arange(S, dtype=np.float32) - S * 0.52) / (S * 0.48), 0, 1)[:, None] ** 0.8
-        m *= hor
-        cv += (m + cv2.GaussianBlur(m, (0, 0), 3) * 1.5)[..., None] * GOLD * 0.05 * grid
-    # gold dust (3D, lens-blurred)
-    P, r, ph = _dust()
+    yy, xx = _qgrid()
+    q = np.zeros((QL, QL, 3), np.float32)
+    for name, a, b in FRAMES:
+        w = scene_weight(t, a, b)
+        if w <= 0.002:
+            continue
+        w *= BOOST.get(name, 1.0)
+        for col, x, y, r, k, ph in BLOOMS[name]:
+            # liquid: domain-warped gaussian, drifting slowly
+            wx = xx + 0.045 * np.sin(yy * 7.0 + t * 0.55 + ph) + 0.022 * np.sin(yy * 15.0 - t * 0.9 + ph * 2.1)
+            wy = yy + 0.045 * np.sin(xx * 6.0 - t * 0.47 + ph * 1.7) + 0.022 * np.sin(xx * 13.0 + t * 0.8 + ph)
+            x2 = x + 0.03 * math.sin(t * 0.31 + ph)
+            y2 = y + 0.025 * math.cos(t * 0.27 + ph * 1.4)
+            g = np.exp(-((wx - x2) ** 2 + (wy - y2) ** 2) / (2 * (r * 0.8) ** 2))
+            q += g[..., None] * col * (k * w)
+    big = cv2.resize(q, (S, S), interpolation=cv2.INTER_CUBIC)
+    cv += cv2.GaussianBlur(big, (0, 0), 4) * 0.42
+    P, rad, ph = _dust()
     P = P.copy()
     P[:, 1] += 0.25 * np.sin(t * 0.3 + ph)
-    P[:, 0] += 0.2 * np.sin(t * 0.21 + ph * 1.3) + cam[0] * 0.5
-    P[:, 2] = (P[:, 2] - t * 0.35 - 4.0) % 12.5 + 4.0
+    P[:, 0] += 0.2 * np.sin(t * 0.21 + ph * 1.3)
+    P[:, 2] = (P[:, 2] - t * 0.3 - 4.0) % 12.5 + 4.0
     tw = 0.5 + 0.5 * np.sin(t * 2.0 + ph * 5)
-    C.particles(cv, C.Cam(0, 0, 0, F=F, focus=6.0, aperture=0.05), P, r, GOLD_HI, opacity=0.35 + 0.65 * tw, glow=1.3)
+    C.particles(cv, C.Cam(0, 0, 0, F=F, focus=6.0, aperture=0.05), P, rad, CHAMP, opacity=0.18 + 0.4 * tw, glow=1.0)
     return cv
 
 
-# ------------------------------------------------------------------ frame 1: logo reveal
+def add_glow(cv, x, y, r, col, k, sy=1.0):
+    """Additive soft light pool (elliptical gaussian) on the canvas."""
+    if k <= 0.002:
+        return
+    x0, x1 = int(max(0, x - 3 * r)), int(min(S, x + 3 * r))
+    y0, y1 = int(max(0, y - 3 * r * sy)), int(min(S, y + 3 * r * sy))
+    if x1 <= x0 or y1 <= y0:
+        return
+    yy, xx = np.ogrid[y0:y1, x0:x1]
+    g = np.exp(-(((xx - x) / r) ** 2 + ((yy - y) / (r * sy)) ** 2) / 2).astype(np.float32)
+    cv[y0:y1, x0:x1, :3] += g[..., None] * np.asarray(col, np.float32) * k
+
+
+def hline(cv, x0, x1, y, col, k, w=1.0, soft=3.0):
+    ov = np.zeros((12, int(x1 - x0) + 2), np.float32)
+    cv2.line(ov, (0, 6 * 8), (int((x1 - x0) * 8), 6 * 8), 1.0, max(1, int(w)), cv2.LINE_AA, shift=3)
+    xs = np.linspace(0, 1, ov.shape[1], dtype=np.float32)
+    ov *= np.clip(np.minimum(xs, 1 - xs) * 6, 0, 1)[None, :]
+    ov = ov + cv2.GaussianBlur(ov, (0, 0), soft) * 1.5
+    yy = int(y) - 6
+    a, b = max(0, yy), min(S, yy + 12)
+    xa, xb = max(0, int(x0)), min(S, int(x0) + ov.shape[1])
+    if b <= a or xb <= xa:
+        return
+    cv[a:b, xa:xb, :3] += ov[a - yy:b - yy, xa - int(x0):xb - int(x0), None] * np.asarray(col, np.float32) * k
+
+
+# ================================================================== scenes
+# ------------------------------------------------------------------ f1: logo reveal with orbiting markets
+ORBIT1 = 'PSX  •  PMEX  •  EQUITIES  •  GOLD  •  COMMODITIES  •  SILVER  •  CRUDE OIL  •  '
+
+
 def f1(cv, t, u, d):
-    out = A.EXPO_IN(A.clamp((u - (d - 0.34)) / 0.34))
-    bars_p = [A.clamp((u - 0.35 - 0.13 * i) / 0.5) for i in range(4)]
-    arrow_p = A.EXPO(A.clamp((u - 0.95) / 0.65))
-    sheen = (u - 1.9) / 0.7
-    s = (1.0 + 0.04 * u / d) * (1 + 0.9 * out)
+    out = exit_p(u, d)
+    o = 1 - out
+    s = 1.0 + 0.035 * u / d + 0.10 * out
+    cy = 520
+    spin = -0.55 * u - 0.9
+    rev = A.EXPO_OUT(A.clamp((u - 0.8) / 1.6))
+    orbit(cv, ORBIT1, M, 21, 'hi', S / 2, cy + 20, 330 * s, spin, 'back', op=o * A.ramp(u, 0.8, 1.2), reveal=rev)
     lg = b3d('logo', 1 + max(0.0, u - 0.12) * 30)
-    if lg is not None:
-        blit(cv, with_reflection(lg), S / 2, 520 - 140 * out, s=s * 1.3, op=1 - out, blur=out * 10)
-    else:
-        spr = logo_sprite(380, bars_p, arrow_p, sheen)
-        blit(cv, spr, S / 2, 500 - 140 * out, s=s, op=1 - out, blur=out * 10)
-    # wordmark: tracking tightens while it fades in, gold rule grows
-    wu = u - 1.55
-    if wu > 0:
-        p = A.EXPO_OUT(A.clamp(wu / 1.1))
-        tr = round(0.75 - 0.5 * p, 2)
-        wm, base, adv = tsprite('FLORET CAPITALS', 'Rubik-700', 62, 'w', tr)
-        blit(cv, wm, S / 2, 805 - 140 * out, s=s * (1.04 - 0.04 * p), op=A.ramp(wu, 0, 0.5) * (1 - out), blur=(1 - p) * 5 + out * 8)
-        rl = 330 * A.EXPO_OUT(A.clamp((wu - 0.25) / 0.9))
-        if rl > 2:
-            line = np.zeros((10, int(2 * rl) + 2, 4), np.float32)
-            g = np.exp(-((np.arange(line.shape[1]) - rl) / (rl * 0.6)) ** 2)[None, :]
-            line[4:6, :, :3] = GOLD[None, None] * g[..., None]
-            line[4:6, :, 3] = g
-            blit(cv, line, S / 2, 868 - 140 * out, s=s, op=(1 - out), mode='add')
-            blit(cv, line, S / 2, 868 - 140 * out, s=s, op=(1 - out) * 0.8, blur=4, mode='add')
+    hero(cv, lg, S / 2, cy, s=1.08 * s, op=A.ramp(u, 0.05, 0.5) * o, blur=out * 10, glow_k=0.9)
+    orbit(cv, ORBIT1, M, 21, 'w', S / 2, cy + 20, 330 * s, spin, 'front', op=o * A.ramp(u, 0.8, 1.2), reveal=rev)
+    Title([('FLORET', SB, 52, 'w'), ('CAPITALS', L, 52, 'w')], S / 2, 945, gap=0.5, track=0.16).draw(
+        cv, t, 1.75, d - EXIT, stagger=0.035, sweep=0.5, s=s)
+    kicker(cv, 'Pakistan stock & commodity brokerage', S / 2, 1010, t, 2.2, d - EXIT, col='m', px=15)
 
 
-# ------------------------------------------------------------------ frame 2: leading brokerage house
-@functools.lru_cache(maxsize=64)
-def chart_card(prog_q):
-    p = U.Paint(980, 300, pad=10)
-    spark(p, 0, 20, 980, 260, seed=12, prog=prog_q / 40, width=3.2, drift=1.4)
-    rng = np.random.default_rng(3)
-    for i in range(22):                                       # faint candles behind the line
-        x = 20 + i * 44
-        v = walk(12, drift=1.4)[min(47, int(i * 47 / 21))]
-        hgt = rng.uniform(30, 80)
-        yc = 20 + 260 * (1 - v)
-        if x / 980 <= prog_q / 40:
-            p.rrect(x - 7, yc - hgt / 2, 14, hgt, 3, GOLD_S if rng.random() > 0.3 else MUTED_S, 0.18)
-    return p.result()
+# ------------------------------------------------------------------ f2: leading brokerage house
+@functools.lru_cache(maxsize=48)
+def chart_content(prog_q):
+    W_, H_ = 900, 330
+    p = new_card(W_, H_)
+    p.text('MARKET OVERVIEW', 40, 56, M, 15, MUTED_S, 1.0, track=0.3)
+    p.circle(W_ - 52, 50, 5, GOLD_S, 1.0)
+    p.text('Live', W_ - 98, 56, M, 16, WHITE_S, 0.8)
+    for k in range(4):
+        p.line([(40, 110 + k * 54), (W_ - 40, 110 + k * 54)], 1, WHITE_S, 0.06)
+    spark(p, 40, 96, W_ - 80, 200, seed=12, prog=prog_q / 40, width=3.0, drift=1.4)
+    return card_img(p)
 
 
 @functools.lru_cache(maxsize=4)
-def chip(txt, w=None):
-    """Small glass pill with the logo icon + label."""
-    spr, base, adv = tsprite(txt, 'Rubik-500', 26, 'w', 0.12)
-    w = w or int(adv + 110)
-    p = U.Paint(w, 64, pad=24)
-    gcard(p, 0, 0, w, 64, 32)
-    res = half(p.result())
-    icon = logo_sprite(56, [1, 1, 1, 1], 1.0)
-    blit(res, icon, 24 + 44, 24 + 32, s=0.82)
-    blit(res, spr, 24 + 78 - 26, 24 + 32 + 9, ax=0, ay=base / spr.shape[0])
-    return res
+def pill_content(txt, logo=True):
+    spr, base, adv = tsprite(txt, M, 19, 'w', 0.28)
+    w = int(adv + (100 if logo else 64))
+    p = new_card(w, 58)
+    res = card_img(p)
+    x = GP + (62 if logo else 32)
+    if logo:
+        blit(res, logo_flat(34), GP + 36, GP + 29)
+    blit(res, spr, x - 26, GP + 29 + 7, ax=0, ay=base / spr.shape[0])
+    return res, w
 
 
 def f2(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    ch = chip('FLORET CAPITALS')
-    p = A.EXPO_OUT(A.clamp((u - 0.1) / 0.7))
-    blit(cv, ch, S / 2, 390 - (1 - p) * 30, op=A.ramp(u, 0.1, 0.4) * (1 - out), blur=(1 - p) * 4)
-    kt = KText([[("Pakistan's", 'Rubik-700', 82, 'w'), ('Leading', 'Rubik-700', 82, 'w')],
-                [('Brokerage', 'Rubik-800', 104, 'g'), ('House', 'Rubik-800', 104, 'g')]], 600)
-    kt.draw(cv, t, FRAMES[1][1] + 0.2, FRAMES[1][2] - 0.34)
-    pr = A.EXPO(A.clamp((u - 0.4) / 2.0))
-    card = chart_card(int(round(pr * 40)))
-    put3d(cv, card, S / 2, 930 + 30 * (1 - pr), 1000, rot=(-38, 0, 0), op=A.ramp(u, 0.3, 0.8) * (1 - out) * 0.9)
+    out = exit_p(u, d)
+    o = 1 - out
+    T0 = FRAMES[1][1]
+    pc, pw = pill_content('FLORET CAPITALS')
+    p = A.EXPO_OUT(A.clamp((u - 0.05) / 0.9))
+    glass(cv, pw, 58, 29, S / 2, 300 - (1 - p) * 26 - out * 30, pw, op=A.ramp(u, 0.05, 0.4) * o, content=pc,
+          refr=10, frost=6, cblur=(1 - p) * 4 + out * 6)
+    Title([("Pakistan's", L, 84, 'w'), ('leading', L, 84, 'w')], S / 2, 470).draw(cv, t, T0 + 0.2, T0 + d - EXIT)
+    Title([('Brokerage', SB, 104, 'g'), ('House', SB, 104, 'g')], S / 2, 590).draw(cv, t, T0 + 0.42, T0 + d - EXIT)
+    pr = A.EXPO(A.clamp((u - 0.5) / 1.9))
+    cp = A.EXPO_OUT(A.clamp((u - 0.35) / 1.2))
+    glass(cv, 900, 330, 34, S / 2, 900 + 70 * (1 - cp) + 40 * out, 940, rot=(-30 + 8 * (1 - cp), 0, 0),
+          op=A.ramp(u, 0.35, 0.8) * o, content=chart_content(int(round(pr * 40))), rim_col=GOLD, rim_k=0.05,
+          cblur=out * 6)
 
 
-# ------------------------------------------------------------------ frame 3: 12,000+ clients map
+# ------------------------------------------------------------------ f3: 12,000+ clients map
 CITIES = [('Lahore', 74.35, 31.55), ('Karachi', 67.01, 24.86), ('Islamabad', 73.05, 33.68), ('Peshawar', 71.58, 34.01),
           ('Quetta', 67.00, 30.18), ('Multan', 71.47, 30.20), ('Faisalabad', 73.08, 31.42), ('Hyderabad', 68.37, 25.39),
           ('Sialkot', 74.53, 32.49), ('Sukkur', 68.86, 27.70), ('Gwadar', 62.33, 25.13)]
@@ -469,25 +639,27 @@ def pak_map():
     def proj(lo, la):
         return ((lo - box[0]) / (box[1] - box[0]) * size, (box[3] - la) / (box[3] - box[2]) * size * 1.0)
     poly_px = np.float32([proj(a, b) for a, b in zip(lon, lat)])
-    dots = []
-    for y in np.arange(0, size, 15):
-        for x in np.arange(0, size, 15):
-            if cv2.pointPolygonTest(poly_px, (float(x), float(y)), False) >= 0:
-                dots.append((x, y))
     p = U.Paint(size, size, pad=20)
-    for x, y in dots:
-        p.circle(x, y, 2.6, GOLD_S, 0.55)
-    p.line([tuple(q) for q in poly_px] + [tuple(poly_px[0])], 1.4, GOLD_S, 0.35)
+    cxm, cym = size * 0.62, size * 0.38
+    for y in np.arange(0, size, 13):
+        for x in np.arange(0, size, 13):
+            if cv2.pointPolygonTest(poly_px, (float(x), float(y)), False) >= 0:
+                k = math.exp(-((x - cxm) ** 2 + (y - cym) ** 2) / (2 * 260 ** 2))
+                p.circle(x, y, 2.1, CHAMP_S if k > 0.5 else GOLD_S, 0.30 + 0.5 * k)
+    m = p.line([tuple(q) for q in poly_px] + [tuple(poly_px[0])], 1.4, GOLD_HI_S, 0.55)
+    p.glow(m, GOLD_S, 6, 0.6)
     cities = {n: proj(lo, la) for n, lo, la in CITIES}
     return half(p.result()), cities, size
 
 
 def f3(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
+    out = exit_p(u, d)
+    o = 1 - out
+    T0 = FRAMES[2][1]
     spr, cities, size = pak_map()
-    mp = A.EXPO_OUT(A.clamp(u / 1.0))
-    mx, my, ms = S / 2 + 20, 660, 0.78
-    blit(cv, spr, mx, my, s=ms * (0.94 + 0.06 * mp), op=0.75 * A.ramp(u, 0, 0.6) * (1 - out), blur=(1 - mp) * 5)
+    mp = A.EXPO_OUT(A.clamp(u / 1.2))
+    mx, my, ms = S / 2 + 20, 690, 0.80 * (0.94 + 0.06 * mp) * (1 + 0.05 * out)
+    blit(cv, spr, mx, my, s=ms, op=0.9 * A.ramp(u, 0, 0.6) * o, blur=(1 - mp) * 5 + out * 8)
 
     def scr(n):
         x, y = cities[n]
@@ -499,246 +671,289 @@ def f3(cv, t, u, d):
         if cu <= 0:
             continue
         x, y = scr(n)
-        if n != 'Lahore':                                     # arc from Lahore
+        if n != 'Lahore':
             pr = A.EXPO_OUT(A.clamp(cu / 0.7))
-            mxp, myp = (hub[0] + x) / 2, (hub[1] + y) / 2 - 0.25 * math.hypot(x - hub[0], y - hub[1])
-            ts = np.linspace(0, pr, 40)
+            mxp, myp = (hub[0] + x) / 2, (hub[1] + y) / 2 - 0.28 * math.hypot(x - hub[0], y - hub[1])
+            ts = np.linspace(0, pr, 48)
             px = (1 - ts) ** 2 * hub[0] + 2 * (1 - ts) * ts * mxp + ts ** 2 * x
             py = (1 - ts) ** 2 * hub[1] + 2 * (1 - ts) * ts * myp + ts ** 2 * y
-            cv2.polylines(ov, [np.int32(np.c_[px, py] * 8)], False, 0.55, 1, cv2.LINE_AA, shift=3)
-            cv2.circle(ov, (int(px[-1] * 8), int(py[-1] * 8)), 3 * 8, 1.2, -1, cv2.LINE_AA, shift=3)
+            cv2.polylines(ov, [np.int32(np.c_[px, py] * 8)], False, 0.6, 1, cv2.LINE_AA, shift=3)
+            cv2.circle(ov, (int(px[-1] * 8), int(py[-1] * 8)), 3 * 8, 1.4, -1, cv2.LINE_AA, shift=3)
         if cu > 0.5 or n == 'Lahore':
             pu = (cu - (0 if n == 'Lahore' else 0.5))
-            cv2.circle(ov, (int(x * 8), int(y * 8)), int(5 * 8), 1.5, -1, cv2.LINE_AA, shift=3)
-            rr = 6 + 40 * ((pu * 0.8) % 1.0)
-            cv2.circle(ov, (int(x * 8), int(y * 8)), int(rr * 8), 0.8 * (1 - (pu * 0.8) % 1.0), 2, cv2.LINE_AA, shift=3)
-    ov *= (1 - out)
-    cv[..., :3] += (ov[..., None] + cv2.GaussianBlur(ov, (0, 0), 5)[..., None] * 1.6) * GOLD_HI
-    cv[..., 3] = np.clip(cv[..., 3] + ov * 0.5, 0, 1)
-    # tumbling 3D coins either side of the map
-    for i, (x, y, sc, ph) in enumerate(((175, 470, 0.62, 0), (1075, 820, 0.5, 40))):
+            cv2.circle(ov, (int(x * 8), int(y * 8)), int(4.5 * 8), 1.6, -1, cv2.LINE_AA, shift=3)
+            rr = 6 + 36 * ((pu * 0.8) % 1.0)
+            cv2.circle(ov, (int(x * 8), int(y * 8)), int(rr * 8), 0.7 * (1 - (pu * 0.8) % 1.0), 2, cv2.LINE_AA, shift=3)
+    ov *= o
+    cv[..., :3] += (ov[..., None] * CHAMP + cv2.GaussianBlur(ov, (0, 0), 6)[..., None] * 2.0 * GOLD)
+    # Lahore label on a small glass tag
+    lu = u - 0.7
+    if lu > 0:
+        tag, tw = pill_content('LAHORE', logo=False)
+        p = A.EXPO_OUT(A.clamp(lu / 0.8))
+        glass(cv, tw, 58, 29, hub[0] + 20 + tw * 0.32, hub[1] - 62 - (1 - p) * 16, tw * 0.64, op=A.ramp(lu, 0, 0.3) * o,
+              content=tag, refr=8, frost=5, shadow=0.4)
+    # floating 3D coins
+    for i, (x, y, sc, ph) in enumerate(((165, 520, 0.56, 0), (1085, 860, 0.46, 40))):
         cn = b3d('coin', 1 + t * 30 * 0.9 + ph, pingpong=True)
-        if cn is not None:
-            q = A.EXPO_OUT(A.clamp((u - 0.4 - i * 0.2) / 0.9))
-            blit(cv, cn, x + (1 - q) * (-120 if i == 0 else 120), y + 14 * math.sin(t * 1.3 + i * 2), s=sc,
-                 op=q * (1 - A.EXPO_IN(out)), blur=(1 - q) * 6 + (1.5 if i else 0))
+        q = A.EXPO_OUT(A.clamp((u - 0.4 - i * 0.2) / 1.0))
+        hero(cv, cn, x + (1 - q) * (-140 if i == 0 else 140), y + 14 * math.sin(t * 1.3 + i * 2), s=sc,
+             op=q * o, blur=(1 - q) * 6 + (2.0 if i else 0) + out * 6, glow_k=0.6)
     # counter
-    cu = A.ramp(u, 0.35, 1.9, A.EXPO)
+    cu = A.ramp(u, 0.35, 2.0, A.EXPO)
     n = int(round(12000 * cu / 10.0)) * 10
     txt = f'{n:,}' + ('+' if cu > 0.98 else '')
-    num, base, adv = tsprite(txt, 'Rubik-800', 190, 'g', 0.0)
-    pop = 1 + 0.06 * math.exp(-max(0, u - 1.95) * 6) * (u > 1.9)
-    o = A.ramp(u, 0.3, 0.6) * (1 - A.EXPO_IN(out))
-    blit(cv, num, S / 2, 250, s=pop, op=o, blur=(1 - A.clamp((u - 0.3) / 0.5)) * 6 + out * 10)
-    kt = KText([[('Active', 'Rubik-700', 70, 'w'), ('Clients', 'Rubik-700', 70, 'w')],
-                [('Nationwide', 'Rubik-500', 54, 'gold')]], 1085)
-    kt.draw(cv, t, FRAMES[2][1] + 0.9, FRAMES[2][2] - 0.34)
+    num, base, adv = tsprite(txt, SB, 200, 'wg', 0.0)
+    pop = 1 + 0.05 * math.exp(-max(0, u - 2.05) * 6) * (u > 2.0)
+    op_ = A.ramp(u, 0.3, 0.6) * o
+    blit(cv, num, S / 2, 250, s=pop * (1 + 0.04 * out), op=op_, blur=(1 - A.clamp((u - 0.3) / 0.5)) * 8 + out * 10)
+    kicker(cv, 'Clients across Pakistan', S / 2, 392, t, T0 + 0.6, T0 + d - EXIT, px=16)
+    Title([('Active', L, 66, 'w'), ('clients', L, 66, 'w'), ('nationwide', SB, 66, 'g')], S / 2, 1118).draw(
+        cv, t, T0 + 1.0, T0 + d - EXIT)
 
 
-# ------------------------------------------------------------------ frame 4: one platform, multiple markets
+# ------------------------------------------------------------------ f4: one platform, multiple markets
 TABS = ['PSX', 'PMEX', 'GOLD', 'CRUDE OIL']
 ROWS = [('UBL', 'Banking', 31), ('HBL', 'Banking', 32), ('OGDCL', 'Oil & Gas', 33), ('PSO', 'Energy', 34)]
+DW, DH = 820, 500
 
 
-@functools.lru_cache(maxsize=256)
-def dashboard(tab, prog_q):
-    W_, H_ = 760, 470
-    p = U.Paint(W_, H_, pad=30)
-    gcard(p, 0, 0, W_, H_, 30)
-    p.text('FLORET CAPITALS', 30, 52, 'Rubik-700', 22, WHITE_S, 0.95, track=0.1)
+@functools.lru_cache(maxsize=1)
+def _tab_x():
+    xs, x = [], 44
+    for tb in TABS:
+        w = U._font(M, 19 * SS).getlength(tb) / SS + 40
+        xs.append((x, w))
+        x += w + 6
+    return xs
+
+
+@functools.lru_cache(maxsize=96)
+def dash_base(tab, prog_q):
+    p = new_card(DW, DH)
+    p.text('Floret Capitals', 92, 64, SB, 22, WHITE_S, 1.0)
+    p.text('Markets', 94, 86, R, 15, MUTED_S, 1.0)
     for k in range(3):
-        p.circle(W_ - 40 - k * 22, 44, 5, MUTED_S, 0.5)
-    x = 30
-    for i, tb in enumerate(TABS):
-        w = U._font('Rubik-500', 22 * SS).getlength(tb) / SS + 34
-        if i == tab:
-            p.rrect(x, 78, w, 40, 20, GOLD_S, 1.0)
-            p.text(tb, x + w / 2, 105, 'Rubik-700', 21, DARK_S, 1.0, anchor='c')
-        else:
-            p.rrect(x, 78, w, 40, 20, WHITE_S, 0.06)
-            p.text(tb, x + w / 2, 105, 'Rubik-500', 21, MUTED_S, 1.0, anchor='c')
-        x += w + 10
-    for k in range(4):                                         # chart grid
-        p.line([(30, 160 + k * 70), (470, 160 + k * 70)], 1, WHITE_S, 0.06)
-    spark(p, 30, 150, 440, 270, seed=40 + tab, prog=prog_q / 30, width=3.0, drift=1.0)
+        p.circle(DW - 44 - k * 20, 58, 4.5, WHITE_S, 0.25)
+    xs = _tab_x()
+    p.rrect(38, 112, xs[-1][0] + xs[-1][1] - 32, 46, 23, WHITE_S, 0.06)
+    p.stroke(38, 112, xs[-1][0] + xs[-1][1] - 32, 46, 23, 1, WHITE_S, 0.08)
+    for k in range(4):
+        p.line([(44, 210 + k * 70), (500, 210 + k * 70)], 1, WHITE_S, 0.05)
+    spark(p, 44, 196, 456, 260, seed=40 + tab, prog=prog_q / 30, width=3.0, drift=1.0)
     for i, (tk, sec, sd) in enumerate(ROWS):
-        y = 150 + i * 72
-        p.rrect(500, y, 230, 60, 14, WHITE_S, 0.045)
-        p.text(tk, 516, y + 28, 'Rubik-700', 21, WHITE_S, 1.0)
-        p.text(sec, 516, y + 50, 'Rubik-400', 15, MUTED_S, 1.0)
-        spark(p, 620, y + 12, 92, 36, seed=sd + tab, prog=1.0, width=1.8, fill=False)
-    return p.result()
+        y = 190 + i * 72
+        p.rrect(528, y, 250, 60, 16, WHITE_S, 0.045)
+        p.stroke(528, y, 250, 60, 16, 1, WHITE_S, 0.06)
+        p.text(tk, 546, y + 28, SB, 19, WHITE_S, 1.0)
+        p.text(sec, 546, y + 49, R, 14, MUTED_S, 1.0)
+        spark(p, 658, y + 14, 100, 32, seed=sd + tab, prog=1.0, width=1.8, fill=False, dot=False)
+    res = card_img(p)
+    blit(res, logo_flat(40), GP + 62, GP + 70)
+    return res
 
 
 @functools.lru_cache(maxsize=8)
-def mini_card(label, seed, sub=''):
-    p = U.Paint(260, 150, pad=24)
-    gcard(p, 0, 0, 260, 150, 22)
-    p.text(label, 22, 44, 'Rubik-700', 24, WHITE_S, 1.0)
-    if sub:
-        p.text(sub, 22, 68, 'Rubik-400', 15, MUTED_S, 1.0)
-    poly(p, [(230, 30), (240, 44), (220, 44)], GOLD_S, 1.0)
-    spark(p, 22, 78, 216, 52, seed, 1.0, width=2.2)
-    return p.result()
+def tab_labels(tab):
+    """Tab captions: the active one dark (sits on the gold pill), others muted."""
+    p = new_card(DW, DH)
+    for i, (x, w) in enumerate(_tab_x()):
+        p.text(TABS[i], x + w / 2, 141, SB if i == tab else M, 19, DARK_S if i == tab else MUTED_S, 1.0, anchor='c')
+    return card_img(p)
+
+
+@functools.lru_cache(maxsize=2)
+def gold_pill(w, h):
+    p = U.Paint(w, h, pad=8)
+    m = p.rrect(0, 0, w, h, h / 2, GOLD_S, 1.0)
+    p.over(m * np.clip(1 - (p._yy - p.X(0)) / (h * SS * 0.55), 0, 1), CHAMP_S, 0.55)
+    p.stroke(0.5, 0.5, w - 1, h - 1, h / 2, 1.2, hexs('fff6e0'), 0.8)
+    return half(p.result())
+
+
+def dash_content(pos, prog_q):
+    tab = int(round(pos))
+    img = dash_base(tab, prog_q).copy()
+    xs = _tab_x()
+    i0, fr = int(math.floor(pos)), pos - math.floor(pos)
+    i1 = min(3, i0 + 1)
+    x = xs[i0][0] + (xs[i1][0] - xs[i0][0]) * fr
+    w = xs[i0][1] + (xs[i1][1] - xs[i0][1]) * fr
+    stretch = 1 + 0.25 * math.sin(math.pi * fr)               # liquid: the pill stretches while it slides
+    pl = gold_pill(int(round(w * stretch)), 38)
+    blit(img, pl, GP + x + w / 2, GP + 135)
+    C.over(img, tab_labels(tab))
+    return img
+
+
+@functools.lru_cache(maxsize=4)
+def mini_content(label, seed):
+    p = new_card(250, 140)
+    p.text(label, 24, 46, SB, 24, WHITE_S, 1.0)
+    p.text('Live market', 24, 70, R, 14, MUTED_S, 1.0)
+    poly(p, [(216, 34), (226, 48), (206, 48)], GOLD_S, 1.0)
+    spark(p, 24, 82, 202, 42, seed, 1.0, width=2.2)
+    return card_img(p)
 
 
 def f4(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    kt = KText([[('One', 'Rubik-700', 80, 'w'), ('Platform.', 'Rubik-700', 80, 'w')],
-                [('Multiple', 'Rubik-800', 92, 'g'), ('Markets.', 'Rubik-800', 92, 'g')]], 255)
-    kt.draw(cv, t, FRAMES[3][1] + 0.15, FRAMES[3][2] - 0.34)
-    tab = min(3, int(max(0, u - 0.9) / 0.55))
-    pr = A.EXPO(A.clamp((u - 0.5 - tab * 0.55) / 0.9)) if tab == 0 else A.EXPO(A.clamp((u - 0.9 - tab * 0.55) / 0.5))
-    img = dashboard(tab, int(round(pr * 30)))
-    p = A.EXPO_OUT(A.clamp((u - 0.25) / 1.0))
-    o = A.ramp(u, 0.25, 0.6) * (1 - A.EXPO_IN(out))
-    put3d(cv, img, S / 2 - 20, 790 + (1 - p) * 120, 880, rot=(14 * (1 - p) + 6, -16 + 10 * p + 4 * u / d, 0), op=o)
-    for i, (lab, sd, x, y, dz) in enumerate((('PSX', 51, 190, 1040, -0.9), ('PMEX', 52, 1060, 560, -1.1))):
-        q = A.EXPO_OUT(A.clamp((u - 0.6 - i * 0.2) / 0.9))
-        put3d(cv, mini_card(lab, sd), x + (1 - q) * (-200 if i == 0 else 200), y + 12 * math.sin(u * 1.5 + i), 270,
-              rot=(4, 18 if i == 0 else -18, 0), depth=4.0, dz=dz, op=q * (1 - out))
+    out = exit_p(u, d)
+    o = 1 - out
+    T0 = FRAMES[3][1]
+    Title([('One', L, 74, 'w'), ('platform.', L, 74, 'w')], S / 2, 210).draw(cv, t, T0 + 0.1, T0 + d - EXIT)
+    Title([('Multiple', SB, 86, 'g'), ('markets.', SB, 86, 'g')], S / 2, 312).draw(cv, t, T0 + 0.3, T0 + d - EXIT)
+    sw = [0.9 + 0.55 * k for k in range(4)]
+    pos = 0.0
+    for k in range(1, 4):
+        pos += A.EXPO(A.clamp((u - sw[k] + 0.12) / 0.38))
+    tab = int(round(pos))
+    t_tab = sw[tab] if tab else 0.5
+    pr = A.EXPO(A.clamp((u - t_tab) / (0.9 if tab == 0 else 0.5)))
+    p = A.EXPO_OUT(A.clamp((u - 0.25) / 1.1))
+    for i, (lab, sd, x, y, dz) in enumerate((('PSX', 51, 215, 1040, 0.6), ('PMEX', 52, 1040, 470, 0.7))):
+        q = A.EXPO_OUT(A.clamp((u - 0.7 - i * 0.2) / 1.0))
+        if i == 1:                                               # the far card sits behind the dashboard
+            glass(cv, 250, 140, 26, x + (1 - q) * 220, y + 10 * math.sin(u * 1.5 + i), 250, rot=(4, -20, 0), dz=dz,
+                  op=A.ramp(q, 0, 0.4) * o, content=mini_content(lab, sd), refr=12, cblur=1.0 + out * 6)
+    glass(cv, DW, DH, 36, S / 2, 770 + (1 - p) * 120 + out * 40, 860, rot=(12 * (1 - p) + 6, -14 + 9 * p + 3 * u / d, 0),
+          op=A.ramp(u, 0.25, 0.6) * o, content=dash_content(pos, int(round(pr * 30))), refr=18, rim_col=GOLD,
+          rim_k=0.10, cblur=out * 6)
+    q = A.EXPO_OUT(A.clamp((u - 0.7) / 1.0))
+    glass(cv, 250, 140, 26, 215 - (1 - q) * 220, 1040 + 10 * math.sin(u * 1.5), 250, rot=(4, 20, 0), dz=-0.5,
+          op=A.ramp(q, 0, 0.4) * o, content=mini_content('PSX', 51), refr=12, cblur=out * 6)
 
 
-# ------------------------------------------------------------------ frame 5: PSX x PMEX
+# ------------------------------------------------------------------ f5: PSX x PMEX
 @functools.lru_cache(maxsize=4)
-def badge(label, sub):
-    """White plate with the exchange's official logo (psx.com.pk lockup / PMEX emblem), gold-lit edge."""
-    W_, H_ = 400, 270
-    p = U.Paint(W_, H_, pad=30)
-    m = p.rrect(0, 0, W_, H_, 34, hexs('fbfaf7'), 1.0)
-    p.glow(np.clip(0.5 - (np.abs(p.sdf_rrect(0, 0, W_, H_, 34)) - 1), 0, 1), GOLD_S, 8, 0.9)
-    p.stroke(0, 0, W_, H_, 34, 2, GOLD_S, 0.9)
-    del m
+def exch_content(label):
+    W_, H_ = 360, 300
+    p = new_card(W_, H_)
     if label == 'PMEX':
-        p.text('PMEX', 180, 126, 'Rubik-800', 64, hexs('cc1721'), 1.0)
-        p.text('Pakistan Mercantile', 184, 166, 'Rubik-500', 20, hexs('5b5b5b'), 1.0)
-        p.text('Exchange', 184, 192, 'Rubik-500', 20, hexs('5b5b5b'), 1.0)
-    res = half(p.result())
+        p.text('PMEX', W_ / 2, 236, SB, 40, WHITE_S, 1.0, anchor='c', track=0.06)
+    res = card_img(p)
     if label == 'PSX':
         lg = C.load(ASSETS + '/psx_logo_full.png')
-        blit(res, lg, 30 + W_ / 2, 30 + H_ / 2, s=(H_ - 40) / lg.shape[0])
+        blit(res, lg, GP + W_ / 2, GP + H_ / 2 + 4, s=(H_ - 60) / lg.shape[0])
     else:
         lg = C.load(ASSETS + '/pmex_emblem.png')
-        blit(res, lg, 30 + 98, 30 + H_ / 2, s=150 / lg.shape[0])
+        blit(res, lg, GP + W_ / 2, GP + 118, s=150 / lg.shape[0])
     return res
 
 
 @functools.lru_cache(maxsize=4)
-def check_chip(word):
-    spr, base, adv = tsprite(word, 'Rubik-500', 36, 'w', 0.0)
-    w = int(adv + 104)
-    p = U.Paint(w, 76, pad=24)
-    gcard(p, 0, 0, w, 76, 38)
-    p.circle(40, 38, 18, GOLD_S, 1.0)
-    p.line([(31, 38), (38, 46), (50, 30)], 3.4, DARK_S, 1.0)
-    res = half(p.result())
-    blit(res, spr, 24 + 72 - 26, 24 + 38 + 13, ax=0, ay=base / spr.shape[0])
-    return res
+def check_content(word):
+    spr, base, adv = tsprite(word, M, 30, 'w', 0.0)
+    w = int(adv + 96)
+    p = new_card(w, 70)
+    p.circle(38, 35, 17, GOLD_S, 1.0)
+    p.line([(30, 35), (36, 42), (47, 28)], 3.2, DARK_S, 1.0)
+    res = card_img(p)
+    blit(res, spr, GP + 68 - 26, GP + 35 + 11, ax=0, ay=base / spr.shape[0])
+    return res, w
 
 
 def f5(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    o = 1 - A.EXPO_IN(out)
-    for i, (lab, sub) in enumerate((('PSX', 'Pakistan Stock Exchange'), ('PMEX', 'Pakistan Mercantile Exchange'))):
-        p = A.EXPO_OUT(A.clamp((u - 0.15) / 0.9))
+    out = exit_p(u, d)
+    o = 1 - out
+    T0 = FRAMES[4][1]
+    kicker(cv, 'Access both exchanges', S / 2, 188, t, T0 + 0.1, T0 + d - EXIT, px=16)
+    for i, (lab, sub, col) in enumerate((('PSX', 'Pakistan Stock Exchange', BL_GREEN),
+                                         ('PMEX', 'Pakistan Mercantile Exchange', BL_RED))):
+        p = A.EXPO_OUT(A.clamp((u - 0.15) / 1.0))
         sgn = -1 if i == 0 else 1
-        x = S / 2 + sgn * (265 + (1 - p) * 360)
-        put3d(cv, badge(lab, sub), x, 470, 420, rot=(0, -sgn * 22 * (1 - p) - sgn * 8, 0), op=A.ramp(u, 0.15, 0.5) * o)
-    # x mark flash + data link
+        x = S / 2 + sgn * (232 + (1 - p) * 330)
+        add_glow(cv, x, 470, 150, col, 0.35 * A.ramp(u, 0.15, 0.8) * o)
+        glass(cv, 360, 300, 40, x, 470 - out * 30, 360, rot=(0, -sgn * 24 * (1 - p) - sgn * 9, 0),
+              op=A.ramp(u, 0.15, 0.5) * o, content=exch_content(lab), refr=20, cblur=out * 6, rim_col=col, rim_k=0.05)
+        Title([(sub, R, 19, 'm')], x, 672).draw(cv, t, T0 + 0.6 + i * 0.1, T0 + d - EXIT, stagger=0.01, sweep=None)
     xu = u - 0.75
     if xu > 0:
-        xs, base, _ = tsprite('×', 'Rubik-500', 140, 'g')
-        s = 1 + 0.6 * math.exp(-xu * 7)
+        xs, base, _ = tsprite('×', XL, 110, 'g')
+        s = 1 + 0.5 * math.exp(-xu * 7)
         blit(cv, xs, S / 2, 470, s=s, op=A.ramp(xu, 0, 0.15) * o)
-        flash = math.exp(-xu * 5) * 1.5
-        yy, xx = np.ogrid[0:S, 0:S]
-        g = np.exp(-(((xx - S / 2) / 260.0) ** 2 + ((yy - 470) / 60.0) ** 2)).astype(np.float32)
-        cv[..., :3] += g[..., None] * GOLD * flash * 0.5 * o
+        add_glow(cv, S / 2, 470, 120, BL_GOLD, 1.2 * math.exp(-xu * 4) * o, sy=0.5)
     for i, w in enumerate(('Regulated.', 'Trusted.', 'Connected.')):
         cu = u - 1.0 - i * 0.22
         if cu <= 0:
             continue
-        p = A.EXPO_OUT(A.clamp(cu / 0.7))
-        chp = check_chip(w)
-        y = 800 + i * 0
-        x = S / 2 + (i - 1) * 345
-        blit(cv, chp, x, y + (1 - p) * 50, s=0.96 + 0.04 * p, op=A.ramp(cu, 0, 0.3) * o, blur=(1 - p) * 5)
-    # thin gold connector under the chips
+        p = A.EXPO_OUT(A.clamp(cu / 0.8))
+        chp, cw = check_content(w)
+        x = S / 2 + (i - 1) * 330
+        glass(cv, cw, 70, 35, x, 860 + (1 - p) * 50 - out * 30, cw, op=A.ramp(cu, 0, 0.3) * o, content=chp, refr=10,
+              frost=6, cblur=(1 - p) * 5 + out * 6)
     lu = A.EXPO_OUT(A.clamp((u - 1.5) / 1.0))
     if lu > 0:
-        ov = np.zeros((S, S), np.float32)
-        cv2.line(ov, (int((S / 2 - 520 * lu) * 8), 905 * 8), (int((S / 2 + 520 * lu) * 8), 905 * 8), 0.8, 1, cv2.LINE_AA, shift=3)
-        cv[..., :3] += (ov + cv2.GaussianBlur(ov, (0, 0), 3))[..., None] * GOLD * o
+        hline(cv, S / 2 - 540 * lu, S / 2 + 540 * lu, 960, GOLD, 0.8 * o)
 
 
-# ------------------------------------------------------------------ frame 6: commodities
+# ------------------------------------------------------------------ f6: commodities carousel
 OBJ3D = dict(gold='goldbar', silver='silverbar', oil='barrel', more='coin')
+KINDS = ['gold', 'silver', 'oil', 'more']
+KNAME = dict(gold='Gold', silver='Silver', oil='Crude Oil', more='And more')
+KGLOW = dict(gold=BL_GOLD, silver=BL_ICE, oil=BL_AMBER, more=BL_GOLD)
+CW, CH = 300, 400
 
 
 @functools.lru_cache(maxsize=8)
-def commodity_card(kind, icon=True):
-    W_, H_ = 400, 260
-    p = U.Paint(W_, H_, pad=30)
-    gcard(p, 0, 0, W_, H_, 30, k=1.2)
-    cx, cy = 92, 110
-    if not icon:
-        p.circle(cx, cy + 34, 44, GOLD_S, 0.07)                 # soft pad the 3D object sits on
-        name = dict(gold='GOLD', silver='SILVER', oil='CRUDE OIL', more='AND MORE')[kind]
-    elif kind in ('gold', 'silver'):
-        hi, mid, lo = (GOLD_HI_S, GOLD_S, GOLD_LO_S) if kind == 'gold' else (hexs('ffffff'), SILVER_S, hexs('8f969f'))
-        poly(p, [(cx - 50, cy + 30), (cx + 50, cy + 30), (cx + 34, cy - 8), (cx - 34, cy - 8)], mid, 1.0)
-        poly(p, [(cx - 34, cy - 8), (cx + 34, cy - 8), (cx + 24, cy - 26), (cx - 24, cy - 26)], hi, 1.0)
-        poly(p, [(cx + 34, cy - 8), (cx + 50, cy + 30), (cx + 40, cy + 30), (cx + 24, cy - 26)], lo, 0.9)
-        name = 'GOLD' if kind == 'gold' else 'SILVER'
-    elif kind == 'oil':
-        p.circle(cx, cy + 12, 30, hexs('2b2620'), 1.0)
-        poly(p, [(cx - 27, cy + 2), (cx, cy - 44), (cx + 27, cy + 2)], hexs('2b2620'), 1.0)
-        p.stroke(cx - 31, cy - 19, 62, 62, 31, 2.4, GOLD_S, 0.9)
-        p.circle(cx - 9, cy + 6, 7, WHITE_S, 0.35)
-        name = 'CRUDE OIL'
-    else:
-        p.circle(cx, cy, 34, GOLD_S, 1.0)
-        p.line([(cx - 15, cy), (cx + 15, cy)], 5, DARK_S, 1.0)
-        p.line([(cx, cy - 15), (cx, cy + 15)], 5, DARK_S, 1.0)
-        name = 'AND MORE'
-    p.text(name, 160, 104, 'Rubik-700', 32, WHITE_S, 1.0)
-    p.text('PMEX', 160, 134, 'Rubik-400', 18, MUTED_S, 1.0, track=0.1)
-    spark(p, 34, 166, 332, 70, {'gold': 61, 'silver': 62, 'oil': 63}.get(kind, 64), 1.0, width=2.6)
-    return p.result()
+def com_content(kind):
+    p = new_card(CW, CH)
+    p.text(KNAME[kind], 30, 300, SB, 32, WHITE_S, 1.0)
+    p.text('Traded on PMEX', 30, 328, R, 15, MUTED_S, 1.0)
+    spark(p, 30, 346, 240, 34, {'gold': 61, 'silver': 62, 'oil': 63}.get(kind, 64), 1.0, width=2.2,
+          col=GOLD_S if kind != 'silver' else hexs('cfd8e6'), fill=False, dot=False)
+    return card_img(p)
 
 
 def f6(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    o = 1 - A.EXPO_IN(out)
+    out = exit_p(u, d)
+    o = 1 - out
     T0 = FRAMES[5][1]
-    words = [('Gold.', 'g'), ('Silver.', 's'), ('Crude Oil.', 'w'), ('And More.', 'g')]
     starts = [0.2, 0.85, 1.5, 2.2]
-    cur = sum(1 for s0 in starts if u >= s0) - 1
-    for i, ((w, col), s0) in enumerate(zip(words, starts)):
-        kt = KText([[(w, 'Rubik-800', 96, col)]], 360 + i * 150, x=110, align='l')
-        hl = 1.0 if i == cur or u > 2.9 else 0.38
-        kt.draw(cv, t, T0 + s0, FRAMES[5][2] - 0.34, op=hl)
-    kinds = ['gold', 'silver', 'oil', 'more']
-    for i in range(4):
-        cu = u - starts[i] - 0.05
+    cur = max(0, sum(1 for s0 in starts if u >= s0) - 1)
+    kicker(cv, 'Trade commodities', S / 2, 170, t, T0 + 0.1, T0 + d - EXIT, px=16)
+    # rolling headline: current word large, previous rolls up and out
+    for i, s0 in enumerate(starts):
+        end = starts[i + 1] if i < 3 else 99
+        if u < s0 or u > end + 0.45:
+            continue
+        kind = KINDS[i]
+        Title([(KNAME[kind] + '.', SB, 104, 'g' if kind != 'silver' else 's')], S / 2, 312).draw(
+            cv, t, T0 + s0 + (0.14 if i else 0), T0 + min(end, d - EXIT), stagger=0.02, sweep=0.3)
+    # carousel: focus slides with an expo glide; ends pulled back to show all four
+    foc = 0.0
+    for k in range(1, 4):
+        foc += A.EXPO(A.clamp((u - starts[k] + 0.05) / 0.55))
+    allv = A.EXPO(A.clamp((u - 2.95) / 0.8))
+    foc = foc * (1 - allv) + 1.5 * allv
+    spacing = 330 * (1 - allv) + 262 * allv
+    order = sorted(range(4), key=lambda i: -abs(i - foc))
+    for i in order:
+        kind = KINDS[i]
+        cu = u - 0.05 - i * 0.12
         if cu <= 0:
             continue
-        p = A.EXPO_OUT(A.clamp(cu / 0.8))
-        x, y = 880 + (i % 2) * 40, 330 + i * 200
-        co = A.ramp(cu, 0, 0.35) * o * (1.0 if i == cur or u > 2.9 else 0.7)
-        has3d = b3d(OBJ3D[kinds[i]], 1) is not None
-        xx = x + (1 - p) * 320
-        put3d(cv, commodity_card(kinds[i], not has3d), xx, y, 380, rot=(4, -20 + 6 * p, 0), op=co)
-        if has3d:
-            ob = b3d(OBJ3D[kinds[i]], 1 + (t - T0 - starts[i]) * 30 * 1.1, pingpong=True)
-            sc = (0.6 if kinds[i] != 'more' else 0.42) * (0.75 + 0.25 * A.BACK_OUT(A.clamp(cu / 0.7)))
-            blit(cv, ob, xx - 100, y - 22, s=sc, op=co)
+        p = A.EXPO_OUT(A.clamp(cu / 0.9))
+        dd = i - foc
+        x = S / 2 + dd * spacing + (1 - p) * 300
+        focus = math.exp(-dd * dd * 2.2)
+        sc = (0.80 + 0.20 * focus) * (1 - 0.18 * allv) + 0.0
+        ry = -max(-1, min(1, dd)) * 26 * (1 - allv)
+        dz = (1 - focus) * 0.9 * (1 - allv)
+        y = 720
+        co = A.ramp(cu, 0, 0.35) * o * (0.55 + 0.45 * max(focus, allv))
+        add_glow(cv, x, y - 40, 170 * sc, KGLOW[kind], (0.15 + 0.35 * max(focus, allv * 0.6)) * co)
+        glass(cv, CW, CH, 40, x, y, CW * sc, rot=(0, ry, 0), dz=dz, op=co, content=com_content(kind), refr=18,
+              cblur=(1 - focus) * (1 - allv) * 2.0 + out * 6)
+        ob = b3d(OBJ3D[kind], 1 + (t - T0 - starts[i]) * 30 * 1.1, pingpong=True)
+        osc = (0.86 if kind != 'more' else 0.62) * sc * (0.75 + 0.25 * A.BACK_OUT(A.clamp(cu / 0.7))) * (4.0 / (4.0 + dz))
+        hero(cv, ob, x, y - 70 * sc + 6 * math.sin(t * 1.4 + i), s=osc, op=co, blur=(1 - focus) * (1 - allv) * 1.5 + out * 6,
+             glow=KGLOW[kind], glow_k=0.6 * max(focus, allv))
 
 
-# ------------------------------------------------------------------ frame 7: global commodities -> PSX companies
+# ------------------------------------------------------------------ f7: global commodities -> PSX companies
 @functools.lru_cache(maxsize=1)
 def _globe_pts():
-    n = 1400
+    n = 1600
     i = np.arange(n) + 0.5
     phi = np.arccos(1 - 2 * i / n)
     th = math.pi * (1 + 5 ** 0.5) * i
@@ -756,139 +971,114 @@ def globe(cv, cx, cy, r, ang, op):
     z2 = y * math.sin(tilt) + z * math.cos(tilt)
     ov = np.zeros((S, S), np.float32)
     for xi, yi, zi in zip(x, y2, z2):
-        b = 0.25 + 0.75 * (zi > 0) * zi
-        cv2.circle(ov, (int((cx + xi * r) * 8), int((cy - yi * r) * 8)), int((1.4 + 0.9 * max(zi, 0)) * 8), float(b),
+        b = 0.12 + 0.88 * max(zi, 0) ** 1.3
+        cv2.circle(ov, (int((cx + xi * r) * 8), int((cy - yi * r) * 8)), int((1.2 + 1.0 * max(zi, 0)) * 8), float(b),
                    -1, cv2.LINE_AA, shift=3)
     ov *= op
-    cv[..., :3] += (ov[..., None] * 0.8 + cv2.GaussianBlur(ov, (0, 0), 4)[..., None] * 0.8) * GOLD
+    cv[..., :3] += ov[..., None] * CHAMP * 0.9 + cv2.GaussianBlur(ov, (0, 0), 4)[..., None] * GOLD * 0.7
     rim = np.zeros((S, S), np.float32)
     cv2.circle(rim, (int(cx * 8), int(cy * 8)), int(r * 8), 1.0, 2, cv2.LINE_AA, shift=3)
-    cv[..., :3] += cv2.GaussianBlur(rim, (0, 0), 6)[..., None] * GOLD * 0.6 * op
-    cv[..., 3] = np.clip(cv[..., 3] + ov * 0.6, 0, 1)
+    cv[..., :3] += (cv2.GaussianBlur(rim, (0, 0), 3)[..., None] * BL_ICE * 0.5 +
+                    cv2.GaussianBlur(rim, (0, 0), 16)[..., None] * BL_BLUE * 1.6) * op
 
 
 @functools.lru_cache(maxsize=8)
-def ticker_card(tk, sec, seed):
-    p = U.Paint(300, 150, pad=24)
-    gcard(p, 0, 0, 300, 150, 24)
-    p.rrect(20, 22, 54, 54, 16, GOLD_S, 0.16)
-    p.text(tk[0], 47, 61, 'Rubik-800', 28, GOLD_S, 1.0, anchor='c')
-    p.text(tk, 90, 50, 'Rubik-700', 30, WHITE_S, 1.0)
-    p.text(sec, 90, 74, 'Rubik-400', 17, MUTED_S, 1.0)
-    poly(p, [(270, 36), (281, 52), (259, 52)], GOLD_S, 1.0)
-    spark(p, 20, 92, 260, 42, seed, 1.0, width=2.2)
-    return p.result()
+def ticker_content(tk, sec, seed):
+    p = new_card(320, 120)
+    p.rrect(22, 26, 54, 54, 16, GOLD_S, 0.14)
+    p.stroke(22, 26, 54, 54, 16, 1, GOLD_S, 0.4)
+    p.text(tk[0], 49, 63, SB, 26, GOLD_HI_S, 1.0, anchor='c')
+    p.text(tk, 92, 52, SB, 25, WHITE_S, 1.0)
+    p.text(sec, 92, 76, R, 15, MUTED_S, 1.0)
+    poly(p, [(290, 40), (300, 54), (280, 54)], GOLD_S, 1.0)
+    spark(p, 196, 64, 84, 30, seed, 1.0, width=2.0, fill=False, dot=False)
+    return card_img(p)
 
 
 def f7(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    o = 1 - A.EXPO_IN(out)
+    out = exit_p(u, d)
+    o = 1 - out
     T0 = FRAMES[6][1]
-    kt = KText([[('From', 'Rubik-500', 58, 'w'), ('Global', 'Rubik-700', 58, 'w'), ('Commodities', 'Rubik-700', 58, 'g')],
-                [('to', 'Rubik-500', 58, 'w'), ("Pakistan's", 'Rubik-700', 58, 'w'), ('Leading', 'Rubik-700', 58, 'w'),
-                 ('Companies', 'Rubik-700', 58, 'g')]], 235)
-    kt.draw(cv, t, T0 + 0.1, FRAMES[6][2] - 0.34, stagger=0.05)
-    gp = A.EXPO_OUT(A.clamp((u - 0.2) / 1.0))
-    globe(cv, 330 - (1 - gp) * 60, 690, 230 * (0.85 + 0.15 * gp), u * 0.45 + 0.5, A.ramp(u, 0.2, 0.7) * o)
+    Title([('From', L, 56, 'w'), ('global', L, 56, 'w'), ('commodities', SB, 56, 'g')], S / 2, 190).draw(
+        cv, t, T0 + 0.1, T0 + d - EXIT, stagger=0.018)
+    Title([('to', L, 56, 'w'), ("Pakistan's", L, 56, 'w'), ('leading', L, 56, 'w'), ('companies', SB, 56, 'g')], S / 2,
+          262).draw(cv, t, T0 + 0.35, T0 + d - EXIT, stagger=0.018)
+    gp = A.EXPO_OUT(A.clamp((u - 0.2) / 1.1))
+    gx, gy, gr = 360 - (1 - gp) * 60, 700, 250 * (0.85 + 0.15 * gp) * (1 + 0.05 * out)
+    globe(cv, gx, gy, gr, u * 0.45 + 0.5, A.ramp(u, 0.2, 0.7) * o)
     for i, (tk, sec, sd) in enumerate(ROWS):
         cu = u - 1.0 - i * 0.16
         if cu <= 0:
             continue
-        p = A.EXPO_OUT(A.clamp(cu / 0.8))
-        x = 870 + (i % 2) * 0
-        y = 470 + i * 150
-        put3d(cv, ticker_card(tk, sec, sd), x + (1 - p) * 220, y, 330, rot=(0, -14, 0), op=A.ramp(cu, 0, 0.3) * o,
-              dz=-0.15 * i)
-        # link from the globe to each card
-        ov = np.zeros((S, S), np.float32)
-        x0, y0 = 330 + 230 * 0.8, 690 + (i - 1.5) * 80
+        p = A.EXPO_OUT(A.clamp(cu / 0.9))
+        x = 860
+        y = 470 + i * 152
+        ov = np.zeros((S, S), np.float32)                       # link from the globe to each card
+        x0, y0 = gx + gr * 0.85, gy + (i - 1.5) * 85
         x1, y1 = x + (1 - p) * 220 - 170, y
-        ts = np.linspace(0, p, 30)
+        ts = np.linspace(0, p, 40)
         px = x0 + (x1 - x0) * ts
         py = y0 + (y1 - y0) * (3 * ts ** 2 - 2 * ts ** 3)
         cv2.polylines(ov, [np.int32(np.c_[px, py] * 8)], False, 0.6, 1, cv2.LINE_AA, shift=3)
         cv[..., :3] += (ov + cv2.GaussianBlur(ov, (0, 0), 3))[..., None] * GOLD * o
-    # ticker band
+        glass(cv, 320, 120, 30, x + (1 - p) * 220, y, 330, rot=(0, -16, 0), dz=-0.12 * i, op=A.ramp(cu, 0, 0.3) * o,
+              content=ticker_content(tk, sec, sd), refr=14, cblur=out * 6)
     bu = A.EXPO_OUT(A.clamp((u - 1.6) / 0.8))
     if bu > 0:
-        band, base, adv = tsprite('UBL  ·  HBL  ·  OGDCL  ·  PSO  ·  ', 'Rubik-700', 40, 'gold', 0.06)
-        off = (u * 120) % adv
+        band, base, adv = tsprite('UBL      HBL      OGDCL      PSO      KSE-100      ', M, 22, 'm', 0.3)
+        off = (u * 90) % adv
         for k in range(-1, 3):
-            blit(cv, band, k * adv - off, 1130, ax=0, op=bu * o * 0.9)
+            blit(cv, band, k * adv - off, 1150, ax=0, op=bu * o * 0.8)
 
 
-# ------------------------------------------------------------------ frame 8: insights / decisions / trust
-@functools.lru_cache(maxsize=4)
-def icon_disc(kind):
-    p = U.Paint(130, 130, pad=30)
-    p.circle(65, 65, 62, DARK_S, 0.85)
-    p.stroke(3, 3, 124, 124, 62, 2, GOLD_S, 0.9)
-    c = GOLD_S
-    if kind == 'bulb':
-        p.circle(65, 56, 24, c, 1.0)
-        p.rrect(54, 74, 22, 20, 5, c, 1.0)
-        p.line([(56, 98), (74, 98)], 3, c, 1.0)
-        for a in range(-60, 61, 30):
-            r = math.radians(a - 90)
-            p.line([(65 + math.cos(r) * 33, 56 + math.sin(r) * 33), (65 + math.cos(r) * 40, 56 + math.sin(r) * 40)], 3, c, 1.0)
-    elif kind == 'target':
-        for rr, w in ((30, 3), (19, 3)):
-            p.stroke(65 - rr, 65 - rr, 2 * rr, 2 * rr, rr, w, c, 1.0)
-        p.circle(65, 65, 7, c, 1.0)
-        p.line([(65, 65), (96, 34)], 3.5, WHITE_S, 1.0)
-        poly(p, [(96, 34), (84, 36), (94, 46)], WHITE_S, 1.0)
-    else:
-        poly(p, [(65, 30), (96, 42), (93, 72), (65, 100), (37, 72), (34, 42)], c, 1.0)
-        p.line([(51, 66), (62, 77), (82, 54)], 5, DARK_S, 1.0)
-    return half(p.result())
+# ------------------------------------------------------------------ f8: insights / decisions / trust
+ORBIT8 = 'EXPERT INSIGHTS  •  SMARTER DECISIONS  •  BUILT ON TRUST  •  '
 
 
 def f8(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    o = 1 - A.EXPO_IN(out)
+    out = exit_p(u, d)
+    o = 1 - out
     T0 = FRAMES[7][1]
-    rows = [('Expert', 'Insights.', 'bulb'), ('Smarter', 'Decisions.', 'target'), ('Built on', 'Trust.', 'shield')]
+    spin = 0.5 * u + 2.2
+    cy = 445
+    q = A.EXPO_OUT(A.clamp(u / 1.0))
+    rev = A.EXPO_OUT(A.clamp((u - 0.25) / 1.4))
+    s = (0.86 + 0.14 * q) * (1 + 0.06 * out)
+    orbit(cv, ORBIT8, M, 26, 'hi', S / 2, cy + 30, 370 * s, spin, 'back', tilt=64, roll=12, op=o, reveal=rev)
     sh = b3d('shield', 1 + max(0.0, u) * 30 * 0.95)
-    if sh is not None:
-        q = A.EXPO_OUT(A.clamp(u / 0.9))
-        blit(cv, sh, S / 2, 260 + 10 * math.sin(u * 1.6), s=1.9 * (0.8 + 0.2 * q), op=A.ramp(u, 0, 0.4) * o, blur=(1 - q) * 6)
-    for i, (a, b, ic) in enumerate(rows):
-        y = 540 + i * 175
-        cu = u - 0.2 - i * 0.55
-        if cu <= 0:
-            continue
-        p = A.EXPO_OUT(A.clamp(cu / 0.8))
-        blit(cv, icon_disc(ic), 215, y, s=1.2 * (0.6 + 0.4 * A.BACK_OUT(A.clamp(cu / 0.6))), op=A.ramp(cu, 0, 0.25) * o,
-             rot=(1 - p) * -40)
-        kt = KText([[(a, 'Rubik-700', 74, 'w'), (b, 'Rubik-800', 74, 'g')]], y + 4, x=320, align='l')
-        kt.draw(cv, t, T0 + 0.25 + i * 0.55, FRAMES[7][2] - 0.34)
-        # connector line down to the next row
-        if i < 2:
-            lu = A.EXPO_OUT(A.clamp((cu - 0.35) / 0.5))
-            ov = np.zeros((S, S), np.float32)
-            cv2.line(ov, (215 * 8, int((y + 72) * 8)), (215 * 8, int((y + 72 + 56 * lu) * 8)), 0.7, 1, cv2.LINE_AA, shift=3)
-            cv[..., :3] += (ov + cv2.GaussianBlur(ov, (0, 0), 3))[..., None] * GOLD * o
+    hero(cv, sh, S / 2, cy + 8 * math.sin(u * 1.6), s=1.55 * s, op=A.ramp(u, 0, 0.4) * o, blur=(1 - q) * 6 + out * 8,
+         glow_k=1.2)
+    orbit(cv, ORBIT8, M, 26, 'w', S / 2, cy + 30, 370 * s, spin, 'front', tilt=64, roll=12, op=o, reveal=rev)
+    rows = [('Expert', 'insights.'), ('Smarter', 'decisions.'), ('Built on', 'trust.')]
+    for i, (a, b) in enumerate(rows):
+        Title([(a, L, 60, 'w'), (b, SB, 60, 'g')], S / 2, 905 + i * 84).draw(cv, t, T0 + 0.35 + i * 0.5, T0 + d - EXIT,
+                                                                          stagger=0.02)
 
 
-# ------------------------------------------------------------------ frame 9: more markets tunnel
+# ------------------------------------------------------------------ f9: more markets tunnel
 @functools.lru_cache(maxsize=16)
 def tile(i):
-    labels = [('PSX', 'Equities'), ('PMEX', 'Commodities'), ('GOLD', 'Metals'), ('SILVER', 'Metals'), ('CRUDE OIL', 'Energy'),
+    labels = [('PSX', 'Equities'), ('PMEX', 'Commodities'), ('Gold', 'Metals'), ('Silver', 'Metals'), ('Crude Oil', 'Energy'),
               ('UBL', 'Banking'), ('HBL', 'Banking'), ('OGDCL', 'Oil & Gas'), ('PSO', 'Energy'), ('KSE-100', 'Index')]
     lab, sub = labels[i % len(labels)]
     p = U.Paint(280, 170, pad=10)
-    gcard(p, 0, 0, 280, 170, 22)
-    p.text(lab, 22, 46, 'Rubik-700', 26, WHITE_S, 1.0)
-    p.text(sub, 22, 70, 'Rubik-400', 15, MUTED_S, 1.0)
-    spark(p, 22, 92, 236, 56, 80 + i, 1.0, width=2.2)
+    p.rrect(0, 0, 280, 170, 26, hexs('2a2218'), 0.5)
+    p.over(np.clip(0.5 - p.sdf_rrect(0, 0, 280, 170, 26), 0, 1) * np.clip(1 - (p._yy - p.X(0)) / (170 * SS * 0.6), 0, 1),
+           WHITE_S, 0.07)
+    p.stroke(0, 0, 280, 170, 26, 1.6, CHAMP_S, 0.7)
+    p.text(lab, 24, 48, SB, 26, WHITE_S, 1.0)
+    p.text(sub, 24, 72, R, 15, MUTED_S, 1.0)
+    spark(p, 24, 94, 232, 52, 80 + i, 1.0, width=2.2, dot=False)
     return p.result()
 
 
 def f9(cv, t, u, d):
-    out = A.clamp((u - (d - 0.34)) / 0.34)
-    o = 1 - A.EXPO_IN(out)
+    out = exit_p(u, d)
+    o = 1 - out
+    T0 = FRAMES[8][1]
     z0 = u * 5.0 + A.EXPO_IN(A.clamp(u / d)) * 4
     cam = C.Cam(0.15 * math.sin(u * 0.8), 0, z0, roll=4 * math.sin(u * 0.6), F=F, focus=z0 + 4.0, aperture=0.008)
+    frost = cv2.GaussianBlur(cv, (0, 0), 14)
     items = []
     for k in range(40):
         z = 3 + k * 1.15
@@ -901,8 +1091,9 @@ def f9(cv, t, u, d):
             continue
         fade = A.clamp((22 - dz) / 6) * A.clamp((dz - 0.4) / 1.2)
         try:
-            C.draw_img3d(cv, tile(ti), cam, (x, y, z), (1.4, 0.85), (rx, ry, 0), opacity=fade * o * 0.9)
-        except cv2.error:                                     # far tile smaller than its blur
+            C.draw_img3d(cv, tile(ti), cam, (x, y, z), (1.4, 0.85), (rx, ry, 0), opacity=fade * o * 0.95,
+                         glass=(frost, 0.8))
+        except cv2.error:
             pass
     fly = [('coin', -1.3, 0.7, 5.5), ('goldbar', 1.4, -0.6, 7.0), ('coin', 1.1, 0.9, 9.0), ('silverbar', -1.2, -0.8, 10.5),
            ('coin', -0.5, 1.2, 12.5), ('goldbar', 0.6, -1.1, 14.0), ('barrel', -1.5, 0.1, 16.0), ('coin', 1.5, 0.2, 18.0)]
@@ -918,57 +1109,51 @@ def f9(cv, t, u, d):
             C.draw_img3d(cv, ob, cam, (x, y, z), (0.75, 0.75), (0, 0, 15 * k), opacity=fade * o)
         except cv2.error:
             pass
-    kt = KText([[('More', 'Rubik-700', 96, 'w'), ('Markets.', 'Rubik-700', 96, 'w')],
-                [('More', 'Rubik-800', 104, 'g'), ('Possibilities.', 'Rubik-800', 104, 'g')]], 610)
-    # dark core behind the type so the tunnel never fights it
-    yy, xx = np.ogrid[0:S, 0:S]
-    g = np.exp(-(((xx - S / 2) / 520.0) ** 2 + ((yy - 610) / 200.0) ** 2)).astype(np.float32)
-    cv[..., :3] *= 1 - 0.75 * g[..., None] * A.ramp(u, 0.1, 0.6)
-    cv[..., 3] = np.clip(cv[..., 3] + 0.75 * g * A.ramp(u, 0.1, 0.6), 0, 1)
-    kt.draw(cv, t, FRAMES[8][1] + 0.25, FRAMES[8][2] - 0.34)
+    yy, xx = np.ogrid[0:S, 0:S]                                 # dark core behind the type
+    g = np.exp(-(((xx - S / 2) / 520.0) ** 2 + ((yy - 600) / 190.0) ** 2)).astype(np.float32)
+    cv[..., :3] *= 1 - 0.55 * g[..., None] * A.ramp(u, 0.1, 0.6)
+    Title([('More', L, 92, 'w'), ('markets.', L, 92, 'w')], S / 2, 570).draw(cv, t, T0 + 0.25, T0 + d - EXIT)
+    Title([('More', SB, 100, 'g'), ('possibilities.', SB, 100, 'g')], S / 2, 685).draw(cv, t, T0 + 0.5, T0 + d - EXIT)
 
 
-# ------------------------------------------------------------------ frame 10: THINK BIGGER. THINK FLORET.
-def slam(cv, spr, x, y, u, op=1.0):
-    if u <= 0:
+# ------------------------------------------------------------------ f10: THINK BIGGER. THINK FLORET.
+def horizon(cv, k, y0=1130):
+    """Planet-edge sunrise: a thin bright arc with a gold atmosphere glowing above it."""
+    if k <= 0.003:
         return
-    p = A.EXPO_OUT(A.clamp(u / 0.45))
-    blit(cv, spr, x, y, s=1.0 + 0.55 * (1 - p), op=A.ramp(u, 0, 0.12) * op, blur=(1 - p) * 12)
+    yy, xx = np.ogrid[0:S, 0:S]
+    Rr = 2600.0
+    d = np.sqrt(((xx - S / 2) * 1.0) ** 2 + (yy - (y0 + Rr)) ** 2) - Rr     # <0 inside the planet
+    d = d.astype(np.float32)
+    edge = np.exp(-(d / 2.2) ** 2)
+    atm = np.exp(-np.clip(d, 0, None) / 120.0) * (d > -1)
+    cv[..., :3] *= (1 - np.clip(-d / 6, 0, 1) * 0.9 * k)[..., None]
+    cv[..., :3] += (edge[..., None] * CHAMP * 1.6 + atm[..., None] * BL_GOLD * 0.30) * k
 
 
 def f10(cv, t, u, d):
+    T0 = FRAMES[9][1]
     T_LOGO = 2.05
     q = A.EXPO_IN(A.clamp((u - T_LOGO + 0.35) / 0.45))
-    a, ba, _ = tsprite('THINK BIGGER.', 'Rubik-900', 118, 'w', 0.02)
-    b, bb, _ = tsprite('THINK FLORET.', 'Rubik-900', 118, 'g', 0.02)
-    slam(cv, a, S / 2, 545 - q * 120, u - 0.1, 1 - q)
-    slam(cv, b, S / 2, 700 - q * 120, u - 0.62, 1 - q)
+    for k, (segs, y, t_in) in enumerate((([('Think', L, 118, 'w'), ('bigger.', L, 118, 'w')], 545, 0.1),
+                                         ([('Think', SB, 118, 'g'), ('Floret.', SB, 118, 'g')], 690, 0.62))):
+        ku = u - t_in
+        if ku > 0:
+            Title(segs, S / 2, y - q * 90).draw(cv, t, T0 + t_in, T0 + T_LOGO - 0.35, stagger=0.018, dur=0.6, sweep=0.25)
+            add_glow(cv, S / 2, y - 40, 260, BL_GOLD, 0.5 * math.exp(-ku * 5), sy=0.35)
+    horizon(cv, A.ramp(u, T_LOGO - 0.1, T_LOGO + 1.3, A.EXPO), 1150)
     lu = u - T_LOGO
     if lu > 0:
-        bars_p = [A.clamp((lu - 0.05 - 0.09 * i) / 0.4) for i in range(4)]
-        ar = A.EXPO(A.clamp((lu - 0.35) / 0.5))
         lg = b3d('logo', 1 + lu * 30 * 1.25)
-        if lg is not None:
-            blit(cv, with_reflection(lg), S / 2, 470, s=1.15 + 0.02 * lu / 3)
-        else:
-            spr = logo_sprite(300, bars_p, ar, (lu - 1.25) / 0.7)
-            blit(cv, spr, S / 2, 480, s=1.0 + 0.02 * lu / 3)
-        wu = lu - 0.6
-        if wu > 0:
-            p = A.EXPO_OUT(A.clamp(wu / 1.0))
-            wm, base, _ = tsprite('FLORET CAPITALS', 'Rubik-700', 70, 'w', round(0.6 - 0.4 * p, 2))
-            blit(cv, wm, S / 2, 770, op=A.ramp(wu, 0, 0.5), blur=(1 - p) * 5)
-            sh = (wu - 0.9) / 0.8
-            if 0 < sh < 1:
-                wl, _, _ = tsprite('FLORET CAPITALS', 'Rubik-700', 70, 'g', 0.2)
-                band = np.exp(-((np.arange(wl.shape[1]) - wl.shape[1] * (sh * 1.4 - 0.2)) / 60.0) ** 2)[None, :, None]
-                blit(cv, wl * band, S / 2, 770, mode='add', op=1.2)
+        hero(cv, lg, S / 2, 455, s=1.0 + 0.02 * lu / 3, op=A.ramp(lu, 0, 0.3), glow_k=1.0, reflect=0.0)
+        Title([('FLORET', SB, 60, 'w'), ('CAPITALS', L, 60, 'w')], S / 2, 800, gap=0.5, track=0.16).draw(
+            cv, t, T0 + T_LOGO + 0.55, stagger=0.03, sweep=0.9)
         su = lu - 1.1
         if su > 0:
-            p = A.EXPO_OUT(A.clamp(su / 0.8))
-            url, _, _ = tsprite('floretcapitals.com', 'Rubik-500', 30, 'gold', 0.08)
-            blit(cv, url, S / 2, 862 + (1 - p) * 16, op=A.ramp(su, 0, 0.4) * 0.95)
-    # end fade
+            p = A.EXPO_OUT(A.clamp(su / 0.9))
+            pc, pw = pill_content('floretcapitals.com', logo=False)
+            glass(cv, pw, 58, 29, S / 2, 900 + (1 - p) * 22, pw, op=A.ramp(su, 0, 0.4), content=pc, refr=10, frost=6,
+                  cblur=(1 - p) * 4, rim_col=GOLD, rim_k=0.06)
     cv *= 1 - A.ramp(u, d - 0.35, d, A.EASY)
 
 
@@ -977,44 +1162,53 @@ DRAW = dict(f1=f1, f2=f2, f3=f3, f4=f4, f5=f5, f6=f6, f7=f7, f8=f8, f9=f9, f10=f
 
 # ------------------------------------------------------------------ camera, transitions, frame
 def cam2d(t):
-    """Global 2D camera on the UI layer: slow push inside each frame + punch at each cut + drift."""
-    z = 1.0
+    """Global camera on the whole frame: slow push inside each scene + soft punch at each cut + drift."""
+    z = 1.02
     for name, a, b in FRAMES:
-        if a <= t < b + OVL:
-            z = 1.0 + 0.045 * A.clamp((t - a) / (b - a))
+        if a <= t < b:
+            z = 1.02 + 0.04 * A.SMOOTH(A.clamp((t - a) / (b - a)))
     for name, a, b in FRAMES[1:]:
         dt = t - a
-        if -0.25 < dt < 0.6:
-            z *= 1 + 0.07 * math.exp(-max(dt, 0) * 7) * (dt > 0) - 0.05 * A.clamp((dt + 0.25) / 0.25) * (dt <= 0)
-    dx = 5 * A.wiggle(t, 0.25, 1, 3)
-    dy = 4 * A.wiggle(t, 0.22, 1, 4)
-    rot = 0.25 * A.wiggle(t, 0.18, 1, 5)
+        if -0.3 < dt < 0.8:
+            z *= 1 + 0.05 * math.exp(-max(dt, 0) * 5) * (dt > 0) - 0.03 * A.clamp((dt + 0.3) / 0.3) * (dt <= 0)
+    dx = 6 * A.wiggle(t, 0.2, 1, 3)
+    dy = 5 * A.wiggle(t, 0.17, 1, 4)
+    rot = 0.2 * A.wiggle(t, 0.15, 1, 5)
     return dx, dy, z, rot
 
 
 def draw(t):
+    BOOST.clear()
+    fg_scene = [(n, a, b) for n, a, b in FRAMES if a <= t < b]
+    # scenes set their bloom boosts before the background is lit: run a cheap pre-pass of the boost logic
+    cv = None
+    for name, a, b in fg_scene:
+        _boost(name, t - a, b - a)
+    cv = background(t)
+    for name, a, b in fg_scene:
+        DRAW[name](cv, t, t - a, b - a)
     dx, dy, z, rot = cam2d(t)
-    cv = background(t, grid=1.0, cam=(dx / 200, dy / 200, z))
-    fg = np.zeros((S, S, 4), np.float32)
-    for name, a, b in FRAMES:
-        if a <= t < b + OVL:
-            DRAW[name](fg, t, t - a, b - a)
-    M = cv2.getRotationMatrix2D((S / 2, S / 2), rot, z)
-    M[0, 2] += dx
-    M[1, 2] += dy
-    fg = cv2.warpAffine(fg, M, (S, S), flags=cv2.INTER_LINEAR, borderValue=0)
-    C.over(cv, fg)
-    # cut accents: radial zoom blur + gold light sweep
+    Mx = cv2.getRotationMatrix2D((S / 2, S / 2), rot, z)
+    Mx[0, 2] += dx
+    Mx[1, 2] += dy
+    cv = cv2.warpAffine(cv, Mx, (S, S), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    # cut accents: soft radial zoom blur + a warm light leak flash
     for name, a, b in FRAMES[1:]:
         dt = t - a
-        if abs(dt) < 0.22:
-            bump = math.exp(-(dt / 0.09) ** 2)
-            cv[...] = radial(cv, 0.10 * bump)
-            yy, xx = np.ogrid[0:S, 0:S]
-            pos = (dt + 0.22) / 0.44 * (S * 1.6) - S * 0.3
-            band = np.exp(-(((xx + yy * 0.35) - pos) / 50.0) ** 2).astype(np.float32)
-            cv += band[..., None] * GOLD * 0.35 * bump
+        if abs(dt) < 0.3:
+            bump = math.exp(-(dt / 0.11) ** 2)
+            cv = radial(cv, 0.07 * bump)
+            add_glow(cv, S * 0.82, S * 0.2, 520, BL_AMBER, 0.22 * bump)
     return cv
+
+
+def _boost(name, u, d):
+    if name == 'f1':
+        BOOST['f1'] = A.ramp(u, 0.0, 1.4) * (1 + 0.6 * math.exp(-max(0, u - 0.9) * 2.5) * (u > 0.9))
+    elif name == 'f8':
+        BOOST['f8'] = 1 + 0.5 * math.exp(-max(0, u - 0.2) * 2.0)
+    elif name == 'f10':
+        BOOST['f10'] = 0.6 + 0.6 * A.ramp(u, 2.05 - 0.2, 2.05 + 1.0)
 
 
 def radial(img, amount, n=6):
@@ -1023,8 +1217,8 @@ def radial(img, amount, n=6):
     acc = img.copy()
     for i in range(1, n):
         s = 1 + amount * i / n
-        M = np.float32([[s, 0, (1 - s) * S / 2], [0, s, (1 - s) * S / 2]])
-        acc += cv2.warpAffine(img, M, (S, S), borderMode=cv2.BORDER_REFLECT)
+        Mx = np.float32([[s, 0, (1 - s) * S / 2], [0, s, (1 - s) * S / 2]])
+        acc += cv2.warpAffine(img, Mx, (S, S), borderMode=cv2.BORDER_REFLECT)
     return acc / n
 
 
@@ -1032,30 +1226,31 @@ def radial(img, amount, n=6):
 def _vig():
     yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
     r = np.hypot(xx - S / 2, yy - S / 2) / (S / 2)
-    return np.clip(1 - 0.7 * np.clip(r - 0.4, 0, None) ** 1.6, 0, 1)[..., None]
+    return np.clip(1 - 0.75 * np.clip(r - 0.35, 0, None) ** 1.5, 0, 1)[..., None]
 
 
 def finish(f, t):
-    f = C.deep_glow(f, 0.55, 0.38, (1.0, 0.7, 0.36), sat_boost=0.6)
-    f = C.halation(f, 0.06, threshold=0.7)
-    f = C.anamorphic(f, 1.1, 0.06, (1.0, 0.7, 0.35), 0.35)
-    x = f[..., :3] / (1 + f[..., :3] * 0.18)
-    s = C.to_srgb(np.clip(x, 0, 1))
-    s = np.clip((s - 0.012) / 0.988, 0, 1)
-    s = s * s * (3 - 2 * s) * 0.18 + s * 0.82
+    f = C.deep_glow(f, 0.55, 0.32, (1.0, 0.78, 0.52), sat_boost=0.7)
+    f = C.halation(f, 0.05, threshold=0.65)
+    f = C.anamorphic(f, 0.9, 0.05, (1.0, 0.72, 0.4), 0.45)
+    f = C.chroma_fringe(f, 1.4)
+    x = f[..., :3] / (1 + f[..., :3] * 0.22)
+    s = C.to_srgb(np.clip(x * 1.08, 0, 1))
+    s = np.clip((s - 0.018) / 0.982, 0, 1)
+    s = s * s * (3 - 2 * s) * 0.22 + s * 0.78
     s = s * _vig()
-    return C.grain(s, t, 0.012, 1.2)
+    return C.grain(s, t, 0.014, 1.2)
 
 
 def samples_for(t):
     for name, a, b in FRAMES[1:]:
         if abs(t - a) < 0.3:
-            return 5
+            return 4
     for name, a, b in FRAMES:
         if a <= t < b:
             u = t - a
             if u < 0.9 or b - t < 0.45:
-                return 4
+                return 3
     return 2
 
 

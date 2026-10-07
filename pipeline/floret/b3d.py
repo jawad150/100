@@ -19,7 +19,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', 'workspace4'))
-GOLD = (1.0, 0.70, 0.28)
+OUTDIR = os.environ.get('B3D_OUT', 'b3d2')
+GOLD = (1.0, 0.68, 0.26)
 SILVER = (0.93, 0.94, 0.96)
 
 
@@ -40,7 +41,7 @@ def reset(res, frames, samples=40):
     sc.render.image_settings.file_format = 'PNG'
     sc.render.image_settings.color_mode = 'RGBA'
     sc.view_settings.view_transform = 'AgX'
-    sc.view_settings.look = 'AgX - Punchy'
+    sc.view_settings.look = 'AgX - Medium High Contrast'
     w = bpy.data.worlds.new('W')
     sc.world = w
     w.use_nodes = True
@@ -112,18 +113,22 @@ def studio_world(w):
     nt.links.new(sep.outputs['Z'], mr.inputs['Value'])
     nt.links.new(mr.outputs['Result'], ramp.inputs['Fac'])
     nt.links.new(ramp.outputs['Color'], bg.inputs['Color'])
-    bg.inputs['Strength'].default_value = 1.7
+    bg.inputs['Strength'].default_value = 2.6
 
 
 def studio():
-    """Softbox studio for metal: big reflection cards (invisible to camera) + key / rims."""
-    emitter('top', (0, -1.5, 5), (0.35, 0, 0), (7, 3), 3.0)
-    emitter('left', (-5, -2, 1), (0, -1.2, 0.3), (2.2, 6), 2.2, (1, 0.86, 0.66))
-    emitter('right', (5, -1, 1.5), (0, 1.2, -0.3), (1.2, 6), 4.0)
-    emitter('front', (0, -6, -1.2), (1.75, 0, 0), (6, 1.0), 1.4)
-    area('key', (-3, -5, 4), (0, 0, 0), 4, 900)
-    area('rimL', (-4, 4, 2), (0, 0, 0.3), 2, 700, (1, 0.75, 0.45))
-    area('rimR', (4, 4, 3), (0, 0, 0.3), 2, 900)
+    """Glossy product studio: big bright reflection cards (invisible to camera), soft key and hot back rims
+    so every silhouette is traced by a bright edge."""
+    emitter('top', (0, -1.5, 5), (0.35, 0, 0), (8, 3.5), 6.0)
+    emitter('left', (-5, -2, 1), (0, -1.2, 0.3), (2.6, 7), 5.0, (1, 0.88, 0.7))
+    emitter('right', (5, -1, 1.5), (0, 1.2, -0.3), (1.6, 7), 8.0)
+    emitter('front', (0, -6, -1.2), (1.75, 0, 0), (7, 1.4), 3.0)
+    emitter('strip', (0, -5, 2.2), (1.2, 0, 0), (9, 0.25), 14.0)
+    area('key', (-3, -5, 4), (0, 0, 0), 4, 1600)
+    area('fill', (4, -4, 0.5), (0, 0, 0), 5, 500, (0.85, 0.9, 1.0))
+    area('rimL', (-4, 4, 2), (0, 0, 0.3), 1.5, 2600, (1, 0.8, 0.5))
+    area('rimR', (4, 4, 3), (0, 0, 0.3), 1.5, 3000, (1, 0.97, 0.92))
+    area('rimT', (0, 5, 5), (0, 0, 0), 2, 1800)
 
 
 def camera(loc, target, lens=70):
@@ -215,6 +220,10 @@ def logo_polys(width=2.2):
 # ------------------------------------------------------------------ jobs
 def job_logo():
     sc = reset(960, 120)
+    # flat front faces mirror what is behind the camera: dim the world + front cards so the gold keeps its depth
+    sc.world.node_tree.nodes['Background'].inputs['Strength'].default_value = 1.1
+    for n in ('front', 'strip'):
+        bpy.data.objects[n].data.materials[0].node_tree.nodes['Emission'].inputs['Strength'].default_value *= 0.25
     gold, silver = metal('gold', GOLD, 0.2), metal('silver', SILVER, 0.16)
     bars, arrows = logo_polys(2.2)
     root = bpy.data.objects.new('root', None)
@@ -349,7 +358,9 @@ def job_shield():
     outline = right + [(-x, z) for x, z in reversed(right[:-1])]
     sh = prism('shield', outline, 0.3, gold, 0.05)
     inner = [(x * 0.82, z * 0.82 + 0.03) for x, z in outline]
-    ins = prism('inner', inner, 0.06, metal('dark', (0.03, 0.025, 0.02), 0.3, 0.0), 0.02, y0=-0.17)
+    lac = metal('dark', (0.012, 0.011, 0.01), 0.1, 0.0)
+    lac.node_tree.nodes['Principled BSDF'].inputs['Coat Weight'].default_value = 1.0
+    ins = prism('inner', inner, 0.06, lac, 0.02, y0=-0.17)
     ins.parent = sh
     # check mark: thick polyline as prisms
     def bar(a, b, w=0.13):
@@ -373,12 +384,12 @@ JOBS = dict(logo=job_logo, goldbar=lambda: job_bar('gold'), silverbar=lambda: jo
 if __name__ == '__main__':
     name = sys.argv[1]
     sc = JOBS[name]()
-    out = f'{ROOT}/b3d/{name}/'
+    out = f'{ROOT}/{OUTDIR}/{name}/'
     os.makedirs(out, exist_ok=True)
     if len(sys.argv) > 2 and sys.argv[2] == 'still':
         f = int(sys.argv[3]) if len(sys.argv) > 3 else sc.frame_end
         sc.frame_set(f)
-        sc.render.filepath = f'{ROOT}/b3d/preview_{name}.png'
+        sc.render.filepath = f'{ROOT}/{OUTDIR}/preview_{name}.png'
         bpy.ops.render.render(write_still=True)
     else:
         step = int(os.environ.get('STEP', 1))
