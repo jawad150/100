@@ -17,12 +17,13 @@ SHOT LIST  (b = beat; SFX = audio.py catalog names, align='hit' at the visual hi
  (b1-5)      | 0.50 c12@4.15 (.635,.535) mum+boy laughing       | camera shake on each slam      | the beats (word | beats; whip on .75/1.25/2.25
              | 0.75 c10@20.9 (.62,.545) dad+daughter to camera  | (impulse x K.shake),           | slams); whip    | (L/R pan); air_zoom 1.75;
              | 1.00 c08@1.8 piggyback, 1.25 c14@9.5 baby lift + | 1.12x slam punch on beats,     | pans 0.75 /1.25 | shimmer on the leaks 1.25 /
-             | kiss, 1.50 c00@1.15 tent, 1.75 c16@2.35 kennel + | zoom-through 1.75, push into   | /2.25 (strip    | 2.25; riser 1.0-2.5
-             | leaves, 2.00 c02@4.25 blocks, 2.25 c11@4.45 teddy| the smash at 2.5               | slide + smear), |
-             | Slammed 3D words (ivory extrude, plum sides,     |                                | zoom 1.75, light|
+             | kiss, 1.50 c00@1.15 tent, 1.75 c16@0.5 kennel    | zoom-through 1.75, push into   | /2.25 (strip    | 2.25; riser 1.0-2.5
+             | (faces, z1.45), 2.00 c02@4.25, 2.25 c11@4.45     | the smash at 2.5               | slide + smear), |
+             | 3D words drop-slam (ivory extrude, plum sides,   |                                | zoom 1.75, light|
              | magenta deep glow, dark scrim slab), one per     |                                | leak sweeps     |
-             | beat at y 1300: "A SAFE / HOME." 190px, "EVERY-  |                                | 1.25 / 2.25     |
-             | DAY / CARE." 170, "A PLACE" 200, "TO BELONG." 150|                                |                 |
+             | beat at y ~1300: "A SAFE / HOME." 190px, "EVERY- |                                | 1.25 / 2.25     |
+             | DAY / CARE." 142, "A PLACE" 180, "TO / BELONG."  |                                |                 |
+             | 165; right edges <= 925 (like/share column)      |                                |                 |
              | (faces framed above the word band y 1150-1460)   |                                |                 |
  2.50-5.50   | 2 THE QUESTION. Smash to the void. Glossy 3D "?" | orbit yaw 8 -> -4, push 1800-> | white smash     | impact_big + sub_drop 2.5;
  (b5-11)     | spins in from z 5600 and lands on b6 (3.0) in a  | 1540 (easy ease), shake on the | frame 2.5; whip | whoosh_by 2.64; glass_tap 3.0;
@@ -41,20 +42,22 @@ SHOT LIST  (b = beat; SFX = audio.py catalog names, align='hit' at the visual hi
              | be a great fit" floats up on b21 (10.5)          |                                |                 |
  11.50-18.50 | 4 SUPPORT DOCK. Headline "Support is part / of   | orbit around the tile row yaw  | whip pan in     | card_slide x3 on 16ths
  (b23-37)    | the role." (100px, sweep 12.3). Three glass tiles| -5 -> 5 (glow plate + bokeh    | 11.5; push into | 11.625-11.875; shimmer 12.3;
-             | slide in as a carousel (16ths), coloured glow    | parallax), whip-pan arrival,   | tile 3's footage| per focus: ui_hover, ui_click
+             | rise in from depth (16ths), coloured glow        | parallax), whip-pan arrival,   | tile 3's footage| per focus: ui_hover, ui_click
              | blobs behind; focus walks L->R on b25/29/33      | push into tile 3 18.22-18.5    | (zoom blur)     | + glass_tap, sparkle glint;
              | (12.5/14.5/16.5): focused tile grows + springs,  |                                | 18.22-18.5      | air_zoom + flash_hit 18.5
-             | lights its edge, plays footage (c03@4.6, c04@1.0,|                                |                 |
-             | c10@17.4), its glossy 3D icon (grad_cap,         |                                |                 |
-             | chat_bubble, coin_gbp night) lifts out to the    |                                |                 |
-             | corner, glass glint sweep; hand cursor hovers    |                                |                 |
+             | lights its edge, plays footage (c03@2.40 0.1x    |                                |                 |
+             | hold, both faces in the slot; c04@1.0; c10@17.4),|                                |                 |
+             | its glossy 3D icon (grad_cap, chat_bubble,       |                                |                 |
+             | coin_gbp night) lifts above the tile (never over |                                |                 |
+             | the footage), glass glint; hand cursor hovers.   |                                |                 |
+             | Row centred at x 492: tile text <= x 915         |                                |                 |
              | Full Training / Preparation & ongoing learning ·|                                |                 |
              | Ongoing Support / Your supervising social worker |                                |                 |
              | · Weekly Allowance / From £447.60 a week per child|                               |                 |
  18.50-21.00 | 5 PAYOFF. c08 full-bleed, src 3.6 s, 1.0 -> 0.6x | push-in 1.02->1.08 (easy ease) | zoom-through +  | impact_soft + heartbeat
  (b37-42)    | slow-mo, warm key + bottom scrim. "Open your     | + drift; exits with a push +   | flash 18.5;     | reprise 18.75; swish 18.75;
-             | home." (112px ivory glow) rises 18.75, "Change a | zoom blur + light leak         | leak flash out  | reverse_swell + impact_soft
-             | / child's life." (150px orange deep glow) rises  |                                | 20.7-21.0       | 19.5; shimmer 20.0; riser
+             | home." (96px ivory glow) rises 18.75, "Change a  | zoom blur + light leak         | leak flash out  | reverse_swell + impact_soft
+             | / child’s life." (150px orange deep glow) 19.5;  |                                | 20.7-21.0       | 19.5; shimmer 20.0; riser
              | 19.5; light sweeps 19.2 / 20.0                   |                                |                 | 19.0-21.0
  21.00-26.00 | 6 END CARD. 3D logo mark (logo_mark3d night_anim)| slow settle (z -1700->-1500,   | flash 21.0      | logo_sting + impact_big +
  (b42-52)    | swings in with its specular sweep, magenta/orange| yaw 2->0), float               |                 | sub_drop 21.0; swish 21.75,
@@ -68,6 +71,11 @@ SHOT LIST  (b = beat; SFX = audio.py catalog names, align='hit' at the visual hi
              | ripple), leaves by 24.35; complete card holds    |                                |                 |
              | 24.35-26.0 (1.65 s static, 3.0 s since the click)|                                |                 |
  Bed: room_tone at -30 dB (felt, not heard). Mix: -18 LUFS integrated, <= -1.5 dBTP (audio.build_reel).
+
+Flashes: no full-frame flash/fade anywhere (core.flash's ivory term lifts blacks into a grey veil). Cut flash frames
+are an exposure + bloom push (_post hot=), slams get a bloom-only kick (_post kick=); UI clicks / ticks / focus / CTA
+have only localised feedback (click ring, check pop, edge glow). Hard cuts switch half a frame early (HALF) so no
+cut frame ghosts the outgoing shot under the 180-degree shutter.
 
 Depth on every shot: backdrop / footage plate, the subject layer (type, UI, 3D), and a near layer (defocused bokeh
 billboards, dust particles through the camera's DOF, light leaks). Footage is graded 'neon'; montage and payoff
@@ -783,7 +791,7 @@ def s_dock(t):
     # headline
     hp = K.ramp(t, HEAD_T, HEAD_T + 0.7, 'out_expo')
     if hp > 0:
-        hpos = (DOCK_X - K.CX + 20.0, 470.0 - K.CY + 60 * (1 - hp), 60.0 + 200 * (1 - hp))
+        hpos = (DOCK_X - K.CX + 20.0, 405.0 - K.CY + 60 * (1 - hp), 60.0 + 200 * (1 - hp))
         sweep = K.ramp(t, 12.3, 13.2, 'inout_sine')
         hd = A['head']
         sc.custom(hpos, lambda c, cm: hd.draw_plane(c, cm, hpos, opacity=K.ramp(t, HEAD_T, HEAD_T + 0.25),
@@ -791,7 +799,7 @@ def s_dock(t):
                                                     sweep_kw=dict(width=0.1, strength=1.3)))
     # tiles: slide in from the right as a carousel (staggered), then the focus walks left -> right
     for i, (x, s, w) in enumerate(lay):
-        tin = K.ramp(t, T_DOCK - 0.05 + 0.125 * i, T_DOCK + 0.75 + 0.125 * i, 'out_expo')
+        tin = K.ramp(t, T_DOCK + 0.0 + 0.125 * i, T_DOCK + 0.7 + 0.125 * i, 'out_expo')
         if tin <= 0:
             continue
         tile = A['tiles'][i]
@@ -810,10 +818,11 @@ def s_dock(t):
             ui.put_media(tile, face, media, *tile.meta['slot'], opacity=mix)
         if 0 < light < 1:
             tile._add_light(face, light, None, -28.0, 0.07)      # diagonal glass glint (light sweep)
-        px = x - K.CX + 900.0 * (1 - tin)
-        pz = FOCUS_Z * w + 500.0 * (1 - tin)
-        P = (px, DOCK_Y - K.CY + 7.0 * math.sin((t - T_DOCK) * 1.3 + i * 2.1) * (1 - 0.6 * w), pz)
-        rot = (1.5 * math.sin((t - T_DOCK) * 0.9 + i), -38.0 * (1 - tin) - 4.0 * (i - 1) * (1 - w), 0.0)
+        # tiles rise in from below in depth (staggered 16ths): no sideways travel through the like/share column
+        px = x - K.CX
+        pz = FOCUS_Z * w + 380.0 * (1 - tin)
+        P = (px, DOCK_Y - K.CY + 7.0 * math.sin((t - T_DOCK) * 1.3 + i * 2.1) * (1 - 0.6 * w) + 520.0 * (1 - tin), pz)
+        rot = (1.5 * math.sin((t - T_DOCK) * 0.9 + i) - 28.0 * (1 - tin), -4.0 * (i - 1) * (1 - w), 0.0)
         sc.custom(P, lambda c, cm, tile=tile, P=P, rot=rot, face=face, s=s, tin=tin: tile.plane(
             c, cm, P, TILE_W * s, rot=rot, face=face, opacity=K.ramp(tin, 0.0, 0.3)))
         # glossy 3D icon: floats in the slot, lifts out to the tile's top-left corner when the tile is focused
@@ -822,10 +831,10 @@ def s_dock(t):
         sx_, sy_, sw_, sh_, sr_ = tile.meta['slot']
         k = TILE_W * s / tile.w
         slot_c = (px + (sx_ + sw_ / 2 - tile.w / 2) * k, P[1] + (sy_ + sh_ / 2 - tile.h / 2) * k, pz - 20)
-        corner = (px, P[1] + (-tile.h / 2 - 66) * k, pz - 110)     # centred above the tile: never over the footage
+        corner = (px, P[1] + (-tile.h / 2 - 52) * k, pz - 110)     # centred above the tile: never over the footage
         lift = mix
         ipos = tuple(slot_c[j] * (1 - lift) + corner[j] * lift for j in range(3))
-        iw = K.lerp(sw_ * 0.78, 112.0, lift) * k * (ic.size[0] / (ic.bbox[2] - ic.bbox[0]))
+        iw = K.lerp(sw_ * 0.78, 100.0, lift) * k * (ic.size[0] / (ic.bbox[2] - ic.bbox[0]))
         sc.billboard(spr, ipos, iw, opacity=K.ramp(tin, 0.2, 0.6))
     # hand cursor hovers the focused tile's footage (hover drives focus)
     sc.billboard(A['bokeh'], (-520.0, 640.0, -950.0), 260, mode='add', opacity=0.5)
@@ -861,7 +870,7 @@ def _dock_cursor(t, cam, lay):
         return xy[0]
     if t < FOCUS_T[0] - 0.12:
         a = K.ramp(t, FOCUS_T[0] - 0.6, FOCUS_T[0] - 0.12, 'out_cubic')
-        xy = (1 - a) * np.array([1150.0, 1500.0]) + a * target(0)
+        xy = (1 - a) * np.array([-90.0, 880.0]) + a * target(0)           # from the left at slot height: crosses no text
     elif t < FOCUS_T[1] - 0.6:
         xy = target(0)
     elif t < FOCUS_T[1] - 0.12:

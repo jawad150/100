@@ -136,23 +136,21 @@ def _hot(cv, a):
     return cv
 
 
-def _spin_spr(asset, ang, rate, t, step=2.0, max_n=10):
-    """Spin-blurred coin frame: the average of n at_yaw frames across this sub-sample's share of the 180-degree
-    shutter (rate in deg/s), so fast flips read as a smooth spin blur instead of stepped ghost copies whose
-    reeded edges stack into a lattice (QA)."""
+def _spin_spr(asset, ang, rate, t):
+    """Spin-blurred coin frame (QA: stepped ghost copies / lattice on fast flips). The asset is rendered every 5
+    degrees and at_yaw cross-fades neighbours, so rims double at that spacing however many angles are averaged.
+    The coin spins about its vertical axis, so screen motion is horizontal with speed ~ R |sin(angle)|: blur the
+    frame horizontally by the arc it sweeps during this sub-sample's share of the 180-degree shutter (at least the
+    5-degree asset step while spinning), sharp face-on, fully smeared edge-on."""
+    import cv2
+    spr = asset.at_yaw(ang % 360.0)
     span = abs(rate) * (0.5 / K.FPS) / max(1, samples(t))
-    n = int(min(max_n, math.ceil(span / step)))
-    if n <= 1:
-        return asset.at_yaw(ang % 360.0)
-    acc = None
-    for j in range(n):
-        f = asset.at_yaw((ang + ((j + 0.5) / n - 0.5) * span * (1 if rate >= 0 else -1)) % 360.0)
-        if acc is None:
-            acc = f.astype(np.float32, copy=True)
-        else:
-            acc += f
-    acc *= np.float32(1.0 / n)
-    return acc
+    span = max(span, 5.0 * min(1.0, abs(rate) / 150.0))
+    k = 0.42 * spr.shape[1] * abs(math.sin(math.radians(ang))) * math.radians(span)
+    if k < 1.5:
+        return spr
+    ks = int(round(k)) | 1
+    return cv2.blur(spr, (ks, 1), borderType=cv2.BORDER_CONSTANT)
 
 
 @functools.lru_cache(maxsize=4)
@@ -526,7 +524,7 @@ def _scene_number(t):
         if ent <= 0:
             continue
         Pe = P * np.array([1.0 + 1.6 * (1 - ent), 1.0, 1.0]) + np.array([0.0, 0.0, 2600.0 * (1 - ent)])
-        spr = A['coin'].at_yaw((t * 160.0 + i * 51.0) % 360.0)
+        spr = _spin_spr(A['coin'], t * 160.0 + i * 51.0, 160.0, t)
         sc.billboard(spr, tuple(Pe), COIN_RING['size'], rot=-14.0 + 10.0 * math.sin(th), opacity=min(1.0, ent * 2))
     # the orbit line itself: back half behind everything, front half in front of the copy plane
     lo = K.ramp(t, T_NUM + 0.1, T_NUM + 0.8)
@@ -535,7 +533,7 @@ def _scene_number(t):
     sc.custom(1.0, lambda c, cm: _orbit_line(c, cm, COIN_RING, 'front', 0.9 * lo, head))
     # near defocused coin (foreground depth layer), bottom-left corner
     Pn = (-700.0, 1050.0, -800.0)
-    sc.billboard(A['coin_big'].at_yaw((t * 90.0) % 360.0), Pn, 420.0, rot=20.0, opacity=0.9)
+    sc.billboard(_spin_spr(A['coin_big'], t * 90.0, 90.0, t), Pn, 420.0, rot=20.0, opacity=0.9)
     sc.particles(A['dust'], t)
     sc.render(cv)
     w = abs(_num_whip(t)) if t < T_CALC else 0.0
@@ -772,7 +770,7 @@ def _draw_wipe(cv, t, A_coin):
         if wj is None:
             continue
         x, y, wd, ang, u = wj
-        spr = _spin_spr(A_coin, ang, 900.0, t, step=4.0, max_n=3)
+        spr = _spin_spr(A_coin, ang, 900.0, t)
         if layer is None:
             layer = np.zeros_like(cv)
         K.draw(layer, spr, x, y, scale=wd / spr.shape[1], rot=-35.0, mode='add', opacity=1.0 / m)
@@ -819,7 +817,7 @@ def _scene_calc(t):
                                      ((-700.0, 1350.0, 900.0), 300.0, 70.0))):
         sc.billboard(A['coin_s'].at_yaw((t * sp + 40 * i) % 360.0), P, wd, rot=20.0 * i - 10.0, opacity=0.85)
     Pn = (250.0, 520.0, -560.0)
-    sc.billboard(A['coin'].at_yaw((t * 70.0 + 200.0) % 360.0), Pn, 230.0, rot=-25.0, opacity=0.8)
+    sc.billboard(_spin_spr(A['coin'], t * 70.0 + 200.0, 70.0, t), Pn, 230.0, rot=-25.0, opacity=0.8)
     sc.particles(A['dust'], t)
     sc.render(cv)
     xy, press, click, op = _cursor_xy(t)
@@ -1027,7 +1025,7 @@ def _post_orbit(cv, t):
     z = K.ramp(t, ZOOM[1] - 0.12, ZOOM[1], 'in_expo')
     wp = _calc_wipe(t)
     ch = 1.6 + (6.0 * math.sin(math.pi * wp[4]) if wp else 0.0) + 6.0 * z
-    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0) + 1.0 * z
+    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0) + 0.6 * z
     _hot(cv, fl)
     return K.post(cv, LOOK, t, chroma=ch)
 
