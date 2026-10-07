@@ -3,3 +3,5 @@ reel/gold_reel_ref_4k.mp4 filter=lfs diff=lfs merge=lfs -text
 reel/gold_reel_ref_1080p.mp4 filter=lfs diff=lfs merge=lfs -text
 reel/yaadein_spiderman_reel_instagram.mp4 filter=lfs diff=lfs merge=lfs -text
 reel/yaadein_spiderman_reel_master.mp4 filter=lfs diff=lfs merge=lfs -text
+reel/you_made_it_studio_reel_instagram.mp4 filter=lfs diff=lfs merge=lfs -text
+reel/you_made_it_studio_reel_master.mp4 filter=lfs diff=lfs merge=lfs -text
