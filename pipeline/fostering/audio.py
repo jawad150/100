@@ -132,6 +132,18 @@ def _fade(x, fin=0.0004, fout=0.01):
     return x
 
 
+def _taper(x, frac=0.25, sec=None):
+    """Raised-cosine fade over the last `frac` of x (or `sec` seconds): buffers end at exactly zero."""
+    n = len(x)
+    m = int(min(n * frac, sec * SR) if sec else n * frac)
+    if m < 2:
+        return x
+    x = np.array(x, dtype=np.float64, copy=True)
+    w = 0.5 + 0.5 * np.cos(np.pi * np.arange(1, m + 1) / m)
+    x[-m:] *= w[:, None] if x.ndim == 2 else w
+    return x
+
+
 def _curve(spec, p, log=True):
     """spec: scalar | callable(p) | [(p0, v0), (p1, v1), ...] breakpoints (log-interpolated if log)."""
     p = np.asarray(p, dtype=np.float64)
@@ -326,7 +338,7 @@ def modal(d, freqs, taus, amps, rng=None, split=0.0, contact=0.0004, t0=0.0):
         else:
             x += a * e * np.sin(TWO_PI * f * u + p0)
     on = _ar(t, contact, 1e9, t0)
-    return x * on
+    return _taper(x * on, 0.3)
 
 
 def fm_bell(d, fc, ratio=1.4, index=2.0, tau=1.0, tau_index=0.25, attack=0.002, t0=0.0):
@@ -335,7 +347,7 @@ def fm_bell(d, fc, ratio=1.4, index=2.0, tau=1.0, tau_index=0.25, attack=0.002, 
     u = np.maximum(t - t0, 0.0)
     I = index * np.exp(-u / tau_index)
     y = np.sin(TWO_PI * fc * u + I * np.sin(TWO_PI * fc * ratio * u))
-    return y * _ar(t, attack, tau, t0)
+    return _taper(y * _ar(t, attack, tau, t0), 0.25)
 
 
 # ------------------------------------------------------------------------------------------- stereo
@@ -460,9 +472,8 @@ def stats(x, hit=None):
     a = np.abs(x).max(1)
     act = a > pk * 10 ** (-40 / 20)
     rms_act = _rms(x[act]) if act.any() else 1e-12
-    edge = 32
-    d0 = np.max(np.abs(x[:edge])) / (pk + 1e-12)
-    d1 = np.max(np.abs(x[-edge:])) / (pk + 1e-12)
+    d0 = max(np.max(np.abs(x[0])), np.max(np.abs(np.diff(x[:4], axis=0)))) / (pk + 1e-12)
+    d1 = max(np.max(np.abs(x[-1])), np.max(np.abs(np.diff(x[-4:], axis=0)))) / (pk + 1e-12)
     env = _smooth(a, 0.004)
     out = dict(dur=len(x) / SR, peak_db=float(db(pk)), rms_db=float(db(_rms(x))), rms_active_db=float(db(rms_act)),
                crest_db=float(db(pk) - db(rms_act)), mmax_lufs=momentary_max(x), dc=float(np.abs(x.mean(0)).max()),
@@ -535,6 +546,7 @@ def reverb(x, preset='room', wet_db=-12.0, dry=1.0, send_hp=None, **kw):
     prm = dict(REVERBS[preset]) if isinstance(preset, str) else {}
     prm.update(kw)
     ir = make_ir(**prm)
+    x = _fade(x, 0.0, 0.004)
     src = hp(x, send_hp) if send_hp else x
     out = np.zeros((len(x) + len(ir) - 1, 2))
     out[:len(x)] = x * dry
@@ -614,7 +626,7 @@ def _thump(d, f_end, f_drop, tau_pitch, tau, rng, attack=0.003, drive=2.0, noise
     x = body + noise * nz
     if click:
         x += click * _unit(bp(rng.standard_normal(len(t)), *click_band)) * _ar(t, 0.0003, 0.004) * 0.25
-    return x
+    return _taper(x, 0.15)
 
 
 def _click(d, rng, band=(2000.0, 9000.0), tau=0.002, modes=None, low=None):
@@ -643,7 +655,7 @@ def _grains(d, rng, n, f_lo, f_hi, g_lo=0.02, g_hi=0.12, density=None, amp=None,
         t0 = np.interp(rng.random(), cdf, pp) * d
         f = math.exp(rng.uniform(math.log(f_lo), math.log(f_hi)))
         gl = rng.uniform(g_lo, g_hi)
-        tt = _t(gl * (3.0 if decay else 1.0))
+        tt = _t(gl * (4.0 if decay else 1.0))
         if decay:
             e = _ar(tt, min(0.004, gl * 0.1), gl)
         else:
@@ -652,7 +664,7 @@ def _grains(d, rng, n, f_lo, f_hi, g_lo=0.02, g_hi=0.12, density=None, amp=None,
         if harm:
             s += harm * np.sin(TWO_PI * f * 2.01 * tt)
         a = amp(t0 / d) if amp is not None else 1.0
-        g = s * e * a * rng.uniform(0.35, 1.0)
+        g = _taper(s * e * a * rng.uniform(0.35, 1.0), 0.35)
         _add(out, pan(g, rng.uniform(-spread, spread)), t0)
     return out
 
@@ -672,7 +684,7 @@ def _crackle(d, rng, rate, lo=2500.0, hi=11000.0, env=None, gdur=(0.0008, 0.005)
         tt = _t(gl * 2.5)
         e = _ar(tt, gl * 0.15, gl * 0.5)
         i = rng.integers(0, SR)
-        g = nz[i:i + len(tt)] * e * rng.lognormal(0, 0.6)
+        g = _taper(nz[i:i + len(tt)] * e * rng.lognormal(0, 0.6), 0.3)
         _add(out, pan(g, rng.uniform(-spread, spread)), t0)
     return out
 
@@ -728,9 +740,9 @@ def impact_big(seed=0, tail=1.0):
     am = 1 + 0.25 * np.sin(TWO_PI * 1.3 * t + 1.0) * np.sin(TWO_PI * 0.55 * t)
     rum = rum * (_ar(t, 0.06, 1.25 * tail) * am)[:, None]
     mono = 0.95 * sub + 0.55 * punch + 0.30 * body + 0.22 * thoom + 0.20 * crack + 0.08 * tick
-    st = _st(mono) + 0.10 * air + 0.16 * rum
-    st = transient(st, 3.0)
-    wet = reverb(hp(st, 140) * 0.9, 'hall', wet_db=-3.0 + 2 * (tail - 1), dry=0.0)
+    st = _st(mono) + 0.08 * air + 0.16 * rum
+    st = _taper(transient(st, 3.0), sec=1.6)
+    wet = reverb(lp(hp(st, 140), 5500, 2) * 0.9, 'hall', wet_db=-3.0 + 2 * (tail - 1), dry=0.0)
     out = np.zeros((len(wet), 2))
     out[:len(st)] += st
     out += wet
@@ -793,7 +805,7 @@ def flash_hit(seed=0):
 def logo_sting(seed=0, tone=1.0):
     """Logo sting (~6 s). 0.42 s airy swell, then the hit. hit = 0.42 s. tone scales the bell pitch."""
     r = _rng(seed, 'logo_sting')
-    pre, d = 0.42, 6.0
+    pre, d = 0.42, 8.0
     t = _t(d)
     sw_env = np.where(t < pre, (t / pre) ** 2.4, np.exp(-(t - pre) / 0.05))
     swell = noise_band(d, r, [(0, 900), (pre / d, 6000), (1, 6000)], bw=1.1, width=0.8) * sw_env[:, None] * 0.3
@@ -816,7 +828,7 @@ def logo_sting(seed=0, tone=1.0):
     strike = modal(d, [f0 * 2, f0 * 2.76, f0 * 5.4], [0.25, 0.15, 0.08], [0.3, 0.2, 0.1], r, t0=pre) * 0.5
     shim = _grains(d, r, 70, 2800, 10000, 0.03, 0.22, density=lambda p: np.exp(-np.maximum(p - pre / d, 0) * 6)
                    * (p >= pre / d * 0.9), spread=0.95) * 0.11
-    st = swell + _st(0.85 * th + strike) + 0.30 * bell + shim
+    st = _taper(swell + _st(0.85 * th + strike) + 0.30 * bell + shim, sec=2.5)
     st = reverb(st, 'air', wet_db=-6, send_hp=200)
     return _finish(st, pre, 0.0, 'logo_sting')
 
@@ -1089,7 +1101,7 @@ def ui_hover(seed=0):
     env = np.where(t < hit, np.sin(np.pi / 2 * t / hit) ** 2, np.exp(-(t - hit) / 0.06))
     air = noise_band(d, r, [(0, 1700), (hit / d, 3400), (1, 3000)], 0.7, width=0.5) * env[:, None]
     glint = osc(1100 + 450 * np.clip(t / hit, 0, 1)) * env * 0.08
-    st = air * 0.5 + _st(glint)
+    st = _taper(air * 0.5 + _st(glint), 0.3)
     st = reverb(st, 'plate', wet_db=-15)
     return _finish(st, hit, -15.0, 'ui_hover')
 
@@ -1205,7 +1217,7 @@ def toast_chime(seed=0, pitch=1.0):
 def glass_tap(seed=0, pitch=1.0):
     """Glass tap (~1.1 s). hit = 0.0005 s."""
     r = _rng(seed, 'glass_tap')
-    d = 1.1
+    d = 1.8
     f0 = 2150 * pitch * r.uniform(0.97, 1.03)
     rat = [1.0, 2.07, 3.42, 5.10, 7.12]
     x = modal(d, [f0 * k for k in rat], [0.45, 0.26, 0.15, 0.08, 0.05], [1, .55, .35, .2, .12], r, split=2.2)
@@ -1287,13 +1299,14 @@ def _coin_ring(d, r, f0, tau0=0.7, hard=1.0, split=3.5):
 def coin_flip(seed=0):
     """Coin flip (~1.4 s). hit = 0.0005 s (the flick)."""
     r = _rng(seed, 'coin_flip')
-    d = 1.4
+    d = 2.2
     t = _t(d)
     ping = _coin_ring(d, r, 3050, tau0=0.5, hard=1.2)
     rate = 34 * np.exp(-t / 1.2) + 8
     rot = 0.5 + 0.5 * np.cos(TWO_PI * np.cumsum(rate) / SR)
     spin = _coin_ring(d, r, 3050, tau0=0.9, hard=0.8, split=6.0) * (0.25 + 0.75 * rot ** 2) * 0.6
     flutter = noise_band(d, r, [(0, 5000), (1, 3500)], 0.6) * (rot * _ar(t, 0.03, 0.4)) * 0.05
+    flutter = _taper(flutter, 0.3)
     x = ping * _ar(t, 0.0002, 0.08) + spin * np.clip(t / 0.03, 0, 1) + flutter
     st = pan(decorrelate(x, r, 0.3), np.sin(TWO_PI * np.cumsum(rate * 0.12) / SR) * 0.35)
     st = reverb(st, 'plate', wet_db=-14)
@@ -1305,7 +1318,7 @@ def coin_flip(seed=0):
 def coin_ring(seed=0, pitch=1.0):
     """Coin ring (~2 s). hit = 0.0003 s."""
     r = _rng(seed, 'coin_ring')
-    d = 2.0
+    d = 3.0
     x = _coin_ring(d, r, 2750 * pitch * r.uniform(0.98, 1.02), tau0=0.75, hard=1.0)
     st = reverb(decorrelate(x, r, 0.3), 'plate', wet_db=-13)
     return _finish(st, 0.0003, -8.0, 'coin_ring', fin=0.0002)
@@ -1321,7 +1334,7 @@ def coins_burst(seed=0, n=26):
     for k in range(int(n)):
         t0 = 0.0 if k == 0 else min(d - 0.6, r.exponential(0.16))
         f0 = math.exp(r.uniform(math.log(2300), math.log(4800)))
-        x = _coin_ring(0.9, r, f0, tau0=r.uniform(0.12, 0.45), hard=r.uniform(0.8, 1.3), split=r.uniform(2, 8))
+        x = _coin_ring(1.5, r, f0, tau0=r.uniform(0.12, 0.45), hard=r.uniform(0.8, 1.3), split=r.uniform(2, 8))
         g = r.uniform(0.25, 1.0) * math.exp(-t0 / 0.5)
         _add(out, pan(x * g, r.uniform(-0.85, 0.85)), t0)
     out = reverb(out, 'plate', wet_db=-12)
@@ -1333,7 +1346,7 @@ def coins_burst(seed=0, n=26):
 def cash_kaching(seed=0):
     """Cash ka-ching (~2.2 s). hit = 0.12 s (the bell)."""
     r = _rng(seed, 'cash_kaching')
-    hit, d = 0.12, 2.2
+    hit, d = 0.12, 3.2
     t = _t(d)
     x = np.zeros((len(t), 2))
     ka = _click(0.12, r, (1000, 6000), 0.004, [(620, 0.02, 0.6), (1130, 0.015, 0.4), (2400, 0.008, 0.2)],
@@ -1366,9 +1379,15 @@ def slot_tick(n=16, dur=1.2, ease='out', seed=0):
     n = max(2, int(n))
     D = dur + 0.5
     out = np.zeros((_n(D), 2))
+    if ease == 'out':                       # gaps grow geometrically: the last gap is 4x the first
+        rr = 4.0 ** (1.0 / max(n - 2, 1))
+        gaps = rr ** np.arange(n - 1)
+        times = np.concatenate([[0.0], np.cumsum(gaps)]) * (dur / np.sum(gaps))
+    else:
+        times = np.linspace(0, dur, n)
     for k in range(n):
         u = k / (n - 1)
-        tk = dur * (1 - (1 - u) ** (1 / 3.0)) if ease == 'out' else dur * u
+        tk = times[k]
         last = k == n - 1
         f = 2600 + 900 * u + r.uniform(-60, 60)
         x = _click(0.06, r, (3000, 10000), 0.0008, [(f, 0.006, 0.6), (f * 1.62, 0.004, 0.3)])
@@ -1423,7 +1442,7 @@ def bar_grow(duration=0.8, pitch=1.0, seed=0):
     tock = np.zeros(len(t))
     _add(tock, _click(0.1, r, (1500, 6000), 0.002, [(880 * pitch, 0.02, 0.6), (2350 * pitch, 0.008, 0.25)]),
          duration)
-    st = _st(0.14 * tone + 0.5 * tock) + 0.12 * air
+    st = _taper(_st(0.14 * tone + 0.5 * tock) + 0.12 * air, sec=0.2)
     st = reverb(decorrelate(st, r, 0.2), 'plate', wet_db=-14)
     return _finish(st, duration, -10.0, 'bar_grow')
 
@@ -1512,12 +1531,12 @@ def grow_swell(duration=2.5, seed=0):
     def woody(p, f):
         g = np.zeros((len(p), len(f)))
         base = 150 * 2 ** (0.55 * np.clip(p / pk, 0, 1))
-        for k, a in ((1.0, 1.0), (1.47, 0.6), (2.13, 0.4), (3.05, 0.2)):
-            g += a * np.exp(-0.5 * (np.log2(np.maximum(f, 8)[None, :] / (base[:, None] * k)) / 0.035) ** 2)
-        return 0.15 + g
-    body = noise_band(d, r, [(0, 220), (pk, 420), (1, 380)], 1.3, width=0.4, extra=woody)
+        for k, a in ((1.0, 1.0), (1.47, 0.7), (2.13, 0.5), (3.05, 0.3), (4.4, 0.15)):
+            g += a * np.exp(-0.5 * (np.log2(np.maximum(f, 8)[None, :] / (base[:, None] * k)) / 0.022) ** 2)
+        return 0.04 + g
+    body = noise_band(d, r, [(0, 260), (pk, 520), (1, 460)], 1.0, width=0.4, extra=woody)
     rust = _crackle(d, r, 900, 2200, 9000, env=lambda p: np.clip(p / pk, 0, 1) ** 1.5 * (p < pk * 1.05))
-    st = (0.55 * air + 0.35 * body) * env[:, None] + 0.5 * rust
+    st = (0.45 * air + 0.55 * body) * env[:, None] + 0.5 * rust
     st = reverb(st, 'plate', wet_db=-13)
     return _finish(st, duration, -8.0, 'grow_swell', keep_until=duration + 0.3)
 
@@ -1668,29 +1687,29 @@ def outdoor_birds(dur=24.0, seed=0, birds=1.0):
 
     def mask(tl, f):
         lf = np.log2(np.maximum(f, 8))[None, :]
-        gust = 0.55 + 0.45 * (0.5 + 0.5 * np.sin(TWO_PI * 2 * tl / dur + ph[0]) * np.sin(TWO_PI * 3 * tl / dur
-                                                                                          + ph[1]))
-        c = np.log2(700) + 0.6 * (gust[:, None] - 0.5)
-        breeze = gust[:, None] * np.exp(-0.5 * ((lf - c) / 1.0) ** 2)
-        leaves = 0.12 * gust[:, None] ** 2 * np.exp(-0.5 * ((lf - np.log2(4200)) / 0.6) ** 2)
-        low = 0.25 * np.exp(-0.5 * ((lf - np.log2(160)) / 0.8) ** 2)
+        gust = 0.3 + 0.7 * (0.5 + 0.5 * np.sin(TWO_PI * 2 * tl / dur + ph[0]) * np.sin(TWO_PI * 3 * tl / dur
+                                                                                        + ph[1])) ** 1.5
+        c = np.log2(420) + 0.7 * (gust[:, None] - 0.5)
+        breeze = gust[:, None] * np.exp(-0.5 * ((lf - c) / 0.8) ** 2)
+        leaves = 0.05 * gust[:, None] ** 2 * np.exp(-0.5 * ((lf - np.log2(3500)) / 0.5) ** 2)
+        low = 0.3 * np.exp(-0.5 * ((lf - np.log2(140)) / 0.7) ** 2)
         return breeze + leaves + low
     x = _loop_mask_noise(L, r, mask, corr=0.25)
-    x = _unit(x) * 0.35
+    x = _unit(x) * 0.22
     birds_buf = np.zeros((L, 2))
     t0 = r.uniform(0.2, 1.0)
     while t0 < dur - 0.2:
         kind = r.choice(['chirp', 'chirp', 'trill', 'whistle'])
         call = _bird_call(kind, r)
-        dist = r.uniform(0.0, 1.0)
-        call = lp(call, 12000 - 7000 * dist, 2) * (1.0 - 0.7 * dist) * r.uniform(0.6, 1.0)
+        dist = r.uniform(0.0, 1.0) ** 0.8
+        call = lp(call, 12000 - 6000 * dist, 2) * (1.0 - 0.6 * dist) * r.uniform(0.6, 1.0)
         st = pan(call, r.uniform(-0.85, 0.85))
         i = int(t0 * SR)
         idx = (i + np.arange(len(st))) % L
         np.add.at(birds_buf, idx, st)
-        t0 += r.uniform(1.2, 3.2)
+        t0 += r.uniform(0.7, 2.4)
     birds_buf = reverb_circular(birds_buf, 'outdoor', wet_db=-4)
-    x = x + birds_buf * 0.11 * birds
+    x = x + birds_buf * 0.45 * birds
     return _bed_finish(x, 'outdoor_birds')
 
 
@@ -2066,7 +2085,7 @@ def _font(size, bold=False):
     return ImageFont.load_default()
 
 
-def spectro_image(x, w=640, h=300, hit=None, title='', sub='', fmin=30.0, fmax=20000.0, dyn=90.0, tmax=None):
+def spectro_image(x, w=640, h=300, hit=None, title='', sub='', fmin=30.0, fmax=20000.0, dyn=72.0, tmax=None):
     """PIL image: title, stereo waveform (L up / R down, with RMS) and a log-frequency spectrogram (dB),
     hit marker in cyan. tmax fixes the time axis (s) for side-by-side comparison."""
     from PIL import Image, ImageDraw
@@ -2081,9 +2100,10 @@ def spectro_image(x, w=640, h=300, hit=None, title='', sub='', fmin=30.0, fmax=2
     dr.text((8, 25), sub, fill=(170, 160, 185), font=_font(12))
     # waveform
     cols = np.minimum((np.arange(len(x)) / SR / tmax * w).astype(int), w - 1)
+    x_disp = x / (np.max(np.abs(x)) + 1e-12)
     y0 = top + wav_h // 2
     for c, (sgn, col) in enumerate(((-1, (255, 100, 170)), (1, (255, 150, 80)))):
-        a = np.abs(x[:, c])
+        a = np.abs(x_disp[:, c])
         mx = np.zeros(w)
         np.maximum.at(mx, cols, a)
         ss = np.zeros(w)
@@ -2167,10 +2187,10 @@ def qc(x, hit):
         pr.append('non-finite samples')
     if st['peak_db'] > PEAK_CAP_DB + 0.01:
         pr.append('peak %.2f dBFS above cap' % st['peak_db'])
-    if st['edge_start'] > 0.05:
+    if st['edge_start'] > 0.02:
         pr.append('start edge %.3f of peak' % st['edge_start'])
-    if st['edge_end'] > 0.02:
-        pr.append('end edge %.3f of peak' % st['edge_end'])
+    if st['edge_end'] > 0.002:
+        pr.append('end edge %.4f of peak' % st['edge_end'])
     if st['dc'] > 1e-3:
         pr.append('DC %.4f' % st['dc'])
     if hit > st['dur'] + 1e-6:
