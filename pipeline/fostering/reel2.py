@@ -893,7 +893,7 @@ def _orb_assets():
                        glow_radii=(0.05, 0.18, 0.45), glow_weights=(0.8, 0.5, 0.3))
     d['h2'] = T.render('your household', 'gold', px=116)
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.6, power=2.0)
-    d['door'] = K.radial(512, K.C['AMBER'] * 2.5, power=1.6)
+    d['door'] = K.radial(512, K.C['AMBER'] * 1.5, power=1.6)
     d['pop'] = K.radial(300, K.C['AMBER'] * 1.2, power=2.2)
     d['shadow'] = K.radial(400, K.C['NIGHT_0'] * 0.0, power=1.6)
     d['scrim'] = K.radial(512, (0.0, 0.0, 0.0), power=1.3)
@@ -1025,7 +1025,7 @@ def _post_orbit(cv, t):
     z = K.ramp(t, ZOOM[1] - 0.12, ZOOM[1], 'in_expo')
     wp = _calc_wipe(t)
     ch = 1.6 + (6.0 * math.sin(math.pi * wp[4]) if wp else 0.0) + 6.0 * z
-    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0) + 0.6 * z
+    fl = 0.25 * K.impulse(t, T_ORB, 9.0) + (0.25 * math.sin(math.pi * wp[4]) ** 2 if wp else 0.0) + 0.35 * z
     _hot(cv, fl)
     return K.post(cv, LOOK, t, chroma=ch)
 
