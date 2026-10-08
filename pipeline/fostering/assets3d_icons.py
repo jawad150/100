@@ -85,7 +85,9 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
-WS = os.environ.get('FOSTER_WS', os.path.join(REPO, 'workspace3'))
+sys.path.insert(0, HERE)
+import wsconf  # noqa: E402
+WS = wsconf.workspace()
 OUT3D = os.path.join(WS, 'assets3d')
 PREVIEW3D = os.path.join(WS, 'out', 'preview3d')
 SELFTEST = os.path.join(WS, 'out', 'selftest')

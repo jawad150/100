@@ -171,7 +171,8 @@ from scipy.ndimage import maximum_filter1d, minimum_filter1d, uniform_filter1d
 
 # ============================================================================================ paths / constants
 REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-WS = os.path.abspath(os.environ.get('FOSTER_WS', os.path.join(REPO, 'workspace3')))
+import wsconf  # noqa: E402
+WS = wsconf.workspace()
 AUDIO = os.path.join(WS, 'audio')
 OUT = os.path.join(WS, 'out')
 SELFTEST = os.path.join(OUT, 'selftest')

@@ -221,7 +221,8 @@ limit_blas_threads(int(os.environ.get('FOSTER_BLAS_THREADS', '1')))
 
 # =============================================================================================== paths
 REPO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-WS = os.path.abspath(os.environ.get('FOSTER_WS', os.path.join(REPO, 'workspace3')))
+import wsconf  # noqa: E402  workspace + optional project.json overrides
+WS = wsconf.workspace()
 FONTS = os.path.join(WS, 'fonts')
 BRAND = os.path.join(WS, 'brand')
 FRAMES = os.path.join(WS, 'frames')
@@ -237,8 +238,9 @@ CX, CY = W / 2.0, H / 2.0
 
 
 def font_path(name):
-    """'Nunito-Black' -> absolute .ttf path in FONTS."""
-    return os.path.join(FONTS, name if name.endswith('.ttf') else name + '.ttf')
+    """'Nunito-Black' -> absolute .ttf path in FONTS (project.json "font_map" renames the family)."""
+    name = wsconf.font_name(name[:-4] if name.endswith('.ttf') else name)
+    return os.path.join(FONTS, name + '.ttf')
 
 
 # =============================================================================================== colour
@@ -268,6 +270,7 @@ PALETTE_HEX = {
     'NIGHT_0': '#0B0310', 'NIGHT_1': '#1C0822', 'IVORY': '#FCF8F5', 'PEACH': '#FFD4BA',
     'LAVENDER': '#F6EAF3', 'WHITE': '#FFFFFF', 'BLACK': '#000000',
 }
+PALETTE_HEX.update(wsconf.project().get('palette', {}))   # per-project brand (project.json)
 C = {k: hexlin(v) for k, v in PALETTE_HEX.items()}
 
 _LUMA = np.array([0.2126, 0.7152, 0.0722], np.float32)

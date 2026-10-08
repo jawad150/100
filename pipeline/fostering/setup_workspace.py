@@ -16,7 +16,9 @@ import sys
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-WS = os.path.abspath(os.environ.get('FOSTER_WS', os.path.join(HERE, '..', '..', 'workspace3')))
+sys.path.insert(0, HERE)
+import wsconf  # noqa: E402
+WS = wsconf.workspace()
 SITE = 'https://organicfostering.co.uk'
 DRIVE_FOLDER = '1HU1dWfJVcwtORMaNxGOOBIXbv6CJr4Z0'
 UA = {'User-Agent': 'Mozilla/5.0'}

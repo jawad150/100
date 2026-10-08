@@ -19,7 +19,8 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
-WS = os.path.abspath(os.environ.get('FOSTER_WS', os.path.join(REPO, 'workspace3')))
+import wsconf  # noqa: E402
+WS = wsconf.workspace()
 DEST = os.path.join(REPO, 'reel', 'organic_fostering')
 
 

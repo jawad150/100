@@ -81,7 +81,9 @@ from functools import lru_cache
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-_DEFAULT_WS = os.environ.get('FOSTER_WS', os.path.abspath(os.path.join(HERE, '..', '..', 'workspace3')))
+sys.path.insert(0, HERE)
+import wsconf  # noqa: E402
+_DEFAULT_WS = wsconf.workspace()
 
 
 def _ws():
