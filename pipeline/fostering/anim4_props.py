@@ -27,9 +27,8 @@ NEEDED = [('coin_gbp', 'day', None), ('coin_gbp', 'day', 'spin'), ('question', '
           ('question', 'day', None), ('house', 'day', None), ('bed', 'day', None), ('apple', 'day', None),
           ('sandwich', 'day', None), ('plate', 'day', None), ('basket', 'day', None), ('basket', 'day_full', None),
           ('tshirt', 'day', None), ('trainer', 'day', None), ('backpack', 'day', None), ('school_bus', 'day', None),
-          ('school_bus', 'side', None), ('football', 'day', None), ('paint_palette', 'day', None),
-          ('child_figure', 'day', None), ('book_pencil', 'day', None), ('heart', 'day', None), ('orbs', 'day', None),
-          ('check_tile', 'day', None)]
+          ('school_bus', 'day_side', None), ('football', 'day', None), ('paint_palette', 'day', None),
+          ('child_figure', 'day', None), ('book_pencil', 'day', None), ('heart', 'day', None), ('orbs', 'day', None)]
 
 # stand-in colours (sRGB) per prop
 _COL = dict(coin_gbp='#FFB15C', question='#B7006E', house='#FF6411', bed='#8E7BD8', apple='#E2342B',
@@ -247,6 +246,24 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'status':
         for k, v in status().items():
             print('%-26s %s' % (k, 'ready' if v else '-'))
+    elif len(sys.argv) > 1 and sys.argv[1] == 'sheet':
+        # every ready folder at yaw -20 / 0 / +20 on the anim4 white page -> out/anim4/dev/props_sheet.png
+        import anim4_fx as X
+        ready_ = [(n, v, m) for n, v, m in NEEDED if ready(n, v, m)]
+        cols = 3
+        tile = 360
+        H_ = tile * len(ready_)
+        cv = np.ones((max(tile, H_), tile * cols, 4), np.float32)
+        cv[..., :3] = X.lin('#FFFFFF') * 1.1
+        for r, (n, v, m) in enumerate(ready_):
+            a = prop(n, v, m, scale=0.45)
+            for k, yaw in enumerate((-20.0, 0.0, 20.0)):
+                spr = a.frame(0) if getattr(a, 'mode', 'yaw') == 'static' else a.at_yaw(yaw)
+                K.draw(cv, spr, tile * k + tile / 2, tile * r + tile / 2, scale=0.9 * tile / spr.shape[1])
+        d = os.path.join(K.OUT, 'anim4', 'dev')
+        os.makedirs(d, exist_ok=True)
+        K.save_png(os.path.join(d, 'props_sheet.png'), K.to_srgb8(cv))
+        print('->', os.path.join(d, 'props_sheet.png'), [n + '/' + folder_of(v, m) for n, v, m in ready_])
     else:
         os.makedirs(K.SELFTEST, exist_ok=True)
         cv = K.new_canvas(K.C['IVORY'])

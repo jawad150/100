@@ -246,8 +246,9 @@ def bus_pass(seed=0, dur=1.15, beep=True):
             u = t - tb
             g = (u >= 0) & (u < 0.085)
             env_b = np.where(g, np.sin(np.pi * np.clip(u / 0.085, 0, 1)) ** 0.3, 0.0)
-            tone = np.sign(np.sin(TWO * f * u)) * 0.5 + np.sin(TWO * f * 2 * u) * 0.2
-            bt += lp(tone * env_b, 2400, 2) * 0.22
+            ph_ = TWO * f * u
+            tone = np.sin(ph_) + 0.35 * np.sin(2 * ph_) + 0.12 * np.sin(3 * ph_) + 0.05 * np.sin(4 * ph_)
+            bt += lp(tone * env_b, 3000, 2) * 0.16
         st = st + pan(_st(bt), -0.2)
     st = reverb(st, 'room', wet_db=-15)
     return _finish(st, tp, -7.0, 'bus_pass')
@@ -376,6 +377,8 @@ def cues():
         q(tb, 'type_thump', 0.0, p, weight=w)
     q(B(1), 'impact_soft', -5)
     q(B(0), 'impact_soft', -8)
+    q(B(2.25), 'backpack_thud', -5, 0.0)           # alarm clock lands
+    q(B(2.25) + 0.01, 'clock_rattle', -10, 0.0, dur=0.15)
     q(B(2.5) + 0.02, 'ui_click', -3, -0.45)
     q(B(2.5) + 0.05, 'ui_click', -4, 0.45, pitch=1.12)
     q(B(3), 'marker_swipe', 0, 0.0, 'start', dur=0.32)
@@ -385,7 +388,7 @@ def cues():
     q(B(4) + 0.9, 'clock_tick', -5, 0.05, n=6, interval=0.3)
     q(3.62, 'pen_write', -2, 0.25, 'start', dur=0.4, rate=7.0)
     # slide to sheet B
-    q(5.40, 'paper_slide', 0, 0.0, dur=0.34)
+    q(5.32, 'paper_slide', 0, 0.0, dur=0.34)
     # ---- FRAME 2: list + props
     q(B(9), 'type_thump', 0, -0.2, weight=1.15)
     q(5.70, 'backpack_thud', 0, -0.35)
@@ -424,6 +427,8 @@ def cues():
     for k, tb in enumerate((B(26), B(26.75), B(27.5))):
         q(tb + 0.02, 'swish_small', -6, (-0.2, 0.0, 0.2)[k])
         q(tb + 0.10, 'type_thump', -3, 0.0, weight=0.9 + 0.15 * k)
+    q(B(26.5) + 0.02, 'ui_click', -4, -0.45)
+    q(B(26.5) + 0.05, 'ui_click', -5, 0.45, pitch=1.12)
     q(B(28.25) + 0.15, 'backpack_thud', -3, 0.0)
     q(B(28.25) + 0.15, 'block_clack', -9, 0.0, pitch=0.8)
     q(B(29.75), 'swish_small', -4, 0.0)

@@ -7,6 +7,7 @@
     python3 anim4_dev.py stats a b [--samples 1] [--every 1]
         per-frame luma (BT.709 limited range, as ffmpeg signalstats reports): YMIN / YAVG / YMAX + jumps
     python3 anim4_dev.py mini a b [--fps 15]   low-res motion-check clip (1 sample) -> dev/mini_a_b.mp4
+    python3 anim4_dev.py signalstats file.mp4   ffmpeg signalstats flash / lift / grey-white check of an encode
     python3 anim4_dev.py checks [a b]    layout checks (safe zones, like column, overlaps), every 2nd frame
 """
 import os
@@ -126,6 +127,39 @@ def mini(t0, t1, fps=15, samples=1, scale=0.375, out=None):
     return p
 
 
+def signalstats(mp4, jump=4.0):
+    """ffmpeg signalstats over an encode: per-frame YMIN / YAVG / YMAX (limited range). Prints the ranges and any
+    frame-to-frame YAVG jump >= `jump` or YMAX dip (whites greying) / YMIN lift (blacks lifting) -> flash check."""
+    import subprocess
+    import re
+    out = subprocess.run(['ffmpeg', '-hide_banner', '-i', mp4, '-vf', 'signalstats,metadata=print:file=-', '-f', 'null',
+                          '-'], capture_output=True, text=True).stdout
+    rows, cur = [], {}
+    for line in out.splitlines():
+        m = re.match(r'frame:(\d+)\s+pts:\S+\s+pts_time:(\S+)', line)
+        if m:
+            if cur:
+                rows.append(cur)
+            cur = dict(t=float(m.group(2)))
+            continue
+        m = re.match(r'lavfi\.signalstats\.(YMIN|YAVG|YMAX|YLOW|YHIGH)=(\S+)', line)
+        if m:
+            cur[m.group(1)] = float(m.group(2))
+    if cur:
+        rows.append(cur)
+    if not rows:
+        print('no stats')
+        return rows
+    for k in ('YMIN', 'YLOW', 'YAVG', 'YHIGH', 'YMAX'):
+        v = [r[k] for r in rows if k in r]
+        print('%-5s %.1f .. %.1f' % (k, min(v), max(v)))
+    for a_, b_ in zip(rows, rows[1:]):
+        if abs(b_['YAVG'] - a_['YAVG']) >= jump or b_['YHIGH'] < a_['YHIGH'] - 3 or b_['YLOW'] > a_['YLOW'] + 6:
+            print('%.3f -> %.3f  YAVG %.1f -> %.1f  YLOW %.0f -> %.0f  YHIGH %.0f -> %.0f' % (
+                a_['t'], b_['t'], a_['YAVG'], b_['YAVG'], a_['YLOW'], b_['YLOW'], a_['YHIGH'], b_['YHIGH']))
+    return rows
+
+
 if __name__ == '__main__':
     a = sys.argv[1:]
     if not a:
@@ -146,6 +180,8 @@ if __name__ == '__main__':
         full(float(a[1]), _opt(a, '--samples', None, int))
     elif a[0] == 'mini':
         mini(float(a[1]), float(a[2]), fps=_opt(a, '--fps', 15, int), samples=smp)
+    elif a[0] == 'signalstats':
+        signalstats(a[1])
     elif a[0] == 'checks':
         import anim4
         rng = [float(x) for x in a[1:3]] if len(a) >= 3 and not a[1].startswith('--') else [0.0, None]

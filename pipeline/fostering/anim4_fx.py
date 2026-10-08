@@ -20,8 +20,15 @@ float32 RGBA, 1080 x 1920). World: x right, y down, z away; the stations live on
         world point with a soft drop shadow cast on the page behind it (alpha-derived, 1/4 res).
     soft_shadow(spr) -> low-res plum shadow sprite (cached on identity for static frames).
     glass_chip(label, icon_spr, px=40) -> crisp white glass pill (airy glass, icon + Poppins SemiBold INK label).
-    local_glow(cv, x, y, r, color, amount) -> soft additive-free tinted glow ('screen' on white keeps whites white).
+    draw_lightline(cv, cam, path, s_head, length, offset=0, width=5, opacity=1) -> thin racing light streak along the
+        path (fading tail, white-hot head, warm half-res glow).
+    local_glow(cv, x, y, r, kind='gold'|'peach'|'lav'|'mag'|'hot', amount) -> soft local accent glow (a tinted radial
+        'over', plus a small additive core for 'gold'): never a full-frame flash.
+    far_coins(cv, cam, t, asset, n_samples, opacity, z=1700) -> defocused coins drifting on a far plane (world lattice).
+    near_bokeh(cv, cam, items, t) -> soft lens bokeh discs near the camera (items: world P, kind, size, blur, opacity).
+    unproject(cam, sx, sy, depth) -> world point seen at screen (sx, sy) at camera depth.
     particles_light(n, seed) -> core.Particles tuned for a light scene (gold + lavender motes).
+    REC: dev-only box recorder (None = off); anim4.checks() sets it to a list to collect drawn coin / prop boxes.
 """
 import functools
 import math
@@ -397,12 +404,6 @@ def _over_a(layer, a, color):
     layer[..., 3] += a
 
 
-def _over_rgb(layer, a, rgb):
-    layer *= (1 - a)[..., None]
-    layer[..., :3] += a[..., None] * rgb
-    layer[..., 3] += a
-
-
 # ================================================================================================ coins / props
 def coin_sprite(asset, ang, rate, n_samples=3):
     """Spin-blurred coin frame (see reel2._spin_spr): the coin spins about its vertical axis, so the screen motion
@@ -451,9 +452,8 @@ _SHADOW_CACHE = {}
 
 
 def soft_shadow(spr, key=None):
-    """Low-res soft plum shadow of a sprite's alpha (1/4 res, blurred). Cached on `key` (or the array identity for
-    read-only cached frames); per-call otherwise."""
-    kk = key if key is not None else (id(spr) if not spr.flags.writeable else None)
+    """Low-res soft plum shadow of a sprite's alpha (1/4 res, blurred). Cached on an explicit `key` only."""
+    kk = key      # (no id()-keyed caching: an evicted cache frame's id can be reused by a different array)
     if kk is not None and kk in _SHADOW_CACHE:
         return _SHADOW_CACHE[kk]
     h, w = spr.shape[:2]
@@ -600,3 +600,107 @@ def near_bokeh(cv, cam, items, t, opacity=1.0):
         spr = _bokeh(kind)
         K.draw(cv, spr, sx, sy, scale=w / spr.shape[1], opacity=op * opacity, blur=bl + 0.04 * w)
     return cv
+
+
+def draw_lightline(cv, cam, path, s_head, length, offset=0.0, width=5.0, opacity=1.0, step=12.0):
+    """A thin racing light streak along the path (head at s_head, fading tail of `length`), offset sideways by
+    `offset` world units: warm gold line with a white-hot head and a soft glow (half-res), 'over' the canvas."""
+    if opacity <= 0.01:
+        return cv
+    pts, ss = path.seg(s_head - length, s_head, step)
+    if len(pts) < 3:
+        return cv
+    tg = np.gradient(pts, axis=0)
+    nrm = np.stack([-tg[:, 1], tg[:, 0], np.zeros(len(tg))], 1)
+    nrm /= np.maximum(np.linalg.norm(nrm, axis=1, keepdims=True), 1e-6)
+    pts = pts + nrm * offset
+    xy, d = cam.project(pts)
+    ok = np.isfinite(xy).all(1) & (d > 30)
+    if ok.sum() < 3:
+        return cv
+    xy, d, ss = xy[ok], d[ok], ss[ok]
+    k = cam.focal / d
+    m = 40
+    x0, y0 = int(max(0, xy[:, 0].min() - m)), int(max(0, xy[:, 1].min() - m))
+    x1, y1 = int(min(K.W, xy[:, 0].max() + m)), int(min(K.H, xy[:, 1].max() + m))
+    if x1 - x0 < 4 or y1 - y0 < 4:
+        return cv
+    hh, ww = y1 - y0, x1 - x0
+    S = 16
+    lay = np.zeros((hh, ww), np.uint8)
+    p = np.round((xy - (x0, y0)) * S).astype(np.int32)
+    u = (ss - ss[0]) / max(ss[-1] - ss[0], 1e-6)              # 0 tail .. 1 head
+    for i in range(len(p) - 1):
+        lv = int(255 * u[i] ** 1.6)
+        th = max(1, int(round(width * k[i] * (0.35 + 0.65 * u[i]))))
+        if lv > 2:
+            cv2.line(lay, tuple(p[i]), tuple(p[i + 1]), lv, th, cv2.LINE_AA, 4)
+    a = lay.astype(np.float32) / 255.0
+    h2, w2 = max(2, hh // 2), max(2, ww // 2)
+    ah = cv2.resize(a, (w2, h2), interpolation=cv2.INTER_AREA)
+    gl = np.clip(K.gblur(ah, 4.0, border='constant') * 1.6, 0, 0.55)
+    soft = np.zeros((h2, w2, 4), np.float32)
+    _over_a(soft, gl, lin('#FFC27A') * 1.05)
+    soft = cv2.resize(soft, (ww, hh), interpolation=cv2.INTER_LINEAR) * np.float32(opacity)
+    dst = cv[y0:y1, x0:x1]
+    dst *= 1 - soft[..., 3:4]
+    dst += soft
+    iy, ix = np.nonzero(a > 0.002)
+    if len(iy):
+        D = dst[iy, ix]
+        aa = (a[iy, ix] * opacity)[:, None]
+        D *= 1 - aa
+        D[:, :3] += aa * (lin('#FFE6B0') * 1.5)
+        D[:, 3:] += aa
+        dst[iy, ix] = D
+    return cv
+
+
+def draw_coin_swept(cv, cam, asset, P0, P1, size, ang, rate, n_samples=3, opacity=1.0, rot=0.0, shadow=1.0,
+                    blur=0.0, step_px=2.5, max_sub=10):
+    """Coin moving from world P0 to P1 within this render sample's share of the shutter: drawn as m sub-steps
+    accumulated additively in a local layer (a continuous smear, not the stepped ghost copies a fast object gets
+    from a handful of whole-frame samples), then composited 'over'. Falls back to draw_coin when slow."""
+    P0 = np.asarray(P0, np.float64)
+    P1 = np.asarray(P1, np.float64)
+    xy, d = cam.project(np.stack([P0, P1]))
+    if not np.isfinite(xy).all() or (d < 60).any():
+        return draw_coin(cv, cam, asset, (P0 + P1) / 2, size, ang, rate, n_samples, opacity, rot, shadow, blur)
+    disp = float(np.hypot(*(xy[1] - xy[0])))
+    m = int(min(max_sub, max(1, math.ceil(disp / step_px))))
+    if m <= 1:
+        return draw_coin(cv, cam, asset, (P0 + P1) / 2, size, ang, rate, n_samples, opacity, rot, shadow, blur)
+    Pm = (P0 + P1) / 2
+    k0, k1 = cam.focal / d[0], cam.focal / d[1]
+    w = size * max(k0, k1)
+    x0 = int(max(0, math.floor(xy[:, 0].min() - w)))
+    y0 = int(max(0, math.floor(xy[:, 1].min() - w)))
+    x1 = int(min(K.W, math.ceil(xy[:, 0].max() + w)))
+    y1 = int(min(K.H, math.ceil(xy[:, 1].max() + w)))
+    if x1 - x0 < 2 or y1 - y0 < 2:
+        return None
+    spr = coin_sprite(asset, ang, rate, n_samples)
+    dm = cam.depth(Pm)
+    sig = blur + (0.5 * cam.coc(dm) if cam.aperture > 0 else 0.0)
+    if shadow > 0:
+        xm, ym = (xy[0] + xy[1]) / 2
+        wm = size * cam.focal / dm
+        dx, dy = page_shift(cam, Pm)
+        sh = _coin_shadow()
+        K.draw(cv, sh, xm + dx, ym + dy, scale=(wm * 0.95 / sh.shape[1], wm * 0.80 / sh.shape[0]),
+               opacity=0.30 * shadow * opacity, blur=sig + 0.06 * wm + 0.3 * disp)
+        if REC is not None:
+            REC.append(('coin', (min(xy[:, 0]) - 0.4 * wm, min(xy[:, 1]) - 0.4 * wm, max(xy[:, 0]) + 0.4 * wm,
+                                 max(xy[:, 1]) + 0.4 * wm), opacity))
+    layer = np.zeros((y1 - y0, x1 - x0, 4), np.float32)
+    for j in range(m):
+        u = (j + 0.5) / m
+        x = xy[0][0] + (xy[1][0] - xy[0][0]) * u
+        y = xy[0][1] + (xy[1][1] - xy[0][1]) * u
+        kk = k0 + (k1 - k0) * u
+        K.draw(layer, spr, x - x0, y - y0, scale=size * kk / spr.shape[1], rot=rot, opacity=opacity / m, mode='add',
+               blur=sig)
+    dst = cv[y0:y1, x0:x1]
+    dst *= 1 - np.clip(layer[..., 3:4], 0, 1)
+    dst += layer
+    return float(xy[:, 0].mean()), float(xy[:, 1].mean()), w

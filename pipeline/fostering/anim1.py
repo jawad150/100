@@ -8,46 +8,58 @@ onto the desk with contact + cast shadows that follow the light. Foreground: def
 Type: PLUM #5B174F / MAGENTA #B7006E; accents ORANGE / LEAF; Caveat Bold handwritten lines with scribble underlines.
 SFX only (no music) on the 100 BPM grid: beat = 0.6 s, B(n) = n * 0.6 (8th = 0.3, 16th = 0.15).
 
-SHOT LIST (time s | beat | content | motion / transition | SFX)
- FRAME 1 - sheet A (morning, light from the upper left)
- 0.00-1.80  b0-b3    HOOK: "WHAT DOES / FOSTERING / REALLY LOOK LIKE?" stamped word by word into the paper:
-                     WHAT b0, DOES b0.5, FOSTERING b1 (biggest hit), REALLY b1.5, LOOK b1.75, LIKE? b2 (16ths);
-                     each word drops 1.6x -> 1 with an overshoot, paper dust puff, 2-5 px camera shake on b0/b1.
-                     b2.5 (1.5) "<  >" MAGENTA brackets snap in round FOSTERING (spring) | paper rustle, type
-                     thumps, sub thump on b1, bracket clicks
- 1.80-2.40  b3-b4    MAGENTA marker swipe wipes behind FOSTERING (word knocks out to paper white); the morning
-                     LIGHT STREAK sweeps across the sheet and glints across the type (1.8-3.3) | marker swish, shimmer
- 2.40-5.10  b4-b8.5  "It's often found in the everyday." (Caveat Bold 82 px, MAGENTA) writes on 2.4-3.6, ORANGE
-                     scribble underline under "everyday." draws on 3.6-4.0; hold | pen write, scribble
- 5.10-5.40  b8.5-b9  SLIDE: sheet B slides in from the right over sheet A (rotation 5 deg -> 0, edge shadow,
-                     sheet A pushed left) | paper slide
+SHOT LIST on the 100 BPM grid (time s | beat | content | motion / transition | SFX)
+ FRAME 1 - sheet A (morning: raking light from the upper left, cool sky fill)
+ 0.00-1.50  b0-b2.5  HOOK (the alarm clock drops onto the desk on b2.25 as the camera settles): "WHAT DOES / FOSTERING / REALLY LOOK LIKE?" stamped word by word into the paper on 8ths and
+                     16ths: WHAT b0, DOES b0.5, FOSTERING b1 (biggest hit), REALLY b1.5, LOOK b1.75, LIKE? b2. Each
+                     word drops 1.6-1.9x -> 1 with a pressed overshoot and a soft shadow while airborne; HOOK CAMERA
+                     starts pushed in 1.75x on WHAT, whips to DOES, pulls back through FOSTERING and the last line and
+                     settles at 1.0 by 1.5 s (paper magnified with it, type drawn from 1.75x sprites: stays sharp);
+                     the alarm clock is revealed on the desk below; camera shake on b0 / b1 | paper rustle, 6 type
+                     thumps, soft impacts on b0 / b1
+ 1.50       b2.5     "<  >" MAGENTA brackets snap in round FOSTERING (spring) | 2 clicks
+ 1.80-2.40  b3-b4    MAGENTA marker swipe wipes behind FOSTERING (the word knocks out to paper white); the morning
+                     LIGHT STREAK sweeps across the sheet + a glossy sweep over the ink (1.75-3.3) | marker swish,
+                     shimmer
+ 2.40-4.98  b4-b8.3  "It's often found in the everyday." (Caveat Bold 82 px, MAGENTA) writes on 2.4-3.55; ORANGE
+                     scribble underline under "everyday." 3.62-4.02; the alarm clock rattles once (2.55) and ticks
+                     | pen write, bell rattle, tick-tock, scribble
+ 4.98-5.32  b8.3-b8.9 SLIDE: sheet B slides in from the right over sheet A (rotation 6 -> 0 deg, soft edge shadow,
+                     sheet A pushed left and dimmed), lands just before b9 (7 samples) | paper slide
  FRAME 2 - sheet B (late morning)
- 5.40-7.20  b9-b12   "SCHOOL RUNS." slams (list item 1, MAGENTA); backpack drops (lands 5.7); ORANGE dashed path
-                     draws across the paper 5.7-6.6 and the school bus (side view) drives along it 5.95-7.05 and
-                     exits right | thump, backpack thud, bus pass + beep
- 7.20-8.40  b12-b14  "HOMEWORK." slams (item 2; item 1 turns PLUM); open book + pencil drop (lands 7.35); the
-                     pencil scribbles a graphite line beside the book 7.5-8.25 | thump, book thud, pencil scribble
- 8.40-10.20 b14-b17  "BAKING." slams (item 3); mixing bowl lands 8.55 with a flour puff; cupcake lands 8.85;
-                     oven-timer ding 9.6 (b16) | thump, bowl clink + whisk, flour puff, cupcake plop, ding
- FRAME 3 - sheet B (golden afternoon, light from the top)
- 10.20-12.00 b17-b20 the list slides out into its slots; the props hop, tumble and morph (puff) into three 3D
-                     building blocks that drop onto a tower: block 1 lands b18 with "SMALL MOMENTS" rising out
-                     of its slot, block 2 b19 "CAN HELP BUILD", block 3 b20 "STABILITY." (MAGENTA slam; the tower
-                     wobbles and settles) | swishes, poofs, block clacks, thumps
- 12.60-15.45 b21-b25.75  "A consistent home." (house), "A familiar routine." (alarm clock), "Someone who is there."
-                     (family figures) tick in on b21 / b22 / b23 with their small 3D icons; hold | ticks, pops,
-                     clock tick-tock
- 15.45-15.90 b25.75-b26.5 FLIP: sheet B flips up and away (hinged at the top edge, darkening) revealing sheet C
-                     | paper flip
- FRAME 4 - sheet C (evening, low warm light from the right)
- 15.60-17.40 b26-b29 "FOSTERING / HAPPENS IN THE / EVERYDAY." rise out of their slots on b26, b26.75, b27.5
-                     (EVERYDAY. MAGENTA) | thumps
- 17.10-18.60 b28.25-b31 the 3D house drops in below (lands 17.10); b30 the headline sinks away and the house glides
-                     up; b31 its windows light up (warm glow spills onto the paper) | thud, swish, light-switch click
- 18.60-19.35 b31-b32.25 "Could you make room?" (Caveat 116 px, MAGENTA) writes on, ORANGE scribble underline;
-                     end card: logo_full.png rises in, CTA pill "Start your enquiry" pops, "0161 241 1332 ·
-                     organicfostering.co.uk" | pen write, scribble, warm shimmer, pop
- 19.35-21.00 b32.25- END CARD settled (1.65 s hold), only the light breathes | room tone tail
+ 5.40-7.20  b9-b12   "SCHOOL RUNS." stamps (list item 1, MAGENTA); the 3D backpack drops (lands 5.70); an ORANGE
+                     dashed route draws across the paper 5.7-6.6 and the 3D school bus (side) drives along it
+                     5.95-7.05 and exits right | thump, backpack thud + zip, route pen, bus pass + friendly beep
+ 7.20-8.40  b12-b14  "HOMEWORK." stamps (item 2; item 1 turns PLUM); the open book drops (7.38); its own pencil (cut
+                     out of the render, page inpainted) lifts off, writes two cursive graphite lines on the right
+                     page 7.52-8.18 and settles back | thump, book thud, pencil scribble
+ 8.40-10.20 b14-b17  "BAKING." stamps (item 3); mixing bowl lands 8.55 with a flour puff; cupcake lands 8.85; b16
+                     (9.6) oven-timer "ding": three ORANGE strokes burst from the cupcake | thump, bowl clink + whisk,
+                     flour puff, cupcake plop, timer ding
+ FRAME 3 - sheet B (golden afternoon: light swings round to the top)
+ 10.20-12.00 b17-b20 the list sinks into its slots; group by group the props hop, tumble and morph (puff) into the
+                     three 3D toy blocks, which drop onto a tower: block 1 lands b18 as "SMALL MOMENTS" rises out of
+                     its slot, block 2 b19 "CAN HELP BUILD", block 3 b20 "STABILITY." (MAGENTA stamp, camera shake,
+                     the tower rocks once and settles; glossy sweep over the type) | swishes, poofs + sparkles, block
+                     clacks, big thump
+ 12.60-15.10 b21-b25.2 "A consistent home." (3D house) / "A familiar routine." (3D alarm clock, rings) / "Someone who
+                     is there." (3D family figures) tick in on b21 / b22 / b23: icon drops, text rises from its
+                     slot; hold | pops, ticks, tick-tock
+ 15.10-15.64 b25.2-b26 FLIP: sheet B lifts toward the viewer from its bottom edge and flips up out of frame (hinged at
+                     the top, darkening, shadow band on the sheet below, lit paper edge; 11 samples) | paper flip
+ FRAME 4 - sheet C (evening: low warm light from the right)
+ 15.60-17.10 b26-b28.5 "FOSTERING / HAPPENS IN THE / EVERYDAY." rise out of their slots on b26 / b26.75 / b27.5
+                     (EVERYDAY. MAGENTA, glossy sweep); b26.5 the "< >" brackets snap round FOSTERING again
+                     (bookend of frame 1) | swishes, thumps, clicks
+ 17.10-18.60 b28.5-b31 the 3D house drops in below (lands 17.10); b29.75 the headline sinks away (bottom line first)
+                     and the house glides up; b31 its windows switch on (flicker, bloom) and warm light spills onto
+                     the paper | thud, swish, whoosh, light-switch click, shimmer
+ 18.60-19.35 b31-b32.25 "Could you make room?" (Caveat Bold 116 px, MAGENTA) writes on, ORANGE scribble under "room?";
+                     END CARD: logo_full.png rises in (b31.5), CTA pill "Start your enquiry" pops, "0161 241 1332 ·
+                     organicfostering.co.uk" (Poppins SemiBold 34 px) rises from its slot | pen, logo sting, pop
+ 19.35-21.00 b32.25-b35 END CARD settled (1.65 s hold): only the light breathes, a last glossy sweep 19.5-20.5
+ Foreground everywhere: defocused leaves (a houseplant by the desk) sway in three corners, casting soft shadows on
+ the paper. Every prop has a contact shadow + a cast shadow that follows the light direction.
 BED: room_tone at -32 dB (felt). SFX: anim1_sfx.py (custom paper / pencil / bus / bowl / ding / switch / block
 sounds registered into the toolkit mixer) -> workspace3/audio/anim1_sfx.wav + anim1_sfx_stem.wav, -18 LUFS,
 <= -2.0 dBTP.
@@ -79,7 +91,7 @@ def B(n):
 
 PLUM, MAG, IVORY = '#5B174F', '#B7006E', '#FCF8F5'
 C = K.C
-T_SLIDE0, T_SLIDE1 = 5.06, 5.40          # sheet B slides in (lands on b9)
+T_SLIDE0, T_SLIDE1 = 4.98, 5.32          # sheet B slides in (lands just before b9; the first stamp hits b9)
 T_F3 = B(17)                             # 10.2 frame 3
 T_FLIP0, T_FLIP1 = 15.10, 15.64          # sheet B flips up toward the viewer and away
 T_F4 = B(26)                             # 15.6 frame 4
@@ -88,13 +100,13 @@ T_F4 = B(26)                             # 15.6 frame 4
 # frame 1 (centre x 540)
 F1_BASE = (679, 832, 962)                # baselines: WHAT DOES / FOSTERING / REALLY LOOK LIKE?
 F1_HAND_BASE = 1125
-F1_BAND = (151, 929)                     # magenta swipe x range
+F1_BAND = (156, 924)                     # magenta swipe x range
 F2_X, F2_BASE = 96, (432, 592, 752)      # list
 F3_CAP = (300, 404, 518)                 # headline cap tops
 F3_ROWS = (770, 875, 980)                # supporting rows (centre y)
 TOWER = (540, 1600)                      # tower ground point
-F4_CAP = (430, 580, 695)
-HOUSE_DROP, HOUSE_END = (540, 1330), (540, 800)
+F4_CAP = (440, 580, 695)
+HOUSE_DROP, HOUSE_END = (540, 1420), (540, 800)
 F4_HAND_BASE = 944
 
 
@@ -128,7 +140,7 @@ def A():
     d['rows'] = [X.Txt(s, font='ui', px=50, fill=PLUM) for s in
                  ('A consistent home.', 'A familiar routine.', 'Someone who is there.')]
     # frame 4
-    d['h4'] = [X.Txt('FOSTERING', px=155, fill=PLUM), X.Txt('HAPPENS IN THE', px=104, fill=PLUM),
+    d['h4'] = [X.Txt('FOSTERING', px=130, fill=PLUM), X.Txt('HAPPENS IN THE', px=104, fill=PLUM),
                X.Txt('EVERYDAY.', px=158, fill=MAG)]
     d['hand2'] = X.Txt('Could you make room?', font='hand', px=116, fill=MAG)
     d['phone'] = X.Txt('0161 241 1332 · organicfostering.co.uk', font='ui', px=34, fill=PLUM)
@@ -173,8 +185,13 @@ def bus_path():
 
 @functools.lru_cache(maxsize=1)
 def block_sprites():
-    """Three toy blocks (MAGENTA heart, ORANGE star, LEAF leaf) as separate sprites, ground-anchored.
-    Placeholder (rounded glossy squares) until blocks/day exists."""
+    """Three toy blocks (MAGENTA heart, ORANGE star, LEAF leaf) as separate sprites, ground-anchored, each
+    ~170 px tall: cut from the blocks/day render (3-block stack) when it exists, else rounded glossy squares."""
+    pr = X.Prop('blocks', 600)
+    if pr.real:
+        sp = X.split_blocks(X.register_prop(pr), 0.0)
+        if sp:
+            return [(spr, anc, 172.0 / hpx) for spr, anc, hpx in sp]
     out = []
     for col in ('MAGENTA', 'ORANGE', 'LEAF'):
         n = 200
@@ -382,7 +399,7 @@ def light_for(t):
     su = K.ramp(t, 1.75, 3.3, 'inout_sine')
     if 0 < su < 1:
         L.streak = (su, -32.0, 0.13, 0.30, (1.0, 0.90, 0.74))
-    g = K.ramp(t, B(31) - 0.02, B(31) + 0.25, 'out_cubic')
+    g = window_light(t)
     if g > 0:
         hx, hy = house_pos(t)[:2]
         flick = 1.0 + 0.04 * K.wiggle(t, 7, 1, seed=3)
@@ -435,7 +452,7 @@ def f1_ink(ink, bb, t, light, cam=None):
     if t >= B(2.5) - 0.06:
         sp = K.spring(t - (B(2.5) - 0.06), freq=3.0, damping=0.42)
         cy = F1_BASE[1] - l2.ts.layout.cap / 2
-        for d, cx in ((-1, 104), (1, 976)):
+        for d, cx in ((-1, 110), (1, 970)):
             spr, ax, ay = X.chevron_sprite(100, 15, d, tuple(K.hexlin(MAG)))
             off = (1 - sp) * 150 * d
             sc = 1 + (1 - sp) * 0.5
@@ -454,10 +471,6 @@ def f1_ink(ink, bb, t, light, cam=None):
 
 
 # ============================================================================================ frame 2 / 3
-def list_item_alpha(i, t):
-    return 1.0
-
-
 def f2_list_ink(ink, bb, t, light):
     Ad = A()
     hits = (B(9), B(12), B(14))
@@ -523,35 +536,6 @@ def f2_path_ink(ink, bb, t):
     draw_stroke(ink, bb, A()['bus_path'], 7.0, C['ORANGE'], 0.0, u, dash=(22, 15), opacity=0.92 * fade)
 
 
-# pencil scribble (frame 2, HOMEWORK)
-def scribble_pts():
-    """A quick cursive pencil line (looped 'handwriting' made of a prolate cycloid with natural variation)."""
-    rng = np.random.default_rng(21)
-    th = np.linspace(0, 13 * math.pi, 900)
-    amp = 1.0 + 0.25 * np.sin(th * 0.37 + 1.0) + 0.12 * np.sin(th * 1.3)
-    x = 8.6 * th - 13.0 * np.sin(th) * amp
-    y = -15.0 * np.cos(th) * amp - 0.9 * th
-    pts = np.stack([590 + x, 1258 + y], 1)
-    return X.resample(pts, 2.0)
-
-
-_SCRIB = None
-
-
-def f2_scribble_ink(ink, bb, t):
-    global _SCRIB
-    if _SCRIB is None:
-        _SCRIB = scribble_pts()
-    u = K.ramp(t, 7.5, 8.25, 'inout_sine')
-    if u <= 0:
-        return None
-    fade = 1 - K.ramp(t, T_F3 + 0.6, T_F3 + 1.1, 'inout_sine')
-    if fade <= 0:
-        return None
-    draw_stroke(ink, bb, _SCRIB, 3.4, (0.05, 0.045, 0.055), 0.0, u, opacity=0.82 * fade)
-    return X.path_point(_SCRIB, u)
-
-
 def f3_ink(ink, bb, t, light):
     Ad = A()
     t_lines = (B(18), B(19), B(20))
@@ -592,6 +576,18 @@ def f4_ink(ink, bb, t, light):
     for i, txt in enumerate(Ad['h4']):
         slot_rise(ink, bb, txt, 540, F4_CAP[i], t, t_lines[i] - 0.05, 0.42, out_t0=B(29.75) + 0.06 * (2 - i),
                   out_dur=0.26)
+    # bookend: the "< >" brackets snap round FOSTERING again (b26.5), and leave with the headline
+    tb = B(26.5)
+    if tb - 0.06 <= t < B(29.75) + 0.3:
+        sp = K.spring(t - (tb - 0.06), freq=3.0, damping=0.42)
+        cy = F4_CAP[0] + Ad['h4'][0].ts.layout.cap / 2
+        out = K.ramp(t, B(29.75) + 0.1, B(29.75) + 0.3, 'in_cubic')
+        for d, cx in ((-1, 110), (1, 970)):
+            spr, ax, ay = X.chevron_sprite(100, 15, d, tuple(K.hexlin(MAG)))
+            off = (1 - sp) * 150 * d + out * 60 * d
+            sc = 1 + (1 - sp) * 0.5
+            bb.add(K.draw(ink, spr, cx + off, cy, anchor=(ax, ay), scale=max(sc, 0.2),
+                          opacity=min(1.0, (t - tb + 0.06) / 0.05) * (1 - out)))
     hand = Ad['hand2']
     write_on(ink, bb, hand, 540, F4_HAND_BASE, t, B(31) + 0.02, 0.55)
     uu = K.ramp(t, 19.08, 19.36, 'inout_sine')
@@ -607,25 +603,30 @@ def f4_ink(ink, bb, t, light):
 
 
 # ============================================================================================ props (after light)
+T_CLOCK = B(2.25)          # 1.35: the alarm clock lands as the hook camera settles
+
+
 def props_frame1(cv, layer, lb, t, light):
-    """Morning: the alarm clock sits on the desk below the question (revealed as the hook camera pulls back)
+    """Morning: the alarm clock drops onto the desk below the question on b2.25 (as the hook camera settles)
     and rattles once at b4 as the handwritten line starts."""
     pr = A()['clock']
-    cam = hook_cam(t)
-    x, y = w2s(cam, 540, 1530)
-    z = cam[2] if cam is not None else 1.0
-    if y - pr.height * z > H + 40:
+    dr = X.drop(t, T_CLOCK - 0.26, 0.26, h0=360, s0=0.4)
+    if dr is None:
         return
+    cam = hook_cam(t)
+    x, y = w2s(cam, 540, 1562)
+    z = cam[2] if cam is not None else 1.0
     tr = B(4) + 0.15
-    rot, hop = 0.0, 0.0
+    rot, hop = 0.0, dr['lift']
     if t > tr:
         d = t - tr
         e = math.exp(-d * 3.2)
         rot = 4.0 * math.sin(d * 62) * e
-        hop = 7.0 * abs(math.sin(d * 31)) * e
+        hop += 7.0 * abs(math.sin(d * 31)) * e
     yaw = -14 + 5 * math.sin(t * 0.8)
-    pr.shadow(cv, x, y, light, lift=hop, yaw=yaw, scale=z)
-    lb.add(pr.draw(layer, x, y - hop, yaw=yaw, scale=z, rot=rot))
+    pr.shadow(cv, x, y, light, lift=hop, yaw=yaw, scale=z * dr['scale'], opacity=dr['opacity'])
+    lb.add(pr.draw(layer, x, y - hop * 0.35, yaw=yaw, scale=z * dr['scale'], squash=dr['squash'], rot=rot,
+                   opacity=dr['opacity']))
 
 
 # frame-2 props: ground point, landing time, base yaw
@@ -635,7 +636,6 @@ GROUPS = [('backpack',), ('book',), ('bowl', 'cupcake')]
 # HOMEWORK: cursive lines written on the book's right page (sprite coords normalised by the sprite width,
 # measured on the yaw-0 render: the page's ruled lines rise ~10 deg to the right)
 WRITE_T = (7.52, 8.18)
-REST_TIP = None
 
 
 @functools.lru_cache(maxsize=1)
@@ -791,12 +791,14 @@ def props_frame3(cv, layer, lb, t, light):
         gx, gy = TOWER[0], TOWER[1] - bh * g
         if t < t0:
             continue
+        # morph point: above the block's slot on the tower, pulled toward the group's props
+        xav = sum(p[1][0] for p in members) / len(members)
+        mx, my = xav * 0.4 + gx * 0.6, gy - 300.0 - 40.0 * g
         if t < t_m + 0.05:
             # props hop up, spin and shrink toward the morph point
             u = K.ramp(t, t0, t_m + 0.05, out_quad)
             for name, (x, y) in members:
                 pr = Ad[name]
-                mx, my = (x * 0.4 + gx * 0.6), (y * 0.55 + (gy - 420) * 0.45)
                 px = x + (mx - x) * u
                 py = y + (my - y) * u - 160 * math.sin(math.pi * min(u, 1.0)) * 0.6
                 rot = 300 * u * (1 if x < 540 else -1)
@@ -805,13 +807,10 @@ def props_frame3(cv, layer, lb, t, light):
                 pr.shadow(cv, px, py, light, lift=(y - py) + 40, scale=sc, opacity=op * 0.7)
                 lb.add(pr.draw(layer, px, py, rot=rot, scale=sc, opacity=op))
         if t >= t_m - 0.04 and t < t_land + 2.0:
-            X.puff(layer, t, t_m - 0.02, gx * 0.6 + members[0][1][0] * 0.4, (gy - 420) * 0.45 +
-                   members[0][1][1] * 0.55 - 60, n=26, spread=120, seed=40 + g, size=(5, 16), dur=0.7,
+            X.puff(layer, t, t_m - 0.02, mx, my - 80, n=26, spread=130, seed=40 + g, size=(5, 16), dur=0.7,
                    ang=(-180, 180), opacity=0.9)
         if t >= t_m - 0.04:
             # block appears at the morph point (spinning), then drops onto the tower
-            mx = (members[0][1][0] * 0.4 + gx * 0.6)
-            my = (members[0][1][1] * 0.55 + (gy - 420) * 0.45)
             u = K.ramp(t, t_m, t_land, in_quad)
             px = mx + (gx - mx) * K.ramp(t, t_m, t_land, 'out_sine')
             py = my + (gy - my) * u
@@ -878,17 +877,41 @@ def _block_shadow(cv, x, y, light, lift, ks, spr, anc, op, g, landed):
         K.draw(cv, c, x + dx * 20, y + 4, scale=(w / c.shape[1], w * 0.2 / c.shape[0]), opacity=0.45 * f * op)
 
 
+HOUSE_YAW = -10.0
+
+
 def props_frame4(cv, layer, lb, t, light):
     Ad = A()
     pr = Ad['house']
-    dr = X.drop(t, B(28.25) + 0.15 - 0.30, 0.30, h0=380)
+    dr = X.drop(t, B(28.25) + 0.15 - 0.30, 0.30, h0=240, s0=0.28)
     if dr is None:
         return
     x, y, sc = house_pos(t)
-    yaw = -8 + 6 * math.sin(t * 0.7)
-    pr.shadow(cv, x, y, light, lift=dr['lift'], yaw=yaw, scale=dr['scale'], opacity=dr['opacity'])
-    lb.add(pr.draw(layer, x, y - dr['lift'] * 0.35, yaw=yaw, scale=dr['scale'] * sc, squash=dr['squash'],
-                   opacity=dr['opacity']))
+    pr.shadow(cv, x, y, light, lift=dr['lift'], yaw=HOUSE_YAW, scale=dr['scale'], opacity=dr['opacity'])
+    kw = dict(scale=dr['scale'] * sc, squash=dr['squash'], opacity=dr['opacity'])
+    yy = y - dr['lift'] * 0.35
+    if not pr.real:
+        lb.add(pr.draw(layer, x, yy, yaw=HOUSE_YAW, **kw))
+        return
+    off, on, glow, npx = X.house_states(X.register_prop(pr), HOUSE_YAW)
+    g = window_light(t)
+    if g < 1:
+        lb.add(pr.draw(layer, x, yy, spr=off, **kw))
+    if g > 0:
+        lb.add(pr.draw(layer, x, yy, spr=on, **dict(kw, opacity=kw['opacity'] * g)))
+        pr.draw(layer, x, yy, spr=glow, **dict(kw, opacity=kw['opacity'] * g * (1.0 + 0.06 * math.sin(t * 9))))
+
+
+def window_light(t):
+    """0 -> 1 as the windows light up on b31 (switch click): a quick flicker, then on."""
+    d = t - B(31)
+    if d < 0:
+        return 0.0
+    if d < 0.05:
+        return 0.55
+    if d < 0.09:
+        return 0.2
+    return float(K.ramp(t, B(31) + 0.09, B(31) + 0.2, 'out_cubic'))
 
 
 def endcard(cv, t):
@@ -969,64 +992,58 @@ def compose(sheet_id, t, fi):
             d += reg
     if sheet_id == 2:
         endcard(cv, t)
+    stamp_dust(cv, sheet_id, t)
+    if sheet_id == 0:
+        hook_motion_blur(cv, t)
     cv[..., 3] = 1.0
     return cv
 
 
-@functools.lru_cache(maxsize=1)
-def pencil_sprite():
-    """Procedural glossy toy pencil (horizontal, tip at the left), 4x supersampled."""
-    ss = 4
-    L, Wd = 250, 30
-    w, h = (L + 20) * ss, (Wd + 20) * ss
-    img = np.zeros((h, w, 4), np.float32)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32) / ss
-    cy = (Wd + 20) / 2
-    v = (yy - cy) / (Wd / 2)                 # -1..1 across
-    x = xx - 10
-    body = (x > 48) & (x < 205) & (np.abs(v) <= 1)
-    ferr = (x >= 205) & (x < 226) & (np.abs(v) <= 1.02)
-    eras = (x >= 226) & (x < 248) & (np.abs(v) <= 0.98 - np.clip((x - 240) / 8, 0, 1) ** 2 * 0.4)
-    cone_w = np.clip((x - 4) / 44, 0, 1)
-    cone = (x >= 4) & (x <= 48) & (np.abs(v) <= cone_w)
-    lead = cone & (x < 16)
-    # facet shading across the hexagonal body
-    fac = np.where(v < -0.33, 1.15, np.where(v < 0.33, 0.95, 0.68))
-    col = np.zeros((h, w, 3), np.float32)
-    col[body] = (K.hexlin('#FFB400') * fac[body][:, None])
-    col[ferr] = (np.float32([0.62, 0.62, 0.66]) * (1.1 - 0.5 * np.abs(v[ferr]))[:, None] *
-                 (0.85 + 0.15 * np.cos(x[ferr] * 1.6))[:, None])
-    col[eras] = K.hexlin('#F48FB1') * (1.05 - 0.35 * np.clip(v[eras], 0, 1))[:, None]
-    col[cone] = K.hexlin('#E8C49A') * (1.05 - 0.35 * np.clip(v[cone], 0, 1))[:, None]
-    col[lead] = np.float32([0.05, 0.05, 0.06])
-    a = (body | ferr | eras | cone).astype(np.float32)
-    # gloss streak
-    gl = body & (np.abs(v + 0.55) < 0.12)
-    col[gl] = col[gl] * 0.5 + 0.5
-    img[..., :3] = col * a[..., None]
-    img[..., 3] = a
-    import cv2
-    small = cv2.resize(img, (w // ss, h // ss), interpolation=cv2.INTER_AREA)
-    small.setflags(write=False)
-    tip = (10 + 4) / small.shape[1], cy / small.shape[0]
-    return small, tip
+HOOK_SAMPLES = 5
 
 
-def draw_pencil(cv, layer, lb, t, light):
-    """The pencil scribbling beside the book (HOMEWORK)."""
-    global _SCRIB
-    if _SCRIB is None:
-        _SCRIB = scribble_pts()
-    u = K.ramp(t, 7.5, 8.25, 'inout_sine')
-    op = K.ramp(t, 7.45, 7.52, 'linear') * (1 - K.ramp(t, 8.27, 8.35, 'linear'))
-    px, py, _ = X.path_point(_SCRIB, u)
-    lift = 0 if 7.5 < t < 8.25 else 30
-    spr, tip = pencil_sprite()
-    rot = 205 + 6 * math.sin(t * 22)
-    sil = _sil(spr)
-    (dx, dy), ln = light.shadow_dir()
-    K.draw(cv, sil, px + dx * 18 + 10, py + dy * 18 + 12, anchor=tip, rot=rot, opacity=0.25 * op, blur=5)
-    lb.add(K.draw(layer, spr, px, py - lift, anchor=tip, rot=rot, opacity=op))
+def hook_motion_blur(cv, t):
+    """Camera motion blur for the hook whips: each motion-blur sub-sample is smeared along the camera's screen
+    velocity over its own slice of the 180-degree shutter, so the sub-samples join into one continuous streak
+    (no strobed copies) - plus a zoom blur for the push-out."""
+    if t >= T_HOOK_END:
+        return
+    e = 1.0 / 240
+    trk = hook_track()
+    c0, c1 = np.asarray(trk(t - e), float), np.asarray(trk(t + e), float)
+    v = (c1 - c0) / (2 * e)
+    z = float((c0[2] + c1[2]) / 2)
+    vs = -v[:2] * z                                   # screen velocity of the paper (px/s)
+    slice_ = (0.5 / FPS) / HOOK_SAMPLES * 1.3
+    amt = float(np.hypot(*vs)) * slice_
+    if amt >= 2.0:
+        K.whip_blur(cv, amt, math.degrees(math.atan2(vs[1], vs[0])))
+    zr = abs(v[2]) / z * slice_
+    if zr >= 0.003:
+        K.zoom_blur(cv, zr, center=S_ANCHOR)
+
+
+def stamp_dust(cv, sheet_id, t):
+    """Paper dust skidding out sideways from under the big stamps (tactile hits)."""
+    Ad = A()
+    hits = []
+    if sheet_id == 0:
+        l1, l2 = Ad['l1'], Ad['l2']
+        what = l1.words[0]
+        hits = [(B(0), 540 - l1.w / 2 + (what[1] + what[2]) / 2, F1_BASE[0], (what[2] - what[1]) / 2, 3),
+                (B(1), 540, F1_BASE[1], l2.w / 2, 5)]
+    elif sheet_id == 1:
+        st = Ad['h3'][2]
+        hits = [(B(20), 540, F3_CAP[2] + st.ts.layout.cap, st.w / 2, 7)]
+    cam = hook_cam(t) if sheet_id == 0 else None
+    for th, x, y, hw, seed in hits:
+        if not (th - 0.01 <= t <= th + 0.7):
+            continue
+        z = cam[2] if cam is not None else 1.0
+        for side, (a0, a1) in ((-1, (172.0, 196.0)), (1, (-16.0, 8.0))):
+            sx, sy = w2s(cam, x + side * hw * 0.92, y + 4)
+            X.puff(cv, t, th, sx, sy, n=16, spread=150 * z, seed=seed + (side > 0), rgb=(0.30, 0.25, 0.22),
+                   size=(1.6 * z, 4.2 * z), up=-0.15, dur=0.6, opacity=0.55, gravity=0.0, ang=(a0, a1))
 
 
 # ============================================================================================ transitions
@@ -1077,7 +1094,7 @@ def draw(t):
     if t < T_SLIDE0:
         cv = compose(0, t, fi)
     elif t < T_SLIDE1:
-        u = K.ramp(t, T_SLIDE0, T_SLIDE1, 'out_quart')
+        u = K.ramp(t, T_SLIDE0, T_SLIDE1, 'out_cubic')
         base = frozen(0, T_SLIDE0)
         cv = np.empty_like(base)
         cv[...] = base
@@ -1152,6 +1169,8 @@ def foreground(cv, t, light):
     spr = X.leaf_sprite()
     sh = X.leaf_shadow_sprite()
     (dx, dy), ln = light.shadow_dir()
+    lt = np.clip(light.mean_rgb() / P.light_at(0.0).mean_rgb(), 0.5, 1.4) * 0.70
+    tint = tuple(float(round(c, 2)) for c in lt)
     for x, y, size, rot, bl, ph, so in FG_LEAVES:
         sway = 3.2 * math.sin(t * 0.9 + ph) + 1.2 * math.sin(t * 2.3 + ph * 2)
         px = x + 6 * math.sin(t * 0.6 + ph)
@@ -1159,32 +1178,46 @@ def foreground(cv, t, light):
         sc = size / spr.shape[0]
         off = 120 * so * min(ln, 2.5)
         K.draw(cv, sh, px + dx * off, py + dy * off, scale=sc * 1.05, rot=rot + sway * 1.2, anchor=(0.5, 0.97),
-               opacity=0.30, blur=bl * 1.8 + 8)
+               opacity=0.26, blur=bl * 1.8 + 8)
     for x, y, size, rot, bl, ph, so in FG_LEAVES:
         sway = 3.2 * math.sin(t * 0.9 + ph) + 1.2 * math.sin(t * 2.3 + ph * 2)
         px = x + 6 * math.sin(t * 0.6 + ph)
         py = y + 4 * math.sin(t * 0.8 + ph * 1.3)
         sc = size / spr.shape[0]
-        lt = np.float32(np.clip(light.mean_rgb() / P.light_at(0.0).mean_rgb(), 0.5, 1.4)) * 0.62
-        K.draw(cv, _lit_leaf(tuple(np.round(lt, 2))), px, py, scale=sc, rot=rot + sway, anchor=(0.5, 0.97),
-               blur=bl)
+        dspr, pad = X.leaf_defocused(int(round(bl * 1.05 / sc)), tint)
+        n0 = spr.shape[0]
+        anc = ((0.5 * n0 + pad) / dspr.shape[1], (0.97 * n0 + pad) / dspr.shape[0])
+        K.draw(cv, dspr, px, py, scale=sc, rot=rot + sway, anchor=anc)
 
 
-@functools.lru_cache(maxsize=8)
-def _lit_leaf(tint):
-    spr = X.leaf_sprite().copy()
-    spr[..., :3] *= np.float32(tint)
-    spr.setflags(write=False)
-    return spr
+def push(t):
+    """Slow breathing camera push (zoom factor about PUSH_C) per section; eases back to 1 inside the slide /
+    flip (hidden by the transition) and holds still for the settled end card."""
+    z = 1.0
+    if t < T_SLIDE1:
+        z += 0.022 * K.ramp(t, T_HOOK_END, T_SLIDE0, 'inout_sine') * (1 - K.ramp(t, T_SLIDE0, T_SLIDE1, 'inout_sine'))
+    elif t < T_FLIP1:
+        z += 0.030 * K.ramp(t, T_SLIDE1, T_FLIP0, 'inout_sine') * (1 - K.ramp(t, T_FLIP0, T_FLIP1, 'inout_sine'))
+    else:
+        z += 0.018 * K.ramp(t, T_FLIP1, 19.35, 'inout_sine')
+    return z
+
+
+PUSH_C = (540.0, 900.0)
 
 
 def post(cv, t):
+    z = push(t)
+    if z > 1.0005:
+        import cv2
+        M = np.float32([[z, 0, PUSH_C[0] * (1 - z)], [0, z, PUSH_C[1] * (1 - z)]])
+        cv = cv2.warpAffine(cv, M, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
     return K.post(cv, LOOK, t, vignette=0.10, grain=0.012, chroma=0.6)
 
 
 def samples(t):
     if t < 1.45:
-        return 5
+        return HOOK_SAMPLES
     if T_SLIDE0 - 0.02 < t < T_SLIDE1 + 0.05:
         return 7
     if T_F3 - 0.02 < t < B(20) + 0.2:

@@ -439,7 +439,7 @@ def scribble_path(x0, x1, y, seed=3, amp=10.0, loops=0, slope=-4.0):
 
 def chevron_pts(cx, cy, size, direction=-1):
     """'<' (direction -1) or '>' (+1) chevron polyline centred at (cx, cy); size = height."""
-    hw = size * 0.36
+    hw = size * 0.32
     return np.array([[cx - direction * hw, cy - size / 2], [cx + direction * hw, cy],
                      [cx - direction * hw, cy + size / 2]], np.float64)
 
@@ -539,8 +539,9 @@ def puff(cv, t, t0, x, y, n=36, spread=170.0, seed=1, rgb=(1.0, 0.97, 0.92), siz
 # ============================================================================================ foreground
 @functools.lru_cache(maxsize=2)
 def leaf_sprite(n=420, seed=2):
-    """Procedural glossy leaf (pointing up), premultiplied linear: used heavily defocused as a near-lens foreground
-    element, so only its silhouette, gradient and sheen matter. Anchor = stem base (0.5, ~0.97)."""
+    """Procedural glossy leaf (pointing up), premultiplied linear: a near-lens foreground element. Darker,
+    saturated body, lighter midrib + side veins, translucent backlit rim, specular sheen on one side.
+    Anchor = stem base (0.5, ~0.97)."""
     ss = 2
     N = n * ss
     yy, xx = np.mgrid[0:N, 0:N].astype(np.float32) / N
@@ -548,23 +549,43 @@ def leaf_sprite(n=420, seed=2):
     halfw = 0.30 * np.clip(np.sin(np.clip(v, 0, 1) * math.pi), 0, 1) ** 0.85 * (1 - 0.25 * v)
     u = (xx - 0.5)
     bend = 0.05 * np.sin(v * 2.6)
-    d = np.abs(u - bend) - halfw
+    du = u - bend
+    d = np.abs(du) - halfw
     a = np.clip(-d * N / 1.5 + 0.5, 0, 1) * (v > 0.03) * (v < 0.995)
-    stem = (np.abs(u - bend) < 0.012) & (v > -0.0) & (v < 0.06)
+    stem = (np.abs(du) < 0.012) & (v < 0.06)
     a = np.maximum(a, stem.astype(np.float32))
-    side = np.clip((u - bend) / np.maximum(halfw, 1e-3), -1, 1)
-    c_lo, c_hi = K.C['LEAF'], K.C['LEAF_HI']
-    g = np.clip(0.35 + 0.5 * v + 0.25 * side, 0, 1)[..., None]
-    col = c_lo[None, None, :] * (1 - g) + c_hi[None, None, :] * g
-    col = col * (0.75 + 0.25 * (1 - np.abs(side)))[..., None]
-    rib = np.exp(-((u - bend) / 0.008) ** 2) * (v > 0.04)
-    col = col * (1 - 0.25 * rib[..., None])
-    sheen = np.exp(-((side + 0.45) / 0.18) ** 2) * np.clip(v * 1.4, 0, 1)
-    col = col + 0.18 * sheen[..., None]
+    side = np.clip(du / np.maximum(halfw, 1e-3), -1, 1)
+    dark, mid, hi = K.hexlin('#2F6A08'), K.C['LEAF'], K.C['LEAF_HI']
+    g = np.clip(0.25 + 0.55 * v, 0, 1)[..., None]
+    col = dark[None, None, :] * (1 - g) + mid[None, None, :] * g
+    col = col * (0.70 + 0.30 * (1 - np.abs(side) ** 2))[..., None]
+    # veins: lighter midrib + angled side veins
+    rib = np.exp(-(du / 0.007) ** 2) * (v > 0.04)
+    ph = (v * 9.0 - np.abs(du) * 14.0)
+    veins = (np.cos(ph * 2 * math.pi) > 0.93).astype(np.float32) * (np.abs(side) < 0.85) * (v > 0.08)
+    col = col * (1 + 0.35 * rib[..., None]) + hi[None, None, :] * (0.10 * veins[..., None])
+    # translucent backlit rim + sheen
+    rim = np.clip(1 - (-d * N) / (0.035 * N), 0, 1) ** 2 * a
+    col = col * (1 - 0.4 * rim[..., None]) + hi[None, None, :] * (0.55 * rim[..., None])
+    sheen = np.exp(-((side + 0.45) / 0.2) ** 2) * np.clip(v * 1.4, 0, 1)
+    col = col + 0.14 * sheen[..., None]
     spr = np.dstack([col * a[..., None], a]).astype(np.float32)
     spr = cv2.resize(spr, (n, n), interpolation=cv2.INTER_AREA)
     spr.setflags(write=False)
     return spr
+
+
+@functools.lru_cache(maxsize=8)
+def leaf_defocused(radius_sprite_px, tint=(1.0, 1.0, 1.0)):
+    """The leaf with a lens-like disc (bokeh) defocus of the given radius in sprite px, padded, tinted."""
+    spr = leaf_sprite()
+    r = int(radius_sprite_px)
+    p = r + 4
+    src = np.pad(spr, ((p, p), (p, p), (0, 0)))
+    out = K.disc_blur(src, r).astype(np.float32)
+    out[..., :3] *= np.float32(tint)
+    out.setflags(write=False)
+    return out, p
 
 
 @functools.lru_cache(maxsize=2)
@@ -672,25 +693,59 @@ def register_prop(p):
 # ============================================================================================ house windows / blocks
 @functools.lru_cache(maxsize=2)
 def house_states(prop_id, yaw=-10.0):
-    """(off, on, glow) sprites of the house at `yaw`: 'on' is the render (glowing ORANGE panes + door glow),
-    'off' has the emissive pixels dimmed to dusky glass, 'glow' is an additive bloom of the lit panes."""
+    """(off, on, glow, n_px) sprites of the house at `yaw`. 'on' is the render (its emissive panes blow out to warm
+    white, the door's heart cut-out to white, the door recess glows); 'off' dims the panes + heart to dusky glass
+    and the door recess to shadowed wall; 'glow' is an additive warm bloom of the lit pixels.
+    Lit pixels: warm near-white (R >= 245, G >= 215, R - B >= 25) blobs of >= 100 px (panes; the neutral roof /
+    wall / bush specular highlights fail the warmth test) + white blobs enclosed by the orange door (the heart) +
+    the bright ring hugging the door (its glowing recess)."""
     pr = _PROPS[prop_id]
     spr = pr.sprite(yaw)
     rgb8, a8 = _to_srgb8(spr)
     r, g, b = [rgb8[..., i].astype(np.int32) for i in range(3)]
-    lit = (r > 225) & (g > 95) & (b < 175) & (r - b > 80) & (a8 > 180)
-    m = cv2.GaussianBlur(lit.astype(np.float32), (0, 0), 1.0)
-    m = np.clip(m * 1.6, 0, 1)
+    solid = a8 > 200
+    warm = (r >= 245) & (g >= 215) & (r - b >= 25) & solid
+    white = (np.minimum(np.minimum(r, g), b) >= 248) & solid
+    orange = (r > 180) & (g < 140) & (b < 70) & solid
+    k7 = np.ones((7, 7), np.uint8)
+    glass = np.zeros_like(warm)
+    sliver = np.zeros_like(warm)          # panes seen edge-on (thin side-wall strips): dim like a recess
+    n, lab, st, _ = cv2.connectedComponentsWithStats(warm.astype(np.uint8), 8)
+    for i in range(1, n):
+        if st[i, 4] >= 100:
+            if st[i, 2] < 22 and st[i, 3] > 3 * st[i, 2]:
+                sliver |= lab == i
+            else:
+                glass |= lab == i
+    n, lab, st, _ = cv2.connectedComponentsWithStats(white.astype(np.uint8), 8)
+    for i in range(1, n):
+        c = (lab == i).astype(np.uint8)
+        ring = cv2.dilate(c, k7).astype(bool) & ~c.astype(bool)
+        if st[i, 4] >= 20 and orange[ring].mean() > 0.5:
+            glass |= c.astype(bool)
+    # the door's glowing recess: bright pixels in a band hugging the door
+    recess = np.zeros_like(warm)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(orange.astype(np.uint8), 8)
+    if n > 1:
+        big = 1 + int(np.argmax(st[1:, 4]))
+        door = (lab == big).astype(np.uint8)
+        door = cv2.morphologyEx(door, cv2.MORPH_CLOSE, k7)
+        band = cv2.dilate(door, np.ones((11, 11), np.uint8)).astype(bool) & ~door.astype(bool)
+        recess = band & (np.minimum(r, g) >= 225) & solid & ~glass
+    recess |= sliver
+    mg = np.clip(cv2.GaussianBlur(glass.astype(np.float32), (0, 0), 0.9) * 1.5, 0, 1)
+    mr = np.clip(cv2.GaussianBlur(recess.astype(np.float32), (0, 0), 0.9) * 1.5, 0, 1)
     off = spr.copy()
-    dim = np.float32([0.10, 0.075, 0.11])
-    off[..., :3] = spr[..., :3] * (1 - m[..., None]) + m[..., None] * dim * spr[..., 3:4]
+    dim = np.float32([0.14, 0.12, 0.17])
+    off[..., :3] = spr[..., :3] * (1 - mg[..., None]) + mg[..., None] * dim * spr[..., 3:4]
+    off[..., :3] *= (1 - 0.35 * mr)[..., None]
+    lit = np.clip(mg + 0.6 * mr, 0, 1)
     gl = np.zeros_like(spr)
-    src = (m * spr[..., 3])[..., None] * np.float32([1.0, 0.62, 0.26])
-    acc = 0.9 * cv2.GaussianBlur(src, (0, 0), 4.0) + 0.6 * cv2.GaussianBlur(src, (0, 0), 14.0)
-    gl[..., :3] = acc
+    src = (lit * spr[..., 3])[..., None] * np.float32([1.0, 0.62, 0.26])
+    gl[..., :3] = 0.9 * cv2.GaussianBlur(src, (0, 0), 4.0) + 0.6 * cv2.GaussianBlur(src, (0, 0), 14.0)
     for x in (off, gl):
         x.setflags(write=False)
-    return off, spr, gl, float(m.sum())
+    return off, spr, gl, float(lit.sum())
 
 
 @functools.lru_cache(maxsize=2)
