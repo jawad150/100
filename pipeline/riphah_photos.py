@@ -3,7 +3,7 @@
 Usage:
     python3 pipeline/riphah_photos.py SRC_DIR [OUT_DIR]
 
-SRC_DIR must hold the five event photos 1.jpg ... 5.jpg. Output (1080x1350):
+SRC_DIR must hold the five event photos 1.jpg ... 5.jpg and the cover photo 8.jpg. Output (1080x1350):
     post_0_cover.jpg   title card
     post_1..5_*.jpg    photos in the Floret post template: navy band with the
                        Floret + WIW 2026 logos, photo fading into navy, website.
@@ -53,6 +53,12 @@ PHOTOS = {
               faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)],
               wb=(1.0, 1.0, 1.02)),
 }
+
+# Cover background: the group photo at the Riphah gate, full width (the group is
+# already centred), faces up top, the title panel overlapping from the knees.
+COVER = dict(file="8.jpg", x0=0, w=1280, y0=0, dim=0.70,
+             faces=[(493, 435, 525, 480), (582, 422, 621, 474), (1005, 422, 1037, 474)],
+             wb=(1.0, 1.0, 1.02), panel=(56, 610, 1024, 970), lockup_y=1110)
 
 # Shared look (same for every photo).
 LOOK = dict(highlights=0.5, shadows=0.10, contrast=0.12, clarity=0.10,
@@ -221,26 +227,27 @@ def post(photo, p):
     return img.convert("RGB")
 
 
-def cover(photo):
-    """Title card: the presenter shot dimmed into navy, frosted title panel, logos."""
-    x0, w, y0 = 60, 1440, 180  # source crop: presenter + slide, face high in frame
-    s = W / w
-    big = photo.crop((x0, y0, x0 + w, photo.height))
+def cover(photo, c=COVER):
+    """Title card: event photo dimmed into navy, frosted title panel, logos."""
+    s = W / c["w"]
+    big = photo.crop((c["x0"], c["y0"], c["x0"] + c["w"], photo.height))
     big = big.resize((W, round(big.height * s)), Image.LANCZOS)
     a = np.asarray(big, np.float32)
     L = luma(a)[..., None]
-    a = (L + (a - L) * 0.75) * 0.55 + np.array(NAVY, np.float32) * 0.45  # dim towards navy
+    a = (L + (a - L) * 0.85) * c["dim"] + np.array(NAVY, np.float32) * (1 - c["dim"])
 
     canvas = np.full((H, W, 3), NAVY, np.float32)
     h = min(a.shape[0], H)
     y = np.arange(h, dtype=np.float32)
-    alpha = (smoothstep((y + 40) / 160) * (1 - smoothstep((y - 520) / 360)))[:, None, None]
-    canvas[:h] += (a[:h] - canvas[:h]) * alpha
+    # Calm the top edge, then dissolve into navy behind the title panel.
+    top_fade = smoothstep((y + 60) / 260)
+    bot_fade = 1 - smoothstep((y - (c["panel"][1] - 40)) / (h - c["panel"][1] + 40))
+    canvas[:h] += (a[:h] - canvas[:h]) * (top_fade * bot_fade)[:, None, None]
     canvas += np.random.default_rng(7).normal(0, 1.2, canvas.shape)  # grain, no banding
     img = Image.fromarray(np.clip(canvas + 0.5, 0, 255).astype(np.uint8))
 
     # Frosted panel: blur what's behind it, then a faint white glass tint.
-    px0, py0, px1, py1 = 56, 560, 1024, 930
+    px0, py0, px1, py1 = c["panel"]
     pw, ph = px1 - px0, py1 - py0
     img.paste(img.crop((px0, py0, px1, py1)).filter(ImageFilter.GaussianBlur(18)), (px0, py0))
     mask = Image.new("L", (pw, ph), 0)
@@ -276,7 +283,7 @@ def cover(photo):
         y += hgt + gap
 
     lk = lockup(floret_h=130, wiw_h=112, gap=44, divider_h=110)
-    img.alpha_composite(lk, ((W - lk.width) // 2, 1090 - lk.height // 2))
+    img.alpha_composite(lk, ((W - lk.width) // 2, c["lockup_y"] - lk.height // 2))
     center_text(d, 1250, URL, font("Poppins-Medium.ttf", 29))
     return img.convert("RGB")
 
@@ -292,7 +299,7 @@ def main():
         post(graded[k], p).save(dst, quality=95, subsampling=0, optimize=True)
         print(dst)
     dst = os.path.join(out_dir, "post_0_cover.jpg")
-    cover(graded["3"]).save(dst, quality=95, subsampling=0, optimize=True)
+    cover(graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(dst, quality=95, subsampling=0, optimize=True)
     print(dst)
 
 
