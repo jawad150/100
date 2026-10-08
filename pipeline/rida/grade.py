@@ -20,28 +20,25 @@ def rgb2hsv(c):
 
 
 def grade(c):
+    """Neutral and natural: skin keeps its original colour, only tone/contrast and the wall cast change."""
     c = np.clip(c, 0, 1)
     h, s, v = rgb2hsv(c)
     w = np.array([0.2126, 0.7152, 0.0722])
     lum = (c @ w)[..., None]
-    # 1) white balance: tame (not kill) the olive/yellow cast of the set lighting on the walls
-    cast = (smoothstep(36, 48, h) * (1 - smoothstep(78, 100, h)))[..., None]
-    c = c + cast * 0.35 * (lum - c)
-    # warm daylight balance like the reference
-    c = c * np.array([1.025, 1.0, 0.955])
-    # 2) skin / warm wardrobe: peachy and alive (+22% chroma, a hair toward orange-red)
-    skin = ((smoothstep(2, 10, h) * (1 - smoothstep(32, 40, h))) * smoothstep(0.12, 0.3, s))[..., None]
+    # 1) tame the olive/yellow cast on the low-saturation walls only (no global white-balance shift)
+    cast = (smoothstep(38, 50, h) * (1 - smoothstep(78, 100, h)) * (1 - smoothstep(0.25, 0.45, s)))[..., None]
+    c = c + cast * 0.40 * (lum - c)
+    # 2) a little life in non-skin colours; skin (hue 0-38) is left exactly as shot
+    skin = ((1 - smoothstep(30, 40, h)) + smoothstep(345, 355, h)) * smoothstep(0.08, 0.2, s)
     lum = (c @ w)[..., None]
-    c = c + skin * 0.18 * (c - lum) + skin * np.array([0.012, 0.003, -0.008])
-    # 3) vibrance: lift low-saturation colours, leave already-rich ones
-    lum = (c @ w)[..., None]
-    c = c + (0.14 * (1 - smoothstep(0.25, 0.65, s)))[..., None] * (c - lum)
-    # 4) tone: filmic S-curve, clean (not crushed) blacks, soft highlight roll-off
-    x = np.clip(c, 0, 1) ** 0.96
-    x = x + 0.17 * (x - 0.5) * (1 - np.abs(2 * x - 1) ** 1.1)
-    x = 0.012 + x * (1 - 0.012)
-    x = np.where(x > 0.82, 0.82 + (x - 0.82) * 0.72, x)
-    return np.clip(x, 0, 1)
+    c = c + (0.06 * (1 - np.clip(skin, 0, 1)))[..., None] * (c - lum)
+    # 3) tone on luminance only (additive), so contrast never shifts hue or skin colour
+    L = np.clip(c @ w, 0, 1)
+    L2 = L + 0.12 * (L - 0.5) * (1 - np.abs(2 * L - 1) ** 1.1)
+    L2 = 0.010 + L2 * (1 - 0.010)
+    L2 = np.where(L2 > 0.84, 0.84 + (L2 - 0.84) * 0.75, L2)
+    c = c + (L2 - L)[..., None]
+    return np.clip(c, 0, 1)
 
 
 def write_cube(path, n=65):
