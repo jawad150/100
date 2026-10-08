@@ -3,6 +3,12 @@
 python3 setup_workspace.py              fonts + brand logo variants + website photos
 python3 setup_workspace.py --footage    also download the client's Drive folder 'fostering' and extract frames
 
+Other projects configure it in project.json (all optional; Organic Fostering uses the defaults):
+  "site": "https://acme.com", "drive_folder": "<Drive folder id shared as anyone-with-link>",
+  "google_fonts": {"Inter": "Inter:wght@400;500;600;700;800;900", "Kalam": "Kalam:wght@700"},
+  "logo_src": "https://acme.com/logo.svg" (or a repo-relative file), "site_images_regex": "assets/img/[^\"]+\\.jpg"
+  "footage_names": ["short_name_for_clip_00", ...]
+
 3D renders (workspace3/assets3d) are rebuilt with assets3d_icons.py / assets3d_hero.py / assets3d_everyday.py /
 assets3d_household.py, and the SFX with the reel modules (render.py builds them on demand).
 """
@@ -13,14 +19,16 @@ import os
 import re
 import subprocess
 import sys
+import urllib.parse
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import wsconf  # noqa: E402
 WS = wsconf.workspace()
-SITE = 'https://organicfostering.co.uk'
-DRIVE_FOLDER = '1HU1dWfJVcwtORMaNxGOOBIXbv6CJr4Z0'
+P = wsconf.project()
+SITE = P.get('site', 'https://organicfostering.co.uk').rstrip('/')
+DRIVE_FOLDER = P.get('drive_folder', '1HU1dWfJVcwtORMaNxGOOBIXbv6CJr4Z0')
 UA = {'User-Agent': 'Mozilla/5.0'}
 
 
@@ -37,8 +45,9 @@ def get(url, path=None, headers=UA):
 def fonts():
     d = os.path.join(WS, 'fonts')
     names = {400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold', 800: 'ExtraBold', 900: 'Black'}
-    specs = {'Nunito': 'Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900',
-             'Poppins': 'Poppins:wght@400;500;600;700;800;900', 'Caveat': 'Caveat:wght@700'}
+    specs = P.get('google_fonts') or {'Nunito': 'Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900',
+                                      'Poppins': 'Poppins:wght@400;500;600;700;800;900', 'Caveat': 'Caveat:wght@700'}
+    os.makedirs(d, exist_ok=True)
     for fam, spec in specs.items():
         css = get(f'https://fonts.googleapis.com/css2?family={spec}', headers={'User-Agent': 'Wget/1.0'}).decode()
         for block in re.findall(r'@font-face\s*{(.*?)}', css, re.S):
@@ -55,6 +64,8 @@ def brand():
     from PIL import Image
     d = os.path.join(WS, 'brand')
     os.makedirs(d, exist_ok=True)
+    if P.get('logo_src'):
+        return brand_generic(d)
     page = get(SITE + '/').decode('utf-8', 'ignore')
     logo = re.search(r'assets/organic-fostering-final-logo[^"?]*\.svg', page).group(0)
     get(f'{SITE}/{logo}', os.path.join(d, 'organic-fostering-final-logo-2026-09-25.svg'))
@@ -78,13 +89,42 @@ def brand():
     print('brand ->', d, sorted(os.listdir(d)))
 
 
+def brand_generic(d):
+    """project.json logo_src (SVG/PNG URL or repo-relative path) -> logo_full.png + derived logo_full_onDark.png."""
+    import numpy as np
+    from PIL import Image
+    src = P['logo_src']
+    ext = os.path.splitext(src.split('?')[0])[1].lower() or '.png'
+    raw = os.path.join(d, 'logo_src' + ext)
+    if re.match(r'https?://', src):
+        get(src, raw)
+    else:
+        import shutil
+        shutil.copyfile(os.path.join(wsconf.REPO, src), raw)
+    if ext == '.svg':
+        import cairosvg
+        cairosvg.svg2png(url=raw, write_to=os.path.join(d, 'logo_4k.png'), output_width=4096)
+        raw = os.path.join(d, 'logo_4k.png')
+    im = Image.open(raw).convert('RGBA')
+    im = im.crop(im.getbbox())
+    im.save(os.path.join(d, 'logo_full.png'))
+    a = np.array(im).astype(np.float32)
+    c = a[..., :3] / 255.0
+    lin = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+    dark = (lin @ np.array([0.2126, 0.7152, 0.0722]) < P.get('logo_dark_lum', 0.12)) & (a[..., 3] > 0)
+    a[dark, :3] = 250
+    Image.fromarray(a.astype(np.uint8)).save(os.path.join(d, 'logo_full_onDark.png'))
+    print('brand ->', d, sorted(os.listdir(d)), '(logo_full_onDark is derived; crop logo_mark/logo_wordmark by hand)')
+
+
 def site_images():
     d = os.path.join(WS, 'site_img')
     page = get(SITE + '/').decode('utf-8', 'ignore')
-    paths = sorted(set(re.findall(r'assets/images/homepage/[A-Za-z0-9_.-]+\.(?:webp|jpg)', page)))
+    pat = P.get('site_images_regex', r'assets/images/homepage/[A-Za-z0-9_.-]+\.(?:webp|jpg)')
+    paths = sorted(set(re.findall(pat, page)))
     paths = [p for p in paths if not re.search(r'-(480|768|1200)\.webp$', p)]
     with cf.ThreadPoolExecutor(6) as ex:
-        list(ex.map(lambda p: get(f'{SITE}/{p}', os.path.join(d, os.path.basename(p))), paths))
+        list(ex.map(lambda p: get(urllib.parse.urljoin(SITE + '/', p), os.path.join(d, os.path.basename(p.split('?')[0]))), paths))
     print('site_img ->', d, len(paths))
 
 
@@ -104,10 +144,10 @@ def footage():
         return out
     with cf.ThreadPoolExecutor(6) as ex:
         files = list(ex.map(dl, ents))
-    short = ['tent_dad_daughter', 'two_moms_girl_hug', 'blocks_toddler', 'counselor_teddy_kids', 'counselor_family_sofa',
+    short = P.get('footage_names') or (['tent_dad_daughter', 'two_moms_girl_hug', 'blocks_toddler', 'counselor_teddy_kids', 'counselor_family_sofa',
              'family_sofa_teddy_paperwork', 'two_dads_laptop_sofa', 'yard_meeting', 'piggyback_vertical', 'arrival_teddy_backpack',
              'dad_daughter_cuddle', 'mum_teddy_hug', 'mum_boy_laugh', 'two_dads_tablet', 'two_mums_baby_play',
-             'two_mums_baby_blanket', 'dog_kennel', 'park_bench_teddy', 'document_explain']
+             'two_mums_baby_blanket', 'dog_kennel', 'park_bench_teddy', 'document_explain'] if not P else [])
     man = {}
     for k, f in enumerate(files):
         p = json.loads(subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',

@@ -1,4 +1,4 @@
-"""Package a rendered reel into the delivery folder reel/organic_fostering/.
+"""Package a rendered reel into the delivery folder (reel/organic_fostering/, or project.json "deliver").
 
 python3 package.py <module> <slug> [--cover SECONDS] [--bitrate 22M]
 
@@ -10,6 +10,8 @@ Reads workspace3/out/<module>/<module>.mp4 (the render.py master) and writes
   organic_fostering_<slug>_master.mp4   the CRF 14 master (stored with Git LFS)
   organic_fostering_<slug>_sfx_stem.wav the 48 kHz 24-bit SFX stem (workspace3/audio/<module>_sfx_stem.wav)
   organic_fostering_<slug>_cover.jpg    a frame of the master at --cover seconds
+Another project sets its folder and file prefix in project.json:
+  "deliver": {"dir": "reel/acme", "prefix": "acme"}   (add  reel/acme/*_master.mp4  to .gitattributes LFS)
 """
 import argparse
 import os
@@ -21,7 +23,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 import wsconf  # noqa: E402
 WS = wsconf.workspace()
-DEST = os.path.join(REPO, 'reel', 'organic_fostering')
+_DELIVER = wsconf.project().get('deliver', {})
+DEST = os.path.join(REPO, _DELIVER.get('dir', os.path.join('reel', 'organic_fostering')))
+PREFIX = _DELIVER.get('prefix', 'organic_fostering')
 
 
 def run(cmd):
@@ -39,7 +43,7 @@ def main():
     if not os.path.exists(master):
         raise SystemExit(f'no master at {master}: run  python3 render.py {a.module} --workers 4  first')
     os.makedirs(DEST, exist_ok=True)
-    base = os.path.join(DEST, 'organic_fostering_' + a.slug)
+    base = os.path.join(DEST, PREFIX + '_' + a.slug)
     with tempfile.TemporaryDirectory() as tmp:
         log = os.path.join(tmp, 'pass')
         common = ['-c:v', 'libx264', '-preset', 'slow', '-b:v', a.bitrate, '-passlogfile', log]
