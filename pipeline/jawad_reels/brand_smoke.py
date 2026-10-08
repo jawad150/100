@@ -35,7 +35,7 @@ def draw(t):
     cam = K.Cam.orbit((0, 0, 0), 1500 - 70 * push, yaw=K.lerp(2.0, -1.5, push), pitch=K.lerp(-1.0, 0.6, push),
                       aperture=28)
     cv = K.background(LOOK, t, cam)
-    A['title'].draw(cv, t, K.CX, 690, t0=0.08)
+    A['title'].draw(cv, t, K.CX, 640, t0=0.08)
     win = A['win']
     u = K.ramp(t, 0.30, 1.20, 'out_cubic')
     if u > 0:
@@ -43,10 +43,10 @@ def draw(t):
         x, y, sw, sh = win.meta['slot']
         for i, (label, tick) in enumerate(ROWS):
             win.put(f, ui.check_row(label, w=sw, t=t - tick, look=LOOK), x - ui.ROW_PAD, y + i * 104 - ui.ROW_PAD)
-        win.plane(cv, cam, (0, 330 + 260 * (1 - u), -30), 760, rot=(6 + 14 * (1 - u), -7, 0.8), face=f,
+        win.plane(cv, cam, (0, 190 + 260 * (1 - u), -30), 740, rot=(6 + 14 * (1 - u), -7, 0.8), face=f,
                   opacity=K.ramp(t, 0.30, 0.65, 'inout_sine'))
     A['sparks'].draw(cv, cam, t)
-    J.signature(cv, K.CX, 1590, opacity=K.ramp(t, 1.1, 1.6, 'inout_sine'))
+    J.signature(cv, K.CX, 1585, opacity=K.ramp(t, 1.1, 1.6, 'inout_sine'))
     return cv
 
 

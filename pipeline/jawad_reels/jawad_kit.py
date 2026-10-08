@@ -430,7 +430,7 @@ class HouseTitle:
         tk = t0 + key_t
         if t >= tk:
             if t - tk < 1.2 or op < 1:
-                self.key.rise(cv, t, x, y, t0=tk, stagger=0.035, dur=0.7, dist=0.35, blur=10, scale0=0.92,
+                self.key.rise(cv, t, x, y, t0=tk, stagger=0.03, dur=0.5, dist=0.3, blur=7, scale0=0.94,
                               opacity=op)
             else:
                 self.key_static.draw(cv, x, y, opacity=op)
