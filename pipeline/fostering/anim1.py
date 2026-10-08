@@ -155,7 +155,7 @@ def A():
     d['i_house'] = X.Prop('house', 92)
     d['i_clock'] = X.Prop('alarm_clock', 92)
     d['i_family'] = X.Prop('family_figures', 92)
-    d['house'] = X.Prop('house', 370)
+    d['house'] = X.Prop('house', 440)
     d['clock'] = X.Prop('alarm_clock', 330)
     d['blocks'] = block_sprites()
     d['bus_path'] = bus_path()
@@ -403,7 +403,7 @@ def light_for(t):
     if g > 0:
         hx, hy = house_pos(t)[:2]
         flick = 1.0 + 0.04 * K.wiggle(t, 7, 1, seed=3)
-        L.glow = (hx, hy - 170, 520.0, 0.65 * g * flick, (1.0, 0.62, 0.30))
+        L.glow = (hx, hy - 200, 560.0, 0.85 * g * flick, (1.0, 0.62, 0.30))
     return L
 
 

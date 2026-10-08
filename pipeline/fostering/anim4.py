@@ -818,7 +818,7 @@ def _prop_state(st, i, t):
         if sn == st and it == i and t >= a0:
             u = K.ramp(t, a0, a1, 'in_cubic')
             cx, cy = SPECS[st][0][2]
-            arc = -150.0 * math.sin(math.pi * K.ramp(t, a0, a1, 'out_sine'))
+            arc = -95.0 * math.sin(math.pi * K.ramp(t, a0, a1, 'out_sine'))
             x = K.lerp(x, cx, u)
             y = K.lerp(y, cy - 30.0, u) + arc
             s *= 1.0 - 0.6 * u
