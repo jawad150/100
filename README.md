@@ -51,6 +51,7 @@ Eleven 1080×1350 slides in [`riphah/`](riphah/), posted in filename order:
 
 - `post_00_cover.jpg`: title card ("World Investor Week 2026 at Riphah International University" plus the WIW 2026 tagline) over the group photo at the Riphah gate (dimmed into navy), with the Floret Capitals and WIW 2026 logos.
 - `post_01` … `post_10`: event photos in the Floret post template. A navy band at the top carries the Floret | WIW 2026 logo lockup, the photo fades into navy with the same top and bottom gradient on every slide, and the website sits at the bottom.
+- `WIW2026_Riphah_carousel.pdf`: all 11 slides in posting order, one 1080×1350 page each. The JPEGs are embedded without recompression (img2pdf).
 
 The script is `pipeline/riphah_photos.py SRC_DIR`. SRC_DIR is the folder of original photos (the shared Drive folder: `IMG_96xx.jpg` camera originals plus the exported `u*.jpg` edits), and each slide names its file in `PHOTOS`. Each original is cropped to the columns its slide uses and processed at up to 2× the output size (never upscaled), then reduced once to 1080×1350. Every photo is processed the same way:
 
