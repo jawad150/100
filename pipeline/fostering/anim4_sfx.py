@@ -21,6 +21,7 @@ any catalog sound and the mixer's levels / room send / limiter treat them the sa
                                   workspace3/audio/anim4_sfx.wav (24-bit) + anim4_sfx_stem.wav (48 kHz 24-bit)
     python3 anim4_sfx.py build      the reel mix (+ overview PNG in workspace3/out/anim4/)
     python3 anim4_sfx.py audition   every custom sound in sequence -> workspace3/out/anim4/anim4_sfx_audition.wav
+    python3 anim4_sfx.py selftest   spectrogram sheet of the custom sounds -> workspace3/out/selftest/anim4_sfx_sheet_1.png
 No side effects on import.
 """
 import math
@@ -293,11 +294,26 @@ def _write(p, x):
     wavfile.write(p, SR, (y * 32767).astype(np.int16))
 
 
+def selftest():
+    """Spectrogram grid of the custom sounds -> workspace3/out/selftest/anim4_sfx_sheet.png (+ QC printout)."""
+    import core as K
+    register()
+    os.makedirs(K.SELFTEST, exist_ok=True)
+    items = [(nm, A.sound(nm)) for nm in CUSTOM]
+    paths = A.catalog_sheets(items, os.path.join(K.SELFTEST, 'anim4_sfx_sheet_%d.png'))
+    for nm, x in items:
+        print('%-13s %s' % (nm, A.qc(np.asarray(x, np.float64), x.hit) or 'ok'))
+    print('->', paths)
+    return paths
+
+
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'build'
     if cmd == 'build':
         build()
     elif cmd == 'audition':
         audition()
+    elif cmd == 'selftest':
+        selftest()
     else:
         print(__doc__)

@@ -764,7 +764,7 @@ SPECS = dict(
           ('heart', 'day', (300.0, -190.0), 220.0, B(13.5), (0.0, 18.0), -110.0),
           ('tile:key', None, (215.0, 470.0), 132.0, B(14), (0.0, 0.0), -90.0),
           ('tile:shield', None, (375.0, 400.0), 132.0, B(14.25), (0.0, 0.0), -90.0)],
-    food=[('basket', 'day', (0.0, 330.0), 470.0, B(17), (-8.0, 6.0), 0.0),
+    food=[('basket', 'day', (0.0, 320.0), 570.0, B(17), (-8.0, 6.0), 0.0),
           ('apple', 'day', (-270.0, -40.0), 250.0, B(18.5), (0.0, 16.0), -60.0),
           ('sandwich', 'day', (30.0, -110.0), 290.0, B(19), (0.0, 14.0), -60.0),
           ('plate', 'day', (310.0, 30.0), 300.0, B(19.5), (0.0, 10.0), -60.0)],
@@ -886,7 +886,7 @@ def _draw_item(cv, c, it, t, n_samples):
         rot = it['yaw']                               # rolling: spin the ball in the image plane
     else:
         spr = _spr_for(name, it['var'], it['yaw'])
-    if name == 'basket':        # fills up: cross-fade to the identical-camera 'day_full' render
+    if name == 'basket' and P.ready('basket', 'day_full'):   # fills up: cross-fade to the identical-camera full one
         f = K.ramp(t, FULL_AT['food'] - 0.04, FULL_AT['food'] + 0.22, 'inout_sine')
         if f > 0:
             full = _spr_for(name, 'day_full', it['yaw'])

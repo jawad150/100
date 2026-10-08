@@ -755,10 +755,10 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
         (bx, by), tl, _ = PROPS2['bowl']
         pr = Ad['bowl']
         fx, fy = pr.feature('batter', -10.0)
-        X.puff(layer, t, tl - 0.01, bx + fx, by + fy - 10, n=46, spread=190, seed=12, rgb=(1.0, 0.985, 0.95),
-               size=(6, 20), up=-1.8, dur=1.25, opacity=0.95, ang=(-170, -10))
-        X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=18, spread=90, seed=13, rgb=(1.0, 0.985, 0.95),
-               size=(4, 12), up=-1.2, dur=0.9, opacity=0.8, ang=(-150, -30))
+        X.puff(layer, t, tl - 0.01, bx + fx, by + fy - 10, n=64, spread=210, seed=12, rgb=(1.22, 1.19, 1.12),
+               size=(9, 30), up=-2.0, dur=1.45, opacity=1.0, ang=(-172, -8))
+        X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=26, spread=110, seed=13, rgb=(1.22, 1.19, 1.12),
+               size=(6, 18), up=-1.4, dur=1.0, opacity=0.9, ang=(-150, -30))
     # bus drives along the dashed path
     if 5.95 <= t <= 7.1:
         u = (t - 5.95) / 1.1

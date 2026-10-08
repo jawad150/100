@@ -738,3 +738,32 @@ def glossy_orb(kind='peach', size=256):
     out[~inside & (a <= 0)] = 0
     out.setflags(write=False)
     return out
+
+
+def _selftest():
+    """Writes workspace3/out/selftest/anim4_fx_world.png: the white world, dot grid, glows, a ribbon with light
+    lines, coins (one swept), a glossy orb, local glows and bokeh, finished with the 'airy' post."""
+    import os
+    os.makedirs(K.SELFTEST, exist_ok=True)
+    cam = K.Cam.orbit((0.0, 0.0, 0.0), 1500.0, aperture=14.0)
+    cv = world_bg(0.5, cam)
+    pth = Path([(-700, -500, -30), (-200, -100, -30), (100, 300, -30), (500, 700, -30)], step=8.0)
+    draw_ribbon(cv, cam, pth, 0.0, pth.length * 0.85, 0.5, width=42.0)
+    draw_lightline(cv, cam, pth, pth.length * 0.8, 500.0, offset=30.0)
+    import anim4_props as P
+    coin = P.prop('coin_gbp', mode='spin', scale=0.2)
+    for i in range(6):
+        Pw = pth.at(pth.length * (0.2 + 0.1 * i)) + np.array([0.0, 0.0, -50.0])
+        draw_coin(cv, cam, coin, Pw, 100.0, 40.0 * i, 300.0)
+    draw_coin_swept(cv, cam, coin, (-300.0, 500.0, -200.0), (-180.0, 560.0, -260.0), 140.0, 30.0, 600.0)
+    K.draw(cv, glossy_orb('sphere_peach'), 820, 1500, scale=0.6)
+    local_glow(cv, 300, 400, 160.0, 'gold', 1.0)
+    near_bokeh(cv, cam, [((420.0, -700.0, -800.0), 'lav', 120.0, 6.0, 0.6)], 0.5)
+    p = os.path.join(K.SELFTEST, 'anim4_fx_world.png')
+    K.save_png(p, K.to_srgb8(K.post(cv, 'airy', 0.5, vignette=0.1, grain=0.006, bloom_threshold=1.3), 0.5))
+    print('->', p)
+    return p
+
+
+if __name__ == '__main__':
+    _selftest()
