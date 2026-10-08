@@ -744,7 +744,9 @@ def wrap2(t, limit=42):
     best = None
     for k in range(1, len(ws)):
         a, b = ' '.join(ws[:k]), ' '.join(ws[k:])
-        sc = max(len(a), len(b))
+        sc = max(len(a), len(b)) + (8 if re.sub(r'[^\w]', '', ws[k - 1].lower()) in WEAK_END else 0)
+        if max(len(a), len(b)) > limit:
+            sc += 100
         if best is None or sc < best[0]:
             best = (sc, a + '\n' + b)
     return best[1]

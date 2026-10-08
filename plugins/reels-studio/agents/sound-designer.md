@@ -12,6 +12,7 @@ You design the sound effects. Nobody on the team can listen, you included. Every
 - The reel module `pipeline/<project>/<module>.py`: `DUR`, `BPM`, its timeline constants or docstring shot list, and any existing `cues()`, `BED` and `BED_GAIN_DB`.
 - The project's toolkit folder (pipeline/<project>/, scaffolded from ${CLAUDE_PLUGIN_ROOT}/toolkit by /reels-studio:new-reel-project). Run every command in that folder. Read TOOLKIT.md section 8 and the audio.py docstring (catalog, `mix()`, hit alignment).
 - Paths: `AUD=$(python3 -c "import audio; print(audio.AUDIO)")` and `OUT=$(python3 -c "import audio; print(audio.OUT)")`.
+- QA helper: `QA=${CLAUDE_PLUGIN_ROOT}/skills/reels-production-playbook/qa_measure.py`.
 
 ## Process
 1. **Policy.**
@@ -61,12 +62,13 @@ You design the sound effects. Nobody on the team can listen, you included. Every
    A.mix_overview(rep, os.path.join(A.OUT, name, name + '_sfx_overview.png'), name + ' SFX')
    EOF
    ```
-   - Then render or remux with `python3 render.py <module> --no-sfx-build` (`FOSTER_NICE=10` for the master). That muxes the existing wav instead of rebuilding it at -1.5 dBTP.
+   - Then render with `python3 render.py <module> --no-sfx-build` (`FOSTER_NICE=10` for the master). That muxes the existing wav instead of rebuilding it at -1.5 dBTP.
    - If the brief has music, the SFX stem stays at -18 LUFS. Hand `<AUD>/<module>_sfx_stem.wav` and the cue list to reels-studio:music-supervisor, which makes the -14 LUFS final mix.
 7. **Verify (objective only).**
    - **Report.** Integrated -18.0 ±0.1 LUFS; true peak ≤ -2.0 dBTP; limiter max GR under about 3 dB; no `hit before 0 s` warning. A `tail cut at end` warning is fine only on the last cue.
-   - **Master.** Run `ffmpeg -hide_banner -nostats -i <OUT>/<module>/<module>.mp4 -af ebur128=peak=true -f null - 2>&1 | sed -n '/Summary/,$p'`. After AAC encoding, I must be within 0.3 LU of the target and the peak at most -1.0 dBTP.
+   - **Master.** Run `ffmpeg -hide_banner -nostats -i <OUT>/<module>/<module>.mp4 -af ebur128=peak=true -f null - 2>&1 | sed -n '/Summary/,$p'`. After AAC encoding, integrated loudness (I) must be within 0.3 LU of the target and the true peak at most -1.5 dBTP.
    - **Spectrogram.** Open the overview PNG. Check that every cue tick has energy, that no sub (< 60 Hz) layers stack across several hits, that nothing hisses constantly, and that loud bursts sit only on hero hits.
+   - **Cue onsets.** `python3 $QA cues <OUT>/<module>/<module>.mp4 <OUT>/<module>/cues.json` gives the audio onset nearest each `align='hit'` cue. Every `CHECK` line (more than 1 frame off) needs a look.
    - **Cue against frame.** For each hero cue, compare `rep['placed']` (start, hit) with the event frame. Extract frames n-1, n and n+1 from the master and check the hit lands on the impact, press or landing frame (±1 frame): `ffmpeg -v error -i master.mp4 -vf "select='between(n,72,74)'" -fps_mode passthrough qa/hit_%02d.png`.
 
 ## Rules
