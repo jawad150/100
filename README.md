@@ -1,4 +1,4 @@
-# Organic Fostering: three cinematic SaaS-style reels
+# Organic Fostering: three cinematic SaaS-style reels and two animations
 
 These are three vertical reels (1080×1920, 30 fps) for [organicfostering.co.uk](https://organicfostering.co.uk/). They're built from the client's Drive footage ("fostering", 19 clips), the brand colours, logo and fonts from the website, and 3D elements rendered in Blender. The audio is **SFX only**; the client adds music.
 
@@ -40,6 +40,20 @@ Each reel also has a cover image (`…_cover.jpg`).
   - **Trust pills:** a 3D shield with the trust statements.
   - **End card:** the sprout's leaves fly into the logo over a sunset, with "Start your enquiry".
 
+## The animations (content doc #1 and #4)
+Pure animation, no footage, built from the client's content doc. Audio is SFX only, as for the reels.
+
+| Animation | Instagram-ready | Master (Git LFS) | SFX stem | Music tempo |
+|---|---|---|---|---|
+| #1 · **Day in the Life** (21 s, editorial paper) | `organic_fostering_anim1_day_in_the_life.mp4` | `…_day_in_the_life_master.mp4` | `…_day_in_the_life_sfx_stem.wav` | **100 BPM** |
+
+- **#1, "Day in the Life":** kinetic type stamped onto relit crumpled paper with 3D props.
+  - **Hook:** "WHAT DOES ‹FOSTERING› REALLY LOOK LIKE?" with a marker swipe and a ringing alarm clock, then "It's often found in the everyday."
+  - **The everyday:** "SCHOOL RUNS." (backpack, school bus), "HOMEWORK." (book and pencil), "BAKING." (mixing bowl, cupcake).
+  - **Stability:** the props tumble into a tower of blocks under "SMALL MOMENTS CAN HELP BUILD STABILITY." with a checklist: a consistent home, a familiar routine, someone who is there.
+  - **Payoff:** a page flip to "‹FOSTERING› HAPPENS IN THE EVERYDAY." and a 3D house whose windows light up.
+  - **End card:** "Could you make room?", the logo, "Start your enquiry", the phone and URL.
+
 **Copy:** all of it comes from the website or the client's ads, including the allowance figures and the disclaimer. The ad's "£2,500" figure isn't used because its unit (week, month or one-off) wasn't stated. Tell us what it covers and it can go in.
 
 ## How it's built ([`pipeline/fostering/`](pipeline/fostering/))
@@ -53,25 +67,71 @@ Each reel also has a cover image (`…_cover.jpg`).
 | `type3d.py` | 3D extruded, deep-glow, light-sweep, video-in-type and kinetic glyph typography |
 | `ui.py` | SaaS glass UI kit |
 | `assets3d_icons.py`, `assets3d_hero.py` | Blender (Cycles) renders of the 3D elements: heart, house, £ coin, shield, check tile, star badge, chat bubble, grad cap, key, phone, orbs, the extruded logo, "?", "£", the sprout growth, leaf, seed, puzzle pair and blocks |
+| `assets3d_everyday.py`, `assets3d_household.py` | The animations' props: backpack, school bus, book and pencil, mixing bowl, cupcake, alarm clock, family and child figures, bed, apple, sandwich, plate, basket, t-shirt, trainer, football, paint palette |
+| `assets3d_gpu.py` | `FOSTER_GPU=1` renders the props on an NVIDIA/AMD/Apple GPU (OPTIX > CUDA > HIP > METAL), CPU otherwise |
+| `wsconf.py` | Where the data lives (`workspace3/`), plus optional per-client overrides in `project.json` (palette, fonts, site, delivery folder) |
 | `sprites3d.py` | Loads the 3D renders at runtime |
 | `audio.py` | Synthesized SFX library and the cue-sheet mixer |
-| `reel1.py`, `reel2.py`, `reel3.py` | The three timelines |
+| `reel1.py`, `reel2.py`, `reel3.py` | The three reel timelines |
+| `anim1*.py`, `anim4*.py` | The two animation timelines with their paper, effects and synthesized-SFX helpers |
 | `render.py` | Parallel renderer |
+| `package.py` | Instagram encode (2-pass), master, stem and cover into `reel/organic_fostering/` |
+| `setup_workspace.py` | Rebuilds the git-ignored `workspace3/` (fonts, logos, site photos, `--footage`) after a fresh clone |
 
 Every final render was QA'd frame by frame by independent reviewers, and each finding was verified by a second agent before it was fixed.
 
 Rebuild:
 
 ```bash
-pip install bpy numpy opencv-python-headless pillow scipy cairosvg fonttools
-# workspace3/: frames/cXX (ffmpeg JPEG sequences of the Drive clips, 4K scaled to 1920 tall) + frames/manifest.json,
-#              fonts/ (Nunito, Poppins, Caveat), brand/ (logo PNG/SVG from the website), site_img/ (website photos)
+pip install bpy==5.2.2 numpy opencv-python-headless pillow scipy cairosvg fonttools   # bpy 5.2 needs Python 3.13
 cd pipeline/fostering
+python3 setup_workspace.py --footage   # workspace3/: fonts, brand logos, site photos, Drive clips -> frames/cXX + manifest
 python3 assets3d_icons.py heart house coin_gbp shield_check grad_cap chat_bubble key_heart check_tile star_badge orbs pin_phone
 python3 assets3d_hero.py logo_mark3d question pound_glyph sprout leaf seed puzzle_pair blocks
 python3 render.py reel1 --workers 4          # likewise reel2 (add --no-sfx-build after `python3 reel2_dev.py sfx`), reel3
+python3 assets3d_everyday.py all ; python3 assets3d_household.py all   # animation props (FOSTER_GPU=1 on an NVIDIA PC)
 python3 render.py reel1 --stills 1.0,8.1 ; python3 render.py reel1 --sheet 48   # previews
+python3 render.py anim1 --workers 4 && python3 package.py anim1 anim1_day_in_the_life --cover 4.0
 ```
+
+Continuing on a Windows PC (WSL2, RTX GPU): [`LOCAL_SETUP.md`](pipeline/fostering/LOCAL_SETUP.md), or run `pipeline/fostering/bootstrap_wsl.sh`.
+
+## Reels Studio: the agent team as a plugin for other projects
+Everything that made these videos is packaged as a Claude Code plugin in [`plugins/reels-studio/`](plugins/reels-studio/): 14 agents, 4 skills and the motion toolkit above.
+
+**Install once** (any machine with Claude Code; the repo is private, so log in to GitHub first with `gh auth login && gh auth setup-git`):
+
+```bash
+claude plugin marketplace add jawad150/100
+claude plugin install reels-studio@jawad-reels --scope user
+# later, to pick up improvements:
+claude plugin marketplace update jawad-reels && claude plugin update reels-studio@jawad-reels
+```
+
+Or inside Claude Code: `/plugin marketplace add jawad150/100`, then `/plugin install reels-studio@jawad-reels`.
+
+**Use it in a new project:** open Claude Code in the new project's folder and say, for example, *"Start 3 reels for acme.com, footage in this Drive folder: …"*. Or run `/reels-studio:new-reel-project acme https://acme.com`. That copies the toolkit into `pipeline/acme/`, and the **brand-kit-builder** agent pulls the client's colours, fonts and logo. After that, Claude runs the team in the order set by the `/reels-studio:reels-production-playbook` skill. You can also call any agent directly, e.g. *"use reels-studio:motion-qa-reviewer on reel/acme/acme_reel1.mp4"*.
+
+| Job | Agent |
+|---|---|
+| Client colours, fonts and logo from their website | `brand-kit-builder` |
+| Breakdown of a reference reel | `reference-analyst` |
+| Current trends, formats and sounds in the niche | `trend-researcher` |
+| Hooks and on-screen copy | `script-hook-writer` |
+| Brief and storyboard | `creative-director` |
+| 3D props in Blender | `blender-3d-artist` |
+| Picking and cropping footage moments | `footage-editor` |
+| Building each reel | `motion-timeline-builder` |
+| New reusable effects and widgets | `motion-toolkit-engineer` |
+| Sound effects | `sound-designer` |
+| Music (licensed or AI-generated) | `music-supervisor` |
+| Animated trending captions | `caption-designer` |
+| Frame-by-frame review | `motion-qa-reviewer` |
+| Final exports and push | `delivery-packager` |
+
+Skills: `new-reel-project` (set-up), `reels-production-playbook` (the order of work and the QA rules), `saas-motion-styles` (five proven looks with code recipes) and `trending-captions` (word-by-word caption styles burned in with `make_captions.py`).
+
+When this toolkit improves, refresh the plugin copy with `bash plugins/reels-studio/sync_toolkit.sh`, then commit.
 
 ---
 
