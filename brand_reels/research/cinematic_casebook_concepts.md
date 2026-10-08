@@ -448,3 +448,361 @@ kahenge, nostalgia) meets an editing-specific image (render bar, timeline, expor
 universal part makes non-editors send it; the editing part makes it his.
 
 ---------------------------------------------------------------------------------------------------------------
+
+## 4. Shared craft kit (applies to every concept)
+
+### 4.1 The 3-layer hook, Jawad edition
+- **Frame 0 already shows something.** A physical event lands in the first 0.2-0.5 s (his proven cold open: lights
+  clunking on, a slam, a power cut). Never a fade from black, a logo or "hey guys".
+- **Text by 0.6 s, keyword by 1.5 s.** House lockup: white grotesk carrier words plus one glowing serif-italic keyword
+  (`J.HouseTitle`, style `jw_key`). In this document, `*word*` marks the keyword.
+- **The spoken line starts by 0.3 s** and contains the topic word, which doubles as Instagram search SEO.
+- **The muted test.** Text plus picture must hook and pay off with the sound off.
+- **Hook truth.** Each hook below is extracted from its own payoff; no bait-and-switch.
+- **A/B rule.** Each chosen concept gets two hooks that differ only in the first 3 s (Trial Reels).
+
+### 4.2 Transition families (one family per reel in a set of five)
+The playbook rule: no two reels in a set share a signature device or a transition family. Jawad dislikes light-leak
+washes on cuts, full-frame white flashes, clutter and one-frame jump cuts (repo audit).
+
+| family | grammar | emotional job | concepts |
+|---|---|---|---|
+| **Light-on births** | each world is born from black when a source turns on (ref2's best device) | revelation, hope | C15, C17 |
+| **Diegetic power** | brownout, flicker, CRT collapse, torch-beam reveal, power-on bloom | nostalgia, surprise | C11 |
+| **Exploded layers** | a frame splits into its compositing layers in 3D, then slams back | awe, respect | C08 |
+| **UI portals** | a chat bubble, spinner ring or window expands into the next world | story-UI metaphor | C02, C04, C09 |
+| **Continuous flyover** | one unbroken camera path across a data landscape | tenderness, scale | C10, C14 |
+| **Revolving split** | a split-screen divider that rotates, swaps or heals | duality, comedy | C13, C24 |
+| **Shuttle time** | rewind scrubs, speed ramps (2x-8x), freezes with a camera dolly | control, pause | C01, C20, C23 |
+| **Gate / aspect change** | the frame's own aspect ratio or resolution changes mechanically | growth over time | C12 |
+| **Game HUD hits** | round slams, hit-stops, KO | comedy, energy | C03 |
+| **Glitch / datamosh** | reserved for AI-vs-human contrast | uncanny, debate | C07 |
+| **Infinite zoom** | Droste zoom into nested objects | procrastination, loop | C19 |
+| **Fourth-wall frame** | the canvas itself dodges, stretches and bounces | meta comedy | C16 |
+| **Slice cuts** | a light stroke slices the frame and the halves part | poetry | C17 |
+
+### 4.3 SFX grammar (built from `audio.py` plus the cinema voices ported from his Yaadein reel)
+- **Signature motif per reel**: one recurring sound that *is* the concept (keyswitch thock, UPS beep, typing dots,
+  render fan, voice-note blip). It sits in the hook and returns at the payoff.
+- **Budget**: 3-6 designed hits per reel on world changes (ref2 averages ~0.85 designed events per second, but the
+  "Sound of Reels" study warns against busy, onset-heavy mixes), max ~3 sounds on one instant, VO always intelligible.
+- **Silence**: 0.6-1.5 s of near-silence before the most important line. It is the cheapest emotional device and
+  the rarest in a loud feed.
+- **Pre-lap**: the next scene's sound starts 4-8 frames before its picture.
+- **Levels** (brand skill + toolkit): ~-14 LUFS integrated with music, true peak <= -2.0 dBTP, speech >= 8 LU above
+  the bed; SFX-only stem at -18 LUFS for in-app music.
+
+### 4.4 Music grammar
+| mood | BPM | palette | can a trending song replace it? |
+|---|---|---|---|
+| reflective monologue | 60-80 | felt piano, cello drone, sub swells, choir pad | yes, at -20 dB under the VO |
+| comedic / POV | 95-128 | pizzicato, tabla or 808, short stabs | yes, if its beat lands the jokes |
+| tension to release | no beat, then 70-90 | drones, ticking, a release chord | partly: only after the release |
+| nostalgia | 80-100 | detuned harmonium-like pad, lo-fi keys, tape wow | yes |
+| editing-reveal | 90-110 | modern hybrid pulse, one big drop | yes, if the drop can be placed |
+| **sync-critical** (music obeys the picture) | any | custom only | no: C01, C12, C20, C23 need custom scores |
+
+### 4.5 Using Jawad's face (character-sheet cut-outs, no lip-sync)
+- The VO is narration or inner monologue, so the mouth never has to move.
+- Expression swaps are cuts on beats, carried by a hit or a whoosh: neutral, 3/4, profile, smirk, shocked,
+  confused, smiling and hand-on-chest (suit); power pose, 3/4 turn, smirk, sunglasses and chin-up gaze (streetwear).
+- **Two wardrobes = two characters** (C24) or two eras (C13).
+- 2.5D treatment: rim light in FLAME, parallax against a Blender plate, DOF, slow push-ins, breathing scale (1.000 to
+  1.006), never a warp. Faces are never covered by captions or 3D props.
+- Headshots work best where a person would naturally be still: in front of a laptop (C22), in a spotlight (C15),
+  on a call (C24), reading a message (C02).
+
+### 4.6 Engine mapping (local, CPU, shared machine)
+| need | engine |
+|---|---|
+| keyword titles, kinetic type, counters | `type3d` + `jawad_kit` styles `jw_key`, `jw_key3d`, `jw_caps`, `jw_mono`; `T.Glyphs`, `T.Counter` |
+| SaaS story-UI (chat, spinner, export, voice note, progress, compare slider) | `ui.py` re-skinned to the ember palette, 1-2 panels per beat |
+| 3D props | new `assets3d_jawad.py` (Blender 5.2 CPU, `threads=2`, low samples + OIDN), PNG sequences through `sprites3d` |
+| worlds, DOF, embers, god rays, whips, zoom blur | `core.py` + looks `ember`, `noir_ember` (kit) and `inferno`, `gold_hour`, `dusk` (colorist) |
+| SFX, mix, stems | `audio.py` + `sfx_cinema` voices (braam, heartbeat, tape_stop, reverse_swell, glass) |
+| captions | snake captions from the Yaadein reel or `make_captions.py`, Roman Urdu house spelling |
+
+---------------------------------------------------------------------------------------------------------------
+
+## 5. The 25 concepts
+
+Card format: archetype · emotion · look · logline · **3-layer hook** (visual / on-screen text / spoken) · beats with
+timings · signature device · transitions · SFX · music · 3D and UI · share trigger (who sends it to whom) · loop ·
+CTA · risks and [TRUTH CHECK] · scores. On-screen keywords are marked `*like this*`; Roman Urdu lines are drafts for
+the hinglish-scriptwriter (about 2.5-3 words per second).
+
+Scores (1-10): **SS** scroll-stop, **RL** relatability, **SH** share-ability, **OR** originality, **FE** feasibility
+with local tools, **BF** brand fit. **Total** /60. **Viral weight W** /80 = 1.5 SS + 1.5 RL + 2 SH + OR + FE + BF
+(share-ability counts double because sends drive non-follower reach).
+
+### C01 · J · K · L: "Zindagi ke teen button"
+*Archetype* A8 analogy + A1 kinetic monologue · *Emotion* calm resolve · *Look* `noir_ember` · *Length* 36 s
+
+**Logline.** Every editor drives the timeline with three keys; Jawad turns J (rewind), K (pause) and L (play) into a
+life philosophy, and the twist is the key nobody presses.
+
+**Hook (0-2.6 s)**
+- Visual: macro of a black-gloss keycap "K" slamming down by itself; every ember in the room freezes mid-air; HUD `0x`.
+- Text: "Editing ke *3 button*"
+- Spoken: "Har editor ki zindagi teen button pe chalti hai: J, K aur L."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 0.0-2.6 | hook | as above |
+| 2.6-9.0 | J: the world scrubs backwards; abstract light-streak clips fly back past the lens; HUD `-1x -2x` | "J dabao, toh sab ulta chalta hai. Bohat log zindagi J pe guzaar dete hain: kaash yeh, kaash woh." Text "*J* · peeche" |
+| 9.0-16.0 | L, then double-tap: 1x, 2x, 4x, 8x; the world time-smears; Jawad (streetwear 3/4) blurs in place; at 8x the readout turns RED | "Phir L. Aage. Aur tez. 2x, 4x, 8x... itna tez ke manzil aayi aur guzar bhi gayi." Text "*L* · aage" |
+| 16.0-22.0 | K: hard freeze, 1.0 s of total silence, then a slow dolly through frozen embers to Jawad (suit, neutral) | "Aur K. Pause. Sab se kam dabaya jaane wala button." Text "*K* · ruko" |
+| 22.0-29.0 | the three keycaps align; K glows FLAME; Jawad's expression swaps to smiling | "Editor jaanta hai: sab se acha cut tab milta hai jab tum ruk ke dekhte ho." |
+| 29.0-33.0 | keyword lockup | "Aaj *K* dabao. Bas ek minute." |
+| 33.0-36.0 | end card | CTA "Us dost ko bhejo jo 8x pe chal raha hai" |
+
+- **Signature device.** *Shuttle-speed world*: the whole world's time obeys the key pressed, with a speed readout
+  (`jw_mono`). J plays the world backwards, L smears it, and K freezes it so the camera can move through stillness
+  (2.5D bullet time).
+- **Transitions.** Each key press is the cut (on the downstroke, 2-frame exposure push); reverse-scrub whip;
+  freeze-and-dolly.
+- **SFX.** Close-miked mechanical "thock" per press (the motif); tape-rewind warble on J; a Shepard-style riser that
+  climbs with each L tap; tape-stop into true silence on K; one soft piano note on "Pause".
+- **Music.** Minimal piano + sub pulse at 80 BPM that literally obeys the keys (reversed, sped up, stopped). Custom
+  score; a trending song cannot do this.
+- **3D / UI.** Three keycaps (black gloss, emissive FLAME legends), a floating timeline slab, embers.
+- **Share trigger.** Care + relatability: sent to the friend who is "running at 8x".
+- **Loop.** The last frame is K half-pressed; the first frame is K slamming down.
+- **Risks.** Overlaps C20 (pause); never put both in one slate. Abstract for non-editors: the J/K/L labels must be
+  explained in text in the first 3 s.
+- **Scores.** SS 8 · RL 8 · SH 8 · OR 8 · FE 9 · BF 10 · **Total 51 · W 67**
+
+### C02 · "Beta, tum karte kya ho?"
+*Archetype* A5 POV / A12 family satire with heart · *Emotion* amusement then warmth · *Look* `gold_hour` · *Length* 37 s
+
+**Logline.** Jawad tries four ways to explain "motion designer" to his mother; each answer becomes a lavish cinematic
+scene she misunderstands, until a family-group forward explains it for him.
+
+**Hook (0-2.5 s)**
+- Visual: a dark-glass chat bubble slams in: "Ammi" with typing dots; Jawad (suit, confused) lit by phone glow.
+- Text: "Ammi: Beta, tum *karte kya* ho?"
+- Spoken: "Har editor se sab se mushkil sawaal client nahi poochta. Ammi poochti hain."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-8 | reply: "Video editor hoon." Ammi: "Shaadi ki video?" The frame becomes a gaudy 2000s wedding-video title with a page-curl and heart wipe (parody) | "Main ne kaha video editor hoon. Unhon ne suna: shaadi wala." |
+| 8-14 | "Motion graphics, Ammi." "Matlab cartoon?" The brand word MOTION wobbles like a cartoon and collapses; Jawad shocked | "Motion graphics bola, toh cartoon samjhi." |
+| 14-20 | "Brands ke liye reels..." "Achha. Naukri kab lagegi?" A spinner "Samjha raha hoon..." fails in RED: "Error: Ammi convinced nahi" | "Phir main ne haar maan li." |
+| 20-27 | phone buzz: family group, "Khala: Yeh apna Jawad hai na??" with a "forwarded many times" tag; Ammi's hand (3D, rim-lit) holds the phone, chai beside it | "Phir ek din khala ne meri reel family group mein forward kar di." [TRUTH CHECK] |
+| 27-33 | Ammi's bubble types slowly: "Mera beta *cinema* banata hai." Jawad smiling, hand on chest | "Ab woh sab ko khud samjhaati hain. Mujh se behtar." |
+| 33-37 | end card | "Aap ki Ammi aap ke kaam ko kya kehti hain?" CTA "Comment mein batao" |
+
+- **Signature device.** *The misunderstanding renderer*: each wrong guess is rendered literally as a full mini-scene
+  in the wrong genre (2000s wedding VHS, cartoon, error dialog), then snaps back to Jawad's dark edit world. Genre
+  whiplash is the joke.
+- **Transitions.** Chat bubbles as portals (a bubble expands into the next world); the parody page-curl is used once,
+  as a joke; a snap-back zoom blur.
+- **SFX.** A designed message pop (not WhatsApp's), typing ticks, a short original dhol-and-shehnai sting for the
+  wedding parody, a cartoon boing, an error buzz, a notification flood that accelerates, then warm silence for the
+  payoff line.
+- **Music.** Playful pizzicato + tabla at 100 BPM, warm strings for the last 10 s. A light trending track can replace
+  it at low level.
+- **3D / UI.** Generic phone, chai cup, 3D wedding title, chat UI. Ammi is never shown: only her words and hands.
+- **Share trigger.** Identity: every desi creative sends it to a sibling or tags their mother.
+- **Loop.** The final bubble is from Nani: "Beta, tum karte kya ho?"
+- **Risks.** Use "socho agar" framing if the khala forward did not happen. Keep Ammi loving, never a punchline.
+- **Scores.** SS 8 · RL 10 · SH 9 · OR 7 · FE 8 · BF 8 · **Total 50 · W 68**
+
+### C03 · Rishtedaar Boss Fight
+*Archetype* A12 satire, game parody · *Emotion* amusement · *Look* `inferno` · *Length* 36 s · *Timely* shaadi season (Nov-Feb in both countries)
+
+**Logline.** Wedding season as a fighting game: Jawad against the relatives' questions, each a boss with a health
+bar, and the final boss asks the only question that matters.
+
+**Hook (0-2.5 s)**
+- Visual: "ROUND 1" slams over a fairy-light shaadi stage (orange bokeh); HUD health bars `JAWAD` vs `PHUPPO · LVL 99`.
+- Text: "Shaadi season *shuru*"
+- Spoken: "Shaadi season aa gaya. Aur har shaadi mein ek boss fight hoti hai."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-8 | Boss 1 (silhouette, name tag) fires "Beta kya karte ho?" (critical hit, -30%); combo: "YouTube wala?" "Naukri?" | VO calls the moves like a commentator |
+| 8-14 | Boss 2 "Chacha · Finance Expert": "Kitna kama lete ho?" A Y/N dialog "Salary batayein?" Jawad smirks and dodges | "Special move: 'Aap ki shaadi ki video free mein bana doon?'" |
+| 14-21 | Boss 3 "Khala · Matchmaker": "Shaadi kab karoge?" The cursor runs from an ESCAPE button | "Is boss ka koi counter nahi hota." |
+| 21-28 | the fairy lights dim; final boss: Abbu, no health bar, one quiet bubble: "Khush ho?" | "Aur phir Abbu ne sirf ek sawaal poocha." |
+| 28-33 | "K.O." turns into "Khush hoon."; Jawad's bar refills; HUD "Level complete" | "Baaki sab sawaal health kam karte hain. Yeh wala health wapas deta hai." |
+| 33-36 | end card | CTA "Us cousin ko tag karo jo yeh fight har saal larta hai" |
+
+- **Signature device.** *Fighting-game HUD on a cinematic shaadi world*: health bars, combo counters and move names in
+  `jw_mono`, layered over warm, lens-flared fairy-light bokeh.
+- **Transitions.** ROUND slams, 2-frame hit-stops on every question, a KO glow (local, not full-frame), whip pans
+  between bosses.
+- **SFX.** Original arcade stings, punch impacts, combo ticks, a health-drain whine, a dhol loop bed, silence before
+  the Abbu line, a warm chime on the refill.
+- **Music.** Dhol-trap 140 BPM (felt at 70). A trending shaadi or dhol track can carry it.
+- **3D / UI.** Fairy-light strands, a stage-arch silhouette, HUD. Relatives are silhouettes with name tags: no faces,
+  no religion markers, no caricature.
+- **Share trigger.** Relatability + tagging cousins; seasonal (posting window Nov-Dec 2026).
+- **Loop.** "ROUND 2" appears at the end.
+- **Risks.** Relatives' interrogation is a crowded meme; the Abbu twist is what makes it Jawad's. Brand link to
+  editing is thin.
+- **Scores.** SS 9 · RL 9 · SH 9 · OR 6 · FE 8 · BF 6 · **Total 47 · W 65**
+
+### C04 · Pehli Payment: "Sab se lambe 14 second"
+*Archetype* A2 journey + middle-class izzat · *Emotion* anxiety then pride · *Look* `ember` · *Length* 36 s
+
+**Logline.** The seconds between "payment sent" and "payment received" on a freelancer's first international job,
+stretched into a cinematic eternity.
+
+**Hook (0-2.5 s)**
+- Visual: macro of a dark-glass banking card, a spinner "Payment processing..." and a red clock.
+- Text: "Pehli payment ka *intezaar*"
+- Spoken: "Kisi freelancer se poocho: zindagi ke sab se lambe 14 second kaunse the."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-9 | the spinner is the clock of the world: dust slows, particles hang; thoughts as toasts: "Scam toh nahi?", "Bank poochega yeh paisa kahan se aaya?"; a currency converter rolls digits | "Har second ek naya darr." |
+| 9-17 | three props in pools of light: a charger held together with tape, borrowed wifi bars, a render at 3 am | "Ek tooti charger. Udhaar ka wifi. Aur bohat saari raatein." [TRUTH CHECK] |
+| 17-24 | the spinner slows... 0.8 s of silence... "Received" lands with an amber burst; time snaps back to normal | the "ping" |
+| 24-31 | an envelope passes between two hands in rim light (faces off-frame) | "Paise bohat thore the. Lekin us din pehli baar ghar walon ne mere kaam ko *kaam* kaha." |
+| 31-36 | end card | "Aap ne apni pehli kamai kis ko di thi?" CTA "Comment mein batao" |
+
+- **Signature device.** *Time-dilation spinner*: the loading spinner is the master clock of the scene; as anxiety
+  rises it slows and the world's time stretches with it; "Received" snaps everything back to real time (speed ramp).
+- **Transitions.** The spinner ring becomes an iris into each flashback prop; a counter-roll whip; the snap-back ramp.
+- **SFX.** A clock tick that slows with the spinner, a low heartbeat, slot ticks on the currency roll, the designed
+  "ping", a sub swell on release.
+- **Music.** Drone + tick (no beat) into warm piano and strings at 72 BPM after the ping. A trending emotional song
+  fits only after 24 s; keep the custom bed for the tension.
+- **3D / UI.** Generic phone, banking card UI, charger with tape, router, envelope.
+- **Share trigger.** Pride + identity for freelancers (Pakistan's freelance boom, PayPal's absence) and anyone who
+  remembers a first salary; sent to the friend who just got their first client.
+- **Loop.** The end shows a new spinner: "Payment processing... client #2".
+- **Risks.** Never show or state an amount unless Jawad supplies it [TRUTH CHECK]; no bank or app logos.
+- **Scores.** SS 7 · RL 8 · SH 8 · OR 8 · FE 9 · BF 9 · **Total 49 · W 64.5**
+
+### C05 · Render 99%
+*Archetype* A8 analogy + A11 motivation · *Emotion* frustration to hope · *Look* `noir_ember` · *Length* 35 s
+
+**Logline.** Every editor knows the last 1% of a render takes the longest; so does every dream.
+
+**Hook (0-2.6 s)**
+- Visual: a huge glass render bar hangs in a dark void, stuck at 99%, Jawad's reflection in its glass.
+- Text: "99% pe hi *kyun* atakta hai?"
+- Spoken: "Har editor ne yeh dekha hai. Render 99% pe aake ruk jaata hai."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.6-9 | "Time remaining" readout jumps: 2 min, 3 hours, 2 saal | "Aur zindagi bhi." |
+| 9-17 | life toasts orbit the bar while it stays at 99%: "Cousin ki shaadi", "Dost ki job lag gayi", "Settle kab hoge?" | "Sab aage nikal gaye. Mera render wahin ka wahin." |
+| 17-24 | the camera flies inside the bar; the last segment is dense, glowing, heavy | "Lekin editor jaanta hai: aakhri frames sab se bhaari hote hain. Render ruka nahi hota, sab se mushkil hissa process kar raha hota hai." |
+| 24-30 | 100%: the end wall shatters into light | "Agar tum 99% pe ho... band mat karna." |
+| 30-35 | end card | CTA "Us dost ko bhejo jo 99% pe hai" |
+
+- **Signature device.** *The bar is the world*: the render bar is a long glass corridor; the camera travels inside
+  the fill; 99% is the end wall and 100% breaks it.
+- **Transitions.** Fly-through glass, toasts as whip wipes, the wall shatter.
+- **SFX.** A laptop fan rising in pitch, render beeps, readout ticks, a glass shatter + sub boom, a choir-pad swell.
+- **Music.** Original minimal pulse at 70 BPM building to a release. A trending motivational track fits.
+- **3D / UI.** Glass corridor and shards (Blender or toolkit planes), toast cards.
+- **Share trigger.** Inspiration; sent to a struggling friend.
+- **Loop.** The last frame is a new render at 0%.
+- **Risks.** The render-bar metaphor is familiar; the "last frames are heaviest" insight is what earns it.
+- **Scores.** SS 8 · RL 8 · SH 8 · OR 6 · FE 9 · BF 9 · **Total 48 · W 64**
+
+### C06 · "Views ginta raha, calls nahi"
+*Archetype* A6 confession / creator loneliness · *Emotion* ache then warmth · *Look* `dusk` · *Length* 35 s
+
+**Logline.** The view counter climbs on one side of the frame while the room gets darker on the other, until one
+missed call outweighs every view.
+
+**Hook (0-2.5 s)**
+- Visual: a massive odometer spins upward in the dark; beside it, a phone face-down on the desk, glowing.
+- Text: "*Views* ginta raha, calls nahi."
+- Spoken: "Ek creator ki raat aisi hoti hai: views ginta rehta hai... aur calls miss karta rehta hai."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-9 | split light: dashboard glow on one side, his room on the other; as the counter rises, the desk lamp dims (a light-meter HUD shows the inverse) | "Har refresh pe ek number barhta tha. Kamre ki roshni kam hoti thi." |
+| 9-16 | notifications flood in FLAME; one grey notification sinks to the bottom: "Ammi · Missed call (3)" | "Sab notifications chamak rahi theen. Ek grey thi." |
+| 16-23 | a milestone burst, then silence; Jawad (suit, neutral) alone | "Sab ne congratulations kaha. Kisi ne nahi poocha: khaana khaya?" |
+| 23-30 | he taps the grey notification: the counter fades, the lamp warms to full | "Us raat main ne pehli baar views band kiye. Aur call wapas ki." [TRUTH CHECK] |
+| 30-35 | lockup + end card | "*Viewers* bohat hain. Apne kam." CTA "Aaj kisi apne ko call karo" |
+
+- **Signature device.** *Inverse light*: one frame, two light sources with an inverse relationship (views up, warmth
+  down), shown by a light-meter HUD; the tap reverses it.
+- **Transitions.** Deliberately almost none: one continuous slow push (a oner) and a single hard cut on the tap.
+  Restraint is the device.
+- **SFX.** Notification pops accelerating into a wall of noise, then a hard cut to room tone; a phone vibrating on
+  wood (close-miked); a ringback tone at the end.
+- **Music.** Solo piano at 66 BPM, very sparse. A trending emotional piano or lo-fi track can replace it.
+- **3D / UI.** Odometer (`T.Counter`), desk lamp, phone, a simple room set.
+- **Share trigger.** Sent to parents and siblings; "this is me" for creators and night-shift workers.
+- **Loop.** It ends on a phone ringing; it opens on a phone face-down.
+- **Risks.** Self-pity; keep it observational. Do not imply he has 1M views unless true.
+- **Scores.** SS 7 · RL 9 · SH 9 · OR 7 · FE 8 · BF 8 · **Total 48 · W 65**
+
+### C07 · Prompt: "make a cinematic reel like @jawad_mp4"
+*Archetype* A13 AI reveal + contrarian take · *Emotion* anxiety to confidence · *Look* `noir_ember` · *Length* 36 s
+
+**Logline.** A mock AI produces "Jawad's reel" in three seconds; it is flawless and empty, and Jawad shows the one
+layer no model can render.
+
+**Hook (0-2.5 s)**
+- Visual: a SaaS prompt bar types "make a cinematic reel like @jawad_mp4", Generate, and a glossy result fills the frame instantly.
+- Text: "*3 second* mein meri 3 saal ki mehnat?"
+- Spoken: "Ek prompt. Teen second. Meri jaisi reel. Socho agar yeh sach ho jaye."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-9 | the "AI version" plays: glossy, perfect, generic (skin too smooth, everything centred); HUD "quality 98%" | "Bilkul perfect. Phir bhi kuch missing tha." |
+| 9-17 | Jawad pauses it; a compare UI lists its layers with empty slots in RED: `Kahani: --`, `Kyun: --`, `Ammi ki awaaz: --`, `3 baje ki galti: --` | "Main ne layers kholi. Tools sab the. Kahani koi nahi." |
+| 17-25 | his version fills those slots in FLAME: a voice-note waveform, a chai ring on the timeline, a rough storyboard sketch | "Yeh cheezein prompt mein nahi likhi jaatein. Yeh jee ke aati hain." |
+| 25-31 | lockup | "AI ke paas *tools* hain. Kahani nahi." VO: "Main AI se nahi darta. Main us editor se darta hoon jo AI se kuch nahi seekhta." |
+| 31-36 | end card | "AI aap ka kaam le lega? Haan ya nahi?" CTA "Comment karo" |
+
+- **Signature device.** *The diff view*: a code-review style compare panel (RED minus lines, FLAME plus lines)
+  applied to a reel's layers. The reel becomes a code review of what a human adds.
+- **Transitions.** Glitch/datamosh only between AI and human versions; a before/after compare slider wipe.
+- **SFX.** Typing, a "generate" whoosh, a too-clean synthetic shimmer for the AI output, digital stutters, then
+  organic sounds for the human layers (pencil scratch, a sip, a breath).
+- **Music.** Cold synth arpeggio at 110 BPM for the AI section; organic piano and strings at 75 BPM for the human
+  section. The tempo change is the message. Custom score.
+- **3D / UI.** A black-glass AI core with a FLAME slit, layer slabs, prompt bar, diff panel.
+- **Share trigger.** Social currency + debate: sent to editor friends; comments argue (anxiety is high-arousal).
+- **Loop.** It ends on an empty prompt bar with a blinking cursor.
+- **Risks.** The "AI version" is a mock built locally, so frame it as "socho agar" and do not claim a real model made
+  it. Stay pro-tool: Jawad uses AI himself.
+- **Scores.** SS 8 · RL 8 · SH 9 · OR 8 · FE 8 · BF 10 · **Total 51 · W 68**
+
+### C08 · Ek Frame ki Keemat
+*Archetype* A7 "what nobody tells you" + A13 editing reveal · *Emotion* awe and respect · *Look* `ember` · *Length* 36 s
+
+**Logline.** Pause any frame of a cinematic reel and it explodes into the layers and hours hidden inside 1/30th of a
+second.
+
+**Hook (0-2.5 s)**
+- Visual: a finished house-style frame (Jawad with rim light, a serif keyword, embers) freezes with a pause icon,
+  then cracks along its layer seams.
+- Text: "Aap ne ise *0.03 second* dekha."
+- Spoken: "Yeh frame aap ne 0.03 second ke liye dekha..."
+
+| t (s) | picture | VO / text |
+|---|---|---|
+| 2.5-8 | the frame separates in depth into an exploded stack of glass layers; the camera arcs 90° to see them side-on | "...main ne ise kai ghante diye." [TRUTH CHECK: his real estimate] |
+| 8-20 | the camera flies through the layers; each gets a `jw_mono` tag with its time ("rim light · 25 min", "keyword glow · 40 min", "sound · 14 layers"); a total-time counter ticks up | "Background. Roshni. Dhuaan. Chehra. Har lafz ka glow. Har awaaz." |
+| 20-26 | the single stack multiplies into 30 stacks receding into a corridor | "Aur ek second mein 30 frames hote hain." |
+| 26-32 | all layers slam back into the original frame on the beat; Jawad smirks | "Isliye jab koi kehta hai 'bas thora sa edit hai'... woh 30 frames nahi dekhta." |
+| 32-36 | end card | CTA "Us client ko bhejo jo kehta hai: 5 minute ka kaam hai" |
+
+- **Signature device.** *Exploded frame*: a single composited frame pulled apart into its real compositing layers in
+  3D space, like an engineering exploded view. It is honest (the toolkit really has those layers) and it is his
+  process made visible: Mosseri's "only you could create" in one image.
+- **Transitions.** Pause-freeze, layer separation, corridor multiplication, a reassembly slam.
+- **SFX.** A pause click, glass slides per layer (`card_slide`), `ui_tick` per label, slot ticks on the time counter,
+  a big reassembly impact + sub drop.
+- **Music.** Modern hybrid pulse at 100 BPM with one drop at the reassembly (~26 s). A trending track with a
+  placeable drop works.
+- **3D / UI.** Glass layer panes as toolkit planes; no Blender needed except one hero prop.
+- **Share trigger.** Practical value + social currency: editors and designers forward it to the client who haggles.
+  That is the strongest kind of send (to one named person).
+- **Loop.** The reassembled frame is frame 0.
+- **Risks.** Broad audiences care less about craft; the "5 minute ka kaam" payoff brings in anyone with a demanding
+  boss. Hours must be real.
+- **Scores.** SS 9 · RL 7 · SH 9 · OR 9 · FE 10 · BF 10 · **Total 54 · W 71**
+
