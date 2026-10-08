@@ -1,0 +1,287 @@
+{
+ "_about": "Voiceover script for the five Organic Fostering pieces. Verified copy only (BRIEF.md section 1, BRIEF2.md): every line repeats on-screen copy or a verified site fact. Each paragraph is voiced in one take (natural prosody), then split into lines at the sentence pauses with Whisper word timings (vo_tools.py split). 'say' is what the TTS reads (numbers spelled out); 'lines' are the on-screen-matched sentence ids in order.",
+ "voice": {
+  "engine": "higgsfield text2speech_v2 / elevenlabs",
+  "name": "Vera",
+  "voice_id": "0c51919f-0756-5f8d-8169-026a339d8fd7",
+  "voice_type": "preset"
+ },
+ "pieces": {
+  "anim1": [
+   {
+    "p": "p1",
+    "say": "What does fostering really look like? It's often found in the everyday.",
+    "lines": [
+     "what_does",
+     "often_found"
+    ]
+   },
+   {
+    "p": "p2",
+    "say": "School runs. Homework. Baking.",
+    "lines": [
+     "school_runs",
+     "homework",
+     "baking"
+    ]
+   },
+   {
+    "p": "p3",
+    "say": "Small moments can help build stability.",
+    "lines": [
+     "small_moments"
+    ]
+   },
+   {
+    "p": "p4",
+    "say": "A consistent home. A familiar routine. Someone who is there.",
+    "lines": [
+     "consistent_home",
+     "familiar_routine",
+     "someone_there"
+    ]
+   },
+   {
+    "p": "p5",
+    "say": "Fostering happens in the everyday.",
+    "lines": [
+     "happens_everyday"
+    ]
+   },
+   {
+    "p": "p6",
+    "say": "Could you make room? Start your enquiry with Organic Fostering.",
+    "lines": [
+     "make_room",
+     "start_enquiry"
+    ]
+   }
+  ],
+  "anim4": [
+   {
+    "p": "p1",
+    "say": "Four hundred and forty-seven pounds sixty a week. But where does it go?",
+    "lines": [
+     "amount",
+     "where"
+    ]
+   },
+   {
+    "p": "p2",
+    "say": "Fostering payments help cover the costs of caring for a child.",
+    "lines": [
+     "payments_help"
+    ]
+   },
+   {
+    "p": "p3",
+    "say": "A safe, comfortable home. Food and everyday essentials. Clothes, school items and personal needs. Travel, activities and experiences.",
+    "lines": [
+     "home",
+     "food",
+     "clothes",
+     "travel"
+    ]
+   },
+   {
+    "p": "p4",
+    "say": "It's about supporting everyday life.",
+    "lines": [
+     "everyday_life"
+    ]
+   },
+   {
+    "p": "p5",
+    "say": "Four hundred and forty-seven pounds sixty a week, per child aged nought to four.",
+    "lines": [
+     "final_amount"
+    ]
+   },
+   {
+    "p": "p6",
+    "say": "Want to understand fostering payments? Start the conversation with Organic Fostering.",
+    "lines": [
+     "want_understand",
+     "start_conversation"
+    ]
+   }
+  ],
+  "reel1": [
+   {
+    "p": "p1",
+    "say": "A safe home. Everyday care. A place to belong.",
+    "lines": [
+     "safe_home",
+     "everyday_care",
+     "place_belong"
+    ]
+   },
+   {
+    "p": "p2",
+    "say": "Could you be a foster carer?",
+    "lines": [
+     "could_you"
+    ]
+   },
+   {
+    "p": "p3",
+    "say": "Am I eligible to foster? A spare bedroom. Time and flexibility. Single, or in a relationship. Rent, or own your home. No previous experience needed. You could be a great fit.",
+    "lines": [
+     "eligible",
+     "bedroom",
+     "time_flex",
+     "single",
+     "rent_own",
+     "no_experience",
+     "great_fit"
+    ]
+   },
+   {
+    "p": "p4",
+    "say": "Support is part of the role. Full training. Ongoing support. And a weekly allowance, from four hundred and forty-seven pounds sixty a week per child.",
+    "lines": [
+     "support_role",
+     "training",
+     "ongoing",
+     "allowance"
+    ]
+   },
+   {
+    "p": "p5",
+    "say": "Open your home. Change a child's life.",
+    "lines": [
+     "open_home",
+     "change_life"
+    ]
+   },
+   {
+    "p": "p6",
+    "say": "Organic Fostering, rated Good by Ofsted. Start your enquiry today.",
+    "lines": [
+     "ofsted",
+     "start_enquiry"
+    ]
+   }
+  ],
+  "reel2": [
+   {
+    "p": "p1",
+    "say": "Let's talk about financial support for foster carers.",
+    "lines": [
+     "financial_support"
+    ]
+   },
+   {
+    "p": "p2",
+    "say": "From four hundred and forty-seven pounds sixty a week, per child aged nought to four.",
+    "lines": [
+     "from_amount"
+    ]
+   },
+   {
+    "p": "p3",
+    "say": "Allowances rise with age, up to five hundred and fifty-four pounds and two pence a week for ages fifteen and over.",
+    "lines": [
+     "rise_with_age"
+    ]
+   },
+   {
+    "p": "p4",
+    "say": "Over fifty-two weeks, for one child aged nought to four, that's an estimated twenty-three thousand, two hundred and seventy-five pounds and twenty pence.",
+    "lines": [
+     "fifty_two_weeks"
+    ]
+   },
+   {
+    "p": "p5",
+    "say": "Rates may vary by region, and are subject to change.",
+    "lines": [
+     "rates_vary"
+    ]
+   },
+   {
+    "p": "p6",
+    "say": "Plus support around your household: your supervising social worker, ongoing training, and a foster carer community.",
+    "lines": [
+     "support_household"
+    ]
+   },
+   {
+    "p": "p7",
+    "say": "Recognition for a skilled role.",
+    "lines": [
+     "recognition"
+    ]
+   },
+   {
+    "p": "p8",
+    "say": "Discuss your estimate with Organic Fostering.",
+    "lines": [
+     "discuss"
+    ]
+   }
+  ],
+  "reel3": [
+   {
+    "p": "p1",
+    "say": "A small beginning... can change the direction of a life.",
+    "lines": [
+     "small_beginning",
+     "change_direction"
+    ]
+   },
+   {
+    "p": "p2",
+    "say": "Nurture. A safe home and everyday care.",
+    "lines": [
+     "nurture",
+     "safe_home"
+    ]
+   },
+   {
+    "p": "p3",
+    "say": "Develop. Matching that sees the whole child: culture, faith, language and identity.",
+    "lines": [
+     "develop",
+     "matching"
+    ]
+   },
+   {
+    "p": "p4",
+    "say": "Grow. Steady care, and a sense of belonging.",
+    "lines": [
+     "grow",
+     "steady_care"
+    ]
+   },
+   {
+    "p": "p5",
+    "say": "Different children need different kinds of care.",
+    "lines": [
+     "kinds_of_care"
+    ]
+   },
+   {
+    "p": "p6",
+    "say": "An independent fostering agency. Cultural matching specialists. Rated Good by Ofsted.",
+    "lines": [
+     "independent",
+     "cultural",
+     "ofsted"
+    ]
+   },
+   {
+    "p": "p7",
+    "say": "Nurture. Develop. Grow. Start your enquiry with Organic Fostering.",
+    "lines": [
+     "tagline",
+     "start_enquiry"
+    ],
+    "texts": [
+     "Nurture. Develop. Grow.",
+     "Start your enquiry with Organic Fostering."
+    ]
+   }
+  ]
+ }
+}
