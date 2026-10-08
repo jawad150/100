@@ -148,6 +148,27 @@ script gate -> TTS + timing -> parallel builds (3D, faces, grade, timelines on p
   `viral-reverse-engineering` (share triggers), motion-reel's critique pass; reels-studio's
   `saas-motion-styles` (device recipes: use the code patterns, re-skin every look to Jawad's worlds).
 
+## Jawad's own account skills (he added these; use them)
+Synced read-only at `/root/.claude/skills/synced/52e39fd9-fc02-4eeb-bd0a-78be55c219f4_9d49974d-76ce-4345-a26f-8cb895a77bfd/<name>/`
+(read `SKILL.md` first, then the `references/` it points to):
+- `cinematic-director`: the director's runbook. Use it at concept and brief stage (Director's Pass that kills
+  the obvious idea, short-form hook engineering, World Bible per reel, film grammar, sound-and-voice plan) and
+  at screening (`references/screening-qc.md` revision protocol). Its Production Packet YAML is the format for
+  each reel's packet next to `BRIEF.md`.
+- `production-consistency`: one-film consistency across the five reels (asset ledger, look/identity locks,
+  QC log, finishing and delivery). Its Higgsfield routing applies here ONLY to TTS (the Vlad voice); its image,
+  video, upscale and Magnific paths are out of bounds for this project.
+- `human-realism` + `photo-realism`: realism rules for every shot that shows Jawad (skin texture kept, no
+  plastic or waxy smoothing, eye and hair detail, skin-tone-correct exposure, lens/light logic). The
+  face-compositor and colorist apply them to the character-sheet cut-outs; no AI images are generated.
+- `cinedance-higgsfield`: Seedance video prompting. No video is generated on Higgsfield in this project, so use
+  only its film-language discipline (whole-second timelines, visible end states, blocking, gaze, lens and
+  lighting locks) when writing shot lists and beat sheets.
+- Reels Studio is installed as a plugin in this session (`reels-studio@jawad-reels`, local scope): its 14
+  agents are `reels-studio:<agent>` and their definitions are in `plugins/reels-studio/agents/*.md`; its 4
+  skills are in `plugins/reels-studio/skills/*/SKILL.md`. The toolkit copy for this page is
+  `pipeline/jawad_reels/` (never edit the plugin's own toolkit).
+
 ## Brand checks before delivery (on top of the playbook checklist)
 - [ ] Nothing recognisable from the fostering / Floret examples (looks, props, copy, layouts).
 - [ ] Red-orange holds >= 60 % of saturated pixels (colorist hue budget); blacks deep but legal (YMIN 16-22).
