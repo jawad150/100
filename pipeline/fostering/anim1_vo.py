@@ -22,8 +22,9 @@ SLOTS = [
     dict(lines=['consistent_home'], at=12.6, delay=0.1, hold=(12.95, 13.2), tail=0.25),
     dict(lines=['familiar_routine'], at=13.2, delay=0.2, hold=(13.55, 13.8), tail=0.25),
     dict(lines=['someone_there'], at=13.8, delay=0.2, hold=(14.2, 15.1), tail=0.6),
-    # FRAME 4: the headline, the house lands, a read before the headline sinks
-    dict(lines=['happens_everyday'], at=15.6, delay=0.2, hold=(17.25, 17.85), tail=0.45),
+    # FRAME 4: the headline, the house lands, a read before the headline sinks (the hold starts after the house's
+    # post-landing hop, src 17.10-17.32, so the hop keeps its speed)
+    dict(lines=['happens_everyday'], at=15.6, delay=0.2, hold=(17.40, 17.85), tail=0.45),
     # END CARD: "Could you make room?" as it writes on, then the CTA over the settled card
     dict(lines=['make_room', 'start_enquiry'], at=18.6, delay=0.15, gap=0.35, hold=(19.35, 21.0), tail=1.5),
 ]

@@ -6,7 +6,9 @@ python3 package.py <module> <slug> [--cover SECONDS] [--bitrate 22M]
         python3 package.py anim4 anim4_where_does_it_go --cover 1.2
 
 Reads workspace3/out/<module>/<module>.mp4 (the render.py master) and writes
-  organic_fostering_<slug>.mp4          Instagram-ready H.264 High, 2-pass ~22 Mbps, +faststart (< 100 MB for ~26 s)
+  organic_fostering_<slug>.mp4          Instagram-ready H.264 High, 2-pass ~22 Mbps, +faststart; a long piece (the
+                                        voiceover versions, 40-50 s) gets a lower rate so the file stays < 95 MB
+                                        (GitHub's 100 MB file limit; Instagram re-encodes to a few Mbps anyway)
   organic_fostering_<slug>_master.mp4   the CRF 14 master (stored with Git LFS)
   organic_fostering_<slug>_sfx_stem.wav the 48 kHz 24-bit SFX stem (workspace3/audio/<module>_sfx_stem.wav)
   organic_fostering_<slug>_cover.jpg    a frame of the master at --cover seconds
@@ -33,6 +35,18 @@ def run(cmd):
     subprocess.run(cmd, check=True)
 
 
+def _fit_bitrate(master, bitrate, max_mb=95.0, audio_kbps=330):
+    """The requested video bitrate, lowered when the file would pass max_mb (git's 100 MB file limit)."""
+    dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', master],
+                               capture_output=True, text=True, check=True).stdout.strip())
+    want = float(bitrate.rstrip('Mm')) * 1e6 if bitrate[-1] in 'Mm' else float(bitrate)
+    cap = (max_mb * 8e6 / dur - audio_kbps * 1e3) * 0.97          # 2-pass lands within a few % of the target
+    if want <= cap:
+        return bitrate
+    print(f'   {dur:.1f} s at {want / 1e6:.0f} Mbps would pass {max_mb:.0f} MB: video at {cap / 1e6:.1f} Mbps')
+    return '%dk' % int(cap / 1e3)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('module')
@@ -45,9 +59,10 @@ def main():
         raise SystemExit(f'no master at {master}: run  python3 render.py {a.module} --workers 4  first')
     os.makedirs(DEST, exist_ok=True)
     base = os.path.join(DEST, PREFIX + '_' + a.slug)
+    bitrate = _fit_bitrate(master, a.bitrate)
     with tempfile.TemporaryDirectory() as tmp:
         log = os.path.join(tmp, 'pass')
-        common = ['-c:v', 'libx264', '-preset', 'slow', '-b:v', a.bitrate, '-passlogfile', log]
+        common = ['-c:v', 'libx264', '-preset', 'slow', '-b:v', bitrate, '-passlogfile', log]
         run(['ffmpeg', '-v', 'error', '-y', '-i', master, *common, '-pass', '1', '-an', '-f', 'null', os.devnull])
         run(['ffmpeg', '-v', 'error', '-y', '-i', master, *common, '-pass', '2', '-maxrate', '30M', '-bufsize', '44M',
              '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709',
