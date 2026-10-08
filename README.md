@@ -44,3 +44,7 @@ python3 pipeline/render_all.py            # -> workspace/out/higgsfield_genjutsu
 ```
 
 To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Set `REEL_WORKDIR` to use a different workspace folder.
+
+## Riphah visit photos (Instagram 4:5)
+
+Five graded photos from the Floret Capitals / PMEX session at Riphah, each 1080×1350 for the Instagram feed: [`riphah/`](riphah/). They're made by `pipeline/riphah_photos.py SRC_DIR`, which runs a per-photo correction, a shared finishing grade and a 4:5 crop for each one. The wide group photo is placed whole on a blurred navy backdrop so no one gets cropped out.
