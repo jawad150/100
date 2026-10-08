@@ -9,7 +9,9 @@ rim back-right + ORANGE kicker back-left over a dark plum world with two coloure
 CLI
 ---
     python3 assets3d_hero.py <name> [<name> ...] [--preview] [--variant night|day] [--mode M] [--frames 0,30,59]
-                             [--samples N]
+                             [--samples N] [--size WxH] [--yaw-frames N] [--spin-frames N]
+        --size overrides the render size; --yaw-frames / --spin-frames (env HERO_YAW_FRAMES / HERO_SPIN_FRAMES,
+        defaults 49 / 72) set the 'yaw' sweep and the 'question' spin frame counts (the leaf spin stays 48).
         M is a builder mode key: logo_mark3d yaw|anim, question yaw|spin, pound_glyph yaw, sprout grow|sway,
         leaf spin, seed static|glow, puzzle_pair yaw|anim, blocks yaw (all modes of one asset share a camera,
         so re-render them together when the geometry/animation changes).
@@ -31,8 +33,9 @@ Assets (folder under workspace3/assets3d/<name>/, mode, frames, size)
                                                           ORANGE children + heart proud, LEAF leaves raised and
                                                           tilted. anim = swing-in yaw -75 -> 0 with overshoot
                                                           settle and a specular sweep; its last frame == yaw 0.
-    question      night               yaw  49  1000x1000  Nunito-Black "?" (text object, extrude + bevel),
-                  night_spin          spin 72             MAGENTA->ORANGE 35-degree gradient candy.
+    question      night, day          yaw  49  1000x1000  Nunito-Black "?" (text object, extrude + bevel),
+                  night_spin, day_spin spin 72            MAGENTA->ORANGE 35-degree gradient candy.
+                  (the anim #1/#4 day finals: --size 720x720 --yaw-frames 33 --spin-frames 48 --samples 64)
     pound_glyph   night               yaw  49  1000x1000  Nunito-Black "£" in polished AMBER/ORANGE gold.
     sprout        day                 anim 120 900x1200   grows from the soil point: S-curve stem, 2 then 4
                                                           leaves unfold; the top pair ends echoing the logo leaves.
@@ -626,7 +629,9 @@ LENS = 80.0
 ELEV_DEG = 5.0
 FILL = 0.80
 YAW_RANGE = (-40.0, 40.0)
-YAW_FRAMES = 49
+YAW_FRAMES = int(os.environ.get('HERO_YAW_FRAMES', '49'))     # CLI --yaw-frames N overrides
+SPIN_FRAMES = int(os.environ.get('HERO_SPIN_FRAMES', '72'))   # CLI --spin-frames N overrides ('question' spin)
+_LEGACY_YAW_N = 49    # builders' frame_on yaw indices are written on this grid and remapped to YAW_FRAMES
 EXPOSURE = {'night': 0.0, 'day': 0.0}
 
 
@@ -1304,12 +1309,16 @@ def asset(name, variants, size, modes, notes='', priority=9, metal=False, fill=F
     return deco
 
 
-def yaw_of(i, n=YAW_FRAMES):
+def yaw_of(i, n=None):
+    n = n or YAW_FRAMES
     return YAW_RANGE[0] + (YAW_RANGE[1] - YAW_RANGE[0]) * i / (n - 1)
 
 
-def yaw_mode(root, extra=None, n=YAW_FRAMES):
-    """Standard 'yaw' mode: root yaw sweeps YAW_RANGE over n frames (rotation about Blender Z)."""
+def yaw_mode(root, extra=None, n=None):
+    """Standard 'yaw' mode: root yaw sweeps YAW_RANGE over n frames (default YAW_FRAMES, read at call
+    time so --yaw-frames / HERO_YAW_FRAMES apply) about Blender Z."""
+    n = n or YAW_FRAMES
+
     def upd(i):
         root.rotation_euler = (0.0, 0.0, math.radians(yaw_of(i, n)))
         if extra:
@@ -1322,11 +1331,12 @@ def _folder(variant, mode, m):
     return variant if m.get('primary') else f'{variant}_{mode}'
 
 
-def render_asset(name, variant, modes=None, preview=False, frames=None, samples=None, q=None):
-    """Render one asset variant (all of its modes unless `modes` is given). Returns {folder: meta}."""
+def render_asset(name, variant, modes=None, preview=False, frames=None, samples=None, q=None, size=None):
+    """Render one asset variant (all of its modes unless `modes` is given). Returns {folder: meta}.
+    size=(w, h) overrides the asset's render size (CLI --size WxH)."""
     _bpy()
     spec = ASSETS[name]
-    W, Hh = spec['size']
+    W, Hh = size or spec['size']
     res = (W // 2, Hh // 2) if preview else (W, Hh)
     spp = samples or (PREVIEW_SAMPLES if preview else SAMPLES)
     q = q if q is not None else (0.6 if preview else 1.0)
@@ -1337,6 +1347,10 @@ def render_asset(name, variant, modes=None, preview=False, frames=None, samples=
     vl = bpy.context.view_layer
     pts = []
     for (mode, i) in S['frame_on']:
+        mn = S['modes'][mode]['n']
+        if mode == 'yaw' and mn != _LEGACY_YAW_N:      # frame_on yaw indices are on the 49-frame grid
+            i = int(round(i * (mn - 1) / (_LEGACY_YAW_N - 1)))
+        i = min(max(int(i), 0), mn - 1)
         S['modes'][mode]['update'](i)
         vl.update()
         pts.append(_mesh_points(scene_meshes()))
@@ -1566,7 +1580,7 @@ def build_logo(variant, q):
         'yaw': yaw_mode(root, yaw_extra),
         'anim': {'n': T, 'update': anim_upd, 'primary': False, 'loop': False, 'fps': 30,
                  'notes': 'Swing-in: yaw -75 -> 0 (spring overshoot ~+7 deg, settles), pitch 9 -> 0, a specular '
-                          'strip sweeps left->right (frames 14-50). Last frame == yaw frame 24 (yaw 0).',
+                          'strip sweeps left->right (frames 14-50). Last frame == the middle yaw frame (yaw 0).',
                  'meta': {'yaw_start': -75.0, 'axis': 'z'}},
     }
     frame_on = [('anim', i) for i in (0, 8, 16, 24, 32, 59)] + [('yaw', i) for i in (0, 12, 24, 36, 48)]
@@ -1579,8 +1593,10 @@ def build_logo(variant, q):
 GRAD35 = (math.cos(math.radians(35)), 0.0, math.sin(math.radians(35)))    # signature gradient axis (X right, Z up)
 
 
-def spin_mode(root, n=72, axis='z', extra=None):
-    """'spin': a full 360-degree turn about `axis` over n frames (loops)."""
+def spin_mode(root, n=None, axis='z', extra=None):
+    """'spin': a full 360-degree turn about `axis` over n frames (default SPIN_FRAMES; loops)."""
+    n = n or SPIN_FRAMES
+
     def upd(i):
         a = 2 * math.pi * i / n
         root.rotation_euler = (a, 0.0, 0.0) if axis == 'x' else (0.0, 0.0, a)
@@ -1589,7 +1605,7 @@ def spin_mode(root, n=72, axis='z', extra=None):
     return {'n': n, 'update': upd, 'primary': False, 'loop': True, 'fps': 30, 'meta': {'axis': axis}}
 
 
-@asset('question', ('night',), (1000, 1000), ('yaw', 'spin'), priority=2,
+@asset('question', ('night', 'day'), (1000, 1000), ('yaw', 'spin'), priority=2,
        notes='Nunito-Black "?" (text object, extrude + round bevel), MAGENTA->ORANGE 35-degree gradient candy.')
 def build_question(variant, q):
     root = empty('root')
@@ -1601,11 +1617,12 @@ def build_question(variant, q):
     proj = co @ np.array(GRAD35)
     mat = m_candy('q_grad', 'MAGENTA', rough=0.26, coat_r=0.035, sss=0.0,
                   grad=('ORANGE', GRAD35, float(proj.min()) * 0.75, float(proj.max()) * 0.75),
-                  rim='HOT_PINK', rim_str=0.35)
+                  rim='HOT_PINK', rim_str=0.35 if variant == 'night' else 0.22)
     o.data.materials.append(mat)
     rig(variant, scale=1.0)
-    modes = {'yaw': yaw_mode(root), 'spin': spin_mode(root, 72)}
-    frame_on = [('spin', i) for i in range(0, 72, 6)] + [('yaw', i) for i in (0, 24, 48)]
+    sm = spin_mode(root)
+    modes = {'yaw': yaw_mode(root), 'spin': sm}
+    frame_on = [('spin', i) for i in range(0, sm['n'], max(1, sm['n'] // 12))] + [('yaw', i) for i in (0, 24, 48)]
     return {'modes': modes, 'frame_on': frame_on, 'pivot': (0.0, 0.0, 0.0)}
 
 
@@ -2416,11 +2433,20 @@ def selftest():
 # ============================================================================= CLI
 
 def _parse(argv):
-    o = {'names': [], 'preview': False, 'variant': None, 'mode': None, 'frames': None, 'samples': None}
+    global YAW_FRAMES, SPIN_FRAMES
+    o = {'names': [], 'preview': False, 'variant': None, 'mode': None, 'frames': None, 'samples': None,
+         'size': None}
     it = iter(argv)
     for a in it:
         if a == '--preview':
             o['preview'] = True
+        elif a == '--yaw-frames':
+            YAW_FRAMES = int(next(it))
+        elif a == '--spin-frames':
+            SPIN_FRAMES = int(next(it))
+        elif a == '--size':
+            w_, _, h_ = next(it).lower().partition('x')
+            o['size'] = (int(w_), int(h_ or w_))
         elif a == '--variant':
             o['variant'] = next(it)
         elif a == '--mode':
@@ -2456,7 +2482,7 @@ def main(argv):
             if o['variant'] and v != o['variant']:
                 continue
             render_asset(nm, v, modes=[o['mode']] if o['mode'] else None, preview=o['preview'],
-                         frames=o['frames'], samples=o['samples'])
+                         frames=o['frames'], samples=o['samples'], size=o['size'])
     return 0
 
 

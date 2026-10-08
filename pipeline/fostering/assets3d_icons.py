@@ -7,7 +7,7 @@ frosted-glass / polished-gold icons as transparent RGBA PNG sequences for sprite
 CLI
 ---
     python3 assets3d_icons.py <name> [<name> ...] [--variant night|day] [--mode yaw|spin|static]
-                              [--frames 0,24,48] [--samples N] [--preview]
+                              [--frames 0,24,48] [--samples N] [--preview] [--yaw-frames N] [--spin-frames N]
     python3 assets3d_icons.py all        # every asset, every variant and mode (finals)
     python3 assets3d_icons.py sheet      # contact sheets of the finals -> out/selftest/assets3d_icons_contact_*.png
     python3 assets3d_icons.py selftest   # mesher checks + shape sheet + tiny renders + final sheets
@@ -16,15 +16,18 @@ CLI
                 (never touches the finals).
     env ICON_SAMPLES (default 8; x1.34 for the glass assets; OIDN-denoised, fixed seed so the residual
     noise does not boil between frames), ICON_THREADS (default 2), SKIP_EXISTING=1 resumes a sequence.
+    --yaw-frames / --spin-frames (env ICON_YAW_FRAMES / ICON_SPIN_FRAMES) change the frame counts
+    (defaults 49 / 72; the anims #1/#4 day set uses 33 / 48). meta.json records the count used.
 
 Assets (variants; mode; render size)
 ------------------------------------
     heart         night, day; yaw; 720   puffy MAGENTA candy heart, HOT_PINK random-walk subsurface glow
     house         night, day; yaw; 720   toy house: ivory walls, MAGENTA roof + chimney, glowing ORANGE door
                                          with a heart cut-out, glowing windows, a LEAF bush
-    coin_gbp      night; yaw (720) + spin (1000)  thick polished gold coin, embossed pound sign on both
+    coin_gbp      night, day; yaw (720) + spin (1000)  thick polished gold coin, embossed pound sign on both
                                          faces (satin field, polished relief), bead ring, reeded rim.
-                                         yaw -> assets3d/coin_gbp/night/, spin -> assets3d/coin_gbp/night_spin/
+                                         yaw -> assets3d/coin_gbp/<variant>/, spin -> <variant>_spin/;
+                                         day uses a slightly yellower gold so it does not read copper on ivory
     shield_check  night, day; yaw; 720   MAGENTA shield, frosted-glass inner panel, white raised check
     check_tile    night, day; yaw; 720   LEAF-green squircle tile with a white raised check ("done")
     orbs          night, day; static; 720  6 frames: 0 magenta, 1 orange, 2 peach, 3 leaf sphere,
@@ -738,8 +741,8 @@ LENS = 80.0
 ELEV_DEG = 5.0
 FILL = 0.80
 YAW_RANGE = (-40.0, 40.0)
-YAW_FRAMES = 49
-SPIN_FRAMES = 72
+YAW_FRAMES = int(os.environ.get('ICON_YAW_FRAMES', '49'))      # CLI --yaw-frames N overrides
+SPIN_FRAMES = int(os.environ.get('ICON_SPIN_FRAMES', '72'))    # CLI --spin-frames N overrides
 
 # exposure (stops) per variant, tuned so a key-lit brand face reads close to its hex
 EXPOSURE = {'night': 0.0, 'day': 0.0}
@@ -1576,7 +1579,7 @@ def pound_sd(height=1.0, res=1100):
     return glyph_sd('£', 'Nunito-Black.ttf', height, res).rounded(concave=0.02 * height).blurred(0.8)
 
 
-@asset('coin_gbp', ('night',), modes=('yaw', 'spin'), notes='thick polished gold coin, embossed pound sign, reeded rim')
+@asset('coin_gbp', ('night', 'day'), modes=('yaw', 'spin'), notes='thick polished gold coin, embossed pound sign, reeded rim')
 def build_coin(root, variant, q=1.0):
     Rr, T = 1.0, 0.155
     reeds = 120
@@ -1605,7 +1608,11 @@ def build_coin(root, variant, q=1.0):
         backf = inflate(Pm, thick=0.04, edge=0.028, zc=-(T - 0.005))(x, y, z)
         return np.minimum(front, backf)
     F = u_smin(u_smin(u_smin(coin, lip_f, 0.012), beads, 0.008), emb, 0.012)
-    mg = m_gold('gold', rough=0.15, relief=('Y', T + 0.004, T + 0.02, 0.34))
+    if variant == 'day':   # the ivory world reads AMBER as copper: lift it towards a yellow gold
+        mg = m_gold('gold', base=mixlin('AMBER', '#FFD27A', 0.45), edge=mixlin('ORANGE', 'AMBER', 0.35), rough=0.15,
+                    relief=('Y', T + 0.004, T + 0.02, 0.34))
+    else:
+        mg = m_gold('gold', rough=0.15, relief=('Y', T + 0.004, T + 0.02, 0.34))
     sdf_object('coin', F, ((-1.04, -1.04, -0.23), (1.04, 1.04, 0.23)), R(q, 420), mg, root)
     return {'metal': True, 'sym180': True, 'notes': 'polished gold coin, pound sign both faces'}
 
@@ -2077,6 +2084,12 @@ def _parse(argv):
             opts['frames'] = [int(x) for x in next(it).split(',')]
         elif a == '--samples':
             opts['samples'] = int(next(it))
+        elif a in ('--yaw-frames', '--spin-frames'):      # frame-count overrides (defaults 49 / 72)
+            global YAW_FRAMES, SPIN_FRAMES
+            if a == '--yaw-frames':
+                YAW_FRAMES = int(next(it))
+            else:
+                SPIN_FRAMES = int(next(it))
         else:
             names.append(a)
     return names, opts
