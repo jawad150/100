@@ -86,12 +86,12 @@ _BG = {
     'ember': dict(
         top='NIGHT_0', bottom='NIGHT_0', lift=0.30, base_tint=(1.25, 0.92, 0.85),
         blobs=[
-            (0.50, -0.08, 0.70, 0.20, 0, 'FLAME', 0.10, 0.03, 0.01, 27.0, 0.0),     # stage haze from the top
-            (0.86, 0.20, 0.50, 0.26, -24, 'FLAME', 0.20, 0.05, 0.04, 23.0, 0.75),   # key glow, smoky curtains
-            (0.80, 0.24, 0.15, 0.09, -24, 'AMBER', 0.08, 0.04, 0.03, 17.0, 0.4),    # its hot core
-            (0.08, 0.76, 0.56, 0.42, 28, 'EMBER', 0.42, 0.05, 0.05, 29.0, 0.5),     # ember haze low left
-            (0.16, 0.72, 0.22, 0.16, 28, 'RED', 0.09, 0.05, 0.05, 19.0, 0.6),
-            (0.60, 1.06, 0.80, 0.16, 0, 'EMBER', 0.22, 0.03, 0.01, 31.0, 0.0),      # warm floor bounce
+            (0.50, -0.08, 0.70, 0.20, 0, 'FLAME', 0.07, 0.03, 0.01, 27.0, 0.0),     # stage haze from the top
+            (0.88, 0.18, 0.48, 0.24, -24, 'FLAME', 0.12, 0.05, 0.04, 23.0, 0.75),   # key glow, smoky curtains
+            (0.82, 0.22, 0.14, 0.08, -24, 'AMBER', 0.05, 0.04, 0.03, 17.0, 0.4),    # its hot core
+            (0.04, 0.80, 0.52, 0.38, 28, 'EMBER', 0.24, 0.05, 0.05, 29.0, 0.5),     # ember haze low left
+            (0.12, 0.76, 0.20, 0.14, 28, 'RED', 0.05, 0.05, 0.05, 19.0, 0.6),
+            (0.60, 1.08, 0.80, 0.14, 0, 'EMBER', 0.16, 0.03, 0.01, 31.0, 0.0),      # warm floor bounce
         ],
         rim=None, dots=0.0, dots_lit=0.0, noise=0.62),
     'noir_ember': dict(
@@ -104,8 +104,8 @@ _BG = {
         rim=None, dots=0.0, dots_lit=0.0, noise=0.5),
 }
 # bokeh layer: (count, colour names, radius range px, brightness)
-_BOKEH = {'ember': (26, ('FLAME', 'AMBER', 'RED', 'GOLD'), (10, 70), 0.20),
-          'noir_ember': (12, ('FLAME', 'AMBER'), (8, 54), 0.14)}
+_BOKEH = {'ember': (22, ('FLAME', 'AMBER', 'RED', 'GOLD'), (8, 64), 0.24),
+          'noir_ember': (10, ('FLAME', 'RED'), (8, 48), 0.16)}
 
 
 @functools.lru_cache(maxsize=64)
@@ -127,11 +127,17 @@ def _bokeh_disc(r, cname):
 def _bokeh_set(look, seed):
     n, cols, (r0, r1), br = _BOKEH[look]
     rng = np.random.default_rng(1000 + seed)
-    return dict(x=rng.uniform(-0.05, 1.05, n), y=rng.uniform(0.0, 1.0, n),
+    d = dict(x=rng.uniform(-0.05, 1.05, n), y=rng.uniform(0.0, 1.0, n),
                 r=np.round(r0 + (r1 - r0) * rng.uniform(0, 1, n) ** 2.2).astype(int),
                 c=[cols[i] for i in rng.integers(0, len(cols), n)], v=rng.uniform(0.006, 0.02, n),
                 sway=rng.uniform(0.004, 0.018, n), ph=rng.uniform(0, 2 * math.pi, n),
                 tw=rng.uniform(0.25, 0.9, n), b=br * rng.uniform(0.35, 1.0, n), z=rng.uniform(1.1, 1.7, n))
+    # a big defocused disc spreads the same light over more area: dimmer (keeps big ones from reading as stains)
+    d['b'] = d['b'] * np.minimum(1.0, (r0 * 1.6 / d['r']) ** 0.7)
+    # big discs only in the saturated flame / red (a dim amber disc reads olive on the dark red haze)
+    big = ('FLAME', 'RED')
+    d['c'] = [c if r <= 26 else big[i % 2] for i, (c, r) in enumerate(zip(d['c'], d['r']))]
+    return d
 
 
 def _draw_bokeh(cv, look, t, cam, amount, seed, parallax):
@@ -155,16 +161,14 @@ def _draw_bokeh(cv, look, t, cam, amount, seed, parallax):
 
 # =============================================================================================== post
 def _crush(cv, k):
-    """Toe curve per channel in linear light: c' = c^2 / (c + k) * (1 + k). Deep blacks go deeper, nothing is
-    lifted; mids and highlights (and emissive > 1) are almost untouched. Alpha stays 1."""
+    """Toe curve per channel in linear light: c' = c^2 / (c + k). Deep blacks go deeper, nothing is lifted;
+    mids and highlights (and emissive > 1) lose only ~k (1-2 %). Alpha is set to 1 by the caller."""
     if not k or max(k) <= 0:
         return cv
-    k4 = (float(k[0]), float(k[1]), float(k[2]), 1.0)
     np.maximum(cv, 0, out=cv)
-    den = cv2.add(cv, k4)
+    den = cv2.add(cv, (float(k[0]), float(k[1]), float(k[2]), 1.0))
     sq = cv2.multiply(cv, cv)
     cv2.divide(sq, den, dst=cv)
-    cv2.multiply(cv, (1 + k4[0], 1 + k4[1], 1 + k4[2], 1.0), dst=cv)
     return cv
 
 
@@ -172,13 +176,16 @@ def _mono(cv, amount, warm=(1.0, 0.92, 0.84)):
     """Desaturate everything that is not orange / red towards a warm mono (noir_ember)."""
     if amount <= 0:
         return cv
-    rgb = cv[..., :3]
-    L = cv2.transform(np.ascontiguousarray(rgb), np.float32([[0.2126, 0.7152, 0.0722]]))
-    mx = np.maximum(rgb[..., 1], rgb[..., 2])
-    red = np.clip((rgb[..., 0] - mx) / (rgb[..., 0] + 0.02) * 1.6 - 0.35, 0, 1)
-    keep = 1.0 - amount * (1.0 - red)
-    mono = L[..., None] * np.float32(warm)
-    cv[..., :3] = mono + (rgb - mono) * keep[..., None]
+    r, g, b, a = cv2.split(cv)
+    L = cv2.transform(cv, np.float32([[0.2126, 0.7152, 0.0722, 0.0]]))
+    red = cv2.divide(cv2.subtract(r, cv2.max(g, b)), cv2.add(r, 0.02), scale=1.6)
+    keep = cv2.max(cv2.min(cv2.subtract(red, 0.35), 1.0), 0.0)            # 1 = orange/red, 0 = everything else
+    keep = cv2.add(cv2.multiply(keep, float(amount)), float(1.0 - amount))  # 1 - amount * (1 - red)
+    out = []
+    for ch, wk in zip((r, g, b), warm):
+        m = cv2.multiply(L, float(wk))
+        out.append(cv2.add(m, cv2.multiply(cv2.subtract(ch, m), keep)))
+    cv2.merge(out + [a], dst=cv)
     return cv
 
 
@@ -221,10 +228,10 @@ def apply():
     K.LOOKS['ember'] = dict(
         exposure=0.0, bloom=0.62, bloom_threshold=0.40, bloom_knee=0.3, bloom_radii=(8, 26, 70, 170),
         bloom_tint=(1.0, 0.46, 0.20), halation=0.16, anamorphic=0.0, anamorphic_color=tuple(_lin('FLAME')),
-        vignette=0.50, chroma=1.2, grain=0.022, black_tint=None, crush=(0.010, 0.015, 0.020), mono=0.0)
+        vignette=0.50, chroma=1.2, grain=0.016, black_tint=None, crush=(0.010, 0.015, 0.020), mono=0.0)
     K.LOOKS['noir_ember'] = dict(
         exposure=-0.05, bloom=0.50, bloom_threshold=0.48, bloom_knee=0.3, bloom_radii=(8, 26, 70, 170),
-        bloom_tint=(1.0, 0.40, 0.16), halation=0.12, anamorphic=0.0, vignette=0.62, chroma=1.0, grain=0.028,
+        bloom_tint=(1.0, 0.40, 0.16), halation=0.12, anamorphic=0.0, vignette=0.62, chroma=1.0, grain=0.022,
         black_tint=None, crush=(0.018, 0.024, 0.030), mono=0.85)
     orig_bg, orig_post = K.background, K.post
 
@@ -285,18 +292,21 @@ def apply():
     T.FONT_ALIAS.update(hand=SERIF, serif=SERIF, serif_roman=SERIF_ROMAN, grotesk=GROTESK, grotesk_bold=GROTESK_BOLD,
                         grotesk_medium=GROTESK_MEDIUM, mono=MONO, mono_bold=MONO_BOLD)
     S = T.STYLES
-    S['extrude3d'] = S['extrude3d'].but(side_tint='#7A1A0C')
+    S['extrude3d'] = S['extrude3d'].but(side_tint='#7A1A0C', fill=((0.0, '#FFFFFF'), (0.5, '#FFF1E6'), (1.0, '#E8D3C6')),
+                                        rim_color=('HOT_PINK', 1.3))
     S['chrome'] = S['chrome'].but(side=(('#7A1A0C', 1.0), ('#140504', 1.0)))
     S['deep_glow'] = S['deep_glow'].but(fill=((0.0, '#FFFFFF'), (1.0, '#FFF4E8')))
     S['ink_soft'] = S['ink_soft'].but(fill=((0.0, '#2A1A15'), (1.0, '#170A07')), side=(('#5A1A0E', 1.0), ('#3A0E08', 1.0)),
                                       long_shadow_color='#8A4A30', shadow_color='#4A1A10')
     S['glass_pill_light'] = S['glass_pill_light'].but(pill_shadow_color='#4A1A10')
-    flame = ((0.0, 'AMBER'), (0.48, 'FLAME'), (1.0, 'RED'))
+    # keyword fill measured on the covers: amber-gold top (#F4A21A..#FB8626) -> orange (#F07124) -> red-orange
+    # bottom (#CD5024 / #F84600); a soft bevel gives the slight emboss, the glow is red-orange and wide
+    flame = ((0.0, '#FFC34D'), (0.45, '#FF8A1F'), (1.0, '#F04A16'))
     S['jw_key'] = T.Style(
-        name='jw_key', font=SERIF, px=210, tracking=-0.005, fill=flame, fill_angle=-90, fill_gain=1.30,
-        stroke=0.010, stroke_color=('FLAME', 1.05), inner_glow=0.55, inner_glow_color=('AMBER', 1.1),
-        inner_glow_size=0.035, glow=1.0, glow_color=('FLAME', 1.7), glow_radii=(0.02, 0.06, 0.16, 0.40),
-        glow_weights=(0.75, 0.6, 0.5, 0.42), shadow=0.35, shadow_offset=(0.0, 0.04), shadow_blur=0.08)
+        name='jw_key', font=SERIF, px=210, tracking=-0.005, fill=flame, fill_angle=-90, fill_gain=1.0,
+        stroke=0.008, stroke_color='#FF7A1C', bevel=0.012, profile='soft', ambient=0.78, spec=0.35, shininess=20,
+        glow=1.0, glow_color=('#FF4A1A', 1.3), glow_radii=(0.04, 0.12, 0.36, 0.8), glow_weights=(0.4, 0.4, 0.35, 0.3),
+        shadow=0.35, shadow_offset=(0.0, 0.04), shadow_blur=0.08)
     S['jw_key3d'] = S['extrude3d'].but(
         name='jw_key3d', font=SERIF, fill=flame, fill_angle=-90, fill_gain=1.15, bevel=0.012, profile='round',
         ambient=0.72, spec=0.55, env=0.0, rim_color=('AMBER', 1.4), inner_shadow_color='PLUM', depth=0.14,
@@ -462,7 +472,7 @@ def selftest():
     tm = {}
     for look in LOOK_NAMES:
         t = 1.4
-        K.background(look, t)
+        K.background(look, t + 0.5)
         t0 = time.perf_counter()
         cv = K.background(look, t)
         tm[look + '_bg'] = (time.perf_counter() - t0) * 1e3
@@ -477,6 +487,7 @@ def selftest():
         signature(cv, K.CX, 1660)
         cam = K.Cam(aperture=36)
         embers(120, seed=2).draw(cv, cam, t)
+        K.post(cv.copy(), look, t)                      # warm-up (grain noise, bloom buffers)
         c2 = cv.copy()
         t0 = time.perf_counter()
         K.post(c2, look, t)

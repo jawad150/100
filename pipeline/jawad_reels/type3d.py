@@ -2555,6 +2555,9 @@ def selftest():
         print('  %s sheet %.1fs (builds included)' % (name, time.time() - t0))
     for fn in (_sweep_strip, _kinetic_strip, _orbit_counter_sheet, _video_sheet, _plane_sheet, _hook_sheet,
                _fineprint_sheet):
+        if fn in (_video_sheet, _hook_sheet) and not os.path.exists(os.path.join(K.FRAMES, 'manifest.json')):
+            print('  %s skipped: no footage in this workspace (frames/manifest.json)' % fn.__name__)
+            continue
         t0 = time.time()
         paths.append(fn(out))
         print('  %s %.1fs' % (fn.__name__, time.time() - t0))

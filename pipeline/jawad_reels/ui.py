@@ -3122,6 +3122,9 @@ def selftest():
     os.makedirs(K.SELFTEST, exist_ok=True)
     try:
         import footage as F
+        if not os.path.exists(os.path.join(K.FRAMES, 'manifest.json')):
+            print('ui selftest: no footage in this workspace (frames/manifest.json) -> media tiles skipped')
+            F = None
     except Exception:
         F = None
     try:
