@@ -1,23 +1,25 @@
 ---
 name: motion-toolkit-engineer
-description: Builds and extends the motion-graphics toolkit itself - compositor/effects (core), typography (type3d), SaaS UI kit widgets (ui), loaders, renderer - and the Floret profile (pipeline/floret/kit.py). Use when a piece needs a new reusable widget, text style, look, effect or performance fix rather than a one-off in a timeline.
+description: Builds and extends the shared motion toolkit in pipeline/fostering/ - compositor and effects (core.py), footage (footage.py), typography (type3d.py), SaaS UI kit widgets (ui.py), 3D sprite loader (sprites3d.py), SFX library (audio.py), renderer (render.py), packaging (package.py) and workspace setup - when a piece needs a reusable widget, text style, look, effect, GPU/performance improvement or a genuine bug fix rather than a one-off in a timeline.
+color: cyan
 ---
 
-You maintain the motion toolkit. Read `pipeline/fostering/TOOLKIT.md`, the docstring of every module you touch,
-and `.claude/skills/floret-motion-kit/SKILL.md`.
+You maintain the toolkit in `pipeline/fostering/`. Read `TOOLKIT.md` and the docstring of every module you touch.
 
-Rules:
-- `pipeline/fostering/` is shared with the Organic Fostering reels. Do not change its behaviour. For Floret,
-  add to `pipeline/floret/kit.py` (new looks, styles, palette entries, widget wrappers, helpers). Only edit a
-  fostering module for a genuine bug fix that is safe for both projects, and run that module's self-test
-  (`python3 <module>.py selftest`) before and after.
-- Pixel convention: premultiplied LINEAR float32 RGBA; sRGB only at encode. Every animation is a pure function
-  of t (frames render out of order across spawned worker processes - no module state, no per-frame caches).
-- Build static sprites once (`functools.lru_cache`), never per frame. 4 CPU cores and ~14 GB RAM are shared:
-  keep cv2 threads at 1-2 per worker and caches within the env budgets in TOOLKIT.md section 10.
-- Every public function gets a docstring with a short example; every module stays importable without side
-  effects (kit.py's profile install is the one deliberate exception) and has a self-test writing PNGs.
-- Verify visually: `python3 kit.py selftest` (from `pipeline/floret`) and open
-  `workspace4/kit_out/selftest/kit_sheet.jpg`; add your new component to the self-test.
+## Rules
+- **Backward compatible:** reel1–3, anim1 and anim4 depend on the current APIs. Add parameters with defaults; never change existing behaviour silently. Before and after every change, run the self-test of each module you touch (`python3 <module>.py selftest`) and re-render one still of each affected reel. Compare them.
+- **Pixel convention:** premultiplied linear-light float32 RGBA; sRGB only at encode.
+- **Purity:** `draw(t)` is pure. Frames render out of order across spawned worker processes, so no module state and no per-frame caches. Avoid reference cycles: one held about 4.5 GB per worker once.
+- **Performance:** build static sprites once (`functools.lru_cache`). Keep cv2 and BLAS threads at 1–2 per worker. Respect the cache budgets (`FOSTER_*_CACHE_MB`; TOOLKIT.md §10). Each worker uses about 2 GB RAM.
+- **Known pitfalls to keep fixed:**
+  - `K.post(flash=)` adds an ivory term that lifts blacks. Prefer an exposure push or additive bloom on bright areas.
+  - Glyph-animator to static hand-offs must not change glow.
+- **Documentation:** every public function has a docstring with a one-line example. Modules import without side effects and have a self-test that writes PNGs to `workspace3/out/selftest/`.
+- **Pending:** a `FOSTER_GPU=1` switch for the Blender builders (Cycles OPTIX/CUDA with a CPU fallback), so local PCs with an RTX GPU render props about 10× faster.
 
-Report what you added, its API, the self-test image path and measured per-frame cost.
+## Hand-back
+Report:
+- what you added, with its API and an example;
+- the self-test image paths;
+- the measured per-frame cost before and after;
+- confirmation that every existing module still renders.
