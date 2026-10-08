@@ -97,7 +97,7 @@
 ### 2.3 Pattern-interrupt toolbox built for the toolkit
 
 All of these are Jawad's craft shown, not borrowed.
-- **The frame becomes a timeline.** At 0.3 s the image shrinks into a viewer window. A playhead and clip blocks appear, and a razor cut slices to the next shot. Build: `ui.app_window` with a custom ember `ui.Look`, `win.plane`, and the `ui.Surf` clip blocks from §4.8-1.
+- **The frame becomes a timeline.** At 0.3 s the image shrinks into a viewer window. A playhead and clip blocks appear, and a razor cut slices to the next shot. Build: `ui.app_window(look='ember', title=…, header=…)` (always pass title and header), `win.plane`, and the `ui.Surf` clip blocks from §4.8-1.
 - **Render reveal.** Frame 0 shows a wireframe or clay version of the hero shot. A Cycles-style bucket sweep resolves it to the final grade in 0.6 s. Build: §4.8-3 applied to the whole frame (mosaic, then sharp, behind a moving edge).
 - **Error pop-up.** A glass dialog slams in: "ERROR · client_feedback_v9 can't be opened". This is a house device (see the "ERROR: can't delete this memory" cover). Build: `ui.glass_card` + `ui.put_text` + `K.impulse` shake + `glitch_short`.
 - **Blackout.** Bright for 0.3 s, a power-cut drop to black, then only the ember keyword glows. Build: an exposure ramp in `K.post(..., exposure=)`, the keyword drawn after post with additive glow, and a UPS beep (custom sound).
