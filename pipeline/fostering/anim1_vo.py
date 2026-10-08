@@ -30,8 +30,8 @@ SLOTS = [
 
 
 def keep_cue(cue, src_t, rate):
-    """Frame-3 clock: keep the first tick; the rest would land seconds apart inside the slowed checklist holds."""
-    return not (cue['name'] == 'clock_tick' and 13.35 < src_t < 15.1 and rate < 0.5)
+    """Frame-3 clock: keep only the first tick; the rest would land seconds apart inside the slowed checklist holds."""
+    return not (cue['name'] == 'clock_tick' and 13.35 < src_t < 15.1)
 
 
 retime.wrap(globals(), M, 'anim1', SLOTS, cue_filter=keep_cue)

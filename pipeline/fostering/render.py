@@ -302,7 +302,7 @@ def _final_encode(src, audio, out_path, crf=14, preset='slow', t_offset=0.0, dur
 def _share_encode(src, out_path):
     cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-i', src, '-c:v', 'libx264', '-profile:v', 'high',
            '-preset', 'medium', '-crf', '21', '-maxrate', '12M', '-bufsize', '24M', '-pix_fmt', 'yuv420p'] + _vtags()
-    cmd += ['-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart', out_path]
+    cmd += ['-c:a', 'copy', '-movflags', '+faststart', out_path]     # a 2nd AAC encode overshoots the true peak
     _ff(cmd)
 
 

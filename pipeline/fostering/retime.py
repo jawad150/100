@@ -106,10 +106,18 @@ class Warp:
 
 # ============================================================================================ VO lines
 def load_lines(piece):
+    """<WS>/vo/<piece>/lines.json. If lines_plan.json sits next to it (a frozen copy taken when a picture was
+    rendered), its durations drive the timing, so re-cut clips can be re-mixed onto that picture without moving it."""
     p = os.path.join(WS, 'vo', piece, 'lines.json')
     if not os.path.exists(p):
         raise FileNotFoundError('%s missing: run  <python with faster-whisper> vo_tools.py split %s' % (p, piece))
-    return json.load(open(p))
+    lines = json.load(open(p))
+    lock = os.path.join(WS, 'vo', piece, 'lines_plan.json')
+    if os.path.exists(lock):
+        for k, v in json.load(open(lock)).items():
+            if k in lines:
+                lines[k]['dur'] = v['dur']
+    return lines
 
 
 def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth=0.24):

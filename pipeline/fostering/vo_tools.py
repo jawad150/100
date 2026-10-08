@@ -127,11 +127,13 @@ def split_take(x, texts, sr=SR):
     starts = [max(0.0, t_on - PRE)] + [max(r0, r1 - PRE) for r0, r1 in cuts]
     ends = [min(r1, r0 + 0.08) for r0, r1 in cuts] + [min(len(x) / sr, t_off + POST)]
     for k, (t0, t1) in enumerate(zip(starts, ends)):
-        last = k == len(starts) - 1 and t1 >= len(x) / sr - 1e-3
-        if last:   # the take's natural decay runs to the end of the file: short fade + a little silence
-            y = np.concatenate([_fade(x[int(t0 * sr):], 0.010, 0.015), np.zeros(int(0.08 * sr), np.float32)])
-        else:
-            y = _fade(x[int(t0 * sr):int(t1 * sr)])
+        seg = x[int(t0 * sr):int(t1 * sr)]
+        # end 0.15 s after the last frame within 24 dB of the line's loudest 20 ms (drops room tone / breaths that
+        # sit around -30 dB after the last word, which would otherwise hold the line open and the SFX ducked)
+        e20, h20 = _env_db(seg, sr, 0.02)
+        speech = np.where(e20 > e20.max() - 24.0)[0]
+        n_end = min(len(seg), int(((speech[-1] + 1) * h20 + 0.15) * sr)) if len(speech) else len(seg)
+        y = _fade(seg[:n_end], 0.010, 0.04)
         clips.append((y, ''))
     return clips
 
