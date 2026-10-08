@@ -3,8 +3,9 @@
 Usage:
     python3 pipeline/riphah_photos.py SRC_DIR [OUT_DIR]
 
-SRC_DIR must hold the event photos 1-5 and 9-13 (.jpg) and the cover photo
-8.jpg. Output (1080x1350), in posting order:
+SRC_DIR holds the original photos (the Drive folder: IMG_96xx.jpg plus the
+exported u*.jpg edits); each slide names its file below. Output (1080x1350),
+in posting order:
     post_00_cover.jpg  title card
     post_01..10_*.jpg  photos in the Floret post template: navy band with the
                        Floret + WIW 2026 logos, photo fading into navy, website.
@@ -18,7 +19,7 @@ import sys
 
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "riphah", "assets")
@@ -39,32 +40,34 @@ NEUTRAL_TARGET = (1.01, 1.0, 0.985)  # R:G:B of greys after WB (a touch warm)
 BLACK_TARGET = 0.012           # luma at the 0.5th percentile
 SKIN_CHROMA_TARGET = 0.235     # mean (max-min) chroma of lit skin (set median ~0.245)
 
-# Per photo:
+# Per photo (coordinates are in a reference pixel space ref_w wide; the
+# original file is any size with the same framing, and is scaled to match):
+#   file    original photo in SRC_DIR
 #   x0, w   source columns shown across the 1080 px width (sets the scale)
 #   y0      source row that lands on the window top (negative when the photo is
 #           shorter than the window; the gap is filled by extend())
 #   faces   source boxes (x0, y0, x1, y1) metered for levelling
 PHOTOS = {
-    "1": dict(name="handover", x0=312, w=1188, y0=530,
+    "1": dict(name="handover", file="IMG_9661.jpg", ref_w=1500, x0=312, w=1188, y0=530,
               faces=[(750, 800, 820, 890), (1010, 810, 1090, 900)]),
-    "2": dict(name="souvenir", x0=0, w=1240, y0=740,
+    "2": dict(name="souvenir", file="ue5f57ebe.jpg", ref_w=1351, x0=0, w=1240, y0=740,
               faces=[(380, 1000, 470, 1110), (590, 990, 670, 1100), (810, 990, 890, 1110)]),
-    "3": dict(name="trading_instruments", x0=110, w=1320, y0=6,
+    "3": dict(name="trading_instruments", file="IMG_9653.jpg", ref_w=2000, x0=110, w=1320, y0=6,
               faces=[(410, 550, 550, 710)]),
-    "4": dict(name="floret_intro", x0=150, w=1500, y0=0,
+    "4": dict(name="floret_intro", file="IMG_9655.jpg", ref_w=2000, x0=150, w=1500, y0=0,
               faces=[(440, 520, 560, 700)]),
-    "5": dict(name="group", x0=75, w=1900, y0=-225,
+    "5": dict(name="group", file="u6c5e1c03.jpg", ref_w=2000, x0=75, w=1900, y0=-225,
               faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)]),
-    # Second batch (source files 9-13).
-    "6": dict(name="margin_trading", file="9.jpg", x0=0, w=1500, y0=47,
+    # Second batch.
+    "6": dict(name="margin_trading", file="IMG_9645.jpg", ref_w=1500, x0=0, w=1500, y0=47,
               faces=[(350, 720, 410, 820)]),
-    "7": dict(name="classroom", file="10.jpg", x0=200, w=1521, y0=0,
+    "7": dict(name="classroom", file="IMG_9647.jpg", ref_w=2000, x0=200, w=1521, y0=0,
               faces=[(1530, 390, 1600, 470), (460, 570, 580, 700), (720, 560, 820, 660)]),
-    "8": dict(name="presenter", file="11.jpg", x0=275, w=1300, y0=123,
+    "8": dict(name="presenter", file="u272ba09b.jpg", ref_w=2000, x0=275, w=1300, y0=123,
               faces=[(790, 520, 940, 700)]),
-    "9": dict(name="box_handover", file="12.jpg", x0=20, w=1350, y0=222,
+    "9": dict(name="box_handover", file="IMG_9669.jpg", ref_w=1500, x0=20, w=1350, y0=222,
               faces=[(330, 600, 430, 720), (570, 600, 670, 720), (980, 700, 1080, 820)]),
-    "10": dict(name="pmex_bag", file="13.jpg", x0=0, w=1070, y0=523,
+    "10": dict(name="pmex_bag", file="ue0e424ae.jpg", ref_w=1161, x0=0, w=1070, y0=523,
                faces=[(350, 810, 430, 920), (710, 840, 790, 950)]),
 }
 
@@ -72,7 +75,7 @@ PHOTOS = {
 # already centred), cut just below the "Welcome to Riphah" sign so the banners
 # are out. It sits under the logo band with the same soft top edge; the title
 # panel overlaps from the knees.
-COVER = dict(file="8.jpg", x0=0, w=1280, y0=262, top=265, top_fade=150, dim=0.72,
+COVER = dict(file="u6c5e1c03.jpg", ref_w=1280, x0=0, w=1280, y0=262, top=265, top_fade=150, dim=0.72,
              faces=[(493, 435, 525, 480), (582, 422, 621, 474), (1005, 422, 1037, 474)], panel=(56, 715, 1024, 1075))
 
 # Shared look (same for every photo).
@@ -133,7 +136,7 @@ def grade(src, wb, exposure, sat=1.0):
 
     L = luma(a)
     L2 = tone(L)
-    detail = L2 - blur(L2, 28)
+    detail = L2 - blur(L2, 0.014 * L2.shape[1])
     L2 = np.clip(L2 + LOOK["clarity"] * 1.6 * detail * 4 * L2 * (1 - L2), 0, 1)
     a = np.clip(a * ((L2 + 1e-4) / (L + 1e-4))[..., None], 0, 1)
 
@@ -183,11 +186,11 @@ def skin_chroma(a, faces):
 FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 
-def smooth_skin(rgb8, faces):
+def smooth_skin(rgb8, faces, scale=1.0):
     """Soften skin only: a skin-tone mask around each face (listed + detected),
     bilateral-smoothed and blended back partly so natural texture stays."""
     gray = cv2.cvtColor(rgb8, cv2.COLOR_RGB2GRAY)
-    found = FACE_CASCADE.detectMultiScale(gray, 1.1, 6, minSize=(36, 36))
+    found = FACE_CASCADE.detectMultiScale(gray, 1.1, 6, minSize=(int(36 * scale), int(36 * scale)))
     boxes = list(faces) + [(x, y, x + w, y + h) for x, y, w, h in found]
 
     ycc = cv2.cvtColor(rgb8, cv2.COLOR_RGB2YCrCb)
@@ -200,34 +203,54 @@ def smooth_skin(rgb8, faces):
         X0, X1 = max(0, int(x0 - 0.5 * w)), min(W_, int(x1 + 0.5 * w))
         Y0, Y1 = max(0, int(y0 - 0.6 * h)), min(H_, int(y1 + 1.0 * h))
         mask[Y0:Y1, X0:X1] = np.maximum(mask[Y0:Y1, X0:X1], skin[Y0:Y1, X0:X1])
-    mask = cv2.GaussianBlur(mask, (0, 0), 4)
+    mask = cv2.GaussianBlur(mask, (0, 0), 4 * scale)
 
-    smooth = cv2.bilateralFilter(rgb8, 0, 24, 5).astype(np.float32)
-    smooth = cv2.bilateralFilter(smooth.astype(np.uint8), 0, 18, 3).astype(np.float32)
+    smooth = cv2.bilateralFilter(rgb8, 0, 24, 5 * scale).astype(np.float32)
+    smooth = cv2.bilateralFilter(smooth.astype(np.uint8), 0, 18, 3 * scale).astype(np.float32)
     k = (mask * LOOK["skin_smooth"])[..., None]
     out = rgb8.astype(np.float32) * (1 - k) + smooth * k
     return np.clip(out + 0.5, 0, 255).astype(np.uint8), len(found)
 
 
+WORK_W = 2 * W  # columns kept while processing: 2x the output, downsized once at the end
+
+
 def graded_photo(path, p):
-    rgb8 = np.asarray(Image.open(path).convert("RGB"))
-    rgb8, noise = denoise(rgb8)
+    """Load the original, keep the columns the slide uses at up to 2x output
+    resolution (never upscaled), denoise, grade to the shared targets and
+    smooth skin. Returns the image and its scale (working px per reference px)."""
+    im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
+    native = im.width / p["ref_w"]
+    F = min(WORK_W / p["w"], native)
+    box = [round(v * native) for v in (p["x0"], 0, p["x0"] + p["w"])] + [im.height]
+    im = im.crop((box[0], 0, box[2], box[3]))
+    im = im.resize((round(p["w"] * F), round(im.height * F / native)), Image.LANCZOS)
+    faces = [(round((x0 - p["x0"]) * F), round(y0 * F), round((x1 - p["x0"]) * F), round(y1 * F))
+             for x0, y0, x1, y1 in p["faces"]]
+    faces = [(max(0, x0), y0, min(im.width, x1), y1) for x0, y0, x1, y1 in faces if x1 > 0 and x0 < im.width]
+
+    rgb8, noise = denoise(np.asarray(im))
     src = rgb8.astype(np.float32) / 255
     wb = auto_wb(src)
+
+    # Meter on a small copy (fast), then grade the full-size image once.
+    k = 0.35
+    small = cv2.resize(src, None, fx=k, fy=k, interpolation=cv2.INTER_AREA)
+    sfaces = [tuple(round(v * k) for v in f) for f in faces]
     ev, sat = 0.0, 1.0
-    for _ in range(5):  # meter faces and skin, settle exposure and saturation
-        a = grade(src, wb, ev, sat)
-        step = np.log2(FACE_TARGET / face_level(a, p["faces"])) * 0.9
-        sat = float(np.clip(sat * SKIN_CHROMA_TARGET / skin_chroma(a, p["faces"]), 0.7, 1.25))
+    for _ in range(6):
+        a = grade(small, wb, ev, sat)
+        step = np.log2(FACE_TARGET / face_level(a, sfaces)) * 0.9
+        sat = float(np.clip(sat * SKIN_CHROMA_TARGET / skin_chroma(a, sfaces), 0.7, 1.25))
         if abs(step) < 0.01:
             break
         ev = float(np.clip(ev + step, -0.7, 0.7))
     a = grade(src, wb, ev, sat)
-    out, n_found = smooth_skin((a * 255 + 0.5).astype(np.uint8), p["faces"])
-    print(f"  {os.path.basename(path)}: noise {noise:.1f}, EV {ev:+.2f}, sat x{sat:.2f}, "
-          f"faces {face_level(a, p['faces']):.3f}, skin {skin_chroma(a, p['faces']):.3f}, "
-          f"+{n_found} detected")
-    return Image.fromarray(out)
+    out, n_found = smooth_skin((a * 255 + 0.5).astype(np.uint8), faces, scale=F)
+    print(f"  {os.path.basename(path)}: {im.width}x{im.height} working, noise {noise:.1f}, "
+          f"EV {ev:+.2f}, sat x{sat:.2f}, faces {face_level(a, faces):.3f}, "
+          f"skin {skin_chroma(a, faces):.3f}, +{n_found} detected")
+    return Image.fromarray(out), F
 
 
 # ---------------------------------------------------------------- layout
@@ -286,11 +309,10 @@ def extend(big, top):
     return Image.fromarray(np.clip(out + 0.5, 0, 255).astype(np.uint8)), top - pad_top
 
 
-def post(photo, p):
-    s = W / p["w"]
-    ph = round(photo.height * s)
-    big = photo.crop((p["x0"], 0, p["x0"] + p["w"], photo.height)).resize((W, ph), Image.LANCZOS)
-    big, top = extend(big, WIN_TOP - round(p["y0"] * s))
+def post(photo, p, F):
+    s = W / photo.width  # photo is the slide's column crop, F px per reference px
+    big = photo.resize((W, round(photo.height * s)), Image.LANCZOS)
+    big, top = extend(big, WIN_TOP - round(p["y0"] * F * s))
 
     # Same fades on every slide: the window always spans WIN_TOP..WIN_BOT.
     y = np.arange(H, dtype=np.float32)
@@ -312,11 +334,10 @@ def post(photo, p):
     return img.convert("RGB")
 
 
-def cover(photo, c=COVER):
+def cover(photo, F, c=COVER):
     """Title card: event photo dimmed into navy, frosted title panel, logos."""
-    s = W / c["w"]
-    big = photo.crop((c["x0"], c["y0"], c["x0"] + c["w"], photo.height))
-    big = big.resize((W, round(big.height * s)), Image.LANCZOS)
+    big = photo.crop((0, round(c["y0"] * F), photo.width, photo.height))
+    big = big.resize((W, round(big.height * W / photo.width)), Image.LANCZOS)
     a = np.asarray(big, np.float32)
     L = luma(a)[..., None]
     a = (L + (a - L) * 0.85) * c["dim"] + np.array(NAVY, np.float32) * (1 - c["dim"])
@@ -378,14 +399,14 @@ def main():
     src_dir = sys.argv[1]
     out_dir = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "riphah")
     os.makedirs(out_dir, exist_ok=True)
-    graded = {}
     for k, p in PHOTOS.items():
-        graded[k] = graded_photo(os.path.join(src_dir, p.get("file", f"{k}.jpg")), p)
+        photo, F = graded_photo(os.path.join(src_dir, p["file"]), p)
         dst = os.path.join(out_dir, f"post_{int(k):02d}_{p['name']}.jpg")
-        post(graded[k], p).save(dst, quality=98, subsampling=0, optimize=True)
+        post(photo, p, F).save(dst, quality=98, subsampling=0, optimize=True)
         print(dst)
     dst = os.path.join(out_dir, "post_00_cover.jpg")
-    cover(graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(dst, quality=98, subsampling=0, optimize=True)
+    cover(*graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(
+        dst, quality=98, subsampling=0, optimize=True)
     print(dst)
 
 
