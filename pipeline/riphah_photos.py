@@ -1,51 +1,66 @@
-"""Colour-grade and crop the Riphah x Floret Capitals / PMEX visit photos for
-Instagram 4:5 feed posts (1080x1350).
+"""Floret Capitals x World Investor Week 2026 at Riphah: Instagram 4:5 carousel.
 
 Usage:
     python3 pipeline/riphah_photos.py SRC_DIR [OUT_DIR]
 
-SRC_DIR must hold 1.jpg ... 5.jpg. Output goes to riphah/ by default.
+SRC_DIR must hold the five event photos 1.jpg ... 5.jpg. Output (1080x1350):
+    post_0_cover.jpg   title card
+    post_1..5_*.jpg    photos in the Floret post template: navy band with the
+                       Floret + WIW 2026 logos, photo fading into navy, website.
 
-Every photo gets the same finishing look (neutral white balance, recovered
-highlights, lifted shadows, gentle S-curve, vibrance, clarity, output
-sharpening) after a per-photo correction that brings it to a common baseline,
-so the set reads as one carousel.
+Grading is levelled across the set: every photo goes through the same tone and
+colour look, then its exposure is nudged so the faces meter to one target, so
+nobody looks brighter or darker from slide to slide.
 """
 import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-W, H = 1080, 1350  # Instagram 4:5 portrait
+HERE = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.join(HERE, "..", "riphah", "assets")
 
-# Per-photo settings.
-#   crop:  (x0, y0, width) in source pixels; height follows from 4:5.
-#          None = the whole frame is kept and set on a blurred backdrop.
-#   rotate: degrees counter-clockwise to level the frame.
-#   wb:    RGB gains to neutralise the cast before the shared look.
-#   exposure: stops.  highlights/shadows: -1..1 recovery/lift amounts.
+W, H = 1080, 1350
+NAVY = (8, 18, 28)
+ORANGE = (229, 161, 58)
+URL = "www.floretcapitals.com"
+
+# Photo window on the template; the photo fades into navy at both ends.
+WIN_TOP, WIN_BOT = 150, 1215
+FADE_TOP, FADE_BOT = 260, 170
+
+FACE_TARGET = 0.44  # mean sRGB value the faces are levelled to
+
+# Per photo:
+#   x0, w   source columns shown across the 1080 px width (sets the scale)
+#   y0      source row that lands on the window top (negative when the photo is
+#           shorter than the window; the gap is filled by extend())
+#   faces   source boxes (x0, y0, x1, y1) metered for levelling
+#   wb      RGB gains removing the colour cast
 PHOTOS = {
-    "1": dict(crop=(90, 0, 1410), rotate=0.0, wb=(0.99, 1.0, 1.03),
-              exposure=0.05, highlights=0.45, shadows=0.30, contrast=0.16,
-              vibrance=0.18, saturation=0.02),
-    "2": dict(crop=(2, 316, 1347), rotate=0.0, wb=(1.0, 1.0, 1.0),
-              exposure=-0.08, highlights=0.55, shadows=0.20, contrast=0.08,
-              vibrance=0.04, saturation=-0.08),
-    "3": dict(crop=(190, 0, 1200), rotate=0.0, wb=(0.94, 1.0, 1.06),
-              exposure=0.10, highlights=0.35, shadows=0.25, contrast=0.18,
-              vibrance=0.12, saturation=0.0),
-    "4": dict(crop=(190, 0, 1200), rotate=0.0, wb=(0.95, 1.0, 1.05),
-              exposure=-0.12, highlights=0.55, shadows=0.20, contrast=0.22,
-              vibrance=0.12, saturation=0.0),
-    "5": dict(crop=None, rotate=0.0, wb=(1.0, 1.0, 1.01),
-              exposure=-0.05, highlights=0.55, shadows=0.20, contrast=0.08,
-              vibrance=0.04, saturation=-0.06),
+    "1": dict(name="handover", x0=312, w=1188, y0=530,
+              faces=[(750, 800, 820, 890), (1010, 810, 1090, 900)],
+              wb=(0.99, 1.0, 1.03)),
+    "2": dict(name="souvenir", x0=0, w=1240, y0=740,
+              faces=[(380, 1000, 470, 1110), (590, 990, 670, 1100), (810, 990, 890, 1110)],
+              wb=(0.99, 1.0, 1.02)),
+    "3": dict(name="trading_instruments", x0=110, w=1320, y0=6,
+              faces=[(410, 550, 550, 710)], wb=(0.95, 1.0, 1.06)),
+    "4": dict(name="floret_intro", x0=150, w=1500, y0=0,
+              faces=[(440, 520, 560, 700)], wb=(0.96, 1.0, 1.05)),
+    "5": dict(name="group", x0=75, w=1900, y0=-225,
+              faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)],
+              wb=(1.0, 1.0, 1.02)),
 }
 
-# Shared finishing look, applied after the per-photo correction.
-LOOK = dict(warmth=0.015, clarity=0.22, vignette=0.12, sharpen=0.6)
+# Shared look (same for every photo).
+LOOK = dict(highlights=0.5, shadows=0.10, contrast=0.12, clarity=0.10,
+            saturation=-0.08, vibrance=0.06, shadow_tint=(-0.010, 0.002, 0.016),
+            sharpen=0.5)
 
+
+# ---------------------------------------------------------------- colour
 
 def srgb_to_lin(x):
     return np.where(x <= 0.04045, x / 12.92, ((x + 0.055) / 1.055) ** 2.4)
@@ -78,120 +93,207 @@ def blur(arr, radius):
     return arr
 
 
-def tone(L, highlights, shadows, contrast):
-    """Tone curve on display-referred luminance (0..1)."""
-    # Shadow lift: raise the low end, fading out by the midtones.
-    L = L + shadows * 0.22 * L * (1 - L) ** 3 * 4
-    # Highlight recovery: compress the top quarter towards a soft shoulder.
-    knee = 0.72
-    over = np.clip(L - knee, 0, None)
-    span = 1 - knee
-    L = np.where(L > knee, knee + span * (over / span) ** (1 + highlights * 0.9) *
-                 (1 - highlights * 0.06), L)
-    # Midtone S-curve around 0.5.
+def tone(L):
+    """Shared tone curve on display-referred luminance (0..1)."""
+    L = L + LOOK["shadows"] * 0.88 * L * (1 - L) ** 3
+    knee, hl = 0.72, LOOK["highlights"]
+    over = np.clip(L - knee, 0, None) / (1 - knee)
+    L = np.where(L > knee, knee + (1 - knee) * over ** (1 + hl * 0.9) * (1 - hl * 0.06), L)
     s = np.clip(L, 0, 1)
-    curve = s + contrast * (s - 0.5) * (1 - np.abs(2 * s - 1)) * 1.2
-    return np.clip(curve, 0, 1)
+    return np.clip(s + LOOK["contrast"] * (s - 0.5) * (1 - np.abs(2 * s - 1)) * 1.2, 0, 1)
 
 
-def grade(img, p):
-    a = np.asarray(img, dtype=np.float32) / 255.0
-    lin = srgb_to_lin(a)
-
-    # White balance + exposure in linear light.
-    lin = lin * np.array(p["wb"], dtype=np.float32) * (2 ** p["exposure"])
-    warm = LOOK["warmth"]
-    lin = lin * np.array([1 + warm, 1.0, 1 - warm], dtype=np.float32)
+def grade(src, wb, exposure):
+    lin = srgb_to_lin(src) * np.array(wb, np.float32) * (2 ** exposure)
     a = lin_to_srgb(lin)
 
-    # Tone on luminance, applied as a ratio so hue is preserved.
     L = luma(a)
-    L2 = tone(L, p["highlights"], p["shadows"], p["contrast"])
+    L2 = tone(L)
+    detail = L2 - blur(L2, 28)
+    L2 = np.clip(L2 + LOOK["clarity"] * 1.6 * detail * 4 * L2 * (1 - L2), 0, 1)
+    a = np.clip(a * ((L2 + 1e-4) / (L + 1e-4))[..., None], 0, 1)
 
-    # Clarity: local-contrast boost on luminance, protected at the extremes.
-    base = blur(L2, 28)
-    detail = L2 - base
-    mask = 4 * L2 * (1 - L2)
-    L2 = np.clip(L2 + LOOK["clarity"] * detail * mask * 1.6, 0, 1)
-
-    ratio = (L2 + 1e-4) / (L + 1e-4)
-    a = np.clip(a * ratio[..., None], 0, 1)
-    # Pull any channel that blew past 1 back towards the luminance.
-    a = np.clip(a, 0, 1)
-
-    # Vibrance (boosts muted colours more than saturated ones) + saturation.
     L = luma(a)[..., None]
     chroma = a.max(-1, keepdims=True) - a.min(-1, keepdims=True)
-    vib = p["vibrance"] * (1 - np.clip(chroma * 1.6, 0, 1))
-    a = np.clip(L + (a - L) * (1 + p["saturation"] + vib), 0, 1)
-    return a
+    vib = LOOK["vibrance"] * (1 - np.clip(chroma * 1.6, 0, 1))
+    a = L + (a - L) * (1 + LOOK["saturation"] + vib)
+    # Cool the shadows slightly so the photo sits in the navy template.
+    a = a + np.array(LOOK["shadow_tint"], np.float32) * (1 - L) ** 2
+    return np.clip(a, 0, 1)
 
 
-def vignette(a, amount):
-    h, w = a.shape[:2]
-    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
-    d = np.sqrt(((x - w / 2) / (w / 2)) ** 2 + ((y - h / 2) / (h / 2)) ** 2) / np.sqrt(2)
-    v = 1 - amount * np.clip((d - 0.45) / 0.55, 0, 1) ** 2
-    return a * v[..., None]
+def face_level(a, faces):
+    return float(np.mean([a[y0:y1, x0:x1].mean() for x0, y0, x1, y1 in faces]))
 
 
-def to_image(a):
-    return Image.fromarray((np.clip(a, 0, 1) * 255 + 0.5).astype(np.uint8))
+def graded_photo(path, p):
+    src = np.asarray(Image.open(path).convert("RGB"), np.float32) / 255
+    ev = 0.0
+    for _ in range(4):  # meter the faces and settle on the exposure
+        a = grade(src, p["wb"], ev)
+        step = np.log2(FACE_TARGET / face_level(a, p["faces"])) * 0.9
+        if abs(step) < 0.01:
+            break
+        ev = float(np.clip(ev + step, -0.6, 0.6))
+    a = grade(src, p["wb"], ev)
+    print(f"  {os.path.basename(path)}: exposure {ev:+.2f} EV, faces {face_level(a, p['faces']):.3f}")
+    return Image.fromarray((a * 255 + 0.5).astype(np.uint8))
 
 
-def crop_45(img, box):
-    x0, y0, w = box
-    h = round(w * 5 / 4)
-    if x0 + w > img.width or y0 + h > img.height:
-        raise ValueError(f"crop {box} -> {w}x{h} exceeds {img.size}")
-    return img.crop((x0, y0, x0 + w, y0 + h))
+# ---------------------------------------------------------------- layout
+
+def font(name, size):
+    return ImageFont.truetype(os.path.join(ASSETS, name), size)
 
 
-def backdrop(img):
-    """Whole frame centred on a soft, darkened blur of itself (for wide group shots)."""
-    bg = ImageOps.fit(img, (W, H), Image.LANCZOS)
-    bg = bg.filter(ImageFilter.GaussianBlur(60))
-    bg = Image.blend(bg, Image.new("RGB", (W, H), (12, 20, 44)), 0.7)
-    fw = W
-    fh = round(img.height * fw / img.width)
-    fg = img.resize((fw, fh), Image.LANCZOS)
-    # Soft shadow under the photo so it sits on the backdrop.
-    shadow = Image.new("L", (W, H), 0)
-    top = (H - fh) // 2
-    shadow.paste(140, (0, top + 10, W, top + fh + 10))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(24))
-    bg = Image.composite(Image.new("RGB", (W, H), (0, 0, 0)), bg, shadow)
-    bg.paste(fg, (0, top))
-    return bg
+def logo(name, height):
+    im = Image.open(os.path.join(ASSETS, name)).convert("RGBA")
+    im = im.crop(im.split()[3].getbbox())
+    return im.resize((round(im.width * height / im.height), height), Image.LANCZOS)
 
 
-def process(src, p):
-    img = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
-    if p["rotate"]:
-        img = img.rotate(p["rotate"], Image.BICUBIC, expand=False)
-    graded = to_image(grade(img, p))
-
-    if p["crop"] is not None:
-        out = crop_45(graded, p["crop"]).resize((W, H), Image.LANCZOS)
-        out = to_image(vignette(np.asarray(out, np.float32) / 255, LOOK["vignette"]))
-    else:
-        out = backdrop(graded)
-
-    out = out.filter(ImageFilter.UnsharpMask(radius=1.2,
-                                             percent=int(LOOK["sharpen"] * 100),
-                                             threshold=2))
+def lockup(floret_h, wiw_h, gap, divider_h):
+    """Floret mark | WIW 2026 logo, as one transparent image."""
+    f, w = logo("floret_logo.png", floret_h), logo("wiw2026_logo_white.png", wiw_h)
+    h = max(f.height, w.height, divider_h)
+    out = Image.new("RGBA", (f.width + 2 * gap + 2 + w.width, h), (0, 0, 0, 0))
+    out.alpha_composite(f, (0, (h - f.height) // 2))
+    x = f.width + gap
+    ImageDraw.Draw(out).rectangle([x, (h - divider_h) // 2, x + 1, (h + divider_h) // 2],
+                                  fill=(255, 255, 255, 110))
+    out.alpha_composite(w, (x + 2 + gap, (h - w.height) // 2))
     return out
+
+
+def smoothstep(t):
+    t = np.clip(t, 0, 1)
+    return t * t * (3 - 2 * t)
+
+
+def center_text(draw, y, text, fnt, fill=(255, 255, 255)):
+    l, t, r, b = draw.textbbox((0, 0), text, font=fnt)
+    draw.text(((W - (r - l)) / 2 - l, y - t), text, font=fnt, fill=fill)
+    return b - t
+
+
+def extend(big, top):
+    """Fill the photo window top to bottom. A photo shorter than the window (the
+    wide group shot) is continued with a blurred mirror of its own edges, so
+    every slide uses exactly the same fades."""
+    a = np.asarray(big, np.float32)
+    pad_top, pad_bot = max(0, top - WIN_TOP), max(0, WIN_BOT - (top + a.shape[0]))
+    if not pad_top and not pad_bot:
+        return big, top
+    ext = np.pad(a, ((pad_top, pad_bot), (0, 0), (0, 0)), mode="symmetric")
+    soft = np.stack([blur(ext[..., c] / 255, 30) * 255 for c in range(3)], -1)
+    rows = np.arange(ext.shape[0], dtype=np.float32)
+    inside = smoothstep((rows - pad_top) / 40) * smoothstep((pad_top + a.shape[0] - rows) / 40)
+    if not pad_top:
+        inside = np.where(rows < a.shape[0] / 2, 1, inside)
+    if not pad_bot:
+        inside = np.where(rows > a.shape[0] / 2, 1, inside)
+    out = soft + (ext - soft) * inside[:, None, None]
+    return Image.fromarray(np.clip(out + 0.5, 0, 255).astype(np.uint8)), top - pad_top
+
+
+def post(photo, p):
+    s = W / p["w"]
+    ph = round(photo.height * s)
+    big = photo.crop((p["x0"], 0, p["x0"] + p["w"], photo.height)).resize((W, ph), Image.LANCZOS)
+    big, top = extend(big, WIN_TOP - round(p["y0"] * s))
+
+    # Same fades on every slide: the window always spans WIN_TOP..WIN_BOT.
+    y = np.arange(H, dtype=np.float32)
+    alpha = smoothstep((y - WIN_TOP) / FADE_TOP) * smoothstep((WIN_BOT - y) / FADE_BOT)
+    alpha[(y < WIN_TOP) | (y >= WIN_BOT)] = 0
+
+    layer = Image.new("RGB", (W, H), NAVY)
+    layer.paste(big, (0, top))
+    base = np.full((H, W, 3), NAVY, np.float32)
+    out = base + (np.asarray(layer, np.float32) - base) * alpha[:, None, None]
+    img = Image.fromarray(np.clip(out + 0.5, 0, 255).astype(np.uint8))
+    img = img.filter(ImageFilter.UnsharpMask(radius=1.2, percent=int(LOOK["sharpen"] * 100), threshold=2))
+
+    img = img.convert("RGBA")
+    lk = lockup(floret_h=68, wiw_h=78, gap=32, divider_h=58)
+    img.alpha_composite(lk, ((W - lk.width) // 2, 78 - lk.height // 2))
+    center_text(ImageDraw.Draw(img), 1250, URL, font("Poppins-Medium.ttf", 29))
+    return img.convert("RGB")
+
+
+def cover(photo):
+    """Title card: the presenter shot dimmed into navy, frosted title panel, logos."""
+    x0, w, y0 = 60, 1440, 180  # source crop: presenter + slide, face high in frame
+    s = W / w
+    big = photo.crop((x0, y0, x0 + w, photo.height))
+    big = big.resize((W, round(big.height * s)), Image.LANCZOS)
+    a = np.asarray(big, np.float32)
+    L = luma(a)[..., None]
+    a = (L + (a - L) * 0.75) * 0.55 + np.array(NAVY, np.float32) * 0.45  # dim towards navy
+
+    canvas = np.full((H, W, 3), NAVY, np.float32)
+    h = min(a.shape[0], H)
+    y = np.arange(h, dtype=np.float32)
+    alpha = (smoothstep((y + 40) / 160) * (1 - smoothstep((y - 520) / 360)))[:, None, None]
+    canvas[:h] += (a[:h] - canvas[:h]) * alpha
+    canvas += np.random.default_rng(7).normal(0, 1.2, canvas.shape)  # grain, no banding
+    img = Image.fromarray(np.clip(canvas + 0.5, 0, 255).astype(np.uint8))
+
+    # Frosted panel: blur what's behind it, then a faint white glass tint.
+    px0, py0, px1, py1 = 56, 560, 1024, 930
+    pw, ph = px1 - px0, py1 - py0
+    img.paste(img.crop((px0, py0, px1, py1)).filter(ImageFilter.GaussianBlur(18)), (px0, py0))
+    mask = Image.new("L", (pw, ph), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, pw - 1, ph - 1], radius=26, fill=255)
+    tint = np.linspace(0.10, 0.20, pw, dtype=np.float32)[None, :].repeat(ph, 0)
+    alpha = (tint * np.asarray(mask, np.float32)).astype(np.uint8)
+    glass = Image.new("RGBA", (pw, ph), (255, 255, 255, 0))
+    glass.putalpha(Image.fromarray(alpha))
+    img = img.convert("RGBA")
+    img.alpha_composite(glass, (px0, py0))
+    edge = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(edge).rounded_rectangle([px0, py0, px1 - 1, py1 - 1], radius=26,
+                                           outline=(255, 255, 255, 36), width=2)
+    img.alpha_composite(edge)
+    d = ImageDraw.Draw(img)
+
+    # Title, each line fitted to the panel width.
+    inner = pw - 96
+
+    def fitted(text, size):
+        while d.textlength(text, font=font("Anton-Regular.ttf", size)) > inner:
+            size -= 2
+        return font("Anton-Regular.ttf", size)
+
+    lines = [("WORLD INVESTOR WEEK 2026", 118, (255, 255, 255), 26),
+             ("AT RIPHAH INTERNATIONAL UNIVERSITY", 70, ORANGE, 30),
+             ("Invest in Your Future. Protect It Today.", 56, (255, 255, 255), 0)]
+    lines = [(t, fitted(t, size), col, gap) for t, size, col, gap in lines]
+    heights = [d.textbbox((0, 0), t, font=f)[3] - d.textbbox((0, 0), t, font=f)[1] for t, f, _, _ in lines]
+    y = (py0 + py1) / 2 - (sum(heights) + sum(g for *_, g in lines)) / 2
+    for (t, f, col, gap), hgt in zip(lines, heights):
+        center_text(d, y, t, f, col)
+        y += hgt + gap
+
+    lk = lockup(floret_h=130, wiw_h=112, gap=44, divider_h=110)
+    img.alpha_composite(lk, ((W - lk.width) // 2, 1090 - lk.height // 2))
+    center_text(d, 1250, URL, font("Poppins-Medium.ttf", 29))
+    return img.convert("RGB")
 
 
 def main():
     src_dir = sys.argv[1]
-    out_dir = sys.argv[2] if len(sys.argv) > 2 else "riphah"
+    out_dir = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "riphah")
     os.makedirs(out_dir, exist_ok=True)
-    for name, p in PHOTOS.items():
-        out = process(os.path.join(src_dir, f"{name}.jpg"), p)
-        dst = os.path.join(out_dir, f"riphah_{name}_1080x1350.jpg")
-        out.save(dst, quality=95, subsampling=0, optimize=True)
-        print(dst, out.size)
+    graded = {}
+    for k, p in PHOTOS.items():
+        graded[k] = graded_photo(os.path.join(src_dir, f"{k}.jpg"), p)
+        dst = os.path.join(out_dir, f"post_{k}_{p['name']}.jpg")
+        post(graded[k], p).save(dst, quality=95, subsampling=0, optimize=True)
+        print(dst)
+    dst = os.path.join(out_dir, "post_0_cover.jpg")
+    cover(graded["3"]).save(dst, quality=95, subsampling=0, optimize=True)
+    print(dst)
 
 
 if __name__ == "__main__":
