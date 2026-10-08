@@ -17,7 +17,7 @@ any catalog sound and the mixer's levels / room send / limiter treat them the sa
     airy_bed       light airy bed: soft high air, faint warm body, slow breathing; seamless loop (BED)
 
     register()                 -> idempotent; called by anim4.cues()
-    build(tp=-2.0)             -> mixes anim4.cues() (+ BED) at -18 LUFS, <= -2.0 dBTP ->
+    build(tp=-2.3)             -> mixes anim4.cues() (+ BED) at -18 LUFS, <= -2.3 dBTP (margin for AAC) ->
                                   workspace3/audio/anim4_sfx.wav (24-bit) + anim4_sfx_stem.wav (48 kHz 24-bit)
     python3 anim4_sfx.py build      the reel mix (+ overview PNG in workspace3/out/anim4/)
     python3 anim4_sfx.py audition   every custom sound in sequence -> workspace3/out/anim4/anim4_sfx_audition.wav
@@ -238,7 +238,7 @@ def register():
 
 
 # ------------------------------------------------------------------------------------------- build
-def build(tp=-2.0, verbose=True, overview=True):
+def build(tp=-2.3, verbose=True, overview=True):
     """Mix anim4.cues() + BED into workspace3/audio/anim4_sfx.wav (+ _stem.wav), -18 LUFS, <= tp dBTP."""
     import core as K
     import anim4

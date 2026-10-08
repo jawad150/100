@@ -72,14 +72,15 @@ Main options:
 - `--size` sets the em in px at 1080 wide. Defaults: 84 bold-pop, 74 karaoke, 62 boxed, 54 minimal.
 - `--case upper|lower|as-is`, `--max-words` (1-4), `--lines` (default 2).
 - `--y` sets the block centre; `--y-at "0-3.5:1300,3.5-9:620"` sets it per time range to keep captions off faces. `--x` moves the centre left; this also gives more width.
-- Timing: `--lead 0.05` (shows words slightly early), `--hold 0.35`, `--gap 0.45` (a pause longer than this starts a new phrase), `--offset` (shifts all words, for example when the voice-over starts at 1.2 s in the edit).
+- Timing: `--lead 0.05` (shows words slightly early), `--hold 0.35`, `--gap 0.45` (a pause longer than this starts a new phrase), `--offset` (shifts all words in the output, for example when the voice-over starts at 1.2 s in the edit). It does not change the words JSON, so pass the same `--offset` on every run, or shift the JSON into edit time once and drop the flag (the caption-designer agent does the latter).
 - `--srt-mode sentences|phrases`. Upload files use sentences: 2 lines of up to 42 characters, at most 6 s each.
 
 ## Rules the script enforces, and what you still check
 - **Safe zones at 1080x1920.** The script scales them for other sizes.
   - Captions stay inside x 70-1010 and y 230-1480.
   - Nothing goes at x > 930 for y 1050-1700 (the like/share column), and nothing below y 1620.
-  - The default caption band is the lower middle (centre y 1240-1260, or 1390 for minimal). It overlaps the column zone, so the maximum line width is about 720-780 px around x 540.
+  - The default caption band is the lower middle (centre y 1240-1260, or 1390 for minimal). It overlaps the column zone, so the maximum line width is about 765 px around x 540.
+  - Lines are fitted, and the `SAFE-ZONE` check is measured, at their peak width: the active word at its pop scale (and its `--pill`), so a single long word that pops cannot reach the like/share column.
   - A phrase that would overflow first breaks into 2 balanced lines (no line ends on "the", "your", "to" ...). Only then does it shrink. A shrink below 85 % is a `SIZE` warning: shorten the phrase or lower `--size`.
 - **Legibility.** The text stays at UI-body size or bigger (well above 34-40 px). Use one accent colour. Highlight sparingly: hooks, numbers, the key noun, the punchline. Numbers, %, £, $ and € are emphasised automatically (`--no-number-emphasis` turns this off). Pass 1-3 keywords per reel with `--emphasis`; if every word is highlighted, none is.
 - **Motion.**
@@ -92,7 +93,7 @@ Main options:
 - **Pitfalls.**
   - Don't input-seek (`ffmpeg -ss T -i in.mp4 -vf ass=...`). It restarts the clock and the captions vanish or shift. Burn the whole clip, or seek on the output side (`-i in.mp4 -ss T`).
   - Match `--fps` and `--res` to the video you burn onto (use `--video`).
-  - The burned result depends on `fontsdir`. If ffmpeg logs `fontselect: ... -> DejaVuSans`, the brand font wasn't found.
+  - The burned result depends on `fontsdir`. libass logs one `fontselect: (<requested name>, ...) -> <match>` line per font. A match from `fontsdir` shows the face's own name (`-> Poppins-Black, 0, Poppins-Black`). A match that is a different family or a system path (`-> /usr/share/fonts/.../Inter-Regular.otf`; the fallback is fontconfig's default and differs per system) means the brand font was substituted: check `--fontsdir` and the full font name in the .ass `Style:` line.
 
 ## Caption trend notes (checked 2026-10-08; sources are mostly caption-tool vendors, so treat them as informed opinion)
 - **Word-by-word is the baseline.** Showing 2-3 words at a time, synced to speech, is now standard. Static full-sentence blocks read as dated or low-effort. (blitzcutai.com/blog/tiktok-caption-trends-2026; subclip.app; opus.pro)

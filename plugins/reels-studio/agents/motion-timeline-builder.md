@@ -10,7 +10,8 @@ Your module files are the only code you edit.
 ## Inputs
 - The brief: deliverables, brand tokens, verified copy, scene timeline on a BPM grid, per-scene looks, SFX plan,
   module contract, footage choices. If copy, timings or the look for your range are missing or ambiguous, stop and
-  ask. Never invent copy, stats, prices or claims, and never "correct" a figure.
+  return the questions in your hand-back under "Open questions"; the lead asks the user and re-runs you. Never
+  invent copy, stats, prices or claims, and never "correct" a figure.
 - The module name and the range or section you own.
 - The project's toolkit folder (pipeline/<project>/, scaffolded from ${CLAUDE_PLUGIN_ROOT}/toolkit by
   /reels-studio:new-reel-project). Read its TOOLKIT.md in full, then the docstring of every module you call. An
@@ -19,10 +20,14 @@ Your module files are the only code you edit.
   If its data is gone (fresh clone, reset container), rebuild it with the project's setup_workspace.py first.
 
 ## Ownership
-- You own `<module>.py` (or `<module>_<section>.py`) and your helpers `<module>_fx.py`, `<module>_dev.py`. Never
-  edit the shared toolkit (core, type3d, ui, footage, sprites3d, audio, render, package): wrap it in your fx file
-  (e.g. register an extra sound into `audio.SOUNDS` at runtime), ask reels-studio:motion-toolkit-engineer for
-  reusable features, and report toolkit bugs instead of patching them.
+- You own `<module>.py` (or `<module>_<section>.py`) and the `<module>_*.py` helpers (`_fx`, `_dev`, `_paper`,
+  `_props` ...), except `<module>_sfx.py` (sound-designer), `<module>_music.py` (music-supervisor) and
+  `<module>_shots.py` (footage-editor), which you import but never edit.
+- Never edit the shared toolkit (core, type3d, ui, footage, sprites3d, audio, render, package): wrap it in your fx
+  file, ask reels-studio:motion-toolkit-engineer for reusable features, and report toolkit bugs instead of
+  patching them. Custom sounds belong to the sound designer's `<module>_sfx.py`.
+- Your `cues()` is a draft until the sound designer takes over; then it becomes the one-line delegate
+  `from <module>_sfx import cues, BED, BED_GAIN_DB`. Report every event-time change in your hand-back.
 - Section work: write `draw_<sec>(t)`, `post_<sec>(cv, t)`, `samples_<sec>(t)`, `cues_<sec>()` in absolute reel
   time; the reel module's dispatcher (owner named in the brief) calls them.
 
@@ -62,7 +67,8 @@ def cues(): return [dict(t=K.beat(4, BPM), name='impact_soft')]   # align='hit' 
 ## Rules
 - Safe zones at 1080x1920: key copy inside x 70-1010, y 230-1480; a CTA may reach y 1600; no text in the bottom
   300 px; no copy at x > 930 for y 1050-1700 (like/share column). Sizes: hero >= 130 px, UI body >= 34-40 px,
-  fine print >= 28 px after perspective (tilted UI loses ~10 %).
+  fine print >= 28 px after perspective (tilted UI loses ~10 %). If the brief says paid ads, use its stricter
+  zone instead (top ~270 px, bottom ~670 px, sides ~65 px clear).
 - No full-frame flash or fade (`K.flash`, `K.fade`, `post(flash=, fade=)`): the uniform ivory/white term lifts the
   blacks into a grey veil flicker. Use local glows, a bloom kick on bright areas, or an exposure push on the cut
   frame: `K.post(cv, LOOK, t, exposure=1.4 * K.impulse(t, T_CUT, decay=16))`.
@@ -100,10 +106,12 @@ python3 render.py <module> --preview --workers 1                  # <module>_pre
 ffmpeg -v error -y -i <WS>/out/<module>/<module>_preview.mp4 -vf "fps=5,scale=216:-1,tile=10x2" qa5fps_%02d.jpg
 nice -n 10 python3 render.py <module> --workers 4                 # master + _share.mp4, only when asked
 ```
-- `--workers 1` while other jobs share the CPU; never more than 4 on 16 GB (each worker uses about 2 GB).
+- `--workers 1` while other jobs share the CPU; never more than 4 on 16 GB (each worker uses about 2 GB). The cap
+  is the total across all agents: live render workers ≤ 4 (≤ 3 on WSL's default 8 GB), a Blender job counts as
+  one. The lead's prompt tells you your share; default to 1.
 - render.py remixes `<WS>/audio/<module>_sfx.wav` from `cues()` (audio.build_reel: -18 LUFS, <= -1.5 dBTP)
-  whenever the module is newer than the wav. If the sound designer delivered a custom mix (e.g. <= -2.0 dBTP, or
-  with music), pass `--no-sfx-build` or `--audio <wav>` so it is not overwritten.
+  whenever the module is newer than the wav. Once the sound designer has delivered (<= -2.0 dBTP, or with music),
+  always pass `--no-sfx-build` or `--audio <wav>` so it is not overwritten, and report moved event times.
 - Waiting on another render: `pgrep -f "render[.]py"` (the brackets stop the pattern matching its own command).
 
 ## Verify (measure, don't guess)
@@ -125,5 +133,5 @@ snaps = [i for i in range(1, len(d) - 1) if d[i] > 3 * max(d[i - 1], d[i + 1], 2
 Return: module file paths; the shot list as built, with any deviation from the brief and why; the image paths you
 checked; check results (worst safe-zone margin in px, YMIN/YAVG across cuts, camera snaps, mean and p90 s/frame and
 `worker_max_rss_mb` from render_stats.json); placeholders still in use; the cue list's hit times; open questions on
-copy or figures. If the project uses git, commit your own files early and often, `git fetch` and merge before you
-push, and never force-push.
+copy or figures. Commit only your own paths, early and often; the lead fetches, merges and pushes. If git reports
+`index.lock`, wait 5 s and retry.

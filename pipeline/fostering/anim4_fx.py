@@ -469,10 +469,25 @@ def soft_shadow(spr, key=None):
     return out
 
 
+def accumulate(layer, tmp, bb):
+    """Add the sub-step just drawn 'over' into the zeroed scratch `tmp` (touched bbox `bb` from K.draw) to `layer`
+    and re-zero it. Linear in RGB AND alpha, unlike K.draw(mode='add'), whose alpha combines like 'over'
+    (1 - (1 - a/m)^m < a), which left swept sprites semi-transparent and washed out on the white page."""
+    if bb is None:
+        return
+    x0, y0, x1, y1 = [int(v) for v in bb]
+    x0, y0 = max(0, x0), max(0, y0)
+    x1, y1 = min(layer.shape[1], x1), min(layer.shape[0], y1)
+    if x1 > x0 and y1 > y0:
+        layer[y0:y1, x0:x1] += tmp[y0:y1, x0:x1]
+        tmp[y0:y1, x0:x1] = 0.0
+
+
 def draw_prop(cv, cam, spr, P, width, opacity=1.0, rot=0.0, shadow=1.0, anchor=(0.5, 0.5), blur=0.0,
-              shadow_key=None, scale_xy=(1.0, 1.0)):
+              shadow_key=None, scale_xy=(1.0, 1.0), sprite=True):
     """3D prop sprite at world point P (anchor fraction lands there), `width` world units wide, with a soft drop
-    shadow on the page behind. Returns (sx, sy, screen width) or None."""
+    shadow on the page behind. sprite=False draws only the shadow (draw_prop_swept smears the sprite itself).
+    Returns (sx, sy, screen width) or None."""
     if spr is None or opacity <= 0.003:
         return None
     xy, d = cam.project(np.asarray(P, np.float64)[None])
@@ -502,9 +517,60 @@ def draw_prop(cv, cam, spr, P, width, opacity=1.0, rot=0.0, shadow=1.0, anchor=(
         ay = (anchor[1] * spr.shape[0] / 4.0 + 8) / sh.shape[0]
         K.draw(cv, sh, sx + dx, sy + dy, scale=(sc * 4 * scale_xy[0], sc * 4 * scale_xy[1]), rot=rot,
                anchor=(ax, ay), opacity=0.34 * shadow * opacity, blur=sig + 0.012 * w)
-    K.draw(cv, spr, sx, sy, scale=(sc * scale_xy[0], sc * scale_xy[1]), rot=rot, anchor=anchor, opacity=opacity,
-           blur=sig)
+    if sprite:
+        K.draw(cv, spr, sx, sy, scale=(sc * scale_xy[0], sc * scale_xy[1]), rot=rot, anchor=anchor, opacity=opacity,
+               blur=sig)
     return sx, sy, w
+
+
+def draw_prop_swept(cv, cam, spr, P0, P1, w0, w1, opacity=1.0, rot0=0.0, rot1=None, shadow=1.0, anchor=(0.5, 0.5),
+                    blur=0.0, shadow_key=None, scale_xy=(1.0, 1.0), step_px=3.0, max_sub=12):
+    """Prop moving / growing / turning from (P0, w0, rot0) to (P1, w1, rot1) within this render sample's share of
+    the shutter: m sub-steps accumulated additively in a local layer (one continuous smear instead of the stepped
+    outlines a fast pop or throw gets from a few whole-frame samples), composited 'over'; the soft page shadow is
+    drawn once at the mid state. Falls back to draw_prop when the motion is under `step_px`."""
+    if spr is None or opacity <= 0.003:
+        return None
+    rot1 = rot0 if rot1 is None else rot1
+    P0 = np.asarray(P0, np.float64)
+    P1 = np.asarray(P1, np.float64)
+    Pm, wm, rm = (P0 + P1) / 2, (w0 + w1) / 2, (rot0 + rot1) / 2
+    xy, d = cam.project(np.stack([P0, P1]))
+    if not np.isfinite(xy).all() or (d < 60).any():
+        return draw_prop(cv, cam, spr, Pm, wm, opacity, rm, shadow, anchor, blur, shadow_key, scale_xy)
+    k0, k1 = cam.focal / d[0], cam.focal / d[1]
+    asp = spr.shape[0] / spr.shape[1]
+    W0, W1 = w0 * k0, w1 * k1
+    smax = max(abs(scale_xy[0]), abs(scale_xy[1]))
+    disp = (float(np.hypot(*(xy[1] - xy[0]))) + 0.5 * abs(W1 - W0) * max(1.0, asp) * smax
+            + 0.5 * max(W0, W1) * smax * abs(math.radians(rot1 - rot0)))
+    m = int(min(max_sub, max(1, math.ceil(disp / step_px))))
+    if m <= 1:
+        return draw_prop(cv, cam, spr, Pm, wm, opacity, rm, shadow, anchor, blur, shadow_key, scale_xy)
+    res = draw_prop(cv, cam, spr, Pm, wm, opacity, rm, shadow, anchor, blur, shadow_key, scale_xy, sprite=False)
+    if res is None:
+        return None
+    sig = blur + (0.5 * cam.coc(cam.depth(Pm)) if cam.aperture > 0 else 0.0)
+    R = math.hypot(1.0, asp) * max(W0, W1) * smax + 3.0 * sig + 4.0       # covers any anchor / rotation
+    x0 = int(max(0, math.floor(xy[:, 0].min() - R)))
+    y0 = int(max(0, math.floor(xy[:, 1].min() - R)))
+    x1 = int(min(K.W, math.ceil(xy[:, 0].max() + R)))
+    y1 = int(min(K.H, math.ceil(xy[:, 1].max() + R)))
+    if x1 - x0 < 2 or y1 - y0 < 2:
+        return res
+    layer = np.zeros((y1 - y0, x1 - x0, 4), np.float32)
+    tmp = np.zeros_like(layer)
+    for j in range(m):
+        u = (j + 0.5) / m
+        x = xy[0][0] + (xy[1][0] - xy[0][0]) * u
+        y = xy[0][1] + (xy[1][1] - xy[0][1]) * u
+        sc = (W0 + (W1 - W0) * u) / spr.shape[1]
+        accumulate(layer, tmp, K.draw(tmp, spr, x - x0, y - y0, scale=(sc * scale_xy[0], sc * scale_xy[1]),
+                                      rot=rot0 + (rot1 - rot0) * u, anchor=anchor, opacity=opacity / m, blur=sig))
+    dst = cv[y0:y1, x0:x1]
+    dst *= 1 - np.clip(layer[..., 3:4], 0, 1)
+    dst += layer
+    return res
 
 
 # ================================================================================================ glows / particles
@@ -546,6 +612,57 @@ def particles_light(n=110, seed=7):
 def unproject(cam, sx, sy, depth):
     pc = np.array([(sx - K.CX) * depth / cam.focal, (sy - K.CY) * depth / cam.focal, depth])
     return cam.R @ pc + cam.pos
+
+
+@functools.lru_cache(maxsize=1)
+def _pix_grid():
+    gx, gy = np.meshgrid(np.arange(K.W, dtype=np.float32), np.arange(K.H, dtype=np.float32))
+    return gx, gy
+
+
+def flow_field(cam_c, cam_0, cam_1, plane_z=0.0, nx=12, ny=20):
+    """Coarse (ny, nx) screen-space motion field (dx, dy), px, from cam_0 to cam_1 of the points that cam_c sees on
+    the plane z = plane_z (ray / plane intersection per grid point; depth clamped)."""
+    xs = np.linspace(0.0, K.W, nx)
+    ys = np.linspace(0.0, K.H, ny)
+    gx, gy = np.meshgrid(xs, ys)
+    sx, sy = gx.ravel(), gy.ravel()
+
+    def unp(d):
+        pc = np.stack([(sx - K.CX) * d / cam_c.focal, (sy - K.CY) * d / cam_c.focal, np.full_like(sx, d)], 0)
+        return (cam_c.R @ pc).T + cam_c.pos
+    P1, P2 = unp(1000.0), unp(2000.0)
+    dz = P2[:, 2] - P1[:, 2]
+    s = np.where(np.abs(dz) > 1e-6, (plane_z - P1[:, 2]) / np.where(np.abs(dz) > 1e-6, dz, 1.0), 0.5)
+    s = np.clip(s, -0.8, 19.0)                                 # depth 200 .. 20000
+    P = P1 + (P2 - P1) * s[:, None]
+    a, _ = cam_0.project(P)
+    b, _ = cam_1.project(P)
+    d = np.nan_to_num(b - a)
+    return d[:, 0].reshape(ny, nx).astype(np.float32), d[:, 1].reshape(ny, nx).astype(np.float32)
+
+
+def flow_smear(cv, cam_c, cam_0, cam_1, gain=1.15, plane_z=0.0, min_px=1.5, max_taps=9):
+    """Per-pixel directional smear along the camera's motion field (cam_0 -> cam_1 = one render sample's interval),
+    in place: turns the n stepped copies of a fast camera move into one continuous blur everywhere in the frame,
+    corners included (a single global whip_blur only matches the frame centre when the camera banks / zooms)."""
+    dx, dy = flow_field(cam_c, cam_0, cam_1, plane_z)
+    dx *= gain
+    dy *= gain
+    L = float(np.max(np.hypot(dx, dy)))
+    if L < min_px:
+        return cv
+    m = int(min(max_taps, max(2, math.ceil(L / 1.5))))
+    DX = cv2.resize(dx, (K.W, K.H), interpolation=cv2.INTER_LINEAR)
+    DY = cv2.resize(dy, (K.W, K.H), interpolation=cv2.INTER_LINEAR)
+    bx, by = _pix_grid()
+    acc = np.zeros_like(cv)
+    for j in range(m):
+        u = np.float32((j + 0.5) / m - 0.5)
+        acc += cv2.remap(cv, bx + u * DX, by + u * DY, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+    acc *= np.float32(1.0 / m)
+    cv[...] = acc
+    return cv
 
 
 @functools.lru_cache(maxsize=8)
@@ -693,13 +810,14 @@ def draw_coin_swept(cv, cam, asset, P0, P1, size, ang, rate, n_samples=3, opacit
             REC.append(('coin', (min(xy[:, 0]) - 0.4 * wm, min(xy[:, 1]) - 0.4 * wm, max(xy[:, 0]) + 0.4 * wm,
                                  max(xy[:, 1]) + 0.4 * wm), opacity))
     layer = np.zeros((y1 - y0, x1 - x0, 4), np.float32)
+    tmp = np.zeros_like(layer)
     for j in range(m):
         u = (j + 0.5) / m
         x = xy[0][0] + (xy[1][0] - xy[0][0]) * u
         y = xy[0][1] + (xy[1][1] - xy[0][1]) * u
         kk = k0 + (k1 - k0) * u
-        K.draw(layer, spr, x - x0, y - y0, scale=size * kk / spr.shape[1], rot=rot, opacity=opacity / m, mode='add',
-               blur=sig)
+        accumulate(layer, tmp, K.draw(tmp, spr, x - x0, y - y0, scale=size * kk / spr.shape[1], rot=rot,
+                                      opacity=opacity / m, blur=sig))
     dst = cv[y0:y1, x0:x1]
     dst *= 1 - np.clip(layer[..., 3:4], 0, 1)
     dst += layer

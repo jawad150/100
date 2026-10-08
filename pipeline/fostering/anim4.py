@@ -22,8 +22,8 @@ SHOT LIST (t s | beat | picture | camera | SFX)
               28 spinning 3D coins bursting outward (half toward the lens), warm local bloom, light sweep 0.30-0.95
               | static, slam shake | impact_big (soft) + coins_burst + coin_ring + shimmer + whoosh_by
   0.50  B1    "per week" (Nunito Black PLUM 80 px) rises under it | | swish_small
-  1.00  B2    "Where does it go?" (INK 84 px) per-glyph slam; the glossy 3D "?" (question/day) pops above with a
-              yaw swing | | pop + bubble_pop + whoosh_fast
+  1.00  B2    "Where does it go?" (INK 84 px) per-glyph slam; the glossy 3D "?" (question/day) pops above with one
+              eased full turn to face-on | | pop + bubble_pop + whoosh_fast
   1.50  B3    the amount BURSTS into five white glass chips with 3D prop icons on glowing gold spokes from a spinning
               gold coin hub, one per 16th: Home | Food | Essentials | Travel | School | | coin_flip, 5 pops + glass taps
   2.50  B5    chips SNAP back into the hub, the number re-forms | | reverse_swell + impact_soft + coin_ring
@@ -62,10 +62,12 @@ SHOT LIST (t s | beat | picture | camera | SFX)
  22.25  B44.5 "Want to understand fostering payments?" | 22.50 B45 two-line gradient pill "Start the conversation /
               with Organic Fostering." pops | 22.75 B45.5 "0161 241 1332 · organicfostering.co.uk" + footer
               "Weekly allowance for one child aged 0–4, based on / current published rates. Rates may vary; terms
-              apply." (28 px) | 23.25 B46.5 cursor clicks the pill (press + ripple), leaves by 23.70
- 23.75-25.50  settled end card (1.75 s): slow breathing world, two defocused coins in the lower corners
+              apply." (28 px) | 23.25 B46.5 cursor clicks the pill (press + ripple), leaves past the right
+              edge by 23.75 (opaque until it is out of frame)
+ 23.81-25.50  settled end card (1.69 s): slow breathing world, two defocused coins in the lower corners
 SFX: anim4_sfx.py synthesises zip_pull, fabric_swish, bus_pass, ball_bounce, paint_dab, basket_drop, house_pop,
-coin_clinks, soft_chime and the airy_bed BED (registered into audio.SOUNDS at runtime); mix -18 LUFS, <= -2.0 dBTP:
+coin_clinks, soft_chime and the airy_bed BED (registered into audio.SOUNDS at runtime); mix -18 LUFS, <= -2.3 dBTP
+(margin for the AAC encode):
 python3 anim4_sfx.py build -> workspace3/audio/anim4_sfx.wav (+ anim4_sfx_stem.wav, 48 kHz 24-bit).
 
 FLASH POLICY: no full-frame flash / fade anywhere (the page white must never grey, the ink never lift): accents
@@ -73,8 +75,15 @@ are local glows at the interaction point (anim4_fx.local_glow); the light sweep 
 would dissolve gold letters into the white page).
 
 Render contract: DUR, LOOK, BPM, draw(t) (pure), post(cv, t), samples(t), cues(), prewarm(); BED, BED_GAIN_DB.
-samples(t): 3 normally; 5 on the slam / burst, chip burst + snap, the break, the bus drive-off; 6-8 on the moves
-(<= ~6 px of camera travel between samples); mean 3.9 per frame.
+samples(t): 3 normally; 5 on the slam / burst, chip burst + snap, the break, the bus drive-off; 6-10 on the moves
+(<= ~6 px of camera travel between samples); 10 while the hook amount shrinks into the hub / re-forms and on the
+cursor glide; 12 on the final number slam and the pill pop (mean 4.6 per frame). Moves also get a per-pixel smear
+along the camera's motion field in post (anim4_fx.flow_smear: the corners move more than the centre).
+MOTION BLUR beyond the samples: every fast object is drawn SWEPT over its render sample's shutter slice (sub-steps
+accumulated additively in a local layer, so it smears instead of stacking 3-5 outlines): coins (draw_coin_swept),
+station props / pops / INTO hops / bus / ball (draw_prop_swept), the "?", the hook chips (_panel_swept), the child
+and the gathered props; camera moves get a one-step directional smear in post. Springs start from rest (K.spring
+is 0 with zero velocity at contact; the collector squash is a damped sine from each hit); spins <= ~25 deg / frame.
 Helpers: anim4_fx.py (world background, dot grid, ribbon, light lines, coins, shadows, depth layers),
 anim4_props.py (3D props with stand-ins until the Blender renders land), anim4_sfx.py (extra SFX + the mix),
 anim4_dev.py (strips, full frames, low-res motion clips, luma stats, layout checks: checks() below).
@@ -346,39 +355,53 @@ def draw_stream(cv, c, t, n_samples, opacity=1.0, rib_from=0.0):
         if s0_ + 200 < sh <= s1 + 80:
             fade_ = K.smoothstep(s0_ + 200, s0_ + 700, sh) * K.smoothstep(s1 + 80, s1 - 120, sh)
             X.draw_lightline(cv, c, pth, min(sh, s1), ln, offset=off, width=4.0, opacity=lo * fade_)
-    # trickle coins: flow toward the head, absorbed into it; tail spawn
+    # trickle coins: flow toward the head, absorbed into it; tail spawn. They ride with the head, so in a move they
+    # travel at the head's speed along the curving path (not with the camera): drawn swept over each render
+    # sample's shutter slice (world positions at t -/+ half) so they smear instead of stepping
     span = N_TRICKLE * GAP
+    half = 0.25 / K.FPS / max(1, n_samples)
+    s1a, s1b = s_lead(t - half), s_lead(t + half)
+
+    def trickle(i, sh_, tt):
+        back = (i * GAP - (tt * V_FLOW) % GAP) % span
+        s = sh_ - back
+        Pp = pth.at(max(0.0, s))
+        tg = pth.tan(max(0.0, s))
+        nrm = np.array([-tg[1], tg[0], 0.0])
+        wob = 26.0 * math.sin(s * 0.011 + i * 1.7)
+        return Pp + nrm * wob + np.array([0.0, 0.0, -40.0 - 30.0 * math.sin(i * 2.1 + tt)]), back, s
     for i in range(N_TRICKLE):
-        back = (i * GAP - (t * V_FLOW) % GAP) % span
-        s = s1 - back
+        Pw, back, s = trickle(i, s1, t)
         if s < s0_ + 40 or s < 0:
             continue
         a = K.smoothstep(0.0, 90.0, back) * K.smoothstep(span, span - 300.0, back)
         a *= K.smoothstep(s0_ + 40, s0_ + 240, s)
         if a <= 0.02:
             continue
-        Pp = pth.at(s)
-        tg = pth.tan(s)
-        nrm = np.array([-tg[1], tg[0], 0.0])
-        wob = 26.0 * math.sin(s * 0.011 + i * 1.7)
-        Pw = Pp + nrm * wob + np.array([0.0, 0.0, -40.0 - 30.0 * math.sin(i * 2.1 + t)])
         size = 86.0 + 18.0 * ((i * 37) % 5) / 4.0
         rate = 260.0 + 70.0 * ((i * 13) % 4)
         ang = t * rate + i * 47.0
-        X.draw_coin(cv, c, _coin_asset(size * c.focal / 1500.0), Pw, size, ang, rate, n_samples,
-                    opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(i))
-    # lead packet (bigger coins) while travelling
+        P0, b0, _ = trickle(i, s1a, t - half)
+        P1, b1, _ = trickle(i, s1b, t + half)
+        if abs(b1 - b0) < GAP / 2:                      # (not across a tail respawn)
+            X.draw_coin_swept(cv, c, _coin_asset(size * c.focal / 1500.0), P0, P1, size, ang, rate, n_samples,
+                              opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(i))
+        else:
+            X.draw_coin(cv, c, _coin_asset(size * c.focal / 1500.0), Pw, size, ang, rate, n_samples,
+                        opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(i))
+    # lead packet (bigger coins) while travelling (swept the same way)
     if mv > 0.01:
-        for j in range(5):
-            s = s1 - 60.0 - 70.0 * j
+        def lead(j, sh_, tt):
+            s = sh_ - 60.0 - 70.0 * j
             Pp = pth.at(s)
             tg = pth.tan(s)
             nrm = np.array([-tg[1], tg[0], 0.0])
-            Pw = Pp + nrm * (40.0 * math.sin(t * 7.0 + j * 1.9)) + np.array([0.0, 0.0, -80.0 - 40.0 * j])
+            return Pp + nrm * (40.0 * math.sin(tt * 7.0 + j * 1.9)) + np.array([0.0, 0.0, -80.0 - 40.0 * j])
+        for j in range(5):
             size = 120.0 - 10.0 * j
             rate = 420.0 + 60.0 * j
-            X.draw_coin(cv, c, _coin_asset(size * c.focal / 1500.0), Pw, size, t * rate + j * 70.0, rate, n_samples,
-                        opacity=mv * opacity)
+            X.draw_coin_swept(cv, c, _coin_asset(size * c.focal / 1500.0), lead(j, s1a, t - half),
+                              lead(j, s1b, t + half), size, t * rate + j * 70.0, rate, n_samples, opacity=mv * opacity)
 
 
 # ================================================================================================ type
@@ -469,9 +492,9 @@ PW_W = (0.0, 74.0)              # per week -> 1034
 Q_W = (0.0, 330.0)              # question -> 1290
 QM_W = (0.0, -530.0, -60.0)     # 3D question mark (screen y ~430)
 HUB_W = (0.0, -70.0, -40.0)     # chip hub -> 890
-CHIPS = [('Home', 'house', (0.0, -235.0)), ('Food', 'apple', (285.0, -110.0)),
+CHIPS = [('Home', 'house', (0.0, -235.0)), ('Food', 'apple', (272.0, -110.0)),
          ('Essentials', 'tshirt', (190.0, 170.0)), ('Travel', 'school_bus', (-190.0, 170.0)),
-         ('School', 'book_pencil', (-285.0, -110.0))]
+         ('School', 'book_pencil', (-272.0, -110.0))]
 
 
 @functools.lru_cache(maxsize=1)
@@ -485,7 +508,7 @@ def _hook_assets():
     for i in range(28):
         th = 2 * math.pi * (i + 0.5 * rng.random()) / 28
         d['burst'].append((th, rng.uniform(0.75, 1.25), rng.uniform(-1100.0, -300.0) if i % 2 else
-                           rng.uniform(300.0, 900.0), rng.uniform(110.0, 190.0), rng.uniform(500, 1100)))
+                           rng.uniform(300.0, 900.0), rng.uniform(110.0, 190.0), rng.uniform(420, 740)))
     return d
 
 
@@ -533,10 +556,51 @@ def _spark():
     return out
 
 
+def _empty_face(pn):
+    k = id(pn)
+    f = _EMPTY_FACES.get(k)
+    if f is None or f[0] is not pn:
+        f = (pn, np.zeros_like(pn.face))
+        _EMPTY_FACES[k] = f
+    return f[1]
+
+
+_EMPTY_FACES = {}
+
+
+def _panel_swept(cv, pn, a, b, op, step_px=3.0, max_sub=12):
+    """ui.Panel moving / scaling from a = (x, y, scale) to b within this render sample's shutter slice: shadow and
+    frost once at the mid state, the face as m sub-steps accumulated linearly (RGB and alpha, X.accumulate) in a
+    local layer (a smear, not stepped outlines), composited 'over'."""
+    xm, ym, sm = [(u + v) / 2 for u, v in zip(a, b)]
+    disp = math.hypot(b[0] - a[0], b[1] - a[1]) + 0.5 * abs(b[2] - a[2]) * max(pn.w, pn.h)
+    m = int(min(max_sub, max(1, math.ceil(disp / step_px))))
+    if m <= 1:
+        pn.draw(cv, xm, ym, scale=sm, opacity=op)
+        return
+    pn.draw(cv, xm, ym, scale=sm, opacity=op, face=_empty_face(pn))          # shadow + frost only
+    R = 0.5 * math.hypot(pn.face.shape[1], pn.face.shape[0]) * max(a[2], b[2]) + 4.0
+    x0 = int(max(0, math.floor(min(a[0], b[0]) - R)))
+    y0 = int(max(0, math.floor(min(a[1], b[1]) - R)))
+    x1 = int(min(K.W, math.ceil(max(a[0], b[0]) + R)))
+    y1 = int(min(K.H, math.ceil(max(a[1], b[1]) + R)))
+    if x1 - x0 < 2 or y1 - y0 < 2:
+        return
+    layer = np.zeros((y1 - y0, x1 - x0, 4), np.float32)
+    tmp = np.zeros_like(layer)
+    for j in range(m):
+        u = (j + 0.5) / m
+        X.accumulate(layer, tmp, pn.draw(tmp, a[0] + (b[0] - a[0]) * u - x0, a[1] + (b[1] - a[1]) * u - y0,
+                                         scale=a[2] + (b[2] - a[2]) * u, opacity=op / m, shadow=0.0, frost=0.0))
+    dst = cv[y0:y1, x0:x1]
+    dst *= 1 - np.clip(layer[..., 3:4], 0, 1)
+    dst += layer
+
+
 def _chip_state(i, t):
     """(out 0..1 along the spoke, opacity) of chip i."""
     t0 = T_CHIPS + 0.125 * i
-    o = K.ramp(t, t0, t0 + 0.42, 'out_back') if t < T_SNAP else 1.0
+    o = K.spring(t - t0, freq=2.4, damping=0.6) if t < T_SNAP else 1.0     # from rest: no peak-speed start
     if t >= T_SNAP - 0.25:
         b = K.ramp(t, T_SNAP - 0.25 + 0.03 * (4 - i), T_SNAP - 0.01, 'in_back')
         o *= 1 - b
@@ -569,6 +633,19 @@ def _burst_pos(t, th, sp, dz):
     return np.array([NUM_W[0] + ex, NUM_W[1] + ey, dz * u])
 
 
+def _q_state(t):
+    """3D "?" at t: (world pos, width, opacity, yaw, spin rate deg/s). Pops on B2 with one full turn that eases to
+    face-on (peak ~21 deg / frame, spin-blurred), floats, lifts out at the break."""
+    sp = K.spring(t - T_Q, freq=2.4, damping=0.45)
+    out = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.2, 'in_cubic')
+    q_spin = 0.9
+    sp2 = K.ramp(t, T_Q, T_Q + q_spin, 'inout_sine')
+    yaw = 360.0 * (1 - sp2) + 12.0 * math.sin(t * 1.9)
+    rate = 360.0 * (math.pi / 2) / q_spin * math.sin(math.pi * K.clamp((t - T_Q) / q_spin, 0.0, 1.0))
+    Pq = (QM_W[0], QM_W[1] - 120.0 * out + 10 * math.sin(t * 2.3), QM_W[2])
+    return Pq, 400.0 * max(0.0, sp) * (1 - 0.5 * out), 1 - out, yaw, rate
+
+
 def scene_hook(t, n_samples):
     c = cam(t)
     tc = text_cam(t)
@@ -591,15 +668,13 @@ def scene_hook(t, n_samples):
                               opacity=1.0 - K.ramp(t, 0.75, 1.15), rot=math.degrees(th) * 0.2)
     # 3D question mark (pops on B2, half spin to face-on, floats)
     if t >= T_Q - 0.02:
-        sp = K.spring(t - T_Q, freq=2.4, damping=0.45)
-        out = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.2, 'in_cubic')
-        # pops with a 1.5-turn spin that springs to face-on (spin blur while fast), then a gentle float
-        sp2 = K.spring(t - T_Q, freq=1.6, damping=0.55)
-        yaw = 540.0 * (1 - sp2) + 12.0 * math.sin(t * 1.9)
-        rate = abs(540.0 * (K.spring(t - T_Q + 0.01, freq=1.6, damping=0.55) - sp2) / 0.01)
+        Pq, wq, opq, yaw, rate = _q_state(t)
+        half = 0.25 / K.FPS / max(1, n_samples)
+        Pa, wa = _q_state(t - half)[:2]
+        Pb, wb = _q_state(t + half)[:2]
         spr = X.coin_sprite(A['q3'], -yaw, rate, n_samples)
-        Pq = (QM_W[0], QM_W[1] - 120.0 * out + 10 * math.sin(t * 2.3), QM_W[2])
-        X.draw_prop(cv, c, spr, Pq, 400.0 * max(0.0, sp) * (1 - 0.5 * out), opacity=1 - out)
+        X.draw_prop_swept(cv, c, spr, Pa, Pb, wa, wb, opacity=opq,       # the pop smears instead of stepping
+                          shadow=K.clamp(wq / 400.0) ** 2)     # (a crisp tiny shadow would read as a second "?")
         if t < T_Q + 0.4:
             qx, qy, _ = screen_of(c, QM_W[0], QM_W[1])
             X.local_glow(cv, qx, qy, 260.0, 'mag', 0.6 * K.impulse(t, T_Q, decay=6.0))
@@ -674,11 +749,17 @@ def _draw_chips(cv, c, tc, t, n_samples):
     if hub > 0.01:
         X.local_glow(cv, hx, hy, 260.0, 'gold', 0.5 * hub)
         X.draw_coin(cv, c, _coin_asset(240), HUB_W, 190.0 * hub, t * 300.0, 300.0, n_samples)
+    half = 0.25 / K.FPS / max(1, n_samples)
     for (i, ex, ey, o, op) in ends:
         lab, icn, off = CHIPS[i]
         pn = chip_panel(lab, icn)
         s = 0.55 + 0.45 * K.clamp(o)
-        pn.draw(cv, ex, ey, scale=s, opacity=op)
+        st_ = []
+        for tt in (t - half, t + half):                  # this sample's shutter slice: the burst / snap smears
+            o_, _ = _chip_state(i, tt)
+            x_, y_, _ = screen_of(tc, HUB_W[0] + off[0] * o_, HUB_W[1] + off[1] * o_)
+            st_.append((x_, y_, 0.55 + 0.45 * K.clamp(o_)))
+        _panel_swept(cv, pn, st_[0], st_[1], op)
         if X.REC is not None and op > 0.3 and o > 0.9:
             X.REC.append(('text', (ex - pn.w * s / 2, ey - pn.h * s / 2, ex + pn.w * s / 2, ey + pn.h * s / 2), op,
                           'chip ' + lab))
@@ -719,7 +800,7 @@ def _draw_break(cv, c, t, n_samples):
         P1_, _, _ = _break_pos(t + half, sd, i)
         if a <= 0.003:
             continue
-        rate = 900.0 * (1 - 0.6 * w)
+        rate = 720.0 * (1 - 0.6 * w)
         X.draw_coin_swept(cv, c, _coin_asset(160), P0_, P1_, 104.0 - 30.0 * w, t * rate + i * 33, rate, n_samples,
                           opacity=a)
 
@@ -803,13 +884,16 @@ def _spr_for(name, variant, yaw):
     return a.at_yaw(yaw)
 
 
-def _collector_kick(st, t):
-    """Squash / bounce of a collector when items land in it (and when the money arrives)."""
-    k = K.impulse(t, ARRIVE[st], decay=5.0) * 0.6
-    for (sn, it, a0, a1) in INTO:
-        if sn == st:
-            k += K.impulse(t, a1, decay=7.0)
-    return k
+def _collector_squash(st, t):
+    """Squash / bounce of a collector when the money arrives and when items land in it: a damped sine from each hit,
+    so it starts from 0 on contact (continuous inside the hit frame's shutter) and peaks ~3 frames later."""
+    ev = [(ARRIVE[st], 0.6, 5.0)] + [(a1, 1.0, 7.0) for (sn, it, a0, a1) in INTO if sn == st]
+    k = 0.0
+    for (a, amp, dec) in ev:
+        u = t - a
+        if u > 0:
+            k += amp * math.exp(-dec * u) * math.sin(18.0 * u)
+    return 0.095 * k
 
 
 def _prop_state(st, i, t):
@@ -823,8 +907,7 @@ def _prop_state(st, i, t):
     s = sp
     sq = 0.0
     if i == 0:
-        kk = _collector_kick(st, t)
-        sq = 0.07 * kk * math.cos((t - t0) * 18.0) if kk > 0.01 else 0.0
+        sq = _collector_squash(st, t)
         bob *= 0.5
     for (sn, it, a0, a1) in INTO:
         if sn == st and it == i and t >= a0:
@@ -873,7 +956,9 @@ def _prop_state(st, i, t):
     return (x, y + bob, z), s, op, yaw, sq
 
 
-def _station_items(st, t):
+def _station_items(st, t, half=0.0):
+    """Visible props of a station at t; P0 / s0 / yaw0 and P1 / s1 / yaw1 are the states at t -/+ half (this render
+    sample's share of the shutter) for the swept draw."""
     out = []
     S = ST[st]
     for i, spec in enumerate(SPECS[st]):
@@ -883,8 +968,12 @@ def _station_items(st, t):
         pos, s, op, yaw, sq = _prop_state(st, i, t)
         if s <= 0.01 or op <= 0.01:
             continue
-        out.append(dict(i=i, name=name, var=var, P=(S[0] + pos[0], S[1] + pos[1], pos[2]), s=s, op=op, yaw=yaw,
-                        sq=sq, w=w, t0=t0, z=pos[2]))
+        it = dict(i=i, name=name, var=var, P=(S[0] + pos[0], S[1] + pos[1], pos[2]), s=s, op=op, yaw=yaw,
+                  sq=sq, w=w, t0=t0, z=pos[2])
+        for tag, tt in (('0', t - half), ('1', t + half)):
+            p_, s_, _, y_, _ = _prop_state(st, i, tt) if half > 0 else (pos, s, op, yaw, sq)
+            it['P' + tag], it['s' + tag], it['yaw' + tag] = (S[0] + p_[0], S[1] + p_[1], p_[2]), max(0.0, s_), y_
+        out.append(it)
     return out
 
 
@@ -907,8 +996,10 @@ def _draw_item(cv, c, it, t, n_samples):
         sx, sy, k = screen_of(c, *it['P'])
         X.local_glow(cv, sx, sy, 0.75 * it['w'] * k, 'peach', 0.75 * pop)
     sq = it['sq']
-    X.draw_prop(cv, c, spr, it['P'], it['w'] * it['s'], opacity=it['op'], scale_xy=(1.0 + sq, 1.0 - sq),
-                anchor=(0.5, 0.5), rot=rot)
+    r0, r1 = (it['yaw0'], it['yaw1']) if name == 'football' else (rot, rot)
+    X.draw_prop_swept(cv, c, spr, it.get('P0', it['P']), it.get('P1', it['P']), it['w'] * it.get('s0', it['s']),
+                      it['w'] * it.get('s1', it['s']), opacity=it['op'], rot0=r0, rot1=r1,
+                      scale_xy=(1.0 + sq, 1.0 - sq), anchor=(0.5, 0.5))
 
 
 def _visible_stations(c):
@@ -1005,7 +1096,7 @@ def draw_stations(cv, c, t, n_samples, stream_op=1.0):
     draw_decor(cv, c, t)
     items = []
     for st in sts:
-        items += [(st, it) for it in _station_items(st, t)]
+        items += [(st, it) for it in _station_items(st, t, 0.25 / K.FPS / max(1, n_samples))]
     # back items, then the money stream, then the collectors (the coins pour INTO them: the ribbon's head and the
     # trickle disappear behind the collector's front, which also keeps the ribbon's warm halo off the prop), then
     # the front items
@@ -1132,14 +1223,25 @@ def _gather_state(i, t):
     return Pw, s, op, math.sin(th)
 
 
-def _draw_child(cv, c, t, n_samples, opacity=1.0, scale=1.0, pos=None):
+def _draw_child(cv, c, t, n_samples, opacity=1.0, scale=1.0, pos=None, pos_fn=None):
+    """The 3D child; pos_fn(t) -> (world pos, scale) overrides pos / scale (the flight into the logo) so the
+    pop and the flight smear over each render sample's shutter slice."""
     a = P.prop('child_figure', 'day')
-    pop = K.spring(t - T_CHILD_POP, freq=2.3, damping=0.45) if t >= T_CHILD_POP else 0.0
-    if pop <= 0.01:
+
+    def state(tt):
+        pop = K.spring(tt - T_CHILD_POP, freq=2.3, damping=0.45) if tt >= T_CHILD_POP else 0.0
+        if pos_fn is not None:
+            Pw, sc = pos_fn(tt)
+        else:
+            Pw, sc = (pos if pos is not None else _child_pos(tt)), scale
+        return Pw, CHILD_W * pop * sc
+    Pw, w = state(t)
+    if w <= 0.01 * CHILD_W:
         return
     spr = a.at_yaw(6.0 * math.sin(t * 0.8)) if not getattr(a, 'placeholder', False) else a.frame(0)
-    Pw = pos if pos is not None else _child_pos(t)
-    X.draw_prop(cv, c, spr, Pw, CHILD_W * pop * scale, opacity=opacity)
+    half = 0.25 / K.FPS / max(1, n_samples)
+    (P0, w0), (P1, w1) = state(t - half), state(t + half)
+    X.draw_prop_swept(cv, c, spr, P0, P1, w0, w1, opacity=opacity)
 
 
 def _child_halo(cv, c, t, amount):
@@ -1166,13 +1268,13 @@ def _draw_child_scene(cv, c, tc, t, n_samples, fade):
             continue
         items.append((dz, i, nm, var, Pw, s, op))
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] > 0], key=lambda r: -r[0]):
-        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op)
+        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
     _draw_child(cv, c, t, n_samples)
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] <= 0], key=lambda r: -r[0]):
-        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op)
+        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
 
 
-def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op):
+def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples=3):
     a = P.prop(nm, var)
     spr = a.frame(0) if getattr(a, 'mode', 'yaw') == 'static' else a.at_yaw(12.0 * math.sin(t * 0.9 + i))
     w = {'school_bus': 230.0, 'bed': 260.0, 'sandwich': 230.0, 'house': 230.0, 'plate': 220.0}.get(nm, 205.0)
@@ -1181,7 +1283,9 @@ def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op):
     if land > 0.03 and op > 0.5:
         sx, sy, k = screen_of(c, *Pw)
         X.local_glow(cv, sx, sy, 160.0 * k, 'peach', 0.6 * land)
-    X.draw_prop(cv, c, spr, tuple(Pw), w * s, opacity=op)
+    half = 0.25 / K.FPS / max(1, n_samples)
+    (P0, s0, _, _), (P1, s1, _, _) = _gather_state(i, t - half), _gather_state(i, t + half)
+    X.draw_prop_swept(cv, c, spr, tuple(P0), tuple(P1), w * s0, w * s1, opacity=op)   # fast fly-in smears
 
 
 # ================================================================================================ H. FINAL
@@ -1263,18 +1367,23 @@ def _final_num_coins(cv, c, t, n_samples):
     if not (t0 <= t < t1 + 0.05):
         return
     S = ST['child']
-    Cw = np.array(_child_pos(t))
     ts = _type()['fnum']
-    for i in range(14):
-        u = K.ramp(t, t0 + 0.012 * i, t1, 'in_cubic')
+    half = 0.25 / K.FPS / max(1, n_samples)
+
+    def pos(i, tt):
+        Cw = _child_pos(tt)
+        u = K.ramp(tt, t0 + 0.012 * i, t1, 'in_cubic')
         tx = S[0] - 120.0 + (i / 13.0 - 0.5) * ts.w * 0.9
         ty = S[1] + (F_NUM_Y - 960.0)
         sx0 = Cw[0] + 180.0 * math.cos(i * 2.4)
         sy0 = Cw[1] - 80.0 + 60.0 * math.sin(i * 1.7)
         x = K.lerp(sx0, tx, u) + 160.0 * math.sin(math.pi * u) * math.cos(i * 1.3)
-        y = K.lerp(sy0, ty, u)
-        X.draw_coin(cv, c, _coin_asset(140), (x, y, -80.0), 96.0 * (1 - 0.4 * u), t * 700 + i * 40, 700.0,
-                    n_samples, opacity=K.ramp(t, t0 + 0.012 * i, t0 + 0.1 + 0.012 * i) * (1 - K.ramp(t, t1 - 0.06, t1)))
+        return np.array([x, K.lerp(sy0, ty, u), -80.0]), u
+    for i in range(14):
+        _, u = pos(i, t)
+        X.draw_coin_swept(cv, c, _coin_asset(140), pos(i, t - half)[0], pos(i, t + half)[0], 96.0 * (1 - 0.4 * u),
+                          t * 700 + i * 40, 700.0, n_samples, max_sub=12,
+                          opacity=K.ramp(t, t0 + 0.012 * i, t0 + 0.1 + 0.012 * i) * (1 - K.ramp(t, t1 - 0.06, t1)))
 
 
 def _draw_final(cv, c, tc, t, n_samples):
@@ -1291,15 +1400,16 @@ def _draw_final(cv, c, tc, t, n_samples):
     u = K.ramp(t, T_LOGO, T_LOGO + 0.7, 'inout_cubic')
     _child_halo(cv, c, t, 1.0 - u)
     if u < 1:
-        C0 = np.array(_child_pos(t))
         tgt = np.array([S[0] + (lx0 + gx - 540.0), wy(ly0 + gy), 0.0])
-        Pw = C0 * (1 - u) + tgt * u
         a = P.prop('child_figure', 'day')
         bb = getattr(a, 'bbox', (0, 0, a.size[0], a.size[1]))
         vis_h = (bb[3] - bb[1]) / a.size[0] * CHILD_W          # visible height in world units at scale 1
         sc_end = gh / max(vis_h, 1.0)
-        _draw_child(cv, c, t, n_samples, opacity=1.0 - K.ramp(t, T_LOGO + 0.52, T_LOGO + 0.74), pos=tuple(Pw),
-                    scale=K.lerp(1.0, sc_end, u))
+
+        def fly(tt):
+            uu = K.ramp(tt, T_LOGO, T_LOGO + 0.7, 'inout_cubic')
+            return tuple(np.array(_child_pos(tt)) * (1 - uu) + tgt * uu), K.lerp(1.0, sc_end, uu)
+        _draw_child(cv, c, t, n_samples, opacity=1.0 - K.ramp(t, T_LOGO + 0.52, T_LOGO + 0.74), pos_fn=fly)
     _final_num_coins(cv, c, t, n_samples)
     fc = K.ramp(t, T_NUM2 - 0.3, T_NUM2 + 0.6, 'out_cubic')
     if fc > 0:
@@ -1366,14 +1476,14 @@ def _draw_final(cv, c, tc, t, n_samples):
     draw_text_world(cv, Ty['phone'], tc, S[0], wy(F_PH_Y), t, T_PH, label='phone')
     draw_text_world(cv, Ty['foot'], tc, S[0], wy(F_FOOT_Y), t, T_PH + 0.06, label='Weekly allowance footer')
     # cursor: enters from the right at pill height, clicks the arrow, leaves the same way
-    if T_CLICK - 0.75 <= t < T_CLICK + 0.6:
+    if T_CLICK - 0.75 <= t < T_CLICK + 0.5:
         import ui
         ty = F_BTN_Y + 26.0
         trk = K.Track([(T_CLICK - 0.75, (1180.0, ty + 30.0), 'out_cubic'), (T_CLICK - 0.06, (842.0, ty), 'hold'),
-                       (T_CLICK + 0.1, (842.0, ty), 'in_cubic'), (T_CLICK + 0.45, (1190.0, ty + 40.0))])
+                       (T_CLICK + 0.1, (842.0, ty), 'in_sine'), (T_CLICK + 0.5, (1200.0, ty + 40.0))])
         x, y = trk(t)
         press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04)
-        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.55) * (1 - K.ramp(t, T_CLICK + 0.25, T_CLICK + 0.45))
+        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.55)      # enters and leaves past the right edge, opaque
         if cop > 0.01:
             ui.draw_cursor(cv, x, y, 'hand', 84, press=press, click=(t - T_CLICK) if t >= T_CLICK else None,
                            opacity=cop, look='airy')
@@ -1406,10 +1516,12 @@ def _cam_shutter_disp(t):
 def post(cv, t):
     # during moves, a directional smear of one sub-sample step along the camera motion turns the render samples'
     # discrete copies into a continuous blur (the tracked coins barely move on screen, so they stay crisp)
-    dx, dy = _cam_shutter_disp(t)
-    step = math.hypot(dx, dy) / max(1, samples(t))
-    if step > 1.5:
-        K.whip_blur(cv, 1.15 * step, angle=math.degrees(math.atan2(-dy, dx)))
+    a_, b_, u_ = _segment(t)
+    if b_ is not None:
+        # per-pixel: the camera banks and pulls back, so the corners move more than the centre (a single global
+        # whip_blur left stepped copies there); field of one sample interval on the page plane
+        h = 0.25 / K.FPS / max(1, samples(t))
+        X.flow_smear(cv, cam(t), cam(t - h), cam(t + h))
     return K.post(cv, LOOK, t, vignette=0.10, grain=0.006, bloom=0.35, bloom_threshold=1.3,
                   chroma=0.6 + 2.5 * _move_amount(t))
 
@@ -1422,6 +1534,8 @@ def _move_amount(t):
 def samples(t):
     if t < 0.45:
         return 5                                   # slam + coin burst toward the lens
+    if T_CHIPS - 0.03 < t < T_CHIPS + 0.2 or T_SNAP - 0.1 < t < T_SNAP + 0.15:
+        return 10                                  # the amount shrinks into the hub / re-forms (scale at speed)
     if T_CHIPS - 0.05 < t < T_CHIPS + 0.7 or T_SNAP - 0.15 < t < T_SNAP + 0.2:
         return 5
     if T_BREAK - 0.05 < t < T_BREAK + 0.9:
@@ -1431,6 +1545,10 @@ def samples(t):
         return int(min(10, max(6, math.ceil(math.hypot(dx, dy) / 6.0))))
     if BUS_GO < t < BUS_GO + 1.1:
         return 5                                   # bus drives off past the camera
+    if T_NUM2 - 0.05 < t < T_NUM2 + 0.4 or T_BTN - 0.02 < t < T_BTN + 0.3:
+        return 12                                  # final number slam (1.35 -> 1), CTA pill pop (0.6 -> 1)
+    if T_CLICK - 0.75 < t < T_CLICK + 0.5:
+        return 10                                  # cursor glide in / out
     return 3
 
 

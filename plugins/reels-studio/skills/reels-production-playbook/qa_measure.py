@@ -17,7 +17,8 @@ Needs ffmpeg/ffprobe on PATH and python3 with numpy, opencv-python(-headless) an
     freeze VIDEO                                  duplicate frames (mpdecimate) grouped into runs
     guides IMAGE OUT.png                          draws the 1080x1920 safe-zone lines on a frame
     ink    IMAGE X0 Y0 X1 Y1 '#RRGGBB' [--tol 40] ink box of one text colour inside a ROI + margins to the lines
-    cues   VIDEO CUES_JSON [--win 0.06]           audio onset nearest each align='hit' cue (ms and frames)
+    cues   VIDEO CUES_JSON [--win 0.06] [--offset A]  audio onset nearest each align='hit' cue (ms and frames);
+                                                  --offset A: VIDEO is a range render that starts at reel time A
     audio  MEDIA [--spec OUT.png]                 EBU R128 integrated / LRA / true peak (+ spectrogram)
 
 Flags are prompts to LOOK, not verdicts: hard cuts legitimately change YMIN and produce motion spikes.
@@ -169,12 +170,13 @@ def cmd_frame(a):
 
 
 def trim_args(a):
+    """Input-side -ss/-t (both before -i): an output -t lets the filtergraph run past --to."""
     args = []
     if a.from_ is not None:
         args += ['-ss', '%.4f' % a.from_]
-    args += ['-i', a.video]
     if a.to is not None:
         args += ['-t', '%.4f' % (a.to - (a.from_ or 0.0))]
+    args += ['-i', a.video]
     return args
 
 
@@ -191,6 +193,8 @@ def cmd_luma(a):
         elif cur is not None and '=' in line:
             k, v = line.split('=', 1)
             cur[k.split('.')[-1]] = float(v)
+    if a.to is not None:
+        rows = [r for r in rows if r['t'] < a.to - 1e-6]
     if not rows:
         sys.exit('no frames')
     ymin = [r['YMIN'] for r in rows]
@@ -329,11 +333,12 @@ def cmd_cues(a):
     for c in sorted(cues, key=lambda c: c['t']):
         if c.get('align', 'hit') != 'hit':
             continue
-        i0, i1 = int((c['t'] - a.win) * 200), int((c['t'] + a.win) * 200)
+        tv = c['t'] - a.offset                        # cue time inside this file (reel time printed)
+        i0, i1 = int((tv - a.win) * 200), int((tv + a.win) * 200)
         if i0 < 0 or i1 >= len(on):
             continue
         k = i0 + int(np.argmax(on[i0:i1]))
-        off = k / 200.0 - c['t']
+        off = k / 200.0 - tv
         flag = 'CHECK' if abs(off) > 1.0 / fps and on[k] > 6 else '     '
         print('%s %7.3f %-16s onset %+5.0f ms (%+.1f fr)  rise %4.1f dB' % (
             flag, c['t'], c['name'], off * 1000, off * fps, on[k]))
@@ -383,6 +388,7 @@ def main():
         p.add_argument(k, type=int)
     p.add_argument('hex'); p.add_argument('--tol', type=float, default=40.0)
     p = sp.add_parser('cues'); p.add_argument('video'); p.add_argument('cues'); p.add_argument('--win', type=float, default=0.06)
+    p.add_argument('--offset', type=float, default=0.0, help='reel time of the first frame (range renders)')
     p = sp.add_parser('audio'); p.add_argument('media'); p.add_argument('--spec')
     a = ap.parse_args()
     globals()['cmd_' + a.cmd](a)

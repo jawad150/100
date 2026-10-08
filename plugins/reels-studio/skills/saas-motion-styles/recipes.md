@@ -2,15 +2,18 @@
 
 Working patterns for the devices in SKILL.md, written against the reels toolkit API (TOOLKIT.md in the project's
 toolkit folder). Each block is a starting point: copy it into a reel module (or `<module>_fx.py`), then replace the
-copy, clip ids, colours and times with the brief's. Copy strings must come from the brief's verified-copy table.
+clip ids, colours and times with the brief's. Every on-screen string comes from `COPY` (the brief's verified-copy
+table, by copy id); `'<...>'` strings are placeholders that must be replaced. Example values must never ship.
 
 Rules for all of them:
 - `draw(t)` is pure. Static sprites are built once in `lru_cache`d functions that `prewarm()` calls.
 - Times sit on the BPM grid (`B(n)`). Hard cuts switch half a frame early (`HALF`).
 - Colour names like `'MAGENTA'` are the toolkit's colour roles (`K.C`). A project re-points them to its brand with
-  `project.json` `"palette"` (if the toolkit has wsconf.py) or a brand kit profile from
-  reels-studio:motion-toolkit-engineer. Don't hard-code another brand's hex values. The `side=` hex values in the
-  extruded-type recipe are examples, so derive them from the brand's darkest tones.
+  project.json `"palette"` (wsconf.py; written by reels-studio:brand-kit-builder). Hard-coded preset hex (extrude3d
+  sides, K.LOOKS tints) needs a profile from reels-studio:motion-toolkit-engineer. Don't hard-code a brand's hex.
+- Toolkit widgets default to the original client's copy (`ui.app_window` title/header, `ui.button` text,
+  `T.Counter` prefix `£`): always pass those arguments.
+- Check copy extents on every frame with `qa_measure.py ink` on range renders (or a dev recorder), not one still.
 
 ## Shared header and finishing (exposure push instead of a flash)
 
@@ -21,6 +24,7 @@ import core as K, type3d as T, ui, footage as F, sprites3d as S3
 
 DUR, LOOK, BPM = 26.0, 'neon', 120
 HALF = 0.5 / K.FPS                        # cut switch: half a frame before the cut time
+COPY = {}                                 # copy id -> exact verified text, from BRIEF.md §2 (verified rows only)
 def B(n): return n * 60.0 / BPM           # beat n -> seconds
 CUTS = [B(5), B(11)]                      # hard cuts from the shot list
 
@@ -59,7 +63,7 @@ def particles_clear_of(cv, parts, cam, t, rects):
 
 ```python
 IRIS_C = (540.0, 860.0)
-MONT = [('c01', 9.4, (0.50, 0.42)), ('c08', 1.0, (0.50, 0.40)), ('c12', 11.4, (0.62, 0.44))]  # footage-editor picks:
+MONT = [('c01', 9.4, (0.50, 0.42)), ('c08', 1.0, (0.50, 0.40)), ('c12', 11.4, (0.62, 0.44))]  # <module>_shots.py:
 T_IRIS, DT = B(1), 60.0 / BPM / 3         # (clip, source s, face crop centre); one flash per triplet 8th
 
 @functools.lru_cache(maxsize=1)
@@ -133,11 +137,13 @@ def tunnel(t):
 ```python
 VT0, VZ0, VZ1 = B(8), B(10), B(11)        # entrance, zoom start, zoom end (= the cut to full footage)
 VT_CLIP = ('c01', 2.0, (0.50, 0.40))      # high-contrast faces that sit in the letter band
+VT_I = 4                                  # index of the letter to zoom into: a thick stroke over the face
 
 @functools.lru_cache(maxsize=1)
 def vit_assets():
-    vt = T.VideoType('NURTURE', px=191, tracking=-0.01, look='light')   # very heavy letters; T.measure: <= 940 px
-    return vt, vt.zoom_point('U', index=4)                           # character index 4 = the second U
+    word = COPY['vit_word']                                          # one short, very heavy word
+    vt = T.VideoType(word, px=191, tracking=-0.01, look='light')     # T.measure: <= 940 px
+    return vt, vt.zoom_point(word[VT_I], index=VT_I)
 
 def vit(t):
     vt, zp = vit_assets()
@@ -159,14 +165,14 @@ def vit(t):
 ## App-window checklist with cursor, progress ring and toast
 
 ```python
-ROWS = ['A spare bedroom', 'Time & flexibility', 'Rent or own your home']   # verified copy only
+ROWS = [COPY['row1'], COPY['row2'], COPY['row3']]
 TICK = [B(13), B(14.5), B(16)]
 WIN_C, WIN_W, WIN_ROT = (0.0, -60.0, 0.0), 860.0, (7.0, -14.0, 1.5)
 
 @functools.lru_cache(maxsize=1)
 def win_assets():
-    win = ui.app_window(w=860, h=1100, look='neon', title='example.com', header='Am I eligible?', active=1)
-    return win, ui.toast('You could be a great fit', look='neon')
+    win = ui.app_window(w=860, h=1100, look='neon', title=COPY['url'], header=COPY['win_header'], active=1)
+    return win, ui.toast(COPY['toast'], look='neon')
 
 def checklist(t):
     win, toast = win_assets()
@@ -195,35 +201,50 @@ def checklist(t):
 # UI text >= 34 px on screen after perspective; fine print 30 px on tilted UI.
 ```
 
-## Glass dock carousel
+## Glass dock row
 
 ```python
-DOCK = [('Full Training', 'Preparation & learning', 'graduation', ('c03', 2.4)),
-        ('Ongoing Support', 'Your social worker', 'chat', ('c04', 1.0)),
-        ('Weekly Allowance', 'Verified figure here', 'pound', ('c10', 17.4))]
+DOCK = [(COPY['tile1'], COPY['tile1_sub'], '<icon>', ('c03', 2.4)),   # (title, sub, ui icon name, (clip, src s))
+        (COPY['tile2'], COPY['tile2_sub'], '<icon>', ('c04', 1.0)),
+        (COPY['tile3'], COPY['tile3_sub'], '<icon>', ('c10', 17.4))]
 D0 = B(23)
+TILE_W, TILE_H, TILE_GAP, GROW = 264, 460, 18, 0.06   # static row centred at x 492: tiles span x 70-914
+ROW_X, ROW_Y = 492.0, 1000.0
 
 @functools.lru_cache(maxsize=1)
 def dock_assets():
-    return [ui.dock_tile(ti, su, ic, look='neon') for ti, su, ic, _ in DOCK]
+    return [ui.dock_tile(ti, su, ic, look='neon', w=TILE_W, h=TILE_H) for ti, su, ic, _ in DOCK]
+
+def dock_layout(t):                       # [(x centre, scale, focus weight)]: the row re-centres as a tile grows
+    f = K.Track([(D0 + 1.0, 0.0), (D0 + 3.0, 0.0), (D0 + 3.5, 1.0), (D0 + 5.5, 1.0), (D0 + 6.0, 2.0)],
+                ease='inout_cubic')(t)
+    ws = [max(0.0, 1.0 - abs(i - f)) for i in range(len(DOCK))]
+    wd = [TILE_W * (1.0 + GROW * w) for w in ws]
+    x, out = ROW_X - (sum(wd) + TILE_GAP * (len(DOCK) - 1)) / 2, []
+    for i in range(len(DOCK)):
+        out.append((x + wd[i] / 2, wd[i] / TILE_W, ws[i]))
+        x += wd[i] + TILE_GAP
+    return out
 
 def dock(t):
     tiles = dock_assets()
-    focus = K.Track([(D0 + 1.0, 0.0), (D0 + 3.0, 0.0), (D0 + 3.5, 1.0), (D0 + 5.5, 1.0), (D0 + 6.0, 2.0)],
-                    ease='inout_cubic')(t)
-    cam = K.Cam(pos=(K.lerp(-60, 60, K.ramp(t, D0, D0 + 7, 'inout_sine')), 0, -1500), aperture=30, focus_dist=1500)
-    cv = K.background('neon', t, cam, rim=0)
+    bg_cam = K.Cam(pos=(K.lerp(-60, 60, K.ramp(t, D0, D0 + 7, 'inout_sine')), 0, -1500))   # drift: backdrop only
+    cam = K.Cam(aperture=30)              # fixed: tiles never slide toward the like/share column
+    cv = K.background('neon', t, bg_cam, rim=0)
     sc = K.Scene(cam)
-    for i, (dx, s, w) in enumerate(ui.carousel(len(tiles), focus, spacing=330, grow=0.16)):
+    for i, (x, s, w) in enumerate(dock_layout(t)):
         sx, sy, sw_, sh_, sr = tiles[i].meta['slot']
         cid, src = DOCK[i][3]
         media = F.Clip(cid).get(src + (t - D0) * 0.5, int(sw_), int(sh_), look='neon') if w > 0.05 else None
         face = ui.dock_face(tiles[i], focus=w, media=media, media_mix=w, sweep=((t - D0) * 0.3 + i * 0.33) % 1.0)
-        P = (dx - 48.0, 40.0, 0.0)                                   # row centred left of x 540: text stays <= x 915
-        sc.custom(P, lambda c, cm, i=i, P=P, s=s, face=face: tiles[i].plane(c, cm, P, 300.0 * s, rot=(0, -8, 0),
+        P = (x - K.CX, ROW_Y - K.CY, 0.0)
+        sc.custom(P, lambda c, cm, i=i, P=P, s=s, face=face: tiles[i].plane(c, cm, P, TILE_W * s, rot=(0, -8, 0),
                                                                            face=face))
     sc.render(cv)
     return cv
+# Measured: tile bodies stay inside x 70-914 at every focus; text inside them stays left of x 930 in y 1050-1700.
+# A carousel that centres the focused tile (ui.carousel) pushes its right neighbour to x ~820-1075, into the
+# like/share column: don't use it for tiles with text. Check every frame with qa_measure.py ink on a range render.
 # A tile's 3D icon may lift above its tile, never over the footage faces. SFX: card_slide on the entrances,
 # ui_hover + ui_click + glass_tap per focus change.
 ```
@@ -233,9 +254,9 @@ def dock(t):
 ```python
 @functools.lru_cache(maxsize=1)
 def orbit_assets():
-    ot = T.OrbitText('NURTURE • DEVELOP • GROW • ', 'flat', px=56, radius=380, tilt=14, roll=-8,
-                     fill='IVORY')
-    return ot, S3.get('house', 'night')
+    ot = T.OrbitText(' • '.join([COPY['w1'], COPY['w2'], COPY['w3']]) + ' • ', 'flat', px=56, radius=380, tilt=14,
+                     roll=-8, fill='IVORY')
+    return ot, S3.get('<hero_prop>', 'night')
 
 def orbit_text(t):
     ot, hero = orbit_assets()
@@ -246,31 +267,47 @@ def orbit_text(t):
     ot.draw(cv, cam, (0, 0, 0), t=t, spin=20, part='front')
     return cv
 
-TAGS = ['Short-term', 'Long-term', 'Emergency', 'Respite', 'Siblings', 'Teenagers']   # or (text, thumb, key)
+TAGS = [COPY['tag1'], COPY['tag2'], COPY['tag3'], COPY['tag4'], COPY['tag5'], COPY['tag6']]   # or (text, thumb, key)
+RING = dict(center=(0, 60, 0), radius=(280, 220), tilt=20, roll=6, size=1.0)   # tested: 6 tags of ~190-260 px stay
+                                                                                # inside x 129-911 for 6 s
+def tags_cam(t, t0):
+    rz, tilt = RING['radius'][1], RING['tilt']
+    return K.Cam.orbit(RING['center'], 1500, yaw=K.lerp(-6, 4.5, K.EASE['easy_ease'](K.ramp(t, t0, t0 + 5, 'linear'))),
+                       pitch=7, aperture=18, focus_dist=1500 - rz * math.cos(math.radians(tilt)))
+
 def orbit_tags(t, t0=B(24)):
-    rz, tilt = 300.0, 20.0
-    cam = K.Cam.orbit((0, 60, 0), 1500, yaw=K.lerp(-6, 4.5, K.EASE['easy_ease'](K.ramp(t, t0, t0 + 5, 'linear'))),
-                      pitch=7, aperture=18, focus_dist=1500 - rz * math.cos(math.radians(tilt)))
+    cam = tags_cam(t, t0)
     cv = K.background('airy', t, cam)
-    hero = S3.get('heart', 'day')
+    hero = S3.get('<hero_prop>', 'day')
     enter = [K.ramp(t, t0 + 0.25 * i, t0 + 0.25 * i + 0.35, 'out_cubic') for i in range(len(TAGS))]
-    ui.orbit_ring(cv, cam, TAGS, phase=(t - t0) * 0.05, center=(0, 60, 0), radius=(430, rz), tilt=tilt, roll=6,
-                  look='airy', enter=enter,
-                  mid=lambda c: K.draw_billboard(c, hero.float_yaw(t, 12, 4.0), cam, (0, 60, 0), 420))
+    ui.orbit_ring(cv, cam, TAGS, phase=(t - t0) * 0.05, look='airy', enter=enter,
+                  mid=lambda c: K.draw_billboard(c, hero.float_yaw(t, 12, 4.0), cam, (0, 60, 0), 420), **RING)
     return cv
-# Thumbnails: ('Siblings', F.still('<site photo>', 140, 140, look='airy'), 'siblings'). Check every frame that each
-# tag stays inside x 70-1010 and out of the like/share column. Parked tags must all be readable (give explicit slots
-# if the ring hides some). In a set, tilt and roll each ring differently. SFX: pop per tag, whoosh_by on turns.
+
+def check_tags(t0=B(24), t1=B(24) + 6.0):  # <module>_dev.py: every frame of the ring, every tag
+    W = [ui.tag(s, look='airy').w for s in TAGS]
+    for f in range(round(t0 * K.FPS), round(t1 * K.FPS)):
+        t, cam = f / K.FPS, tags_cam(f / K.FPS, t0)
+        res = ui.orbit_ring(np.zeros((K.H, K.W, 4), np.float32), cam, TAGS, phase=(t - t0) * 0.05, look='airy', **RING)
+        for i, (x, y), dep, fw in res:
+            half = 0.5 * W[i] * RING['size'] * (1 - 0.2 * (1 - fw)) * cam.focal / dep   # back tags scale 0.8
+            assert 70 <= x - half and x + half <= 1010, (t, TAGS[i], x - half, x + half)
+            assert not (1050 - 42 <= y <= 1700 + 42 and x + half > 930), (t, TAGS[i], x + half, y)   # tag h 84
+# Thumbnails: (COPY['tag5'], F.still('<site photo>', 140, 140, look='airy'), 'tag5'). Wider rings or longer tags
+# leave the safe zone (radius 430 put a tag at x 15-235): re-run check_tags after any change to RING, TAGS or the
+# camera. Parked tags must all be readable (give explicit slots if the ring hides some). In a set, change tilt and
+# roll per ring and re-check. SFX: pop per tag, whoosh_by on turns.
 ```
 
 ## Counter and slot digits
 
 ```python
-C0, C1, VALUE = B(5), B(8), 447.60        # VALUE comes from the verified-copy table, never invented
+C0, C1 = B(5), B(8)
+VALUE, CUR, DEC = float(COPY['fig_value']), '<currency>', 2   # the verified figure (as a number), its symbol, decimals
 
 @functools.lru_cache(maxsize=1)
 def counter_assets():
-    return T.Counter('gold', px=150, prefix='£', decimals=2), K.Track([(C0, 0.0, 'out_expo'), (C1, VALUE)])
+    return T.Counter('gold', px=150, prefix=CUR, decimals=DEC), K.Track([(C0, 0.0, 'out_expo'), (C1, VALUE)])
 
 def counter(cv, t):
     cnt, trk = counter_assets()
@@ -281,7 +318,8 @@ def counter(cv, t):
 def counter_cues():
     return [dict(t=C0, name='slot_tick', align='start', params=dict(dur=C1 - C0)),
             dict(t=C1, name='cash_kaching'), dict(t=C1, name='coin_ring', gain_db=-3)]
-# Set prefix / decimals / sep for the brand's currency. Keep blur_cap at 0.12 (the default): legible gold streaks.
+# Always pass prefix (the default is '£'), decimals and sep for the brief's currency and format; the settled value
+# must read exactly as the copy table writes it. Keep blur_cap at 0.12 (the default): legible gold streaks.
 ```
 
 ## Extruded 3D slam, light sweep and deep glow
@@ -289,10 +327,10 @@ def counter_cues():
 ```python
 @functools.lru_cache(maxsize=1)
 def type_assets():
-    hero = T.render('YOU', 'extrude3d', px=250, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35, env=0,
-                    ambient=0.74, spec=0.65, depth=0.24, angle=-70, persp=0.08,
-                    side=(('#9A1066', 1), ('#22041C', 1)), rim_color=('HOT_PINK', 1.4))
-    sub = T.Glyphs('Foster Carer?', 'deep_glow', px=132, glow_color=('ORANGE', 2.4), scrim=0.8)
+    hero = T.render(COPY['hero_word'], 'extrude3d', px=250, fill=('MAGENTA', 'HOT_PINK', 'ORANGE'), fill_angle=35,
+                    env=0, ambient=0.74, spec=0.65, depth=0.24, angle=-70, persp=0.08,
+                    side=(('PLUM', 1), ('NIGHT_0', 1)), rim_color=('HOT_PINK', 1.4))   # sides: the brand's darks
+    sub = T.Glyphs(COPY['hero_sub'], 'deep_glow', px=132, glow_color=('ORANGE', 2.4), scrim=0.8)
     return hero, sub
 
 def type_slam(cv, t, t0=B(7)):
@@ -302,7 +340,7 @@ def type_slam(cv, t, t0=B(7)):
     hero.draw(cv, 540, 860, scale=s, opacity=K.ramp(t, t0 - 0.03, t0 + 0.05), sweep=sw if 0 < sw < 1 else None)
     sub.rise(cv, t, 540, 1080, t0=t0 + 0.5)
 # In 3D with parallax: hero.draw_plane(cv, cam, (0, 30, -60), rot=(0, 0, 0), sweep=sw).
-# Gold variant: T.render('£447.60', 'gold', px=210). Warm sweep on light looks: sweep_kw=dict(color='AMBER').
+# Gold variant: T.render(COPY['fig_text'], 'gold', px=210). Warm sweep on light looks: sweep_kw=dict(color='AMBER').
 # Camera shake on the slam: dx, dy, rot = K.shake(t, 9 * K.impulse(t, t0, 8), 15). SFX: impact_big (+ sub_drop) on
 # t0, riser ending on t0, shimmer at the sweep.
 # Hand-off: when a Glyphs animation settles into a static sprite, the glow and scrim fade on their own ramps so
@@ -313,8 +351,9 @@ def type_slam(cv, t, t0=B(7)):
 
 ```python
 E0, TC = B(42), B(47)                      # card starts, cursor click; settled hold >= 1.5 s after the cursor leaves
-CTA, LINE = 'Start your enquiry', 'example.com'           # verified copy only
-LOGO_FILE = 'logo_full_onDark.png'        # the brand's light-on-dark logo file in <WS>/brand/ (light looks: the normal one)
+CTA, LINE = COPY['cta'], COPY['url']      # verified copy only (ui.button's default text is another client's)
+LOGO_FILE = 'logo_full_onDark.png'        # derived light-on-dark logo in <WS>/brand/; use logo_full_onDark_official.png
+                                          # when the client supplied one (BRAND.md), logo_full.png on light looks
 
 @functools.lru_cache(maxsize=1)
 def end_assets():

@@ -1,5 +1,5 @@
 ---
-description: How the main session runs a 9:16 motion-graphics reel project end to end with the reels-studio agent team. The stages are intake, the creative-director brief, parallel 3D asset and timeline builds on placeholders, sound and music, a full-quality render by the lead, two-lens QA with an independent verifier per major finding, fixes by the original builder, a re-render and delivery. It also covers CPU and RAM budgets (4-core cloud versus a 24-core 16 GB PC), file ownership, status updates, measured stage times, container-reset recovery, git hygiene when other sessions share the branch, and the full production-lessons checklist. Bundles qa_measure.py (objective QA measurements).
+description: How the main session runs a 9:16 motion-graphics reel project end to end with the reels-studio agent team. The stages are intake with the brand kit, the creative-director brief, parallel 3D asset and timeline builds on placeholders, sound and music, a full-quality render by the lead, burned captions for speech reels, two-lens QA with an independent verifier per major finding, fixes by the original builder, a re-render and delivery. It also covers CPU and RAM budgets (4-core cloud versus a 24-core 16 GB PC), file ownership, status updates, measured stage times, container-reset recovery, git hygiene when other sessions share the branch, and the full production-lessons checklist. Bundles qa_measure.py (objective QA measurements).
 when_to_use: Use at the start of any reel or motion-graphics project, when planning, resuming or recovering one, when deciding which agent runs next or how many can run at once, and before rendering, QA or delivery.
 ---
 
@@ -14,49 +14,66 @@ is the measuring tool for QA and delivery.
 ## Team
 | agent (`reels-studio:<name>`) | stage | owns |
 |---|---|---|
-| creative-director | brief, re-plans | `pipeline/<project>/BRIEF.md` |
-| reference-analyst, trend-researcher | intake research | their reports |
-| script-hook-writer | hooks and on-screen lines from the copy table | the copy section it is given |
-| footage-editor | clip moments, crop centres, ramps, grades | shot tables (in the brief or module) |
-| blender-3d-artist | 3D props, logo marks, glyphs | `assets3d_*.py` builders, `<WS>/assets3d/<name>/` |
-| motion-timeline-builder (one per reel or section) | timelines | `<module>.py`, `<module>_fx.py`, `<module>_dev.py` |
-| motion-toolkit-engineer | toolkit features, brand kit profile | the toolkit modules, `<brand>_kit.py` |
-| sound-designer | SFX cues, custom sounds, mix, stem | `<module>_sfx.py`, `<WS>/audio/<module>_*` |
-| music-supervisor | music on the BPM grid, licence, music mix | music files and its mix notes |
+| brand-kit-builder | brand kit, right after scaffolding | project.json palette/font_map/google_fonts/logo_src/site, `BRAND.md`, `brand_src/` |
+| creative-director | brief, re-plans, merging approved copy | `pipeline/<project>/BRIEF.md` |
+| reference-analyst, trend-researcher | intake research | `refs/<slug>.md`, `research/TRENDS_<date>.md` |
+| script-hook-writer | hooks and on-screen lines from the copy table | `pipeline/<project>/COPY.md` |
+| footage-editor | clip moments, crop centres, ramps, grades | `<module>_shots.py` |
+| blender-3d-artist | 3D props, logo marks, glyphs | its `assets3d_<set>.py` builders, `<WS>/assets3d/<name>/` |
+| motion-timeline-builder (one per reel or section) | timelines | `<module>.py` and `<module>_*.py` helpers except `_sfx`, `_music`, `_shots` |
+| motion-toolkit-engineer | toolkit features; looks, grades, canvas and overrides project.json can't express | the toolkit modules, `<brand>_kit.py` |
+| sound-designer | SFX cues, custom sounds, SFX mix and stem | `<module>_sfx.py`, `<WS>/audio/<module>_sfx*` |
+| music-supervisor | music map and key, track, licence, final music mix | `<module>_music.py`, `MUSIC_<module>.md`, `media/<project>/music/`, `<WS>/audio/<module>_m*` |
+| caption-designer | burned captions + SRT for speech | `pipeline/<project>/captions/`, `<WS>/captions/`, `<WS>/out/<module>_cap/` |
 | motion-qa-reviewer | lens A, lens B, verify mode | `<WS>/out/<module>/qa/` only |
 | delivery-packager | exports, LFS commit, push | the delivery folder |
 
-Skills: /reels-studio:new-reel-project scaffolds pipeline/<project>/ from ${CLAUDE_PLUGIN_ROOT}/toolkit, and
-/reels-studio:saas-motion-styles is the look and device recipe book.
+Paths without a folder are in `pipeline/<project>/`. Skills: /reels-studio:new-reel-project scaffolds
+pipeline/<project>/ from ${CLAUDE_PLUGIN_ROOT}/toolkit, /reels-studio:saas-motion-styles is the look and device
+recipe book, and /reels-studio:trending-captions is the caption script caption-designer runs.
+
+Subagents cannot talk to the user, start other agents or wait for an answer. Each one returns "Open questions";
+you ask the user and re-run it with the answers.
 
 ## Stages
 1. **Intake (you).** Collect:
    - the client doc (Google Doc: `curl -sL "https://docs.google.com/document/d/<ID>/export?format=txt"`);
    - the website URL, footage link, logo and brand files, and reference reels;
    - platforms, the number of reels, durations, deadline, and audio policy (SFX only or with music; licence);
-   - whether the reels run as paid ads (stricter safe zone).
-   Ask once, as one consolidated list. Scaffold with /reels-studio:new-reel-project. Footage goes to the
-   workspace (pre-extracted frames).
+   - whether the reels run as paid ads (stricter safe zone), whether there is speech (captions), and any credit
+     ceiling for AI music.
+   Ask once, as one consolidated list. Scaffold with /reels-studio:new-reel-project, which runs brand-kit-builder
+   right after the copy (palette, fonts and logos in project.json, BRAND.md). Footage goes to the workspace
+   (pre-extracted frames); local source files go into Git LFS at once (Container reset, step 2).
 2. **Brief.** Run reference-analyst (and trend-researcher, if useful) first, in parallel. creative-director then
-   writes BRIEF.md: deliverables, brand tokens, the verified-copy table, a per-scene timeline on a BPM grid, the
-   look matrix (a distinct look and device set per reel), the SFX plan and the module contract. script-hook-writer
-   writes hooks and lines from the copy table. **Gate:** the user approves the copy, figures, looks and hooks.
-   Ambiguous figures stay out until the client answers.
+   writes BRIEF.md from BRAND.md and their reports: deliverables, brand tokens, the verified-copy table, a per-scene
+   timeline on a BPM grid, the look matrix (a distinct look and device set per reel), the SFX plan and the module
+   contract. script-hook-writer writes hooks and lines to COPY.md from the copy table. **Gate:** the user approves
+   the copy, figures, looks and hooks. Ambiguous figures stay out until the client answers. After the gate,
+   creative-director (revision run) merges the approved COPY.md hook and lines into BRIEF.md §6 before builds start.
 3. **Builds, in parallel.**
-   - A new brand gets its kit profile from motion-toolkit-engineer before the builders start.
-   - blender-3d-artist renders the brief's assets list. footage-editor picks moments and crops for footage shots.
+   - Brand palette and fonts are already in project.json. motion-toolkit-engineer runs first only if the look
+     matrix needs a look, grade or canvas the toolkit lacks, or an override of its hard-coded preset colours
+     (listed in BRAND.md).
+   - blender-3d-artist renders the brief's assets list. footage-editor writes `<module>_shots.py` for footage shots.
    - One motion-timeline-builder per reel (per section for reels over ~30 s, with one named dispatcher owner) starts
      at once on labelled placeholders. They switch automatically when `<WS>/assets3d/<name>/<variant>/meta.json`
      appears.
    - Builders iterate with sheets, stills, range renders and previews at `--workers 1`.
-4. **Sound.** Once a reel's events are locked, sound-designer builds its cues and mix, and music-supervisor (if there
-   is music) delivers music on the BPM grid.
-   - Targets: SFX only, -18 LUFS; with music, about -14 LUFS; ≤ -2.0 dBTP either way.
-   - A custom mix must not be overwritten by render.py's automatic rebuild (`--no-sfx-build`, or `--audio <wav>`).
-   - Sound can start from the shot list while timelines are polished.
+4. **Sound.** Once a reel's events are locked:
+   - SFX only: sound-designer writes `<module>_sfx.py` and builds the mix (-18 LUFS, ≤ -2.0 dBTP).
+   - With music: music-supervisor run 1 (music map + key) → sound-designer (SFX in that key, -18 LUFS stem) →
+     music-supervisor run 2 (final mix, about -14 LUFS, ≤ -2.0 dBTP).
+   - Then the builder replaces its draft cues with `from <module>_sfx import cues, BED, BED_GAIN_DB`.
+   - Each returns the render flag that keeps its mix: `--no-sfx-build` (SFX only) or `--audio <WS>/audio/<module>_mix.wav`.
 5. **Full-quality render (you, sequential).** One reel at a time, in the background:
-   `nice -n 10 python3 render.py <module> --workers <N>`, with N from the budget table. Check
-   `render_stats.json` (s/frame, `worker_max_rss_mb`) and Read a few frames before QA.
+   `nice -n 10 python3 render.py <module> --workers <N> --no-sfx-build` (SFX only) or
+   `... --audio <WS>/audio/<module>_mix.wav` (with music), once the sound team has delivered; N from the budget
+   table. Without either flag, render.py rebuilds the SFX wav at -1.5 dBTP whenever `<module>.py` is newer than
+   it, overwriting the -2.0 mix. Check `render_stats.json` (s/frame, `worker_max_rss_mb`) and Read a few frames.
+   **5b. Captions (speech reels only).** caption-designer burns onto the CRF 14 master and writes
+   `<WS>/out/<module>_cap/<module>_cap.mp4`. QA lens A then runs on `<module>_cap.mp4`, and delivery packages
+   `<module>_cap`.
 6. **QA.**
    - Run two motion-qa-reviewer instances in parallel per reel: lens A (copy, layout, legibility, safe zones) and
      lens B (motion, transitions, finish, audio sync).
@@ -65,9 +82,10 @@ Skills: /reels-studio:new-reel-project scaffolds pipeline/<project>/ from ${CLAU
      PARTLY findings go to fixing.
 7. **Fixes.** Each confirmed finding goes to the owner of the file (builder, sound, 3D, toolkit), never to whoever is
    free. Owners prove each fix with range renders across the affected time ±0.4 s plus the measurement that
-   failed.
-8. **Re-render** the full master (stage 5). A regression QA pass then re-measures the fixed ranges, runs `probe`
-   and `audio`, and checks a fresh 5 fps sheet. Repeat stages 6-8 until there are no blockers or majors.
+   failed. If a fix moves or adds any event time, re-run sound-designer (and music-supervisor) before the
+   re-render; they rebuild at tp_ceiling -2.0. Captions are re-burned after any picture change.
+8. **Re-render** the full master (stage 5, same flag). A regression QA pass then re-measures the fixed ranges, runs
+   `probe` and `audio`, and checks a fresh 5 fps sheet. Repeat stages 6-8 until there are no blockers or majors.
 9. **Delivery.** delivery-packager makes the exports, verifies them with ffprobe, and commits with LFS, fetch, merge
    and push. Send the user the preview, the deliverables table and the cover.
 
@@ -77,7 +95,7 @@ Each render worker holds its own caches and uses about 2 GB. `draw(t)` must stay
 | | 4-core cloud container (~14 GB limit) | i9 PC, 24 cores / 32 threads, 16 GB, WSL2 |
 |---|---|---|
 | full render | 4 workers, alone, under `nice` | 4 workers (RAM-bound, not core-bound); 3 if WSL has its default 8 GB |
-| builder iteration | `--workers 1`, at most 2-3 builders rendering at once | `--workers 1-2`, up to 4 builders |
+| builder iteration | `--workers 1`, at most 2-3 builders rendering at once | total live render workers across all agents ≤ 4 (≤ 3 on WSL's default 8 GB): e.g. 4 builders at `--workers 1`, or 2 at `--workers 2`; a Blender job counts as one worker |
 | Blender | threads 2 under `nice`; ~1.5 h per 1,000 frames | GPU (RTX 4060) if the builder supports it; 10-15 min per 1,000 frames |
 | during a full render | agents write code only; no other renders | light work only (sheets, QA decoding) |
 
@@ -92,12 +110,17 @@ Each render worker holds its own caches and uses about 2 GB. `draw(t)` must stay
 - One owner per file. The shared toolkit (core, type3d, ui, footage, sprites3d, audio, render, package,
   setup_workspace) is read-only for builders. Changes go through motion-toolkit-engineer, and bugs are reported,
   not patched.
-- `cues()` lives in the timeline module, which the builder owns. If the sound designer must change cue lists,
-  make `cues()` a one-line delegate to `<module>_sfx.cues()`, so each file still has one owner.
+- `cues()` starts as the builder's draft in the timeline module. Once sound-designer takes over, the builder makes it
+  the one-line delegate `from <module>_sfx import cues, BED, BED_GAIN_DB`, so each file still has one owner.
+- render.py decides SFX staleness only from the reel module's mtime, so cue edits in `<module>_sfx.py` never trigger
+  a rebuild. Render with `--no-sfx-build` after the sound designer's own build (or `--sfx` to force render.py's
+  -1.5 dBTP rebuild for a quick preview).
 - Change the brief only through creative-director. Mark the change and tell every affected owner.
 - QA never edits. Builders never run full masters; the lead owns the render queue.
 - When a fix spans two owners, split it, and say who goes first.
-- Agents commit only the paths they own (`git add <paths>`, never `git add -A`).
+- Agents running in parallel only `git add <owned paths> && git commit` (never `git add -A`). They never fetch,
+  merge or push: you fetch, merge and push after each hand-back. delivery-packager, which runs alone at the end, is
+  the exception. On `index.lock`, an agent waits 5 s and retries.
 
 ## Status updates to the user
 Post at every gate and about every 30 minutes during long stages. Keep each update to four or five lines:
@@ -124,17 +147,22 @@ For a new set with the toolkit ready, plan about 4-5 h in the cloud from approve
 ## Container reset and recovery
 Cloud containers reset. Git-ignored workspace data and running jobs are lost; only pushed commits survive.
 1. `git status`, `git fetch origin && git merge --no-edit origin/<branch>`.
-2. In the toolkit folder: `python3 setup_workspace.py [--footage]` rebuilds fonts, brand files, site photos and
-   footage frames.
+2. In the toolkit folder: `python3 setup_workspace.py` rebuilds fonts, logos and site photos from project.json; run
+   the restore block in BRAND.md (logo crops, official reversed logo, font-weight copies). Footage: with a
+   `drive_folder`, `python3 setup_workspace.py --footage`; local source footage lives in Git LFS at
+   `media/<project>/footage/` (put it there as soon as it arrives), so `git lfs pull --include="media/<project>/*"`
+   and re-extract frames (footage-editor's commands).
 3. 3D: `git lfs pull --include="media/<project>/*"` then `tar -xf media/<project>/assets3d.tar -C <WS>`, or
    re-render with the builders. After every set of final 3D renders, archive them:
    `tar -cf media/<project>/assets3d.tar -C <WS> assets3d`, `git lfs track "media/<project>/*.tar"`, commit and
    push.
-4. SFX mixes rebuild from `cues()` (or the sound designer's build command). Re-run renders that were in flight.
+4. SFX mixes: re-run the sound designer's build command (`<module>_sfx.py`, tp -2.0) and music-supervisor's mix;
+   licensed or AI music comes back from `media/<project>/music/` in LFS. Re-run renders that were in flight.
 5. Make a sheet per module to confirm the state before continuing.
 
 ## Git hygiene
 - Commit and push early and often: after the brief, after each agent hand-back, and after each render or fix round.
+  Agents commit their own paths; you do every fetch, merge and push (delivery-packager excepted).
 - Other sessions may push to the same branch. Before every push, `git fetch` and merge, resolving conflicts by
   keeping both sides' intent. Never force-push, and never rebase published commits.
 - Masters and tarballs go in Git LFS. Never commit the workspace.

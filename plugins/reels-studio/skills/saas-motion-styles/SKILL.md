@@ -13,11 +13,12 @@ code for each device is in ${CLAUDE_SKILL_DIR}/recipes.md.
 **Palette roles, not hex values.** Each look names roles: base, primary glow, secondary/rim, accent, text, and
 data/money. Map each role to the client's brand tokens in the brief. Token names in the examples (`'MAGENTA'`,
 `'ORANGE'`, `'AMBER'`, `'PLUM'`, `'INK'`, `'IVORY'`) are the toolkit's colour roles. A project re-points them to its
-brand in one of two ways:
-- through `pipeline/<project>/project.json` `"palette"` and `"font_map"`, if the toolkit has wsconf.py (see
-  TOOLKIT.md);
-- through a brand kit profile from reels-studio:motion-toolkit-engineer.
-Never hard-code another client's hex values in a timeline.
+brand in `pipeline/<project>/project.json` `"palette"` and `"font_map"` (read by wsconf.py; see its docstring),
+written by reels-studio:brand-kit-builder. Toolkit presets with hard-coded hex (extrude3d/chrome sides, ink_soft,
+`K.LOOKS` bloom and black tints, the ui amber tint) need a profile from reels-studio:motion-toolkit-engineer;
+BRAND.md lists them. Several widgets also default to the original client's copy (`ui.app_window` title and header,
+`ui.button` text, `T.Counter` prefix `£`): always pass those arguments. Never hard-code another client's hex values
+or copy in a timeline.
 
 **Rules every look keeps:**
 - Key copy inside x 70-1010, y 230-1480. A CTA may reach y 1600. Nothing textual below y 1620, and no copy at
@@ -224,7 +225,7 @@ Never hard-code another client's hex values in a timeline.
 | Video-in-type + zoom-through | `T.VideoType(word, px, look)`; `vt.draw(cv, clip.get(t, 1080, 1920, look='natural'), x, y)`; `vt.zoom(u, vt.zoom_point('U'), x, y, s1=46)` then `vt.draw(cv, foot, **z)`; `K.zoom_blur(cv, 0.12*u)` | very heavy letters, high-contrast faces in the letter band; `T.measure` <= 940 px; 7 samples during the zoom; the screen-locked footage lands on the next full-frame shot |
 | Iris montage hook | `K.glow(K.ring(300, 4, col), glow_col, (8, 28, 80), 1.3)` built once; a circular mask of radius r(t) (`K.spring` open, `K.ramp` blow-out); `clip.get(..., zoom=1.22->1.0)` per flash | 6-8 flashes on 8ths or triplets; faces centred in the iris; the shot index switches half a frame early; swish + tick per cut |
 | Light sweep | `ts.draw(..., sweep=K.ramp(t, t0, t1, 'inout_sine'), sweep_kw=dict(color=..., width=.09, angle=-32))`; `T.light_sweep(ts, u)`; panels `face_at(light=u)`; frame band `K.light_leak(cv, t, sweep=u)` | 0.6-1.0 s per pass; on white looks, a warm band; shimmer SFX |
-| Deep glow | `T.render(text, 'deep_glow', px, glow_color=(c, 2), scrim=0.8)` or `T.Glyphs(...).slam/rise`; for sprites `K.glow(spr, col, (8, 28, 80), 1.2)` built once | scrim 0.75-0.85 over footage; glow and scrim fade on their own ramps at hand-offs (no pop); the glow colour differs from the logo's colours |
+| Deep glow | `T.render(text, 'deep_glow', px=px, glow_color=(c, 2), scrim=0.8)` or `T.Glyphs(...).slam/rise`; for sprites `K.glow(spr, col, (8, 28, 80), 1.2)` built once | scrim 0.75-0.85 over footage; glow and scrim fade on their own ramps at hand-offs (no pop); the glow colour differs from the logo's colours |
 | Extruded 3D type | `T.render(word, 'extrude3d', px=250, fill=(c0, c1, c2), fill_angle=35, depth=.24, angle=-70, persp=.08, side=(...), rim_color=(...))`; `'gold'`, `'chrome'`; `ts.draw_plane(cv, cam, P, rot=...)` for parallax; slam `scale=K.lerp(1.6, 1, K.spring(t-t0, 3.2, .45))` | build in `prewarm()` (0.3-1.2 s); width <= 940 px; impact on the beat, riser ending on it |
 | Logo end card | flat `K.load_image(os.path.join(K.BRAND, '<logo>.png'), size=760)` or a 3D mark `S3.get('<mark>', '<variant>_anim').at_time(t - t0)` (last frame == yaw 0); a dark `K.radial` pool behind; `ui.button(cta, hover, press, ripple)` + `ui.draw_cursor('hand')`; particles masked off logo and copy | CTA body inside x 70-1010 with its bottom <= y 1600; any line in y 1050-1700 ends at x <= 930; nothing textual below y 1620; the logo is never recoloured or stretched; the cursor leaves, then the card holds settled >= 1.5 s; logo_sting at the resolve, ui_click + toggle_on on the press |
 

@@ -11,11 +11,15 @@ pixels (a re-layout for 1:1, a new end card), hand it back to the lead.
 ## Inputs
 - The module, its DUR, the client slug and reel slug, the destination folder (e.g. `reel/<client>/`), the platforms
   and variants, the cover time and captions needs. All of these come from the brief's Deliverables section
-  (`pipeline/<project>/BRIEF.md`). Ask if any are missing.
+  (`pipeline/<project>/BRIEF.md`). If any are missing, stop and list them under "Open questions".
 - The master: `<WS>/out/<module>/<module>.mp4` from render.py (CRF 14, AAC 320k 48 kHz). `<WS>` is the output of
   `python3 -c "import core; print(core.WS)"`, run in the project's toolkit folder (pipeline/<project>/,
   scaffolded from ${CLAUDE_PLUGIN_ROOT}/toolkit by /reels-studio:new-reel-project).
-- Stems in `<WS>/audio/`: `<module>_sfx_stem.wav`, plus a music or full-mix stem if the sound team made one.
+- Stems in `<WS>/audio/`: `<module>_sfx_stem.wav`, plus `_music_stem.wav` and `_mix_stem.wav` if music-supervisor
+  made them.
+- Speech reels: if reels-studio:caption-designer delivered `<WS>/out/<module>_cap/<module>_cap.mp4`, package module
+  `<module>_cap` (package.py then reads `<WS>/audio/<module>_cap_sfx_stem.wav`), and take the SRT from
+  `pipeline/<project>/captions/<module>.srt`.
 - The QA verdict. Package a master that QA has not passed only as a clearly named `_preview` for review.
 - Helper: `QA=${CLAUDE_PLUGIN_ROOT}/skills/reels-production-playbook/qa_measure.py`. If the path is not expanded:
   `find ~/.claude/plugins -name qa_measure.py -path '*reels-studio*' | head -1`.
@@ -27,10 +31,13 @@ Re-deliveries after client changes keep the names; git holds the history.
 
 ## Process (run from the repo root; prefix encodes with `nice -n 10` while renders share the CPU)
 1. Gate: `python3 $QA probe $M --dur <DUR>` on the master must be all PASS.
-2. Standard set. The project's `package.py` does steps 3, 4, 5 and the cover: `python3 package.py <module> <slug>
-   --cover <s> [--bitrate 22M]`. Read its docstring first. If its DEST folder or file prefix belongs to another
-   client, run the commands below instead (they are what it runs) and report it so
-   reels-studio:motion-toolkit-engineer can parameterise it. Never edit package.py yourself.
+2. Standard set. The project's `package.py` makes the 9:16 file, the master copy, the SFX stem and the cover:
+   `python3 package.py <module> <slug> --cover <s> [--bitrate 22M]` (run in the toolkit folder). It writes to
+   project.json `"deliver"` `"dir"` with prefix `"deliver"` `"prefix"` (default `reel/organic_fostering`,
+   `organic_fostering`: another client's). If that key is missing or wrong, stop and ask the lead to set it in
+   `pipeline/<project>/project.json` (plus its LFS line in .gitattributes); don't hand-run the set. Never edit
+   package.py. The raw commands below are for what package.py does not make (4:5, 1:1, preview, music and mix
+   stems) and document what it runs.
 3. 9:16 social file (one file serves Reels, TikTok and Shorts). Keep it under 100 MB: for DUR > ~34 s, lower
    `-b:v` to `0.9 x 800 / DUR - 0.3` Mbps.
    ```bash
@@ -42,8 +49,8 @@ Re-deliveries after client changes keep the names; git holds the history.
    ```
    `-c:a copy` keeps the master's AAC 320k. If the master's audio is anything else, use `-c:a aac -b:a 320k -ar 48000`.
 4. Master and stems: `cp $M ${B}_master.mp4`; copy each stem to its name. Check each stem with
-   `python3 $QA audio <stem>`: it must be pcm_s24le at 48000 Hz, -18 LUFS (SFX only) or about -14 (with music),
-   and <= -2.0 dBTP.
+   `python3 $QA audio <stem>`: all pcm_s24le 48 kHz and <= -2.0 dBTP; `_sfx_stem` -18 LUFS ±0.5; `_mix_stem` -14
+   ±0.5; `_music_stem` has no LUFS target.
 5. Cover. Pick candidates from the hook title, hero or payoff: settled frames with no motion blur, eyes open, the
    title inside the safe zone and inside the 3:4 profile-grid crop (y 240-1680). Grab them with
    `python3 $QA frame $M <t> c_<t>.png` and compare sharpness with
@@ -70,14 +77,16 @@ Re-deliveries after client changes keep the names; git holds the history.
      -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 160k -ar 48000 \
      -movflags +faststart ${B}_preview.mp4
    ```
-8. SRT, only when the brief asks or the reel has voice-over. Use verified copy only, exactly as on screen, with
-   times from the shot list (cues.json and the module docstring). Captions are 1-2 lines of at most 42 characters
-   each and stay up at least 0.8 s, in `HH:MM:SS,mmm --> HH:MM:SS,mmm` format. Validate with
+8. SRT. If the reel has speech, copy caption-designer's `pipeline/<project>/captions/<module>.srt` to `$B.srt`
+   (a transcript of what is said). Write an SRT from on-screen copy only for reels without speech when the brief
+   asks: verified copy exactly as on screen, times from the shot list (cues.json and the module docstring), 1-2
+   lines of at most 42 characters, each up at least 0.8 s, `HH:MM:SS,mmm --> HH:MM:SS,mmm`. Validate with
    `ffprobe -v error -i $B.srt -show_entries packet=pts_time,duration_time -of csv=p=0`.
 9. Verify every video: `python3 $QA probe <file> --dur <DUR> --size <WxH> --max-mb <100|30>`. Expect 30/1, frames =
    DUR x 30, the duration, h264 High yuv420p, bt709 tags, AAC 48 kHz and faststart. Then
    `ls -l <dest>`. Any FAIL: fix it and re-run.
-10. Git (if the project uses it). Follow the session's commit-attribution rules.
+10. Git (if the project uses it). You run alone at the end, so unlike the other agents you fetch, merge and push.
+    Follow the session's commit-attribution rules.
     ```bash
     git lfs install --local
     git lfs track "<dest>/*_master.mp4"            # once per destination; commits .gitattributes

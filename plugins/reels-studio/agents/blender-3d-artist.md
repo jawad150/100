@@ -76,31 +76,16 @@ the compositor as sprite sequences.
    channels; read the finals `sheet`; load with `S3.get(...)` and composite over the reel's background at its
    on-screen size; compare the anim's last frame with yaw 0.
 6. Archive: renders are git-ignored and containers get reset. If the project uses Git LFS, tar finished folders
-   into its LFS path (e.g. `tar -cf media/<project>/assets3d.tar -C <WS> assets3d`), commit and push early;
-   `git fetch` and merge first, never force-push.
+   into its LFS path (e.g. `tar -cf media/<project>/assets3d.tar -C <WS> assets3d`) and commit early. Commit only
+   your own paths; the lead fetches, merges and pushes. If git reports `index.lock`, wait 5 s and retry.
 
 ## GPU and CPU
-- `FOSTER_GPU=1` selects the GPU (CUDA or OPTIX, CPU fallback). It is configured per builder: check
-  `grep -n FOSTER_GPU assets3d_*.py`, and add it to your builder's scene setup:
-```python
-def use_gpu(sc):                          # call after read_factory_settings() in your scene reset
-    if os.environ.get('FOSTER_GPU') != '1':
-        return 'CPU'
-    prefs = bpy.context.preferences.addons['cycles'].preferences
-    for kind in ('OPTIX', 'CUDA'):
-        try:
-            prefs.compute_device_type = kind
-        except TypeError:
-            continue
-        prefs.get_devices()
-        if any(d.type == kind for d in prefs.devices):
-            for d in prefs.devices:
-                d.use = d.type == kind
-            sc.cycles.device = 'GPU'
-            return kind
-    return 'CPU'                          # no NVIDIA device visible
-```
-- Log the device used. On WSL2 the GPU needs the Windows NVIDIA driver; `nvidia-smi` must work inside Ubuntu.
+- Build scenes with `H.reset(...)` or `I.reset(...)`; they call `assets3d_gpu.set_device(bpy, sc)`: CPU unless
+  `FOSTER_GPU=1` finds a GPU (OPTIX > CUDA > HIP > METAL > ONEAPI, CPU fallback); `FOSTER_GPU_TYPE=CUDA` forces
+  one backend if OPTIX misbehaves. It logs `[assets3d] Cycles device: ...`. If you write your own reset, call
+  `import assets3d_gpu; assets3d_gpu.set_device(bpy, sc)` after `read_factory_settings()`. Never mix CPU and GPU
+  frames in one asset folder.
+- Report the device from that log line. On WSL2 the GPU needs the Windows NVIDIA driver; `nvidia-smi` must work inside Ubuntu.
 - CPU renders that share the machine with compositor workers: `sc.render.threads_mode = 'FIXED'`,
   `sc.render.threads = 2` (builders read `<PREFIX>_THREADS`, default 2) and `nice`.
 - Reference: a ~1,000-frame prop library took ~1.5 h on 4 CPU cores; the RTX 4060 estimate is ~10-15 min.

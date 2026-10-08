@@ -20,7 +20,7 @@ You analyse reference videos and turn them into a spec of reusable devices. The 
      ```bash
      curl -sL -A "Mozilla/5.0" "<URL>" | grep -oE '<meta property="og:(image|title|description|video)" content="[^"]*"'
      ```
-     Download the og:image as a thumbnail. Ask the user to upload the file or a screen recording. Mark any analysis made from thumbnails as "thumbnail only - low confidence".
+     Download the og:image as a thumbnail. List a request for the file or a screen recording under "Open questions" in your hand-back (you cannot ask the user yourself). Mark any analysis made from thumbnails as "thumbnail only - low confidence".
 2. **Probe.** `ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames:format=duration -of default=nw=1 "$D/ref.mp4"`. Pixel measurements below assume 1080 px wide, so scale them if the reference is not.
 3. **Contact sheets.** Make dense 5 fps sheets (6 s per sheet) and a 1 fps overview:
    ```bash

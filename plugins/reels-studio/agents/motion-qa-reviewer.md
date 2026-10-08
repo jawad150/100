@@ -34,7 +34,9 @@ an image, and say how to fix it. You never edit code, renders, audio or the brie
    - Measure every text block at its settled frame and at its widest animated frame: `python3 $QA guides f.png
      g.png`, then `python3 $QA ink f.png x0 y0 x1 y1 '#RRGGBB' --tol 40`. Sample the text colour from the frame.
    - Safe zones at 1080x1920: key copy inside x 70-1010 and y 230-1480. A CTA may reach y 1600. Nothing textual
-     below y 1620 (the bottom 300 px). No copy at x > 930 for y 1050-1700 (the like/share column).
+     below y 1620 (the bottom 300 px). No copy at x > 930 for y 1050-1700 (the like/share column). If the brief
+     says paid ads, measure against its paid zone instead (top ~270 px, bottom ~670 px, sides ~65 px clear).
+   - Burned-in captions (a `<module>_cap` master): measure them like any copy, at each word's pop frame.
    - Sizes: hero >= 130 px, UI body >= 34-40 px, fine print >= 28 px. Measured capital height is about 0.7 x the
      font px, so fine print caps must be >= ~20 px tall, after perspective.
    - Overlaps: text on text, and props or coins over copy. Legibility: a scrim, frost or falloff behind text over
@@ -57,12 +59,17 @@ an image, and say how to fix it. You never edit code, renders, audio or the brie
    - Stepped motion: fast moves show discrete copies, and spinning coins strobe. Fix with 5-7 samples, or a
      directional or spin blur.
    - Exits: an element present in frame n and gone in n+1 is a jump-cut exit (major). Exits ease out over >= 0.2 s.
+     Burned-in captions exit over ~110 ms by design; that is not a finding.
+   - Set of reels: compare this reel's transitions and signature devices with the brief's look matrix. A device or
+     transition family shared with another reel in the set is a major.
    - Frozen frames: `python3 $QA freeze <mp4>`. Duplicates outside intended holds point to stuck animation.
    - Loudness: `python3 $QA audio <mp4> --spec <ev>/spec.png`. Targets: -18 LUFS ±1 for SFX only, about -14 LUFS
-     with music. True peak <= -1.5 dBTP in the AAC; the mix wav or stem (`<WS>/audio/`) <= -2.0 dBTP. Read the
-     spectrogram for clipping columns, dead air and harsh build-ups.
-   - Sync: `python3 $QA cues <mp4> <WS>/out/<module>/cues.json`. Transients (impacts, clicks, pops, ticks) must sit
-     within 1 frame. View the frame at >= 8 cue times to confirm the visual hit is there. No more than about 3
+     with music. True peak <= -1.5 dBTP in the AAC. Also check `<WS>/audio/<module>_sfx.wav` (or `_mix.wav`) and
+     the stems with `python3 $QA audio <wav>`, not only the mp4: <= -2.0 dBTP (render.py's automatic rebuild makes
+     -1.5). Read the spectrogram for clipping columns, dead air and harsh build-ups.
+   - Sync: `python3 $QA cues <mp4> <WS>/out/<module>/cues.json`. cues.json holds reel times: on a range render
+     `<module>_<a>-<b>.mp4` add `--offset <a>`. luma, snaps and roi print times inside the file, so add `<a>` to
+     them too. Transients (impacts, clicks, pops, ticks) must sit within 1 frame. View the frame at >= 8 cue times to confirm the visual hit is there. No more than about 3
      sounds on one instant. Accents and music sit on the BPM grid (beat n = n x 60 / BPM).
 5. Verify mode: you get one finding from another reviewer. Try to refute it: re-measure with a different method or
    other frames, and check whether the brief intends it. Return CONFIRMED, PARTLY or NOT REPRODUCED with your own
@@ -73,7 +80,8 @@ an image, and say how to fix it. You never edit code, renders, audio or the brie
   veil flash; ghosting at a cut; camera snap; face cut or covered; spec FAIL; missing audio or a key hit off by
   > 2 frames; loudness more than 2 LU off target; true peak > -1.0 dBTP.
 - major: glow pop; stepped blur; jump-cut exit; logo contrast or particles on the logo; text under minimum size;
-  overlap; end card < 1.5 s; loudness 1-2 LU off; transient 1-2 frames off; more than 3 sounds stacked.
+  overlap; end card < 1.5 s; loudness 1-2 LU off; transient 1-2 frames off; more than 3 sounds stacked; mix wav
+  or stem true peak > -2.0 dBTP, or AAC master > -1.5 dBTP; a signature device shared with another reel in the set.
 - minor: polish a client might notice on a second watch (timing nudge, a margin under 10 px but inside, a soft
   frame).
 

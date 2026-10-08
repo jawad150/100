@@ -215,6 +215,7 @@ def load_words(path):
 
 
 def transcribe(media, a, out_json):
+    os.makedirs(os.path.dirname(os.path.abspath(out_json)) or '.', exist_ok=True)   # before the long transcription
     try:
         from faster_whisper import WhisperModel
     except ImportError:
@@ -307,22 +308,33 @@ def rrect(w, h, r):
 
 # ------------------------------------------------------------------------------------------------ layout
 def layout(disp, emph, P, M, max_w, max_lines):
-    """Split a phrase into <= max_lines balanced lines. Returns (lines [[idx..]], widths, gap, shrink)."""
+    """Split a phrase into <= max_lines balanced lines. Returns (lines [[idx..]], widths, gap, shrink).
+    Lines are fitted at their PEAK width: any one word at the active-word pop scale (plus its pill), centred on
+    the line centre, must stay inside max_w, so a single wide word that pops cannot reach the like/share column."""
     widths = [M.adv(d) * (P['emph_scale'] if e else 1.0) for d, e in zip(disp, emph)]
     gap = M.adv(' ') * P['word_gap'] + 2 * P.get('out_px', 0.0) + P.get('extra_gap', 0.0)   # outline-independent
     lw = lambda seq: sum(widths[i] for i in seq) + gap * (len(seq) - 1)
+    pop, pad, opx = P['pop'], P.get('pill_pad', 0.0), P.get('out_px', 0.0)
+
+    def span(seq):                                 # peak width around the line centre (outer outline excluded)
+        L = lw(seq)
+        x, m = -L / 2, L / 2
+        for i in seq:
+            m = max(m, abs(x + widths[i] / 2) + 0.5 * (widths[i] + pad) * pop + opx * (pop - 1))
+            x += widths[i] + gap
+        return 2 * m
     n = len(disp)
     lines = [list(range(n))]
-    if lw(lines[0]) > max_w and max_lines >= 2 and n >= 2:
+    if span(lines[0]) > max_w and max_lines >= 2 and n >= 2:
         best = None
         for k in range(1, n):
             a, b = list(range(k)), list(range(k, n))
             weak = re.sub(r'[^\w]', '', disp[k - 1].lower()) in WEAK_END
-            score = (max(lw(a), lw(b)) * (1.2 if weak else 1.0), lw(a) > lw(b))   # balanced, no weak line end
+            score = (max(span(a), span(b)) * (1.2 if weak else 1.0), lw(a) > lw(b))   # balanced, no weak line end
             if best is None or score < best[0]:
                 best = (score, [a, b])
         lines = best[1]
-    widest = max(lw(l) for l in lines)
+    widest = max(span(l) for l in lines)
     shrink = min(1.0, max_w / widest) if widest > 0 else 1.0
     return lines, widths, gap, shrink
 
@@ -394,6 +406,8 @@ def build(a):
     pill = a.pill and P['mode'] == 'words'
     if pill:
         P['extra_gap'] = 0.30 * em               # room for the pill padding between words
+        if not P.get('box'):                     # boxed: the phrase box already covers the pill padding
+            P['pill_pad'] = 0.56 * em
     if a.pill and not pill:
         print('note: --pill applies to bold-pop and boxed only; ignored.')
 
@@ -413,8 +427,7 @@ def build(a):
         max_w = a.max_width * sx
     else:                                           # safe width around cx; the caption band overlaps the column zone
         half = min(cx - SAFE['x0'] * sx, SAFE['col_x'] * sx - cx)
-        max_w = 2 * half - 2 * out_px - 2 * padx
-        max_w *= (1.0 / (1 + (P['pop'] - 1) * 0.5))
+        max_w = 2 * half - 2 * out_px - 2 * padx    # layout() fits lines at peak pop / pill width inside this
     max_w = max(200.0, max_w)
 
     words = load_words(a.input_json)
@@ -520,9 +533,20 @@ def build(a):
         W = max(line_w)
         cap = M.cap * shrink
         desc = 0.0 if case == 'upper' else 0.22 * em * shrink
+        top_y, bot_y = Y - (nl - 1) / 2 * lh, Y + (nl - 1) / 2 * lh
         bx0, bx1 = cx - W / 2 - out_px, cx + W / 2 + out_px
-        by0 = Y - (nl - 1) / 2 * lh - cap / 2 - out_px - 0.04 * em
-        by1 = Y + (nl - 1) / 2 * lh + cap / 2 + desc + out_px
+        by0 = top_y - cap / 2 - out_px - 0.04 * em
+        by1 = bot_y + cap / 2 + desc + out_px
+        if P['mode'] == 'words' and (P['pop'] > 1 or pill):   # QA bbox at the active word's PEAK scale (+ pill)
+            pk = P['pop']
+            ppad = 0.56 * em * shrink if pill else 0.0
+            for j in range(len(ws)):
+                x, _, wpx = pos[j]
+                hx = max(0.5 * wpx + out_px, 0.5 * (wpx + ppad)) * pk
+                bx0, bx1 = min(bx0, x - hx), max(bx1, x + hx)
+            hy = max(cap / 2 + out_px, 0.5 * (cap + ppad)) * pk
+            by0 = min(by0, top_y - hy - 0.04 * em)
+            by1 = max(by1, bot_y + hy + desc * pk + P['rise'] * em / 3)   # entry rise is ~1/3 left at the peak
         if P.get('box'):
             bw, bh = W + 2 * padx, (nl - 1) * lh + cap + 2 * pady
             byc = Y + 0.05 * em * shrink if case != 'upper' else Y     # room for descenders
@@ -637,16 +661,17 @@ def build(a):
 
         # ---- safe-zone check (reference px)
         r = dict(x0=bx0 / sx, x1=bx1 / sx, y0=by0 / sy, y1=by1 / sy)
+        tol = 0.5                                  # px tolerance: a line fitted exactly to the limit is not a hit
         prob = []
-        if r['x0'] < SAFE['x0'] or r['x1'] > SAFE['x1']:
+        if r['x0'] < SAFE['x0'] - tol or r['x1'] > SAFE['x1'] + tol:
             prob.append('outside x %d-%d' % (SAFE['x0'], SAFE['x1']))
-        if r['y0'] < SAFE['y0']:
+        if r['y0'] < SAFE['y0'] - tol:
             prob.append('above y %d' % SAFE['y0'])
-        if r['y1'] > SAFE['floor']:
+        if r['y1'] > SAFE['floor'] + tol:
             prob.append('below y %d (bottom UI)' % SAFE['floor'])
-        elif r['y1'] > SAFE['y1']:
+        elif r['y1'] > SAFE['y1'] + tol:
             prob.append('below y %d (key-copy limit)' % SAFE['y1'])
-        if r['y1'] > SAFE['col_y0'] and r['y0'] < SAFE['col_y1'] and r['x1'] > SAFE['col_x']:
+        if r['y1'] > SAFE['col_y0'] and r['y0'] < SAFE['col_y1'] and r['x1'] > SAFE['col_x'] + tol:
             prob.append('enters the like/share column (x > %d at y %d-%d)' % (SAFE['col_x'], SAFE['col_y0'], SAFE['col_y1']))
         for q in prob:
             warns.append('SAFE-ZONE phrase %d at %.2fs "%s": %s (bbox x %.0f-%.0f, y %.0f-%.0f)' % (
