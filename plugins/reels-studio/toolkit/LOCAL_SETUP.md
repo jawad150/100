@@ -108,6 +108,13 @@ claude auth login
 ```
 `claude auth login` opens a browser. Sign in with the same claude.ai account; no password is typed into the terminal.
 
+Then install the Reels Studio plugin once (the 14 agents and 4 skills for future projects):
+```bash
+claude plugin marketplace add jawad150/100
+claude plugin install reels-studio@jawad-reels --scope user
+```
+In a new project folder, run `claude` and say *"Start 3 reels for <client website>"*, or `/reels-studio:new-reel-project <slug> <website>`. The README section "Reels Studio" has the full list.
+
 ## 11. Bring the cloud conversation to your PC
 Teleport needs a clean `git status`, the branch pushed to GitHub, and the same claude.ai account.
 ```bash
