@@ -28,6 +28,8 @@ LOOKS (pass the name wherever the toolkit takes a look: K.background, K.post, ui
 TYPE STYLES (T.render(text, style, px=...); T.Glyphs(text, style, px=...))
     'jw_key'      the house keyword: Instrument Serif Italic, amber->flame->red vertical gradient, hot inner glow,
                   deep flame/red glow ("yaadein", "younger self", "AI video ad").  hero 150-260 px.
+    'jw_key_core' + 'jw_key_halo'  jw_key split into per-glyph core (glow <= 0.36 em) + one wide halo block
+                  (draw both at the same anchor; HouseTitle does this so per-glyph animators stay ~2x cheaper).
     'jw_key3d'    the same keyword as a 3D extrusion (ember sides, amber rim light) for big 3D moments.
     'jw_neon'     serif-italic neon tube (signage).
     'jw_caps'     white uppercase grotesk (Poppins SemiBold, +6 % tracking, warm halo + soft shadow) - "MEETING MY".
@@ -315,6 +317,11 @@ def apply():
         stroke=0.008, stroke_color='#FF7A1C', bevel=0.012, profile='soft', ambient=0.78, spec=0.35, shininess=20,
         glow=1.0, glow_color=('#FF4A1A', 1.3), glow_radii=(0.04, 0.12, 0.36, 0.8), glow_weights=(0.4, 0.4, 0.35, 0.3),
         shadow=0.35, shadow_offset=(0.0, 0.04), shadow_blur=0.08)
+    # the same keyword split in two (HouseTitle): per-glyph core + tight glow, and the wide halo drawn as one block
+    # (a per-glyph 0.8 em glow made the rise ~2x slower); core + halo == jw_key
+    S['jw_key_core'] = S['jw_key'].but(name='jw_key_core', glow_radii=(0.04, 0.12, 0.36), glow_weights=(0.4, 0.4, 0.35))
+    S['jw_key_halo'] = T.Style(name='jw_key_halo', font=SERIF, px=210, tracking=-0.005, face=False, glow=1.0,
+                               glow_color=('#FF4A1A', 1.3), glow_radii=(0.8,), glow_weights=(0.3,))
     S['jw_key3d'] = S['extrude3d'].but(
         name='jw_key3d', font=SERIF, fill=flame, fill_angle=-90, fill_gain=1.15, bevel=0.012, profile='round',
         ambient=0.72, spec=0.55, env=0.0, rim_color=('AMBER', 1.4), inner_shadow_color='PLUM', depth=0.14,
@@ -442,8 +449,10 @@ class HouseTitle:
         cw = T.measure(caps, caps_style, px=caps_px)[0] if caps else 0
         if cw > max_w:
             caps_px *= max_w / cw
-        self.key = T.Glyphs(key, key_style, px=key_px)
-        self.key_static = T.render(key, key_style, px=key_px)
+        split = key_style == 'jw_key'
+        self.key = T.Glyphs(key, 'jw_key_core' if split else key_style, px=key_px)
+        self.key_static = T.render(key, 'jw_key_core' if split else key_style, px=key_px)
+        self.halo = T.render(key, 'jw_key_halo', px=key_px) if split else None
         self.caps = T.render(caps, caps_style, px=caps_px) if caps else None
         self.key_px, self.caps_px = key_px, caps_px
         self.gap = gap * key_px
@@ -465,6 +474,9 @@ class HouseTitle:
             self.caps.draw(cv, x, cy + 28 * (1 - uc), opacity=op * K.ramp(t, t0, t0 + caps_dur * 0.7, 'inout_sine'),
                            blur=6 * (1 - uc))
         tk = t0 + key_t
+        if t >= tk and self.halo is not None:
+            hk = K.ramp(t, tk, tk + 0.5 + 0.03 * len(self.key_txt), 'inout_sine')
+            self.halo.draw(cv, x, y, opacity=op * hk)
         if t >= tk:
             if t - tk < 1.2 or op < 1:
                 self.key.rise(cv, t, x, y, t0=tk, stagger=0.03, dur=0.5, dist=0.3, blur=7, scale0=0.94,
