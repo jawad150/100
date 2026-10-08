@@ -8,13 +8,15 @@ Importing this module gives a Floret profile of the whole toolkit WITHOUT editin
                 HOT_PINK, AMBER, LEAF, PLUM, INK, NIGHT_0/1 ...) are re-pointed at gold equivalents (BRAND_REMAP);
                 the originals stay as OF_MAGENTA, OF_ORANGE, ... (this process only - Organic Fostering renders
                 are untouched).
-    fonts       General Sans everywhere (aliases 'display' 700, 'display2'/'head' 600, 'ui' 500, 'body' 400,
+    fonts       General Sans everywhere (downloaded from Fontshare automatically if workspace/fonts lacks it) (aliases 'display' 700, 'display2'/'head' 600, 'ui' 500, 'body' 400,
                 'light' 300, 'thin' 200); Nunito / Poppins / Caveat still resolve by full name.
     looks       'gold' (onyx void, gold aurora, electric-blue accent) and 'pearl' (ivory/champagne daylight) for
                 core.background / core.post / ui widgets / footage grades.
     type styles extrude3d_gold, chrome_gold, gradient_gold, deep_glow_gold, neon_gold, glass_pill_gold
                 (+ every Organic Fostering preset: flat ui ui_ink extrude3d chrome gold deep_glow neon gradient ...).
     outputs     workspace4/kit_out/<module>/ (renders, sheets, selftest), workspace4/audio/ (SFX mixes).
+    currency    Pakistani rupee: icons 'rupee' and 'coin_rs' ('pound' / 'coin' draw them too in Floret processes),
+                ui.money() and T.Counter default to 'Rs '; kit.money(12500) -> 'Rs 12,500'.
     3D objects  kit.obj('logo' | 'goldbar' | 'silverbar' | 'barrel' | 'coin' | 'shield') -> the Floret Blender
                 sequences (workspace4/b3d2) as linear premultiplied sprites; the toolkit's own assets
                 (S3.get('shield_check', 'night'), orbs, check_tile, star_badge, ...) still load from workspace3.
@@ -76,6 +78,12 @@ GS = {w: 'GeneralSans-%d' % w for w in (200, 300, 400, 500, 600, 700)}
 FONT_MAP = {'Nunito-Black': GS[700], 'Nunito-ExtraBold': GS[600], 'Nunito-Bold': GS[600], 'Nunito-SemiBold': GS[500],
             'Poppins-Bold': GS[600], 'Poppins-SemiBold': GS[500], 'Poppins-Medium': GS[500],
             'Poppins-Regular': GS[400]}
+
+# Pakistani rupee ("Rs") on the toolkit's 24-unit icon grid: R (stem, bowl, leg) + a small s.
+RUPEE = ['M4.3 19V5h4.5a3.5 3.5 0 0 1 0 7H4.3', 'M8.3 12l3.6 7',
+         'M20.2 13.4c-.5-.9-1.4-1.4-2.5-1.4-1.4 0-2.4.8-2.4 1.9 0 2.6 5.1 1.4 5.1 4 0 1.2-1.1 2.1-2.7 2.1'
+         '-1.1 0-2.1-.5-2.6-1.3']
+CURRENCY = 'Rs '
 
 _STATE = {'applied': False, 'canvas': (K.W, K.H, K.FPS)}
 
@@ -161,10 +169,45 @@ def _font_farm():
                     except OSError:
                         pass
     missing = [f for f in GS.values() if not os.path.exists(os.path.join(dst, f + '.ttf'))]
+    if missing and _fetch_general_sans():
+        return _font_farm()
     if missing:
         print('kit: General Sans weights missing in %s: %s (download: api.fontshare.com/v2/fonts/download/'
               'general-sans)' % (dst, ', '.join(missing)), file=sys.stderr)
     return dst
+
+
+GS_URL = 'https://api.fontshare.com/v2/fonts/download/general-sans'
+GS_FILES = {'Extralight': 200, 'Light': 300, 'Regular': 400, 'Medium': 500, 'Semibold': 600, 'Bold': 700}
+
+
+def _fetch_general_sans():
+    """Download General Sans (Fontshare, free licence) into workspace/fonts as GeneralSans-<weight>.ttf.
+    Only the six static TTFs are read from the zip; nothing in it is executed. Returns True on success."""
+    import io
+    import urllib.request
+    import zipfile
+    dst = os.path.join(REPO, 'workspace', 'fonts')
+    if _STATE.get('gs_fetch_tried'):
+        return False
+    _STATE['gs_fetch_tried'] = True
+    try:
+        data = urllib.request.urlopen(GS_URL, timeout=60).read()
+        zf = zipfile.ZipFile(io.BytesIO(data))
+        os.makedirs(dst, exist_ok=True)
+        got = 0
+        for info in zf.infolist():
+            base = os.path.basename(info.filename)
+            stem = base[len('GeneralSans-'):-len('.ttf')] if base.startswith('GeneralSans-') and \
+                base.endswith('.ttf') else None
+            if '/WEB/fonts/' in info.filename and stem in GS_FILES:
+                with open(os.path.join(dst, 'GeneralSans-%d.ttf' % GS_FILES[stem]), 'wb') as f:
+                    f.write(zf.read(info))
+                got += 1
+        return got == len(GS_FILES)
+    except Exception as e:  # offline / blocked: keep going with whatever fonts exist
+        print('kit: General Sans download failed (%s)' % e, file=sys.stderr)
+        return False
 
 
 def _fonts():
@@ -273,6 +316,26 @@ def _background(look='neon', *a, **kw):
         K._BG_LOOKS['airy'] = keep
 
 
+# ============================================================================================ currency
+def _currency():
+    """Rupee icons ('rupee', 'coin_rs'; 'pound' / 'coin' re-pointed at them, originals as 'of_pound' / 'of_coin')
+    and 'Rs ' as the default symbol of ui.money() and the prefix of type3d.Counter."""
+    D = ui.ICON_DEFS
+    if 'of_pound' not in D:
+        D['of_pound'], D['of_coin'] = D['pound'], D['coin']
+    D['rupee'] = list(RUPEE)
+    D['coin_rs'] = [('circle', 12, 12, 9.8)] + [('s', d, (0.5, 12.2, 12.2)) for d in RUPEE]
+    D['pound'], D['coin'] = D['rupee'], D['coin_rs']
+    ui.ICONS = tuple(D)
+    for fn in (ui.money, T.Counter.__init__):
+        _retarget(fn, {'symbol': ('\u00a3', CURRENCY), 'prefix': ('\u00a3', CURRENCY)})
+
+
+def money(v, decimals=0, symbol=CURRENCY):
+    """money(12500) -> 'Rs 12,500'."""
+    return ui.money(v, decimals, symbol)
+
+
 # ============================================================================================ paths
 def _paths():
     out = os.path.join(WS4, 'kit_out')
@@ -323,6 +386,7 @@ def apply():
         return
     _fonts()
     _looks()
+    _currency()
     _paths()
     K.background = _background
     canvas()
@@ -356,7 +420,7 @@ def _st_dashboard(t=3.0):
     cam = K.Cam(aperture=14)
     cv = K.background(lk, t, cam)
     win = ui.app_window(w=980, h=860, look=lk, title='floretcapitals.com', header='Markets', sub='PSX · PMEX',
-                        icons=('home', 'chart', 'coin', 'globe', 'settings'), active=1)
+                        icons=('home', 'chart', 'rupee', 'globe', 'settings'), active=1)
     x, y, sw, sh = win.meta['slot']
     face = win.face_at(sweep=0.35)
     cx = x
@@ -395,7 +459,7 @@ def _st_components(lk):
     ui.place(cv, ui.search_bar('KSE-100', n=7, t=0, w=int(680 * s), look=lk, placeholder='Search markets'),
              420 * s, 960)
     ui.place(cv, ui.steps(2.4, 5, int(760 * s), lk, labels=None), 450 * s, 1090)
-    for i, nm in enumerate(['home', 'chart', 'coin', 'globe', 'shield', 'star', 'bell', 'search', 'clock', 'key',
+    for i, nm in enumerate(['home', 'chart', 'rupee', 'coin', 'globe', 'shield', 'star', 'bell', 'search', 'clock',
                             'user', 'settings']):
         ui.place(cv, ui.icon(nm, 56, L.text, stroke=2.0, glow=0.5 if L.dark else 0.0, glow_color=L.accent_hi),
                  (80 + (i % 12) * 88) * s, 1190)

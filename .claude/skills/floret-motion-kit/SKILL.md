@@ -49,8 +49,9 @@ FLORET_FPS=30 python3 kit.py ...` (or `kit.canvas(1080, 1920, 30)` before buildi
 - Copy: only claims the client provided (Pakistan's leading brokerage house, 12,000+ active clients
   nationwide, PSX and PMEX access, gold / silver / crude oil, expert insights, built on trust,
   floretcapitals.com). Do not invent figures, prices or returns.
-- Icons: `ui.icon('chart' | 'globe' | 'shield' | 'star' | 'bell' | ...)`. Avoid `coin` and `pound` (they draw a
-  £ sign).
+- Currency is the Pakistani rupee: icons `rupee` (Rs) and `coin_rs` (`pound` / `coin` draw them too in Floret
+  processes; the toolkit's £ versions are `of_pound` / `of_coin`). `ui.money()` and `T.Counter` default to
+  `'Rs '`; `kit.money(12500)` -> `Rs 12,500`. Other icons: `ui.ICONS` (chart, globe, shield, star, bell, ...).
 
 ## Look rules (from the client's reference)
 
@@ -60,6 +61,6 @@ Every scene clears before the next enters. Check stills before any full render.
 
 ## Data and setup
 
-`workspace*/` is git-ignored. Fonts: `workspace/fonts/GeneralSans-*.ttf` (from
-api.fontshare.com/v2/fonts/download/general-sans) and `workspace3/fonts/` (toolkit fonts); `kit.py` links both
-into `workspace4/fonts/`. Python: numpy, opencv-python-headless, pillow, scipy, fonttools, bpy (Blender).
+`workspace*/` is git-ignored. Fonts: `workspace/fonts/GeneralSans-*.ttf` (kit.py downloads them from Fontshare
+on first import when missing) and `workspace3/fonts/` (toolkit fonts); `kit.py` links both into
+`workspace4/fonts/`. The Floret 3D objects are re-rendered with `pipeline/floret/render_b3d.sh` (~1 h on 4 cores). Python: numpy, opencv-python-headless, pillow, scipy, fonttools, bpy (Blender).
