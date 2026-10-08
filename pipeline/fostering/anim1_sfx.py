@@ -381,9 +381,8 @@ def cues():
     q(B(3), 'marker_swipe', 0, 0.0, 'start', dur=0.32)
     q(B(3) + 0.15, 'shimmer', -9)
     q(B(4), 'pen_write', 0, -0.1, 'start', dur=1.15, rate=5.0)
-    q(B(4) + 0.15, 'backpack_thud', -6, 0.0)          # alarm clock lands (felt thud) ...
-    q(B(4) + 0.16, 'clock_rattle', -2, 0.05)           # ... and its bells rattle once
-    q(B(4) + 0.75, 'clock_tick', -4, 0.05, n=4, interval=0.3)
+    q(B(4) + 0.15, 'clock_rattle', 0, 0.05)            # the alarm clock's bells rattle once
+    q(B(4) + 0.9, 'clock_tick', -5, 0.05, n=6, interval=0.3)
     q(3.62, 'pen_write', -2, 0.25, 'start', dur=0.4, rate=7.0)
     # slide to sheet B
     q(5.40, 'paper_slide', 0, 0.0, dur=0.34)

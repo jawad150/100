@@ -399,7 +399,7 @@ def _rise(t, t0, dur=0.55):
 
 
 def draw_text_world(cv, ts, tc, wx, wy, t, t_in, t_out=None, out_dur=0.35, sweep=None, anchor=(0.5, 0.5),
-                    sweep_kw=None, scale=1.0, opacity=1.0):
+                    sweep_kw=None, scale=1.0, opacity=1.0, label=None):
     """Text anchored at a world point, drawn in 2D through the text camera (pixel-locked at holds)."""
     if t < t_in:
         return
@@ -419,7 +419,7 @@ def draw_text_world(cv, ts, tc, wx, wy, t, t_in, t_out=None, out_dur=0.35, sweep
         x, y = round(x), round(y + dy)
     else:
         y = y + dy * k
-    _rec_text(ts, x, y, s, anchor, op)
+    _rec_text(ts, x, y, s, anchor, op, label)
     ts.draw(cv, x, y, anchor=anchor, scale=s, opacity=op, blur=bl, snap=snap,
             sweep=sweep if sweep is not None and 0 < sweep < 1 else None, sweep_kw=sweep_kw)
 
@@ -492,10 +492,10 @@ def _chip_state(i, t):
     """(out 0..1 along the spoke, opacity) of chip i."""
     t0 = T_CHIPS + 0.125 * i
     o = K.ramp(t, t0, t0 + 0.42, 'out_back') if t < T_SNAP else 1.0
-    if t >= T_SNAP - 0.12:
-        b = K.ramp(t, T_SNAP - 0.12 + 0.03 * (4 - i), T_SNAP + 0.1, 'in_back')
+    if t >= T_SNAP - 0.25:
+        b = K.ramp(t, T_SNAP - 0.25 + 0.03 * (4 - i), T_SNAP - 0.01, 'in_back')
         o *= 1 - b
-    op = K.ramp(t, t0, t0 + 0.1) * (1 - K.ramp(t, T_SNAP + 0.02, T_SNAP + 0.1))
+    op = K.ramp(t, t0, t0 + 0.1) * (1 - K.ramp(t, T_SNAP - 0.08, T_SNAP - 0.01))
     return K.clamp(o, -0.2, 1.3), op
 
 
@@ -503,7 +503,7 @@ def _num_state(t):
     """(scale, opacity) of the hook number: slam at 0, out into the chips at B3, re-forms at B5, breaks at B6."""
     if t < T_CHIPS:
         sp = K.spring(t + 0.03, freq=2.6, damping=0.38)
-        return K.lerp(1.15, 1.0, sp), 1.0
+        return K.lerp(1.12, 1.0, sp), 1.0
     if t < T_SNAP:
         u = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.16, 'in_cubic')
         return 1.0 - 0.6 * u, 1.0 - u
@@ -539,11 +539,11 @@ def scene_hook(t, n_samples):
     # 3D question mark (pops on B2, half spin to face-on, floats)
     if t >= T_Q - 0.02:
         sp = K.spring(t - T_Q, freq=2.4, damping=0.45)
-        out = K.ramp(t, T_BREAK, T_BREAK + 0.35, 'in_back')
+        out = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.2, 'in_cubic')
         yaw = -40.0 * (1 - K.spring(t - T_Q, freq=1.8, damping=0.5)) + 10.0 * math.sin(t * 1.9)
         spr = A['q3'].at_yaw(yaw)
-        Pq = (QM_W[0], QM_W[1] - 600.0 * out + 10 * math.sin(t * 2.3), QM_W[2])
-        X.draw_prop(cv, c, spr, Pq, 330.0 * max(0.0, sp) * (1 - 0.3 * out), opacity=1 - out)
+        Pq = (QM_W[0], QM_W[1] - 120.0 * out + 10 * math.sin(t * 2.3), QM_W[2])
+        X.draw_prop(cv, c, spr, Pq, 330.0 * max(0.0, sp) * (1 - 0.5 * out), opacity=1 - out)
         if t < T_Q + 0.4:
             qx, qy, _ = screen_of(c, QM_W[0], QM_W[1])
             X.local_glow(cv, qx, qy, 260.0, 'mag', 0.6 * K.impulse(t, T_Q, decay=6.0))
@@ -562,9 +562,10 @@ def scene_hook(t, n_samples):
         _rec_text(Ty['num'], x, y, s * k, (0.5, 0.5), op, '£447.60')
     # per week (rises on B1, leaves into the chips with the number)
     if t >= T_PERWEEK:
-        o_out = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.14) * (1 - K.ramp(t, T_SNAP, T_SNAP + 0.12))
-        o_brk = K.ramp(t, T_BREAK, T_BREAK + 0.18)
-        draw_text_world(cv, Ty['perweek'], tc, *PW_W, t, T_PERWEEK, opacity=(1 - o_out) * (1 - o_brk))
+        o_out = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.14) * (1 - K.ramp(t, T_SNAP + 0.04, T_SNAP + 0.16))
+        o_brk = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.06)
+        draw_text_world(cv, Ty['perweek'], tc, *PW_W, t, T_PERWEEK, opacity=(1 - o_out) * (1 - o_brk),
+                        label='per week')
     # question (per-glyph slam on B2)
     if t >= T_Q:
         qx, qy, k = screen_of(tc, *Q_W)
@@ -577,7 +578,7 @@ def scene_hook(t, n_samples):
     if t >= T_BREAK - 0.02:
         _draw_break(cv, c, t, n_samples)
     for i, ts in enumerate(Ty['msg']):
-        draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i)
+        draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i, label='msg%d' % i)
     near_layer(cv, c, t)
     return cv
 
@@ -673,7 +674,7 @@ def scene_message(t, n_samples):
     draw_stations(cv, c, t, n_samples)
     _draw_break(cv, c, t, n_samples)
     for i, ts in enumerate(Ty['msg']):
-        draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i)
+        draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i, label='msg%d' % i)
     near_layer(cv, c, t)
     return cv
 
@@ -891,7 +892,8 @@ def _draw_station_text(cv, tc, t):
             continue
         if t > LEAVE.get(st, 1e9) + 1.2:
             continue
-        draw_text_world(cv, Ty['head'][st], tc, S[0], S[1] + HEAD_DY, t, t_in, t_out=t_out, out_dur=0.6)
+        draw_text_world(cv, Ty['head'][st], tc, S[0], S[1] + HEAD_DY, t, t_in, t_out=t_out, out_dur=0.6,
+                        label='head ' + st)
 
 
 def scene_stations(t, n_samples):
@@ -1152,9 +1154,9 @@ def _draw_final(cv, c, tc, t, n_samples):
                              opacity=op, snap=False)
         g = K.impulse(t, T_NUM2, decay=5.0)
         X.local_glow(cv, x, y, 420.0, 'gold', 0.5 * g)
-    draw_text_world(cv, Ty['perchild'], tc, S[0], wy(F_PC_Y), t, T_PC)
-    draw_text_world(cv, Ty['stmt'], tc, S[0], wy(F_ST_Y), t, T_STMT)
-    draw_text_world(cv, Ty['ask'], tc, S[0], wy(F_ASK_Y), t, T_ASK)
+    draw_text_world(cv, Ty['perchild'], tc, S[0], wy(F_PC_Y), t, T_PC, label='per child')
+    draw_text_world(cv, Ty['stmt'], tc, S[0], wy(F_ST_Y), t, T_STMT, label='statement')
+    draw_text_world(cv, Ty['ask'], tc, S[0], wy(F_ASK_Y), t, T_ASK, label='ask')
     # CTA pill (pops on B45), cursor click on B46.5
     if t >= T_BTN:
         import ui
@@ -1170,8 +1172,8 @@ def _draw_final(cv, c, tc, t, n_samples):
                  opacity=K.ramp(t, T_BTN, T_BTN + 0.1))
         if X.REC is not None and settled:
             X.REC.append(('text', (x - BTN_W / 2, y - BTN_H / 2, x + BTN_W / 2, y + BTN_H / 2), 1.0, 'CTA pill'))
-    draw_text_world(cv, Ty['phone'], tc, S[0], wy(F_PH_Y), t, T_PH)
-    draw_text_world(cv, Ty['foot'], tc, S[0], wy(F_FOOT_Y), t, T_PH + 0.06)
+    draw_text_world(cv, Ty['phone'], tc, S[0], wy(F_PH_Y), t, T_PH, label='phone')
+    draw_text_world(cv, Ty['foot'], tc, S[0], wy(F_FOOT_Y), t, T_PH + 0.06, label='Weekly allowance footer')
     # cursor: enters from the right at pill height, clicks the arrow, leaves the same way
     if T_CLICK - 0.75 <= t < T_CLICK + 0.6:
         import ui

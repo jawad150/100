@@ -667,3 +667,61 @@ _PROPS = {}
 def register_prop(p):
     _PROPS[id(p)] = p
     return id(p)
+
+
+# ============================================================================================ house windows / blocks
+@functools.lru_cache(maxsize=2)
+def house_states(prop_id, yaw=-10.0):
+    """(off, on, glow) sprites of the house at `yaw`: 'on' is the render (glowing ORANGE panes + door glow),
+    'off' has the emissive pixels dimmed to dusky glass, 'glow' is an additive bloom of the lit panes."""
+    pr = _PROPS[prop_id]
+    spr = pr.sprite(yaw)
+    rgb8, a8 = _to_srgb8(spr)
+    r, g, b = [rgb8[..., i].astype(np.int32) for i in range(3)]
+    lit = (r > 225) & (g > 95) & (b < 175) & (r - b > 80) & (a8 > 180)
+    m = cv2.GaussianBlur(lit.astype(np.float32), (0, 0), 1.0)
+    m = np.clip(m * 1.6, 0, 1)
+    off = spr.copy()
+    dim = np.float32([0.10, 0.075, 0.11])
+    off[..., :3] = spr[..., :3] * (1 - m[..., None]) + m[..., None] * dim * spr[..., 3:4]
+    gl = np.zeros_like(spr)
+    src = (m * spr[..., 3])[..., None] * np.float32([1.0, 0.62, 0.26])
+    acc = 0.9 * cv2.GaussianBlur(src, (0, 0), 4.0) + 0.6 * cv2.GaussianBlur(src, (0, 0), 14.0)
+    gl[..., :3] = acc
+    for x in (off, gl):
+        x.setflags(write=False)
+    return off, spr, gl, float(m.sum())
+
+
+@functools.lru_cache(maxsize=2)
+def split_blocks(prop_id, yaw=0.0):
+    """Split the 3-block stack sprite into [(sprite, ground anchor frac, height px)] bottom -> top, cutting at the
+    two narrowest silhouette rows (the seams between the rounded blocks). None if it fails."""
+    pr = _PROPS[prop_id]
+    spr = pr.sprite(yaw)
+    a = spr[..., 3]
+    rows = np.nonzero(a.max(1) > 0.5)[0]
+    if len(rows) < 30:
+        return None
+    y0, y1 = rows[0], rows[-1] + 1
+    width = (a > 0.5).sum(1).astype(np.float32)
+    width = np.convolve(width, np.ones(3) / 3, mode='same')
+    hgt = y1 - y0
+    cuts = []
+    for frac in (1 / 3, 2 / 3):
+        c = y0 + int(frac * hgt)
+        lo, hi = c - int(0.09 * hgt), c + int(0.09 * hgt)
+        seg = width[lo:hi]
+        cuts.append(lo + int(np.argmin(seg)))
+    bounds = [y0] + cuts + [y1]
+    out = []
+    for i in range(3):
+        ya, yb = bounds[2 - i], bounds[3 - i]           # bottom block first
+        sub = np.zeros_like(spr)
+        sub[ya:yb] = spr[ya:yb]
+        cols = np.nonzero(sub[..., 3].max(0) > 0.3)[0]
+        cx = (cols[0] + cols[-1] + 1) / 2 if len(cols) else spr.shape[1] / 2
+        sub = np.ascontiguousarray(sub)
+        sub.setflags(write=False)
+        out.append((sub, (cx / spr.shape[1], yb / spr.shape[0]), float(yb - ya)))
+    return out

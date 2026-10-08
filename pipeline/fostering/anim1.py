@@ -608,20 +608,24 @@ def f4_ink(ink, bb, t, light):
 
 # ============================================================================================ props (after light)
 def props_frame1(cv, layer, lb, t, light):
-    """Morning: the alarm clock drops onto the desk under the handwritten line and rattles once."""
+    """Morning: the alarm clock sits on the desk below the question (revealed as the hook camera pulls back)
+    and rattles once at b4 as the handwritten line starts."""
     pr = A()['clock']
-    tl = B(4) + 0.15
-    dr = X.drop(t, tl - 0.30, 0.30, h0=420)
-    if dr is None:
+    cam = hook_cam(t)
+    x, y = w2s(cam, 540, 1530)
+    z = cam[2] if cam is not None else 1.0
+    if y - pr.height * z > H + 40:
         return
-    x, y = 540, 1530
-    rot = 0.0
-    if t > tl:
-        rot = 3.5 * math.sin((t - tl) * 62) * math.exp(-(t - tl) * 3.0)
+    tr = B(4) + 0.15
+    rot, hop = 0.0, 0.0
+    if t > tr:
+        d = t - tr
+        e = math.exp(-d * 3.2)
+        rot = 4.0 * math.sin(d * 62) * e
+        hop = 7.0 * abs(math.sin(d * 31)) * e
     yaw = -14 + 5 * math.sin(t * 0.8)
-    pr.shadow(cv, x, y, light, lift=dr['lift'], yaw=yaw, scale=dr['scale'], opacity=dr['opacity'])
-    lb.add(pr.draw(layer, x, y - dr['lift'] * 0.35, yaw=yaw, scale=dr['scale'], squash=dr['squash'],
-                   opacity=dr['opacity'], rot=rot))
+    pr.shadow(cv, x, y, light, lift=hop, yaw=yaw, scale=z)
+    lb.add(pr.draw(layer, x, y - hop, yaw=yaw, scale=z, rot=rot))
 
 
 # frame-2 props: ground point, landing time, base yaw
@@ -831,8 +835,7 @@ def props_frame3(cv, layer, lb, t, light):
             if t < t_land:
                 X_ = px
             sh_op = min(1.0, pop)
-            if g == 0:
-                _block_shadow(cv, X_, gy, light, lift, ks, spr, anc, sh_op)
+            _block_shadow(cv, X_ if t >= t_land else gx, gy, light, lift, ks, spr, anc, sh_op, g, t >= t_land)
             K_ = ks * pop
             lb.add(K.draw(layer, spr, X_, py if t < t_land else gy, scale=(K_ * sq[0], K_ * sq[1]),
                           rot=rot + wob, anchor=anc))
@@ -856,15 +859,23 @@ def props_frame3(cv, layer, lb, t, light):
                        opacity=dr['opacity'], rot=rot))
 
 
-def _block_shadow(cv, x, y, light, lift, ks, spr, anc, op):
-    c = X._contact()
-    w = 175
-    K.draw(cv, c, x + 4, y + 2, scale=(w * 1.3 / c.shape[1], w * 0.2 / c.shape[0]), opacity=0.55 * op)
+def _block_shadow(cv, x, y, light, lift, ks, spr, anc, op, g, landed):
+    """Tower block shadows on the paper: a cast silhouette away from the light once landed (the tower's
+    shadow), a contact shadow under the base block, and a soft growing shadow where a falling block will land."""
     (dx, dy), ln = light.shadow_dir()
-    off = 30 * min(ln, 3.0)
-    sil = _sil(spr)
-    K.draw(cv, sil, x + dx * off * 1.6, y + dy * off * 0.6, scale=(ks * 1.02, ks * 3.0 * 0.97), anchor=anc,
-           opacity=0.22 * op, blur=12)
+    base_y = TOWER[1]
+    if landed:
+        off = 26 * min(ln, 3.0) + 18 * g
+        sil = _sil(spr)
+        K.draw(cv, sil, x + dx * off, y + dy * off * 0.5 + 6, scale=ks, anchor=anc, opacity=0.24 * op, blur=10)
+        if g == 0:
+            c = X._contact()
+            K.draw(cv, c, x + 3, base_y + 2, scale=(230 / c.shape[1], 34 / c.shape[0]), opacity=0.6 * op)
+    else:
+        f = float(np.clip(1.0 - lift / 700.0, 0, 1)) ** 1.5
+        c = X._contact()
+        w = 150 + 120 * (1 - f)
+        K.draw(cv, c, x + dx * 20, y + 4, scale=(w / c.shape[1], w * 0.2 / c.shape[0]), opacity=0.45 * f * op)
 
 
 def props_frame4(cv, layer, lb, t, light):
@@ -919,12 +930,21 @@ def compose(sheet_id, t, fi):
         if 0 < su < 1:
             sweep = (su, -32.0, 0.035, 0.16, (1.0, 0.90, 0.78))
     elif sheet_id == 1:
+        su = K.ramp(t, B(20) + 0.15, B(20) + 0.95, 'inout_sine')
+        if 0 < su < 1:
+            sweep = (su, -32.0, 0.04, 0.24, (1.0, 0.90, 0.76))
         f2_path_ink(ink, bb, t)
         f2_ding_ink(ink, bb, t)
         f2_list_ink(ink, bb, t, light)
         if t >= T_F3 - 0.2:
             f3_ink(ink, bb, t, light)
     else:
+        su = max(K.ramp(t, B(27.5) + 0.2, B(27.5) + 1.0, 'inout_sine'), 0.0)
+        if 0 < su < 1:
+            sweep = (su, -32.0, 0.04, 0.24, (1.0, 0.88, 0.72))
+        su2 = K.ramp(t, 19.5, 20.5, 'inout_sine')
+        if 0 < su2 < 1:
+            sweep = (su2, -32.0, 0.05, 0.22, (1.0, 0.88, 0.72))
         f4_ink(ink, bb, t, light)
     cv = P.shade(sh, light, ink, bb.box, sweep=sweep, key=(sheet_id, fi))
     layer = np.zeros((H, W, 4), np.float32)
