@@ -118,7 +118,20 @@ The self-tests' own sample copy is the toolkit's fixture text from the earlier c
 
 ## 6. Measured render cost (`brand_smoke`, ember look, 1 worker, shared 4-core box under load 5-6)
 
-TIMINGS_PLACEHOLDER
+`python3 render.py brand_smoke --range 0 2 --samples N --workers 1` -> `workspace/jawad_reels/out/brand_smoke/render_stats.json`
+(copies `render_stats_s1.json` / `render_stats_s3.json`). Two runs each, because other agents shared the CPU:
+
+| samples | run | mean s/frame | median | p90 | max | worker peak RSS | load avg |
+|---|---|---|---|---|---|---|---|
+| 1 | first (before the halo split) | 0.53 | 0.46 | 0.75 | 1.94 (first frame, warm-up) | 789 MB | ~5 |
+| 3 | first | 1.10 | 0.97 | 1.75 | 1.97 | 955 MB | ~5 |
+| 1 | final | 0.63 | 0.62 | 0.90 | 1.22 | 752 MB | ~9 |
+| 3 | final | 0.99 | 0.92 | 1.54 | 1.73 | 952 MB | ~9 |
+
+3 samples cost only ~1.6-2x one sample because post + sRGB + encode run once per frame. The slowest frames are the
+keyword rise (t 0.4-0.6 s). Encode of the 60-frame range (yuv444 crf 8 intermediate + crf 14 master): 33-50 s.
+Planning figure for a 35 s reel (1050 frames, ember, 3 samples, no footage): ~1 s/frame/worker -> ~18 min on one
+worker, ~9-10 min on two (more for heavy 3D sprite or footage scenes); keep `--workers 1-2` on this shared box.
 
 Component costs (warm caches, 1 core, median of 5): `K.background('ember')` ~40-80 ms (bokeh layer ~0-35 ms;
 `neon` 53 ms), `K.post('ember')` ~130 ms (`neon` 138 ms in the same run; crush 27 ms), `K.post('noir_ember')`

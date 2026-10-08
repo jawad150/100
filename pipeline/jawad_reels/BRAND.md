@@ -1,5 +1,7 @@
 # Jawad (@jawad_mp4) - brand kit for the reels toolkit
 
+**Nickname: JD** (approved by Jawad for on-screen text, VO and a JD monogram; the handle on cards stays `@jawad_mp4`).
+
 Personal brand of Jawad, video editor / motion designer (video editing, motion graphics, AI video, cinematic
 storytelling) for a Pakistani + Indian audience. Voice-over and captions in Hinglish / Roman Urdu.
 Profile: https://www.instagram.com/jawad_mp4/ (not scraped: instagram.com rate-limits with 429; every value

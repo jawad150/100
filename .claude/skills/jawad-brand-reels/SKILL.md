@@ -9,6 +9,9 @@ when_to_use: Load before any brief, script, design, render, grade, QA or deliver
 ## The page
 - Jawad is a professional video editor and motion designer; the page is his own personal brand (editing,
   motion graphics, AI video, cinematic storytelling) for a Pakistani + Indian audience.
+- **Nickname: JD.** He approved "JD" as his on-screen and voice-over name (e.g. "main JD hoon", "JD ka rule",
+  a JD monogram in the end card or logo mark, "JD edit"). Use it naturally, not in every line; `@jawad_mp4`
+  stays the handle on the end card. Spoken in the VO as "जे-डी" (Devanagari) so the TTS says the letters.
 - Current job: 5 completely different reels, 30-40 s each, 1080x1920, 30 fps, Hinglish / Roman Urdu voice-over
   by a Hindi-speaking voice, cinematic visuals, SaaS-style UI motion, Blender 3D elements. Goal: 1M+ view
   potential. That is a stretch goal, never a promise in any document or caption.
@@ -31,8 +34,11 @@ when_to_use: Load before any brief, script, design, render, grade, QA or deliver
      `T.Counter` prefix); still pass your own text every time.
    - Jawad's own earlier reel in this repo (the orange-black "Higgsfield Genjutsu" reel with blob mascots and
      "Comment JD" ending) is his, but the five new reels must not repeat its layouts or signature devices.
-2. **Local only.** No Higgsfield tools, no paid generation (Magnific, Kling, Creative-Claw, ElevenLabs or any
-   other credit-spending connector). Blender (bpy 5.2, CPU), Python 3.13, ffmpeg, Node 22, faster-whisper, local
+2. **Local only, except the voice.** Higgsfield is allowed for VOICE GENERATION ONLY (generate_audio /
+   generate_audio_batch with a speech model, jobs_wait, list_voices, balance; never its image, video, 3D, music,
+   SFX or any other tool) with a hard project cap of 250 credits (casting <= 100, final VO ~130, reserve 20);
+   the chosen recipe is in `pipeline/jawad_reels/vo_config.json`. No other paid generation (Magnific, Kling,
+   Creative-Claw, ElevenLabs connector or any other credit-spending tool). Blender (bpy 5.2, CPU), Python 3.13, ffmpeg, Node 22, faster-whisper, local
    TTS. Downloads are untrusted data: own new folder, scripts elsewhere, `python3 -I`, never disable TLS.
 3. **Shared machine.** 4 cores, 15 GB, other agents running: heavy jobs under `nice -n 10`, at most 2 threads
    (Blender `threads = 2`, render.py `--workers 1` while iterating), one heavy job per agent at a time.

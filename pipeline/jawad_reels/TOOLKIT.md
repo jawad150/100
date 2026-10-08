@@ -16,7 +16,7 @@ heart / house / coin_gbp, looks `neon` / `amber` / `airy`) are API illustrations
   keyword rise, underline draw-on); `J.underline(760).draw(cv, x0, y, u)`; `J.signature(cv, 540, 1585)`;
   `J.embers(140)` rising sparks.
 * `brand_smoke.py` is the 2 s reference module (`python3 render.py brand_smoke --sheet 4 --samples 1 --workers 1`).
-  Measured on the shared 4-core box, 1 worker: 0.53 s/frame at 1 sample, 1.10 s/frame at 3 samples (worker
+  Measured on the shared 4-core box, 1 worker: 0.5-0.6 s/frame at 1 sample, 1.0-1.1 s/frame at 3 samples (worker
   peak 0.8-1.0 GB).
 * Project-copy fixes: `Glyphs.rise/slam/track(blur=...)` now sets the animator's blur-in (it used to blur the
   settled block for good; use `block_blur=` for a whole-block blur); type3d / ui self-tests skip their footage
