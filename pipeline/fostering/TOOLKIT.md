@@ -308,3 +308,6 @@ python3 demo_looks.py heroes | clip | selftest           # the reference demo
     `--no-sfx-build`.
 15. `K.shake` peaks at about 2 px at frame times even at high amplitude. For a visible hit judder, use a damped
     sub-pixel offset as `anim1.py` does (`SHAKES`).
+16. `K.ramp(t, a, b)` defaults to `'out_expo'`, which makes about 60 % of the change happen in the first ~12 % of
+    the ramp. Used as a fade, it gives one-frame exits, ghost frames and pops (anim4 QA). Always pass the ease:
+    'inout_sine' or 'linear' for fades, 'in_cubic' for exits, 'out_cubic' for arrivals.

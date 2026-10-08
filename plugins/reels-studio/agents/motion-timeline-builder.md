@@ -90,6 +90,11 @@ def cues(): return [dict(t=K.beat(4, BPM), name='impact_soft')]   # align='hit' 
   as a pale double image on every slam.
 - Colour changes on text: draw the outgoing colour at full opacity and fade the new one over it (or lerp RGB);
   cross-fading two sprites drops coverage and flashes pale for a few frames.
+- Always pass an ease to `K.ramp`: the default 'out_expo' front-loads ~60 % of the change into the first frame or
+  two, so fades become one-frame exits and ghosts. Fades 'inout_sine'/'linear', exits 'in_cubic'. A slammed element
+  is solid on the beat frame itself, not one frame later.
+- Copy leaving during a camera move fades out within the first 0.3 s of the move; it never slides out sharp
+  leaving half-words at the frame edge.
 - Exits ease out over >= 0.2 s (in_expo plus fade or blur). Never remove an element with a one-frame jump cut.
 - Contrast: a logo glow must not share the colour of the logo's elements; keep particles and bokeh out of logo,
   wordmark and copy areas (they read as stray dots or a full stop).

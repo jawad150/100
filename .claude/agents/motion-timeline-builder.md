@@ -33,6 +33,8 @@ You build timelines for the Organic Fostering pieces with the toolkit in `pipeli
 - Use 5–7 samples on fast moves, and spin or directional blur for coins. Above about 60 px/frame or 25°/frame, 5–7 samples still show stacked copies: use 11–15 samples for those exact windows, or a directional smear (`K.whip_blur`, `K.zoom_blur`) on the moving layer. Cap spins at about 25°/frame, and don't start a fast move on an `out_` ease (it starts at peak speed).
 - Keep every value continuous at contact. A spring after a slam or landing must start where the approach ended: use `sin`, not `cos`, in `exp(-k*d)*sin(w*d)`. A jump inside the hit frame's shutter shows as a double image (anim1 QA, round 1).
 - Colour changes on text: draw the outgoing colour at full opacity and fade the new one over it, or lerp the RGB. Cross-fading two sprites drops coverage and flashes pale.
+- Always pass an ease to `K.ramp`. The default `'out_expo'` front-loads about 60 % of the change into the first frame or two, so fades become one-frame exits and ghost frames (anim4 QA). Use 'inout_sine'/'linear' for fades and 'in_cubic' for exits. On a slam, the element must be solid on the beat frame itself, not one frame later.
+- Copy leaving during a camera move fades out within the first 0.3 s of the move. It must not slide out sharp and leave half-words at the frame edge.
 - Missing 3D props: draw a placeholder until `workspace3/assets3d/<name>/<variant>/meta.json` exists.
 
 ## Iterate (cheap first; the CPU is shared)
