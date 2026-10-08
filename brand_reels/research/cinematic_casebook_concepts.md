@@ -293,7 +293,7 @@ for Jawad. Share-trigger vocabulary follows the viral-reverse-engineering skill:
 | example | number | reliability |
 |---|---|---|
 | Creators 4 Mental Health study (Nov 2025): high anxiety, depression and burnout; 10% report work-related suicidal thoughts; 89% lack care that understands their job | survey | [Tubefilter](https://www.tubefilter.com/2026/05/07/creators-4-mental-health-shira-lazar-new-york-city-subway-campaign/amp/) |
-| 2021 study: 90% of creators experienced burnout, 71% considered quitting | survey | [CBC](https://amp.cbc.ca/radio/q/wednesday-october-3-2018-david-attenborough-m-i-a-mark-critch-and-more-1.4847506/why-are-so-many-youtubers-feeling-burnt-out-1.4847561), [vidIQ](https://vidiq.com/blog/post/beat-youtube-burnout-192-josh-zimmerman/) |
+| A 2021 study reported that 90% of creators had experienced burnout and 71% had considered quitting | survey, secondhand | [vidIQ / Creator Handbook summaries](https://www.creatorhandbook.net/why-are-so-many-youtubers-quitting/) (primary study not located) |
 | MatPat's farewell (Jan 2024): "I don't love late nights" | n/a | [Creator Handbook](https://www.creatorhandbook.net/why-are-so-many-youtubers-quitting/) |
 
 - **Why it spreads.** Relief and recognition ("I thought it was just me"); saves and sends to a friend who is
