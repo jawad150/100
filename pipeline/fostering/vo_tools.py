@@ -133,7 +133,9 @@ def split_take(x, texts, sr=SR):
         e20, h20 = _env_db(seg, sr, 0.02)
         speech = np.where(e20 > e20.max() - 24.0)[0]
         n_end = min(len(seg), int(((speech[-1] + 1) * h20 + 0.15) * sr)) if len(speech) else len(seg)
-        y = _fade(seg[:n_end], 0.010, 0.04)
+        # and start 0.06 s before the first such frame (no dead air / breath before the first word)
+        n_beg = max(0, int((speech[0] * h20 - 0.06) * sr)) if len(speech) else 0
+        y = _fade(seg[n_beg:n_end], 0.010, 0.04)
         clips.append((y, ''))
     return clips
 

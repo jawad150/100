@@ -24,9 +24,13 @@ Slot keys (all times are SOURCE seconds of the wrapped module):
     min_rate    floor on the source speed inside the hold (default 0.12; ~0.5 where footage plays)
     gap         pause between consecutive lines inside the slot (default 0.18 s)
     quant       grid for this hold's extension in seconds (default half a beat; e.g. 0.25 at 120 BPM)
+    duck_lead   s the SFX duck leads this slot's lines (default 0.10; negative = start after the line's onset,
+                for a line that starts on a hero hit the duck must not flatten)
 Everything outside the holds runs at rate 1, so slams, whips, cuts, tumbles and camera moves keep their timing.
-Each hold's extension is rounded UP to half beats (30 / BPM), so every source event moves by whole 8th notes and the
-edit stays on the module's BPM grid (music at the same tempo still locks).
+Never put a hold inside a moving action (a flight, morph, slam or spring that is still travelling): it hangs.
+The running output-minus-source shift is rounded UP to half beats (30 / BPM) at every hold and then to whole frames,
+so every source event moves by whole 8th notes (within one frame) and the edit stays on the module's BPM grid
+(music at the same tempo still locks), while hard cuts stay frame-clean.
 
 Audio (python3 retime.py audio <reel>_vo): the module's SFX cues are re-mixed at their warped times (rhythmic
 'interval' params scaled by the local slow-down) at -18 LUFS, the VO lines are placed
@@ -52,6 +56,7 @@ sys.path.insert(0, HERE)
 import wsconf  # noqa: E402
 
 WS = wsconf.workspace()
+FPS = 30
 
 
 # ============================================================================================ warp
@@ -167,21 +172,33 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
             need.append(float(sl['min_hold']) / L)
         kf = max(need)
         q = float(sl['quant']) if sl.get('quant') else beat
-        if q:                            # round the extension up to whole beats (or the slot's own grid)
-            ext = L * (kf - 1.0)
-            if ext > 1e-6:
-                kf = 1.0 + math.ceil(ext / q - 1e-6) * q / L
         kmax = 1.0 / float(sl.get('min_rate', 0.12))
         warn = ''
         if kf > kmax + 1e-9:
             warn = 'needs rate %.2f < min_rate %.2f: VO runs %.2fs past the hold' % (1 / kf, 1 / kmax, (kf - kmax) * L)
-            kf = kmax if not q else 1.0 + math.floor(L * (kmax - 1) / q) * q / L
+            kf = kmax
+        prev_shift = C - a                       # total output-minus-source shift before this hold
+        if q and kf > 1.0 + 1e-9:
+            # round the running shift (not this hold's extension) to the grid: every source event after the hold
+            # moves by whole 8th notes, and short holds can take any stretch without rounding to zero
+            sh = C + L * kf - b
+            sq = math.ceil(sh / q - 1e-6) * q
+            if (sq + b - C) / L > kmax + 1e-9:
+                sq_floor = math.floor((C + L * kmax - b) / q + 1e-6) * q
+                # a short hold that cannot reach the next grid line takes its full stretch off-grid; the next
+                # hold's rounding puts the running shift back on the grid
+                sq = sq_floor if sq_floor > prev_shift + 1e-6 else C + L * kmax - b
+            kf = max(1.0, (sq + b - C) / L)
+        # whole-frame shift: hard cuts in the wrapped module switch half a frame early (180-degree shutter); a
+        # fractional-frame shift would put the switch inside a frame's shutter and blend both shots
+        f = (C + L * kf - b) * FPS
+        kf += (math.ceil(f - 1e-6) - f) / FPS / L
         o_at = o_at_fixed if o_at_fixed is not None else C + x * kf
         vo0 = max(o_at + d, P) if ids else prev_end
         t = vo0
         for i, du in zip(ids, durs):
             placed.append(dict(line=i, text=lines[i]['text'], start=round(t, 3), end=round(t + du, 3),
-                               file=lines[i]['file'], lufs=lines[i]['lufs']))
+                               file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead')))
             t += du + gap
         if ids:
             prev_end = t - gap
@@ -300,6 +317,21 @@ def _env(active, sr, attack=0.06, release=0.35):
     return np.clip(out, 0, 1)
 
 
+def deess(y, sr, f0=5500.0, ratio_db=-8.0, max_cut_db=8.0):
+    """Dynamic de-esser: the band above f0 is limited to ratio_db below the full-band envelope (5 ms), with at
+    most max_cut_db of cut, so hot 's' sounds stop driving the limiter while vowels stay untouched."""
+    from scipy.signal import butter, sosfiltfilt
+    sos = butter(4, f0, 'highpass', fs=sr, output='sos')
+    hp = sosfiltfilt(sos, y)
+    lp = y - hp
+    k = np.ones(int(0.005 * sr)) / int(0.005 * sr)
+    e_hp = np.sqrt(np.convolve(hp ** 2, k, 'same')) + 1e-9
+    e_all = np.sqrt(np.convolve(y ** 2, k, 'same')) + 1e-9
+    g = np.clip(10 ** (ratio_db / 20) * e_all / e_hp, 10 ** (-max_cut_db / 20), 1.0)
+    g = np.convolve(g, np.ones(int(0.004 * sr)) / int(0.004 * sr), 'same')
+    return lp + hp * g
+
+
 def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db=-10.0, duck_lead=0.10, sfx_tp=-2.3,
                 verbose=True):
     import importlib
@@ -320,6 +352,7 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
     # ---- VO bus
     vo = np.zeros((N, 2))
     active = np.zeros(N, bool)
+    ahead = np.zeros(N, bool)
     for p in mod.VO:
         fsr, y = wavfile.read(p['file'])
         y = y.astype(np.float64)
@@ -328,6 +361,7 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         if fsr != sr:
             from scipy.signal import resample_poly
             y = resample_poly(y, sr, fsr)
+        y = deess(y, sr)
         g = A.undb(float(np.clip(vo_lufs - p['lufs'], -9, 9)))
         i0 = int(round(p['start'] * sr))
         n = min(len(y), N - i0)
@@ -335,9 +369,14 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
             continue
         vo[i0:i0 + n] += (y[:n] * g)[:, None]
         rms = np.sqrt(np.convolve(y[:n] ** 2, np.ones(480) / 480, 'same'))
-        active[i0:i0 + n] |= rms > 10 ** (-45 / 20)
-    lead = int(duck_lead * sr)              # the duck is fully down when each line starts (no hit on its first word)
-    ahead = np.concatenate([active[lead:], np.zeros(lead, bool)]) | active
+        act = rms > 10 ** (-45 / 20)
+        active[i0:i0 + n] |= act
+        # look-ahead: the duck is fully down when the line starts (no hit on its first word), unless the slot asks
+        # for a late duck (duck_lead < 0) to keep a hero hit under the first syllable
+        ld = duck_lead if p.get('duck_lead') is None else float(p['duck_lead'])
+        j0 = max(0, i0 - int(round(ld * sr)))
+        j1 = min(N, j0 + n)
+        ahead[j0:j1] |= act[:j1 - j0]
     env = _env(ahead, sr, attack=0.02, release=0.30)
     sfx_d = sfx * (1 - (1 - A.undb(getattr(mod, 'DUCK_DB', duck_db))) * env)[:, None]
     # ---- master: gain G, true-peak limiter, iterate
