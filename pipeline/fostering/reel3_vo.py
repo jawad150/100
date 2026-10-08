@@ -44,9 +44,12 @@ SLOTS = [
 
 
 def cue_gain(cue, src_t, rate):
-    """Hits that land on words: the DEVELOP chip bubble pop under "sees"."""
+    """Hits that land on words: the DEVELOP chip bubble pop under "sees"; the DEVELOP / GROW impacts on the first
+    consonant of the chapter word (the whip and air zoom keep their level)."""
     if cue['name'] == 'bubble_pop' and abs(src_t - 9.946) < 0.05:
         return -6.0
+    if cue['name'] == 'impact_soft' and any(abs(src_t - x) < 0.03 for x in (M.T_DEV + 0.05, M.T_GRO + 0.03)):
+        return -4.0
     return 0.0
 
 
