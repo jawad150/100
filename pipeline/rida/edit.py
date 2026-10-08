@@ -779,13 +779,23 @@ def _center(s, shape):
 
 
 def _avatar():
+    """Floret Capitals profile picture: their logo on a white disc, with the yellow ring."""
     d = 200
     yy, xx = np.mgrid[0:d, 0:d].astype(np.float32)
     r = np.sqrt((xx - d / 2) ** 2 + (yy - d / 2) ** 2)
     a = np.clip(d / 2 - 1 - r, 0, 1)
     ring = np.clip(1 - np.abs(r - (d / 2 - 5)) / 3.5, 0, 1)
-    spr = solid(a, (0.10, 0.11, 0.14, 1))
-    spr = over_spr(spr, _center(text('F', 130, 'y', glow=0.3, shadow=0), spr.shape))
+    spr = solid(a, (1, 1, 1, 1))
+    im = cv2.imread(f'{WORK}/src/floret_logo.png', cv2.IMREAD_UNCHANGED)
+    if im.shape[2] == 3:
+        im = np.concatenate([im, np.full(im.shape[:2] + (1,), 255, np.uint8)], 2)
+    ink = (im[..., 3] > 8) & (im[..., :3].min(2) < 235)  # logo marks, not the white/transparent ground
+    ys, xs = np.where(ink)
+    im = im[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    sc = d * 0.60 / max(im.shape[:2])
+    im = cv2.resize(im, (int(im.shape[1] * sc), int(im.shape[0] * sc)), interpolation=cv2.INTER_AREA)
+    logo = E.to_premul(im[..., [2, 1, 0, 3]])
+    spr = over_spr(spr, _center(logo, spr.shape) * a[..., None])
     spr = over_spr(spr, solid(ring, YEL + (1,)))
     return spr
 
