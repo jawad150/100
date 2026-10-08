@@ -494,6 +494,24 @@ def f2_list_ink(ink, bb, t, light):
             bb.add(K.draw(ink, txt.spr, F2_X, base, anchor=anc, scale=s, opacity=op))
 
 
+def f2_ding_ink(ink, bb, t):
+    """Oven-timer 'ding': three short hand-drawn ORANGE strokes burst from the cupcake's top (b16)."""
+    t0 = B(16)
+    if t < t0 - 0.02 or t > t0 + 0.75:
+        return
+    (cx, cy), _, _ = PROPS2['cupcake']
+    top = cy - 300 - 18
+    for k, ang in enumerate((-58.0, -90.0, -122.0)):
+        a = math.radians(ang)
+        r0, r1 = 40.0, 92.0 - 10 * abs(k - 1)
+        u_in = K.ramp(t, t0 + 0.02 * k, t0 + 0.12 + 0.02 * k, 'out_cubic')
+        u_out = K.ramp(t, t0 + 0.45, t0 + 0.7, 'in_cubic')
+        p0 = (cx + math.cos(a) * r0, top + math.sin(a) * r0 + 20)
+        p1 = (cx + math.cos(a) * r1, top + math.sin(a) * r1 + 20)
+        pts = X.resample(np.array([p0, p1]), 2.0)
+        draw_stroke(ink, bb, pts, 8.0, C['ORANGE'], u_out, u_in)
+
+
 def f2_path_ink(ink, bb, t):
     """ORANGE dashed bus route drawn across the paper (fades as frame 3 starts)."""
     u = K.ramp(t, 5.7, 6.6, 'inout_sine')
@@ -723,6 +741,15 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
                        opacity=dr['opacity']))
         if name == 'book' and t > WRITE_T[1] + 0.17:
             draw_book_lines(layer, lb, x, y, t)
+    # flour puff out of the bowl on landing (and a smaller second puff from the whisk)
+    if 8.5 <= t <= 10.1 and not (morph and t >= T_F3 + 1.2):
+        (bx, by), tl, _ = PROPS2['bowl']
+        pr = Ad['bowl']
+        fx, fy = pr.feature('batter', -10.0)
+        X.puff(layer, t, tl - 0.01, bx + fx, by + fy - 10, n=46, spread=190, seed=12, rgb=(1.0, 0.985, 0.95),
+               size=(6, 20), up=-1.8, dur=1.25, opacity=0.95, ang=(-170, -10))
+        X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=18, spread=90, seed=13, rgb=(1.0, 0.985, 0.95),
+               size=(4, 12), up=-1.2, dur=0.9, opacity=0.8, ang=(-150, -30))
     # bus drives along the dashed path
     if 5.95 <= t <= 7.1:
         u = (t - 5.95) / 1.1
@@ -893,6 +920,7 @@ def compose(sheet_id, t, fi):
             sweep = (su, -32.0, 0.035, 0.16, (1.0, 0.90, 0.78))
     elif sheet_id == 1:
         f2_path_ink(ink, bb, t)
+        f2_ding_ink(ink, bb, t)
         f2_list_ink(ink, bb, t, light)
         if t >= T_F3 - 0.2:
             f3_ink(ink, bb, t, light)
