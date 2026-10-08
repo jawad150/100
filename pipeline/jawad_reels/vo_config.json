@@ -1,0 +1,45 @@
+{
+  "decided_by": "Jawad (user pick, 2026-10-08)",
+  "primary": {
+    "provider": "Higgsfield (voice generation only)",
+    "model": "elevenlabs_v4",
+    "voice_name": "Vlad",
+    "voice_type": "preset",
+    "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+    "request_shape": {"model": "elevenlabs_v4", "prompt": "<devanagari text>", "dialogue": [{"text": "<devanagari text>", "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d", "voice_type": "preset"}]},
+    "optional_params": {"stability": "omit (provider default) unless a take is flat (try 0.35) or unstable (try 0.55)", "similarity_boost": "omit or 0.8"},
+    "output": "44.1 kHz mono mp3 at result_url; download with curl into workspace/brand_reels/tts/hf_dl/<reel>/"
+  },
+  "alternate": {
+    "provider": "local (free)",
+    "engine": "kokoro-82m-onnx",
+    "voice": "hm_psi",
+    "text_style": "DEV",
+    "note": "fallback only if Higgsfield is unavailable; different timbre, so never mix voices inside one reel"
+  },
+  "text_style": "DEV: Devanagari text tuned for Hindi TTS (nuktas where Urdu-natural, English loan words in Devanagari phonetics, numbers spelled out, commas/ellipses for pauses). The nickname JD is written जे-डी.",
+  "measured": {
+    "file": "workspace/brand_reels/tts/hf_dl/vlad/vlad_v4_r1_DEV.mp3",
+    "text": "scripts/texts.py DEV (3 sentences)",
+    "cer_whisper_small_hi": 0.079,
+    "p_hi_plus_ur": 1.0,
+    "p_en": 0.0002,
+    "utmos_rank_only": 3.08,
+    "wpm": 142.8,
+    "f0_std_semitones": 6.27,
+    "max_internal_pause_s": 0.77,
+    "lufs": -17.6,
+    "duration_s": 22.6
+  },
+  "post_processing": [
+    "trim leading/trailing silence to 40 ms; cap internal pauses at 0.45 s except deliberate dramatic beats",
+    "time-stretch 1.06-1.10x with rubberband/ffmpeg atempo (pitch-preserving) to land ~155-165 wpm for reels",
+    "high-pass 70 Hz, gentle de-ess, light compression, normalise VO stem to -16 LUFS integrated before the mix",
+    "word timings: faster-whisper word_timestamps on the final processed take; captions use the Roman Urdu track"
+  ],
+  "generation_policy": [
+    "generate per beat or per 1-3 sentences (better control, cheap re-takes) rather than one whole-reel take; join with crossfades in the timeline",
+    "never resubmit blindly; poll job ids with jobs_wait",
+    "Higgsfield credit budget: project cap 250; casting spent 62.71 (balance 7255.02 -> 7192.31); remaining 187.29 for final VO + fixes (~2.5 credits per ~520-char take)"
+  ]
+}
