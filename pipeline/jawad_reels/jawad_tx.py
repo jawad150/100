@@ -1053,10 +1053,11 @@ def _l5_post(t, w, o):
     return {'anamorphic': 0.9 * math.sin(math.pi * w.u(t))} if w.inside(t) else {}
 
 
-def _tx_beam(t, w, A, B, src=(K.CX, -900.0), a0=-40.0, a1=40.0, width=2.2, haze=0.55, rays=0.6):
+def _tx_beam(t, w, A, B, src=(K.CX, -900.0), a0=-40.0, a1=40.0, width=2.2, haze=0.45, rays=0.0):
     """L7 light-beam (god-ray) sweep: a volumetric amber/flame beam from a source above the frame swings
     a0 -> a1 degrees (inout_sine; it crosses frame centre at c), intensity sin(pi u) * 1.2; the scene swaps
-    under the beam core (B on the side it has passed), then K.god_rays thickens the light."""
+    under the beam core (B on the side it has passed); rays > 0 adds K.god_rays (it also smears the scene's own
+    highlights, so keep it for scenes without hard bright rims)."""
     u = w.u(t)
     th = K.lerp(a0, a1, K.EASE['inout_sine'](u))
     I = 1.2 * math.sin(math.pi * u)
@@ -1068,11 +1069,11 @@ def _tx_beam(t, w, A, B, src=(K.CX, -900.0), a0=-40.0, a1=40.0, width=2.2, haze=
     dist = np.hypot(X - src[0], Y - src[1])
     fall = np.clip(1.25 - (dist - 900.0) / 2600.0, 0.15, 1.0)
     core = np.exp(-(dang / width) ** 2)
-    soft = np.exp(-(dang / (width * 4.0)) ** 2) * 0.35
+    soft = np.exp(-(dang / (width * 3.0)) ** 2) * 0.2
     vol = (0.55 + haze * fbm(23, 4.0))
     beam = ((core + soft) * fall * vol).astype(np.float32)
     if I > 0.01:
-        col = np.float32(K.C['AMBER']) * 0.6 + np.float32(K.C['FLAME']) * 0.9
+        col = np.float32(K.C['AMBER']) * 0.45 + np.float32(K.C['FLAME']) * 0.7
         _add_rgb(cv, up(beam), col, I)
         if rays > 0:
             K.god_rays(cv, (float(src[0]), 0.0), strength=rays * I, threshold=0.45, length=0.45,
@@ -1177,13 +1178,13 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
     """D1 timeline playhead scrub (editor-native): pull back into a generic NLE (pull frames, out_expo), the
     playhead scrubs across the V1 cut (inout_expo, monitor updates at 12 Hz like real scrubbing) and lands
     on the B marker at c with the SNAP spring, then the monitor pushes back in (push frames, in_expo) so B is
-    full-frame at the window end. Monitor shows A at fast-forwarded source time, then B. Default window
-    pre = pull + 20 (scrub), post = push."""
+    full-frame on the last window frame. Monitor shows A at fast-forwarded source time, then B; the timecode
+    is the timeline time under the playhead. Default window pre = pull + 20 (scrub), post = push."""
     t_pull = w.t0 + pull / FPS
     t_push0 = w.c
     mx, my, ms = _NLE_MON
     if t < t_pull:
-        p = K.EASE['out_expo'](K.clamp((t - w.t0) / (pull / FPS)))
+        p = K.EASE['out_expo'](K.clamp((t - w.t0) / max(1e-6, (pull - 1) / FPS)))
         content = A(t)
     elif t < t_push0:
         p = 1.0
@@ -1195,7 +1196,7 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
             src = w.c - span_b * (1 - (e - 0.5) / 0.5)
             content = B(math.floor(src * 12) / 12)
     else:
-        p = 1.0 - K.EASE['in_expo'](w.ub(t))
+        p = 1.0 - K.EASE['in_cubic'](K.clamp((t - w.c) / max(1e-6, (w.post - 1) / FPS)))
         content = B(t)
     s = K.lerp(1.0, ms, p)
     cyy = K.lerp(K.CY, my, p)
@@ -1229,7 +1230,7 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
         ph = K.lerp(xa, xb, K.EASE['inout_expo'](uu))
         sn = spring(t - (t_push0 - 4 / FPS), 'SNAP') if t > t_push0 - 4 / FPS else 0.0
         ph = ph + (xb - ph) * sn if sn > 0 else ph
-        src_t = t_pull + (t - t_pull) * 3.0
+        src_t = K.lerp(t_pull, w.c, (ph - xa) / (xb - xa))          # timeline time under the playhead
     else:
         ph, src_t = xb, t
     line = np.zeros((H4, W4), np.float32)
