@@ -214,9 +214,11 @@ def _install_grain_clock():
     K.grain = grain
 
 
-def _warp_cue(c, warp):
+def _warp_cue(c, warp, gain=None):
     c = json.loads(json.dumps(c))
     s = float(c['t'])
+    if gain is not None:
+        c['gain_db'] = float(c.get('gain_db', 0.0)) + float(gain(c, s, warp.rate_src(s)) or 0.0)
     c['t'] = round(warp.out(s), 4)
     r = warp.rate_src(s)
     if r < 0.999:
@@ -226,9 +228,10 @@ def _warp_cue(c, warp):
     return c
 
 
-def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, **solve_kw):
+def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, **solve_kw):
     """Fill a VO module's namespace `ns` (pass globals()) from the wrapped module M. cue_filter(cue, src_t, rate)
-    -> False drops a (single-hit) SFX cue, e.g. ticks that would land seconds apart inside a slowed hold."""
+    -> False drops a (single-hit) SFX cue, e.g. ticks that would land seconds apart inside a slowed hold;
+    cue_gain(cue, src_t, rate) -> dB added to a cue's gain (e.g. -5 for a hit that masks a word)."""
     import core as K
     lines = load_lines(piece)
     warp, placed, rows = solve(slots, lines, float(M.DUR), getattr(M, 'BPM', None), quantize, **solve_kw)
@@ -259,9 +262,9 @@ def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, **solve_kw):
                     pi['n'] = 1
                     ci['t'] = float(c['t']) + i * iv
                     if cue_filter is None or cue_filter(ci, ci['t'], warp.rate_src(ci['t'])) is not False:
-                        out.append(_warp_cue(ci, warp))
+                        out.append(_warp_cue(ci, warp, cue_gain))
             elif cue_filter is None or cue_filter(c, float(c['t']), warp.rate_src(float(c['t']))) is not False:
-                out.append(_warp_cue(c, warp))
+                out.append(_warp_cue(c, warp, cue_gain))
         return out
 
     def prewarm():
