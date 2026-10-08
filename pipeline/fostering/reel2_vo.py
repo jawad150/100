@@ -28,10 +28,14 @@ SLOTS = [
     dict(lines=['support_household'], at=B(27.5), delay=0.0, hold=(B(32) + 0.3, B(34)), min_hold=2.0, tail=0.3),
     # the hold ends before the light-leak exit; >= 0.7 s of reading
     dict(lines=['recognition'], at=B(38), delay=0.0, hold=(B(40), M.T_END - 0.36), min_rate=0.5, tail=0.7),
-    dict(lines=['discuss'], at=M.T_BTN, delay=0.0, hold=(22.4, M.DUR), tail=1.6),
+    dict(lines=['discuss'], at=M.T_BTN, delay=0.0, hold=(22.4, M.DUR), tail=1.6, trim={'discuss': 2.30}),
 ]
 
-retime.wrap(globals(), M, 'reel2', SLOTS)
+# p2 / p7 / p8 were re-voiced with the "Thanks." pad after the render (their last words were cut by the TTS); the new
+# takes are shorter, so the plan keeps the rendered timing (each line starts where it did and reads a little longer)
+PLAN_DURS = {'from_amount': 6.15, 'recognition': 2.20, 'discuss': 2.62}
+
+retime.wrap(globals(), M, 'reel2', SLOTS, plan_durs=PLAN_DURS)
 # continuous motion keeps its speed through the holds: the coin orbit / spins run on output time from T_NUM, the
 # background beat pulse on output time (the music grid)
 M.ORBIT_CLOCK = lambda s, w=WARP: M.T_NUM + w.out(s) - w.out(M.T_NUM)

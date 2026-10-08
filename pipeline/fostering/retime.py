@@ -268,15 +268,19 @@ def _warp_cue(c, warp, gain=None):
     return c
 
 
-def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, cuts=(), **solve_kw):
+def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, cuts=(), plan_durs=None, **solve_kw):
     """Fill a VO module's namespace `ns` (pass globals()) from the wrapped module M. cue_filter(cue, src_t, rate)
     -> False drops a (single-hit) SFX cue, e.g. ticks that would land seconds apart inside a slowed hold;
     cue_gain(cue, src_t, rate) -> dB added to a cue's gain (e.g. -5 for a hit that masks a word).
     cuts: SOURCE times of hard cuts (the switch instant). A motion-blur sub-sample on the far side of a cut from its
     frame's centre is clamped to the frame's side, so a cut never blends two shots: the original puts every cut
-    between two frames' shutters, but in a speed ramp the warped switch can fall inside a shutter."""
+    between two frames' shutters, but in a speed ramp the warped switch can fall inside a shutter.
+    plan_durs: {line: s} plans with these durations instead of the clips' (a re-voiced line keeps the rendered
+    picture's timing; the mix plays the new clip from the same start)."""
     import core as K
     lines = load_lines(piece)
+    for k, v in (plan_durs or {}).items():
+        lines[k] = dict(lines[k], dur=float(v))
     warp, placed, rows = solve(slots, lines, float(M.DUR), getattr(M, 'BPM', None), quantize, **solve_kw)
     _install_grain_clock()
     src_post = getattr(M, 'post', None)

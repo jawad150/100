@@ -342,6 +342,8 @@ reading time. Motion, cuts and SFX keep their timing. The QA rounds on all five 
      the head.
    - A click after the last word can be faded in the mix only with the slot's `trim={line: s}`, without changing the
      plan.
+   - A line re-voiced after the render keeps the picture with `wrap(..., plan_durs={line: old_dur})`: the plan uses
+     the rendered durations and the mix plays the new clip from the same start.
 8. **Fixes after QA.**
    - A fix that keeps DUR and the other holds can be spliced. Re-render the span between two IDR keyframes with
      `render.py --range` and stream-copy it in, checking that every other frame is bit-identical.

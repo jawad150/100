@@ -186,7 +186,8 @@
     "say": "From four hundred and forty-seven pounds sixty a week, per child aged nought to four.",
     "lines": [
      "from_amount"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p3",
@@ -223,14 +224,16 @@
     "say": "Recognition for a skilled role.",
     "lines": [
      "recognition"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p8",
     "say": "Discuss your estimate with Organic Fostering.",
     "lines": [
      "discuss"
-    ]
+    ],
+    "pad": "Thanks."
    }
   ],
   "reel3": [
