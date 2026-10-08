@@ -242,6 +242,8 @@ def _warp_cue(c, warp, gain=None):
         for d in (c, c.get('params') if isinstance(c.get('params'), dict) else None):
             if d is not None and 'interval' in d:
                 d['interval'] = float(d['interval']) / r
+            if d is not None and 'cps' in d:         # type-on sounds (audio.typing) keep pace with slowed type
+                d['cps'] = float(d['cps']) * r
     return c
 
 

@@ -1,5 +1,5 @@
 {
- "_about": "Voiceover script for the five Organic Fostering pieces. Verified copy only (BRIEF.md section 1, BRIEF2.md): every line repeats on-screen copy or a verified site fact. Each paragraph is voiced in one take (natural prosody), then split into lines at the sentence pauses with Whisper word timings (vo_tools.py split). 'say' is what the TTS reads (numbers spelled out); 'lines' are the on-screen-matched sentence ids in order. 'pad' is a throwaway word voiced after the paragraph (the TTS otherwise clips the last word); vo_tools cuts it off.",
+ "_about": "Voiceover script for the five Organic Fostering pieces. Verified copy only (BRIEF.md section 1, BRIEF2.md): every line repeats on-screen copy or a verified site fact. Each paragraph is voiced in one take (natural prosody), then split into lines at the sentence pauses with Whisper word timings (vo_tools.py split). 'say' is what the TTS reads (numbers spelled out); 'lines' are the on-screen-matched sentence ids in order. 'pad' is a throwaway word voiced after the paragraph (the TTS otherwise clips the last word); vo_tools cuts it off. 'lead' is the same for a throwaway word voiced before the paragraph (the TTS clipped the first sound of reel3 p7).",
  "voice": {
   "engine": "higgsfield text2speech_v2 / elevenlabs",
   "name": "Vera",
@@ -295,7 +295,8 @@
      "Nurture. Develop. Grow.",
      "Start your enquiry with Organic Fostering."
     ],
-    "pad": "Thanks."
+    "pad": "Thanks.",
+    "lead": "Okay."
    }
   ]
  }

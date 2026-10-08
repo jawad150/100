@@ -4,7 +4,7 @@
 
 Reads vo/script.json and the TTS takes vo/<piece>/<p>.mp3 (one take per paragraph, natural prosody; a paragraph with
 "pad" was voiced with that throwaway word after it, because the TTS clips the last word of a take, and the pad clip
-is dropped). Each take is
+is dropped; likewise "lead", a throwaway word voiced before it, when the TTS clips the take's first sound). Each take is
 transcribed with word timestamps; it is cut between sentences at the silence gaps that follow sentence-final
 punctuation (the largest such gaps, as many as the paragraph has lines), trimmed to 30 ms before the first and
 120 ms after the last word, faded (10 / 60 ms) and written as 48 kHz mono float WAVs:
@@ -133,8 +133,11 @@ def split_take(x, texts, sr=SR):
         e20, h20 = _env_db(seg, sr, 0.02)
         speech = np.where(e20 > e20.max() - 24.0)[0]
         n_end = min(len(seg), int(((speech[-1] + 1) * h20 + 0.15) * sr)) if len(speech) else len(seg)
-        # and start 0.06 s before the first such frame (no dead air / breath before the first word)
-        n_beg = max(0, int((speech[0] * h20 - 0.06) * sr)) if len(speech) else 0
+        # and start 0.06 s before the first such frame that begins sustained sound (3 of the next 5 frames), so no dead
+        # air / breath before the first word and no isolated mouth click (a plosive's vowel follows within 100 ms)
+        on = [i for i in speech if np.sum((speech >= i) & (speech < i + 5)) >= 3]
+        first = on[0] if on else (speech[0] if len(speech) else 0)
+        n_beg = max(0, int((first * h20 - 0.06) * sr)) if len(speech) else 0
         y = _fade(seg[n_beg:n_end], 0.010, 0.04)
         clips.append((y, ''))
     return clips
@@ -161,7 +164,9 @@ def split(pieces=None):
             if end_db > -35 and not para.get('pad'):     # the take stops mid-sound: its last word is clipped
                 print('   !! %s %s: take ends %.0f dB below peak (clipped last word): re-voice with "pad"'
                       % (piece, para['p'], end_db))
-            clips = split_take(x, texts + ([para['pad']] if para.get('pad') else []), SR)[:len(texts)]
+            lead = [para['lead']] if para.get('lead') else []
+            clips = split_take(x, lead + texts + ([para['pad']] if para.get('pad') else []), SR)[len(lead):]
+            clips = clips[:len(texts)]
             for k, (line, (y, _)) in enumerate(zip(para['lines'], clips)):
                 p = os.path.join(out, line + '.wav')
                 sf.write(p, y, SR, subtype='FLOAT')
