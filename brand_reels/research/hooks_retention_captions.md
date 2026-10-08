@@ -99,8 +99,8 @@
 All of these are Jawad's craft shown, not borrowed.
 - **The frame becomes a timeline.** At 0.3 s the image shrinks into a viewer window. A playhead and clip blocks appear, and a razor cut slices to the next shot. Build: `ui.app_window(look='ember', title=…, header=…)` (always pass title and header), `win.plane`, and the `ui.Surf` clip blocks from §4.8-1.
 - **Render reveal.** Frame 0 shows a wireframe or clay version of the hero shot. A Cycles-style bucket sweep resolves it to the final grade in 0.6 s. Build: §4.8-3 applied to the whole frame (mosaic, then sharp, behind a moving edge).
-- **Error pop-up.** A glass dialog slams in: "ERROR · client_feedback_v9 can't be opened". This is a house device (see the "ERROR: can't delete this memory" cover). Build: `ui.glass_card` + `ui.put_text` + `K.impulse` shake + `glitch_short`.
-- **Blackout.** Bright for 0.3 s, a power-cut drop to black, then only the ember keyword glows. Build: an exposure ramp in `K.post(..., exposure=)`, the keyword drawn after post with additive glow, and a UPS beep (custom sound).
+- **Error pop-up.** A glass dialog slams in: "ERROR · client_feedback_v9 can't be opened". This device comes from his "ERROR: can't delete this memory" cover: reuse the idea, not that cover's layout. Build: `ui.glass_card(look='ember')` + `ui.put_text` + `K.impulse` shake + `glitch_short`, with RED for the "error" accent.
+- **Blackout.** Bright for 0.3 s, a power-cut drop to black, then only the flame keyword glows. Build: an exposure ramp in `K.post(..., exposure=)` (or the `noir_ember` look), the keyword drawn after post with additive glow, and a UPS beep (custom sound).
 - **Out-of-frame 3D.** A Blender prop breaks the frame edge toward the lens. Use DOF with `aperture` 40-60 and a near-plane fly-by (planes are clipped at the near plane).
 - **Keyframe freeze.** Everything freezes, and keyframe diamonds and a motion path appear over the action. Build: §4.8-2.
 - **Sound before picture.** Use a recognisable editor sound on f0 (a timeline-scrub chirp, or a Windows-style error "ding" made procedurally). The picture explains it at f6.
@@ -119,12 +119,13 @@ All of these are Jawad's craft shown, not borrowed.
 
 ### 2.5 Pan-desi language sheet
 
-These are canonical spellings for VO scripts, captions and post copy. They are chosen to read naturally to both Indian Hinglish and Pakistani Roman Urdu readers.
+These are canonical spellings for VO scripts, captions and post copy. **House spelling wins:** Jawad's own `prior/captions_roman_urdu.srt` uses sentence case and writes *hai / nahi / mein / bohat / bari*, and the brand skill adopts it. The other choices below read naturally to both Indian Hinglish and Pakistani Roman Urdu readers.
 
 | meaning | write | don't write | note |
 |---|---|---|---|
-| not | **nahi** | nahin, nai, nhi | |
-| very | **bohot** | bahut, bohat, boht | the common internet spelling on both sides |
+| not | **nahi** | nahin, nai, nhi | house |
+| very | **bohat** | bahut, bohot, boht | house spelling; Indian readers parse it fine |
+| big (f.) | **bari** | badi | house spelling. In hooks, prefer a synonym ("sabse lambi", "sabse mehengi") where "bari" could be read as *baari* (turn). |
 | is / are | **hai / hain** | he, h, hy | |
 | in / I | **mein / main** | me, mai | keep these two distinct |
 | so, then | **toh** | to | "to" clashes with English |
@@ -146,10 +147,10 @@ These are canonical spellings for VO scripts, captions and post copy. They are c
 
 **Avoid:** Indo-Pak politics, flags and maps, team-vs-team cricket, religious comparisons, and caste or region jokes. These bring comment wars, which look like engagement but poison the brand and invite restrictions.
 
-**VO note for the sound team (TTS with a Hindi voice) ⚑:**
-- Feed the TTS **Devanagari with nukta letters** (ज़िंदगी, फ़र्क़, ख़्वाब, ग़लती if Jawad pronounces it) so "zindagi" is not voiced as "jindagi".
+**VO note for hinglish-scriptwriter and the sound team (TTS with a Hindi voice) ⚑:**
+- The brand pipeline already writes a Devanagari TTS track plus a token-aligned Roman caption track. Use **nukta letters** in the Devanagari (ज़िंदगी, फ़र्क़, ख़्वाब, ग़लती if Jawad pronounces it) so "zindagi" is not voiced as "jindagi". Pakistani viewers hear the difference.
 - Feed English words in Latin script if the engine handles code-switching; otherwise transliterate them.
-- The captions always follow the spoken word in the Roman spellings above.
+- The captions always follow the spoken word, in the Roman spellings above.
 
 ### 2.6 The 40 hooks (★ = top 10)
 
