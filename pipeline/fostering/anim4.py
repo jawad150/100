@@ -14,7 +14,8 @@ travel (0, 6000) | child (575, 7500). Holds: camera at 1500 (1 world unit = 1 px
 rides a text camera without the breathing, so held type is pixel-locked. Moves (1.25 s, B(s-2.5) -> B(s)): the
 camera FOLLOWS THE MONEY: it rides the lead coins along the route (low-passed to cut the S-bends), blending from one
 station's framing to the next, with a pull-back to ~2280 and a bank into the path (6-8 motion-blur samples + a
-one-step directional smear in post, so the tracked coins stay crisp while the world streaks past).
+per-pixel smear along the camera's motion field in post, so the tracked coins stay crisp while the world streaks
+past).
 
 SHOT LIST (t s | beat | picture | camera | SFX)
  A HOOK 0.00-3.00 (B0-B6), station S0
@@ -51,10 +52,10 @@ SHOT LIST (t s | beat | picture | camera | SFX)
  17.62  B35.25 the 3D child (orange logo girl) pops; B36 the stream arrives, gold halo, coin clinks
  18.25  B36.5 every prop flies in from the sides (pairs on 16ths) and gathers on a slow 3D orbit around her;
               "It's about supporting" / "everyday life." B36.5 | whoosh_slow, swishes, pops
- 20.00  B40   everything shrinks into the child and fades (props, ribbon, coins, headline) by B41.4; only the
-              child remains | whoosh_slow + shimmer
+ 20.00  B40   everything shrinks into the child and fades (headline by 20.6, ribbon and stream by B41.4, the
+              props one after another by 20.9); only the child remains | whoosh_slow + shimmer
  H FINAL 21.00-25.50 (B42-B51)
- 20.75  B41.5 coins rise from the child's halo and converge on the number
+ 20.50  B41   coins rise from the child's halo and converge on the number | coin_flip
  21.00  B42   "£447.60/week" (gold 150 + 86 px) slams at the top | impact_soft + coin_ring + reverse_swell
  21.25  B42.5 "per child · ages 0–4" | 21.50 B43 "Fostering payments are there to help / cover the costs of caring
               for a child." (Nunito ExtraBold 46 px)
@@ -1445,9 +1446,7 @@ def _draw_final(cv, c, tc, t, n_samples):
         gap = 10.0
         tot = wn + gap + ww_
         xl = x - tot / 2
-        sw = K.ramp(t, T_NUM2 + 0.3, T_NUM2 + 0.95, 'inout_sine')
-        if sw >= 1:
-            sw = K.ramp(t, B(48), B(49.5), 'inout_sine')
+        sw = K.ramp(t, T_NUM2 + 0.3, T_NUM2 + 0.95, 'inout_sine')     # one sweep; the end card then holds still
         op = K.ramp(t, T_NUM2, T_NUM2 + 0.05)
         settled = w_set >= 1.0
         cxn = xl + wn / 2
