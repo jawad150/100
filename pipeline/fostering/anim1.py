@@ -101,10 +101,15 @@ T_F4 = B(26)                             # 15.6 frame 4
 F1_BASE = (679, 832, 962)                # baselines: WHAT DOES / FOSTERING / REALLY LOOK LIKE?
 F1_HAND_BASE = 1125
 F1_BAND = (156, 924)                     # magenta swipe x range
-F2_X, F2_BASE = 96, (432, 592, 752)      # list
-F3_CAP = (300, 404, 518)                 # headline cap tops
-F3_ROWS = (770, 875, 980)                # supporting rows (centre y)
-TOWER = (540, 1600)                      # tower ground point
+# frames 2 / 3: justified type stacks (every line set to the same 920 px width = 85 % of the frame; the safe
+# width x 70..1010 caps "SCHOOL RUNS." at ~121 px and "SMALL MOMENTS" at ~104 px)
+STACK_W = 920.0
+F2_X, F2_TOP, F2_GAP = 80.0, 240.0, 30.0       # list: left edge, first cap top, gap between lines
+F3_TOP, F3_GAP = 250.0, 28.0                   # headline
+F3_ROWS = (690.0, 800.0, 910.0)                # checklist rows (centre y)
+ROW_ICON_X, ROW_TEXT_X = 228.0, 301.0          # checklist: icon column centre / text left (block centred)
+TOWER = (540, 1650)                            # tower ground point
+BLOCK_H = 205.0                                # toy block height on the tower
 F4_CAP = (440, 580, 695)
 HOUSE_DROP, HOUSE_END = (540, 1500), (540, 800)
 F4_HAND_BASE = 944
@@ -132,12 +137,13 @@ def A():
     d['hand1'] = X.Txt("It's often found in the everyday.", font='hand', px=82, fill=MAG)
     d['band'] = X.marker_band(F1_BAND[1] - F1_BAND[0], 150, seed=4)
     # frame 2
-    d['list'] = [(X.Txt(s, px=116, fill=MAG), X.Txt(s, px=116, fill=PLUM))
+    d['list'] = [(X.Txt(s, px=fit_px(s), fill=MAG), X.Txt(s, px=fit_px(s), fill=PLUM))
                  for s in ('SCHOOL RUNS.', 'HOMEWORK.', 'BAKING.')]
     # frame 3
-    d['h3'] = [X.Txt('SMALL MOMENTS', px=100, fill=PLUM), X.Txt('CAN HELP BUILD', px=105, fill=PLUM),
-               X.Txt('STABILITY.', px=165, fill=MAG)]
-    d['rows'] = [X.Txt(s, font='ui', px=50, fill=PLUM) for s in
+    d['h3'] = [X.Txt('SMALL MOMENTS', px=fit_px('SMALL MOMENTS'), fill=PLUM),
+               X.Txt('CAN HELP BUILD', px=fit_px('CAN HELP BUILD'), fill=PLUM),
+               X.Txt('STABILITY.', px=fit_px('STABILITY.'), fill=MAG)]
+    d['rows'] = [X.Txt(s, font='ui', px=52, fill=PLUM) for s in
                  ('A consistent home.', 'A familiar routine.', 'Someone who is there.')]
     # frame 4
     d['h4'] = [X.Txt('FOSTERING', px=130, fill=PLUM), X.Txt('HAPPENS IN THE', px=104, fill=PLUM),
@@ -147,19 +153,38 @@ def A():
     d['logo'] = K.load_image(K.BRAND + '/logo_full.png', size=680)
     d['button'] = ui.button('Start your enquiry', look='airy', h=92, size=40)
     # props
-    d['backpack'] = X.Prop('backpack', 380)
-    d['bus'] = X.Prop('school_bus', 185, mode='side')
-    d['book'] = X.Prop('book_pencil', 330)
-    d['bowl'] = X.Prop('mixing_bowl', 300)
-    d['cupcake'] = X.Prop('cupcake', 300)
-    d['i_house'] = X.Prop('house', 92)
-    d['i_clock'] = X.Prop('alarm_clock', 92)
-    d['i_family'] = X.Prop('family_figures', 92)
+    d['backpack'] = X.Prop('backpack', 445)
+    d['bus'] = X.Prop('school_bus', 240, mode='side')
+    d['book'] = X.Prop('book_pencil', 390)
+    d['bowl'] = X.Prop('mixing_bowl', 410)
+    d['cupcake'] = X.Prop('cupcake', 400)
+    d['i_house'] = X.Prop('house', 84)
+    d['i_clock'] = X.Prop('alarm_clock', 84)
+    d['i_family'] = X.Prop('family_figures', 84)
     d['house'] = X.Prop('house', 440)
     d['clock'] = X.Prop('alarm_clock', 330)
     d['blocks'] = block_sprites()
     d['bus_path'] = bus_path()
     return d
+
+
+@functools.lru_cache(maxsize=16)
+def fit_px(text, font='display', width=STACK_W):
+    """Font px at which `text` (Nunito Black caps) spans exactly `width` px."""
+    w, _ = T.measure(text, 'flat', font=font, px=100)
+    return round(100.0 * width / w, 1)
+
+
+@functools.lru_cache(maxsize=4)
+def stack_tops(key, top, gap):
+    """Cap tops of a vertical stack of Txt lines (A()[key]) starting at `top` with `gap` px between lines."""
+    out, y = [], top
+    for txt in A()[key]:
+        if isinstance(txt, tuple):
+            txt = txt[0]
+        out.append(y)
+        y += txt.ts.layout.cap + gap
+    return tuple(out)
 
 
 def prewarm():
@@ -170,7 +195,7 @@ def prewarm():
 
 
 def bus_path():
-    ctrl = np.array([(-90, 1405), (160, 1338), (430, 1392), (700, 1318), (930, 1352), (1180, 1300)], np.float64)
+    ctrl = np.array([(-120, 1338), (150, 1276), (430, 1326), (700, 1262), (930, 1292), (1200, 1240)], np.float64)
     # Catmull-Rom through the control points
     pts = []
     for i in range(len(ctrl) - 1):
@@ -191,7 +216,7 @@ def block_sprites():
     if pr.real:
         sp = X.split_blocks(X.register_prop(pr), 0.0)
         if sp:
-            return [(spr, anc, 172.0 / hpx) for spr, anc, hpx in sp]
+            return [(spr, anc, BLOCK_H / hpx) for spr, anc, hpx in sp]
     out = []
     for col in ('MAGENTA', 'ORANGE', 'LEAF'):
         n = 200
@@ -202,7 +227,7 @@ def block_sprites():
         rgb = C[col][None, None, :] * sh[..., None]
         spr = np.dstack([rgb * a[..., None], a]).astype(np.float32)
         spr.setflags(write=False)
-        out.append((spr, (0.5, (hh - 10) / hh), 170.0 / (n - 20)))
+        out.append((spr, (0.5, (hh - 10) / hh), BLOCK_H / (n - 20)))
     return out
 
 
@@ -481,14 +506,14 @@ def f2_list_ink(ink, bb, t, light):
         nxt = hits[i + 1] if i + 1 < 3 else 99
         active = t < nxt
         txt = mag if active else plum
-        base = F2_BASE[i]
         cap = txt.ts.layout.cap
+        base = stack_tops('list', F2_TOP, F2_GAP)[i] + cap
         # exit into slots at 10.2 (staggered)
         if t >= T_F3:
             slot_rise(ink, bb, txt, F2_X, base - cap, t, -10, 0.1, out_t0=T_F3 + 0.05 * i, out_dur=0.28,
                       anchor_x=0.0, overshoot=False)
             continue
-        st = stamp(t, th, 1.45)
+        st = stamp(t, th, 1.3)
         if st is None:
             continue
         s, op, lift = st
@@ -513,16 +538,18 @@ def f2_ding_ink(ink, bb, t):
     if t < t0 - 0.02 or t > t0 + 0.75:
         return
     (cx, cy), _, _ = PROPS2['cupcake']
-    ox, oy = cx + 48, cy - 232                       # just right of the cherry
+    hgt = A()['cupcake'].height
+    ox, oy = cx + 0.16 * hgt, cy - 0.773 * hgt       # just right of the cherry
+    q = hgt / 300.0
     for k, ang in enumerate((-8.0, -38.0, -68.0)):
         a = math.radians(ang)
-        r0, r1 = 52.0, 102.0 - 10 * abs(k - 1)
+        r0, r1 = 52.0 * q, (102.0 - 10 * abs(k - 1)) * q
         u_in = K.ramp(t, t0 + 0.02 * k, t0 + 0.12 + 0.02 * k, 'out_cubic')
         u_out = K.ramp(t, t0 + 0.45, t0 + 0.7, 'in_cubic')
         p0 = (ox + math.cos(a) * r0, oy + math.sin(a) * r0)
         p1 = (ox + math.cos(a) * r1, oy + math.sin(a) * r1)
         pts = X.resample(np.array([p0, p1]), 2.0)
-        draw_stroke(ink, bb, pts, 8.0, C['ORANGE'], u_out, u_in)
+        draw_stroke(ink, bb, pts, 9.0, C['ORANGE'], u_out, u_in)
 
 
 def f2_path_ink(ink, bb, t):
@@ -539,15 +566,16 @@ def f2_path_ink(ink, bb, t):
 def f3_ink(ink, bb, t, light):
     Ad = A()
     t_lines = (B(18), B(19), B(20))
+    caps = stack_tops('h3', F3_TOP, F3_GAP)
     for i, txt in enumerate(Ad['h3']):
         if i < 2:
-            slot_rise(ink, bb, txt, 540, F3_CAP[i], t, t_lines[i] - 0.05, 0.42)
+            slot_rise(ink, bb, txt, 540, caps[i], t, t_lines[i] - 0.05, 0.42)
         else:
-            st = stamp(t, t_lines[i], 1.55)
+            st = stamp(t, t_lines[i], 1.4)
             if st is None:
                 continue
             s, op, lift = st
-            cy = F3_CAP[i] + txt.ts.layout.cap / 2
+            cy = caps[i] + txt.ts.layout.cap / 2
             if lift > 0.02:
                 (dx, dy), ln = light.shadow_dir()
                 off = 70 * lift * min(ln, 2.5)
@@ -558,7 +586,7 @@ def f3_ink(ink, bb, t, light):
     for i, txt in enumerate(Ad['rows']):
         t0 = B(21 + i)
         cap = txt.ts.layout.cap
-        slot_rise(ink, bb, txt, 238, F3_ROWS[i] - cap / 2, t, t0 + 0.05, 0.38, anchor_x=0.0)
+        slot_rise(ink, bb, txt, ROW_TEXT_X, F3_ROWS[i] - cap / 2, t, t0 + 0.05, 0.38, anchor_x=0.0)
 
 
 # ============================================================================================ frame 4
@@ -630,8 +658,8 @@ def props_frame1(cv, layer, lb, t, light):
 
 
 # frame-2 props: ground point, landing time, base yaw
-PROPS2 = {'backpack': ((250, 1232), 5.70, -12.0), 'book': ((785, 1196), 7.38, 0.0),
-          'bowl': ((305, 1562), 8.55, -10.0), 'cupcake': ((785, 1566), 8.85, 12.0)}
+PROPS2 = {'backpack': ((250, 1125), 5.70, -12.0), 'book': ((752, 1118), 7.38, 0.0),
+          'bowl': ((290, 1612), 8.55, -10.0), 'cupcake': ((780, 1612), 8.85, 12.0)}
 GROUPS = [('backpack',), ('book',), ('bowl', 'cupcake')]
 # HOMEWORK: cursive lines written on the book's right page (sprite coords normalised by the sprite width,
 # measured on the yaw-0 render: the page's ruled lines rise ~10 deg to the right)
@@ -689,7 +717,7 @@ def draw_book_writing(cv, layer, lb, t, light, x, y):
     for i, p in enumerate(paths):
         d = min(max(dist - acc, 0.0), lens[i])
         if d > 0:
-            al, ax0, ay0 = X.stroke_alpha(p, 1.9, 0.0, d / lens[i])
+            al, ax0, ay0 = X.stroke_alpha(p, 1.9 * pr.height / 330.0, 0.0, d / lens[i])
             lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
         acc += lens[i] + (40.0 if i == 0 else 0.0)
     # pencil tip position
@@ -755,9 +783,9 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
         (bx, by), tl, _ = PROPS2['bowl']
         pr = Ad['bowl']
         fx, fy = pr.feature('batter', -10.0)
-        X.puff(layer, t, tl - 0.01, bx + fx, by + fy - 10, n=64, spread=210, seed=12, rgb=(1.22, 1.19, 1.12),
+        X.puff(layer, t, tl - 0.01, bx + fx, by + fy - 10, n=64, spread=260, seed=12, rgb=(1.22, 1.19, 1.12),
                size=(9, 30), up=-2.0, dur=1.45, opacity=1.0, ang=(-172, -8))
-        X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=26, spread=110, seed=13, rgb=(1.22, 1.19, 1.12),
+        X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=26, spread=140, seed=13, rgb=(1.22, 1.19, 1.12),
                size=(6, 18), up=-1.4, dur=1.0, opacity=0.9, ang=(-150, -30))
     # bus drives along the dashed path
     if 5.95 <= t <= 7.1:
@@ -777,7 +805,7 @@ def draw_book_lines(layer, lb, x, y, t):
         return
     for p in write_paths():
         P = book_to_screen(pr, x, y, 1.0, p)
-        al, ax0, ay0 = X.stroke_alpha(P, 1.9)
+        al, ax0, ay0 = X.stroke_alpha(P, 1.9 * pr.height / 330.0)
         lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
 
 
@@ -792,7 +820,7 @@ def props_frame3(cv, layer, lb, t, light):
         t_m = t0 + 0.24                      # morph moment (top of the hop, mid-spin)
         t_land = t0 + 0.6                    # block lands on the tower (b18 / b19 / b20)
         spr, anc, ks = blocks[g]
-        bh = 170.0
+        bh = BLOCK_H
         gx, gy = TOWER[0], TOWER[1] - bh * g
         if t < t0:
             continue
@@ -852,7 +880,7 @@ def props_frame3(cv, layer, lb, t, light):
             continue
         sc = max(0.0, K.spring(t - (tl - 0.06), freq=3.2, damping=0.45))
         op = min(1.0, (t - tl + 0.06) / 0.06)
-        x, y = 165, F3_ROWS[i] + 44
+        x, y = ROW_ICON_X, F3_ROWS[i] + 40
         yaw = 10 * math.sin(t * 1.3 + i)
         rot = 0.0
         if i == 1 and t > tl:      # alarm clock: rings (shakes) briefly
@@ -875,7 +903,7 @@ def _block_shadow(cv, x, y, light, lift, ks, spr, anc, op, g, landed):
         K.draw(cv, sil, x + dx * off, y + dy * off * 0.5 + 6, scale=ks, anchor=anc, opacity=0.24 * op, blur=10)
         if g == 0:
             c = X._contact()
-            K.draw(cv, c, x + 3, base_y + 2, scale=(230 / c.shape[1], 34 / c.shape[0]), opacity=0.6 * op)
+            K.draw(cv, c, x + 3, base_y + 2, scale=(280 / c.shape[1], 40 / c.shape[0]), opacity=0.6 * op)
     else:
         f = float(np.clip(1.0 - lift / 700.0, 0, 1)) ** 1.5
         c = X._contact()
@@ -1040,7 +1068,7 @@ def stamp_dust(cv, sheet_id, t):
                 (B(1), 540, F1_BASE[1], l2.w / 2, 5)]
     elif sheet_id == 1:
         st = Ad['h3'][2]
-        hits = [(B(20), 540, F3_CAP[2] + st.ts.layout.cap, st.w / 2, 7)]
+        hits = [(B(20), 540, stack_tops('h3', F3_TOP, F3_GAP)[2] + st.ts.layout.cap, st.w / 2, 7)]
     cam = hook_cam(t) if sheet_id == 0 else None
     for th, x, y, hw, seed in hits:
         if not (th - 0.01 <= t <= th + 0.7):
