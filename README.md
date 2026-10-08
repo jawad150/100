@@ -1,3 +1,52 @@
+# Rida — Japan bonds × Yen carry trade reel
+
+An 89-second vertical talking-head reel (1080×1920, 30 fps) in Roman-Urdu captions, edited from the
+"Rida Proj" Drive folder:
+
+- **Main clip**: `Rida Raww Final 2 3.mp4`
+- **Captions**: Roman-Urdu text taken from `Script/Script.txt`, aligned word by word to the audio
+- **Grade**: matched to the natural-colour reference (clean neutral whites, natural warm skin, soft contrast, lifted shadows), with sharpening and the baked-in vignette lifted
+- **Caption and motion style**: taken from the reference reel. Single-word pop captions in a bold SF-Pro-style sans (Inter Display), stacked yellow kinetic type tilted in 3D, yellow icons and a face-tracking box
+- **SFX**: the reference reel's own sound effects. The voice was removed with Demucs and the whooshes, pops, clicks, booms and ding were sliced from the remaining stem
+
+**Video:** [`reel/rida_japan_yen_reel.mp4`](reel/rida_japan_yen_reel.mp4) · **LUT:** [`reel/rida_natural_grade.cube`](reel/rida_natural_grade.cube)
+
+The 3D cutaways are built After-Effects style with a 3D camera, a perspective grid floor, glass cards and coins in depth:
+
+- Japan ↔ U.S. Treasury connection
+- JGB yield chart
+- Yen carry-trade flow, filmed with a camera move through three stations
+- ¥360T → $2.34T counter
+- 1996 → 2026 timeline with the 3% slam
+- money flowing back to Japan
+- impact cards
+- gold and oil
+- opportunities vs. risks
+
+The reel ends on a follow card for Floret Capitals.
+
+Captions and key graphics stay inside the Instagram Reels safe zone (x 64–940, y 260–1480). Text is placed so it never covers the talent's face.
+
+### Rebuild
+
+```bash
+pip install numpy scipy pillow "opencv-python-headless==4.10.0.84" faster-whisper demucs gdown
+# workspace/rida/src/: main.mp4, ref_style.mp4, ref_grade2.jpg, script.txt, broll/*.png (from the Drive folder)
+python3 pipeline/rida/grade.py workspace/rida/ana/grade.cube                 # natural grade LUT
+ffmpeg -i workspace/rida/src/main.mp4 -vf "fps=30,hqdn3d=0:2.5:0:0,lut3d=workspace/rida/ana/grade.cube" \
+       -crf 10 -an workspace/rida/work_graded.mp4                            # graded plate
+python3 pipeline/rida/facetrack.py workspace/rida/work_graded.mp4 workspace/rida/ana/face.json
+# whisper word timings -> ana/main_words*.json, then:
+python3 pipeline/rida/align.py workspace/rida/src/script.txt ... workspace/rida/ana/captions_words.json
+python3 -m demucs -n htdemucs --two-stems=vocals -o workspace/rida/ana/sep workspace/rida/ana/ref_audio.wav
+python3 pipeline/rida/extract_sfx.py workspace/rida/ana/sep/htdemucs/ref_audio/no_vocals.wav workspace/rida/sfx
+python3 pipeline/rida/render_all.py                                          # -> workspace/rida/out/
+```
+
+Preview frames with `python3 pipeline/rida/edit.py still 1.0,30.8,47.6`. Set `SAFE_GUIDE=1` to draw the safe-zone box.
+
+---
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.
