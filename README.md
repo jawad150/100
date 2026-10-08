@@ -47,11 +47,11 @@ To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Se
 
 ## World Investor Week 2026 at Riphah: Instagram carousel (4:5)
 
-Six 1080×1350 slides in [`riphah/`](riphah/), posted in filename order:
+Eleven 1080×1350 slides in [`riphah/`](riphah/), posted in filename order:
 
-- `post_0_cover.jpg`: title card ("World Investor Week 2026 at Riphah International University" plus the WIW 2026 tagline) over the group photo at the Riphah gate (dimmed into navy), with the Floret Capitals and WIW 2026 logos.
-- `post_1` … `post_5`: event photos in the Floret post template. A navy band at the top carries the Floret | WIW 2026 logo lockup, the photo fades into navy with the same top and bottom gradient on every slide, and the website sits at the bottom.
+- `post_00_cover.jpg`: title card ("World Investor Week 2026 at Riphah International University" plus the WIW 2026 tagline) over the group photo at the Riphah gate (dimmed into navy), with the Floret Capitals and WIW 2026 logos.
+- `post_01` … `post_10`: event photos in the Floret post template. A navy band at the top carries the Floret | WIW 2026 logo lockup, the photo fades into navy with the same top and bottom gradient on every slide, and the website sits at the bottom.
 
-The script is `pipeline/riphah_photos.py SRC_DIR` (SRC_DIR holds `1.jpg` … `5.jpg` and the cover photo `8.jpg`). It gives every photo one shared grade and then sets each photo's exposure so the faces meter to the same level. Crops centre the people horizontally. The wide group shot is continued with a blurred mirror of its own edges so its fades match the other slides.
+The script is `pipeline/riphah_photos.py SRC_DIR` (SRC_DIR holds the event photos `1.jpg` … `5.jpg` and `9.jpg` … `13.jpg`, plus the cover photo `8.jpg`). It gives every photo one shared grade and then sets each photo's exposure so the faces meter to the same level. Crops centre the people horizontally. The wide group shot is continued with a blurred mirror of its own edges so its fades match the other slides.
 
 Assets in `riphah/assets/`: Floret logo, the official white WIW 2026 logo (from the IOSCO WIW 2026 campaign toolkit at worldinvestorweek.org), and the Poppins and Anton fonts (SIL OFL).

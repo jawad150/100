@@ -3,9 +3,10 @@
 Usage:
     python3 pipeline/riphah_photos.py SRC_DIR [OUT_DIR]
 
-SRC_DIR must hold the five event photos 1.jpg ... 5.jpg and the cover photo 8.jpg. Output (1080x1350):
-    post_0_cover.jpg   title card
-    post_1..5_*.jpg    photos in the Floret post template: navy band with the
+SRC_DIR must hold the event photos 1-5 and 9-13 (.jpg) and the cover photo
+8.jpg. Output (1080x1350), in posting order:
+    post_00_cover.jpg  title card
+    post_01..10_*.jpg  photos in the Floret post template: navy band with the
                        Floret + WIW 2026 logos, photo fading into navy, website.
 
 Grading is levelled across the set: every photo goes through the same tone and
@@ -52,6 +53,20 @@ PHOTOS = {
     "5": dict(name="group", x0=75, w=1900, y0=-225,
               faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)],
               wb=(1.0, 1.0, 1.02)),
+    # Second batch (source files 9-13).
+    "6": dict(name="margin_trading", file="9.jpg", x0=0, w=1500, y0=47,
+              faces=[(350, 720, 410, 820)], wb=(0.96, 1.0, 1.05)),
+    "7": dict(name="classroom", file="10.jpg", x0=200, w=1521, y0=0,
+              faces=[(1530, 390, 1600, 470), (460, 570, 580, 700), (720, 560, 820, 660)],
+              wb=(0.97, 1.0, 1.04)),
+    "8": dict(name="presenter", file="11.jpg", x0=275, w=1300, y0=123,
+              faces=[(790, 520, 940, 700)], wb=(0.98, 1.0, 1.03)),
+    "9": dict(name="box_handover", file="12.jpg", x0=20, w=1350, y0=222,
+              faces=[(330, 600, 430, 720), (570, 600, 670, 720), (980, 700, 1080, 820)],
+              wb=(0.99, 1.0, 1.03)),
+    "10": dict(name="pmex_bag", file="13.jpg", x0=0, w=1070, y0=523,
+               faces=[(350, 810, 430, 920), (710, 840, 790, 950)],
+               wb=(0.99, 1.0, 1.02)),
 }
 
 # Cover background: the group photo at the Riphah gate, full width (the group is
@@ -297,11 +312,11 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     graded = {}
     for k, p in PHOTOS.items():
-        graded[k] = graded_photo(os.path.join(src_dir, f"{k}.jpg"), p)
-        dst = os.path.join(out_dir, f"post_{k}_{p['name']}.jpg")
+        graded[k] = graded_photo(os.path.join(src_dir, p.get("file", f"{k}.jpg")), p)
+        dst = os.path.join(out_dir, f"post_{int(k):02d}_{p['name']}.jpg")
         post(graded[k], p).save(dst, quality=95, subsampling=0, optimize=True)
         print(dst)
-    dst = os.path.join(out_dir, "post_0_cover.jpg")
+    dst = os.path.join(out_dir, "post_00_cover.jpg")
     cover(graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(dst, quality=95, subsampling=0, optimize=True)
     print(dst)
 
