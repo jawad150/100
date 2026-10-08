@@ -8,6 +8,10 @@ Other projects configure it in project.json (all optional; Organic Fostering use
   "google_fonts": {"Inter": "Inter:wght@400;500;600;700;800;900", "Kalam": "Kalam:wght@700"},
   "logo_src": "https://acme.com/logo.svg" (or a repo-relative file), "site_images_regex": "assets/img/[^\"]+\\.jpg"
   "footage_names": ["short_name_for_clip_00", ...]
+  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic"}   (dst <- src basenames in fonts/:
+      fills a weight a family lacks, e.g. the toolkit's 'Caveat-Bold' accent role -> a single-weight italic)
+  "site_images": false   skips the site photo scrape (social-profile sites, JavaScript apps)
+With a project.json, --footage needs "drive_folder" (it never falls back to the original client's folder).
 
 3D renders (workspace3/assets3d) are rebuilt with assets3d_icons.py / assets3d_hero.py / assets3d_everyday.py /
 assets3d_household.py, and the SFX with the reel modules (render.py builds them on demand).
@@ -55,6 +59,10 @@ def fonts():
             w = int(re.search(r'font-weight:\s*(\d+)', block).group(1))
             url = re.search(r'url\((.*?)\)', block).group(1)
             get(url, os.path.join(d, f'{fam}-{names[w]}' + ('Italic' if italic else '') + '.ttf'))
+    import shutil
+    for dst, src in (P.get('font_copies') or {}).items():
+        shutil.copyfile(os.path.join(d, src + '.ttf'), os.path.join(d, dst + '.ttf'))
+        print('font copy', src, '->', dst)
     print('fonts ->', d, len(os.listdir(d)))
 
 
@@ -118,6 +126,9 @@ def brand_generic(d):
 
 
 def site_images():
+    if P.get('site_images') is False:
+        print('site_img -> skipped (project.json "site_images": false)')
+        return
     d = os.path.join(WS, 'site_img')
     page = get(SITE + '/').decode('utf-8', 'ignore')
     pat = P.get('site_images_regex', r'assets/images/homepage/[A-Za-z0-9_.-]+\.(?:webp|jpg)')
@@ -130,6 +141,8 @@ def site_images():
 
 def footage():
     """Client footage (Drive folder 'fostering', shared as anyone-with-link) -> frames/cXX/%05d.jpg + manifest."""
+    if P and not P.get('drive_folder'):
+        sys.exit('footage: project.json has no "drive_folder"; local footage is extracted by footage-editor')
     src, frames = os.path.join(WS, 'src'), os.path.join(WS, 'frames')
     os.makedirs(src, exist_ok=True)
     t = get(f'https://drive.google.com/embeddedfolderview?id={DRIVE_FOLDER}#list').decode('utf-8', 'ignore')

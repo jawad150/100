@@ -1,0 +1,40 @@
+{
+  "project": "jawad_reels",
+  "client": "Jawad (@jawad_mp4) - video editor / motion designer, personal brand",
+  "workspace": "workspace/jawad_reels",
+  "site": "https://www.instagram.com/jawad_mp4/",
+  "site_images": false,
+  "google_fonts": {
+    "Poppins": "Poppins:wght@400;500;600;700;800;900",
+    "InstrumentSerif": "Instrument+Serif:ital@0;1",
+    "JetBrainsMono": "JetBrains+Mono:wght@400;500;600;700;800"
+  },
+  "font_map": {"Nunito": "Poppins", "Poppins": "Poppins", "Caveat": "InstrumentSerif"},
+  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic"},
+  "logo_src": "pipeline/jawad_reels/brand_src/logo_full.svg",
+  "logo_dark_lum": 0.12,
+  "palette": {
+    "MAGENTA": "#FF6A1A",
+    "LOGO_MAGENTA": "#FF6A1A",
+    "HOT_PINK": "#FF8A3D",
+    "ORANGE": "#F2312B",
+    "LOGO_ORANGE": "#F2312B",
+    "AMBER": "#FFB547",
+    "LEAF": "#FF9F1C",
+    "LEAF_HI": "#FFD38A",
+    "PLUM": "#4A0E08",
+    "INK": "#0B0706",
+    "NIGHT_0": "#070404",
+    "NIGHT_1": "#170A07",
+    "IVORY": "#FFF3E6",
+    "PEACH": "#FFD3B0",
+    "LAVENDER": "#F4E4DA",
+    "FLAME": "#FF6A1A",
+    "RED": "#F2312B",
+    "EMBER": "#B3120E",
+    "GOLD": "#FF9F1C",
+    "ASH": "#A8978C",
+    "SMOKE": "#2A1A15"
+  },
+  "deliver": {"dir": "reel/jawad_reels", "prefix": "jawad"}
+}
