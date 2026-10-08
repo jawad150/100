@@ -176,7 +176,7 @@ def base_cam_params(t):
     e = K.EASE[MOVE_EASE](K.clamp(u))
     off = (A - hA) * (1 - e) + (Bp - hB) * e
     sh = s_lead(t)
-    bump = math.sin(math.pi * K.clamp(u))
+    bump = math.sin(math.pi * e)            # eased: zero velocity at both ends of the move (no kink at the cuts)
     # low-pass the head's route (cut the corners of the S): the coins stay in the pulled-back frame while the
     # camera path is shorter and smoother
     W = 650.0 * bump
@@ -191,14 +191,19 @@ def base_cam_params(t):
 
 
 def _breath(t):
+    """Hold breathing of the world camera (not the text camera): a slow push-in and a soft wiggle. Continuous at
+    every hand-off: the wiggle fades in after an arrival, and the push + wiggle reached at a LEAVE decay to zero
+    over the first 45 % of the move (no zoom / position snap at the cut between hold and move)."""
     a, b, u = _segment(t)
-    if b is not None:
-        return 0.0, 0.0, 0.0, 0.0
-    t0 = ARRIVE[a]
-    t1 = LEAVE[a] if LEAVE[a] < 1e8 else DUR
-    v = K.EASE['inout_sine'](K.clamp((t - t0) / max(0.1, t1 - t0)))
-    push = -36.0 * v
-    return push, K.wiggle(t, 0.22, 5.0, seed=11), K.wiggle(t, 0.19, 4.0, seed=12), K.wiggle(t, 0.15, 0.25, seed=13)
+    wig = (K.wiggle(t, 0.22, 5.0, seed=11), K.wiggle(t, 0.19, 4.0, seed=12), K.wiggle(t, 0.15, 0.25, seed=13))
+    if b is None:
+        t0 = ARRIVE[a]
+        t1 = LEAVE[a] if LEAVE[a] < 1e8 else DUR
+        v = K.EASE['inout_sine'](K.clamp((t - t0) / max(0.1, t1 - t0)))
+        fin = K.ramp(t, t0, t0 + 0.6, 'inout_sine') if t0 > 0 else 1.0
+        return -36.0 * v, wig[0] * fin, wig[1] * fin, wig[2] * fin
+    fade = 1.0 - K.ramp(u, 0.0, 0.45, 'inout_sine')
+    return -36.0 * fade, wig[0] * fade, wig[1] * fade, wig[2] * fade
 
 
 def _hook_shake(t):
@@ -574,7 +579,8 @@ def scene_hook(t, n_samples):
     # warm local bloom behind the number on the slam / snap
     nx, ny, k = screen_of(c, *NUM_W)
     g = K.impulse(t, 0.0, decay=4.0) + 0.7 * K.impulse(t, T_SNAP, decay=5.0)
-    X.local_glow(cv, nx, ny, 520.0, 'peach', 0.8 * min(1.0, g + 0.25))
+    base = 0.25 * (1.0 - K.ramp(t, T_BREAK, T_BREAK + 0.5, 'inout_sine'))    # gone before the scene hand-off
+    X.local_glow(cv, nx, ny, 520.0, 'peach', 0.8 * min(1.0, g + base))
     X.local_glow(cv, nx, ny, 380.0, 'gold', 0.6 * g)
     # coin burst around the number (frame 0 is already mid-burst); each coin smeared over its shutter slice
     if t < 1.2:
@@ -762,7 +768,7 @@ def _tile(icon_name):
 # ribbon (drawn after the stream), z >= 0 behind it.
 SPECS = dict(
     home=[('house', 'day', (0.0, 60.0), 660.0, B(11), (-10.0, 8.0), 0.0),
-          ('bed', 'day', (-255.0, 430.0), 420.0, B(13), (14.0, 6.0), -70.0),
+          ('bed', 'day', (-235.0, 440.0), 560.0, B(13), (14.0, 6.0), -70.0),
           ('heart', 'day', (300.0, -190.0), 220.0, B(13.5), (0.0, 18.0), -110.0),
           ('tile:key', None, (215.0, 470.0), 132.0, B(14), (0.0, 0.0), -90.0),
           ('tile:shield', None, (375.0, 400.0), 132.0, B(14.25), (0.0, 0.0), -90.0)],
@@ -1169,7 +1175,7 @@ def _draw_child_scene(cv, c, tc, t, n_samples, fade):
 def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op):
     a = P.prop(nm, var)
     spr = a.frame(0) if getattr(a, 'mode', 'yaw') == 'static' else a.at_yaw(12.0 * math.sin(t * 0.9 + i))
-    w = 170.0 if nm != 'school_bus' else 210.0
+    w = {'school_bus': 230.0, 'bed': 260.0, 'sandwich': 230.0, 'house': 230.0, 'plate': 220.0}.get(nm, 205.0)
     t0 = T_GATHER + 0.125 * (i // 2) + 0.62
     land = K.impulse(t, t0, decay=7.0)
     if land > 0.03 and op > 0.5:
