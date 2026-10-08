@@ -66,6 +66,32 @@ Pure animation, no footage, built from the client's content doc. Audio is SFX on
 
 **Copy:** all of it comes from the website or the client's ads, including the allowance figures and the disclaimer. The ad's "£2,500" figure isn't used because its unit (week, month or one-off) wasn't stated. Tell us what it covers and it can go in.
 
+## Voiceover versions (all five pieces)
+Each piece also has a **voiceover version**. A warm British female narrator ("Vera") reads the on-screen copy, and the holds are slowed so every line can be read before the next one lands. Only the holds slow down. Slams, flights, page flips, springs and camera moves keep their original speed. The originals above are unchanged.
+
+| Piece | Voiceover version | Length | Music tempo |
+|---|---|---|---|
+| Reel 1 · Could You? | `organic_fostering_reel1_vo_could_you.mp4` | 49.5 s | 120 BPM |
+| Reel 2 · Financial Support | `organic_fostering_reel2_vo_financial_support.mp4` | 42.3 s | 128 BPM |
+| Reel 3 · Nurture · Develop · Grow | `organic_fostering_reel3_vo_nurture_develop_grow.mp4` | 47.2 s | 92 BPM |
+| #1 · Day in the Life | `organic_fostering_anim1_vo_day_in_the_life.mp4` | 31.2 s | 100 BPM |
+| #4 · £447.60: where does it go? | `organic_fostering_anim4_vo_where_does_it_go.mp4` | 50.8 s | 120 BPM |
+
+Each one comes with:
+- `…_master.mp4`: CRF 14, stored in Git LFS.
+- `…_cover.jpg`: the cover image.
+- `…_vo_stem.wav`: the voice alone, 48 kHz 24-bit.
+- `…_sfx_stem.wav`: the re-timed SFX alone, 48 kHz 24-bit.
+
+**The mix:**
+- The voice sits at about −16 LUFS per line.
+- The SFX duck by 10 dB under each line (14 dB on #4). Hero slams still punch through.
+- The master is −14 LUFS integrated with a true peak of −2 dBTP or lower.
+
+**The script** is in [`vo/script.json`](pipeline/fostering/vo/script.json). Every spoken line repeats on-screen copy or a verified site fact, with numbers read out ("four hundred and forty-seven pounds sixty a week").
+
+**Adding music:** wherever a hold is long enough, its slow-down is rounded to whole half-beats. Most cuts therefore stay on the tempo grid above, counted from 0.00 s. Only a few very short holds take their stretch off-grid. A track at that tempo lines up with the cuts, and you can mix it under the voice stem.
+
 ## How it's built ([`pipeline/fostering/`](pipeline/fostering/))
 - [`BRIEF.md`](pipeline/fostering/BRIEF.md) holds the creative brief, the storyboards and the engineering contract.
 - [`TOOLKIT.md`](pipeline/fostering/TOOLKIT.md) is the API cheat-sheet for the toolkit modules below.
@@ -84,6 +110,8 @@ Pure animation, no footage, built from the client's content doc. Audio is SFX on
 | `audio.py` | Synthesized SFX library and the cue-sheet mixer |
 | `reel1.py`, `reel2.py`, `reel3.py` | The three reel timelines |
 | `anim1*.py`, `anim4*.py` | The two animation timelines with their paper, effects and synthesized-SFX helpers |
+| `retime.py`, `*_vo.py` | Voiceover versions: a time-warp that slows each hold to fit its VO line plus reading time (motion stays 1:1), re-timed SFX cues, the VO/SFX ducked mix and stems |
+| `vo_tools.py`, `vo/` | The VO script and TTS takes. Each take is cut into sentence lines at its silences (Whisper word timings plus an energy envelope) and checked by re-transcription |
 | `render.py` | Parallel renderer |
 | `package.py` | Instagram encode (2-pass), master, stem and cover into `reel/organic_fostering/` |
 | `setup_workspace.py` | Rebuilds the git-ignored `workspace3/` (fonts, logos, site photos, `--footage`) after a fresh clone |
@@ -102,6 +130,11 @@ python3 render.py reel1 --workers 4          # likewise reel2 (add --no-sfx-buil
 python3 assets3d_everyday.py all ; python3 assets3d_household.py all   # animation props (FOSTER_GPU=1 on an NVIDIA PC)
 python3 render.py reel1 --stills 1.0,8.1 ; python3 render.py reel1 --sheet 48   # previews
 python3 render.py anim1 --workers 4 && python3 package.py anim1 anim1_day_in_the_life --cover 4.0
+# voiceover versions (vo_tools needs: pip install faster-whisper soundfile pyloudnorm)
+python3 vo_tools.py split anim1                       # takes in vo/anim1/*.mp3 -> workspace3/vo/anim1/<line>.wav
+python3 retime.py plan anim1_vo ; python3 retime.py audio anim1_vo
+python3 render.py anim1_vo --workers 4 --audio ../../workspace3/audio/anim1_vo_mix.wav
+python3 package.py anim1_vo anim1_vo_day_in_the_life --cover 4.0
 ```
 
 Continuing on a Windows PC (WSL2, RTX GPU): [`LOCAL_SETUP.md`](pipeline/fostering/LOCAL_SETUP.md), or run `pipeline/fostering/bootstrap_wsl.sh`.
