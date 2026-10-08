@@ -42,4 +42,12 @@ SLOTS = [
          min_rate=0.1, tail=1.6),
 ]
 
-retime.wrap(globals(), M, 'reel3', SLOTS)
+
+def cue_gain(cue, src_t, rate):
+    """Hits that land on words: the DEVELOP chip bubble pop under "sees"."""
+    if cue['name'] == 'bubble_pop' and abs(src_t - 9.946) < 0.05:
+        return -6.0
+    return 0.0
+
+
+retime.wrap(globals(), M, 'reel3', SLOTS, cue_gain=cue_gain)
