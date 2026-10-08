@@ -30,7 +30,7 @@ SLOTS = [
     dict(lines=['time_flex'], at=T[1], delay=0.05, hold=(T[1] + 0.63, T[2] - 0.05), min_rate=0.04, tail=0.1,
          duck_lead=-0.02),
     dict(lines=['single'], at=T[2], delay=0.05, hold=(T[2] + 0.63, T[3] - 0.05), min_rate=0.04, tail=0.1,
-         duck_lead=-0.02),
+         duck_lead=-0.02, trim={'single': 1.97}),          # a mouth click after "relationship" held the duck on tick 4
     dict(lines=['rent_own'], at=T[3], delay=0.05, hold=(T[3] + 0.63, T[4] - 0.05), min_rate=0.04, tail=0.1,
          duck_lead=-0.02),
     dict(lines=['no_experience'], at=T[4], delay=0.05, hold=(9.90, 9.94), min_rate=0.02, tail=0.15,
@@ -66,8 +66,12 @@ def cue_gain(cue, src_t, rate):
         return -5.0
     if cue['name'] == 'pop' and abs(src_t - 22.75) < 0.05:
         return -4.0
-    if cue['name'] == 'impact_soft' and any(abs(src_t - x) < 0.05 for x in (0.5, 1.5, 19.5)):   # on "A" / "Ch-"
+    if cue['name'] == 'impact_soft' and abs(src_t - 1.5) < 0.05:        # slam 3's tail on the "A" of "A place"
+        return -6.0
+    if cue['name'] == 'impact_soft' and any(abs(src_t - x) < 0.05 for x in (0.5, 19.5)):        # on "A" / "Ch-"
         return -3.0
+    if cue['name'] == 'heartbeat' and abs(src_t - 18.75) < 0.05:         # the reprise's 2nd beat on "home"
+        return -4.0
     if cue['name'] == 'riser' and abs(src_t - 2.5) < 0.1:                                     # under "-long"
         return -3.0
     return 0.0

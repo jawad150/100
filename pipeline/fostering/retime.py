@@ -150,7 +150,8 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
             for i in ids:
                 du = float(lines[i]['dur'])
                 placed.append(dict(line=i, text=lines[i]['text'], start=round(t, 3), end=round(t + du, 3),
-                                   file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead')))
+                                   file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead'),
+                                   trim=(sl.get('trim') or {}).get(i)))
                 t += du + gap
             prev_end = t - gap
             rows.append(dict(slot=k, lines=ids, src=(at, at), out=(round(cur_o, 3), round(cur_o, 3)), rate=1.0,
@@ -217,7 +218,8 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
         t = vo0
         for i, du in zip(ids, durs):
             placed.append(dict(line=i, text=lines[i]['text'], start=round(t, 3), end=round(t + du, 3),
-                               file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead')))
+                               file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead'),
+                               trim=(sl.get('trim') or {}).get(i)))
             t += du + gap
         if ids:
             prev_end = t - gap
@@ -393,6 +395,11 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         if fsr != sr:
             from scipy.signal import resample_poly
             y = resample_poly(y, sr, fsr)
+        if p.get('trim'):                # slot trim={line: s}: fade the clip out there (a click / noise after the last
+            nt = int(float(p['trim']) * sr)                        # word), mix only: the planned timing is unchanged
+            nf = int(0.03 * sr)
+            y = y[:nt].copy()
+            y[-nf:] *= np.linspace(1.0, 0.0, nf)
         y_raw = y
         y = deess(y, sr)
         # level after de-essing (it takes up to ~1.7 LU off sibilant lines, which would then sit low)
