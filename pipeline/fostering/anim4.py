@@ -26,13 +26,16 @@ SHOT LIST (t s | beat | picture | camera | SFX)
   1.00  B2    "Where does it go?" (INK 84 px) per-glyph slam; the glossy 3D "?" (question/day) pops above with one
               eased full turn to face-on | | pop + bubble_pop + whoosh_fast
   1.50  B3    the amount BURSTS into five white glass chips with 3D prop icons on glowing gold spokes from a spinning
-              gold coin hub, one per 16th: Home | Food | Essentials | Travel | School | | coin_flip, 5 pops + glass taps
-  2.50  B5    chips SNAP back into the hub, the number re-forms | | reverse_swell + impact_soft + coin_ring
+              gold coin hub, one per 32nd (all out by ~1.85): Home | Food | Essentials | Travel | School | |
+              coin_flip, 5 pops + glass taps
+  2.28  B5    chips fly straight back into the hub (in_cubic, opaque until they reach it) and the number re-forms
+              on the B5 hit | | reverse_swell + impact_soft + coin_ring
  B THE MONEY MOVES 3.00-5.00 (B6-B10)
   3.00  B6    the number BREAKS into 40 coins (burst down / outward / toward the lens) that are pulled into the gold
               ribbon drawing on down-right; racing light lines; "?" and question lift out | slow push |
               coins_burst + coin_clinks + whoosh_slow
   3.25  B6.5  "Fostering payments" (PLUM) / "help cover the costs of" / "caring for a child." rise on 8ths (80 px)
+ (each station's headline and chips fade out over the first 0.3 s of the move away from it)
  C HOME 5.00-7.75 (move B10-B12, hold B12-B15.5)
   5.00  B10   swoop to HOME following the lead coins | whoosh_by
   5.50  B11   the 3D house pops in the distance (collector) | | house_pop
@@ -41,25 +44,29 @@ SHOT LIST (t s | beat | picture | camera | SFX)
  D FOOD 7.75-10.75 (move B15.5-B18, hold B18-B21.5): basket (collector) pops B17; chip "Food", "Food & everyday" /
               "essentials"; apple B18.5 -> sandwich B19 -> plate B19.5; apple and sandwich drop into the basket
               B20.5 / B21, which fills (cross-fade day -> day_full) | basket_drop x3, pops, glass tap
- E CLOTHES 10.75-13.75 (move B21.5-B24, hold B24-B27.5): backpack (collector) B23; chips "Essentials" + "School",
-              "Clothes, school items" / "& personal needs"; t-shirt B24.5 -> trainer B25 -> book & pencil B25.5; all
-              three slide into the backpack B26.5 / B27 / B27.5, zip on B27.75 | fabric swishes, zip_pull
+ E CLOTHES 10.75-13.75 (move B21.5-B24, hold B24-B27.5): backpack (collector) pops on screen B23.5; chips
+              "Essentials" + "School", "Clothes, school items" / "& personal needs"; t-shirt B24.5 -> trainer B25 ->
+              book & pencil B25.5; all three slide into the backpack B26.5 / B27 / B27.5 (zip_pull with the last
+              landing) | fabric swishes, zip_pull
  F TRAVEL 13.75-16.75 (move B27.5-B30, hold B30-B33.5): the school bus drives in and pulls up B29.5-B30.5 (the money
               pours into it); chip "Travel", "Travel, activities" / "& experiences"; football bounces in, hits on
-              B32 / B32.5 / B33 / B33.5; paint palette B32.5 with a paint dab B33; the bus drives off past the camera
-              B33.5-B34.6 | ball_bounce x4, paint_dab, bus_pass
+              B32 / B32.5 / B33 / B33.5; paint palette B32.5 with a paint dab B33; the bus pulls away from B33 (16.5)
+              and exits frame right by ~16.95, opaque, ball on its roof | ball_bounce x4, paint_dab, bus_pass
  G THE BIGGER PICTURE 16.75-21.00 (move B33.5-B36, hold from B36)
  17.62  B35.25 the 3D child (orange logo girl) pops; B36 the stream arrives, gold halo, coin clinks
  18.25  B36.5 every prop flies in from the sides (pairs on 16ths) and gathers on a slow 3D orbit around her;
-              "It's about supporting" / "everyday life." B36.5 | whoosh_slow, swishes, pops
+              "It’s about supporting" / "everyday life." B36.5 | whoosh_slow, swishes, pops
  20.00  B40   everything shrinks into the child and fades (headline by 20.6, ribbon and stream by B41.4, the
               props one after another by 20.9); only the child remains | whoosh_slow + shimmer
  H FINAL 21.00-25.50 (B42-B51)
- 20.50  B41   coins rise from the child's halo and converge on the number | coin_flip
- 21.00  B42   "£447.60/week" (gold 150 + 86 px) slams at the top | impact_soft + coin_ring + reverse_swell
+ 20.50  B41   coins grow out of the child's halo and converge on the number's glyph band, hitting it on B42 |
+              coin_flip
+ 21.00  B42   "£447.60/week" (gold 150 + 86 px) slams at the top, solid on the beat frame (1.07 -> 1 spring, ink
+              inside x 70-1010) | impact_soft + coin_ring + reverse_swell
  21.25  B42.5 "per child · ages 0–4" | 21.50 B43 "Fostering payments are there to help / cover the costs of caring
               for a child." (Nunito ExtraBold 46 px)
- 22.00  B44   the child flies into the girl of the logo while logo_full builds (soft_chime on landing)
+ 22.00  B44   the child flies into the girl of the logo (0.55 s, lands on her at ~22.5) and cross-fades into
+              logo_full (logo 22.42-22.62, child out 22.45-22.60) | whoosh_fast 22.33, soft_chime on landing
  22.25  B44.5 "Want to understand fostering payments?" | 22.50 B45 two-line gradient pill "Start the conversation /
               with Organic Fostering." pops | 22.75 B45.5 "0161 241 1332 · organicfostering.co.uk" + footer
               "Weekly allowance for one child aged 0–4, based on / current published rates. Rates may vary; terms
@@ -274,9 +281,10 @@ def _near_items():
 def world(t, c, n_samples):
     """Background world: white page + far glows, far defocused coins, dot grid (parallax depth layers)."""
     cv = X.world_bg(t, c, dots=0.0)
-    lg = K.ramp(t, T_LOGO - 0.2, T_LOGO + 0.5)        # keep the logo clear of drifting depth coins
-    X.far_coins(cv, c, t, _money_assets()['coin'], n_samples, opacity=0.38,
-                avoid=((230.0, 1030.0, 850.0, 1260.0, lg),) if lg > 0 else ())
+    lg = K.ramp(t, T_LOGO - 0.2, T_LOGO + 0.5, 'inout_sine')   # keep the logo clear of drifting depth coins
+    lt = K.ramp(t, T_NUM2 - 0.5, T_NUM2 + 0.3, 'inout_sine')   # ... and the end-card copy / like column
+    av = tuple(r for r in ((230.0, 1030.0, 850.0, 1260.0, lg), (90.0, 300.0, 990.0, 1470.0, lt)) if r[4] > 0)
+    X.far_coins(cv, c, t, _money_assets()['coin'], n_samples, opacity=0.38, avoid=av)
     X.dot_grid(cv, c, t)
     return cv
 
@@ -347,11 +355,12 @@ def draw_stream(cv, c, t, n_samples, opacity=1.0, rib_from=0.0):
     s1 = s_lead(t)
     s0_ = max(rib_from, s1 - 5200.0)
     if s1 - s0_ > 4:
-        intro = K.ramp(t, T_BREAK, T_BREAK + 0.35)
+        intro = K.ramp(t, T_BREAK, T_BREAK + 0.35, 'inout_sine')
         X.draw_ribbon(cv, c, pth, s0_, s1, t, width=42.0, opacity=opacity * intro, head=0.4 + 0.6 * lead_moving(t))
     # racing light lines along the stream (stronger while the money travels)
     mv = lead_moving(t)
-    lo = opacity * (0.35 + 0.65 * max(mv, K.ramp(t, T_BREAK, T_BREAK + 0.3) * (1 - K.ramp(t, T_BREAK + 1.5, B(10)))))
+    lo = opacity * (0.35 + 0.65 * max(mv, K.ramp(t, T_BREAK, T_BREAK + 0.3, 'inout_sine') *
+                                       (1 - K.ramp(t, T_BREAK + 1.5, B(10), 'inout_sine'))))
     for k, (spd, off, ln) in enumerate(((1500.0, 34.0, 520.0), (1150.0, -40.0, 420.0), (1800.0, 12.0, 640.0))):
         cyc = 2600.0
         sh = s1 - ((t * spd + k * 900.0) % cyc) + 300.0
@@ -408,7 +417,7 @@ def draw_stream(cv, c, t, n_samples, opacity=1.0, rib_from=0.0):
 
 
 # ================================================================================================ type
-GOLD_KW = dict(fill=((0.0, '#FFF6E0'), (0.38, '#FFD27F'), (0.72, '#FFB15C'), (1.0, '#FF7A1A')),
+GOLD_KW = dict(fill=((0.0, '#FFC873'), (0.4, '#FFB15C'), (0.75, '#FF8A2A'), (1.0, '#FF6411')),   # AMBER top
                side=(('#E07A12', 1.0), ('#8A3A06', 1.0)), glow=0.0, shadow=0.32, shadow_color='#6B2A40',
                shadow_offset=(0.03, 0.12), shadow_blur=0.10, tracking=0.035, env_ground='#FF8A2A')
 SWEEP_KW = dict(width=0.12, strength=0.8, color='#FFE6B0', halo=0.0)   # warm gold sweep: a white band would
@@ -429,7 +438,7 @@ def _type():
                 T.render('caring for a child.', 'flat', px=80, **HEAD_KW)]
     heads = dict(home='A safe, comfortable\nhome', food='Food & everyday\nessentials',
                  cloth='Clothes, school items\n& personal needs', travel='Travel, activities\n& experiences',
-                 child="It's about supporting\neveryday life.")
+                 child="It’s about supporting\neveryday life.")
     d['head'] = {k: (T.render(v.split('\n')[0], 'flat', px=84, **HEAD_KW),
                      T.render(v.split('\n')[1], 'flat', px=84, **dict(HEAD_KW, fill='PLUM')))
                  for k, v in heads.items()}
@@ -448,7 +457,7 @@ def _type():
 def _rise(t, t0, dur=0.55):
     """(opacity, dy, blur) for an eased rise-in starting at t0."""
     r = K.ramp(t, t0, t0 + dur, 'out_expo')
-    return K.ramp(t, t0, t0 + 0.18), 34.0 * (1 - r), 7.0 * (1 - r)
+    return K.ramp(t, t0, t0 + 0.18, 'inout_sine'), 34.0 * (1 - r), 7.0 * (1 - r)
 
 
 def draw_text_world(cv, ts, tc, wx, wy, t, t_in, t_out=None, out_dur=0.35, sweep=None, anchor=(0.5, 0.5),
@@ -602,12 +611,13 @@ def _panel_swept(cv, pn, a, b, op, step_px=3.0, max_sub=12):
 
 def _chip_state(i, t):
     """(out 0..1 along the spoke, opacity) of chip i."""
-    t0 = T_CHIPS + 0.125 * i
+    t0 = T_CHIPS + 0.0625 * i                       # one per 32nd: all five out by ~1.85 s
     o = K.spring(t - t0, freq=2.4, damping=0.6) if t < T_SNAP else 1.0     # from rest: no peak-speed start
     if t >= T_SNAP - 0.25:
-        b = K.ramp(t, T_SNAP - 0.25 + 0.03 * (4 - i), T_SNAP - 0.01, 'in_back')
+        # snap back: accelerate straight into the hub (no back-out), opaque until they reach it
+        b = K.ramp(t, T_SNAP - 0.22 + 0.02 * (4 - i), T_SNAP - 0.02, 'in_cubic')
         o *= 1 - b
-    op = K.ramp(t, t0, t0 + 0.1) * (1 - K.ramp(t, T_SNAP - 0.08, T_SNAP - 0.01))
+    op = K.ramp(t, t0, t0 + 0.1, 'linear') * (1 - K.ramp(t, T_SNAP - 0.04, T_SNAP, 'in_cubic'))
     return K.clamp(o, -0.2, 1.3), op
 
 
@@ -616,15 +626,20 @@ def _num_state(t):
     if t < T_CHIPS:
         sp = K.spring(t + 0.03, freq=2.6, damping=0.38)
         return K.lerp(1.10, 1.0, sp), 1.0
-    if t < T_SNAP - 0.07:
+    if t < T_SNAP - 0.02:
         u = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.16, 'in_cubic')
         return 1.0 - 0.6 * u, 1.0 - u
     if t < T_BREAK:
-        t0 = T_SNAP - 0.07                      # re-forms out of the hub as the chips land in it (no empty frame)
+        t0 = T_SNAP - 0.02                      # re-forms out of the hub on the hit, as the chips land in it
         sp = K.spring(t - t0, freq=2.6, damping=0.62)
-        return K.lerp(0.55, 1.0, sp), K.ramp(t, t0, t0 + 0.06)
-    u = K.ramp(t, T_BREAK, T_BREAK + 0.16, 'inout_sine')     # dissolves into the coins (no big last-frame step)
+        return K.lerp(0.55, 1.0, sp), K.ramp(t, t0, t0 + 0.05, 'linear')
+    u = K.ramp(t, T_BREAK, T_BREAK + 0.07, 'in_cubic')       # #8: gone by f92, blurred as it goes (_num_blur)
     return 1.0 + 0.12 * u, 1.0 - u
+
+
+def _num_blur(t):
+    """Extra blur (px) of the hook number as it breaks into the coins."""
+    return 6.0 * K.ramp(t, T_BREAK, T_BREAK + 0.07, 'in_cubic')
 
 
 def _burst_pos(t, th, sp, dz):
@@ -668,7 +683,7 @@ def scene_hook(t, n_samples):
         for i, (th, sp, dz, size, rate) in enumerate(A['burst']):
             P0_, P1_ = _burst_pos(t - half, th, sp, dz), _burst_pos(t + half, th, sp, dz)
             X.draw_coin_swept(cv, c, _coin_asset(size * 1.6), P0_, P1_, size, t * rate + i * 40, rate, n_samples,
-                              opacity=1.0 - K.ramp(t, 0.75, 1.15), rot=math.degrees(th) * 0.2)
+                              opacity=1.0 - K.ramp(t, 0.75, 1.15, 'inout_sine'), rot=math.degrees(th) * 0.2)
     # 3D question mark (pops on B2, half spin to face-on, floats)
     if t >= T_Q - 0.02:
         Pq, wq, opq, yaw, rate = _q_state(t)
@@ -691,13 +706,14 @@ def scene_hook(t, n_samples):
         sw = K.ramp(t, 0.30, 0.95, 'inout_sine')
         if sw >= 1:
             sw = K.ramp(t, T_SNAP + 0.1, T_SNAP + 0.55, 'inout_sine')
-        Ty['num'].draw(cv, x, y, scale=s * k, opacity=op, snap=False, blur=2.0 * abs(s - 1.0) * 4,
+        Ty['num'].draw(cv, x, y, scale=s * k, opacity=op, snap=False, blur=2.0 * abs(s - 1.0) * 4 + _num_blur(t),
                        sweep=sw if 0 < sw < 1 else None, sweep_kw=SWEEP_KW)
         _rec_text(Ty['num'], x, y, s * k, (0.5, 0.5), op, '£447.60')
     # per week (rises on B1, leaves into the chips with the number)
     if t >= T_PERWEEK:
-        o_out = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.14) * (1 - K.ramp(t, T_SNAP + 0.04, T_SNAP + 0.16))
-        o_brk = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.06)
+        o_out = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.14, 'inout_sine') * (1 - K.ramp(t, T_SNAP + 0.04, T_SNAP + 0.16,
+                                                                                   'inout_sine'))
+        o_brk = K.ramp(t, T_BREAK - 0.04, T_BREAK + 0.06, 'inout_sine')
         draw_text_world(cv, Ty['perweek'], tc, *PW_W, t, T_PERWEEK, opacity=(1 - o_out) * (1 - o_brk),
                         label='per week')
     # question (per-glyph slam on B2)
@@ -720,7 +736,8 @@ def scene_hook(t, n_samples):
 def _draw_chips(cv, c, tc, t, n_samples):
     import cv2
     hx, hy, k = screen_of(c, HUB_W[0], HUB_W[1], HUB_W[2])
-    hub = K.ramp(t, T_CHIPS - 0.05, T_CHIPS + 0.2, 'out_back') * (1 - K.ramp(t, T_SNAP - 0.04, T_SNAP + 0.08))
+    hub = K.ramp(t, T_CHIPS - 0.05, T_CHIPS + 0.2, 'out_back') * (1 - K.ramp(t, T_SNAP - 0.01, T_SNAP + 0.035,
+                                                                              'in_cubic'))   # gone under the number
     # spokes
     lay = np.zeros((K.H, K.W), np.uint8)
     ends = []
@@ -817,7 +834,7 @@ def _break_pos(t, sd, i):
     s_t = max(0.0, s_lead(t) - 40.0 - 900.0 * r * (1 - K.clamp(u / BREAK_MERGE)))
     P1 = path().at(s_t) + np.array([0.0, 0.0, -60.0])
     w = K.ramp(u, 0.18 + 0.25 * r, 0.75 + 0.3 * r, 'inout_cubic')
-    a = K.ramp(u, -0.02, 0.03) * (1 - K.ramp(u, 0.75 + 0.3 * r, BREAK_MERGE))
+    a = K.ramp(u, -0.02, 0.03, 'linear') * (1 - K.ramp(u, 0.75 + 0.3 * r, BREAK_MERGE, 'inout_sine'))
     return P0 * (1 - w) + P1 * w, a, w
 
 
@@ -860,7 +877,7 @@ SPECS = dict(
           ('apple', 'day', (-270.0, -40.0), 290.0, B(18.5), (0.0, 16.0), -60.0),
           ('sandwich', 'day', (30.0, -110.0), 350.0, B(19), (0.0, 14.0), -60.0),
           ('plate', 'day', (310.0, 30.0), 300.0, B(19.5), (0.0, 10.0), -60.0)],
-    cloth=[('backpack', 'day', (240.0, 330.0), 520.0, B(23), (-8.0, 8.0), 0.0),
+    cloth=[('backpack', 'day', (240.0, 330.0), 520.0, B(23.5), (-8.0, 8.0), 0.0),
            ('tshirt', 'day', (-300.0, -50.0), 320.0, B(24.5), (0.0, 16.0), -60.0),
            ('trainer', 'day', (-10.0, -120.0), 310.0, B(25), (0.0, 14.0), -60.0),
            ('book_pencil', 'day', (-280.0, 290.0), 340.0, B(25.5), (0.0, 12.0), -60.0)],
@@ -874,6 +891,11 @@ FULL_AT = dict(food=B(20.5))
 BOUNCES = (B(32), B(32.5), B(33), B(33.5))
 FLARE = dict(home=(0.0, 80.0), food=(0.0, -40.0), cloth=(-10.0, -60.0), travel=(-40.0, -60.0))   # rel to collector
 BUS_STOP, BUS_GO = B(30.5), B(33.5)
+
+
+def _bus_out(t):
+    """0..1 of the bus's drive-off (+1500 world px): pulls away in the hold and exits right before the move."""
+    return K.ramp(t, BUS_GO - 0.25, BUS_GO + 0.55, 'linear') ** 2          # in_quad (not in core.EASE)
 
 
 def _spr_for(name, variant, yaw):
@@ -906,7 +928,7 @@ def _prop_state(st, i, t):
     x, y = rel
     bob = 10.0 * math.sin(t * 1.6 + i * 1.3)
     yaw = yb + ya * math.sin(t * 0.9 + i)
-    op = K.ramp(t, t0, t0 + 0.08)
+    op = K.ramp(t, t0, t0 + 0.08, 'linear')
     s = sp
     sq = 0.0
     if i == 0:
@@ -921,7 +943,7 @@ def _prop_state(st, i, t):
             x = K.lerp(x, cx, u)
             y = K.lerp(y, cy + 10.0, u) + arc
             s *= 1.0 - 0.45 * u
-            op *= 1.0 - K.ramp(t, a1 - 0.03, a1 + 0.03)
+            op *= 1.0 - K.ramp(t, a1 - 0.03, a1 + 0.03, 'inout_sine')
             yaw += 40.0 * u
             if u > 0.62:
                 z = 5.0                                 # now behind the collector's front
@@ -929,7 +951,7 @@ def _prop_state(st, i, t):
         # drives in from the left and pulls up at the station (B29.5 -> B30.5), the money pours in, then it drives
         # off to the right past the camera (B33.5 -> B34.6)
         a_in = K.ramp(t, t0, BUS_STOP, 'out_cubic')
-        a_out = K.ramp(t, BUS_GO, BUS_GO + 1.1, 'in_cubic')
+        a_out = _bus_out(t)
         x = K.lerp(-1150.0, rel[0], a_in) + 1500.0 * a_out
         s = 1.0
         op = 1.0 if t >= t0 else 0.0
@@ -939,7 +961,7 @@ def _prop_state(st, i, t):
     if name == 'football' and t >= t0:
         # flies in from the right and bounces on the parked bus's roof (hits on the BOUNCES beats), then rides off
         # on the roof when the bus drives away
-        bx = SPECS['travel'][0][2][0] + 1500.0 * K.ramp(t, BUS_GO, BUS_GO + 1.1, 'in_cubic')
+        bx = SPECS['travel'][0][2][0] + 1500.0 * _bus_out(t)
         if t < BOUNCES[0]:
             u = K.ramp(t, t0, BOUNCES[0], 'linear')
             x = K.lerp(700.0, rel[0] + 60.0, u)
@@ -990,7 +1012,7 @@ def _draw_item(cv, c, it, t, n_samples):
     else:
         spr = _spr_for(name, it['var'], it['yaw'])
     if name == 'basket' and P.ready('basket', 'day_full'):   # fills up: cross-fade to the identical-camera full one
-        f = K.ramp(t, FULL_AT['food'] - 0.04, FULL_AT['food'] + 0.22, 'inout_sine')
+        f = K.ramp(t, FULL_AT['food'] - 0.01, FULL_AT['food'] + 0.05, 'inout_sine')
         if f > 0:
             full = _spr_for(name, 'day_full', it['yaw'])
             spr = full if f >= 1 or full.shape != spr.shape else (spr * np.float32(1 - f) + full * np.float32(f))
@@ -1027,7 +1049,7 @@ def _paint_dab(cv, c, t):
         rr = r * k * u
         if rr > 0.6:
             K.draw(cv, _dab_spr(j % len(cols)), x, y, scale=rr / 64.0, rot=37.0 * j,
-                   opacity=0.95 * K.ramp(t, t0 + 0.03 * j, t0 + 0.08 + 0.03 * j))
+                   opacity=0.95 * K.ramp(t, t0 + 0.03 * j, t0 + 0.08 + 0.03 * j, 'linear'))
 
 
 @functools.lru_cache(maxsize=8)
@@ -1135,17 +1157,19 @@ def _draw_station_text(cv, tc, t):
     for st in ('home', 'food', 'cloth', 'travel', 'child'):
         S = ST[st]
         t_in = ARRIVE[st] + 0.25
-        t_out = B(40) if st == 'child' else None
-        if t < ARRIVE[st] - 0.1 or (t_out is not None and t > t_out + 0.7):
+        t_out = B(40) if st == 'child' else LEAVE[st]      # stations: gone within the first 0.3 s of the move
+        o_dur = 0.6 if st == 'child' else 0.3
+        if t < ARRIVE[st] - 0.1 or t > t_out + o_dur + 0.05:
             continue
         nxt = ORDER[ORDER.index(st) + 1] if st != 'child' else None
         if nxt and t > ARRIVE[nxt]:
             continue
         l1, l2 = Ty['head'][st]
-        draw_text_world(cv, l1, tc, S[0], S[1] + HEAD_DY - LINE_DY, t, t_in, t_out=t_out, out_dur=0.6,
+        draw_text_world(cv, l1, tc, S[0], S[1] + HEAD_DY - LINE_DY, t, t_in, t_out=t_out, out_dur=o_dur,
                         label='head1 ' + st)
-        draw_text_world(cv, l2, tc, S[0], S[1] + HEAD_DY + LINE_DY, t, t_in + 0.12, t_out=t_out, out_dur=0.6,
+        draw_text_world(cv, l2, tc, S[0], S[1] + HEAD_DY + LINE_DY, t, t_in + 0.12, t_out=t_out, out_dur=o_dur,
                         label='head2 ' + st)
+        chip_out = 1.0 - K.ramp(t, LEAVE[st], LEAVE[st] + 0.3, 'in_cubic') if st != 'child' else 1.0
         chips = STATION_CHIPS.get(st, [])
         if chips and t >= ARRIVE[st] - 0.05:
             pns = [chip_panel(lab, icn) for lab, icn in chips]
@@ -1156,7 +1180,7 @@ def _draw_station_text(cv, tc, t):
                 sp = K.spring(t - t0, freq=2.8, damping=0.5) if t >= t0 else 0.0
                 w_set = K.ramp(t, t0 + 0.4, t0 + 0.7, 'inout_sine')       # spring tail -> exactly 1, once
                 sp = K.lerp(sp, 1.0, w_set)
-                op = K.ramp(t, t0, t0 + 0.08)
+                op = K.ramp(t, t0, t0 + 0.08, 'linear') * chip_out
                 cx, cy, kk = screen_of(tc, S[0] + x + pn.w / 2, S[1] + CHIP_DY)
                 sc = kk * (0.6 + 0.4 * sp)
                 settled = w_set >= 1.0 and abs(sc - 1.0) < 2e-3
@@ -1177,7 +1201,8 @@ def scene_stations(t, n_samples):
     if t < ARRIVE['home']:                      # B: the break coins and the message (until it has left the frame)
         _draw_break(cv, c, t, n_samples)
         for i, ts in enumerate(_type()['msg']):
-            draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i, label='msg%d' % i)
+            draw_text_world(cv, ts, tc, *MSG_W[i], t, T_MSG + 0.25 * i, t_out=LEAVE['s0'], out_dur=0.3,
+                            label='msg%d' % i)
     if t >= ARRIVE['child'] - 1.0:
         _draw_child_scene(cv, c, tc, t, n_samples, fade)
     _draw_station_text(cv, tc, t)
@@ -1217,7 +1242,7 @@ def _gather_state(i, t):
     yo = yr + 260.0 * (1 - u) * (0.5 + 0.5 * math.sin(th)) + 120.0 * math.sin(math.pi * u) * side * 0.0
     Pw = np.array([S[0] + RING['cx'] + xo, S[1] + RING['cy'] + yo + 8.0 * math.sin(t * 1.7 + i), zr])
     s = 0.7 + 0.3 * u
-    op = K.ramp(t, t0, t0 + 0.12)
+    op = K.ramp(t, t0, t0 + 0.12, 'linear')
     # fade: everything shrinks into the child and dissolves (only the child stays)
     f = K.ramp(t, T_FADE[0] + 0.03 * i, T_FADE[0] + 0.55 + 0.03 * i, 'in_cubic')
     if f > 0:
@@ -1228,7 +1253,7 @@ def _gather_state(i, t):
     return Pw, s, op, math.sin(th)
 
 
-def _draw_child(cv, c, t, n_samples, opacity=1.0, scale=1.0, pos=None, pos_fn=None):
+def _draw_child(cv, c, t, n_samples, opacity=1.0, scale=1.0, pos=None, pos_fn=None, shadow=1.0):
     """The 3D child; pos_fn(t) -> (world pos, scale) overrides pos / scale (the flight into the logo) so the
     pop and the flight smear over each render sample's shutter slice."""
     a = P.prop('child_figure', 'day')
@@ -1246,7 +1271,7 @@ def _draw_child(cv, c, t, n_samples, opacity=1.0, scale=1.0, pos=None, pos_fn=No
     spr = a.at_yaw(6.0 * math.sin(t * 0.8)) if not getattr(a, 'placeholder', False) else a.frame(0)
     half = 0.25 / K.FPS / max(1, n_samples)
     (P0, w0), (P1, w1) = state(t - half), state(t + half)
-    X.draw_prop_swept(cv, c, spr, P0, P1, w0, w1, opacity=opacity)
+    X.draw_prop_swept(cv, c, spr, P0, P1, w0, w1, opacity=opacity, shadow=shadow)
 
 
 def _child_halo(cv, c, t, amount):
@@ -1264,7 +1289,7 @@ def _draw_child_scene(cv, c, tc, t, n_samples, fade):
     # (the last one is gone at T_FADE[0] + 0.88, already inside the final card's time: it keeps being drawn there,
     # never cut)
     if t < T_FINAL - 0.6:
-        _child_halo(cv, c, t, K.ramp(t, ARRIVE['child'] - 0.2, ARRIVE['child'] + 0.4))
+        _child_halo(cv, c, t, K.ramp(t, ARRIVE['child'] - 0.2, ARRIVE['child'] + 0.4, 'inout_sine'))
     items = []
     for i, (nm, var) in enumerate(GATHER):
         if t < T_GATHER + 0.125 * (i // 2):
@@ -1275,26 +1300,33 @@ def _draw_child_scene(cv, c, tc, t, n_samples, fade):
         items.append((dz, i, nm, var, Pw, s, op))
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] > 0], key=lambda r: -r[0]):
         _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
+    for (dz, i, nm, var, Pw, s, op) in [r for r in items if r[0] <= 0]:     # front items' shadows: under her
+        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples, part='shadow')
     if t >= T_FINAL - 0.6:
         _draw_final(cv, c, tc, t, n_samples)
     else:
         _draw_child(cv, c, t, n_samples)
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] <= 0], key=lambda r: -r[0]):
-        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
+        _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples, part='sprite')
 
 
-def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples=3):
+def _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples=3, part='all'):
+    """part: 'all' | 'shadow' (page shadow only) | 'sprite' (no shadow): front items' shadows go under the child."""
     a = P.prop(nm, var)
     spr = a.frame(0) if getattr(a, 'mode', 'yaw') == 'static' else a.at_yaw(12.0 * math.sin(t * 0.9 + i))
     w = {'school_bus': 230.0, 'bed': 260.0, 'sandwich': 230.0, 'house': 230.0, 'plate': 220.0}.get(nm, 205.0)
     t0 = T_GATHER + 0.125 * (i // 2) + 0.62
     land = K.impulse(t, t0, decay=7.0)
+    if part == 'shadow':
+        X.draw_prop(cv, c, spr, tuple(Pw), w * s, opacity=op, sprite=False)
+        return
     if land > 0.03 and op > 0.5:
         sx, sy, k = screen_of(c, *Pw)
         X.local_glow(cv, sx, sy, 160.0 * k, 'peach', 0.6 * land)
     half = 0.25 / K.FPS / max(1, n_samples)
     (P0, s0, _, _), (P1, s1, _, _) = _gather_state(i, t - half), _gather_state(i, t + half)
-    X.draw_prop_swept(cv, c, spr, tuple(P0), tuple(P1), w * s0, w * s1, opacity=op)   # fast fly-in smears
+    X.draw_prop_swept(cv, c, spr, tuple(P0), tuple(P1), w * s0, w * s1, opacity=op,   # fast fly-in smears
+                      shadow=0.0 if part == 'sprite' else 1.0)
 
 
 # ================================================================================================ H. FINAL
@@ -1302,6 +1334,8 @@ F_NUM_Y, F_PC_Y, F_ST_Y, F_ASK_Y, F_BTN_Y, F_LOGO_Y, F_PH_Y, F_FOOT_Y = 362, 482
 T_NUM2, T_PC, T_STMT, T_LOGO, T_ASK, T_BTN, T_PH, T_CLICK = (B(42), B(42.5), B(43), B(44), B(44.5), B(45), B(45.5),
                                                              B(46.5))
 LOGO_W = 560.0
+CHILD_FLY = 0.55          # the child's flight into the emblem girl (lands at ~T_LOGO + 0.5, then cross-fades)
+NUM2_S0 = 1.07             # final slam start scale: 873 px of ink x 1.07 = 934 px, inside x 70-1010 on every frame
 BTN_W, BTN_H, BTN_PX = 620, 150, 42
 
 
@@ -1347,7 +1381,8 @@ def _pill(hover, press, ripple):
 @functools.lru_cache(maxsize=16)
 def _pill_base(hover):
     import ui
-    spr = ui.button(' ', hover=hover, look='airy', h=BTN_H, size=BTN_PX, icon_name=None, w=BTN_W).copy()
+    spr = ui.button(' ', hover=hover, look='airy', h=BTN_H, size=BTN_PX, icon_name=None, w=BTN_W,
+                    grad=(C['MAGENTA'], '#E85A0C')).copy()        # darker orange stop: white arrow >= 3:1
     P_ = ui.BUTTON_PAD
     lines = ('Start the conversation', 'with Organic Fostering.')
     tw = max(ui.measure(l, BTN_PX, 'ui') for l in lines)
@@ -1371,8 +1406,8 @@ def _feather(spr, m=40.0):
 
 
 def _final_num_coins(cv, c, t, n_samples):
-    """Coins rise from the child's halo and converge on the number (B41.5 -> B42)."""
-    t0, t1 = T_NUM2 - 0.5, T_NUM2 + 0.04
+    """Coins rise from the child's halo (B41) and hit the number's glyph band on the B42 frame."""
+    t0, t1 = T_NUM2 - 0.5, T_NUM2
     if not (t0 <= t < t1 + 0.05):
         return
     S = ST['child']
@@ -1382,17 +1417,26 @@ def _final_num_coins(cv, c, t, n_samples):
     def pos(i, tt):
         Cw = _child_pos(tt)
         u = K.ramp(tt, t0 + 0.012 * i, t1, 'in_cubic')
-        tx = S[0] - 120.0 + (i / 13.0 - 0.5) * ts.w * 0.9
-        ty = S[1] + (F_NUM_Y - 960.0)
+        zc = (1500.0 - 80.0) / 1500.0                  # the coins fly at z = -80: aim so they project onto the band
+        tx = S[0] + (-120.0 + (i / 13.0 - 0.5) * ts.w * 0.9) * zc
+        ty = S[1] + (F_NUM_Y - 960.0) * zc
         sx0 = Cw[0] + 180.0 * math.cos(i * 2.4)
         sy0 = Cw[1] - 80.0 + 60.0 * math.sin(i * 1.7)
         x = K.lerp(sx0, tx, u) + 160.0 * math.sin(math.pi * u) * math.cos(i * 1.3)
         return np.array([x, K.lerp(sy0, ty, u), -80.0]), u
     for i in range(14):
         _, u = pos(i, t)
-        X.draw_coin_swept(cv, c, _coin_asset(140), pos(i, t - half)[0], pos(i, t + half)[0], 96.0 * (1 - 0.4 * u),
-                          t * 700 + i * 40, 700.0, n_samples, max_sub=12,
-                          opacity=K.ramp(t, t0 + 0.012 * i, t0 + 0.1 + 0.012 * i) * (1 - K.ramp(t, t1 - 0.06, t1)))
+        a_in = K.ramp(t, t0 + 0.012 * i, t0 + 0.12 + 0.012 * i, 'inout_sine')   # grows in from nothing
+        X.draw_coin_swept(cv, c, _coin_asset(140), pos(i, t - half)[0], pos(i, t + half)[0],
+                          96.0 * (1 - 0.4 * u) * a_in, t * 700 + i * 40, 700.0, n_samples, max_sub=12,
+                          opacity=a_in * (1 - K.ramp(t, t1 - 0.02, t1 + 0.04, 'in_cubic')))
+
+
+def _screen_to_z0(c, sx, sy):
+    """World point on the z = 0 plane under screen (sx, sy) for camera c, and its view depth."""
+    P1, P2 = X.unproject(c, sx, sy, 1000.0), X.unproject(c, sx, sy, 2000.0)
+    k = (0.0 - P1[2]) / (P2[2] - P1[2]) if abs(P2[2] - P1[2]) > 1e-9 else 0.5
+    return P1 + (P2 - P1) * k, 1000.0 + 1000.0 * k
 
 
 def _draw_final(cv, c, tc, t, n_samples):
@@ -1405,20 +1449,29 @@ def _draw_final(cv, c, tc, t, n_samples):
     # child: holds, then (B44) flies into the girl of the logo while the logo builds
     lw, lh = FA['logo_size']
     gx, gy, gh = FA['girl']
-    lx0, ly0 = 540.0 - lw / 2, F_LOGO_Y - lh / 2
-    u = K.ramp(t, T_LOGO, T_LOGO + 0.7, 'inout_cubic')
+    u = K.ramp(t, T_LOGO, T_LOGO + CHILD_FLY, 'inout_cubic')
     _child_halo(cv, c, t, 1.0 - u)
     if u < 1:
-        tgt = np.array([S[0] + (lx0 + gx - 540.0), wy(ly0 + gy), 0.0])
         a = P.prop('child_figure', 'day')
         bb = getattr(a, 'bbox', (0, 0, a.size[0], a.size[1]))
+        # target in SCREEN space (the logo rides the pixel-locked text camera, the child the breathing world
+        # camera): the child's visible-bbox centre lands on the emblem girl at the logo's scale at landing, and
+        # her visible height matches the girl's; then back to the world through this sample's camera
+        ls = K.lerp(0.94, 1.0, K.ramp(T_LOGO + 0.5, T_LOGO + 0.3, T_LOGO + 0.8, 'out_cubic'))
+        gsx, gsy = 540.0 + (gx - lw / 2) * ls, F_LOGO_Y + (gy - lh / 2) * ls
+        Pg, depth = _screen_to_z0(c, gsx, gsy)
+        px_w = depth / c.focal                                  # world units per screen px on the z = 0 plane
         vis_h = (bb[3] - bb[1]) / a.size[0] * CHILD_W          # visible height in world units at scale 1
-        sc_end = gh / max(vis_h, 1.0)
+        sc_end = gh * ls * px_w / max(vis_h, 1.0)
+        bcx = ((bb[0] + bb[2]) / 2 - a.size[0] / 2) / a.size[0] * CHILD_W * sc_end
+        bcy = ((bb[1] + bb[3]) / 2 - a.size[1] / 2) / a.size[0] * CHILD_W * sc_end
+        tgt = np.array([Pg[0] - bcx, Pg[1] - bcy, 0.0])
 
         def fly(tt):
-            uu = K.ramp(tt, T_LOGO, T_LOGO + 0.7, 'inout_cubic')
+            uu = K.ramp(tt, T_LOGO, T_LOGO + CHILD_FLY, 'inout_cubic')    # lands before the cross-fade
             return tuple(np.array(_child_pos(tt)) * (1 - uu) + tgt * uu), K.lerp(1.0, sc_end, uu)
-        _draw_child(cv, c, t, n_samples, opacity=1.0 - K.ramp(t, T_LOGO + 0.52, T_LOGO + 0.74), pos_fn=fly)
+        _draw_child(cv, c, t, n_samples, opacity=1.0 - K.ramp(t, T_LOGO + 0.45, T_LOGO + 0.6, 'in_cubic'),
+                    pos_fn=fly, shadow=1.0 - u)          # (no page shadow left under the emblem)
     _final_num_coins(cv, c, t, n_samples)
     fc = K.ramp(t, T_NUM2 - 0.3, T_NUM2 + 0.6, 'out_cubic')
     if fc > 0:
@@ -1435,19 +1488,20 @@ def _draw_final(cv, c, tc, t, n_samples):
         r = K.ramp(t, T_LOGO + 0.3, T_LOGO + 0.8, 'out_cubic')
         x, y, k = screen_of(tc, S[0], wy(F_LOGO_Y))
         K.draw(cv, FA['logo'], round(x) if r >= 1 else x, round(y) if r >= 1 else y, scale=K.lerp(0.94, 1.0, r),
-               opacity=K.ramp(t, T_LOGO + 0.3, T_LOGO + 0.62))
+               opacity=K.ramp(t, T_LOGO + 0.42, T_LOGO + 0.62, 'inout_sine'))
     # number "£447.60" + "/week"
-    if t >= T_NUM2 - 0.02:
+    if t >= T_NUM2 - 0.04:
         sp = K.spring(t - T_NUM2, freq=2.6, damping=0.45)
         w_set = K.ramp(t, T_NUM2 + 0.5, T_NUM2 + 0.8, 'inout_sine')    # spring tail -> exactly 1, settles once
-        s = K.lerp(K.lerp(1.35, 1.0, sp), 1.0, w_set)
+        # slam from NUM2_S0: solid (op 1) on the B42 frame itself; the 873 px ink line stays inside x 70-1010
+        s = K.lerp(K.lerp(NUM2_S0, 1.0, sp), 1.0, w_set)
         x, y, k = screen_of(tc, S[0], wy(F_NUM_Y))
         wn, ww_ = Ty['fnum'].w, Ty['fweek'].w
         gap = 10.0
         tot = wn + gap + ww_
         xl = x - tot / 2
         sw = K.ramp(t, T_NUM2 + 0.3, T_NUM2 + 0.95, 'inout_sine')     # one sweep; the end card then holds still
-        op = K.ramp(t, T_NUM2, T_NUM2 + 0.05)
+        op = K.ramp(t, T_NUM2 - 0.034, T_NUM2 - 0.005, 'linear')
         settled = w_set >= 1.0
         cxn = xl + wn / 2
         if settled:
@@ -1470,7 +1524,8 @@ def _draw_final(cv, c, tc, t, n_samples):
     if t >= T_BTN:
         import ui
         pop = K.spring(t - T_BTN, freq=2.6, damping=0.5)
-        hover = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1) * (1 - K.ramp(t, T_CLICK + 0.2, T_CLICK + 0.45))
+        hover = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1, 'inout_sine') * (1 - K.ramp(t, T_CLICK + 0.2, T_CLICK + 0.45,
+                                                                                 'inout_sine'))
         press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04) if t < T_CLICK + 0.5 else 0.0
         rip = 1.6 * (t - T_CLICK) if t >= T_CLICK else None        # ripple done at T_CLICK + 0.56
         spr = _feather(_pill(hover, press, rip))
@@ -1479,7 +1534,7 @@ def _draw_final(cv, c, tc, t, n_samples):
         sc = K.lerp(K.lerp(0.6, 1.0, pop), 1.0, w_set)
         settled = w_set >= 1.0
         ui.place(cv, spr, round(x) if settled else x, round(y) if settled else y, scale=sc,
-                 opacity=K.ramp(t, T_BTN, T_BTN + 0.1))
+                 opacity=K.ramp(t, T_BTN, T_BTN + 0.1, 'linear'))
         if X.REC is not None and settled:
             X.REC.append(('text', (x - BTN_W / 2, y - BTN_H / 2, x + BTN_W / 2, y + BTN_H / 2), 1.0, 'CTA pill'))
     draw_text_world(cv, Ty['phone'], tc, S[0], wy(F_PH_Y), t, T_PH, label='phone')
@@ -1492,7 +1547,7 @@ def _draw_final(cv, c, tc, t, n_samples):
                        (T_CLICK + 0.1, (842.0, ty), 'in_sine'), (T_CLICK + 0.5, (1200.0, ty + 40.0))])
         x, y = trk(t)
         press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04)
-        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.55)      # enters and leaves past the right edge, opaque
+        cop = K.ramp(t, T_CLICK - 0.75, T_CLICK - 0.55, 'inout_sine')      # enters and leaves past the right edge, opaque
         if cop > 0.01:
             ui.draw_cursor(cv, x, y, 'hand', 84, press=press, click=(t - T_CLICK) if t >= T_CLICK else None,
                            opacity=cop, look='airy')
@@ -1552,8 +1607,8 @@ def samples(t):
     if _move_amount(t) > 0.05:                     # moves: ~<= 6 px between samples at the peak swoop
         dx, dy = _cam_shutter_disp(t)
         return int(min(10, max(6, math.ceil(math.hypot(dx, dy) / 6.0))))
-    if BUS_GO < t < BUS_GO + 1.1:
-        return 5                                   # bus drives off past the camera
+    if BUS_GO - 0.25 < t < BUS_GO + 0.6:
+        return 5                                   # bus drives off to the right
     if T_NUM2 - 0.05 < t < T_NUM2 + 0.4 or T_BTN - 0.02 < t < T_BTN + 0.3:
         return 12                                  # final number slam (1.35 -> 1), CTA pill pop (0.6 -> 1)
     if T_CLICK - 0.75 < t < T_CLICK + 0.5:
@@ -1596,9 +1651,9 @@ def cues():
     q(T_Q + 0.01, 'whoosh_fast', -12)
     q(T_CHIPS - 0.02, 'coin_flip', -7)
     q(T_CHIPS, 'swish_small', -5)
-    for i in range(5):
-        q(T_CHIPS + 0.125 * i + 0.05, 'pop', -5, -0.5 + 0.25 * i, params=dict(pitch=0.95 + 0.07 * i))
-        q(T_CHIPS + 0.125 * i + 0.06, 'glass_tap', -13, -0.5 + 0.25 * i, params=dict(pitch=1.0 + 0.05 * i))
+    for i in range(5):                                             # chips pop on 32nds
+        q(T_CHIPS + 0.0625 * i + 0.04, 'pop', -5, -0.5 + 0.25 * i, params=dict(pitch=0.95 + 0.07 * i))
+        q(T_CHIPS + 0.0625 * i + 0.05, 'glass_tap', -13, -0.5 + 0.25 * i, params=dict(pitch=1.0 + 0.05 * i))
     q(T_SNAP, 'reverse_swell', -8, params=dict(duration=0.45))
     q(T_SNAP, 'impact_soft', -4)
     q(T_SNAP + 0.01, 'coin_ring', -6, -0.1, params=dict(pitch=1.05))
@@ -1640,8 +1695,8 @@ def cues():
     q(B(20.5) + 0.1, 'swish_small', -12, 0.1)
     q(B(21), 'basket_drop', -5, 0.1)
     # ---- E CLOTHES
-    q(B(23), 'impact_soft', -7, 0.2)
-    q(B(23) + 0.01, 'fabric_swish', -5, 0.2)
+    q(B(23.5), 'impact_soft', -7, 0.2)
+    q(B(23.5) + 0.01, 'fabric_swish', -5, 0.2)
     q(ARRIVE['cloth'], 'impact_soft', -11)
     q(B(24.5), 'fabric_swish', -5, -0.3)
     q(B(25), 'pop', -6, 0.0, params=dict(pitch=0.8))
@@ -1649,12 +1704,12 @@ def cues():
     for k, tl in enumerate((B(26.5), B(27), B(27.5))):
         q(tl - 0.2, 'fabric_swish', -7, -0.2 + 0.2 * k)
         q(tl, 'impact_soft', -11, 0.2)
-    q(B(27.75), 'zip_pull', -4, 0.2)
+    q(B(27.5) + 0.06, 'zip_pull', -12, 0.2)                  # with the last item landing in the backpack
     # ---- F TRAVEL
     q(B(29.5) + 0.35, 'whoosh_fast', -8, -0.6)
     q(BUS_STOP, 'impact_soft', -10, -0.1)
     q(BUS_STOP + 0.05, 'pop', -8, params=dict(pitch=0.7))
-    q(BUS_GO + 0.55, 'bus_pass', -4, params=dict(dur=1.4))
+    q(BUS_GO + 0.05, 'bus_pass', -7, params=dict(dur=1.0))             # the bus leaves frame right
     q(BOUNCES[0], 'ball_bounce', -4, 0.25)
     q(BOUNCES[1], 'ball_bounce', -7, 0.22, params=dict(pitch=1.05))
     q(BOUNCES[2], 'ball_bounce', -10, 0.2, params=dict(pitch=1.1))
@@ -1683,7 +1738,7 @@ def cues():
     q(T_NUM2 + 0.3, 'shimmer', -12, params=dict(dur=1.0))
     q(T_PC, 'swish_small', -11)
     q(T_STMT, 'swish_small', -10, 0.1)
-    q(T_LOGO + 0.05, 'whoosh_fast', -10, -0.2)
+    q(T_LOGO + 0.33, 'whoosh_fast', -10, -0.2)
     q(T_LOGO + 0.625, 'soft_chime', -2)
     q(T_ASK, 'swish_small', -11)
     q(T_BTN, 'pop', -5, params=dict(pitch=0.9))
