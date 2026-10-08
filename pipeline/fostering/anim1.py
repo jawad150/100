@@ -640,18 +640,23 @@ WRITE_T = (7.52, 8.18)
 
 @functools.lru_cache(maxsize=1)
 def write_paths():
+    """Two lines of quick cursive on the right page: small loops with random heights (a few ascenders),
+    rising ~10 deg like the ruled lines."""
     def cursive(x0, y0, length, seed, loops):
         rng = np.random.default_rng(seed)
-        th = np.linspace(0, loops * 2 * math.pi, 60 * loops)
-        amp = 1.0 + 0.22 * np.sin(th * 0.41 + rng.uniform(0, 6)) + 0.1 * np.sin(th * 1.7)
-        a, b = length / (loops * 2 * math.pi), 0.0105
-        x = a * th - b * np.sin(th) * amp
-        y = -b * 0.95 * np.cos(th) * amp
+        th = np.linspace(0, loops * 2 * math.pi, 70 * loops)
+        k = np.floor(th / (2 * math.pi)).astype(int)
+        hts = rng.choice([1.0, 1.0, 0.8, 1.9, 1.0, 0.7], loops + 1)     # some letters taller (ascenders)
+        amp = hts[k] * (1.0 + 0.12 * np.sin(th * 0.77))
+        a = length / (loops * 2 * math.pi)
+        bx, by = 0.0062, 0.0058
+        x = a * th - bx * np.sin(th) * amp
+        y = -by * (1 - np.cos(th)) * amp * 0.5 - by * 0.15 * amp
         ang = math.radians(-10.0)
         xr = x * math.cos(ang) - y * math.sin(ang)
         yr = x * math.sin(ang) + y * math.cos(ang)
         return np.stack([x0 + xr, y0 + yr], 1)
-    return [cursive(0.548, 0.488, 0.165, 3, 8), cursive(0.548, 0.536, 0.115, 7, 6)]
+    return [cursive(0.548, 0.494, 0.165, 3, 11), cursive(0.548, 0.540, 0.118, 7, 8)]
 
 
 def book_to_screen(pr, x, y, scale, pts_norm):
@@ -684,7 +689,7 @@ def draw_book_writing(cv, layer, lb, t, light, x, y):
     for i, p in enumerate(paths):
         d = min(max(dist - acc, 0.0), lens[i])
         if d > 0:
-            al, ax0, ay0 = X.stroke_alpha(p, 2.1 * k / 0.75, 0.0, d / lens[i])
+            al, ax0, ay0 = X.stroke_alpha(p, 1.9, 0.0, d / lens[i])
             lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
         acc += lens[i] + (40.0 if i == 0 else 0.0)
     # pencil tip position
@@ -772,7 +777,7 @@ def draw_book_lines(layer, lb, x, y, t):
         return
     for p in write_paths():
         P = book_to_screen(pr, x, y, 1.0, p)
-        al, ax0, ay0 = X.stroke_alpha(P, 2.1 * pr.k / 0.75)
+        al, ax0, ay0 = X.stroke_alpha(P, 1.9)
         lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
 
 

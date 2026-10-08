@@ -11,15 +11,17 @@ line 2 PLUM); captions / chips / CTA Poppins. SFX only (no music).
 GRID: 120 BPM, beat = 0.5 s, B(n) = n * 0.5. Every slam / pop / cut sits on a beat, 8th or 16th.
 WORLD: stations on the z = 0 plane: S0 (0, 0) | home (1150, 1500) | food (0, 3000) | cloth (1150, 4500) |
 travel (0, 6000) | child (575, 7500). Holds: camera at 1500 (1 world unit = 1 px), slow push + wiggle; the copy
-rides a text camera without the breathing, so held type is pixel-locked. Moves (1.0 s, B(s-2) -> B(s)): an
-easy-ease bezier swoop along the stream direction, pull-back to ~2300 and banking roll (6 motion-blur samples).
+rides a text camera without the breathing, so held type is pixel-locked. Moves (1.25 s, B(s-2.5) -> B(s)): the
+camera FOLLOWS THE MONEY: it rides the lead coins along the route (low-passed to cut the S-bends), blending from one
+station's framing to the next, with a pull-back to ~2280 and a bank into the path (6-8 motion-blur samples + a
+one-step directional smear in post, so the tracked coins stay crisp while the world streaks past).
 
 SHOT LIST (t s | beat | picture | camera | SFX)
  A HOOK 0.00-3.00 (B0-B6), station S0
   0.00  B0    frame 0 is mid-explosion: "£447.60" (gold extrude 210 px) SLAMS (1.10 -> 1 spring) inside a ring of
               28 spinning 3D coins bursting outward (half toward the lens), warm local bloom, light sweep 0.30-0.95
               | static, slam shake | impact_big (soft) + coins_burst + coin_ring + shimmer + whoosh_by
-  0.50  B1    "per week" (Nunito Black PLUM 76 px) rises under it | | swish_small
+  0.50  B1    "per week" (Nunito Black PLUM 80 px) rises under it | | swish_small
   1.00  B2    "Where does it go?" (INK 84 px) per-glyph slam; the glossy 3D "?" (question/day) pops above with a
               yaw swing | | pop + bubble_pop + whoosh_fast
   1.50  B3    the amount BURSTS into five white glass chips with 3D prop icons on glowing gold spokes from a spinning
@@ -29,23 +31,23 @@ SHOT LIST (t s | beat | picture | camera | SFX)
   3.00  B6    the number BREAKS into 40 coins (burst down / outward / toward the lens) that are pulled into the gold
               ribbon drawing on down-right; racing light lines; "?" and question lift out | slow push |
               coins_burst + coin_clinks + whoosh_slow
-  3.25  B6.5  "Fostering payments" (PLUM) / "help cover the costs of" / "caring for a child." rise on 8ths (76 px)
- C HOME 5.00-8.00 (move B10-B12, hold B12-B16)
+  3.25  B6.5  "Fostering payments" (PLUM) / "help cover the costs of" / "caring for a child." rise on 8ths (80 px)
+ C HOME 5.00-7.75 (move B10-B12, hold B12-B15.5)
   5.00  B10   swoop to HOME following the lead coins | whoosh_by
   5.50  B11   the 3D house pops in the distance (collector) | | house_pop
   6.00  B12   the money pours into the house (kick, coin clinks); chip "Home"; headline "A safe, comfortable" /
               "home" B12.5; bed B13 (pop + fabric swish); 3D heart B13.5; glass app tiles key / shield B14, B14.25
- D FOOD 8.00-11.00 (move B16-B18, hold B18-B22): basket (collector) pops B17; chip "Food", "Food & everyday" /
+ D FOOD 7.75-10.75 (move B15.5-B18, hold B18-B21.5): basket (collector) pops B17; chip "Food", "Food & everyday" /
               "essentials"; apple B18.5 -> sandwich B19 -> plate B19.5; apple and sandwich drop into the basket
               B20.5 / B21, which fills (cross-fade day -> day_full) | basket_drop x3, pops, glass tap
- E CLOTHES 11.00-14.00 (move B22-B24, hold B24-B28): backpack (collector) B23; chips "Essentials" + "School",
+ E CLOTHES 10.75-13.75 (move B21.5-B24, hold B24-B27.5): backpack (collector) B23; chips "Essentials" + "School",
               "Clothes, school items" / "& personal needs"; t-shirt B24.5 -> trainer B25 -> book & pencil B25.5; all
-              three slide into the backpack B26.5 / B27 / B27.5, zip on B28 | fabric swishes, zip_pull
- F TRAVEL 14.00-17.00 (move B28-B30, hold B30-B34): the school bus drives in and pulls up B29.5-B30.5 (the money
+              three slide into the backpack B26.5 / B27 / B27.5, zip on B27.75 | fabric swishes, zip_pull
+ F TRAVEL 13.75-16.75 (move B27.5-B30, hold B30-B33.5): the school bus drives in and pulls up B29.5-B30.5 (the money
               pours into it); chip "Travel", "Travel, activities" / "& experiences"; football bounces in, hits on
               B32 / B32.5 / B33 / B33.5; paint palette B32.5 with a paint dab B33; the bus drives off past the camera
               B33.5-B34.6 | ball_bounce x4, paint_dab, bus_pass
- G THE BIGGER PICTURE 17.00-21.00 (move B34-B36, hold from B36)
+ G THE BIGGER PICTURE 16.75-21.00 (move B33.5-B36, hold from B36)
  17.62  B35.25 the 3D child (orange logo girl) pops; B36 the stream arrives, gold halo, coin clinks
  18.25  B36.5 every prop flies in from the sides (pairs on 16ths) and gathers on a slow 3D orbit around her;
               "It's about supporting" / "everyday life." B36.5 | whoosh_slow, swishes, pops
@@ -71,7 +73,8 @@ are local glows at the interaction point (anim4_fx.local_glow); the light sweep 
 would dissolve gold letters into the white page).
 
 Render contract: DUR, LOOK, BPM, draw(t) (pure), post(cv, t), samples(t), cues(), prewarm(); BED, BED_GAIN_DB.
-samples(t): 3 normally; 5 on the slam / burst, chip burst + snap, the break, the bus drive-off; 6 on every move.
+samples(t): 3 normally; 5 on the slam / burst, chip burst + snap, the break, the bus drive-off; 6-8 on the moves
+(<= ~6 px of camera travel between samples); mean 3.9 per frame.
 Helpers: anim4_fx.py (world background, dot grid, ribbon, light lines, coins, shadows, depth layers),
 anim4_props.py (3D props with stand-ins until the Blender renders land), anim4_sfx.py (extra SFX + the mix),
 anim4_dev.py (strips, full frames, low-res motion clips, luma stats, layout checks: checks() below).
@@ -387,11 +390,11 @@ def _type():
     import type3d as T
     d = {}
     d['num'] = T.render('£447.60', 'gold', px=210, **GOLD_KW)
-    d['perweek'] = T.render('per week', 'flat', px=76, **dict(HEAD_KW, fill='PLUM'))
+    d['perweek'] = T.render('per week', 'flat', px=80, **dict(HEAD_KW, fill='PLUM'))
     d['q'] = T.Glyphs('Where does it go?', 'flat', px=84, **HEAD_KW)
-    d['msg'] = [T.render('Fostering payments', 'flat', px=76, **dict(HEAD_KW, fill='PLUM')),
-                T.render('help cover the costs of', 'flat', px=76, **HEAD_KW),
-                T.render('caring for a child.', 'flat', px=76, **HEAD_KW)]
+    d['msg'] = [T.render('Fostering payments', 'flat', px=80, **dict(HEAD_KW, fill='PLUM')),
+                T.render('help cover the costs of', 'flat', px=80, **HEAD_KW),
+                T.render('caring for a child.', 'flat', px=80, **HEAD_KW)]
     heads = dict(home='A safe, comfortable\nhome', food='Food & everyday\nessentials',
                  cloth='Clothes, school items\n& personal needs', travel='Travel, activities\n& experiences',
                  child="It's about supporting\neveryday life.")
@@ -727,7 +730,7 @@ def _break_pos(t, sd, i):
 
 
 # ================================================================================================ B. MESSAGE
-MSG_W = [(0.0, -590.0), (0.0, -498.0), (0.0, -406.0)]     # world (screen y 370 / 462 / 554 at S0)
+MSG_W = [(0.0, -596.0), (0.0, -500.0), (0.0, -404.0)]     # world (screen y 364 / 460 / 556 at S0)
 
 
 # ================================================================================================ C-F. STATIONS
@@ -768,15 +771,16 @@ SPECS = dict(
     cloth=[('backpack', 'day', (240.0, 330.0), 520.0, B(23), (-8.0, 8.0), 0.0),
            ('tshirt', 'day', (-300.0, -50.0), 320.0, B(24.5), (0.0, 16.0), -60.0),
            ('trainer', 'day', (-10.0, -120.0), 280.0, B(25), (0.0, 14.0), -60.0),
-           ('book_pencil', 'day', (-290.0, 300.0), 260.0, B(25.5), (0.0, 12.0), -60.0)],
+           ('book_pencil', 'day', (-280.0, 290.0), 340.0, B(25.5), (0.0, 12.0), -60.0)],
     travel=[('school_bus', 'day_side', (0.0, 380.0), 620.0, B(29.5), (0.0, 0.0), 10.0),
-            ('football', 'day', (250.0, 170.0), 230.0, B(31.5), (0.0, 0.0), -70.0),
-            ('paint_palette', 'day', (-270.0, 150.0), 320.0, B(32.5), (0.0, 10.0), -70.0)])
+            ('football', 'day', (110.0, 112.0), 210.0, B(31.5), (0.0, 0.0), -70.0),
+            ('paint_palette', 'day', (-275.0, 40.0), 330.0, B(32.5), (0.0, 10.0), -70.0)])
 # items that move into their station's collector: (station, item index, t0, t1)
 INTO = [('food', 1, B(20), B(20.5)), ('food', 2, B(20.5), B(21)),
         ('cloth', 1, B(26), B(26.5)), ('cloth', 2, B(26.5), B(27)), ('cloth', 3, B(27), B(27.5))]
 FULL_AT = dict(food=B(20.5))
 BOUNCES = (B(32), B(32.5), B(33), B(33.5))
+FLARE = dict(home=(0.0, 80.0), food=(0.0, -40.0), cloth=(-10.0, -60.0), travel=(-40.0, -60.0))   # rel to collector
 BUS_STOP, BUS_GO = B(30.5), B(33.5)
 
 
@@ -836,21 +840,25 @@ def _prop_state(st, i, t):
         bob = 4.0 * abs(math.sin(t * 17.0)) * min(1.0, moving * 3) - 6.0 * K.impulse(t, BUS_STOP, decay=6.0) * \
             math.sin((t - BUS_STOP) * 20.0)
     if name == 'football' and t >= t0:
+        # flies in from the right and bounces on the parked bus's roof (hits on the BOUNCES beats), then rides off
+        # on the roof when the bus drives away
+        bx = SPECS['travel'][0][2][0] + 1500.0 * K.ramp(t, BUS_GO, BUS_GO + 1.1, 'in_cubic')
         if t < BOUNCES[0]:
             u = K.ramp(t, t0, BOUNCES[0], 'linear')
-            x = K.lerp(640.0, rel[0] + 70.0, u)
-            y = rel[1] - 460.0 * (1 - u * u)
+            x = K.lerp(700.0, rel[0] + 60.0, u)
+            y = rel[1] - 520.0 * (1 - u * u)
         else:
             k = max(j for j in range(len(BOUNCES)) if BOUNCES[j] <= t)
             if k + 1 < len(BOUNCES):
                 uu = (t - BOUNCES[k]) / (BOUNCES[k + 1] - BOUNCES[k])
-                hgt = 230.0 * (0.5 ** k)
+                hgt = 240.0 * (0.48 ** k)
                 y = rel[1] - 4 * hgt * uu * (1 - uu)
-                x = rel[0] + 70.0 - 23.0 * (k + uu)
+                x = rel[0] + 60.0 - 20.0 * (k + uu)
             else:
                 y, x = rel[1], rel[0]
+            x += bx
         s, op, bob = 1.0, 1.0, 0.0
-        yaw = -t * 260.0
+        yaw = -t * 260.0 * (1.0 if t < BOUNCES[-1] else 0.3)
     return (x, y + bob, z), s, op, yaw, sq
 
 
@@ -975,7 +983,7 @@ def draw_decor(cv, c, t):
     for (Pw, kind, size, ph) in _decor():
         if abs(Pw[1] - c.pos[1]) > 2600:
             continue
-        spr = orbs.by_label(kind) if not getattr(orbs, 'placeholder', False) else orbs.frame(0)
+        spr = orbs.by_label(kind) if not getattr(orbs, 'placeholder', False) else X.glossy_orb(kind)
         P_ = (Pw[0] + 18.0 * math.sin(t * 0.6 + ph), Pw[1] + 22.0 * math.sin(t * 0.5 + 2 * ph), Pw[2])
         X.draw_prop(cv, c, spr, P_, size, shadow=0.8)
 
@@ -995,6 +1003,11 @@ def draw_stations(cv, c, t, n_samples, stream_op=1.0):
     draw_stream(cv, c, t, n_samples, opacity=stream_op)
     for st, it in [r for r in items if r[1]['i'] == 0]:
         _draw_item(cv, c, it, t, n_samples)
+        g = K.impulse(t, ARRIVE[st], decay=4.5)            # the money lands: a warm flare at the collector
+        if g > 0.02:
+            fx, fy = FLARE.get(st, (0.0, 0.0))
+            sx, sy, k = screen_of(c, it['P'][0] + fx, it['P'][1] + fy, it['P'][2] - 40.0)
+            X.local_glow(cv, sx, sy, 190.0 * k, 'gold', 0.9 * g)
     for st, it in sorted([r for r in items if r[1]['z'] < 0 and r[1]['i'] != 0], key=lambda r: -r[1]['z']):
         _draw_item(cv, c, it, t, n_samples)
     if 'travel' in sts:
@@ -1324,9 +1337,9 @@ def _draw_final(cv, c, tc, t, n_samples):
     if t >= T_BTN:
         import ui
         pop = K.spring(t - T_BTN, freq=2.6, damping=0.5)
-        hover = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1) * (1 - K.ramp(t, T_CLICK + 0.3, T_CLICK + 0.6))
-        press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04)
-        rip = 1.4 * (t - T_CLICK) if t >= T_CLICK else None
+        hover = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1) * (1 - K.ramp(t, T_CLICK + 0.2, T_CLICK + 0.45))
+        press = K.impulse(t, T_CLICK, decay=9.0, attack=0.04) if t < T_CLICK + 0.5 else 0.0
+        rip = 1.6 * (t - T_CLICK) if t >= T_CLICK else None        # ripple done at T_CLICK + 0.56
         spr = _feather(_pill(hover, press, rip))
         x, y, k = screen_of(tc, S[0], wy(F_BTN_Y))
         sc = K.lerp(0.6, 1.0, pop)
@@ -1494,7 +1507,7 @@ def cues():
     for k, tl in enumerate((B(26.5), B(27), B(27.5))):
         q(tl - 0.2, 'fabric_swish', -7, -0.2 + 0.2 * k)
         q(tl, 'impact_soft', -11, 0.2)
-    q(B(28), 'zip_pull', -4, 0.2)
+    q(B(27.75), 'zip_pull', -4, 0.2)
     # ---- F TRAVEL
     q(B(29.5) + 0.35, 'whoosh_fast', -8, -0.6)
     q(BUS_STOP, 'impact_soft', -10, -0.1)

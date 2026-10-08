@@ -8,6 +8,17 @@ These steps were written for a Windows PC (Intel i9 14th gen, RTX 4060, 16 GB RA
 
 **Project:** repo `github.com/jawad150/100`, branch `claude/festive-lovelace-6gletw`. You'll need about 40 GB of free disk.
 
+## Fast path: one script does steps 5–10
+Do steps 1–4 by hand first (driver, WSL and reboot). Then, in Ubuntu:
+```bash
+sudo apt update && sudo apt install -y gh git git-lfs
+gh auth login && gh auth setup-git
+cd ~ && gh repo clone jawad150/100 && cd 100 && git checkout claude/festive-lovelace-6gletw
+bash pipeline/fostering/bootstrap_wsl.sh      # --no-footage skips the Drive clips; --render-3d re-renders props
+claude auth login && claude --teleport
+```
+The script is safe to re-run; it skips finished steps. If `.wslconfig` is missing, it also writes one sized to your RAM. In that case run `wsl --shutdown` once afterwards.
+
 ## 1. Let the cloud work finish
 1. Wait until the cloud session says its work is rendered and pushed.
 2. Ask it to *"push everything, including the 3D render backup"*. The 3D renders are git-ignored, so they're backed up as `media/fostering/assets3d.tar` in Git LFS.

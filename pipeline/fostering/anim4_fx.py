@@ -704,3 +704,37 @@ def draw_coin_swept(cv, cam, asset, P0, P1, size, ang, rate, n_samples=3, opacit
     dst *= 1 - np.clip(layer[..., 3:4], 0, 1)
     dst += layer
     return float(xy[:, 0].mean()), float(xy[:, 1].mean()), w
+
+
+@functools.lru_cache(maxsize=12)
+def glossy_orb(kind='peach', size=256):
+    """Procedural glossy candy sphere (fallback for the 'orbs' day asset): lit from the top-left, soft specular
+    highlight, coloured rim, gentle fresnel; 'glass' is a translucent lavender bubble."""
+    cols = dict(sphere_peach='#FFB98F', sphere_magenta='#D62E8C', sphere_orange='#FF7A2E', sphere_leaf='#7FBF2E',
+                torus_glass='#CDBDF0', capsule_magenta_orange='#F0507A')
+    base = lin(cols.get(kind, '#FFB98F'))
+    s = size
+    yy, xx = np.mgrid[0:s, 0:s].astype(np.float32)
+    c = (s - 1) / 2.0
+    r = s * 0.46
+    nx, ny = (xx - c) / r, (yy - c) / r
+    d2 = nx * nx + ny * ny
+    inside = d2 < 1.0
+    nz = np.sqrt(np.clip(1.0 - d2, 0, 1))
+    L = np.array([-0.45, -0.6, 0.66], np.float32)
+    L /= np.linalg.norm(L)
+    diff = np.clip(nx * L[0] + ny * L[1] + nz * L[2], 0, 1)
+    H = L + np.array([0, 0, 1.0], np.float32)
+    H /= np.linalg.norm(H)
+    spec = np.clip(nx * H[0] + ny * H[1] + nz * H[2], 0, 1) ** 60
+    fres = (1 - nz) ** 2.5
+    rgb = base[None, None] * (0.42 + 0.68 * diff)[..., None]
+    rgb += fres[..., None] * (lin('#FFE6F2') * 0.55)
+    rgb += spec[..., None] * 1.6
+    a = np.clip((1.0 - np.sqrt(d2)) * r + 0.5, 0, 1)
+    if kind == 'torus_glass':
+        a = a * np.clip(0.35 + 0.65 * fres + 0.9 * spec, 0, 1)
+    out = np.dstack([rgb * a[..., None], a]).astype(np.float32)
+    out[~inside & (a <= 0)] = 0
+    out.setflags(write=False)
+    return out
