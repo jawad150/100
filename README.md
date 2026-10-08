@@ -46,6 +46,7 @@ Pure animation, no footage, built from the client's content doc. Audio is SFX on
 | Animation | Instagram-ready | Master (Git LFS) | SFX stem | Music tempo |
 |---|---|---|---|---|
 | #1 · **Day in the Life** (21 s, editorial paper) | `organic_fostering_anim1_day_in_the_life.mp4` | `…_day_in_the_life_master.mp4` | `…_day_in_the_life_sfx_stem.wav` | **100 BPM** |
+| #4 · **£447.60: where does it go?** (25.5 s, clean SaaS light) | `organic_fostering_anim4_where_does_it_go.mp4` | `…_where_does_it_go_master.mp4` | `…_where_does_it_go_sfx_stem.wav` | **120 BPM** |
 
 - **#1, "Day in the Life":** kinetic type stamped onto relit crumpled paper with 3D props.
   - **Hook:** "WHAT DOES ‹FOSTERING› REALLY LOOK LIKE?" with a marker swipe and a ringing alarm clock, then "It's often found in the everyday."
@@ -53,6 +54,15 @@ Pure animation, no footage, built from the client's content doc. Audio is SFX on
   - **Stability:** the props tumble into a tower of blocks under "SMALL MOMENTS CAN HELP BUILD STABILITY." with a checklist: a consistent home, a familiar routine, someone who is there.
   - **Payoff:** a page flip to "‹FOSTERING› HAPPENS IN THE EVERYDAY." and a 3D house whose windows light up.
   - **End card:** "Could you make room?", the logo, "Start your enquiry", the phone and URL.
+- **#4, "£447.60: where does it go?":** follow the money on a clean white page.
+  - **Hook:** a gold 3D "£447.60" slams inside a burst of coins, then "per week" and "Where does it go?" with a 3D "?". The amount bursts into five glass chips (Home, Food, Essentials, Travel, School) and snaps back.
+  - **The money stream:** the number breaks into coins that become a gold ribbon ("Fostering payments help cover the costs of caring for a child."). The camera follows the ribbon through four stations:
+    - "A safe, comfortable home": house, bed, heart, key, shield.
+    - "Food & everyday essentials": apple, sandwich, plate, filling basket.
+    - "Clothes, school items & personal needs": t-shirt, trainer, book, backpack.
+    - "Travel, activities & experiences": bus, football, paint palette.
+  - **Payoff:** a child figure gathers every prop around her: "It's about supporting everyday life."
+  - **End card:** "£447.60/week" with "per child · ages 0–4", the statement and question, a "Start the conversation with Organic Fostering" pill click, the logo, the phone, the URL and the footer "Weekly allowance for one child aged 0–4, based on current published rates. Rates may vary; terms apply."
 
 **Copy:** all of it comes from the website or the client's ads, including the allowance figures and the disclaimer. The ad's "£2,500" figure isn't used because its unit (week, month or one-off) wasn't stated. Tell us what it covers and it can go in.
 
