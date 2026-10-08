@@ -26,8 +26,9 @@ send, glue, bed, loudness + true-peak limiter) mixes them like catalog sounds:
 
     cues() -> the reel's cue list (anim1.cues() returns it)
     build(out_dir=None) -> report: mixes workspace3/audio/anim1_sfx.wav + anim1_sfx_stem.wav (48 kHz 24-bit),
-        -18 LUFS integrated, <= -2.0 dBTP (the toolkit default ceiling is -1.5; this brief asks for -2.0).
-    Importing also wraps audio.build_reel so that render.py's automatic mix of 'anim1' uses tp_ceiling=-2.0.
+        -18 LUFS integrated, limiter ceiling -2.3 dBTP (brief: <= -2.0; the toolkit default is -1.5; the margin
+        covers the AAC encode). Importing also wraps audio.build_reel so that render.py's automatic mix of 'anim1'
+        uses the same ceiling.
 
     python3 anim1_sfx.py build      -> writes the mix + stem, prints the loudness report, mix overview PNG
     python3 anim1_sfx.py play NAME  -> out/selftest/anim1_sfx_<NAME>.wav
@@ -392,7 +393,6 @@ def cues():
     # ---- FRAME 2: list + props
     q(B(9), 'type_thump', 0, -0.2, weight=1.15)
     q(5.70, 'backpack_thud', 0, -0.35)
-    q(5.86, 'zip', -4, -0.35, 'start', dur=0.22)
     q(5.72, 'pen_write', -8, -0.2, 'start', dur=0.85, rate=4.0)   # dashed route drawn on
     q(6.52, 'bus_pass', 0, 0.0, dur=1.15)
     q(B(12), 'type_thump', 0, -0.1, weight=1.1)
@@ -444,7 +444,7 @@ def cues():
 
 # ============================================================================================ build
 OUT_NAME = 'anim1'
-TP_CEILING = -2.0
+TP_CEILING = -2.3          # brief: <= -2.0 dBTP; -2.3 leaves margin for the AAC encode (measured -2.1 at -2.0)
 
 
 def build(out_dir=None, overview=True):

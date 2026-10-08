@@ -236,13 +236,17 @@ def drop(t, t0, dur=0.30, h0=420.0, s0=0.45, bounce=0.10):
         f = 1.0 - u * u                       # falling (accelerating)
         lift = h0 * f
         sc = 1.0 + s0 * f
-        sq = (1.0 - 0.06 * u, 1.0 + 0.10 * u)  # stretch while falling
+        # stretch while falling, eased back to 1 over the last 30 % so the shape is continuous at contact
+        # (no stretch -> squash jump inside the landing frame's shutter)
+        k = u / 0.7 if u < 0.7 else (1.0 - u) / 0.3
+        k = k * k * (3 - 2 * k)
+        sq = (1.0 - 0.06 * k, 1.0 + 0.10 * k)
         op = min(1.0, u / 0.18)
         return dict(lift=lift, scale=sc, squash=sq, opacity=op, land=0.0)
     dt = t - (t0 + dur)
-    # small hop after landing + squash spring
+    # small hop after landing + squash spring (starts at 0: continuous with the fall)
     hop = bounce * h0 * max(0.0, math.sin(min(dt / 0.22, 1.0) * math.pi)) * math.exp(-dt * 2.0)
-    imp = math.exp(-dt * 9.0) * math.cos(dt * 34.0)
+    imp = math.exp(-dt * 9.0) * math.sin(dt * 34.0) * 1.25
     sq = (1.0 + 0.10 * imp, 1.0 - 0.13 * imp)
     return dict(lift=hop, scale=1.0 + 0.0008 * hop, squash=sq, opacity=1.0, land=1.0)
 
@@ -292,6 +296,61 @@ class Txt:
 
     def draw(self, cv, x, y, anchor=(0.5, 0.5), **kw):
         return self.ts.draw(cv, x, y, anchor=anchor, **kw)
+
+
+class KernTxt(Txt):
+    """A Txt with a manual kerning tweak: every glyph from character index `at` on moves dx px (negative =
+    tighter). The sprite is cut in the empty column gap before that glyph (the gap must be ink-free on every
+    row) and the right part shifted; .w, .words and .anc() follow. Used where Nunito Black has no kern pair
+    (EVERYDAY.: the open Y-D gap read as "EVERY DAY.")."""
+
+    def __init__(self, text, at, dx, **kw):
+        super().__init__(text, **kw)
+        lay = self.ts.layout
+        spr = self.spr
+        W0 = spr.shape[1]
+        left_px = self.ts.sprite_anchor((0.0, 0.0))[0] * W0          # text-box left edge in sprite px
+        g_prev = next(g for g in lay.glyphs if g.i == at - 1 and g.ink is not None)
+        g_next = next(g for g in lay.glyphs if g.i == at and g.ink is not None)
+        col = spr[..., 3].max(0)
+        lo, hi = int(left_px + g_prev.ink[0]), int(math.ceil(left_px + g_next.ink[2]))
+        empty = [c for c in range(max(lo, 0), min(hi, W0)) if col[c] < 1e-3]
+        if not empty:
+            raise ValueError('KernTxt: no ink-free gap before %r' % text[at])
+        # the widest run of empty columns: cut in its middle
+        runs, cur = [], [empty[0]]
+        for c in empty[1:]:
+            if c == cur[-1] + 1:
+                cur.append(c)
+            else:
+                runs.append(cur)
+                cur = [c]
+        runs.append(cur)
+        run = max(runs, key=len)
+        d = int(round(dx))
+        if -d >= len(run):
+            raise ValueError('KernTxt: dx %s wider than the gap (%d px)' % (dx, len(run)))
+        cut = run[len(run) // 2]
+        out = np.zeros((spr.shape[0], W0 + d, 4), np.float32)
+        out[:, :cut] = spr[:, :cut]
+        out[:, cut + d:] = np.maximum(out[:, cut + d:], spr[:, cut:])
+        out.setflags(write=False)
+        self.spr = out
+        self._left_px = left_px
+        self.w = self.w + d
+        x_cut = cut - left_px
+        self.words = [(wd, x0 if x0 < x_cut else x0 + d, x1 if x1 < x_cut else x1 + d) for wd, x0, x1 in self.words]
+        self.cut_x, self.dx = x_cut, d
+
+    def anc(self, anchor=(0.5, 0.5)):
+        ay = self.ts.sprite_anchor(anchor)[1]
+        return (self._left_px + anchor[0] * self.w) / self.spr.shape[1], ay
+
+    def word_ts(self, i):
+        raise NotImplementedError('KernTxt is drawn as one line')
+
+    def draw(self, cv, x, y, anchor=(0.5, 0.5), **kw):
+        return K.draw(cv, self.spr, x, y, anchor=self.anc(anchor), **kw)
 
 
 def draw_clip(cv, spr, x, y, anchor, rect, opacity=1.0):
@@ -475,11 +534,12 @@ def marker_band(w, h, seed=5):
     fe = 1.8                                  # feathered edges (felt marker), also keeps the deboss soft
     a = np.clip((yy - top[None, :]) / fe + 0.5, 0, 1) * np.clip((bot[None, :] - yy) / fe + 0.5, 0, 1)
     r = 0.5 * h
-    # rounded start, slanted dry end
+    # rounded start; a near-square, gently rounded end (full height: the band must clear the last letter on
+    # every row - the old slanted dry end left the lower right of the "G" ivory on ivory)
     dl = np.clip(xs / r, 0, 1)
     a *= np.clip((np.sqrt(1 - (1 - dl) ** 2)[None, :] * r - np.abs(yy - h * 0.5) + r * (1 - 1)) / 3.0 + 0.5, 0, 1)
-    endx = (w - 1) - (yy - h * 0.5) * 0.35 - 0.12 * h
-    a *= np.clip((endx - xs[None, :]) / 6.0 + 0.5, 0, 1)
+    endx = (w - 1) - 0.04 * h - 0.06 * h * ((yy - h * 0.5) / (h * 0.5)) ** 2
+    a *= np.clip((endx - xs[None, :]) / 3.0 + 0.5, 0, 1)
     st = rng.normal(0, 1, (h, 1)).astype(np.float32)
     st = cv2.GaussianBlur(st, (0, 0), 1.6)
     st = st / (st.std() + 1e-6)

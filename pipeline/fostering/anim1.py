@@ -13,23 +13,27 @@ SHOT LIST on the 100 BPM grid (time s | beat | content | motion / transition | S
  0.00-1.50  b0-b2.5  HOOK (the alarm clock drops onto the desk on b2.25 as the camera settles): "WHAT DOES / FOSTERING / REALLY LOOK LIKE?" stamped word by word into the paper on 8ths and
                      16ths: WHAT b0, DOES b0.5, FOSTERING b1 (biggest hit), REALLY b1.5, LOOK b1.75, LIKE? b2. Each
                      word drops 1.6-1.9x -> 1 with a pressed overshoot and a soft shadow while airborne; HOOK CAMERA
-                     starts pushed in 1.75x on WHAT, whips to DOES, pulls back through FOSTERING and the last line and
+                     starts pushed in 1.75x on WHAT, whips out to frame WHAT DOES (1.11x), punches in on FOSTERING
+                     (1.24x), pulls back through the last line and
                      settles at 1.0 by 1.5 s (paper magnified with it, type drawn from 1.75x sprites: stays sharp);
                      the alarm clock is revealed on the desk below; camera shake on b0 / b1 | paper rustle, 6 type
-                     thumps, soft impacts on b0 / b1
+                     thumps, soft impacts on b0 / b1. (v2: the whole frame-1 stack sits F1_DY = 128 px higher so
+                     the handwritten line clears the Instagram like/share column; WHAT stays readable on b0.5)
  1.50       b2.5     "<  >" MAGENTA brackets snap in round FOSTERING (spring) | 2 clicks
  1.80-2.40  b3-b4    MAGENTA marker swipe wipes behind FOSTERING (the word knocks out to paper white); the morning
                      LIGHT STREAK sweeps across the sheet + a glossy sweep over the ink (1.75-3.3) | marker swish,
                      shimmer
  2.40-4.98  b4-b8.3  "It's often found in the everyday." (Caveat Bold 82 px, MAGENTA) writes on 2.4-3.55; ORANGE
-                     scribble underline under "everyday." 3.62-4.02; the alarm clock rattles once (2.55) and ticks
-                     | pen write, bell rattle, tick-tock, scribble
+                     scribble underline under "everyday." 3.62-4.02; the alarm clock rattles once (2.55) and jolts
+                     on each tick-tock (3.3-4.8) | pen write, bell rattle, tick-tock, scribble
  4.98-5.32  b8.3-b8.9 SLIDE: sheet B slides in from the right over sheet A (rotation 6 -> 0 deg, soft edge shadow,
-                     sheet A pushed left and dimmed), lands just before b9 (7 samples) | paper slide
+                     sheet A pushed left and dimmed), lands just before b9 (15 / 7 samples, each sheet smeared
+                     along its travel per sample: a continuous blur, no stacked copies) | paper slide
  FRAME 2 - sheet B (late morning)
  5.40-7.20  b9-b12   "SCHOOL RUNS." stamps (list item 1, MAGENTA); the 3D backpack drops (lands 5.70); an ORANGE
                      dashed route draws across the paper 5.7-6.6 and the 3D school bus (side) drives along it
-                     5.95-7.05 and exits right | thump, backpack thud + zip, route pen, bus pass + friendly beep
+                     5.95-7.3 and drives fully off the right edge; the route fades 7.3-7.9 | thump, backpack thud,
+                     route pen, bus pass + friendly beep
  7.20-8.40  b12-b14  "HOMEWORK." stamps (item 2; item 1 turns PLUM); the open book drops (7.38); its own pencil (cut
                      out of the render, page inpainted) lifts off, writes two cursive graphite lines on the right
                      page 7.52-8.18 and settles back | thump, book thud, pencil scribble
@@ -38,31 +42,38 @@ SHOT LIST on the 100 BPM grid (time s | beat | content | motion / transition | S
                      flour puff, cupcake plop, timer ding
  FRAME 3 - sheet B (golden afternoon: light swings round to the top)
  10.20-12.00 b17-b20 the list sinks into its slots; group by group the props hop, tumble and morph (puff) into the
-                     three 3D toy blocks, which drop onto a tower: block 1 lands b18 as "SMALL MOMENTS" rises out of
+                     three 3D toy blocks (spinning about their centres; the landed tower stays in front of the later
+                     groups), which drop onto a tower: block 1 lands b18 as "SMALL MOMENTS" rises out of
                      its slot, block 2 b19 "CAN HELP BUILD", block 3 b20 "STABILITY." (MAGENTA stamp, camera shake,
                      the tower rocks once and settles; glossy sweep over the type) | swishes, poofs + sparkles, block
                      clacks, big thump
  12.60-15.10 b21-b25.2 "A consistent home." (3D house) / "A familiar routine." (3D alarm clock, rings) / "Someone who
                      is there." (3D family figures) tick in on b21 / b22 / b23: icon drops, text rises from its
-                     slot; hold | pops, ticks, tick-tock
+                     slot; the clock icon rings, then jolts on each tick-tock; hold | pops, ticks, tick-tock
  15.10-15.64 b25.2-b26 FLIP: sheet B lifts toward the viewer from its bottom edge and flips up out of frame (hinged at
-                     the top, darkening, shadow band on the sheet below, lit paper edge; 11 samples) | paper flip
+                     the top, darkening, shadow band on the sheet below, lit paper edge; 11-15 samples, the page
+                     smeared vertically in proportion to its motion) | paper flip
  FRAME 4 - sheet C (evening: low warm light from the right)
  15.60-17.10 b26-b28.5 "FOSTERING / HAPPENS IN THE / EVERYDAY." rise out of their slots on b26 / b26.75 / b27.5
                      (EVERYDAY. MAGENTA, glossy sweep); b26.5 the "< >" brackets snap round FOSTERING again
                      (bookend of frame 1) | swishes, thumps, clicks
  17.10-18.60 b28.5-b31 the 3D house drops in below (lands 17.10); b29.75 the headline sinks away (bottom line first)
                      and the house glides up; b31 its windows switch on (flicker, bloom) and warm light spills onto
-                     the paper | thud, swish, whoosh, light-switch click, shimmer
+                     the paper (the paper glow rises smoothly; only the windows flicker) | thud, swish, whoosh,
+                     light-switch click, shimmer
  18.60-19.35 b31-b32.25 "Could you make room?" (Caveat Bold 116 px, MAGENTA) writes on, ORANGE scribble under "room?";
-                     END CARD: logo_full.png rises in (b31.5), CTA pill "Start your enquiry" pops, "0161 241 1332 ·
-                     organicfostering.co.uk" (Poppins SemiBold 34 px) rises from its slot | pen, logo sting, pop
+                     drawn after lighting (true MAGENTA: the window glow tinted it red); END CARD: a soft ivory lift
+                     of the paper behind the lockup, logo_full.png (744 px) rises in (b31.5), CTA pill "Start your
+                     enquiry" pops, "0161 241 1332 · organicfostering.co.uk" (Poppins SemiBold 40 px) rises from its
+                     slot | pen, logo sting, pop
  19.35-21.00 b32.25-b35 END CARD settled (1.65 s hold): only the light breathes, a last glossy sweep 19.5-20.5
  Foreground everywhere: defocused leaves (a houseplant by the desk) sway in three corners, casting soft shadows on
  the paper. Every prop has a contact shadow + a cast shadow that follows the light direction.
 BED: room_tone at -32 dB (felt). SFX: anim1_sfx.py (custom paper / pencil / bus / bowl / ding / switch / block
 sounds registered into the toolkit mixer) -> workspace3/audio/anim1_sfx.wav + anim1_sfx_stem.wav, -18 LUFS,
-<= -2.0 dBTP.
+limiter ceiling -2.3 dBTP (brief <= -2.0, margin for the AAC encode).
+Every stamp's 75 ms approach + hit frame renders with >= 11 samples (samples()), and the press after the hit starts
+at the landed scale (no double exposure).
 
 CONTRACT (render.py): DUR, LOOK, BPM, draw(t) pure, post(cv, t), samples(t), cues(), prewarm().
 """
@@ -97,10 +108,17 @@ T_FLIP0, T_FLIP1 = 15.10, 15.64          # sheet B flips up toward the viewer an
 T_F4 = B(26)                             # 15.6 frame 4
 
 # ============================================================================================ layout constants
-# frame 1 (centre x 540)
-F1_BASE = (679, 832, 962)                # baselines: WHAT DOES / FOSTERING / REALLY LOOK LIKE?
-F1_HAND_BASE = 1125
-F1_BAND = (156, 924)                     # magenta swipe x range
+# frame 1 (centre x 540). The whole frame-1 stack (type, hook camera anchor, alarm clock) sits F1_DY higher than
+# in v1 so the full-width handwritten line + its underline clear the Instagram like/share column (nothing at
+# x > 930 for y 1050-1700) at 82 px, under the breathing push too.
+F1_DY = -128
+F1_BASE = (679 + F1_DY, 832 + F1_DY, 962 + F1_DY)   # baselines: WHAT DOES / FOSTERING / REALLY LOOK LIKE?
+F1_HAND_BASE = 1125 + F1_DY
+F1_CLOCK_Y = 1562 + F1_DY                # alarm clock ground point
+F1_BAND = (150, 931)                     # magenta swipe x range (covers FOSTERING's G by >= 12 px on every row)
+# "< >" brackets: size / stroke / x offset from the centre, the same in frames 1 and 4 (inner arm ends clear the
+# swipe band by ~12 px; tips stay inside x 70-1010 at the frame-1 push)
+BRK_SIZE, BRK_STROKE, BRK_DX = 86, 14, 426.5
 # frames 2 / 3: justified type stacks (every line set to the same 920 px width = 85 % of the frame; the safe
 # width x 70..1010 caps "SCHOOL RUNS." at ~121 px and "SMALL MOMENTS" at ~104 px)
 STACK_W = 920.0
@@ -108,17 +126,19 @@ F2_X, F2_TOP, F2_GAP = 80.0, 240.0, 30.0       # list: left edge, first cap top,
 F3_TOP, F3_GAP = 250.0, 28.0                   # headline
 F3_ROWS = (690.0, 800.0, 910.0)                # checklist rows (centre y)
 ROW_ICON_X, ROW_TEXT_X = 228.0, 301.0          # checklist: icon column centre / text left (block centred)
-TOWER = (540, 1650)                            # tower ground point
+TOWER = (540, 1600)                            # tower ground point
 BLOCK_H = 205.0                                # toy block height on the tower
 F4_CAP = (440, 580, 695)
-HOUSE_DROP, HOUSE_END = (540, 1500), (540, 800)
-F4_HAND_BASE = 944
+HOUSE_DROP, HOUSE_END = (540, 1500), (540, 792)
+F4_HAND_BASE = 936
+# end card (drawn after lighting): logo centre / CTA pill centre / phone line cap top
+LOGO_W, LOGO_Y, PILL_Y, PHONE_TOP = 744, 1128, 1338, 1420
 
 
 # hook camera: starts pushed in on WHAT, whips word to word as they stamp in, settles on the whole question
 HZ = 1.75                                # hi-res factor of the hook type sprites
 T_HOOK_END = 1.5
-S_ANCHOR = (540.0, 860.0)                # screen point the camera centre maps to
+S_ANCHOR = (540.0, 860.0 + F1_DY)        # screen point the camera centre maps to
 
 
 # ============================================================================================ assets
@@ -146,11 +166,12 @@ def A():
     d['rows'] = [X.Txt(s, font='ui', px=52, fill=PLUM) for s in
                  ('A consistent home.', 'A familiar routine.', 'Someone who is there.')]
     # frame 4
+    # EVERYDAY.: Nunito Black has no Y-D kern pair (the open gap read as "EVERY DAY.") -> DAY. moves 12 px left
     d['h4'] = [X.Txt('FOSTERING', px=130, fill=PLUM), X.Txt('HAPPENS IN THE', px=104, fill=PLUM),
-               X.Txt('EVERYDAY.', px=158, fill=MAG)]
+               X.KernTxt('EVERYDAY.', 5, -12, px=158, fill=MAG)]
     d['hand2'] = X.Txt('Could you make room?', font='hand', px=116, fill=MAG)
-    d['phone'] = X.Txt('0161 241 1332 · organicfostering.co.uk', font='ui', px=34, fill=PLUM)
-    d['logo'] = K.load_image(K.BRAND + '/logo_full.png', size=680)
+    d['phone'] = X.Txt('0161 241 1332 · organicfostering.co.uk', font='ui', px=40, fill=PLUM)
+    d['logo'] = K.load_image(K.BRAND + '/logo_full.png', size=LOGO_W)
     d['button'] = ui.button('Start your enquiry', look='airy', h=92, size=40)
     # props
     d['backpack'] = X.Prop('backpack', 445)
@@ -192,6 +213,32 @@ def prewarm():
     P.sheet(0)
     P.sheet(1)
     P.sheet(2)
+
+
+T_BUS0, T_BUS1 = 5.95, 7.3
+
+
+@functools.lru_cache(maxsize=1)
+def bus_drive():
+    """The drawn route continued straight along its end tangent for 420 px (off screen): (path, route length)."""
+    p = A()['bus_path']
+    L0 = float(X._arclen(p)[-1])
+    d = p[-1] - p[-8]
+    d = d / np.hypot(*d)
+    ext = p[-1] + d[None, :] * np.linspace(3.0, 420.0, 140)[:, None]
+    return np.vstack([p, ext]), L0
+
+
+def bus_pos(t):
+    """(x, y, angle) of the bus: the v1 speed profile along the route (5.95 -> 7.05), then on at the exit speed."""
+    path, L0 = bus_drive()
+    L = float(X._arclen(path)[-1])
+    u = (t - T_BUS0) / 1.1
+    if u <= 1:
+        f = u * u * (3 - 2 * u) * 0.35 + u * 0.65
+    else:
+        f = 1.0 + 0.65 * (u - 1)
+    return X.path_point(path, min(f * L0 / L, 1.0))
 
 
 def bus_path():
@@ -258,9 +305,9 @@ def in_quad(x):
     return x * x
 
 
-def out_quad(x):
+def inout_quad(x):
     x = min(max(x, 0.0), 1.0)
-    return 1 - (1 - x) * (1 - x)
+    return 2 * x * x if x < 0.5 else 1 - 2 * (1 - x) * (1 - x)
 
 
 def stamp(t, t_hit, s0=1.6, lead=0.075):
@@ -274,8 +321,18 @@ def stamp(t, t_hit, s0=1.6, lead=0.075):
         s = 1 + (s0 - 1) * (1 - u) ** 2
         return s, min(1.0, 0.25 + u * 1.5), (1 - u)
     d = t - t_hit
-    s = 1 - 0.045 * math.exp(-d * 11) * math.cos(d * 30)
+    # pressed overshoot: starts AT the landed scale (sin, not cos: no 4.5 % jump inside the hit frame's shutter)
+    s = 1 - 0.06 * math.exp(-d * 11) * math.sin(d * 30)
     return s, 1.0, 0.0
+
+
+# every stamped hit (s): frames whose shutter overlaps the 75 ms approach or the hit get extra samples
+STAMP_HITS = (B(0), B(0.5), B(1), B(1.5), B(1.75), B(2), B(9), B(12), B(14), B(20))
+
+
+def near_stamp(t, lead=0.075):
+    h = 0.5 / FPS / 2 + 1.0 / FPS / 2
+    return any(th - lead - h <= t <= th + h for th in STAMP_HITS)
 
 
 @functools.lru_cache(maxsize=1)
@@ -290,8 +347,8 @@ def hook_track():
     fos = wc(l2, 0, F1_BASE[1])
     l3c = (540.0, F1_BASE[2] - l3.ts.layout.cap / 2)
     return K.Track([(-0.2, (what[0] - 30, what[1], 1.85)), (B(0), (what[0], what[1], 1.75), 'inout_cubic'),
-                    (B(0.5), (does[0] - 40, does[1], 1.55), 'inout_cubic'),
-                    (B(1), (fos[0], fos[1] - 10, 1.30), 'inout_cubic'),
+                    (B(0.5), ((what[0] + does[0]) / 2 - 6, does[1], 1.11), 'inout_cubic'),
+                    (B(1), (fos[0], fos[1] - 10, 1.24), 'inout_cubic'),
                     (B(1.5), (l3c[0] - 20, l3c[1] - 40, 1.14), 'inout_cubic'),
                     (B(2), (l3c[0] + 10, l3c[1] - 80, 1.07), 'inout_cubic'),
                     (T_HOOK_END, (S_ANCHOR[0], S_ANCHOR[1], 1.0))], ease='inout_cubic')
@@ -339,7 +396,7 @@ def draw_word_stamp(ink, bb, txt, i, line_left, base, t, t_hit, s0=1.6, light=No
         sil = _sil(spr)
         bb.add(K.draw(ink, sil, cx + dx * off, cy + dy * off, scale=s * 0.98, anchor=anc,
                       opacity=0.22 * (1 - lift * 0.6), blur=4 + 14 * lift))
-    bb.add(ts.draw(ink, cx, cy, anchor=(0.5, 0.5), scale=s, opacity=op))
+    bb.add(ts.draw(ink, cx, cy, anchor=(0.5, 0.5), scale=s, opacity=op, blur=2.5 * lift))
 
 
 _SIL = {}
@@ -424,11 +481,13 @@ def light_for(t):
     su = K.ramp(t, 1.75, 3.3, 'inout_sine')
     if 0 < su < 1:
         L.streak = (su, -32.0, 0.13, 0.30, (1.0, 0.90, 0.74))
-    g = window_light(t)
+    # warm window light on the paper: a smooth rise on the switch click (the switch-on flicker stays on the window
+    # sprites only - flickering the whole paper read as frame flashes) and a slow, gentle breathing
+    g = K.ramp(t, B(31), B(31) + 0.25, 'out_cubic')
     if g > 0:
         hx, hy = house_pos(t)[:2]
-        flick = 1.0 + 0.04 * K.wiggle(t, 7, 1, seed=3)
-        L.glow = (hx, hy - 200, 560.0, 0.85 * g * flick, (1.0, 0.62, 0.30))
+        breathe = 1.0 + 0.02 * K.wiggle(t, 1.5, 1, seed=3)
+        L.glow = (hx, hy - 200, 560.0, 0.85 * g * breathe, (1.0, 0.62, 0.30))
     return L
 
 
@@ -449,7 +508,7 @@ def f1_ink(ink, bb, t, light, cam=None):
     x2 = 540 - l2.w / 2
     x3 = 540 - l3.w / 2
     # swipe band (under FOSTERING), wiping on 1.8 -> 2.12
-    wu = K.ramp(t, B(3), B(3) + 0.32, 'inout_cubic')
+    wu = K.ramp(t, B(3), B(3) + 0.32, 'out_cubic')
     bx0, bx1 = F1_BAND
     wipe_x = bx0 - 40 + wu * (bx1 - bx0 + 80)
     if wu > 0:
@@ -477,10 +536,10 @@ def f1_ink(ink, bb, t, light, cam=None):
     if t >= B(2.5) - 0.06:
         sp = K.spring(t - (B(2.5) - 0.06), freq=3.0, damping=0.42)
         cy = F1_BASE[1] - l2.ts.layout.cap / 2
-        for d, cx in ((-1, 110), (1, 970)):
-            spr, ax, ay = X.chevron_sprite(100, 15, d, tuple(K.hexlin(MAG)))
-            off = (1 - sp) * 150 * d
-            sc = 1 + (1 - sp) * 0.5
+        for d, cx in ((-1, 540 - BRK_DX), (1, 540 + BRK_DX)):
+            spr, ax, ay = X.chevron_sprite(BRK_SIZE, BRK_STROKE, d, tuple(K.hexlin(MAG)))
+            off = max(1 - sp, -0.03) * 150 * d          # the spring's overshoot must not reach the word
+            sc = 1 + max(1 - sp, -0.03) * 0.5
             bb.add(K.draw(ink, spr, cx + off, cy, anchor=(ax, ay), scale=max(sc, 0.2),
                           opacity=min(1.0, (t - B(2.5) + 0.06) / 0.05)))
     # handwritten line + scribble underline under "everyday."
@@ -490,7 +549,7 @@ def f1_ink(ink, bb, t, light, cam=None):
     if uu > 0:
         w_ev = hand.words[-1]
         left = 540 - hand.w / 2
-        pts = X.scribble_path(left + w_ev[1] - 6, left + w_ev[2] + 4, F1_HAND_BASE + 26, seed=11, amp=12,
+        pts = X.scribble_path(left + w_ev[1] - 6, left + w_ev[2] - 14, F1_HAND_BASE + 26, seed=11, amp=12,
                               loops=1, slope=-6)
         draw_stroke(ink, bb, pts, 7.0, C['ORANGE'], 0.0, uu)
 
@@ -523,13 +582,14 @@ def f2_list_ink(ink, bb, t, light):
             off = 50 * lift * min(ln, 2.5)
             bb.add(K.draw(ink, _sil(txt.spr), F2_X + dx * off, base + dy * off, anchor=anc, scale=s,
                           opacity=0.2, blur=4 + 12 * lift))
-        # colour change MAG -> PLUM crossfade when the next item lands
+        # colour change MAG -> PLUM when the next item lands: PLUM opaque underneath, MAG fading over it (a
+        # cross-fade of two half-opaque sprites drops coverage and washes the line pale for a few frames)
         if not active and t < nxt + 0.25:
             k = K.ramp(t, nxt, nxt + 0.25, 'out_cubic')
+            bb.add(K.draw(ink, plum.spr, F2_X, base, anchor=anc, scale=s))
             bb.add(K.draw(ink, mag.spr, F2_X, base, anchor=mag.anc((0.0, 1.0)), scale=s, opacity=1 - k))
-            bb.add(K.draw(ink, plum.spr, F2_X, base, anchor=anc, scale=s, opacity=k))
         else:
-            bb.add(K.draw(ink, txt.spr, F2_X, base, anchor=anc, scale=s, opacity=op))
+            bb.add(K.draw(ink, txt.spr, F2_X, base, anchor=anc, scale=s, opacity=op, blur=2.5 * lift))
 
 
 def f2_ding_ink(ink, bb, t):
@@ -553,11 +613,12 @@ def f2_ding_ink(ink, bb, t):
 
 
 def f2_path_ink(ink, bb, t):
-    """ORANGE dashed bus route drawn across the paper (fades as frame 3 starts)."""
+    """ORANGE dashed bus route drawn across the paper; fades out once the bus has gone (before HOMEWORK's
+    book lands and BAKING's props sit on it)."""
     u = K.ramp(t, 5.7, 6.6, 'inout_sine')
     if u <= 0:
         return
-    fade = 1 - K.ramp(t, T_F3, T_F3 + 0.5, 'inout_sine')
+    fade = 1 - K.ramp(t, 7.3, 7.9, 'inout_sine')
     if fade <= 0:
         return
     draw_stroke(ink, bb, A()['bus_path'], 7.0, C['ORANGE'], 0.0, u, dash=(22, 15), opacity=0.92 * fade)
@@ -581,7 +642,7 @@ def f3_ink(ink, bb, t, light):
                 off = 70 * lift * min(ln, 2.5)
                 bb.add(K.draw(ink, _sil(txt.spr), 540 + dx * off, cy + dy * off, anchor=txt.anc((0.5, 0.5)),
                               scale=s, opacity=0.22, blur=4 + 14 * lift))
-            bb.add(txt.draw(ink, 540, cy, scale=s, opacity=op))
+            bb.add(txt.draw(ink, 540, cy, scale=s, opacity=op, blur=2.5 * lift))
     # supporting rows: text rises out of a slot right after its icon pops
     for i, txt in enumerate(Ad['rows']):
         t0 = B(21 + i)
@@ -610,24 +671,15 @@ def f4_ink(ink, bb, t, light):
         sp = K.spring(t - (tb - 0.06), freq=3.0, damping=0.42)
         cy = F4_CAP[0] + Ad['h4'][0].ts.layout.cap / 2
         out = K.ramp(t, B(29.75) + 0.1, B(29.75) + 0.3, 'in_cubic')
-        for d, cx in ((-1, 110), (1, 970)):
-            spr, ax, ay = X.chevron_sprite(100, 15, d, tuple(K.hexlin(MAG)))
-            off = (1 - sp) * 150 * d + out * 60 * d
-            sc = 1 + (1 - sp) * 0.5
+        for d, cx in ((-1, 540 - BRK_DX), (1, 540 + BRK_DX)):
+            spr, ax, ay = X.chevron_sprite(BRK_SIZE, BRK_STROKE, d, tuple(K.hexlin(MAG)))
+            off = max(1 - sp, -0.03) * 150 * d + out * 60 * d
+            sc = 1 + max(1 - sp, -0.03) * 0.5
             bb.add(K.draw(ink, spr, cx + off, cy, anchor=(ax, ay), scale=max(sc, 0.2),
                           opacity=min(1.0, (t - tb + 0.06) / 0.05) * (1 - out)))
-    hand = Ad['hand2']
-    write_on(ink, bb, hand, 540, F4_HAND_BASE, t, B(31) + 0.02, 0.55)
-    uu = K.ramp(t, 19.08, 19.36, 'inout_sine')
-    if uu > 0:
-        w_room = hand.words[-1]
-        left = 540 - hand.w / 2
-        pts = X.scribble_path(left + w_room[1] - 4, left + w_room[2] + 2, F4_HAND_BASE + 26, seed=5, amp=12,
-                              loops=1, slope=-7)
-        draw_stroke(ink, bb, pts, 8.0, C['ORANGE'], 0.0, uu)
     # phone / url line (printed): rises in on the end card
     ph = Ad['phone']
-    slot_rise(ink, bb, ph, 540, 1418, t, 19.02, 0.33, overshoot=False)
+    slot_rise(ink, bb, ph, 540, PHONE_TOP, t, 19.02, 0.33, overshoot=False)
 
 
 # ============================================================================================ props (after light)
@@ -642,7 +694,7 @@ def props_frame1(cv, layer, lb, t, light):
     if dr is None:
         return
     cam = hook_cam(t)
-    x, y = w2s(cam, 540, 1562)
+    x, y = w2s(cam, 540, F1_CLOCK_Y)
     z = cam[2] if cam is not None else 1.0
     tr = B(4) + 0.15
     rot, hop = 0.0, dr['lift']
@@ -651,10 +703,32 @@ def props_frame1(cv, layer, lb, t, light):
         e = math.exp(-d * 3.2)
         rot = 4.0 * math.sin(d * 62) * e
         hop += 7.0 * abs(math.sin(d * 31)) * e
+    tw, th = tick_twitch(t, *TICKS_F1)
+    rot += 2.0 * tw
+    hop += 3.0 * th
     yaw = -14 + 5 * math.sin(t * 0.8)
     pr.shadow(cv, x, y, light, lift=hop, yaw=yaw, scale=z * dr['scale'], opacity=dr['opacity'])
     lb.add(pr.draw(layer, x, y - hop * 0.35, yaw=yaw, scale=z * dr['scale'], squash=dr['squash'], rot=rot,
                    opacity=dr['opacity']))
+
+
+# clock_tick cues (first tick, count, interval): the clocks jolt on every tick-tock so the sound has an action
+TICKS_F1 = (B(4) + 0.9, 6, 0.3)
+TICKS_F3 = (B(22) + 0.1, 5, 0.3)
+
+
+def tick_twitch(t, t0, n, interval):
+    """(rot, hop) 0..1 envelopes of a clock jolting on each tick (alternating tick / tock direction)."""
+    k = int(math.floor((t - t0) / interval + 1e-6))
+    if k < 0 or k >= n + 1:
+        return 0.0, 0.0
+    best = (0.0, 0.0)
+    for j in (k - 1, k):
+        if 0 <= j < n:
+            e = K.impulse(t, t0 + j * interval, decay=22.0, attack=0.012)
+            if e > abs(best[1]):
+                best = ((1 if j % 2 == 0 else -1) * e, e)
+    return best
 
 
 # frame-2 props: ground point, landing time, base yaw
@@ -787,11 +861,9 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
                size=(9, 30), up=-2.0, dur=1.45, opacity=1.0, ang=(-172, -8))
         X.puff(layer, t, tl + 0.35, bx + fx + 30, by + fy - 30, n=26, spread=140, seed=13, rgb=(1.22, 1.19, 1.12),
                size=(6, 18), up=-1.4, dur=1.0, opacity=0.9, ang=(-150, -30))
-    # bus drives along the dashed path
-    if 5.95 <= t <= 7.1:
-        u = (t - 5.95) / 1.1
-        u = u * u * (3 - 2 * u) * 0.35 + u * 0.65
-        px, py, ang = X.path_point(Ad['bus_path'], u)
+    # bus drives along the dashed path and on, fully off the right edge (no parked sliver / exit pop)
+    if T_BUS0 <= t <= T_BUS1:
+        px, py, ang = bus_pos(t)
         bus = Ad['bus']
         bob = 2.0 * math.sin(t * 46) + 1.2 * math.sin(t * 29)
         bus.shadow(cv, px, py, light, lift=0, scale=1.0)
@@ -814,64 +886,80 @@ def props_frame3(cv, layer, lb, t, light):
     Ad = A()
     groups = [[(nm, PROPS2[nm][0]) for nm in grp] for grp in GROUPS]
     blocks = Ad['blocks']
-    tower_h = 0.0
-    for g, members in enumerate(groups):
+
+    def plan(g, members):
         t0 = T_F3 + 0.6 * g                 # hop starts
         t_m = t0 + 0.24                      # morph moment (top of the hop, mid-spin)
         t_land = t0 + 0.6                    # block lands on the tower (b18 / b19 / b20)
-        spr, anc, ks = blocks[g]
-        bh = BLOCK_H
-        gx, gy = TOWER[0], TOWER[1] - bh * g
-        if t < t0:
-            continue
-        # morph point: above the block's slot on the tower, pulled toward the group's props
+        gx, gy = TOWER[0], TOWER[1] - BLOCK_H * g
+        # morph point: above the block's slot on the tower, pulled toward the group's props; the backpack hops
+        # UP (clear of the mixing bowl below it) instead of diving toward the tower's base
         xav = sum(p[1][0] for p in members) / len(members)
         mx, my = xav * 0.4 + gx * 0.6, gy - 300.0 - 40.0 * g
-        if t < t_m + 0.05:
-            # props hop up, spin and shrink toward the morph point
-            u = K.ramp(t, t0, t_m + 0.05, out_quad)
-            for name, (x, y) in members:
-                pr = Ad[name]
-                px = x + (mx - x) * u
-                py = y + (my - y) * u - 160 * math.sin(math.pi * min(u, 1.0)) * 0.6
-                rot = 300 * u * (1 if x < 540 else -1)
-                sc = 1.0 - 0.35 * u
-                op = 1.0 - K.ramp(t, t_m - 0.03, t_m + 0.05, 'linear')
-                pr.shadow(cv, px, py, light, lift=(y - py) + 40, scale=sc, opacity=op * 0.7)
-                lb.add(pr.draw(layer, px, py, rot=rot, scale=sc, opacity=op))
-        if t >= t_m - 0.04 and t < t_land + 2.0:
+        if g == 0:
+            my = min(my, min(p[1][1] for p in members) - 120.0)
+            mx = xav * 0.6 + gx * 0.4              # stays left of the open book while it hops
+        return t0, t_m, t_land, gx, gy, mx, my
+
+    # pass 1: the props hop up, spin and shrink toward the morph point (inout ease: no pop at the start; spin
+    # capped at ~25 deg / frame so the motion blur reads as a blur, not stacked outlines). Drawn first: the
+    # tower's blocks stay on top of later groups flying past (they move away from the camera up the desk)
+    for g, members in enumerate(groups):
+        t0, t_m, t_land, gx, gy, mx, my = plan(g, members)
+        if not (t0 <= t < t_m + 0.05):
+            continue
+        u = K.ramp(t, t0, t_m + 0.05, inout_quad)
+        for name, (x, y) in members:
+            pr = Ad[name]
+            hop = 96.0 * math.sin(math.pi * min(u, 1.0))
+            px = x + (mx - x) * u
+            py = y + (my - y) * u - hop
+            rot = 100 * u * (1 if x < 540 else -1)
+            sc = 1.0 - 0.35 * u
+            op = 1.0 - K.ramp(t, t_m - 0.03, t_m + 0.05, 'linear')
+            # spin about the prop's visual centre (not its ground point: the body swung wide into its neighbours)
+            dx, dy = pr.center_offset()
+            dx, dy = dx * sc, dy * sc
+            r = math.radians(rot)
+            ox = dx - (math.cos(r) * dx - math.sin(r) * dy)
+            oy = dy - (math.sin(r) * dx + math.cos(r) * dy)
+            # shadow stays under the prop's own track on the desk (ground = the straight line to the morph point)
+            gy_ = y + (my - y) * u
+            pr.shadow(cv, px + ox, gy_ + oy, light, lift=max(0.0, 40.0 + hop), scale=sc, opacity=op * 0.7,
+                      rot=rot)
+            lb.add(pr.draw(layer, px + ox, py + oy, rot=rot, scale=sc, opacity=op))
+    # pass 2: puffs + blocks (appear at the morph point, spinning, then drop onto the tower)
+    for g, members in enumerate(groups):
+        t0, t_m, t_land, gx, gy, mx, my = plan(g, members)
+        spr, anc, ks = blocks[g]
+        bh = BLOCK_H
+        if t < t_m - 0.04:
+            continue
+        if t < t_land + 2.0:
             X.puff(layer, t, t_m - 0.02, mx, my - 80, n=26, spread=130, seed=40 + g, size=(5, 16), dur=0.7,
                    ang=(-180, 180), opacity=0.9)
-        if t >= t_m - 0.04:
-            # block appears at the morph point (spinning), then drops onto the tower
-            u = K.ramp(t, t_m, t_land, in_quad)
-            px = mx + (gx - mx) * K.ramp(t, t_m, t_land, 'out_sine')
-            py = my + (gy - my) * u
-            rot = (1 - K.ramp(t, t_m - 0.04, t_land, 'out_cubic')) * 220 * (1 if mx < 540 else -1)
-            pop = K.ramp(t, t_m - 0.04, t_m + 0.08, 'out_back')
-            sq = (1.0, 1.0)
-            wob = 0.0
-            if t >= t_land:
-                d = t - t_land
-                imp = math.exp(-d * 10) * math.cos(d * 32)
-                sq = (1 + 0.07 * imp, 1 - 0.09 * imp)
-            # tower wobble: STABILITY. slam (b20) rocks the stack once, then it settles
-            ws = t - B(20)
-            if ws > 0:
-                wob = 2.6 * math.exp(-ws * 3.2) * math.sin(ws * 13) * (g + 1) / 3
-            lift = max(0.0, gy - py)
-            if g == 0 or t >= t_land:
-                X_ = gx + wob * (bh * g) * 0.017
-            else:
-                X_ = px
-            if t < t_land:
-                X_ = px
-            sh_op = min(1.0, pop)
-            _block_shadow(cv, X_ if t >= t_land else gx, gy, light, lift, ks, spr, anc, sh_op, g, t >= t_land)
-            K_ = ks * pop
-            lb.add(K.draw(layer, spr, X_, py if t < t_land else gy, scale=(K_ * sq[0], K_ * sq[1]),
-                          rot=rot + wob, anchor=anc))
-        tower_h = max(tower_h, g)
+        u = K.ramp(t, t_m, t_land, in_quad)
+        px = mx + (gx - mx) * K.ramp(t, t_m, t_land, 'out_sine')
+        py = my + (gy - my) * u
+        rot = (1 - K.ramp(t, t_m - 0.04, t_land, 'out_cubic')) * 100 * (1 if mx < 540 else -1)
+        pop = K.ramp(t, t_m - 0.04, t_m + 0.08, 'out_back')
+        sq = (1.0, 1.0)
+        wob = 0.0
+        if t >= t_land:
+            d = t - t_land
+            imp = math.exp(-d * 10) * math.sin(d * 32) * 1.3     # starts at 0: no jump at contact
+            sq = (1 + 0.07 * imp, 1 - 0.09 * imp)
+        # tower wobble: STABILITY. slam (b20) rocks the stack once, then it settles
+        ws = t - B(20)
+        if ws > 0:
+            wob = 2.6 * math.exp(-ws * 3.2) * math.sin(ws * 13) * (g + 1) / 3
+        lift = max(0.0, gy - py)
+        X_ = px if t < t_land else gx + wob * (bh * g) * 0.017
+        sh_op = min(1.0, pop)
+        _block_shadow(cv, X_ if t >= t_land else gx, gy, light, lift, ks, spr, anc, sh_op, g, t >= t_land)
+        K_ = ks * pop
+        lb.add(K.draw(layer, spr, X_, py if t < t_land else gy, scale=(K_ * sq[0], K_ * sq[1]),
+                      rot=rot + wob, anchor=anc))
     # supporting-row icons: tick in place (spring pop, no lift, so they never cross the row above)
     icons = (Ad['i_house'], Ad['i_clock'], Ad['i_family'])
     for i, pr in enumerate(icons):
@@ -883,9 +971,9 @@ def props_frame3(cv, layer, lb, t, light):
         x, y = ROW_ICON_X, F3_ROWS[i] + 40
         yaw = 10 * math.sin(t * 1.3 + i)
         rot = 0.0
-        if i == 1 and t > tl:      # alarm clock: rings (shakes) briefly
+        if i == 1 and t > tl:      # alarm clock: rings (shakes) briefly, then jolts on each tick
             yaw = 0
-            rot = 4.0 * math.sin((t - tl) * 70) * math.exp(-(t - tl) * 4)
+            rot = 4.0 * math.sin((t - tl) * 70) * math.exp(-(t - tl) * 4) + 3.0 * tick_twitch(t, *TICKS_F3)[0]
         if sc < 0.02:
             continue
         pr.shadow(cv, x, y, light, lift=0.0, yaw=yaw, scale=sc, opacity=op * 0.8)
@@ -948,19 +1036,64 @@ def window_light(t):
     return float(K.ramp(t, B(31) + 0.09, B(31) + 0.2, 'out_cubic'))
 
 
+# soft ivory lift of the evening paper behind the logo lockup (the orange "Fostering" needs the paler ground;
+# the logo itself is never recoloured): multiplicative, so the creases stay; eases in with the logo
+LIFT_C, LIFT_R, LIFT_K = (540.0, 1235.0), (560.0, 330.0), 0.8
+
+
+@functools.lru_cache(maxsize=1)
+def _lift_mask():
+    import cv2
+    q = 4
+    ys, xs = np.mgrid[0:H // q, 0:W // q].astype(np.float32)
+    d2 = (((xs + 0.5) * q - LIFT_C[0]) / LIFT_R[0]) ** 2 + (((ys + 0.5) * q - LIFT_C[1]) / LIFT_R[1]) ** 2
+    m = np.exp(-1.2 * d2 ** 1.5).astype(np.float32)
+    m = cv2.resize(m, (W, H), interpolation=cv2.INTER_LINEAR)
+    rows = np.nonzero(m.max(1) > 0.004)[0]
+    y0, y1 = int(rows[0]), int(rows[-1]) + 1
+    out = np.ascontiguousarray(m[y0:y1])
+    out.setflags(write=False)
+    return out, y0, y1
+
+
+def ivory_lift(cv, t):
+    k = K.ramp(t, B(31.5) - 0.15, B(31.5) + 0.4, 'inout_sine') * LIFT_K      # settled by 19.3
+    if k <= 0:
+        return
+    m, y0, y1 = _lift_mask()
+    reg = cv[y0:y1, :, :3]
+    cy0, cy1 = int(LIFT_C[1] - 0.45 * LIFT_R[1]) - y0, int(LIFT_C[1] + 0.45 * LIFT_R[1]) - y0
+    cx0, cx1 = int(LIFT_C[0] - 0.45 * LIFT_R[0]), int(LIFT_C[0] + 0.45 * LIFT_R[0])
+    paper = np.median(reg[cy0:cy1:6, cx0:cx1:6].reshape(-1, 3), axis=0)
+    gain = np.clip(K.hexlin(IVORY) / np.maximum(paper, 1e-3), 0.8, 2.5).astype(np.float32)
+    reg *= 1.0 + (m * np.float32(k))[..., None] * (gain - 1.0)
+
+
 def endcard(cv, t):
-    """logo + CTA pill (drawn after lighting: true brand colours)."""
+    """Ivory lift, then "Could you make room?" + its scribble, logo + CTA pill: all drawn after lighting (true
+    brand colours; the window glow would tint the MAGENTA handwriting red)."""
     Ad = A()
+    ivory_lift(cv, t)
+    hand = Ad['hand2']
+    bb = BBox()
+    write_on(cv, bb, hand, 540, F4_HAND_BASE, t, B(31) + 0.02, 0.55)
+    uu = K.ramp(t, 19.08, 19.36, 'inout_sine')
+    if uu > 0:
+        w_room = hand.words[-1]
+        left = 540 - hand.w / 2
+        pts = X.scribble_path(left + w_room[1] - 4, left + w_room[2] + 2, F4_HAND_BASE + 26, seed=5, amp=12,
+                              loops=1, slope=-7)
+        draw_stroke(cv, bb, pts, 8.0, C['ORANGE'], 0.0, uu)
     u = K.ramp(t, B(31.5), B(31.5) + 0.42, 'out_back')
     if u > 0:
         lg = Ad['logo']
         op = K.ramp(t, B(31.5), B(31.5) + 0.15, 'linear')
-        K.draw(cv, lg, 540, 1135 + (1 - u) * 60, scale=0.94 + 0.06 * u, opacity=op)
+        K.draw(cv, lg, 540, LOGO_Y + (1 - u) * 60, scale=0.94 + 0.06 * u, opacity=op)
     v = K.ramp(t, 19.05, 19.33, 'out_back')
     if v > 0:
         bt = Ad['button']
         op = K.ramp(t, 19.05, 19.15, 'linear')
-        K.draw(cv, bt, 540, 1335, scale=0.7 + 0.3 * v, opacity=op)
+        K.draw(cv, bt, 540, PILL_Y, scale=0.7 + 0.3 * v, opacity=op)
 
 
 # ============================================================================================ sheets
@@ -1123,21 +1256,58 @@ def frame_index(t):
     return int(round(t * FPS))
 
 
+def _slice(t):
+    """Seconds of shutter one motion-blur sample stands for (x1.3 overlap): per-layer smears of this length join
+    the samples into one continuous streak instead of stacked copies."""
+    return (0.5 / FPS) / max(1, samples(t)) * 1.3
+
+
+def _slide_u(t):
+    return K.ramp(t, T_SLIDE0, T_SLIDE1, 'out_cubic')
+
+
+def flip_geom(t):
+    """(u, rx, k, ye, hw): flip progress, page rotation (deg), sin(angle), projected bottom edge y, half width."""
+    u = K.ramp(t, T_FLIP0, T_FLIP1, in_quad)
+    rx = -90.0 * u
+    th = math.radians(-rx)
+    depth = 4200.0 - 1920.0 * math.sin(th)
+    ye = 960.0 + (-960.0 + 1920.0 * math.cos(th)) * 4200.0 / depth
+    hw = 540.0 * 4200.0 / depth
+    return u, rx, math.sin(th), ye, hw
+
+
+SLIDE_PAD = 72
+SHAKES = ((B(0), 8.0, 2.0), (B(1), 11.0, 2.2), (B(20), 7.0, 1.9))     # hit time, peak px, phase
+
+
 def draw(t):
+    import cv2
     fi = frame_index(t)
     if t < T_SLIDE0:
         cv = compose(0, t, fi)
     elif t < T_SLIDE1:
-        u = K.ramp(t, T_SLIDE0, T_SLIDE1, 'out_cubic')
+        e = 1.0 / 480
+        u = _slide_u(t)
+        du = (_slide_u(min(t + e, T_SLIDE1)) - _slide_u(max(t - e, T_SLIDE0))) / (2 * e)
+        sl = _slice(t)
+        # sheet A is dragged left by the arriving sheet: eased in AND out (an out_cubic push started at full
+        # speed on the first slide frame - a visible jolt once the smear made it read)
+        pu = K.ramp(t, T_SLIDE0, T_SLIDE1, 'inout_cubic')
+        dpu = (K.ramp(t + e, T_SLIDE0, T_SLIDE1, 'inout_cubic') -
+               K.ramp(t - e, T_SLIDE0, T_SLIDE1, 'inout_cubic')) / (2 * e)
         base = frozen(0, T_SLIDE0)
         cv = np.empty_like(base)
         cv[...] = base
-        push = int(round(-170 * u))
+        push = int(round(-170 * pu))
         if push:
             cv[:, :W + push] = base[:, -push:]
             cv[:, W + push:] = base[:, W - 1:W]
         cv[..., :3] *= np.float32(1.0 - 0.12 * u)
-        new = compose(1, t, fi)
+        K.whip_blur(cv, 170 * abs(dpu) * sl, 0.0)
+        # the incoming sheet, smeared along its travel (padded so its leading edge smears too)
+        new = K.pad(compose(1, t, fi), SLIDE_PAD)
+        K.whip_blur(new, 1180 * abs(du) * sl, 0.0)
         x = 540 + (1 - u) * 1180
         y = 960 + (1 - u) * 140
         rot = (1 - u) * 6.0
@@ -1147,46 +1317,59 @@ def draw(t):
     elif t < T_FLIP0:
         cv = compose(1, t, fi)
     elif t < T_FLIP1:
-        u = K.ramp(t, T_FLIP0, T_FLIP1, in_quad)
+        u, rx, k, ye, hw = flip_geom(t)
+        e = 1.0 / 480
+        vy = (flip_geom(min(t + e, T_FLIP1 - 1e-6))[3] - flip_geom(max(t - e, T_FLIP0))[3]) / (2 * e)
+        sl = _slice(t)
         cv = compose(2, t, fi)
         page = frozen(1, T_FLIP0).copy()
-        rx = -90.0 * u
-        th = math.radians(-rx)
         # the lifting page turns away from the key light: darker overall and toward its (nearer) bottom edge
-        k = math.sin(th)
         if k > 0:
             ramp = np.linspace(1.0, 1.0 - 0.30 * k, H, dtype=np.float32)[:, None, None]
             page[..., :3] *= ramp * np.float32(1.0 - 0.18 * k)
-        # projected bottom edge of the page
-        depth = 4200.0 - 1920.0 * math.sin(th)
-        ye = 960.0 + (-960.0 + 1920.0 * math.cos(th)) * 4200.0 / depth
-        hw = 540.0 * 4200.0 / depth
         # soft shadow cast on the sheet below, just under the lifting edge
         sb = _shadow_band()
         hgt = 40 + 420 * k
         K.draw(cv, sb, 540, ye - 6, scale=((2 * hw + 120) / sb.shape[1], hgt / sb.shape[0]), anchor=(0.5, 0.0),
                opacity=min(1.0, 0.55 * k * 3) * (1 - 0.5 * u))
-        K.draw_plane(cv, page, _FLIP_CAM, (0, -960, 0), W, rot=(rx, 0, 0), anchor=(0.5, 0.0), dof=False)
-        # thin lit paper edge
+        # the page on its own layer, smeared vertically in proportion to its motion (0 at the hinge at the top,
+        # the full edge speed at its bottom edge): continuous blur instead of stacked text copies
+        lay = np.zeros((H, W, 4), np.float32)
+        K.draw_plane(lay, page, _FLIP_CAM, (0, -960, 0), W, rot=(rx, 0, 0), anchor=(0.5, 0.0), dof=False)
+        amt = abs(vy) * sl
+        rows = int(min(H, max(0.0, math.ceil(ye) + 4)))
+        if amt >= 1.5 and rows > 2:
+            kk = max(3, int(round(amt)) | 1)
+            sub = lay[:rows]
+            bl = cv2.blur(sub, (1, kk), borderType=cv2.BORDER_REPLICATE)
+            w = np.clip(np.arange(rows, dtype=np.float32) / max(ye, 1.0), 0, 1)[:, None, None]
+            sub += (bl - sub) * w
+        a = lay[..., 3:4]
+        cv *= (1.0 - a)
+        cv += lay
+        # thin lit paper edge (a band as tall as the edge's travel during this sample: no hairline stripes)
         if 0 < ye < H:
-            y0 = int(round(ye)) - 1
+            hb = max(2.0, amt)
+            y0, y1 = int(round(ye - hb / 2)), int(round(ye + hb / 2))
+            y0, y1 = max(0, y0), min(H, max(y1, y0 + 2))
             x0, x1 = max(0, int(540 - hw)), min(W, int(540 + hw))
-            cv[max(0, y0):y0 + 2, x0:x1, :3] = cv[max(0, y0):y0 + 2, x0:x1, :3] * 0.4 + 0.6 * np.float32(
-                [0.95, 0.88, 0.76])
+            g = np.float32(0.6 * min(1.0, 2.0 / hb))
+            cv[y0:y1, x0:x1, :3] = cv[y0:y1, x0:x1, :3] * (1 - g) + g * np.float32([0.95, 0.88, 0.76])
     else:
         cv = compose(2, t, fi)
     foreground(cv, t, light_for(frame_index(t) / FPS))
-    shake_hits = ((B(0), 5.0), (B(1), 7.0), (B(20), 4.0))
+    # camera shake on the big hits: a short damped judder (peak ~7-11 px, gone in ~0.25 s), sub-pixel, reflected
+    # edges (np.roll wrapped the far edge into view; K.shake's gradient noise stayed under 2 px on frame times)
     sx = sy = 0.0
-    for th, amp in shake_hits:
-        k = K.impulse(t, th, decay=14.0)
+    for th, amp, ph in SHAKES:
+        k = K.impulse(t, th, decay=11.0, attack=0.012)
         if k > 0.01:
-            dx, dy, _ = K.shake(t, amp * k, 22, seed=int(th * 10))
-            sx += dx
-            sy += dy
-    ix, iy = int(round(sx)), int(round(sy))
-    if ix or iy:
-        cv = np.roll(cv, (iy, ix), axis=(0, 1))
+            d = t - th
+            sx += amp * k * math.sin(2 * math.pi * 13.0 * d + ph)
+            sy += 0.8 * amp * k * math.sin(2 * math.pi * 17.0 * d + 1.7 * ph + 1.0)
+    if abs(sx) > 0.05 or abs(sy) > 0.05:
+        M = np.float32([[1, 0, sx], [0, 1, sy]])
+        cv = cv2.warpAffine(cv, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
     return cv
 
 
@@ -1229,7 +1412,8 @@ def push(t):
     flip (hidden by the transition) and holds still for the settled end card."""
     z = 1.0
     if t < T_SLIDE1:
-        z += 0.022 * K.ramp(t, T_HOOK_END, T_SLIDE0, 'inout_sine') * (1 - K.ramp(t, T_SLIDE0, T_SLIDE1, 'inout_sine'))
+        # 1.8 %: at the peak the "< >" tips stay inside x 70-1010 and the handwritten line inside x 1010
+        z += 0.018 * K.ramp(t, T_HOOK_END, T_SLIDE0, 'inout_sine') * (1 - K.ramp(t, T_SLIDE0, T_SLIDE1, 'inout_sine'))
     elif t < T_FLIP1:
         z += 0.030 * K.ramp(t, T_SLIDE1, T_FLIP0, 'inout_sine') * (1 - K.ramp(t, T_FLIP0, T_FLIP1, 'inout_sine'))
     else:
@@ -1249,18 +1433,32 @@ def post(cv, t):
     return K.post(cv, LOOK, t, vignette=0.10, grain=0.012, chroma=0.6)
 
 
+# props dropping onto the desk: the last ~0.12 s of each fall is fast (up to ~95 px / frame)
+DROP_LANDS = (B(2.25), 5.70, 7.38, 8.55, 8.85, B(28.25) + 0.15)
+# frame-3 tumbles: each group's hop + spin starts here (and its block drops ~0.36 s later)
+HOP_STARTS = (T_F3, T_F3 + 0.6, T_F3 + 1.2)
+
+
 def samples(t):
+    """Motion-blur sub-samples for the frame at t (render.py asks with the frame time)."""
+    n = 3
     if t < 1.45:
-        return HOOK_SAMPLES
+        n = HOOK_SAMPLES
     if T_SLIDE0 - 0.02 < t < T_SLIDE1 + 0.05:
-        return 7
+        n = 15 if t < 5.12 else 7
     if T_F3 - 0.02 < t < B(20) + 0.2:
-        return 5
-    if T_FLIP0 + 0.25 < t < T_FLIP1 + 0.02:
-        return 11
+        n = 7
+        if any(h - 0.01 <= t <= h + 0.16 for h in HOP_STARTS):
+            n = 15
     if T_FLIP0 - 0.02 < t < T_FLIP1 + 0.02:
-        return 5
-    return 3
+        n = 15 if t > 15.42 else (11 if t > T_FLIP0 + 0.25 else 5)
+    if any(tl - 0.13 <= t <= tl + 0.02 for tl in DROP_LANDS):
+        n = max(n, 7)
+    if 18.15 <= t <= 18.5:                           # house glide (peak ~130 px / frame)
+        n = max(n, 11)
+    if near_stamp(t):
+        n = max(n, 11)
+    return n
 
 
 def cues():
