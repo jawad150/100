@@ -107,8 +107,8 @@ def world_bg(t, cam, dots=1.0, glows=1.0, glow_gain=1.0):
         # colour glows live on a far plane: they parallax slowly with the journey (depth layer 1)
         for rep in range(-1, 5):
             for (x, y, sz, kind, op, ph) in _GLOWS:
-                P = np.array([x + 120.0 * math.sin(0.21 * t + ph), y + 3200.0 * rep + 90.0 * math.sin(0.17 * t + 2 * ph),
-                              GLOW_Z])
+                P = np.array([x + 120.0 * math.sin(0.21 * t + ph),
+                              y + 3200.0 * rep + 90.0 * math.sin(0.17 * t + 2 * ph), GLOW_Z])
                 xy, d = cam.project(P[None])
                 if not np.isfinite(xy).all():
                     continue

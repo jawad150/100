@@ -282,7 +282,8 @@ def _s_keys():
     s_exit0 = pth.nearest_s((470.0, 1000.0))
     # the camera follows this head exactly during every move (see base_cam_params), so the keys between a LEAVE
     # and the next ARRIVE use the camera's own ease
-    keys = [(T_BREAK, 0.0, 'out_cubic'), (B(8.5), s_exit0 * 0.92, 'inout_sine'), (LEAVE['s0'], s_exit0 * 1.0, MOVE_EASE),
+    keys = [(T_BREAK, 0.0, 'out_cubic'), (B(8.5), s_exit0 * 0.92, 'inout_sine'),
+            (LEAVE['s0'], s_exit0 * 1.0, MOVE_EASE),
             (ARRIVE['home'], sc['home'], 'hold')]
     for a, b in (('home', 'food'), ('food', 'cloth'), ('cloth', 'travel'), ('travel', 'child')):
         keys.append((LEAVE[a], sc[a], MOVE_EASE))
@@ -1135,7 +1136,8 @@ def _child_halo(cv, c, t, amount):
     Pw = _child_pos(t)
     sx, sy, k = screen_of(c, *Pw)
     X.local_glow(cv, sx, sy, 560.0 * k, 'peach', 0.6 * amount)
-    X.local_glow(cv, sx, sy - 40 * k, 300.0 * k, 'gold', 0.35 * amount * (0.6 + 0.4 * K.impulse(t, ARRIVE['child'], 4.0)))
+    pulse = 0.6 + 0.4 * K.impulse(t, ARRIVE['child'], 4.0)
+    X.local_glow(cv, sx, sy - 40 * k, 300.0 * k, 'gold', 0.35 * amount * pulse)
 
 
 def _draw_child_scene(cv, c, tc, t, n_samples, fade):
@@ -1289,7 +1291,8 @@ def _draw_final(cv, c, tc, t, n_samples):
     _final_num_coins(cv, c, t, n_samples)
     fc = K.ramp(t, T_NUM2 - 0.3, T_NUM2 + 0.6, 'out_cubic')
     if fc > 0:
-        for j, (sx, sy, dep, w_, sp_) in enumerate(((150.0, 1790.0, 700.0, 330.0, 50.0), (960.0, 1700.0, 820.0, 280.0, -40.0),
+        for j, (sx, sy, dep, w_, sp_) in enumerate(((150.0, 1790.0, 700.0, 330.0, 50.0),
+                                                    (960.0, 1700.0, 820.0, 280.0, -40.0),
                                                     (985.0, 175.0, 2600.0, 200.0, 70.0))):
             c0 = K.Cam.orbit((float(S[0]), float(S[1]), 0.0), 1500.0)
             Pw = X.unproject(c0, sx, sy + 60.0 * (1 - fc) + 14.0 * math.sin(t * 0.9 + j), dep)

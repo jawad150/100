@@ -21,7 +21,7 @@ any catalog sound and the mixer's levels / room send / limiter treat them the sa
                                   workspace3/audio/anim4_sfx.wav (24-bit) + anim4_sfx_stem.wav (48 kHz 24-bit)
     python3 anim4_sfx.py build      the reel mix (+ overview PNG in workspace3/out/anim4/)
     python3 anim4_sfx.py audition   every custom sound in sequence -> workspace3/out/anim4/anim4_sfx_audition.wav
-    python3 anim4_sfx.py selftest   spectrogram sheet of the custom sounds -> workspace3/out/selftest/anim4_sfx_sheet_1.png
+    python3 anim4_sfx.py selftest   spectrogram sheet of the custom sounds -> out/selftest/anim4_sfx_sheet_1.png
 No side effects on import.
 """
 import math
