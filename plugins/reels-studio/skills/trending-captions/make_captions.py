@@ -427,7 +427,8 @@ def build(a):
         max_w = a.max_width * sx
     else:                                           # safe width around cx; the caption band overlaps the column zone
         half = min(cx - SAFE['x0'] * sx, SAFE['col_x'] * sx - cx)
-        max_w = 2 * half - 2 * out_px - 2 * padx    # layout() fits lines at peak pop / pill width inside this
+        max_w = 2 * half - 2 * out_px - 2 * padx - 2 * (shad_px + P['blur'])   # shadow and blur are ink too
+        # layout() fits each line at its peak pop / pill width inside max_w
     max_w = max(200.0, max_w)
 
     words = load_words(a.input_json)
@@ -547,6 +548,10 @@ def build(a):
             hy = max(cap / 2 + out_px, 0.5 * (cap + ppad)) * pk
             by0 = min(by0, top_y - hy - 0.04 * em)
             by1 = max(by1, bot_y + hy + desc * pk + P['rise'] * em / 3)   # entry rise is ~1/3 left at the peak
+        elif P['mode'] == 'kara':                  # emphasis words are scaled up; lines rise into place from below
+            ek = P['emph_scale'] if any(emph) else 1.0
+            by0 = min(by0, top_y - cap / 2 * ek - out_px - 0.04 * em)
+            by1 = max(by1, bot_y + cap / 2 * ek + desc + out_px + P['rise'] * em)
         if P.get('box'):
             bw, bh = W + 2 * padx, (nl - 1) * lh + cap + 2 * pady
             byc = Y + 0.05 * em * shrink if case != 'upper' else Y     # room for descenders
@@ -659,7 +664,10 @@ def build(a):
                 D(2, f0, f1, 'Cap', '{\\an5\\pos(%.1f,%.1f)\\fad(%d,%d)\\fscx%.1f\\fscy%.1f%s}%s' % (
                     cx, py, min(120, ms(f1 - f0) // 3), fo_m, b, b, blur, txt))
 
-        # ---- safe-zone check (reference px)
+        # ---- safe-zone check (reference px); the drop shadow (down-right) and blur spread are ink as well
+        if not P.get('box'):
+            bx0, by0 = bx0 - P['blur'], by0 - P['blur']
+            bx1, by1 = bx1 + shad_px + P['blur'], by1 + shad_px + P['blur']
         r = dict(x0=bx0 / sx, x1=bx1 / sx, y0=by0 / sy, y1=by1 / sy)
         tol = 0.5                                  # px tolerance: a line fitted exactly to the limit is not a hit
         prob = []

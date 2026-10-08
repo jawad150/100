@@ -273,7 +273,9 @@ def _near_items():
 def world(t, c, n_samples):
     """Background world: white page + far glows, far defocused coins, dot grid (parallax depth layers)."""
     cv = X.world_bg(t, c, dots=0.0)
-    X.far_coins(cv, c, t, _money_assets()['coin'], n_samples, opacity=0.38)
+    lg = K.ramp(t, T_LOGO - 0.2, T_LOGO + 0.5)        # keep the logo clear of drifting depth coins
+    X.far_coins(cv, c, t, _money_assets()['coin'], n_samples, opacity=0.38,
+                avoid=((230.0, 1030.0, 850.0, 1260.0, lg),) if lg > 0 else ())
     X.dot_grid(cv, c, t)
     return cv
 
@@ -1255,21 +1257,25 @@ def _child_halo(cv, c, t, amount):
 
 
 def _draw_child_scene(cv, c, tc, t, n_samples, fade):
-    # arrival: the stream pours into the child (gold halo); gathered props orbit around her
-    if t >= T_FINAL - 0.6:
-        return _draw_final(cv, c, tc, t, n_samples)
-    _child_halo(cv, c, t, K.ramp(t, ARRIVE['child'] - 0.2, ARRIVE['child'] + 0.4))
+    # arrival: the stream pours into the child (gold halo); gathered props orbit around her, then shrink into her
+    # (the last one is gone at T_FADE[0] + 0.88, already inside the final card's time: it keeps being drawn there,
+    # never cut)
+    if t < T_FINAL - 0.6:
+        _child_halo(cv, c, t, K.ramp(t, ARRIVE['child'] - 0.2, ARRIVE['child'] + 0.4))
     items = []
     for i, (nm, var) in enumerate(GATHER):
         if t < T_GATHER + 0.125 * (i // 2):
             continue
         Pw, s, op, dz = _gather_state(i, t)
-        if op <= 0.01:
+        if op <= 0.003:
             continue
         items.append((dz, i, nm, var, Pw, s, op))
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] > 0], key=lambda r: -r[0]):
         _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
-    _draw_child(cv, c, t, n_samples)
+    if t >= T_FINAL - 0.6:
+        _draw_final(cv, c, tc, t, n_samples)
+    else:
+        _draw_child(cv, c, t, n_samples)
     for (dz, i, nm, var, Pw, s, op) in sorted([r for r in items if r[0] <= 0], key=lambda r: -r[0]):
         _draw_gathered(cv, c, t, i, nm, var, Pw, s, op, n_samples)
 

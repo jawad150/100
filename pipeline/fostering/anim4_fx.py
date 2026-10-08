@@ -679,8 +679,10 @@ def _bokeh(kind):
     return np.ascontiguousarray(out.astype(np.float32))
 
 
-def far_coins(cv, cam, t, asset, n_samples=3, opacity=0.5, z=1700.0, sp=(760.0, 820.0), seed=3):
-    """Defocused coins drifting on a far plane (depth layer behind the dot grid), world lattice -> parallax."""
+def far_coins(cv, cam, t, asset, n_samples=3, opacity=0.5, z=1700.0, sp=(760.0, 820.0), seed=3, avoid=()):
+    """Defocused coins drifting on a far plane (depth layer behind the dot grid), world lattice -> parallax.
+    avoid: screen rects (x0, y0, x1, y1, strength 0..1): a coin fades by distance as it drifts near one (a smooth
+    function of position, so nothing pops), e.g. to keep the logo clear of particles."""
     aff = _plane_affine(cam, z)
     if aff is None:
         return cv
@@ -696,8 +698,18 @@ def far_coins(cv, cam, t, asset, n_samples=3, opacity=0.5, z=1700.0, sp=(760.0, 
             jy = ((h >> 9) % 100) / 100.0 - 0.5
             P = np.array([i * sp[0] + jx * 500 + 40 * math.sin(t * 0.5 + h), j * sp[1] + jy * 500 - 22.0 * t, z])
             rate = 60.0 + (h % 90)
-            draw_coin(cv, cam, asset, P, 200.0, t * rate + h, rate, n_samples, opacity=opacity, shadow=0.0,
-                      blur=4.5, rot=(h % 40) - 20)
+            op = opacity
+            if avoid:
+                xy, d = cam.project(P[None])
+                if np.isfinite(xy).all() and d[0] > 60:
+                    sx, sy = xy[0]
+                    rr = 0.5 * 200.0 * cam.focal / d[0]
+                    for (x0, y0, x1, y1, stg) in avoid:
+                        dist = max(x0 - sx, sx - x1, y0 - sy, sy - y1, 0.0) - rr
+                        op *= 1.0 - stg * (1.0 - K.smoothstep(0.0, 160.0, dist))
+            if op > 0.003:
+                draw_coin(cv, cam, asset, P, 200.0, t * rate + h, rate, n_samples, opacity=op, shadow=0.0,
+                          blur=4.5, rot=(h % 40) - 20)
     return cv
 
 

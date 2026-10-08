@@ -9,7 +9,9 @@
     python3 anim4_dev.py mini a b [--fps 15]   low-res motion-check clip (1 sample) -> dev/mini_a_b.mp4
     python3 anim4_dev.py signalstats file.mp4   ffmpeg signalstats flash / lift / grey-white check of an encode
     python3 anim4_dev.py checks [a b]    layout checks (safe zones, like column, overlaps), every 2nd frame
-    python3 anim4_dev.py speeds a b [--limit 8]   stepped-copy probe: screen motion per render sample of each drawn box
+    python3 anim4_dev.py speeds a b [--limit 8] [--kinds prop,text] [--pops]
+        stepped-copy probe: screen motion per render sample of each drawn box; --pops also flags fully on-screen
+        boxes (opacity > 0.5) that vanish by the next frame (one-frame exits / cuts)
 """
 import math
 import os
@@ -162,7 +164,7 @@ def signalstats(mp4, jump=4.0):
     return rows
 
 
-def speeds(t0, t1, limit=8.0, kinds=None):
+def speeds(t0, t1, limit=8.0, kinds=None, pops=False):
     """Stepped-copy probe: draws every frame in [t0, t1) with the box recorder, matches each prop / text / coin box
     to the next frame's (text by label, others by nearest box of similar size) and reports the screen motion per
     render sample (centre travel or edge growth / samples(t)) above `limit` px. Coins drawn swept are smeared within
@@ -205,6 +207,9 @@ def speeds(t0, t1, limit=8.0, kinds=None):
                     if best is None or d < best:
                         best, bj = d, j
                 if bj is None or best > 400:
+                    if pops and r[2] > 0.5 and x0 > 0 and y0 > 0 and x1 < K.W and y1 < K.H:
+                        print('%.3f  POP? %-5s %-22s op %.2f box (%.0f, %.0f, %.0f, %.0f) has no match next frame'
+                              % (t, kind, (r[3] if len(r) > 3 else '')[:22], r[2], x0, y0, x1, y1), flush=True)
                     continue
                 used.add(bj)
                 q = cur[bj]
@@ -247,7 +252,7 @@ if __name__ == '__main__':
         signalstats(a[1])
     elif a[0] == 'speeds':
         kd = _opt(a, '--kinds', '', str)
-        speeds(float(a[1]), float(a[2]), _opt(a, '--limit', 8.0), kd.split(',') if kd else None)
+        speeds(float(a[1]), float(a[2]), _opt(a, '--limit', 8.0), kd.split(',') if kd else None, '--pops' in a)
     elif a[0] == 'checks':
         import anim4
         rng = [float(x) for x in a[1:3]] if len(a) >= 3 and not a[1].startswith('--') else [0.0, None]
