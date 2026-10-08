@@ -303,7 +303,7 @@ def _scene_tunnel(t):
     cam = _tun_cam(t)
     title = t >= T_TITLE
     ti = K.ramp(t, T_TITLE - 0.1, T_TITLE + 0.3)
-    cv = K.background('amber', t, cam, boost=0.25 * (1 - ti) + 0.25 * K.beat_pulse(t, BPM * 2, decay=8.0),
+    cv = K.background('amber', t, cam, boost=0.25 * (1 - ti) + 0.25 * K.beat_pulse(_bclk(t), BPM * 2, decay=8.0),
                       center=(K.lerp(0.5, 0.3, ti), K.lerp(0.45, 0.22, ti)), rim=0, parallax=0.35,
                       intensity=K.lerp(0.8, 0.55, ti))
     sc = K.Scene(cam)
@@ -472,10 +472,25 @@ def _orbit_line(cv, cam, R, part, opacity, head, color=None, width=2.2):
     cv[Y0:Y1, X0:X1, :3] += (m * 1.6 + gl)[..., None] * c * np.float32(opacity)
 
 
+# retime hooks (reel2_vo): continuous motion that must keep its speed when a hold slows the scene. ORBIT_CLOCK maps a
+# source time to the clock of the scene-B coin orbit and spins (anchored at T_NUM), BEAT_CLOCK to the clock of the
+# background beat pulse (output time, so it stays on the music grid). None = source time (the original reel).
+ORBIT_CLOCK = None
+BEAT_CLOCK = None
+
+
+def _oclk(t):
+    return t if ORBIT_CLOCK is None else ORBIT_CLOCK(t)
+
+
+def _bclk(t):
+    return t if BEAT_CLOCK is None else BEAT_CLOCK(t)
+
+
 def _coin_ring_pos(t, i):
     R = COIN_RING
     n = R['n']
-    tau = max(0.0, t - T_NUM)
+    tau = max(0.0, _oclk(t) - T_NUM)
     th = 2 * math.pi * (i / n + R['speed'] * tau + 0.10 * (1 - math.exp(-2.5 * tau)) + 0.11)   # surge, then cruise
     x, z = R['rx'] * math.cos(th), R['rz'] * math.sin(th)
     tl = math.radians(R['tilt'])
@@ -524,16 +539,16 @@ def _scene_number(t):
         if ent <= 0:
             continue
         Pe = P * np.array([1.0 + 1.6 * (1 - ent), 1.0, 1.0]) + np.array([0.0, 0.0, 2600.0 * (1 - ent)])
-        spr = _spin_spr(A['coin'], t * 160.0 + i * 51.0, 160.0, t)
+        spr = _spin_spr(A['coin'], _oclk(t) * 160.0 + i * 51.0, 160.0, t)
         sc.billboard(spr, tuple(Pe), COIN_RING['size'], rot=-14.0 + 10.0 * math.sin(th), opacity=min(1.0, ent * 2))
     # the orbit line itself: back half behind everything, front half in front of the copy plane
     lo = K.ramp(t, T_NUM + 0.1, T_NUM + 0.8)
-    head = 2 * math.pi * (COIN_RING['speed'] * 2.2 * (t - T_NUM)) + 1.0
+    head = 2 * math.pi * (COIN_RING['speed'] * 2.2 * (_oclk(t) - T_NUM)) + 1.0
     sc.custom(2600.0, lambda c, cm: _orbit_line(c, cm, COIN_RING, 'back', 0.8 * lo, head))
     sc.custom(1.0, lambda c, cm: _orbit_line(c, cm, COIN_RING, 'front', 0.9 * lo, head))
     # near defocused coin (foreground depth layer), bottom-left corner
     Pn = (-700.0, 1050.0, -800.0)
-    sc.billboard(_spin_spr(A['coin_big'], t * 90.0, 90.0, t), Pn, 420.0, rot=20.0, opacity=0.9)
+    sc.billboard(_spin_spr(A['coin_big'], _oclk(t) * 90.0, 90.0, t), Pn, 420.0, rot=20.0, opacity=0.9)
     sc.particles(A['dust'], t)
     sc.render(cv)
     w = abs(_num_whip(t)) if t < T_CALC else 0.0
@@ -1142,7 +1157,7 @@ def _end_assets():
             x += gap
     d['tag'] = S.sprite()
     d['ph'] = T.render('0161 241 1332  \u00b7  organicfostering.co.uk', 'ui', px=36, fill='IVORY')
-    d['dis'] = T.render(FINE, 'ui', px=30, fill='PEACH', font='Poppins-Regular')
+    d['dis'] = T.render(FINE, 'ui', px=29, fill='PEACH', font='Poppins-Regular')   # clear of the like/share column
     d['halo2'] = K.glow(K.ring(300, 3, K.C['HOT_PINK'] * 1.4), K.C['MAGENTA'], (10, 30, 70), 1.0)
     d['warm'] = K.radial(512, K.C['ORANGE'] * 0.6, power=2.0)
     # behind the logo mark: a dark plum pool + a magenta halo, so the ORANGE children / heart read crisply (QA)

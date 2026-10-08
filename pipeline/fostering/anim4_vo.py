@@ -43,13 +43,15 @@ DUCK_DB = -14.0          # dense pops / drops under every station line
 
 
 def cue_gain(cue, src_t, rate):
-    """Hits that land on words: the basket drops, the first ball bounce, the gather whoosh, the chip pops."""
+    """Hits that land on words: the basket drops, the first ball bounce, the gather whoosh, the chip / clothes pops."""
     if cue['name'] == 'basket_drop' or (cue['name'] == 'ball_bounce' and src_t < M.BOUNCES[0] + 0.05):
         return -5.0
     if cue['name'] == 'whoosh_slow' and abs(src_t - (M.T_GATHER + 0.25)) < 0.3:
         return -5.0
     if cue['name'] in ('pop', 'glass_tap') and M.T_CHIPS < src_t < M.T_CHIPS + 0.4:     # chips under "does it"
         return -3.0
+    if cue['name'] == 'pop' and abs(src_t - 12.5) < 0.03:                                # clothes pop on "school"
+        return -4.0
     return 0.0
 
 

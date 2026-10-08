@@ -137,6 +137,25 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
         return Warp(knots + [(cur_o + 1e-9, cur_s + 1e-9)]).out(s) if s < cur_s else cur_o + (s - cur_s)
 
     for k, sl in enumerate(slots):
+        if sl.get('hold') is None:      # voice only: the line plays over 1x motion (nothing to hold, e.g. a continuous
+            at = float(sl['at'])        # action with no settled span); it may run on into the next slot's hold
+            if at < cur_s - 1e-6:
+                raise ValueError('slot %d: anchor %.3f before the previous hold end %.3f' % (k, at, cur_s))
+            cur_o += at - cur_s
+            cur_s = at
+            knots.append((cur_o, cur_s))
+            ids = sl['lines'] if isinstance(sl['lines'], (list, tuple)) else [sl['lines']]
+            gap = float(sl.get('gap', 0.18))
+            t = vo0 = max(cur_o + float(sl.get('delay', 0.0)), prev_end + first_gap)
+            for i in ids:
+                du = float(lines[i]['dur'])
+                placed.append(dict(line=i, text=lines[i]['text'], start=round(t, 3), end=round(t + du, 3),
+                                   file=lines[i]['file'], lufs=lines[i]['lufs'], duck_lead=sl.get('duck_lead')))
+                t += du + gap
+            prev_end = t - gap
+            rows.append(dict(slot=k, lines=ids, src=(at, at), out=(round(cur_o, 3), round(cur_o, 3)), rate=1.0,
+                             ext=0.0, vo=(round(vo0, 3), round(prev_end, 3)), warn=''))
+            continue
         a, b = map(float, sl['hold'])
         at = float(sl['at'])
         if a < cur_s - 1e-6 or b <= a:
@@ -374,8 +393,11 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         if fsr != sr:
             from scipy.signal import resample_poly
             y = resample_poly(y, sr, fsr)
+        y_raw = y
         y = deess(y, sr)
-        g = A.undb(float(np.clip(vo_lufs - p['lufs'], -9, 9)))
+        # level after de-essing (it takes up to ~1.7 LU off sibilant lines, which would then sit low)
+        loss = A.loudness(A._st(y_raw)) - A.loudness(A._st(y))
+        g = A.undb(float(np.clip(vo_lufs - p['lufs'] + loss, -9, 9)))
         i0 = int(round(p['start'] * sr))
         n = min(len(y), N - i0)
         if n <= 0:
