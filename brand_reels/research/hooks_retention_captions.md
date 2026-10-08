@@ -1,6 +1,6 @@
 # Hooks, Retention & Captions Playbook: @jawad_mp4
 
-**For:** Jawad (@jawad_mp4), a video editor and motion designer with a Pakistani and Indian audience. This is his own brand: orange-red embers on warm black.
+**For:** Jawad (@jawad_mp4), a video editor and motion designer with a Pakistani and Indian audience. This is his own brand: orange-red flame on warm black.
 **Reels:** Hinglish / Roman Urdu voice-over, 30-40 s, 1080x1920, 30 fps.
 **Roles:** reels-studio `script-hook-writer` and `caption-designer` combined. Checked 2026-10-08.
 **Scope:** hook science and 40 original hooks · retention architecture · on-screen kinetic captions (house style, fonts, safe zones, timing, 10 original caption devices with toolkit build notes) · post-caption copywriting and 5 templates · cover rules.
@@ -19,7 +19,7 @@
    - The spoken line starts within 3 frames (the brand's hard limit is 0.3 s).
    - No logo, no "Assalam-o-alaikum / Namaste doston", no fade-in from black, no "wait for the end".
 2. **The text hook is the headline version of the spoken hook, not a transcript.** Muted viewers get the whole idea from 1-5 words. Sound-on viewers get the full sentence.
-3. **One serif-italic ember keyword per text block.** If everything glows, nothing does.
+3. **One serif-italic flame keyword (`jw_key`) per text block.** If everything glows, nothing does.
 4. **Every 3-5 s something new happens:** a visual event, a verbal turn or a sonic hit. Nothing is static for more than 2 s.
 5. **Re-hook at about 45-50 % of the running time** with a pattern break: 0.3 s of silence, a whip or a flame exposure push (no full-frame white flashes: brand rule), and a new visual world.
 6. **The payoff lands at 65-80 % of the running time.** The last 15-20 % is for the bonus beat and the end card. The end card holds the single CTA and the loop bridge.
@@ -57,7 +57,7 @@
   - 95 words in 32 s, **2.97 words/s**.
   - Opens on a spoken question at 0.0 s ("What do you think creativity is?", 1.9 s long).
   - Only 5 hard cuts. Retention comes from type and camera motion, not cuts.
-- Both refs pair a **tight sans with a light editorial serif-italic**, which is the same family of pairing as Jawad's house style. Jawad's ember glow and underline are what make his version recognisable.
+- Both refs pair a **tight sans with a light editorial serif-italic**, which is the same family of pairing as Jawad's house style. Jawad's flame glow and underline are what make his version recognisable.
 
 ---
 
@@ -90,7 +90,7 @@
 | **Pattern interrupt** (the video edits itself, a power cut, a misplaced caption) | Breaks scroll autopilot | Everyone; shows Jawad's craft | It must connect to the message within 2 s, or it reads as a gimmick. |
 | **Number / challenge** ("[N] cuts. Gin ke dikhao") | Gamification, comments, rewatches | Editors, creators | The number must be literally true in the final cut ⚑. |
 | **Nostalgia + transformation** ("Ye photo 20 saal purani hai") | Emotion, family sends | The general desi audience | Consent and AI disclosure (§3.6, §5). |
-| **Meta hook** ("Ye reel tumhe 2 second mein pakdegi") | Self-proving, and flatters the viewer's savvy | Creators, editors | One per month at most; it gets old. |
+| **Meta hook** ("Ye reel tumhe 2 second mein rok legi") | Self-proving, and flatters the viewer's savvy | Creators, editors | One per month at most; it gets old. |
 | **POV** ("POV: tumne editor ko bola 'bas cinematic bana do'") | The viewer is inside the joke | Everyone | A common format: the visual escalation must be what makes it his. |
 | **"Send this to…"** | Hands the viewer a social use for the reel | Freelancer pain, friendship humour | Say it once, at the end or in the text block, not as the opening line. |
 
@@ -108,7 +108,7 @@ All of these are Jawad's craft shown, not borrowed.
 ### 2.4 Hook-writing rules for Hinglish / Roman Urdu
 
 - **Spoken hook:** 4-8 words, then a period. Use a loaded first word: *Client, Beta, Ruko, Light, Free, Tumhara, Ye photo*. Never start with "Aaj main aapko…", "Doston…" or "Kya aap jaante hain…".
-- **Text hook:** 1-5 words in 2-3 short lines. Exactly **one** ember keyword, 1-2 words long and ≤ 10 characters (measured limits in §4.5).
+- **Text hook:** 1-5 words in 2-3 short lines. Exactly **one** `jw_key` keyword, 1-2 words long and ≤ 12 characters at 180 px (measured limits in §4.5).
 - **Text ≠ VO verbatim.** The text is the compressed punchline ("BAS EK *chhota sa* CHANGE"); the VO is the full line.
 - **Desi register:** spoken, warm and a little self-roasting. Use "tum" for peers and "aap" for business owners. Never mock elders, regions or professions.
 - **Avoid:**
@@ -125,7 +125,7 @@ These are canonical spellings for VO scripts, captions and post copy. **House sp
 |---|---|---|---|
 | not | **nahi** | nahin, nai, nhi | house |
 | very | **bohat** | bahut, bohot, boht | house spelling; Indian readers parse it fine |
-| big (f.) | **bari** | badi | house spelling. In hooks, prefer a synonym ("sabse lambi", "sabse mehengi") where "bari" could be read as *baari* (turn). |
+| big; the ड़ sound in general | **bara / bari**, *barh*, *thora*, *dharakta* | bada, badi, badh, thoda | house rule: ड़ is written **r** (Pakistani convention, from his SRT). ⚑ Confirm with Jawad that this applies to every ड़ word. In hooks, prefer a synonym ("sabse lambi", "sabse mehengi") where "bari" could be read as *baari* (turn). |
 | is / are | **hai / hain** | he, h, hy | |
 | in / I | **mein / main** | me, mai | keep these two distinct |
 | so, then | **toh** | to | "to" clashes with English |
@@ -157,8 +157,9 @@ These are canonical spellings for VO scripts, captions and post copy. **House sp
 **How to read the table:**
 - **Audience:** E editors · F freelancers · C creators · B small-business owners · G the general desi audience.
 - **On-screen:** `/` = line break, CAPS = white grotesk, *italic* = the glowing serif keyword.
-- **Fit:** every on-screen line was measured [Measured]. Grotesk caps fit at **96 px Poppins Bold** (widest 841 px) and every keyword at **150 px Playfair Display Bold Italic** (widest 875 px), within the 940 px safe width plus glow budget.
-- **Upper band only:** lines marked ↑ are wider than 780 px. Place them in the upper band (y 300-1000), or drop to 80 px grotesk / 130 px serif in the lower band (y 1050-1480).
+- **Fit:** all 101 on-screen lines were measured with the kit's house styles through `T.measure` [Measured]. CAPS lines in `jw_caps` (Poppins SemiBold, +6 % tracking) fit at **86 px**, the `HouseTitle` default (widest: "PRODUCT ACHHA" 807 px). Every keyword in `jw_key` (Instrument Serif Italic) fits at **180 px** (widest: "pehla second" 829 px). All of that is within the 940 px safe width plus glow budget.
+- **At HouseTitle's default 210 px keyword:** "pehla second", "dekh rahe ho", "aadha band" and "kar leta hai?" exceed 900 px. `HouseTitle` auto-shrinks them to 940; pass `key_px=180` instead for a cleaner glow margin.
+- **Upper band only (↑):** wider than 780 px at those sizes (#9, #11, #12, #21, #24, #35). Place them in the upper band (y 300-1000), or in the lower band (y 1050-1480) drop to `jw_caps` 72 px / `jw_key` 150 px.
 
 | # | aud | mechanism | spoken line (VO) | on-screen text | frame-0 visual (toolkit) | flags |
 |---|---|---|---|---|---|---|
@@ -167,40 +168,40 @@ These are canonical spellings for VO scripts, captions and post copy. **House sp
 | 3 | E C | number challenge | "Is reel mein [N] cuts hain. Gin ke dikhao." | [N] *cuts* / GIN KE DIKHAO | `T.Counter` rolling to N over a timeline that strobes on every cut. | ⚑ N = the true count in the final edit |
 | 4 | E | relatable in-joke | "final, final_v2, final_FINAL… sach mein final." | FINAL_v7 / *sach mein* / FINAL | A file-rename field typing (`ui.search_bar`, caret), with a stack of file icons behind it. | — |
 | 5 | E C | hyper-specific call-out | "Agar raat ke 3 baje render bar ko ghoor rahe ho… ye tumhare liye hai." | RAAT KE / *3 baje* / RENDER | A dark room, one glowing progress bar, and a wall clock at 3:00 in DOF. | — |
-| **6 ★** | E F G | pattern interrupt (blackout) + pan-desi pain | "Light chali gayi. Aur Ctrl+S aakhri baar do ghante pehle dabaya tha." | LIGHT / *chali gayi* / CTRL + S ? | A bright timeline for 0.3 s, a hard blackout, and only the ember keyword glowing. A UPS beep. | — |
+| **6 ★** | E F G | pattern interrupt (blackout) + pan-desi pain | "Light chali gayi. Aur Ctrl+S aakhri baar do ghante pehle dabaya tha." | LIGHT / *chali gayi* / CTRL + S ? | A bright timeline for 0.3 s, a hard blackout, and only the flame keyword glowing. A UPS beep. | — |
 | **7 ★** | E C | meta pattern interrupt | "Ruko. Ye video khud ko edit kar raha hai." | RUKO. / *khud ko* / EDIT KAR RAHA | The reel's own frame shrinks into an NLE viewer. A playhead runs, and a razor cuts at 0.9 s to the next shot. | — |
-| 8 | C | meta hook | "Ye reel tumhe pehle do second mein pakad legi. Dekho kaise." | PEHLE / *2 second* / MEIN PAKDUNGA ↑ | A `ui.progress_ring` counts 2 s. Hook elements are labelled live: "motion ✓ text ✓ voice ✓". | Explain the mechanics honestly afterwards. |
+| 8 | C | meta hook | "Ye reel tumhe pehle do second mein rok legi. Dekho kaise." | PEHLE / *2 second* / MEIN ROKUNGA | A `ui.progress_ring` counts 2 s. Hook elements are labelled live: "motion ✓ text ✓ voice ✓". | Explain the mechanics honestly afterwards. |
 | **9 ★** | C B | contradiction | "Tumhara content bura nahi hai. Tumhara pehla second bura hai." | CONTENT NAHI / *pehla second* ↑ / BURA HAI | The word CONTENT is struck through by a razor line. A frame-0 thumbnail cracks. | — |
-| **10 ★** | C B | comparison + comment trigger | "Same footage. Do edit. Batao, kaunsa scroll rokega?" | SAME FOOTAGE / DO EDIT / *kaunsa?* | A split screen: left is flat log-grey, right is the graded ember version. "L" and "R" chips. | Both edits must be real. |
-| 11 | C G | muted-viewer call-out | "Tum ye mute pe dekh rahe ho. Mujhe pata hai." | MUTE PE / *dekh rahe ho* ↑ | A huge 3D muted-speaker icon cracks; the cracks glow ember. | Then reward turning the sound on. |
-| 12 | C | myth-bust | "Trending audio laga do, viral ho jaoge — sabse bada jhoot." | TRENDING AUDIO ↑ / = *jhoot* | A music-note chip is slammed with a red "✕" stamp. | Opinion: Jawad must agree. |
+| **10 ★** | C B | comparison + comment trigger | "Same footage. Do edit. Batao, kaunsa scroll rokega?" | SAME FOOTAGE / DO EDIT / *kaunsa?* | A split screen: left is flat log-grey, right is the flame-graded version. "L" and "R" chips. | Both edits must be real. |
+| 11 | C G | muted-viewer call-out | "Tum ye mute pe dekh rahe ho. Mujhe pata hai." | MUTE PE / *dekh rahe ho* ↑ | A huge 3D muted-speaker icon cracks; the cracks glow FLAME. | Then reward turning the sound on. |
+| 12 | C | myth-bust | "Trending audio laga do, viral ho jaoge — sabse bara jhoot." | TRENDING AUDIO ↑ / = *jhoot* | A music-note chip is slammed with a red "✕" stamp. | Opinion: Jawad must agree. |
 | 13 | C | curiosity gap | "Har reel ke andar ek skip button chhupa hota hai. Main dikhata hoon kahan." | HAR REEL MEIN / SKIP BUTTON / *chhupa hai* | An x-ray scan line passes over a phone and reveals a glowing button inside the first second of a timeline. | — |
-| 14 | C B | before/after reveal | "Phone ki ek boring video… aur das second baad." | BORING CLIP / *10 sec baad* | A shaky phone clip with a "RAW" tag, then a whip into the cinematic ember grade. | Real footage only. |
+| 14 | C B | before/after reveal | "Phone ki ek boring video… aur das second baad." | BORING CLIP / *10 sec baad* | A shaky phone clip with a "RAW" tag, then a whip into the cinematic flame grade. | Real footage only. |
 | 15 | F | confession | "Mera pehla paid edit itna sasta tha, batate hue sharam aati hai." | PEHLA PAID EDIT / *itna sasta* | A 3D price tag spins and refuses to show its number (curiosity). | ⚑ Jawad's true story |
 | 16 | F | wordplay | "'Exposure milega' — freelancing ka sabse mehenga word." | *exposure* / MILEGA | A camera exposure dial spins to "∞" while a cost meter climbs. | — |
 | **17 ★** | F G | send trigger | "'Free mein kar do na, tum toh dost ho.' — Ye reel usi dost ko bhejo." | FREE MEIN / *kar do na* | A chat bubble from "Dost 😇" with the share icon already bouncing. | — |
 | 18 | F | relatable pain | "'Rate kya hai bhai?' — ye sawaal sun ke dimaag hang ho jata hai." | RATE KYA HAI? / *hang* | Jawad's face freeze-frames under a "Not responding" glass dialog with a spinning cursor. | — |
-| 19 | F B | contrarian list | "Client portfolio nahi dekhta. Ye teen cheezein dekhta hai." | PORTFOLIO NAHI ↑ / *3 cheezein* | A portfolio grid folds away and 3 glowing slots stay empty (open loop). | Opinion; the 3 items must be Jawad's real process. |
-| 20 | F G | horror parody | "Client ka 'Seen'… freelancer ki sabse darawni horror movie." | *seen* / 2:14 AM | The "Seen" label pulses like a jump-scare. Red flash, `sub_drop`. | — |
+| 19 | F B | contrarian list | "Client portfolio nahi dekhta. Ye teen cheezein dekhta hai." | PORTFOLIO NAHI / *3 cheezein* | A portfolio grid folds away and 3 glowing slots stay empty (open loop). | Opinion; the 3 items must be Jawad's real process. |
+| 20 | F G | horror parody | "Client ka 'Seen'… freelancer ki sabse darawni horror movie." | *seen* / 2:14 AM | The "Seen" label pulses like a jump-scare. A RED exposure pulse (not a white flash), `sub_drop`. | — |
 | **21 ★** | B | contrast | "Aapka product achha hai. Aapka video usse sasta dikhata hai." | PRODUCT ACHHA ↑ / VIDEO / *sasta* | A product on a turntable: crisp and graded on the left, phone-flat and grey on the right. A verdict stamp. | — |
-| 22 | B E | visual gag | "'Logo thoda bada karo' — har business owner ki pehli demand." | LOGO / *thoda bada* | A logo plate grows on every beat until it pushes the frame edges out of the screen. | Use a fictional logo, not a real brand. |
+| 22 | B E | visual gag | "'Logo thora bara karo' — har business owner ki pehli demand." | LOGO / *thora bara* | A logo plate grows on every beat until it pushes the frame edges out of the screen. | Use a fictional logo, not a real brand. |
 | 23 | B | number contrast (rhetorical) | "Customer aapko teen second deta hai. Aapka intro aath second ka hai." | CUSTOMER: / *3 sec* / INTRO: 8 SEC | Two timers race. The 3 s one ends and "SKIP" fires before the intro finishes. | The 3 s mirrors IG's skip-rate window; the 8 s intro is a hypothetical. |
-| 24 | B G | metaphor | "Aapka Instagram page aapki dukaan ka shutter hai. Abhi aadha band hai." | PAGE = SHUTTER ↑ / *aadha band* ↑ | A 3D rolling shutter, half down over a glowing storefront. | — |
-| 25 | B | curiosity | "Chhoti dukaan, bada brand — farq sirf ek cheez ka hai." | CHHOTI DUKAAN ↑ / *bada brand* ↑ | A tiny storefront model that casts a giant cinematic shadow. | — |
+| 24 | B G | metaphor | "Aapka Instagram page aapki dukaan ka shutter hai. Abhi aadha band hai." | PAGE = SHUTTER / *aadha band* ↑ | A 3D rolling shutter, half down over a glowing storefront. | — |
+| 25 | B | curiosity | "Chhoti dukaan, bara brand — farq sirf ek cheez ka hai." | CHHOTI DUKAAN / *bara brand* | A tiny storefront model that casts a giant cinematic shadow. | — |
 | 26 | G | family scene | "Ghar walon ko aaj tak samajh nahi aaya main karta kya hoon." | GHAR WALE: / YE KARTA / *kya hai?* | A family-group chat UI: "beta job kab lagegi?" is typing. | — |
 | 27 | G | relatable wedding | "Chaar ghante ki shaadi ki video… aur sab sirf gaane wala part dekhte hain." | 4 GHANTE / KI SHAADI / *gaane wala* / PART | A long timeline. Fast-forward streaks, then it stops on one glowing clip with dancing silhouettes. | — |
 | **28 ★** | G | nostalgia + AI transformation | "Ye photo bees saal purani hai. Aaj ye phir se chali." | *20 saal* / PURANI PHOTO | A torn and faded print in a glass frame. A breath of motion starts at 1.2 s. | ⚑ Jawad's own photo, with the family's consent; disclose "AI se animate kiya". |
-| 29 | G | comment prompt | "Bachpan ki ek yaad wapas la sakte, toh kaunsi laate?" | *bachpan* / KI EK YAAD | Memory fragments (a cassette, a Nokia, a gali-cricket ball) float in ember dust. | ⚑ Only promise what he will actually make. |
+| 29 | G | comment prompt | "Bachpan ki ek yaad wapas la sakte, toh kaunsi laate?" | *bachpan* / KI EK YAAD | Memory fragments (a cassette, a Nokia, a gali-cricket ball) float in flame dust. | ⚑ Only promise what he will actually make. |
 | **30 ★** | G E | universal pain | "Chai thandi ho gayi. Render abhi bhi ninety-nine pe hai." | CHAI THANDI / RENDER / *99%* | A 3D chai glass with its steam fading, next to a progress bar frozen at 99 %. | — |
-| 31 | G | universal meme | "Duniya ka sabse bada jhoot: 'Estimated time: 2 minutes'." | ESTIMATED TIME: ↑ / *2 minutes* | The time counter goes *up* while the bar goes down. | — |
-| 32 | G E | cricket analogy (neutral) | "Last over, chhe ball, barah run — aur editor ki deadline. Dil dono mein ek jaisa dhadakta hai." | LAST OVER / = *deadline* | A scoreboard UI morphs into a render queue. No teams and no flags. | — |
+| 31 | G | universal meme | "Duniya ka sabse bara jhoot: 'Estimated time: 2 minutes'." | ESTIMATED TIME: / *2 minutes* | The time counter goes *up* while the bar goes down. | — |
+| 32 | G E | cricket analogy (neutral) | "Last over, chhe ball, das run — aur editor ki deadline. Dil dono mein ek jaisa dharakta hai." | LAST OVER / = *deadline* | A scoreboard UI morphs into a render queue. No teams and no flags. | — |
 | 33 | C E | topical debate | "Kya AI editors ki job kha jayega? Pehle ye dekh lo." | KYA AI / *editor* / KHA JAYEGA? | An AI chat box types a prompt. Jawad's hand drags its output onto a timeline and fixes it. | Keep it balanced, not anti-AI. |
 | 34 | G C | underdog story | "Ek laptop. Ek kamra. Aur ek sapna jo ghar mein kisi ko samajh nahi aaya." | EK LAPTOP / EK KAMRA / *ek sapna* | A single desk lamp in a dark room; a laptop glow lights the dust. | ⚑ True story |
 | 35 | G E | underdog / proof | "Mujhe bola gaya tha, 'ye toh koi bhi kar leta hai'." | KOI BHI / *kar leta hai?* ↑ | A finished shot explodes into its 30 layers: the complexity is the answer. | ⚑ True story |
 | 36 | E C | teach-by-doing | "Ye ek cut dekho. Isi cut ki wajah se tum abhi tak ruke ho." | YE CUT / *dekha?* | A match cut happens *at* 0.6 s and is replayed with a glowing marker. | — |
 | 37 | C E | caption-glitch interrupt | "Ruko, ye text galat jagah pe hai." | YE TEXT / *galat jagah* / PE HAI | The caption starts deliberately under the like/share column, then snaps into the safe zone along keyframes. | The misplaced state lasts ≤ 0.4 s. |
 | 38 | G C | POV | "POV: tumne editor ko bola 'bas cinematic bana do'." | POV: / *cinematic* / BANA DO | A plain phone clip escalates into lens flares, a 3D logo and slow-mo in 2 s. | — |
-| 39 | E F | in-group code + send | "Ye reel sirf editors samjhenge. Baaki log… maaf karna." | SIRF EDITORS / *samjhenge* | Insider glyphs flash by: J-K-L keys, red "media offline" frames, a ripple-delete. | — |
+| 39 | E F | in-group code + send | "Ye reel sirf editors samjhenge. Baaki log… maaf karna." | SIRF EDITORS / *samjhenge* | Insider glyphs whip past: J-K-L keys, red "media offline" frames, a ripple-delete. | — |
 | 40 | G B | concession + reveal | "Mobile pe bhi toh edit ho jata hai — haan, ho jata hai. Ab ye dekho." | MOBILE PE BHI / *ho jata hai* | A phone UI edit, then the camera pulls back through the phone into a full 3D scene. | — |
 
 ### 2.7 Top 10: why they rank, and the A/B plan
@@ -213,20 +214,20 @@ Each hook is scored 1-5 on six criteria:
 - **Build:** buildable locally in the toolkit on CPU.
 - **Loop:** loopability.
 
-[Inference]
+[Inference] Ranked by total, with ties broken by send score.
 
 | rank | # | stop | breadth | niche | send | build | loop | total | why |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | 1 chhota sa change | 4 | 5 | 5 | 5 | 5 | 5 | 29 | Universal client/boss pain; the perfect sentence loop (the ending "…aur phir client ne bola—" restarts it). |
-| 2 | 2 shaadi ki video? | 4 | 5 | 5 | 5 | 4 | 3 | 26 | Every desi editor has lived this; non-editors laugh and send it to siblings. |
-| 3 | 30 chai + 99 % | 5 | 5 | 4 | 4 | 5 | 4 | 27 | Simplest, most visual pain; the 3D chai glass is a desi icon. |
+| 2 | 30 chai + 99 % | 5 | 5 | 4 | 4 | 5 | 4 | 27 | Simplest, most visual pain; the 3D chai glass is a desi icon. |
+| 3 | 2 shaadi ki video? | 4 | 5 | 5 | 5 | 4 | 3 | 26 | Every desi editor has lived this; non-editors laugh and send it to siblings. |
 | 4 | 6 light chali gayi | 5 | 5 | 4 | 4 | 5 | 3 | 26 | A blackout is the strongest possible pattern interrupt, and pan-desi. |
-| 5 | 9 pehla second | 4 | 3 | 5 | 4 | 5 | 4 | 25 | A value reel that proves its own point; draws saves and creator sends. |
-| 6 | 17 free mein kar do na | 3 | 5 | 4 | 5 | 5 | 3 | 25 | A built-in indirect-message send ("bhejo usi dost ko"). |
-| 7 | 21 video sasta | 4 | 3 | 5 | 4 | 4 | 3 | 23 | Speaks to paying clients (business owners); lead generation. |
+| 5 | 17 free mein kar do na | 3 | 5 | 4 | 5 | 5 | 3 | 25 | A built-in indirect-message send ("bhejo usi dost ko"). |
+| 6 | 9 pehla second | 4 | 3 | 5 | 4 | 5 | 4 | 25 | A value reel that proves its own point; draws saves and creator sends. |
+| 7 | 7 khud ko edit | 5 | 3 | 5 | 3 | 4 | 5 | 25 | A meta pattern interrupt that is pure Jawad; loops naturally. |
 | 8 | 28 purani photo | 4 | 5 | 4 | 5 | 3 | 3 | 24 | Jawad's AI-video strength; family and nostalgia sends. Needs consent. |
 | 9 | 10 kaunsa? | 4 | 3 | 5 | 3 | 5 | 4 | 24 | A binary comment trigger (L/R); a craft showcase. |
-| 10 | 7 khud ko edit | 5 | 3 | 5 | 3 | 4 | 5 | 25 | A meta pattern interrupt that is pure Jawad; loops naturally. |
+| 10 | 21 video sasta | 4 | 3 | 5 | 4 | 4 | 3 | 23 | Speaks to paying clients (business owners); lead generation. |
 
 Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 Seen horror.
 
@@ -260,11 +261,11 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
 | 4-8 | 12-24 | **BEAT 1** | Context or the first point. A new visual world (camera orbit, new 3D set). | visual change at ~6 s | 10-12 |
 | 8-12 | 24-35 | **BEAT 2 + re-hook** | Turn: "Lekin…" or "Aur yahin galti hoti hai". | verbal turn at ~10.5 s | 10-12 |
 | 12-16.5 | 35-48 | **BEAT 3 / escalation** | Stakes rise (a bigger number, a worse client, a darker world). | sonic hit at ~14 s | 10-12 |
-| **16.5-17.2** | **48-50** | **MIDPOINT PATTERN BREAK** | 0.3-0.5 s of VO silence, then a flash or whip, a scale break (macro to wide), or a palette dip to near-black with the ember only. | all three | 0 |
+| **16.5-17.2** | **48-50** | **MIDPOINT PATTERN BREAK** | 0.3-0.5 s of VO silence, then a whip or flame exposure push (no white flash), a scale break (macro to wide), or a dip to the `noir_ember` look with only the flame left. | all three | 0 |
 | 17.2-24 | 50-70 | **BUILD** | Last step before the payoff. A riser under it (`riser`, duration = time to payoff). | visual every 2 s | 16-18 |
 | **24-28** | **70-82** | **PAYOFF** | The biggest 3D or motion moment: the hero keyword with underline and light sweep. The answer is said plainly. | the release | 8-10 |
-| 28-31.5 | 82-93 | **BONUS + CTA** | One extra twist or a warm line, then **one** CTA (spoken ≤ 2 s plus a pill). | — | 6-8 |
-| 31.5-34 | 93-100 | **LOOP BRIDGE** | The VO half-sentence that completes line 1. Visuals glide back to the frame-0 composition. The @jawad_mp4 signature stays small. | the loop | 3-5 |
+| 28-30 | 82-88 | **BONUS** | One extra twist or a warm line. | — | 5-6 |
+| 30-34 | 88-100 | **END CARD = CTA + LOOP BRIDGE** | The brand end card (keyword or J mark / wordmark once approved, `@jawad_mp4`, **one** CTA ≤ 5 words) settles by about 30.4 s and **holds ≥ 1.5 s** over the living world, not on black. **One** CTA is spoken (≤ 2 s), then the VO half-sentence that completes line 1. Underneath, the camera glides back to the frame-0 pose. In the last 0.2-0.3 s the end-card type lifts away with an exposure push, so frame 0 follows seamlessly. | the loop | 6-9 |
 
 **VO budget:**
 - The Hindi TTS rate is about 2.6-3.0 words/s [Inference]. The references measured 2.97 and 3.36 words/s.
@@ -285,7 +286,7 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
   - "Ab woh part jo koi nahi batata."
 
   Use the last one sparingly; it is overused.
-- **Visual re-hooks native to Jawad:** a razor cut on the beat, a timeline zoom-out, a "render" reveal, a 3D prop breaking the frame, an ember particle burst, a focus pull (aperture 20 to 60), the error pop-up device.
+- **Visual re-hooks native to Jawad:** a razor cut on the beat, a timeline zoom-out, a "render" reveal, a 3D prop breaking the frame, a flame particle burst (`J.embers`), a focus pull (aperture 20 to 60), the error pop-up device.
 - **Never** stack a verbal turn, a big SFX and a scene change on every beat. Alternate them so each one stays noticeable.
 
 ### 3.3 Seamless loops: four kinds, ideally combined
@@ -303,9 +304,15 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
    - Never fade the audio to silence.
    - End on a `reverse_swell` or `riser` whose end is exactly DUR. Its release is then the frame-0 transient (`impact_soft` or `glitch_short` cued at t = 0.0).
    - Music, if any, ends on a bar line, with the downbeat being frame 0.
-4. **Story loop.** The ending reframes the beginning, so a second watch means more. Example: the "client" at the end is revealed to be Jawad's younger self.
+4. **Story loop.** The ending reframes the beginning, so a second watch means more. Example: the impatient "client" at the end turns out to be Jawad himself, reviewing his own edit (a self-roast). His prior "younger self" cover idea is deliberately not reused.
 
-**Avoid:** a black end card, a "follow for more" freeze, or a logo sting with a fade. The signature `@jawad_mp4` lives as a small grotesk line on top of the action (as on the prior covers), not on a separate end card.
+**Reconciling the end card with the loop:**
+- The brand requires a settled end card held ≥ 1.5 s (brand skill and script-hook-writer). That doesn't break the loop if the end card is a **layer over the moving world**, not a separate black slate.
+- The world keeps moving under it toward the frame-0 pose.
+- The VO loop half-sentence plays during the hold.
+- The type exits in the last 0.2-0.3 s with an exposure push.
+
+**Avoid:** a black end card, a "follow for more" freeze, a logo sting with a fade, and the earlier Genjutsu reel's ending layout ("Comment JD" over blob mascots); the brand skill forbids repeating it.
 
 ### 3.4 Payoff timing
 
@@ -315,7 +322,8 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
 
 ### 3.5 CTA placement
 
-- **One CTA per reel**, spoken at 82-93 % of the running time and shown as a verb-first pill of ≤ 5 words (`T.render(..., 'glass_pill')` restyled in the ember tokens, or `ui.button`). The pill sits at y ≤ 1480; nothing textual below y 1620.
+- **One CTA per reel**, spoken on the end card (88-95 % of the running time) and shown as a verb-first line or pill of ≤ 5 words. Build it with `T.render(..., 'glass_pill')`, which picks up the brand palette roles, or `ui.button(text, look='ember', grad=('RED', 'EMBER'))`, since IVORY on flat FLAME fails contrast (BRAND.md).
+- The pill sits at y ≤ 1480. The `J.signature` goes at y about 1560 (BRAND.md); nothing else textual below y 1620.
 - **A mid-roll soft CTA** ("save kar lo, kaam aayega") only on value or list reels, at 55-65 %, and never alongside the end CTA's ask.
 - The CTA's job differs by reel type:
 
@@ -333,7 +341,7 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
 |---|---|---|---|
 | **A or B** (lowest effort) | "Left wala ya right wala? Comment mein bas L ya R." | #10 comparison | One-letter comments get the most replies. |
 | **Count / find** | "Is reel mein kitne cuts hain? Sahi jawab pinned comment mein." | #3 | ⚑ It must be true; pin the answer after 24 h. |
-| **Hidden frame** | "Ek frame mein maine kuch chhupaya hai. Mila?" | any (loops) | Hide a single-frame Easter egg (e.g. a tiny ember "JK" glyph). Drives rewatches. ⚑ It must exist. |
+| **Hidden frame** | "Ek frame mein maine kuch chhupaya hai. Mila?" | any (loops) | Hide a single-frame Easter egg (e.g. a tiny flame "JK" glyph). Drives rewatches. ⚑ It must exist. |
 | **Fill the blank** | "Tumhare client ne kya bola tha? 'Bas ek ______'" | #1 | Pin the funniest reply; this brings stories and a community feel. |
 | **Number confession** | "Tumhara sabse lamba render kitne ghante ka tha?" | #30 | Easy to answer, competitive. |
 | **Memory prompt** | "Apni ek bachpan ki yaad comment karo. Best wali next reel mein." | #29 | ⚑ Only promise what he will make. Never use other people's photos without consent. |
@@ -341,7 +349,8 @@ Honourable mentions: #26 ghar wale, #38 POV cinematic, #33 AI vs editor, #20 See
 | **Keyword for a resource** (DM automation) | "Comment **EMBER** — glow wala preset main DM kar dunga." | value / BTS | See the rules below. |
 
 **Keyword-to-DM rules** [Meta] + [Inference]:
-- **Pick one distinctive uppercase keyword per reel**: EMBER, HOOK, LOOP, GRADE, BRAND. Avoid YES, ME, LINK or HI, which fire on ordinary replies.
+- **⚑ Use a keyword CTA only if Jawad's DM automation actually exists** (an open question in the brand skill). Without it, use a send, save or comment-a-memory CTA instead.
+- **Pick one distinctive uppercase keyword per reel**: EMBER, HOOK, LOOP, GRADE, BRAND. Avoid YES, ME, LINK or HI, which fire on ordinary replies. Don't reuse "JD" from his earlier reel's ending.
 - The deliverable must **exist and be free**: a preset, a checklist PDF, a hook list, a 3-idea brief.
 - **The first DM is the only automatic message** (one private reply within 7 days). It must contain the deliverable or its link, plus one question that invites a reply. That reply is what opens the 24 h window for follow-ups.
 - Write the first DM in the same voice, for example: "Ye lo tumhara EMBER preset 🔥 [link]. Tum zyada reels banate ho ya client work?"
@@ -369,7 +378,9 @@ A send is a social act: the viewer uses the reel as their message. Design the se
 
 - [ ] A logo, intro card, greeting or "doston" before the hook.
 - [ ] Frame 0 is dark, blank, faded or static.
-- [ ] The first VO word comes later than 0.1 s.
+- [ ] The first VO word comes later than 0.1 s (target), or later than 0.3 s (brand hard limit).
+- [ ] A full-frame white flash anywhere (brand: use flame exposure pushes instead).
+- [ ] The end card is held under 1.5 s, sits on black, or doesn't lead back into frame 0.
 - [ ] Hook text appears later than 0.5 s, or has more than 5 words.
 - [ ] The answer comes in the first 5 s with nothing left to want.
 - [ ] Anything holds static for more than 2 s; there is a 3 s window without an event.
@@ -388,8 +399,9 @@ A send is a social act: the viewer uses the reel as their message. Design the se
 
 | layer | what | built with | rule |
 |---|---|---|---|
-| **Designed headlines** | Hook text, keywords, chapter lines, the payoff word, the CTA | The reel module (`type3d`, `ui`, `core`), as part of the motion design | 1-5 words, one ember keyword, upper or middle band |
-| **VO subtitles** | A transcript of the voice-over, word-synced | The trending-captions pipeline for words, phrases and the SRT; the burn route is described in §4.7 | 1-3 words per phrase, lower-middle band, moved per shot |
+| **Designed headlines** | Hook text, keywords, chapter lines, the payoff word, the end-card CTA | The reel module: `J.HouseTitle`, `T.render` / `T.Glyphs` with `jw_caps`, `jw_body`, `jw_key`, plus `J.underline` | 1-5 words, **one serif keyword**, upper or middle band |
+| **VO subtitles** | A transcript of the voice-over, word-synced | **Brand rule:** the caption-designer's `make_captions.py`, in **Poppins, sentence case, 1-4 words, one FLAME accent on the active word**; timings mapped from faster-whisper (Devanagari) through the script's token table | Lower-middle band, moved off the face. **No serif in subtitles.** |
+| **Signature device** (optional) | 1-3 moments per reel drawn in-timeline (§4.8) | The reel module | It replaces the subtitles for its window; never both at once |
 
 Where a headline already shows the words being spoken, **delete those words from the subtitle JSON** for that window (caption-designer rule).
 
@@ -401,107 +413,114 @@ Where a headline already shows the words being spoken, **delete those words from
 - Pills and chips are rising.
 - Avoid per-word shake, neon green or electric blue, and lines in 3+ colours.
 - Sources: the reels-studio trending-captions SKILL notes (checked 2026-10-08) and [opus.pro 2026](https://www.opus.pro/blog/editing-aesthetics-dominating-short-form-2026).
-- **Jawad's angle:** the editorial serif-italic + sans pairing is what premium cinematic creators use (ref2 and ref3 both do it [Measured]). Jawad's **ember glow + underline** on that pairing is a recognisable signature in his feed. Keep it as the baseline. Then give each reel **one** signature caption device from §4.8 for 1-3 moments, not the whole reel, so legibility never suffers.
+- **Jawad's subtitle style is already "dynamic minimalism" in his brand colour:** sentence-case Poppins, one FLAME word. His differentiator is the **designed layer**: the editorial serif-italic + grotesk pairing that premium cinematic creators use (ref2 and ref3 both do [Measured]), made his by the flame glow and underline.
+- Give each reel **one** signature caption device from §4.8 for 1-3 moments, not the whole reel, so legibility never suffers.
 
-### 4.3 House style "EMBER TYPE": spec
+### 4.3 House style: spec
 
-**Colour tokens.** Measured from his prior covers (median pixel colours) [Measured]. They are new tokens: do not reuse the toolkit's 'amber' look; build a custom `ui.Look('ember', …)` and pass hex colours to `type3d`.
+**Palette** (`project.json`; full table and contrast pairs in `pipeline/jawad_reels/BRAND.md`):
 
-| token | hex | measured from | use |
+| job | token | hex |
+|---|---|---|
+| keyword glow, active subtitle word, rims, UI edges | **FLAME** | #FF6A1A |
+| keyword gradient top to bottom (BRAND.md, measured) | "flame" gradient | #FFC34D → #FF8A1F → #F04A16 (built into `jw_key`) |
+| second accent, "error" moments, gradient ends | **RED** | #F2312B |
+| wide halos, haze, rims only (never text on dark) | **EMBER** | #B3120E |
+| hot cores, underline core, sparks (≤ 5 % of frame) | **AMBER / GOLD** | #FFB547 / #FF9F1C |
+| all white type (never pure white) / secondary text | **IVORY / ASH** | #FFF3E6 / #A8978C |
+| the world (70-85 % of every frame) | **NIGHT_0 / NIGHT_1 / SMOKE** | #070404 / #170A07 / #2A1A15 |
+
+- **My independent cross-check [Measured]** (median pixels of bright saturated cover pixels): keyword cores #F6591D (yaadein), #E0701E (you're better), #ED7622 (OpenArt); halos #7F2212 / #822A19. These agree with FLAME and EMBER, so no new tokens are needed.
+- **Subtitle accent:** FLAME on the black outline is about 7:1, so it passes. Don't use RED for the active word over faces (it vibrates against skin), and never IVORY on flat FLAME (2.6:1).
+
+**Type:**
+- **Keyword:** Instrument Serif Italic as **`jw_key`** (amber → flame → red gradient, hot inner glow, deep flame/red glow, 0.8 % em stroke).
+  - Alias `font='serif'` (or `'hand'`, which now points to it).
+  - Sizes 150-260 px in headlines, **≥ 130 px minimum**. Below about 120 px the thin italic loses to its glow (my specimen test agrees), which is why subtitles don't use it.
+- **Grotesk:** Poppins, in three styles:
+  - **`jw_caps`**: SemiBold uppercase, +6 % tracking, warm halo; 72-110 px.
+  - **`jw_body`**: lowercase lines ("delete … hoti").
+  - `jw_caps_bold` for heavier hook words.
+- **Mono:** **`jw_mono`** (JetBrains Mono), for timecodes, file names and percentages in the editor devices.
+- **Signature:** **`jw_handle`** via `J.signature(cv, 540, 1560)`.
+- **Size ratio:** keyword ≈ **1.3-1.8× the grotesk cap height** (brand skill). The `HouseTitle` default is caps 86 / key 210.
+
+**Lockups:**
+- `J.HouseTitle('KUCH', 'yaadein', caps_px=86, key_px=180)`: the stacked layout, the house default. It handles timing and the underline.
+- Same-line mixes ("delete *nahi* hoti"): compose `jw_body` + `jw_key` on a **shared baseline** (`anchor='baseline'`).
+  - Instrument Serif's italic overhang is small: in my specimen sheet "yaadein NAHI" didn't collide, while heavier italics did.
+  - Still leave **≥ 0.18 em of the grotesk size** between an italic keyword and the following upright word. Measure both with `T.measure` before laying out.
+
+**Underline:**
+- `J.underline(length).draw(cv, x0, y, u)`: thin on the left, thick on the right, with a hot comet head. That is the covers' stroke.
+- It draws on in 0.5-0.7 s ('inout_cubic' in HouseTitle). Use it **at most 3 times per reel** (hook, payoff, end card) so it stays special [Inference].
+
+**Case:**
+- Short uppercase grotesk labels of 1-3 words (KUCH, BETA, RUKO, LOGO).
+- Longer Roman Urdu in `jw_body` lowercase or sentence case. Roman Urdu spelling isn't standardised, so readers lean on word shape, and long all-caps Roman Urdu reads slowly [Inference].
+
+**Motion:**
+- Hook grotesk words may slam (`K.spring` overshoot).
+- **Brand type gets no bounce**: keywords rise or wipe with 'out_cubic' / 'easy_ease' over 0.4-0.7 s (brand skill).
+
+### 4.4 Fonts
+
+All of these are house fonts, already in `<WS>/fonts`. Don't add other serif families; the brand kit compared Playfair, DM Serif, Fraunces, Bodoni Moda and others against cover crops and rejected them.
+
+| role | style / alias | font | measured em per char (Roman Urdu corpus) |
 |---|---|---|---|
-| `EMBER` | **#F6591D** | keyword cores, "yaadein" cover (p25 #E64B03 to p75 #FD6465) | Keyword fill, bottom of its gradient |
-| `EMBER_HOT` | **#FF9A3C** | the lighter keyword core, "you're better" cover (p75 #F6912B) | Keyword fill, top of its gradient; light sweep |
-| `FLAME_RED` | **#E2361C** | the glow transition (inferred between core and halo) | Inner glow; underline glow |
-| `EMBER_DEEP` | **#7F2212** | glow halo, median of 2 covers (#7F2212, #822A19) | Outer halo, shadows, the scrim tint |
-| `WARM_WHITE` | **#F5EFE8** | grotesk words (not pure white) | Grotesk text |
-| `VOID` | **#0A0605** | darkest background, median #020103-#201107 | Background base |
-| `SMOKE` | **#201107** | warm lifted blacks (OpenArt cover) | Background lift, glass tint |
+| keyword | `jw_key`, `'serif'` | Instrument Serif Italic | 0.362 (mixed case) |
+| grotesk caps | `jw_caps`, `'grotesk'` | Poppins SemiBold +6 % tracking | 0.635 (CAPS incl. tracking) |
+| grotesk body | `jw_body` | Poppins | 0.525 (mixed case) |
+| subtitles (`make_captions.py`) | `--font Poppins` | Poppins SemiBold or Bold | 0.525 SemiBold mixed |
+| mono | `jw_mono`, `'mono'` | JetBrains Mono | 0.620 |
+| signature | `jw_handle` | Poppins Medium | — |
 
-- **Contrast:** EMBER on VOID ≈ 6:1 (passes 4.5:1). Over footage, add `scrim=0.75-0.85` (`deep_glow`-style backing) or a `EMBER_DEEP` soft box.
-- **Faces:** keep `FLAME_RED` for glows only, never as a text fill over skin (pure red vibrates against skin).
-
-**Typography and layout:**
-- **Keyword:** Playfair Display **Bold Italic** (700). It matched the "yaadein" and "younger self" letterforms best in a side-by-side test [Measured]: high contrast, ball terminals, readable glow.
-  - Fill: gradient `('#FF9A3C', '#F6591D')` at angle −90 (top to bottom).
-  - Glow: 3 radii, about 0.05 / 0.15 / 0.35 em, weights 0.9 / 0.8 / 0.6, colour `FLAME_RED` × 1.6-2.2.
-  - A thin `EMBER_HOT` light sweep on landing.
-- **Grotesk words:** Poppins **SemiBold** (captions) or **Bold** (headlines), WARM_WHITE, with a faint warm glow (0.15 em, `EMBER_DEEP`). Poppins matches the house "KUCH / MEETING MY / MY ENTRY" forms.
-- **Size ratio:** keyword ≈ **1.6-2.0× the grotesk cap height**, matching the covers. Headlines: grotesk 80-96 px, keyword 150-200 px. Subtitles: grotesk 72-84 px, keyword 110-130 px.
-- **Underline:**
-  - A hand-drawn-feeling stroke, slightly tapered at both ends and 3-5 % off horizontal, like the covers.
-  - Core `EMBER_HOT` with 2 px of near-white at its centre, glow `FLAME_RED`.
-  - It draws on left to right in 0.25-0.35 s ('out_cubic') right after the keyword lands.
-  - Use it **max 3 times per reel** (hook, payoff, CTA or signature).
-  - Build: `ui.parse_path` / `ui.trim_polyline` + `ui.stroke_mask` + `K.glow`.
-- **Italic overhang spacing [Measured]:** the italic keyword's swash runs into the next upright word (in the test sheet "yaadein NAHI" collided at normal spacing). Rules:
-  - add **0.25 em of the grotesk size after** an italic keyword, and 0.12 em before it;
-  - or put the keyword on its own line, which is the house default;
-  - baseline-align mixed lines (`anchor='baseline'`), not centre-align.
-- **Case:**
-  - Roman Urdu body words in **lowercase or sentence case**. Roman Urdu spelling isn't standardised, so readers rely on word shapes, and long all-caps Roman Urdu reads slowly [Inference].
-  - Caps only for short grotesk labels of 1-2 words (KUCH, BETA, RUKO, LOGO), as on the covers.
-- **Signature:** `@jawad_mp4` in Poppins Medium, 30-34 px, WARM_WHITE at 70 %, under the final underline, inside y ≤ 1480.
-
-### 4.4 Fonts (all free on Google Fonts, verified available 2026-10-08)
-
-The "em/char" figures are average advance width per character on a Roman Urdu corpus [Measured with Pillow].
-
-| role | font | em/char (mixed / CAPS) | why |
-|---|---|---|---|
-| **Keyword (primary)** | **Playfair Display Bold Italic** (700) | 0.460 / 0.604 | Closest to the house keyword; ball terminals hold the glow. |
-| Keyword (tight fit) | DM Serif Display Italic | 0.435 / 0.532 | About 5 % narrower and softer. Use it when a keyword is too wide. |
-| Keyword (quiet / elegant) | Instrument Serif Italic | 0.367 / 0.413 | The narrowest, but strokes are thin, so the glow washes them out. Use only at ≥ 180 px or for no-glow "minimal" moments. |
-| Avoid for keywords | Fraunces Black Italic, Bodoni Moda Bold Italic | — | Fraunces is too blobby; Bodoni's hairlines break up under glow and compression. |
-| **Grotesk (primary)** | **Poppins SemiBold / Bold** | 0.525 / 0.576 (SemiBold) | Matches the house words; large x-height (0.55 em) reads well for Roman Urdu. |
-| Grotesk (tighter, modern) | Inter Tight ExtraBold | 0.471 / 0.573 | About 10 % more characters per line in mixed case. |
-| Grotesk (personality) | Bricolage Grotesque ExtraBold | 0.502 / 0.585 | For playful reels (#2, #38). |
-| Condensed slam (rare) | Anton | 0.414 / 0.417 | Single-word slams only. Don't use it for Roman Urdu sentences. |
-| Mono (timecodes, UI, file names) | JetBrains Mono Bold (or Geist Mono) | 0.600 | NLE-authentic: timecodes, `final_v7.mp4`, render percentages. |
-| Handwriting (clapperboard chalk) | Kalam Bold (by the Indian Type Foundry) or Caveat Bold | — | Kalam has a desi handwritten feel. |
-
-- Roman Urdu mixed case runs about 3-4 % wider per character than English in the same fonts [Measured: Poppins SemiBold 0.525 vs 0.507].
-- **Install:** download the TTFs into `<WS>/fonts` (the toolkit and libass both read it). Pass them to `type3d` as TTF basenames, e.g. `font='PlayfairDisplay-BoldItalic'`, or map aliases in project.json `font_map`.
+- Roman Urdu mixed case runs about 3-4 % wider per character than English in Poppins [Measured: 0.525 vs 0.507].
+- **Optional, needs the lead's OK:** a handwriting face only as a *prop texture* (the clapperboard chalk in §4.8-4), e.g. Kalam Bold (Google Fonts, by the Indian Type Foundry). Otherwise use `jw_body` with a chalk-noise mask.
 
 ### 4.5 Safe zones and measured line limits
 
 ```
 1080 x 1920
-y    0-230   top UI (status, "Reels", audio)         -> no copy
+y    0-230   top UI (status, "Reels", audio)         -> no copy, no faces/keywords
 y  230-1000  UPPER BAND: hooks, headlines, keywords  -> full 940 px (x 70-1010)
 y 1000-1050  buffer
 y 1050-1480  LOWER BAND: VO subtitles, CTA pill      -> 780 px, right edge <= x 930 (like/share column)
-y 1480-1620  CTA pill may reach y 1600 (script-hook-writer rule); nothing else textual
+y 1480-1620  CTA pill may reach y 1600; J.signature at y ~1560 (BRAND.md); nothing else textual
 y 1620-1920  bottom 300 px: caption, handle, audio   -> nothing textual, nothing important
-Cover-crop safe (3:4 grid and 4:5 feed): y 285-1635.  Strictest (1:1): y 420-1500.
+Cover-crop safe: 3:4 grid y 240-1680 (brand) ; 3:4 and 4:5 both: y 285-1635 ; strictest 1:1: y 420-1500.
 ```
 
-**Measured characters per line**, including spaces, Roman Urdu [Measured]. Glows, extrusions and pills add width beyond these; keep 40-60 px spare.
+**Characters per line, including spaces, Roman Urdu, with the kit's house styles [Measured via `T.measure`].** Glows and pills add width beyond these, so keep 40-60 px spare (about 1 character less).
 
-| font @ px | mixed case, 940 / 780 px | CAPS, 940 / 780 px |
+| style @ px | 940 px (upper band) | 780 px (lower band) |
 |---|---|---|
-| Poppins SemiBold @ 64 | 27 / 23 | 25 / 21 |
-| Poppins SemiBold @ 80 | 22 / 18 | 20 / 16 |
-| Poppins SemiBold @ 96 | 18 / 15 | 17 / 14 |
-| Poppins Bold @ 130 | 13 / 11 | 12 / 10 |
-| Inter Tight ExtraBold @ 80 | 24 / 20 | 20 / 17 |
-| Playfair Display Bold Italic @ 130 | 15 / 13 | 11 / 9 |
-| Playfair Display Bold Italic @ 160 | 12 / 10 | 9 / 8 |
-| Playfair Display Bold Italic @ 200 | 10 / 8 | 7 / 6 |
-| DM Serif Display Italic @ 160 | 13 / 11 | 11 / 9 |
+| `jw_caps` @ 72 | 20 | 17 |
+| `jw_caps` @ 86 (HouseTitle default) | 17 | 14 |
+| `jw_caps` @ 96 | 15 | 12 |
+| `jw_caps` @ 110 | 13 | 11 |
+| `jw_body` @ 72 | 24 | 20 |
+| `jw_body` @ 80 | 22 | 18 |
+| `jw_key` @ 130 | 19 | 16 |
+| `jw_key` @ 150 | 17 | 14 |
+| `jw_key` @ 180 | 14 | 11 |
+| `jw_key` @ 210 (HouseTitle default) | 12 | 10 |
+| `jw_key` @ 260 | 9 | 8 |
+| Poppins SemiBold subtitles @ 80 (mixed case) | 22 | 18 |
 
-Spot checks at 96 px Poppins Bold caps:
-- "BETA KYA KARTE HO?" = 1012 px: it overflows, so it must break into 2 lines.
-- "TUMHARA CONTENT" = 965 px: it overflows.
-- At 200 px Playfair Black Italic, "chhota sa" = 891 px: it fits the upper band only.
+Spot checks:
+- "BETA KYA KARTE HO?" doesn't fit on one `jw_caps` line at 86 px; break it as "BETA, KYA / KARTE HO?".
+- "PRODUCT ACHHA" is 807 px at 86 px, so it goes in the upper band only.
 
 **Words and lines:**
-- VO subtitles: **1-3 words per phrase, max 2 lines, max 16 characters per line** at 80 px in the lower band.
-- Headlines: **≤ 5 words**, 2-3 lines, one keyword of ≤ 10 characters.
-- Break at phrase boundaries; never leave a lone short word ("ka", "hai", "to") at a line end.
+- VO subtitles: **1-4 words per phrase** (brand), 3 by default. Max 2 lines and **max 16-18 characters per line** at 80 px in the lower band.
+- Headlines: **≤ 5 words**, 2-3 lines, one keyword of ≤ 12 characters at 180 px.
+- Break at phrase boundaries; never leave a lone short word ("ka", "hai", "toh") at a line end.
 
 ### 4.6 Timing rules
 
-- **VO-synced subtitles:**
+- **VO-synced subtitles** (`make_captions.py` defaults):
   - A phrase appears 0.05 s before its first word (`--lead 0.05`) and holds 0.35 s after its last word.
   - A pause longer than 0.45 s starts a new phrase.
   - The swap to the next phrase is instant: the new phrase's pop is the transition.
@@ -510,51 +529,49 @@ Spot checks at 96 px Poppins Bold caps:
 - **Designed headlines** (no VO, or reinforcing it):
   - Settled hold ≥ words / 3 s, and ≥ 0.8 s per sentence.
   - For Roman Urdu, add +0.3 s to holds longer than 3 words [Inference: non-standard spelling decodes more slowly].
-  - Single-word slams: 0.4-0.5 s each, building one phrase; the completed phrase then follows the hold rule.
+  - Single-word slams (grotesk only): 0.4-0.5 s each, building one phrase; the completed phrase then follows the hold rule.
 - **Entrances:**
-  - Grotesk: `Glyphs.rise` (dur 0.25-0.35, dist 0.25-0.45, blur 6-10, stagger 0.02-0.03).
-  - Keyword: `Glyphs.slam` (s0 1.3-1.5, dur 0.4) or `wipe` (angle 0, soft 0.12, edge 1.0) with the light sweep.
-  - Use **one** entrance family per reel.
+  - `HouseTitle` timing is the default: caps rise over 0.6 s, the keyword rises per glyph from +0.22 s (stagger 0.03, dur 0.5), the underline runs from +0.55 s for 0.7 s.
+  - For a **hook** that has to be readable by 0.5 s, start it at `t0 = -0.1` and/or pass `caps_dur=0.4, key_t=0.12, ul_t=0.4, ul_dur=0.5`.
+  - Use one entrance family per reel.
 - **Fades:** always pass an ease to `K.ramp` ('inout_sine' or 'linear' for fades, 'in_cubic' for exits). The default 'out_expo' makes ghost frames.
 - **Sound:** no SFX on every word. Keywords get a soft hit at most (`shimmer` or `impact_soft`, −3 dB), and at most 3 caption SFX per reel.
 
-### 4.7 How to burn the house style
+### 4.7 Subtitle pipeline details (Hinglish)
 
-The trending-captions script `make_captions.py` (v. in repo) has **one font per style** plus a colour highlight. It has **no per-word font switch**, so it cannot do "white Poppins + Playfair Italic keyword" natively [Measured by reading its CLI]. Two routes:
+- **Settings for the house look:**
 
-- **Route A (recommended for these reels): render subtitles in the toolkit.**
-  1. Use `make_captions.py` to get the corrected `words.json`, the phrase chunks (`<module>.captions.json`) and the **SRT deliverable**.
-  2. Load the chunks in the reel module (`lru_cache`d) and draw each phrase with `type3d`: grotesk words via `T.render(word, 'flat', font='Poppins-SemiBold', px=80, fill='#F5EFE8', glow=…)`, the keyword via `T.render(..., font='PlayfairDisplay-BoldItalic', fill=('#FF9A3C', '#F6591D'), fill_angle=-90, glow_color=('#E2361C', 2.0))`.
-  3. Draw them in the reel's `draw(t)`. This gives linear-light glow, DOF and motion blur, consistent with the headlines.
-  4. QA with the caption-designer's ink scan on a grey-background render.
-- **Route B (quick talking-head cuts): patch `make_captions.py`.**
-  1. Have the motion-toolkit-engineer add `--emph-font` (and `--emph-italic`), writing inline ASS overrides `{\fnPlayfair Display\i1\c&H…&}word{\r}`.
-  2. Approximate the glow with a duplicate layer underneath: `\bord6\blur8\3c` in EMBER_DEEP.
-  3. Measure emphasis widths with the emphasis font in the layout pass, or the safe-zone check will be wrong.
-- **Hinglish transcription gotcha:**
-  - faster-whisper with `--language hi` returns **Devanagari**.
-  - `--language en` mangles Hindi words.
-  - Because the VO is generated from a known script, take word timings from `--language hi` and **map them 1:1 onto the Roman script tokens**, after checking the counts match.
-  - Or write `words.json` from the TTS engine's own timestamps if it provides them.
-  - Then follow the caption-designer's correction rules (names, numbers, deleting doubled words).
+  ```
+  python3 $S <WS>/captions/<module>.words.json --preset bold-pop --case as-is --video <master.mp4> \
+    --fontsdir <WS>/fonts --font "Poppins" --highlight '#FF6A1A' --text-color '#FFF3E6' --emphasis "<1-3 words>" --strict -o <WS>/captions/<module>
+  ```
+
+  - Use `--size 76-84`. For calm or emotional reels use `--preset minimal` (sentence case by default, no highlight).
+  - **⚠ `bold-pop` and `karaoke` default to UPPERCASE** (preset `case='upper'` in `make_captions.py`). Always pass **`--case as-is`** for the house sentence case [Measured by reading the script].
+- **Transcription:**
+  - faster-whisper with `--language hi` returns **Devanagari**; `--language en` mangles Hindi words.
+  - The brand pipeline maps the Devanagari word timings **through the hinglish-scriptwriter's token table** onto the Roman tokens. Check that the token counts match before mapping.
+  - On the CPU of this machine, run `--model small --device cpu --compute-type int8` under `nice -n 10`.
+  - The installed PyAV rejects faster-whisper's `metadata_errors` argument when given a file path. **Decode with ffmpeg to 16 kHz mono PCM and pass the numpy array** [Measured: `faster_whisper/audio.py` raised `TypeError` on ref3.mp4].
+- **Headline/subtitle doubling:** delete the headline's words from `words.json` for its window, and keep the subtitle band clear while a signature device (§4.8) runs.
 
 ### 4.8 Ten original caption devices for an editor's brand
 
-These are ten devices built for this brief, each showing the editor's craft inside the caption itself. They come with toolkit build notes. "Never done before" can't be proven; in this research pass I found none of them as a packaged caption style (trend reports list word-pop, karaoke, pills, typewriter). Run one more search before claiming novelty in public copy.
+These are ten devices built for this brief, each showing the editor's craft inside the caption itself. They come with toolkit build notes. "Never done before" can't be proven; in this research pass I found none of them as a packaged caption style (trend reports list word-pop, karaoke, pills, typewriter). None of them overlaps the reels-studio `saas-motion-styles` device recipes (iris montage, card tunnel, video-in-type, app-window checklist, glass dock, orbit tags, counters, extruded slam, logo end card) or the earlier Genjutsu reel's devices. Run one more search before claiming novelty in public copy.
 
 #### 1. RAZOR TIMELINE CAPTIONS (subtitles are clips that get cut)
 - **Look:**
-  - The VO words are **clip blocks on a 3D NLE timeline** lying in perspective below the subject. Word clips are warm grey; the keyword clip has the ember gradient.
-  - A glowing ember **playhead** stays fixed at x 540 while the track scrolls.
+  - The VO words are **clip blocks on a 3D NLE timeline** lying in perspective below the subject. Word clips are warm grey (SMOKE/ASH); the keyword clip has the FLAME → RED gradient.
+  - A glowing FLAME **playhead** stays fixed at x 540 while the track scrolls.
   - When the playhead reaches a word, the clip **lifts out of the track** and stands up as the readable caption.
-  - On the keyword, a **razor cursor slices** the clip and the keyword flies up in serif italic.
+  - On the keyword, a **razor cursor slices** the clip and the keyword flies up as `jw_key`.
   - Filler words are **ripple-deleted**: the block collapses and later clips slide left.
 - **Why:** every subtitle shows the editing process. Editors recognise it instantly (#39 in-group); non-editors see "the video is editing itself" (#7).
 - **Build:**
-  - Lanes are a static `ui.Surf(1000, 260)` sprite: `.rrect` lanes V1 and A1, clip blocks via `.rrect_grad`, and a small waveform drawn into the A1 clips. Clip labels in `ui.put_text` JetBrains Mono 28 px are decoration only.
+  - Lanes are a static `ui.Surf(1000, 260)` sprite: `.rrect` lanes V1 and A1, clip blocks via `.rrect_grad`, and a small waveform drawn into the A1 clips. Clip labels in `ui.put_text(..., 'mono', 28)` are decoration only.
   - Lay the lanes as a floor: `K.draw_plane(cv, lanes, cam, (x_scroll, 420, 0), 1100, rot=(-62, 0, 0))`. A negative rx tips the top edge away from the camera. `x_scroll = -(t - t_ref) * 260`.
-  - The lifted word: `T.Glyphs(word, 'flat', font='Poppins-SemiBold', px=80, fill='#F5EFE8').rise(cv, t, 540, 1180, t0=w['start']-0.05, dist=0.6, dur=0.25)`.
-  - The keyword: `T.Glyphs(kw, 'flat', font='PlayfairDisplay-BoldItalic', px=120, fill=('#FF9A3C', '#F6591D'), fill_angle=-90, glow=…, glow_color=('#E2361C', 2.0)).slam(...)`.
+  - The lifted word: `T.Glyphs(word, 'jw_body', px=80).rise(cv, t, 540, 1180, t0=w['start']-0.05, dist=0.6, dur=0.25)`. The active subtitle word can take FLAME via a second cached sprite (`fill='FLAME'`).
+  - The keyword: `T.Glyphs(kw, 'jw_key', px=150).rise(cv, t, 540, 1150, t0=…, dur=0.5)` (no bounce on brand type).
   - The razor cursor is an SVG blade via `ui.parse_path` + `ui.fill_mask`, moved with `K.Track`, with a click `K.impulse`. The split is the clip sprite drawn as two halves whose gap opens 0–8 px over 0.12 s, plus a small spark from a `K.Particles` burst.
   - Ripple-delete: the block's x-scale goes to 0 ('in_cubic', 0.15 s), and later clips follow a `K.Track`.
 - **SFX:** `ui_tick` on every 2nd clip passing (−12 dB), `ui_click` + `glitch_short` for the razor, `card_slide` for the ripple close.
@@ -569,11 +586,11 @@ These are ten devices built for this brief, each showing the editor's craft insi
   - **Gag version:** pass 1 is *linear*, so the word moves robotically and gets a red ✕ chip. A cursor drags the bezier handle, pass 2 is *eased* (out_back), and the word glides in with a ✓.
 - **Why:** it teaches easing in 2 s and flexes motion craft, which suits value reels (#9, #36).
 - **Build:**
-  - Panel: `ui.glass_card(820, 480, r=36, look=EMBER_LOOK)`.
+  - Panel: `ui.glass_card(820, 480, r=36, look='ember')`.
   - Grid lines on a `ui.Surf`.
-  - Curve: points from `K.EASE['out_back']` (or a cubic bezier), revealed with `ui.trim_polyline(pts, 0, u)`, then `ui.stroke_mask(width=6)` tinted `EMBER` + `K.glow`.
+  - Curve: points from `K.EASE['out_back']` (or a cubic bezier), revealed with `ui.trim_polyline(pts, 0, u)`, then `ui.stroke_mask(width=6)` tinted FLAME + `K.glow`.
   - Keyframe diamonds: `K.rrect_alpha(22, 22, 4)` drawn with `rot=45`.
-  - Word: `ts.draw(cv, x(u), y, scale=lerp(0.6, 1, curve(u)))`, with `samples(t)=5` during the move.
+  - Word: `ts = T.render(kw, 'jw_key', px=170)`; `ts.draw(cv, x(u), y, scale=lerp(0.6, 1, curve(u)))`, with `samples(t)=5` during the move. The curve itself may overshoot because it is the *subject* being taught; the settled type then sits still.
   - Cursor: `ui.draw_cursor(..., 'arrow', press=K.impulse(t, tc, 9))`.
 - **SFX:** `ui_click` (grab), `slider_drag` (align='start', duration = the drag), `whoosh_fast` on the eased pass.
 - **Cost:** low.
@@ -581,16 +598,16 @@ These are ten devices built for this brief, each showing the editor's craft insi
 
 #### 3. RENDER-BAR CAPTIONS (the house underline is a render progress bar)
 - **Look:**
-  - The glowing ember **underline is a progress bar** that fills left to right as the phrase is spoken.
-  - Letters ahead of the bar are a dim, **blocky low-res ghost**. At the bar's leading edge they resolve through **Cycles-style render buckets** (small white tile outlines) into sharp glowing type.
+  - The glowing **house underline is a progress bar** that fills left to right as the phrase is spoken.
+  - Letters ahead of the bar are a dim, **blocky low-res ghost**. At the bar's leading edge they resolve through **Cycles-style render buckets** (small IVORY tile outlines) into sharp glowing type.
   - A tiny mono `%` counter rides the bar end.
   - **Gag:** the bar **stalls at 99 %** (hook #30), shakes, then completes on the payoff.
 - **Why:** the brand's signature underline becomes functional and makes "rendering" a visual metaphor; non-editors still read it as loading or suspense.
 - **Build:**
-  - `ts = T.render(phrase, …)`. Cache `sharp = ts.sprite` and `ghost = cv2.resize(cv2.resize(sharp, (w//14, h//14), interpolation=cv2.INTER_AREA), (w, h), interpolation=cv2.INTER_NEAREST) * 0.3` once.
+  - `ts = T.render(phrase, 'jw_body', px=80)` (or `jw_key` for a headline). Cache `sharp = ts.sprite` and `ghost = cv2.resize(cv2.resize(sharp, (w//14, h//14), interpolation=cv2.INTER_AREA), (w, h), interpolation=cv2.INTER_NEAREST) * 0.3` once.
   - Per frame, composite column ranges: `[0, bx)` sharp, `[bx, bx+48)` the bucket band (sharp × a checker mask with 1 px tile outlines), `[bx+48, w)` ghost. Draw with `K.draw` at the sprite anchor (`ts.sprite_anchor`).
-  - Bar: `K.rrect_alpha(int(w*p), 6, 3)` tinted `('#FF9A3C', 2.4)` + `K.glow(..., K.hexlin('#E2361C'), (4, 14, 40), 1.2)`.
-  - Counter: `T.Counter('flat', px=34, suffix='%', decimals=0, font='JetBrainsMono-Bold')`.
+  - Bar: `J.underline(w).draw(cv, x0, y, u=p)`. Its comet head is already the bar's leading edge.
+  - Counter: `T.Counter('jw_mono', px=34, prefix='', suffix='%', decimals=0)` (always pass `prefix`).
   - Progress p = speech progress through the phrase (word timings).
 - **SFX:** `ui_tick` per 25 % (−14 dB), `check_ding` at 100 %, `glitch_short` + `K.impulse` shake on the 99 % stall.
 - **Cost:** low (numpy slicing).
@@ -599,16 +616,16 @@ These are ten devices built for this brief, each showing the editor's craft insi
 #### 4. CLAPPERBOARD CHAPTERS (re-hooks on a 3D slate)
 - **Look:**
   - At each chapter break (the 3-4 re-hooks) a **Blender clapperboard** swings in.
-  - Its sticks carry **ember-and-black stripes**, a brand twist on the usual black and white.
+  - Its sticks carry **FLAME-and-black stripes**, a brand twist on the usual black and white.
   - The chalk face holds `SCENE 02 · TAKE 7` plus the re-hook line in handwriting ("Take 7: client ka 'bas ek change'").
-  - The **clap is the transition**: the sticks snap shut on the beat, a flash, then a whip to the next scene.
+  - The **clap is the transition**: the sticks snap shut on the beat, a flame exposure push, then a whip to the next scene.
 - **Why:** each chapter feels like a new "take", which is a natural micro-hook every 6-9 s.
 - **Build:**
-  - The blender-3d-artist builds a new prop module in the project pipeline (the `assets3d_*` pattern; Cycles on CPU, about 64 samples + OIDN, 720 px, `nice -n 10`, 2 threads).
+  - The blender-3d-artist adds the prop to `assets3d_jawad.py` (brand rule: new props only there). Use Cycles on CPU, about 64 samples + OIDN, 720 px, `nice -n 10`, `threads = 2`.
   - Variants: `night` (yaw 49) and `clap` (anim 18 frames, last frame closed).
   - Export **features** for the 4 corners of the chalk area.
-  - Text: `T.render(line, 'flat', font='Kalam-Bold', px=64, fill='#F5EFE8')`, with grain via a noise multiply on a copy. Warp it onto the slate with `ts.draw_quad(cv, quad)`, where the quad is the projected feature corners.
-  - Clap: at `t_clap`, the next frame of the `clap` sequence, `K.post(..., flash=0.35*K.impulse(t, t_clap))`, `K.whip_blur`.
+  - Text: `T.render(line, 'jw_body', px=64)`, or Kalam Bold if the lead approves a prop-only handwriting face (§4.4), with grain via a noise multiply on a copy. Warp it onto the slate with `ts.draw_quad(cv, quad)`, where the quad is the projected feature corners.
+  - Clap: at `t_clap`, the next frame of the `clap` sequence, `K.post(..., exposure=0.35*K.impulse(t, t_clap))` (a +0.35-stop push; for a coloured pop use `K.flash(cv, a, color=K.C['FLAME'])`, never the default IVORY), `K.whip_blur`.
 - **SFX:** a custom clap (`impact_soft` layered with `camera_shutter`, high-passed; the sound-designer makes it), then `whip`.
 - **Cost:** Blender pre-render about 67 frames once; per frame it's cheap.
 - **Safe zone:** slate text ≥ 56 px after perspective; chalk lines ≤ 4 words.
@@ -616,7 +633,7 @@ These are ten devices built for this brief, each showing the editor's craft insi
 #### 5. COLLISION CAPTIONS (words with physics, meeting a Blender prop)
 - **Look:**
   - The white grotesk words **fall and collide** with a hero Blender prop (a 3D chai glass for #30, a hard drive for #6, a big glossy "RENDER" key), tumble and pile up.
-  - The **serif keyword drops last**, lands upright on top and glows.
+  - The **serif keyword (`jw_key`) drops last**, settles upright on top (eased, no bounce) and glows.
   - **Variant:** the prop rolls through a settled sentence, knocking out every word except the keyword ("the only word that matters").
 - **Why:** physical comedy; it combines 3D and typography in a way that's hard to copy with CapCut templates.
 - **Build:**
@@ -630,8 +647,8 @@ These are ten devices built for this brief, each showing the editor's craft insi
 
 #### 6. WAVEFORM CAPTIONS (the voice draws its own words)
 - **Look:**
-  - The VO's real **waveform** is a glowing ember line scrolling across the lower band.
-  - Each word floats above **its own waveform segment**. The segment under the active word burns brighter, and past segments cool to `EMBER_DEEP`.
+  - The VO's real **waveform** is a glowing FLAME line scrolling across the lower band.
+  - Each word floats above **its own waveform segment**. The segment under the active word burns brighter, and past segments cool to EMBER.
   - The keyword's **size and glow follow loudness**: louder means bigger, so emphasis literally comes from the voice.
   - Ember sparks lift off the peaks.
 - **Why:** it shows the sound side of editing; it's calm and premium, good for the emotional reels (#28, #34).
@@ -639,7 +656,7 @@ These are ten devices built for this brief, each showing the editor's craft insi
   - The envelope is the RMS of the VO wav per 1/60 s, computed once in numpy (`lru_cache`).
   - Visible window t ± 1.6 s mapped to x 90-910. Draw the polyline with `ui.stroke_mask` (width 4) + `K.glow`.
   - Word positions come from the words JSON segment centres. `glow gain = 1 + 1.5*rms_norm(t)` and keyword `scale = 1 + 0.12*rms_norm`.
-  - Sparks: `K.Particles(60, seed=…, colors=[EMBER, EMBER_HOT])` emitted at local maxima.
+  - Sparks: `J.embers(60, seed=…)` emitted at local maxima.
 - **SFX:** none; the VO is the sound.
 - **Cost:** very low.
 - **Safe zone:** the waveform at y 1380-1460, words at y 1180-1320, all ≤ x 930.
@@ -650,13 +667,13 @@ These are ten devices built for this brief, each showing the editor's craft insi
     - File name: `jawad_mp4_tumhare_liye.mp4`
     - Format: `H.264 · 1080x1920 · 30 fps` (the true spec)
     - Destination: `tumhara feed`
-  - The **CTA is the button label** ("Comment EMBER").
+  - The **CTA is the button label**, e.g. "Us dost ko bhejo", or a keyword only if the DM automation exists ⚑.
   - A cursor presses **Export**, a `progress_ring` completes, and on 100 % the frame whips into frame 0: the reel has "exported" itself and starts again.
 - **Why:** a CTA that is also a loop bridge and an editor joke.
 - **Build:**
-  - Panel: `ui.glass_card(860, 860, look=EMBER_LOOK)`. Labels via `p.text(...)`.
+  - Panel: `ui.glass_card(860, 860, look='ember')`. Labels via `p.text(...)`.
   - Fields: `ui.search_bar(text, n=chars(t), w=700, placeholder='')` for typing.
-  - Button: `ui.button('Comment EMBER', hover=…, press=…, ripple=t-tc)` restyled to the ember gradient (`grad=`).
+  - Button: `ui.button('<true CTA>', hover=…, press=…, ripple=t-tc, look='ember', grad=('RED', 'EMBER'))`. IVORY on flat FLAME fails contrast.
   - Ring: `ui.progress_ring(p, colors=…)`. Cursor: `ui.draw_cursor`.
 - **SFX:** `typing` (n, cps), `ui_click`, `bar_grow` (align='start'), and a frame-0 transient as the loop landing.
 - **Safe zone:** the dialog body inside x 110-930 and y 520-1460.
@@ -665,22 +682,22 @@ These are ten devices built for this brief, each showing the editor's craft insi
 - **Look:**
   - A caption is **attached to a moving thing** (Jawad's hand from the character sheet cut-out, a 3D prop, a phone) by an After Effects-style **tracking reticle**: a square with a "+" centre, corner ticks, a dotted trail of past positions and a tiny mono label `TRACK 01 · 98.6%`.
   - The caption is **corner-pinned** in perspective.
-  - On "lock", the reticle turns from white to ember with a click.
+  - On "lock", the reticle turns from IVORY to FLAME with a click.
 - **Why:** it turns a VFX technique into a caption device; great for "dekho kaise" moments.
 - **Build:**
   - Path: `K.Track` (plus `.vel` for the blur).
-  - Reticle: `ui.Surf` strokes (cache the static pieces). Label: `ui.put_text(..., 'JetBrainsMono-Bold', 28)`, decoration only.
+  - Reticle: `ui.Surf` strokes (cache the static pieces). Label: `ui.put_text(..., 'mono', 28)`, decoration only.
   - Trail: sample the track at t−0.6…t and draw dots with fading opacity.
   - Corner pin: project the 4 corners of a small plane attached to the object through `cam.project` → `ts.draw_quad(cv, quad)`.
 - **SFX:** `ui_tick` while tracking (sparse), `toggle_on` on lock.
 
 #### 9. GRADE-WHEEL KEYWORD (bonus): the brand colour is "graded in"
 - **Look:**
-  - The keyword appears **flat log-grey**. A colour-wheel UI (lift/gamma/gain) slides in, the cursor drags the wheel toward orange-red, and the keyword is **graded live** from grey to the ember glow.
+  - The keyword appears **flat log-grey**. A colour-wheel UI (lift/gamma/gain) slides in, the cursor drags the wheel toward orange-red, and the keyword is **graded live** from grey to the `jw_key` flame glow.
   - A tiny RGB parade shifts beside it.
-- **Why:** it's a literal brand reveal; perfect for #25 *bada brand* and #21 *sasta*, and for the business-owner reel.
+- **Why:** it's a literal brand reveal; perfect for #25 *bara brand* and #21 *sasta*, and for the business-owner reel.
 - **Build:**
-  - Two cached sprites of the same keyword: grey `fill='#8C8C8C'` with no glow, and the ember version. Crossfade them with `grade(t)` ('inout_sine'), with the glow layer's opacity at `grade²`.
+  - Two cached sprites of the same keyword: grey (`T.render(kw, 'flat', font='serif', px=…, fill='ASH')`, no glow) and `T.render(kw, 'jw_key', px=…)`. Crossfade them with `grade(t)` ('inout_sine'), with the glow layer's opacity at `grade²`.
   - Wheel: a numpy HSV ring sprite, built once.
   - Parade: `ui.bar_chart([r, g, b], grow=…, colors=…, w=220, h=160)`.
 - **SFX:** `slider_drag`, then `shimmer` at full grade.
@@ -689,15 +706,15 @@ These are ten devices built for this brief, each showing the editor's craft insi
 - **Look:**
   - The myth types out ("trending audio = viral").
   - Keycaps **CTRL + Z** press twice and the text **un-types in reverse**.
-  - A small **History panel** lists `Type "trending audio = viral"`, `Undo`, `Type "pehla second"`, and then the truth types out with the ember keyword.
+  - A small **History panel** lists `Type "trending audio = viral"`, `Undo`, `Type "pehla second"`, and then the truth types out with its `jw_key` keyword.
 - **Why:** a native editor gesture for myth-busting (#12, #19, #9).
 - **Build:**
-  - `T.Glyphs(myth, 'flat', font='Poppins-SemiBold').typewriter(cv, t_eff, …)`, where `t_eff = t` before the undo and `t_undo - (t - t_undo)*1.6` after it (reverse at 1.6×).
+  - `T.Glyphs(myth, 'jw_body', px=72).typewriter(cv, t_eff, …)`, where `t_eff = t` before the undo and `t_undo - (t - t_undo)*1.6` after it (reverse at 1.6×).
   - Keycaps: `ui.chip('CTRL', sel=K.impulse(...))`.
   - Panel: `ui.glass_card` + `p.text` rows.
 - **SFX:** `typing` (n, cps), `ui_click` ×2, `glitch_short` on the undo.
 
-**Assignment rule:** use one signature device per reel, all different across the 5 reels, for its 1-3 key moments. The rest of the VO uses the house EMBER subtitles (§4.3) so the set feels like one brand.
+**Assignment rule:** use one signature device per reel, all different across the 5 reels, for its 1-3 key moments. The rest of the VO uses the house subtitles (Poppins + one FLAME word, §4.1) so the set feels like one brand.
 
 ---
 
@@ -717,13 +734,16 @@ L8  hashtags         3-5 (hard cap 5 incl. comments).
 ```
 
 - **Length:** 400-900 characters total is fine; reels captions are read mostly by people who are already engaged and by search.
-- **Emoji:** 0-2, never in on-screen type. Allowed in the post caption: 🔥 (on-brand ember), 😅, 👇.
-- **Disclosure:** on AI-animated photos, write "AI se animate kiya" in the body and use Instagram's AI label if it applies. On paid or collab work, use the Paid Partnership label.
+- **Emoji:** 0-2, never in on-screen type. Allowed in the post caption: 🔥 (on-brand flame), 😅, 👇.
+- **Disclosure ⚑ (open question for the lead, never silently skipped; brand rule):**
+  - The VO is an **AI (TTS) voice**, and some imagery of Jawad or his family may be AI-generated or animated. Decide per reel whether Meta's AI label is applied.
+  - On AI-animated photos, write "AI se animate kiya" in the body.
+  - On paid or collab work, use the Paid Partnership label.
 
 ### 5.2 Roman Urdu vs English mix
 
 - **Line 1 (hook): Roman Urdu / Hinglish**, for relatability and the desi scroll-stop.
-- **The keyword line: English.** People and Google search English craft terms: video editing, video editor, motion graphics, AI video, Blender 3D, reels editing, cinematic edit. [Inference based on Google indexing and IG keyword search: put English terms in the first 2-3 lines when possible, e.g. "Video editing ka sabse bada jhoot".]
+- **The keyword line: English.** People and Google search English craft terms: video editing, video editor, motion graphics, AI video, Blender 3D, reels editing, cinematic edit. [Inference based on Google indexing and IG keyword search: put English terms in the first 2-3 lines when possible, e.g. "Video editing ka sabse bara jhoot".]
 - **Roman Urdu searches people type** (add 1-2 naturally): "video editing kaise sikhe", "reels kaise banaye", "editing seekho". Spelling varies, so don't stuff variants.
 - Use the canonical spellings from §2.5.
 
@@ -763,8 +783,8 @@ L8  hashtags         3-5 (hard cap 5 incl. comments).
 Bas ek chhota sa change... aur 3 din chale gaye.
 Har editor, har designer, har freelancer ke saath hua hai. Sach batao.
 
-Client: "bas logo thoda bada"
-Client: "music thoda aur energetic"
+Client: "bas logo thora bara"
+Client: "music thora aur energetic"
 Client: "pehle wala hi theek tha" 🙃
 
 Video editing aur motion graphics ki asli zindagi — 30 second mein.
@@ -789,7 +809,7 @@ Comment HOOK — main tumhe apni hook checklist DM kar dunga (DM Requests check 
 #reelstips #contentcreator #videoediting #hinglish #jawadmp4
 ```
 
-⚑ The HOOK checklist must exist before posting. "pehla lafz" is Urdu-leaning; "pehla word" also works.
+⚑ Use this only if the DM automation exists **and** the HOOK checklist exists before posting. Otherwise end with "Save kar lo, next edit mein kaam aayega." "pehla lafz" is Urdu-leaning; "pehla word" also works.
 
 **T3: Business owner / lead (for #21 "video sasta"), first line 58 characters**
 
@@ -806,7 +826,7 @@ Comment VIDEO — aapke product ke liye 3 free reel ideas DM karunga.
 #smallbusiness #brandvideo #videomarketing #videoeditor #jawadmp4
 ```
 
-⚑ Only if Jawad will actually send 3 ideas per comment; otherwise change the CTA to "DM 'BRAND' likho".
+⚑ Use this only if the DM automation exists and Jawad will actually send 3 ideas per comment. Otherwise use "DM mein 'BRAND' likho" (a manual reply) or a send CTA.
 
 **T4: Nostalgia / AI (for #28 "purani photo"), first line 50 characters**
 
@@ -814,7 +834,7 @@ Comment VIDEO — aapke product ke liye 3 free reel ideas DM karunga.
 Ye photo 20 saal purani hai. Aaj ye phir se chali.
 Ghar ki album se nikali, ghar walon ki ijazat se, AI se animate kiya.
 
-Kuch yaadein delete nahi hoti — bas thodi dhundhli ho jati hain.
+Kuch yaadein delete nahi hoti — bas thori dhundhli ho jati hain.
 
 AI video · AI animation · photo to video
 Apni ek yaad comment karo. Aur us bhai/behen ko bhejo jo ye yaad karta hai.
@@ -824,15 +844,15 @@ Apni ek yaad comment karo. Aur us bhai/behen ko bhejo jo ye yaad karta hai.
 
 ⚑ The photo's age, ownership and consent are confirmed. The AI label applies.
 
-**T5: Craft showcase / BTS (3D or motion reel), first line 54 characters**
+**T5: Craft showcase / BTS (3D or motion reel), first line 43 characters**
 
 ```
-Ye 35 second ka reel ek laptop pe bana hai. Breakdown:
-Blender mein 3D, code se motion, aur har sound khud design kiya.
+Ye 35 second ka reel kaise bana? Breakdown:
+[one true sentence about how it was made, in Jawad's words]
 
-→ 3D props: Blender (CPU render)
-→ Type + UI animation: Python motion toolkit
-→ Voice + captions: Hinglish
+→ 3D: [tool Jawad confirms]
+→ Motion + type: [tool / workflow Jawad confirms]
+→ Voice: [human or AI voice, stated honestly]
 
 Motion graphics · Blender 3D · kinetic typography
 Kaunsa shot sabse mushkil tha? Guess karo 👇
@@ -840,34 +860,35 @@ Kaunsa shot sabse mushkil tha? Guess karo 👇
 #motiondesign #blender3d #motiongraphics #cinematic #jawadmp4
 ```
 
-⚑ Every production claim must match how the reel was actually made: duration, laptop, tools.
+⚑ Every production claim must match how the reel was actually made, including AI assistance and the AI/TTS voice. The brand truth rule says facts about Jawad's tools and process come only from him. The first line counts 43 characters.
 
 ---
 
 ## 6. Cover / thumbnail frame rules
 
-1. **Always upload a custom 1080x1920 cover.** It shows in the profile grid (3:4 crop, 1080x1440, since Jan 2025 [2nd, [Hopper](https://www.hopperhq.com/blog/instagram-reel-size/)]), in shares and DMs, and in Explore tiles. It can't be changed after posting [2nd].
+1. **Always upload a custom 1080x1920 cover** (the keyword frame, as the brand skill specifies). It shows in the profile grid (3:4 crop, 1080x1440, since Jan 2025 [2nd, [Hopper](https://www.hopperhq.com/blog/instagram-reel-size/)]), in shares and DMs, and in Explore tiles. It can't be changed after posting [2nd].
 2. **Composition safe area:**
-   - The title, face and keyword sit inside **y 285-1635**, the band common to the 3:4 grid and 4:5 feed crops.
+   - The brand minimum is the keyword inside the 3:4 grid crop, **y 240-1680**.
+   - Recommended: the title, face and keyword inside **y 285-1635**, the band common to the 3:4 grid and 4:5 feed crops.
    - Key copy sits inside **y 285-1480**, which also clears the Reels UI.
    - For the strictest square crops, keep the keyword inside y 420-1500.
 3. **The house cover formula** (from his 3 prior covers):
    - a warm-black cinematic world;
    - the subject with a red-orange **rim light**;
    - a small **grotesk caps line** (2-3 words);
-   - a big **glowing serif-italic keyword** (≥ 170 px);
-   - a **glowing underline**;
-   - `@jawad_mp4` in small type;
-   - ember particles or bokeh.
+   - a big **glowing serif-italic keyword** (`jw_key` ≥ 180 px);
+   - a **glowing underline** (`J.underline`);
+   - `@jawad_mp4` in small type (`J.signature`; the derived logo only once Jawad approves it);
+   - flame particles or bokeh (`J.embers`).
 
    Keep this formula. It is his recognisable grid.
 4. **2-5 words maximum on the cover.** The cover title is the **topic label**, not the full hook: "BAS EK *chhota sa* CHANGE", "*shaadi ki* VIDEO?", "RENDER *99%*".
-5. **Grid rhythm:** put every cover's keyword band at the same height (e.g. a centre line at y ≈ 1050-1150). Across a 3-wide profile row the ember keywords then line up into one glowing band, so the profile reads as a designed series. Alternate the subject between the left and right thirds for movement.
+5. **Grid rhythm:** put every cover's keyword band at the same height (e.g. a centre line at y ≈ 1050-1150). Across a 3-wide profile row the flame keywords then line up into one glowing band, so the profile reads as a designed series. Alternate the subject between the left and right thirds for movement.
 6. **Faces:** use the character-sheet expressions that match the hook: *shocked* (#6, #30), *confused* (#2, #26), *smirk* (#9, #21), *hand-on-chest* (#28, #34). The eye-line points at the keyword. The face sits inside x 140-940.
 7. **The thumbnail legibility test:** downscale the cover to 240 px wide (about the size of a grid tile on a phone). The keyword must still be readable and the face's emotion clear. If not, cut words or enlarge them.
 8. **Frame 0 ≠ cover, but both must work.** The Reels tab autoplays from frame 0, so frame 0 is the real hook. The cover can be a more composed still of the same idea (often the payoff frame with the title added).
 9. **Original only:** no copyrighted characters, logos or film stills on brand covers (originality ranking and IP risk). Jawad's character-sheet likeness and original 3D worlds only.
-10. **Colour:** ember on warm black. Keep blue and green to small accents (e.g. a UI detail), so the grid stays on-brand. The prior "yaadein" cover's purple-blue background was a one-off and shouldn't become the norm. ⚑ Jawad decides.
+10. **Colour:** flame on warm black (NIGHT_0/1). Keep blue and green to small accents (e.g. a UI detail), so the grid stays on-brand. The prior "yaadein" cover's purple-blue background was a one-off and shouldn't become the norm. ⚑ Jawad decides.
 
 ---
 
@@ -875,26 +896,28 @@ Kaunsa shot sabse mushkil tha? Guess karo 👇
 
 **Hook**
 - [ ] Frame 0 is moving and bright, with a transient on f0-f2.
-- [ ] Text ≤ 5 words, readable by 0.5 s, one ember keyword.
-- [ ] VO starts by f3; the hook sentence ends by 3.0 s.
+- [ ] Text ≤ 5 words, readable by 0.5 s, one `jw_key` keyword.
+- [ ] VO starts by f3 (≤ 0.3 s hard limit); the hook sentence ends by 3.0 s.
 
 **Structure**
 - [ ] Events every ≤ 3 s; midpoint break at 45-50 %; payoff at 65-80 %.
-- [ ] One CTA at 82-93 %; the loop bridge holds and frame DUR−1 matches frame 0.
-- [ ] No fade to black, no silent tail.
+- [ ] End card settled ≥ 1.5 s, with one true CTA ≤ 5 words; the loop bridge holds and frame DUR−1 matches frame 0.
+- [ ] No fade to black, no silent tail, no full-frame white flash.
 
 **Captions**
 - [ ] Ink scan inside x 70-1010 and y 230-1480; max x ≤ 930 in y 1050-1700; nothing textual below y 1620.
 - [ ] No doubled words between headline and subtitles.
 - [ ] Highlight within ±1 frame of word onsets.
+- [ ] Subtitles in Poppins sentence case (`--case as-is`) with one FLAME active word; type IVORY, never pure white.
 - [ ] The SRT is exported (sentence mode).
 
 **Language**
-- [ ] Canonical spellings (§2.5); no currency figures, politics or rivalry.
+- [ ] House spellings (§2.5); no currency figures, politics or rivalry.
 - [ ] TTS pronunciation checked (z / f / q sounds).
 
 **Claims**
-- [ ] Every ⚑ line confirmed by Jawad: personal stories, counts, deliverables, consent, tool claims.
+- [ ] Every ⚑ line confirmed by Jawad: personal stories, counts, deliverables, DM automation, consent, tool claims.
+- [ ] AI-label question answered for the TTS voice and any AI imagery of a person.
 
 **Post**
 - [ ] L1 ≤ 55 characters; English keywords in the first 2-3 lines.
@@ -926,7 +949,11 @@ Kaunsa shot sabse mushkil tha? Guess karo 👇
 - Hinglish engagement (IIT Delhi study on X): https://www.dtnext.in/lifestyle/wellbeing/hinglish-helps-users-engage-more-effectively-with-a-broader-audience-study-790290
 - Video-sharing motives: https://reunir.unir.net/handle/123456789/1763 · https://doaj.org/article/2c5ae278affb43e6883a4baf18afb157
 
+**Brand (repo)**
+- `.claude/skills/jawad-brand-reels/SKILL.md`, `pipeline/jawad_reels/BRAND.md`, `project.json`, `jawad_kit.py` (house styles, `HouseTitle`, `underline`, `signature`, looks).
+
 **Measured here**
-- Fonts from the Google Fonts CSS2 API, downloaded to a scratch folder and measured with Pillow/raqm (em/char, line widths of all 101 on-screen hook lines). Serif-italic house-style comparison sheet rendered.
-- Colour tokens sampled from `workspace/brand_reels/prior/*_cover_1080x1920.jpg`.
+- All 101 on-screen hook lines and the characters-per-line tables measured with the kit's `T.measure` (`jw_caps`, `jw_body`, `jw_key`, `jw_mono`). Earlier cross-check: Google Fonts specimens via Pillow/raqm and a serif-italic comparison sheet.
+- Cover colours sampled from `workspace/brand_reels/prior/*_cover_1080x1920.jpg` (agree with FLAME and EMBER).
+- `make_captions.py` read: the `bold-pop`/`karaoke` presets default to uppercase; there is no per-word font switch.
 - ref2 and ref3 word rates via faster-whisper (base, int8, CPU); ref2's own whisper JSON.

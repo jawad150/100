@@ -262,6 +262,11 @@ def apply():
 
     background._jawad_orig = orig_bg
     post._jawad_orig = orig_post
+    del background.__wrapped__, post.__wrapped__     # help() / inspect show the kit's defaults ('ember', bokeh)
+    background.__doc__ = (orig_bg.__doc__ or '') + '\n    [jawad_kit] default look \'ember\'; bokeh=0..1 scales the ' \
+        'bokeh layer of the kit looks.'
+    post.__doc__ = (orig_post.__doc__ or '') + '\n    [jawad_kit] kit looks also take crush=(kr, kg, kb) and mono=0..1; ' \
+        'grain runs last.'
     K.background, K.post = background, post
     # ---- footage grades (display-referred; black=0 -> never lifted)
     F.GRADES.setdefault('ember', dict(

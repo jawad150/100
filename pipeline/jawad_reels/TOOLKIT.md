@@ -1,3 +1,29 @@
+# jawad_reels project notes (read first)
+
+This is the project copy of the Reels Studio toolkit for **Jawad (@jawad_mp4)**. The rest of this file is the
+toolkit's generic cheat-sheet, written for an earlier client: its examples (copy, footage `c01`..., props such as
+heart / house / coin_gbp, looks `neon` / `amber` / `airy`) are API illustrations only. Never use them in Jawad's reels.
+
+* Brand: `BRAND.md` (palette, fonts, logo, contrast, safe zones, restore block). Palette + fonts live in
+  `project.json`; `K.C['MAGENTA']` is Jawad's FLAME orange here, `K.C['ORANGE']` his RED.
+* Profile: start every module with `import jawad_kit` then `from jawad_kit import K, T, ui, F, S3, SFX, J`.
+  Looks: `LOOK = 'ember'` (deep warm-black void, flame / ember glows, warm bokeh, red-orange bloom, crushed
+  blacks) or `'noir_ember'` (monochrome warm black, one red-orange light). `J.register_look()` adds more.
+* House type: `T.render('younger self', 'jw_key', px=210)` (Instrument Serif Italic flame keyword),
+  `'jw_caps'` / `'jw_caps_bold'` (white Poppins uppercase), `'jw_body'`, `'jw_mono'` (JetBrains Mono), `'jw_handle'`,
+  `'jw_key3d'`, `'jw_neon'`; aliases `font='serif' | 'grotesk' | 'mono'` (`'hand'` = the serif italic).
+  `J.HouseTitle('MEETING MY', 'younger self').draw(cv, t, 540, 700, t0=...)` = the covers' lockup (caps line,
+  keyword rise, underline draw-on); `J.underline(760).draw(cv, x0, y, u)`; `J.signature(cv, 540, 1585)`;
+  `J.embers(140)` rising sparks.
+* `brand_smoke.py` is the 2 s reference module (`python3 render.py brand_smoke --sheet 4 --samples 1 --workers 1`).
+  Measured on the shared 4-core box, 1 worker: 0.53 s/frame at 1 sample, 1.10 s/frame at 3 samples (worker
+  peak 0.8-1.0 GB).
+* Project-copy fixes: `Glyphs.rise/slam/track(blur=...)` now sets the animator's blur-in (it used to blur the
+  settled block for good; use `block_blur=` for a whole-block blur); type3d / ui self-tests skip their footage
+  tiles when the workspace has no `frames/manifest.json`; setup_workspace.py: `font_copies`, `"site_images": false`,
+  `--footage` refuses without a `drive_folder`.
+
+---------------------------------------------------------------------------------------------------------------
 # Organic Fostering toolkit: cheat-sheet for the timeline agents
 
 Read `BRIEF.md` first (copy, palette, safe zones, per-reel looks). This page tells you how to *build* a reel with the
