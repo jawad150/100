@@ -1,5 +1,5 @@
 {
- "_about": "Voiceover script for the five Organic Fostering pieces. Verified copy only (BRIEF.md section 1, BRIEF2.md): every line repeats on-screen copy or a verified site fact. Each paragraph is voiced in one take (natural prosody), then split into lines at the sentence pauses with Whisper word timings (vo_tools.py split). 'say' is what the TTS reads (numbers spelled out); 'lines' are the on-screen-matched sentence ids in order.",
+ "_about": "Voiceover script for the five Organic Fostering pieces. Verified copy only (BRIEF.md section 1, BRIEF2.md): every line repeats on-screen copy or a verified site fact. Each paragraph is voiced in one take (natural prosody), then split into lines at the sentence pauses with Whisper word timings (vo_tools.py split). 'say' is what the TTS reads (numbers spelled out); 'lines' are the on-screen-matched sentence ids in order. 'pad' is a throwaway word voiced after the paragraph (the TTS otherwise clips the last word); vo_tools cuts it off.",
  "voice": {
   "engine": "higgsfield text2speech_v2 / elevenlabs",
   "name": "Vera",
@@ -30,7 +30,8 @@
     "say": "Small moments can help build stability.",
     "lines": [
      "small_moments"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p4",
@@ -39,14 +40,16 @@
      "consistent_home",
      "familiar_routine",
      "someone_there"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p5",
     "say": "Fostering happens in the everyday.",
     "lines": [
      "happens_everyday"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p6",
@@ -54,7 +57,8 @@
     "lines": [
      "make_room",
      "start_enquiry"
-    ]
+    ],
+    "pad": "Thanks."
    }
   ],
   "anim4": [
@@ -71,7 +75,8 @@
     "say": "Fostering payments help cover the costs of caring for a child.",
     "lines": [
      "payments_help"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p3",
@@ -88,14 +93,16 @@
     "say": "It's about supporting everyday life.",
     "lines": [
      "everyday_life"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p5",
     "say": "Four hundred and forty-seven pounds sixty a week, per child aged nought to four.",
     "lines": [
      "final_amount"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p6",
@@ -103,7 +110,8 @@
     "lines": [
      "want_understand",
      "start_conversation"
-    ]
+    ],
+    "pad": "Thanks."
    }
   ],
   "reel1": [
@@ -121,7 +129,8 @@
     "say": "Could you be a foster carer?",
     "lines": [
      "could_you"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p3",
@@ -197,14 +206,16 @@
     "say": "Rates may vary by region, and are subject to change.",
     "lines": [
      "rates_vary"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p6",
     "say": "Plus support around your household.",
     "lines": [
      "support_household"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p7",
@@ -244,7 +255,8 @@
     "lines": [
      "develop",
      "matching"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p4",
@@ -252,14 +264,16 @@
     "lines": [
      "grow",
      "steady_care"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p5",
     "say": "Different children need different kinds of care.",
     "lines": [
      "kinds_of_care"
-    ]
+    ],
+    "pad": "Thanks."
    },
    {
     "p": "p6",
@@ -280,7 +294,8 @@
     "texts": [
      "Nurture. Develop. Grow.",
      "Start your enquiry with Organic Fostering."
-    ]
+    ],
+    "pad": "Thanks."
    }
   ]
  }

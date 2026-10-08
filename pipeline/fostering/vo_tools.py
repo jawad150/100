@@ -2,7 +2,9 @@
 
     python3 vo_tools.py split [piece ...]     # needs faster-whisper (pip install faster-whisper soundfile)
 
-Reads vo/script.json and the TTS takes vo/<piece>/<p>.mp3 (one take per paragraph, natural prosody). Each take is
+Reads vo/script.json and the TTS takes vo/<piece>/<p>.mp3 (one take per paragraph, natural prosody; a paragraph with
+"pad" was voiced with that throwaway word after it, because the TTS clips the last word of a take, and the pad clip
+is dropped). Each take is
 transcribed with word timestamps; it is cut between sentences at the silence gaps that follow sentence-final
 punctuation (the largest such gaps, as many as the paragraph has lines), trimmed to 30 ms before the first and
 120 ms after the last word, faded (10 / 60 ms) and written as 48 kHz mono float WAVs:
@@ -124,8 +126,12 @@ def split_take(x, texts, sr=SR):
     clips = []
     starts = [max(0.0, t_on - PRE)] + [max(r0, r1 - PRE) for r0, r1 in cuts]
     ends = [min(r1, r0 + 0.08) for r0, r1 in cuts] + [min(len(x) / sr, t_off + POST)]
-    for t0, t1 in zip(starts, ends):
-        y = _fade(x[int(t0 * sr):int(t1 * sr)])
+    for k, (t0, t1) in enumerate(zip(starts, ends)):
+        last = k == len(starts) - 1 and t1 >= len(x) / sr - 1e-3
+        if last:   # the take's natural decay runs to the end of the file: short fade + a little silence
+            y = np.concatenate([_fade(x[int(t0 * sr):], 0.010, 0.015), np.zeros(int(0.08 * sr), np.float32)])
+        else:
+            y = _fade(x[int(t0 * sr):int(t1 * sr)])
         clips.append((y, ''))
     return clips
 
@@ -146,7 +152,12 @@ def split(pieces=None):
             texts = [t.replace('....', '...') for t in texts]
             if len(texts) != len(para['lines']):
                 raise ValueError('%s %s: %d sentences for %d lines' % (piece, para['p'], len(texts), len(para['lines'])))
-            clips = split_take(x, texts, SR)
+            n20 = int(0.02 * SR)
+            end_db = 20 * np.log10(np.sqrt(np.mean(x[-n20:] ** 2)) / (np.abs(x).max() + 1e-9) + 1e-9)
+            if end_db > -35 and not para.get('pad'):     # the take stops mid-sound: its last word is clipped
+                print('   !! %s %s: take ends %.0f dB below peak (clipped last word): re-voice with "pad"'
+                      % (piece, para['p'], end_db))
+            clips = split_take(x, texts + ([para['pad']] if para.get('pad') else []), SR)[:len(texts)]
             for k, (line, (y, _)) in enumerate(zip(para['lines'], clips)):
                 p = os.path.join(out, line + '.wav')
                 sf.write(p, y, SR, subtype='FLOAT')

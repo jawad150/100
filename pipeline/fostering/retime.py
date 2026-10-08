@@ -23,14 +23,15 @@ Slot keys (all times are SOURCE seconds of the wrapped module):
     min_hold    minimum OUTPUT length of the hold (reading time for copy the VO doesn't read), default 0
     min_rate    floor on the source speed inside the hold (default 0.12; ~0.5 where footage plays)
     gap         pause between consecutive lines inside the slot (default 0.18 s)
-    quant       grid for this hold's extension in seconds (default one beat; e.g. 0.25 = eighth notes at 120 BPM)
+    quant       grid for this hold's extension in seconds (default half a beat; e.g. 0.25 at 120 BPM)
 Everything outside the holds runs at rate 1, so slams, whips, cuts, tumbles and camera moves keep their timing.
-Each hold's extension is rounded UP to whole beats (60 / BPM), so every source event moves by whole beats and the
+Each hold's extension is rounded UP to half beats (30 / BPM), so every source event moves by whole 8th notes and the
 edit stays on the module's BPM grid (music at the same tempo still locks).
 
 Audio (python3 retime.py audio <reel>_vo): the module's SFX cues are re-mixed at their warped times (rhythmic
-'interval' params scaled by the local slow-down) at -18 LUFS, ducked ~7 dB under the voice, the VO lines are placed
-(each levelled to -16 LUFS), and the sum is mastered to -14 LUFS integrated, <= -2.0 dBTP:
+'interval' params scaled by the local slow-down) at -18 LUFS, the VO lines are placed
+(each levelled to -16 LUFS; the SFX duck 10 dB under the voice, fully down 0.1 s before each line, DUCK_DB in the
+VO module overrides), and the sum is mastered to -14 LUFS integrated, <= -2.0 dBTP:
     <WS>/audio/<reel>_vo_mix.wav       render with: python3 render.py <reel>_vo --audio <that wav> --workers 4
     <WS>/audio/<reel>_vo_vo_stem.wav   voice only (post master gain)   |  <reel>_vo_sfx_stem.wav  ducked SFX only
     <WS>/out/<reel>_vo/vo_cues.json    every line's out-time start/end and text (for QA)
@@ -113,7 +114,7 @@ def load_lines(piece):
 
 def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth=0.24):
     """SLOTS + line durations -> (Warp, placed VO list, report rows). See the module docstring."""
-    beat = 60.0 / bpm if (bpm and quantize) else None
+    beat = 30.0 / bpm if (bpm and quantize) else None     # half beats: every event stays on the 8th-note grid
     knots = [(0.0, 0.0)]
     cur_s = cur_o = 0.0
     prev_end = -1e9
@@ -217,8 +218,9 @@ def _warp_cue(c, warp):
     return c
 
 
-def wrap(ns, M, piece, slots, quantize=True, **solve_kw):
-    """Fill a VO module's namespace `ns` (pass globals()) from the wrapped module M."""
+def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, **solve_kw):
+    """Fill a VO module's namespace `ns` (pass globals()) from the wrapped module M. cue_filter(cue, src_t, rate)
+    -> False drops a (single-hit) SFX cue, e.g. ticks that would land seconds apart inside a slowed hold."""
     import core as K
     lines = load_lines(piece)
     warp, placed, rows = solve(slots, lines, float(M.DUR), getattr(M, 'BPM', None), quantize, **solve_kw)
@@ -248,8 +250,9 @@ def wrap(ns, M, piece, slots, quantize=True, **solve_kw):
                     pi = ci['params'] if isinstance(ci.get('params'), dict) else ci
                     pi['n'] = 1
                     ci['t'] = float(c['t']) + i * iv
-                    out.append(_warp_cue(ci, warp))
-            else:
+                    if cue_filter is None or cue_filter(ci, ci['t'], warp.rate_src(ci['t'])) is not False:
+                        out.append(_warp_cue(ci, warp))
+            elif cue_filter is None or cue_filter(c, float(c['t']), warp.rate_src(float(c['t']))) is not False:
                 out.append(_warp_cue(c, warp))
         return out
 
@@ -286,7 +289,8 @@ def _env(active, sr, attack=0.06, release=0.35):
     return np.clip(out, 0, 1)
 
 
-def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db=-7.0, sfx_tp=-2.3, verbose=True):
+def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db=-10.0, duck_lead=0.10, sfx_tp=-2.3,
+                verbose=True):
     import importlib
     import audio as A
     from scipy.io import wavfile
@@ -321,8 +325,10 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         vo[i0:i0 + n] += (y[:n] * g)[:, None]
         rms = np.sqrt(np.convolve(y[:n] ** 2, np.ones(480) / 480, 'same'))
         active[i0:i0 + n] |= rms > 10 ** (-45 / 20)
-    env = _env(active, sr)
-    sfx_d = sfx * (1 - (1 - A.undb(duck_db)) * env)[:, None]
+    lead = int(duck_lead * sr)              # the duck is fully down when each line starts (no hit on its first word)
+    ahead = np.concatenate([active[lead:], np.zeros(lead, bool)]) | active
+    env = _env(ahead, sr, attack=0.02, release=0.30)
+    sfx_d = sfx * (1 - (1 - A.undb(getattr(mod, 'DUCK_DB', duck_db))) * env)[:, None]
     # ---- master: gain G, true-peak limiter, iterate
     mix = vo + sfx_d
     G = target_lufs - A.loudness(mix)
