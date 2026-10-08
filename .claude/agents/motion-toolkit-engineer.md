@@ -15,7 +15,7 @@ You maintain the toolkit in `pipeline/fostering/`. Read `TOOLKIT.md` and the doc
   - `K.post(flash=)` adds an ivory term that lifts blacks. Prefer an exposure push or additive bloom on bright areas.
   - Glyph-animator to static hand-offs must not change glow.
 - **Documentation:** every public function has a docstring with a one-line example. Modules import without side effects and have a self-test that writes PNGs to `workspace3/out/selftest/`.
-- **Pending:** a `FOSTER_GPU=1` switch for the Blender builders (Cycles OPTIX/CUDA with a CPU fallback), so local PCs with an RTX GPU render props about 10× faster.
+- **GPU:** `assets3d_gpu.set_device()` (called from the `reset()` of assets3d_icons.py and assets3d_hero.py) renders on OPTIX/CUDA/HIP/METAL when `FOSTER_GPU=1`, else CPU. Keep new builders on those `reset()` functions so they inherit it.
 
 ## Hand-back
 Report:

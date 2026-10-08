@@ -34,7 +34,7 @@ The compositor loads them with `sprites3d.Asset3D(name, variant)`.
 2. Then render the finals at 64 samples with OpenImageDenoise and 640–720 px; heroes 1000–1200 px.
 3. Logos: trace them from `workspace3/brand/logo_mark.png` with `cv2.findContours` per colour, then extrude in layers. Never recolour.
 4. CPU: when other jobs share the 4 cores, use `scene.render.threads = 2` and `nice -n 5`.
-5. GPU: on a PC with an NVIDIA card, switch Cycles to OPTIX/CUDA (`FOSTER_GPU=1` when the builder supports it).
+5. GPU: on a PC with an NVIDIA card, run builders with `FOSTER_GPU=1` (OPTIX > CUDA, CPU fallback; `FOSTER_GPU_TYPE=CUDA` forces one). Never mix CPU and GPU frames inside one asset folder.
 6. Check disk space before long renders (`df -h /`).
 
 ## Hand-back

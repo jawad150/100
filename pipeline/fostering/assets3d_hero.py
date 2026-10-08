@@ -645,14 +645,15 @@ def _bpy():
 
 
 def reset(res=(720, 720), samples=None, variant='night'):
-    """Empty Cycles CPU scene: transparent film, Standard view, OIDN, fixed seed (no denoiser boil)."""
+    """Empty Cycles scene (CPU; GPU when FOSTER_GPU=1): transparent film, Standard view, OIDN, fixed seed (no denoiser boil)."""
     _bpy()
     import warnings
     warnings.filterwarnings('ignore', category=DeprecationWarning)
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = bpy.context.scene
     sc.render.engine = 'CYCLES'
-    sc.cycles.device = 'CPU'
+    import assets3d_gpu
+    assets3d_gpu.set_device(bpy, sc)          # CPU unless FOSTER_GPU=1 finds a GPU
     sc.render.threads_mode = 'FIXED'
     sc.render.threads = THREADS
     sc.cycles.samples = samples or SAMPLES
