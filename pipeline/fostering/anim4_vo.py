@@ -13,19 +13,21 @@ A, L = M.ARRIVE, M.LEAVE
 
 SLOTS = [
     # HOOK: "£447.60 a week." over the slam + "per week" (float), "But where does it go?" with the "?" and chips
-    dict(lines=['amount'], at=0.0, delay=0.35, hold=(0.6, 1.0), min_rate=0.1, tail=0.1),
-    dict(lines=['where'], at=M.T_Q, delay=0.08, hold=(1.9, 2.25), min_hold=1.2, tail=0.4),
+    # (the hold ends 0.12 s before the "?" slam so the ramp back to 1x is done when it lands)
+    dict(lines=['amount'], at=0.0, delay=0.35, hold=(0.6, 0.88), min_rate=0.085, tail=0.0),
+    dict(lines=['where'], at=M.T_Q, delay=0.08, hold=(1.9, 2.25), min_hold=1.2, tail=0.4, duck_lead=-0.03),
     # the coins break into the ribbon; the message writes in line by line
-    dict(lines=['payments_help'], at=M.T_MSG, delay=0.05, hold=(M.T_MSG + 0.8, L['s0']), tail=0.45),
+    # (tails: >= 0.7 s of reading after the speech ends, before each headline fades)
+    dict(lines=['payments_help'], at=M.T_MSG, delay=0.05, hold=(M.T_MSG + 0.8, L['s0']), tail=0.69),
     # STATIONS: headline lands at ARRIVE + 0.25; the whole dwell slows evenly
-    dict(lines=['home'], at=A['home'] + 0.25, delay=0.0, hold=(A['home'], L['home']), min_rate=0.35, tail=0.3),
-    dict(lines=['food'], at=A['food'] + 0.25, delay=0.06, hold=(A['food'], L['food']), min_rate=0.35, tail=0.3),
-    dict(lines=['clothes'], at=A['cloth'] + 0.25, delay=0.0, hold=(A['cloth'], L['cloth']), min_rate=0.35, tail=0.3),
+    dict(lines=['home'], at=A['home'] + 0.25, delay=0.0, hold=(A['home'], L['home']), min_rate=0.35, tail=0.66),
+    dict(lines=['food'], at=A['food'] + 0.25, delay=0.06, hold=(A['food'], L['food']), min_rate=0.35, tail=0.68),
+    dict(lines=['clothes'], at=A['cloth'] + 0.25, delay=0.0, hold=(A['cloth'], L['cloth']), min_rate=0.35, tail=0.64),
     dict(lines=['travel'], at=A['travel'] + 0.25, delay=0.0, hold=(A['travel'], L['travel']), min_rate=0.35,
-         tail=0.3),
+         tail=0.70),
     # the child gathers everything
     dict(lines=['everyday_life'], at=A['child'] + 0.25, delay=0.05, hold=(A['child'], M.T_FADE[0]), min_rate=0.35,
-         tail=0.35),
+         tail=0.67),
     # FINAL: "£447.60 a week, per child aged nought to four" over a near-freeze on the settled number + statement
     dict(lines=['final_amount'], at=M.T_NUM2, delay=0.35, hold=(M.T_STMT + 0.1, M.T_LOGO), min_rate=0.06,
          tail=0.15),
@@ -40,11 +42,13 @@ DUCK_DB = -14.0          # dense pops / drops under every station line
 
 
 def cue_gain(cue, src_t, rate):
-    """Hits that land on words: the basket drops, the first ball bounce, the gather whoosh."""
+    """Hits that land on words: the basket drops, the first ball bounce, the gather whoosh, the chip pops."""
     if cue['name'] == 'basket_drop' or (cue['name'] == 'ball_bounce' and src_t < M.BOUNCES[0] + 0.05):
         return -5.0
     if cue['name'] == 'whoosh_slow' and abs(src_t - (M.T_GATHER + 0.25)) < 0.3:
         return -5.0
+    if cue['name'] in ('pop', 'glass_tap') and M.T_CHIPS < src_t < M.T_CHIPS + 0.4:     # chips under "does it"
+        return -3.0
     return 0.0
 
 

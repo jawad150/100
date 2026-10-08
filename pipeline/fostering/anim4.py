@@ -374,14 +374,21 @@ def draw_stream(cv, c, t, n_samples, opacity=1.0, rib_from=0.0):
     half = 0.25 / K.FPS / max(1, n_samples)
     s1a, s1b = s_lead(t - half), s_lead(t + half)
 
-    def trickle(i, sh_, tt):
+    def coin_id(i, tt):
+        # a coin's identity is constant while it flows (back falls as tt * V_FLOW grows), so its size, spin and wobble
+        # stay with it when its slot wraps every GAP / V_FLOW s (keyed on the slot i, every coin swapped looks on
+        # each wrap: hidden at 1x, a visible tick when the VO version slows the stream)
         back = (i * GAP - (tt * V_FLOW) % GAP) % span
+        return back, int(round((back + tt * V_FLOW) / GAP))
+
+    def trickle(i, sh_, tt):
+        back, k = coin_id(i, tt)
         s = sh_ - back
         Pp = pth.at(max(0.0, s))
         tg = pth.tan(max(0.0, s))
         nrm = np.array([-tg[1], tg[0], 0.0])
-        wob = 26.0 * math.sin(s * 0.011 + i * 1.7)
-        return Pp + nrm * wob + np.array([0.0, 0.0, -40.0 - 30.0 * math.sin(i * 2.1 + tt)]), back, s
+        wob = 26.0 * math.sin(s * 0.011 + k * 1.7)
+        return Pp + nrm * wob + np.array([0.0, 0.0, -40.0 - 30.0 * math.sin(k * 2.1 + tt)]), back, s
     for i in range(N_TRICKLE):
         Pw, back, s = trickle(i, s1, t)
         if s < s0_ + 40 or s < 0:
@@ -390,17 +397,18 @@ def draw_stream(cv, c, t, n_samples, opacity=1.0, rib_from=0.0):
         a *= K.smoothstep(s0_ + 40, s0_ + 240, s)
         if a <= 0.02:
             continue
-        size = 86.0 + 18.0 * ((i * 37) % 5) / 4.0
-        rate = 260.0 + 70.0 * ((i * 13) % 4)
-        ang = t * rate + i * 47.0
+        k = coin_id(i, t)[1]
+        size = 86.0 + 18.0 * ((k * 37) % 5) / 4.0
+        rate = 260.0 + 70.0 * ((k * 13) % 4)
+        ang = t * rate + k * 47.0
         P0, b0, _ = trickle(i, s1a, t - half)
         P1, b1, _ = trickle(i, s1b, t + half)
         if abs(b1 - b0) < GAP / 2:                      # (not across a tail respawn)
             X.draw_coin_swept(cv, c, _coin_asset(size * c.focal / 1500.0), P0, P1, size, ang, rate, n_samples,
-                              opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(i))
+                              opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(k))
         else:
             X.draw_coin(cv, c, _coin_asset(size * c.focal / 1500.0), Pw, size, ang, rate, n_samples,
-                        opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(i))
+                        opacity=a * opacity, rot=-12.0 + 8.0 * math.sin(k))
     # lead packet (bigger coins) while travelling (swept the same way)
     if mv > 0.01:
         def lead(j, sh_, tt):

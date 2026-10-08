@@ -373,12 +373,23 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         rms = np.sqrt(np.convolve(y[:n] ** 2, np.ones(480) / 480, 'same'))
         act = rms > 10 ** (-45 / 20)
         active[i0:i0 + n] |= act
+        # pauses inside a line (commas, between words) shorter than 0.25 s stay ducked: no SFX swell into a word
+        on = np.flatnonzero(act)
+        if len(on):
+            gaps = np.flatnonzero(np.diff(on) > 1)
+            for g in gaps:
+                a_, b_ = on[g] + 1, on[g + 1]
+                if b_ - a_ < int(0.25 * sr):
+                    act[a_:b_] = True
         # look-ahead: the duck is fully down when the line starts (no hit on its first word), unless the slot asks
-        # for a late duck (duck_lead < 0) to keep a hero hit under the first syllable
+        # for a late duck (duck_lead < 0) to keep a hero hit under the first syllable; either way it holds until the
+        # line's last sound (the shifted mask alone would release duck_lead early, on the last word)
         ld = duck_lead if p.get('duck_lead') is None else float(p['duck_lead'])
         j0 = max(0, i0 - int(round(ld * sr)))
         j1 = min(N, j0 + n)
         ahead[j0:j1] |= act[:j1 - j0]
+        if ld > 0:
+            ahead[i0:i0 + n] |= act
     env = _env(ahead, sr, attack=0.02, release=0.30)
     sfx_d = sfx * (1 - (1 - A.undb(getattr(mod, 'DUCK_DB', duck_db))) * env)[:, None]
     # ---- master: gain G, true-peak limiter, iterate
