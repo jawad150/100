@@ -295,3 +295,16 @@ python3 demo_looks.py heroes | clip | selftest           # the reference demo
    its text by ~10 %: give fine print 30 px on tilted UI).
 9. Safe zones: key copy x 70..1010, y 230..1480; nothing textual below y 1620; avoid x > 930 for y 1050..1700.
 10. Use catalog SFX names (`A.names()`); unknown names fall back fuzzily with a printed warning.
+11. `mode='add'` adds colour but combines alpha like 'over'. That suits light added onto an opaque canvas (glows,
+    bokeh, leaks), but summing N weighted copies of a sprite into an empty layer (a motion smear) leaves the result
+    semi-transparent and pale (alpha 1-(1-a/N)^N). Accumulate smears with plain array sums, as
+    `anim4_fx.accumulate` does, and composite the summed layer once with 'over'.
+12. `ui.glass_card(shadow=0)` raises a TypeError: pass a small value (0.5) and draw only the face. `ui.button`'s
+    glow is clipped at the sprite bounds: feather it or pad the sprite.
+13. `to_srgb8` rolls linear white off to about 247/255. For a pure-white page, use a page value around linear 1.16
+    and a bloom threshold of about 1.3 (anim4).
+14. `render.py` rebuilds a stale SFX mix with `audio.build_reel` at -1.5 dBTP and without custom sounds. A module
+    with its own `<module>_sfx.py` builds the mix itself (`python3 <module>_sfx.py build`) and renders with
+    `--no-sfx-build`.
+15. `K.shake` peaks at about 2 px at frame times even at high amplitude. For a visible hit judder, use a damped
+    sub-pixel offset as `anim1.py` does (`SHAKES`).
