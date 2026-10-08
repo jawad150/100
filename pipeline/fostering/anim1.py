@@ -135,16 +135,16 @@ def A():
     d['logo'] = K.load_image(K.BRAND + '/logo_full.png', size=680)
     d['button'] = ui.button('Start your enquiry', look='airy', h=92, size=40)
     # props
-    d['backpack'] = X.Prop('backpack', 330)
-    d['bus'] = X.Prop('school_bus', 150, mode='side')
-    d['book'] = X.Prop('book_pencil', 290)
-    d['bowl'] = X.Prop('mixing_bowl', 270)
-    d['cupcake'] = X.Prop('cupcake', 255)
+    d['backpack'] = X.Prop('backpack', 380)
+    d['bus'] = X.Prop('school_bus', 185, mode='side')
+    d['book'] = X.Prop('book_pencil', 330)
+    d['bowl'] = X.Prop('mixing_bowl', 300)
+    d['cupcake'] = X.Prop('cupcake', 300)
     d['i_house'] = X.Prop('house', 92)
     d['i_clock'] = X.Prop('alarm_clock', 92)
     d['i_family'] = X.Prop('family_figures', 92)
     d['house'] = X.Prop('house', 370)
-    d['clock'] = X.Prop('alarm_clock', 290)
+    d['clock'] = X.Prop('alarm_clock', 330)
     d['blocks'] = block_sprites()
     d['bus_path'] = bus_path()
     return d
@@ -606,13 +606,107 @@ def props_frame1(cv, layer, lb, t, light):
                    opacity=dr['opacity'], rot=rot))
 
 
+# frame-2 props: ground point, landing time, base yaw
+PROPS2 = {'backpack': ((250, 1232), 5.70, -12.0), 'book': ((785, 1196), 7.38, 0.0),
+          'bowl': ((305, 1562), 8.55, -10.0), 'cupcake': ((785, 1566), 8.85, 12.0)}
+GROUPS = [('backpack',), ('book',), ('bowl', 'cupcake')]
+# HOMEWORK: cursive lines written on the book's right page (sprite coords normalised by the sprite width,
+# measured on the yaw-0 render: the page's ruled lines rise ~10 deg to the right)
+WRITE_T = (7.52, 8.18)
+REST_TIP = None
+
+
+@functools.lru_cache(maxsize=1)
+def write_paths():
+    def cursive(x0, y0, length, seed, loops):
+        rng = np.random.default_rng(seed)
+        th = np.linspace(0, loops * 2 * math.pi, 60 * loops)
+        amp = 1.0 + 0.22 * np.sin(th * 0.41 + rng.uniform(0, 6)) + 0.1 * np.sin(th * 1.7)
+        a, b = length / (loops * 2 * math.pi), 0.0105
+        x = a * th - b * np.sin(th) * amp
+        y = -b * 0.95 * np.cos(th) * amp
+        ang = math.radians(-10.0)
+        xr = x * math.cos(ang) - y * math.sin(ang)
+        yr = x * math.sin(ang) + y * math.cos(ang)
+        return np.stack([x0 + xr, y0 + yr], 1)
+    return [cursive(0.548, 0.488, 0.165, 3, 8), cursive(0.548, 0.536, 0.115, 7, 6)]
+
+
+def book_to_screen(pr, x, y, scale, pts_norm):
+    """Sprite-normalised points -> screen px for the book drawn with its ground point at (x, y)."""
+    sw = pr.a.size[0]
+    gx, gy = pr.ground()
+    P = np.asarray(pts_norm) * sw
+    return np.stack([x + (P[:, 0] - gx) * pr.k * scale, y + (P[:, 1] - gy) * pr.k * scale], 1)
+
+
+def draw_book_writing(cv, layer, lb, t, light, x, y):
+    """The book (pencil removed) + graphite lines + the book's own pencil lifting off, writing, settling back."""
+    pr = A()['book']
+    sp = X.split_book(X.register_prop(pr), 0.0) if pr.real else None
+    if sp is None:
+        return False
+    book, pen, tip, _ = sp
+    sw = pr.a.size[0]
+    anc = pr.anchor_frac()
+    k = pr.k
+    lb.add(K.draw(layer, book, x, y, scale=k, anchor=anc))
+    paths = [book_to_screen(pr, x, y, 1.0, p) for p in write_paths()]
+    lens = [X._arclen(p)[-1] for p in paths]
+    tot = sum(lens) + 40.0                               # +40 px of pen travel between the lines
+    w0, w1 = WRITE_T
+    u = K.ramp(t, w0, w1, 'linear')
+    dist = u * tot
+    # graphite written so far
+    acc = 0.0
+    for i, p in enumerate(paths):
+        d = min(max(dist - acc, 0.0), lens[i])
+        if d > 0:
+            al, ax0, ay0 = X.stroke_alpha(p, 2.1 * k / 0.75, 0.0, d / lens[i])
+            lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
+        acc += lens[i] + (40.0 if i == 0 else 0.0)
+    # pencil tip position
+    rest = np.array([x + (tip[0] - sw * anc[0]) * k, y + (tip[1] - pr.a.size[1] * anc[1]) * k])
+    start = paths[0][0]
+    if t < w0:
+        f = K.ramp(t, w0 - 0.14, w0, 'inout_sine')
+        pos = rest + (start - rest) * f
+        lift = 14.0 * math.sin(math.pi * f)
+        rot = -6.0 * math.sin(math.pi * f)
+    elif t <= w1:
+        acc = 0.0
+        pos = paths[-1][-1]
+        lift = 0.0
+        for i, p in enumerate(paths):
+            if dist <= acc + lens[i]:
+                px, py, _ = X.path_point(p, (dist - acc) / lens[i])
+                pos = np.array([px, py])
+                break
+            acc += lens[i]
+            if i == 0 and dist <= acc + 40.0:          # hop to the next line
+                f = (dist - acc) / 40.0
+                pos = paths[0][-1] + (paths[1][0] - paths[0][-1]) * f
+                lift = 12.0 * math.sin(math.pi * f)
+                break
+            acc += 40.0
+        rot = 4.0 * math.sin(t * 31.0) + 2.0 * math.sin(t * 13.0)
+    else:
+        f = K.ramp(t, w1, w1 + 0.16, 'inout_sine')
+        pos = paths[-1][-1] + (rest - paths[-1][-1]) * f
+        lift = 14.0 * math.sin(math.pi * f)
+        rot = -6.0 * math.sin(math.pi * f)
+    tip_anchor = (tip[0] / pen.shape[1], tip[1] / pen.shape[0])
+    sil = _sil(pen)
+    K.draw(layer, sil, pos[0] + 5 + lift * 0.5, pos[1] + 6 + lift * 0.6, scale=k, rot=rot, anchor=tip_anchor,
+           opacity=0.28, blur=2.5 + lift * 0.3)
+    lb.add(K.draw(layer, pen, pos[0], pos[1] - lift, scale=k, rot=rot, anchor=tip_anchor))
+    return True
+
+
 def props_frame2(cv, layer, lb, t, light, morph=True):
     Ad = A()
-    # backpack: lands 5.7
-    items = [('backpack', (255, 1200), 5.70, 0.0, -12.0), ('book', (790, 1172), 7.38, 0.0, 14.0),
-             ('bowl', (300, 1515), 8.55, 0.0, -10.0), ('cupcake', (775, 1522), 8.85, 0.0, 12.0)]
     groups = {'backpack': 0, 'book': 1, 'bowl': 2, 'cupcake': 2}
-    for name, (x, y), tl, _, yaw0 in items:
+    for name, ((x, y), tl, yaw0) in PROPS2.items():
         pr = Ad[name]
         dr = X.drop(t, tl - 0.30, 0.30)
         if dr is None:
@@ -620,12 +714,16 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
         g = groups[name]
         if morph and t >= T_F3 + 0.6 * g:
             continue       # handled by the tumble / morph
-        yaw = yaw0 + 4.0 * math.sin(t * 0.9 + g)
+        yaw = yaw0 + (0.0 if name == 'book' else 4.0 * math.sin(t * 0.9 + g))
         pr.shadow(cv, x, y, light, lift=dr['lift'], yaw=yaw, scale=dr['scale'], opacity=dr['opacity'])
+        if name == 'book' and WRITE_T[0] - 0.16 <= t <= WRITE_T[1] + 0.17 and dr['land'] >= 1:
+            if draw_book_writing(cv, layer, lb, t, light, x, y - dr['lift'] * 0.35):
+                continue
         lb.add(pr.draw(layer, x, y - dr['lift'] * 0.35, yaw=yaw, scale=dr['scale'], squash=dr['squash'],
                        opacity=dr['opacity']))
+        if name == 'book' and t > WRITE_T[1] + 0.17:
+            draw_book_lines(layer, lb, x, y, t)
     # bus drives along the dashed path
-    ub = K.ramp(t, 5.95, 7.05, 'in_sine') if t < 6.5 else None
     if 5.95 <= t <= 7.1:
         u = (t - 5.95) / 1.1
         u = u * u * (3 - 2 * u) * 0.35 + u * 0.65
@@ -636,10 +734,21 @@ def props_frame2(cv, layer, lb, t, light, morph=True):
         lb.add(bus.draw(layer, px, py - 10 + bob, rot=ang * 0.7, scale=1.0))
 
 
+def draw_book_lines(layer, lb, x, y, t):
+    """The finished pencil lines stay on the page after writing (until the book tumbles)."""
+    pr = A()['book']
+    if not pr.real:
+        return
+    for p in write_paths():
+        P = book_to_screen(pr, x, y, 1.0, p)
+        al, ax0, ay0 = X.stroke_alpha(P, 2.1 * pr.k / 0.75)
+        lb.add(X.paint(layer, al, ax0, ay0, (0.035, 0.032, 0.04), 0.9))
+
+
 def props_frame3(cv, layer, lb, t, light):
     """Tumble + morph of the frame-2 props into blocks; tower; supporting-row icons."""
     Ad = A()
-    groups = [[('backpack', (255, 1200))], [('book', (790, 1172))], [('bowl', (300, 1515)), ('cupcake', (775, 1522))]]
+    groups = [[(nm, PROPS2[nm][0]) for nm in grp] for grp in GROUPS]
     blocks = Ad['blocks']
     tower_h = 0.0
     for g, members in enumerate(groups):
@@ -784,7 +893,6 @@ def compose(sheet_id, t, fi):
             sweep = (su, -32.0, 0.035, 0.16, (1.0, 0.90, 0.78))
     elif sheet_id == 1:
         f2_path_ink(ink, bb, t)
-        tip = f2_scribble_ink(ink, bb, t)
         f2_list_ink(ink, bb, t, light)
         if t >= T_F3 - 0.2:
             f3_ink(ink, bb, t, light)
@@ -799,8 +907,6 @@ def compose(sheet_id, t, fi):
         props_frame2(cv, layer, lb, t, light)
         if t >= T_F3:
             props_frame3(cv, layer, lb, t, light)
-        if 7.45 <= t <= 8.35:
-            draw_pencil(cv, layer, lb, t, light)
     elif sheet_id == 2:
         props_frame4(cv, layer, lb, t, light)
     if lb.box is not None:

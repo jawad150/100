@@ -502,8 +502,8 @@ def _chip_state(i, t):
 def _num_state(t):
     """(scale, opacity) of the hook number: slam at 0, out into the chips at B3, re-forms at B5, breaks at B6."""
     if t < T_CHIPS:
-        sp = K.spring(t + 0.06, freq=2.4, damping=0.42)
-        return K.lerp(1.5, 1.0, sp), 1.0
+        sp = K.spring(t + 0.03, freq=2.6, damping=0.38)
+        return K.lerp(1.15, 1.0, sp), 1.0
     if t < T_SNAP:
         u = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.16, 'in_cubic')
         return 1.0 - 0.6 * u, 1.0 - u
@@ -585,7 +585,7 @@ def scene_hook(t, n_samples):
 def _draw_chips(cv, c, tc, t, n_samples):
     import cv2
     hx, hy, k = screen_of(c, HUB_W[0], HUB_W[1], HUB_W[2])
-    hub = K.ramp(t, T_CHIPS - 0.05, T_CHIPS + 0.2, 'out_back') * (1 - K.ramp(t, T_SNAP + 0.05, T_SNAP + 0.2))
+    hub = K.ramp(t, T_CHIPS - 0.05, T_CHIPS + 0.2, 'out_back') * (1 - K.ramp(t, T_SNAP - 0.04, T_SNAP + 0.08))
     # spokes
     lay = np.zeros((K.H, K.W), np.uint8)
     ends = []
