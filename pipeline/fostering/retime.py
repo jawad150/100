@@ -14,7 +14,8 @@ A VO module (pipeline/fostering/<reel>_vo.py) wraps a finished timeline module w
     retime.wrap(globals(), M, 'anim1', SLOTS)        # defines DUR, LOOK, BPM, BED, draw, post, samples, cues, ...
 
 Slot keys (all times are SOURCE seconds of the wrapped module):
-    lines       VO line ids from <WS>/vo/<piece>/lines.json (vo_tools.py split), spoken back to back (gap s apart)
+    lines       VO line ids from <WS>/vo/<piece>/lines.json (vo_tools.py split), spoken back to back (gap s apart);
+                [] makes a voice-less hold that waits for the running line to finish (+ tail)
     at          the on-screen event the VO belongs to (text lands / prop appears); VO starts at out(at) + delay
     hold        (a, b): span that may be slowed (rate >= min_rate) so the VO + tail ends before out(b). Holds are
                 spans where the picture is (nearly) settled: slowing them reads as calm, not as slow motion.
@@ -22,6 +23,7 @@ Slot keys (all times are SOURCE seconds of the wrapped module):
     min_hold    minimum OUTPUT length of the hold (reading time for copy the VO doesn't read), default 0
     min_rate    floor on the source speed inside the hold (default 0.12; ~0.5 where footage plays)
     gap         pause between consecutive lines inside the slot (default 0.18 s)
+    quant       grid for this hold's extension in seconds (default one beat; e.g. 0.25 = eighth notes at 120 BPM)
 Everything outside the holds runs at rate 1, so slams, whips, cuts, tumbles and camera moves keep their timing.
 Each hold's extension is rounded UP to whole beats (60 / BPM), so every source event moves by whole beats and the
 edit stays on the module's BPM grid (music at the same tempo still locks).
@@ -134,7 +136,7 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
         ids = sl['lines'] if isinstance(sl['lines'], (list, tuple)) else [sl['lines']]
         gap = float(sl.get('gap', 0.18))
         durs = [float(lines[i]['dur']) for i in ids]
-        D = sum(durs) + gap * (len(ids) - 1)
+        D = sum(durs) + gap * (len(ids) - 1) if ids else 0.0
         d = float(sl.get('delay', 0.0))
         tail = float(sl.get('tail', 0.45))
         L, x = b - a, max(0.0, at - a)
@@ -143,7 +145,9 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
         P = prev_end + first_gap
         # stretch factor k >= 1: hold end out(b) = C + L*k must clear VO start + D + tail
         need = [1.0]
-        if o_at_fixed is not None:
+        if not ids:                      # a voice-less hold: wait for the running line (+ tail)
+            need.append((prev_end + float(sl.get('tail', 0.3)) - C) / L)
+        elif o_at_fixed is not None:
             vo0 = max(o_at_fixed + d, P)
             need.append((vo0 + D + tail - C) / L)
         else:
@@ -153,23 +157,25 @@ def solve(slots, lines, src_dur, bpm=None, quantize=True, first_gap=0.15, smooth
         if sl.get('min_hold'):
             need.append(float(sl['min_hold']) / L)
         kf = max(need)
-        if beat:                         # round the extension up to whole beats
+        q = float(sl['quant']) if sl.get('quant') else beat
+        if q:                            # round the extension up to whole beats (or the slot's own grid)
             ext = L * (kf - 1.0)
             if ext > 1e-6:
-                kf = 1.0 + math.ceil(ext / beat - 1e-6) * beat / L
+                kf = 1.0 + math.ceil(ext / q - 1e-6) * q / L
         kmax = 1.0 / float(sl.get('min_rate', 0.12))
         warn = ''
         if kf > kmax + 1e-9:
             warn = 'needs rate %.2f < min_rate %.2f: VO runs %.2fs past the hold' % (1 / kf, 1 / kmax, (kf - kmax) * L)
-            kf = kmax if not beat else 1.0 + math.floor(L * (kmax - 1) / beat) * beat / L
+            kf = kmax if not q else 1.0 + math.floor(L * (kmax - 1) / q) * q / L
         o_at = o_at_fixed if o_at_fixed is not None else C + x * kf
-        vo0 = max(o_at + d, P)
+        vo0 = max(o_at + d, P) if ids else prev_end
         t = vo0
         for i, du in zip(ids, durs):
             placed.append(dict(line=i, text=lines[i]['text'], start=round(t, 3), end=round(t + du, 3),
                                file=lines[i]['file'], lufs=lines[i]['lufs']))
             t += du + gap
-        prev_end = t - gap
+        if ids:
+            prev_end = t - gap
         cur_o = C + L * kf
         cur_s = b
         knots.append((cur_o, cur_s))

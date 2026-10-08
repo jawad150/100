@@ -180,14 +180,14 @@
    },
    {
     "p": "p3",
-    "say": "Allowances rise with age, up to five hundred and fifty-four pounds and two pence a week for ages fifteen and over.",
+    "say": "And the allowance rises with age.",
     "lines": [
      "rise_with_age"
     ]
    },
    {
     "p": "p4",
-    "say": "Over fifty-two weeks, for one child aged nought to four, that's an estimated twenty-three thousand, two hundred and seventy-five pounds and twenty pence.",
+    "say": "Over fifty-two weeks, that's an estimated twenty-three thousand, two hundred and seventy-five pounds twenty.",
     "lines": [
      "fifty_two_weeks"
     ]
@@ -201,7 +201,7 @@
    },
    {
     "p": "p6",
-    "say": "Plus support around your household: your supervising social worker, ongoing training, and a foster carer community.",
+    "say": "Plus support around your household.",
     "lines": [
      "support_household"
     ]
