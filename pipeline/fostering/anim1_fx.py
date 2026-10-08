@@ -769,11 +769,27 @@ def split_blocks(prop_id, yaw=0.0):
         seg = width[lo:hi]
         cuts.append(lo + int(np.argmin(seg)))
     bounds = [y0] + cuts + [y1]
+    rgb8, _ = _to_srgb8(spr)
+    hsv = cv2.cvtColor(rgb8, cv2.COLOR_RGB2HSV).astype(np.int32)
     out = []
     for i in range(3):
         ya, yb = bounds[2 - i], bounds[3 - i]           # bottom block first
         sub = np.zeros_like(spr)
         sub[ya:yb] = spr[ya:yb]
+        # drop slivers of the neighbouring blocks along the cuts (seen through the gaps, other hue)
+        mid = hsv[ya + (yb - ya) // 3: yb - (yb - ya) // 3]
+        sat = mid[..., 1] > 90
+        if sat.any():
+            hue0 = float(np.median(mid[..., 0][sat]))
+            band = np.zeros(spr.shape[:2], bool)
+            band[ya:min(yb, ya + 16)] = True
+            band[max(ya, yb - 16):yb] = True
+            dh = np.abs(hsv[..., 0] - hue0)
+            dh = np.minimum(dh, 180 - dh)
+            bad = band & (hsv[..., 1] > 70) & (dh > 14)
+            bad = cv2.dilate(bad.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool) & band
+            keep = 1.0 - cv2.GaussianBlur(bad.astype(np.float32), (0, 0), 0.8)
+            sub *= np.clip(keep, 0, 1)[..., None]
         cols = np.nonzero(sub[..., 3].max(0) > 0.3)[0]
         cx = (cols[0] + cols[-1] + 1) / 2 if len(cols) else spr.shape[1] / 2
         sub = np.ascontiguousarray(sub)

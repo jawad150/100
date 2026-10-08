@@ -544,12 +544,13 @@ def _num_state(t):
     if t < T_CHIPS:
         sp = K.spring(t + 0.03, freq=2.6, damping=0.38)
         return K.lerp(1.10, 1.0, sp), 1.0
-    if t < T_SNAP:
+    if t < T_SNAP - 0.07:
         u = K.ramp(t, T_CHIPS - 0.02, T_CHIPS + 0.16, 'in_cubic')
         return 1.0 - 0.6 * u, 1.0 - u
     if t < T_BREAK:
-        sp = K.spring(t - T_SNAP, freq=2.6, damping=0.62)
-        return K.lerp(0.55, 1.0, sp), K.ramp(t, T_SNAP, T_SNAP + 0.06)
+        t0 = T_SNAP - 0.07                      # re-forms out of the hub as the chips land in it (no empty frame)
+        sp = K.spring(t - t0, freq=2.6, damping=0.62)
+        return K.lerp(0.55, 1.0, sp), K.ramp(t, t0, t0 + 0.06)
     u = K.ramp(t, T_BREAK, T_BREAK + 0.14, 'in_cubic')
     return 1.0 + 0.12 * u, 1.0 - u
 
@@ -766,8 +767,8 @@ SPECS = dict(
           ('tile:key', None, (215.0, 470.0), 132.0, B(14), (0.0, 0.0), -90.0),
           ('tile:shield', None, (375.0, 400.0), 132.0, B(14.25), (0.0, 0.0), -90.0)],
     food=[('basket', 'day', (0.0, 320.0), 570.0, B(17), (-8.0, 6.0), 0.0),
-          ('apple', 'day', (-270.0, -40.0), 250.0, B(18.5), (0.0, 16.0), -60.0),
-          ('sandwich', 'day', (30.0, -110.0), 290.0, B(19), (0.0, 14.0), -60.0),
+          ('apple', 'day', (-270.0, -40.0), 290.0, B(18.5), (0.0, 16.0), -60.0),
+          ('sandwich', 'day', (30.0, -110.0), 350.0, B(19), (0.0, 14.0), -60.0),
           ('plate', 'day', (310.0, 30.0), 300.0, B(19.5), (0.0, 10.0), -60.0)],
     cloth=[('backpack', 'day', (240.0, 330.0), 520.0, B(23), (-8.0, 8.0), 0.0),
            ('tshirt', 'day', (-300.0, -50.0), 320.0, B(24.5), (0.0, 16.0), -60.0),
@@ -821,14 +822,17 @@ def _prop_state(st, i, t):
         bob *= 0.5
     for (sn, it, a0, a1) in INTO:
         if sn == st and it == i and t >= a0:
-            u = K.ramp(t, a0, a1, 'in_cubic')
+            # hop into the collector: an arc to its mouth, then sink in behind its front wall (see draw_stations)
+            u = K.ramp(t, a0, a1, 'inout_sine')
             cx, cy = SPECS[st][0][2]
-            arc = -95.0 * math.sin(math.pi * K.ramp(t, a0, a1, 'out_sine'))
+            arc = -110.0 * math.sin(math.pi * u)
             x = K.lerp(x, cx, u)
-            y = K.lerp(y, cy - 30.0, u) + arc
-            s *= 1.0 - 0.6 * u
-            op *= 1.0 - K.ramp(t, a1 - 0.08, a1)
+            y = K.lerp(y, cy + 10.0, u) + arc
+            s *= 1.0 - 0.45 * u
+            op *= 1.0 - K.ramp(t, a1 - 0.03, a1 + 0.03)
             yaw += 40.0 * u
+            if u > 0.62:
+                z = 5.0                                 # now behind the collector's front
     if name == 'school_bus':
         # drives in from the left and pulls up at the station (B29.5 -> B30.5), the money pours in, then it drives
         # off to the right past the camera (B33.5 -> B34.6)
@@ -999,9 +1003,11 @@ def draw_stations(cv, c, t, n_samples, stream_op=1.0):
     # back items, then the money stream, then the collectors (the coins pour INTO them: the ribbon's head and the
     # trickle disappear behind the collector's front, which also keeps the ribbon's warm halo off the prop), then
     # the front items
-    for st, it in sorted([r for r in items if r[1]['z'] >= 0 and r[1]['i'] != 0], key=lambda r: -r[1]['z']):
+    for st, it in sorted([r for r in items if r[1]['z'] >= 6 and r[1]['i'] != 0], key=lambda r: -r[1]['z']):
         _draw_item(cv, c, it, t, n_samples)
     draw_stream(cv, c, t, n_samples, opacity=stream_op)
+    for st, it in [r for r in items if 0 <= r[1]['z'] < 6 and r[1]['i'] != 0]:      # sinking into a collector
+        _draw_item(cv, c, it, t, n_samples)
     for st, it in [r for r in items if r[1]['i'] == 0]:
         _draw_item(cv, c, it, t, n_samples)
         g = K.impulse(t, ARRIVE[st], decay=4.5)            # the money lands: a warm flare at the collector

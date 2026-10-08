@@ -106,7 +106,7 @@ F3_CAP = (300, 404, 518)                 # headline cap tops
 F3_ROWS = (770, 875, 980)                # supporting rows (centre y)
 TOWER = (540, 1600)                      # tower ground point
 F4_CAP = (440, 580, 695)
-HOUSE_DROP, HOUSE_END = (540, 1420), (540, 800)
+HOUSE_DROP, HOUSE_END = (540, 1500), (540, 800)
 F4_HAND_BASE = 944
 
 
@@ -513,14 +513,14 @@ def f2_ding_ink(ink, bb, t):
     if t < t0 - 0.02 or t > t0 + 0.75:
         return
     (cx, cy), _, _ = PROPS2['cupcake']
-    top = cy - 300 - 18
-    for k, ang in enumerate((-58.0, -90.0, -122.0)):
+    ox, oy = cx + 48, cy - 232                       # just right of the cherry
+    for k, ang in enumerate((-8.0, -38.0, -68.0)):
         a = math.radians(ang)
-        r0, r1 = 40.0, 92.0 - 10 * abs(k - 1)
+        r0, r1 = 52.0, 102.0 - 10 * abs(k - 1)
         u_in = K.ramp(t, t0 + 0.02 * k, t0 + 0.12 + 0.02 * k, 'out_cubic')
         u_out = K.ramp(t, t0 + 0.45, t0 + 0.7, 'in_cubic')
-        p0 = (cx + math.cos(a) * r0, top + math.sin(a) * r0 + 20)
-        p1 = (cx + math.cos(a) * r1, top + math.sin(a) * r1 + 20)
+        p0 = (ox + math.cos(a) * r0, oy + math.sin(a) * r0)
+        p1 = (ox + math.cos(a) * r1, oy + math.sin(a) * r1)
         pts = X.resample(np.array([p0, p1]), 2.0)
         draw_stroke(ink, bb, pts, 8.0, C['ORANGE'], u_out, u_in)
 
@@ -844,23 +844,24 @@ def props_frame3(cv, layer, lb, t, light):
             lb.add(K.draw(layer, spr, X_, py if t < t_land else gy, scale=(K_ * sq[0], K_ * sq[1]),
                           rot=rot + wob, anchor=anc))
         tower_h = max(tower_h, g)
-    # supporting-row icons
+    # supporting-row icons: tick in place (spring pop, no lift, so they never cross the row above)
     icons = (Ad['i_house'], Ad['i_clock'], Ad['i_family'])
     for i, pr in enumerate(icons):
         tl = B(21 + i)
-        dr = X.drop(t, tl - 0.22, 0.22, h0=160, s0=0.5)
-        if dr is None:
+        if t < tl - 0.06:
             continue
+        sc = max(0.0, K.spring(t - (tl - 0.06), freq=3.2, damping=0.45))
+        op = min(1.0, (t - tl + 0.06) / 0.06)
         x, y = 165, F3_ROWS[i] + 44
         yaw = 10 * math.sin(t * 1.3 + i)
-        if i == 1 and t > tl:
-            yaw = 0
-        pr.shadow(cv, x, y, light, lift=dr['lift'], yaw=yaw, scale=dr['scale'], opacity=dr['opacity'] * 0.8)
         rot = 0.0
         if i == 1 and t > tl:      # alarm clock: rings (shakes) briefly
+            yaw = 0
             rot = 4.0 * math.sin((t - tl) * 70) * math.exp(-(t - tl) * 4)
-        lb.add(pr.draw(layer, x, y - dr['lift'] * 0.3, yaw=yaw, scale=dr['scale'], squash=dr['squash'],
-                       opacity=dr['opacity'], rot=rot))
+        if sc < 0.02:
+            continue
+        pr.shadow(cv, x, y, light, lift=0.0, yaw=yaw, scale=sc, opacity=op * 0.8)
+        lb.add(pr.draw(layer, x, y, yaw=yaw, scale=sc, opacity=op, rot=rot))
 
 
 def _block_shadow(cv, x, y, light, lift, ks, spr, anc, op, g, landed):
@@ -888,7 +889,7 @@ HOUSE_YAW = -10.0
 def props_frame4(cv, layer, lb, t, light):
     Ad = A()
     pr = Ad['house']
-    dr = X.drop(t, B(28.25) + 0.15 - 0.30, 0.30, h0=240, s0=0.28)
+    dr = X.drop(t, B(28.25) + 0.15 - 0.30, 0.30, h0=200, s0=0.14)
     if dr is None:
         return
     x, y, sc = house_pos(t)
