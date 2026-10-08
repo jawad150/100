@@ -19,14 +19,16 @@ when_to_use: Load before any brief, script, design, render, grade, QA or deliver
    - Never render, copy or adapt `toolkit/examples/*` (BRIEF*.md, reel1-3, anim1, anim4, demo_looks, reel_demo).
      Read them for code patterns only.
    - Never use the built-in looks as they are: `neon` (magenta/plum aurora + planet rim + dot grid), `amber`,
-     `airy`, or footage grades `F.GRADES['neon'|'amber'|'airy']`. Jawad's looks are new `jw_*` keys (colorist).
-     If a built-in backdrop is used as a raw layer, it is with `rim=0, dots=0` under a `jw_*` finish.
+     `airy`, or footage grades `F.GRADES['neon'|'amber'|'airy']`. Jawad's looks are `'ember'` and `'noir_ember'`
+     from `jawad_kit.py` plus the per-reel looks the colorist adds (`inferno`, `gold_hour`, `dusk`, or the
+     brief's own). A built-in backdrop used as a raw layer runs with `rim=0, dots=0` under one of those looks.
    - Never use the old prop library: heart, house, shield_check, check_tile, coin_gbp, pound_glyph, orbs,
      grad_cap, chat_bubble, key_heart, pin_phone, star_badge, logo_mark3d, question, sprout, leaf, seed,
      puzzle_pair, blocks, or the other `assets3d_*` sets' props. New props come from a new builder
      (`assets3d_jawad.py`).
    - Never use their copy or defaults: fostering, allowance, £, Ofsted, "NURTURE • DEVELOP • GROW", "A SAFE
-     HOME". Always pass `header`/`title` to `ui.app_window`, text to `ui.button`, `prefix` to `T.Counter`.
+     HOME". `jawad_kit` blanks the old defaults (`ui.app_window` title/header, `ui.button`, `ui.badge`,
+     `T.Counter` prefix); still pass your own text every time.
    - Jawad's own earlier reel in this repo (the orange-black "Higgsfield Genjutsu" reel with blob mascots and
      "Comment JD" ending) is his, but the five new reels must not repeat its layouts or signature devices.
 2. **Local only.** No Higgsfield tools, no paid generation (Magnific, Kling, Creative-Claw, ElevenLabs or any
@@ -42,6 +44,8 @@ when_to_use: Load before any brief, script, design, render, grade, QA or deliver
 | what | path |
 |---|---|
 | toolkit copy, project.json (palette, fonts: source of truth), brief, reel modules | `pipeline/jawad_reels/` |
+| brand kit write-up (measured hex, contrast table, do-not-use pairs, fonts, logo rules) | `pipeline/jawad_reels/BRAND.md` |
+| brand profile: looks `ember` / `noir_ember`, house type styles, helpers (motion-toolkit-engineer owns it) | `pipeline/jawad_reels/jawad_kit.py` (`import jawad_kit` first; `from jawad_kit import K, T, ui, F, S3, SFX, J`) |
 | workspace `<WS>` (fonts, renders, audio; git-ignored) | `workspace/jawad_reels/` (`python3 -c "import core; print(core.WS)"`) |
 | client inputs: prior covers, captions example, character sheets + crops, reference reels, TTS auditions | `workspace/brand_reels/{prior,charsheet,refs,tts}/` |
 | derived logo (no official logo yet): flame-gradient "J" ring mark, wordmarks | `pipeline/jawad_reels/brand_src/` (`make_logo.py`) |
@@ -61,23 +65,26 @@ when_to_use: Load before any brief, script, design, render, grade, QA or deliver
 Cross-check from `prior/prior_covers.jpg` (k-means): glows #EB600D-#F3731F with cores #F89821-#F5BA59, darks
 #030105 and #231819-#2B1407, white type #F4E4DD; the "yaadein" cover adds violet darks #171431-#211D43.
 
-**House type** (as on his covers):
-- Keyword: Instrument Serif Italic, glowing flame, one per line, ~1.3-1.8x the grotesk cap height. In the
-  toolkit it is `font='hand'` (project.json maps Caveat -> InstrumentSerif-Bold, a copy of RegularItalic):
-  `T.render('yaadein', 'deep_glow', px=150, font='hand', fill=('GOLD', 'FLAME'), glow_color=('FLAME', 2.0))`.
-- Grotesk: Poppins SemiBold/Bold uppercase, IVORY, slight tracking (`font='ui'` / `'ui_bold'`; `'display'` =
-  Poppins Black). Mono for UI and timecodes: JetBrains Mono.
-- Pattern: `KUCH {yaadein}` / `delete {nahi} hoti`: white grotesk words + the serif keyword on a shared baseline,
-  then a glowing flame underline stroke drawn on (`ui.stroke_mask` + `ui.trim_polyline`, tapered, `K.glow`).
-- Signature: `@jawad_mp4` in Poppins Medium, IVORY ~80 %, under the final line on the end card and on covers.
-- Sizes and zones from the playbook: hero >= 130 px, keyword lines measured with `T.measure(..., font='hand')`,
+**House type** (as on his covers; all of it already exists in `jawad_kit.py`, use it rather than rebuilding):
+- Keyword: Instrument Serif Italic, amber -> flame -> red gradient with a hot inner glow and a wide red halo,
+  one per line, 150-260 px: style `'jw_key'` (3D variant `'jw_key3d'`, neon tube `'jw_neon'`). Font aliases
+  `'serif'` / `'hand'` resolve to the serif italic.
+- Grotesk: style `'jw_caps'` / `'jw_caps_bold'` (Poppins SemiBold/Bold uppercase, +6 % tracking, warm halo) for
+  "MEETING MY" lines, `'jw_body'` for lowercase lines, `'jw_mono'` (JetBrains Mono) for timecodes and UI readouts.
+- Pattern: `KUCH {yaadein}` / `delete {nahi} hoti`: `J.HouseTitle('MEETING MY', 'younger self')` (caps rise,
+  keyword rises per glyph, underline draws on) and `J.underline(760).draw(cv, x0, y, u)` (thin-to-thick glowing
+  stroke with a hot comet head).
+- Signature: `J.signature(cv, x, y)` = `@jawad_mp4` in Poppins Medium (style `'jw_handle'`), end card and covers.
+- Sparks and bokeh: `J.embers(...)` (rising warm particles, DOF from the camera); keep them off type and logos.
+- Sizes and zones from the playbook: hero >= 130 px, keyword lines measured with `T.measure(text, 'jw_key', px=...)`,
   <= 940 px wide (780 px in y 1050-1700), key copy in x 70-1010, y 230-1480.
 
 **World and light:** warm dark cinematic spaces (studio, edit suite, void with volumetric flame light, god rays,
-haze), bokeh and dust (`K.Particles` in FLAME/GOLD, kept off type), red-orange rim light on Jawad and on props,
+haze), bokeh and sparks (`J.embers`, or `K.Particles` in FLAME/GOLD; kept off type), red-orange rim light on Jawad and on props,
 dark-glass SaaS UI with flame edges and comet sweeps (timelines, keyframes, render bars, export dialogs, cursors),
 Blender props in black gloss + emissive orange or chrome reflecting flame, film grain and halation from the
-`jw_*` finish. No full-frame white flashes; exposure pushes on cut frames.
+look's finish (`G.finish` from the colorist's `jawad_grade.py`). No full-frame white flashes; exposure pushes
+on cut frames.
 
 **Motion personality:** energetic for hooks (slams on the beat, `K.spring` overshoot, whips with 5-7 samples),
 premium for keyword reveals (`'out_cubic'` / `'easy_ease'`, 0.4-0.7 s, no bounce on brand type). Always pass an
@@ -101,7 +108,7 @@ the same words, drop them from the captions for that window.
 >= 1.5 s settled. Cover: the keyword frame inside the 3:4 grid crop (y 240-1680).
 
 ## Five reels, five worlds
-Each reel gets its own story shape, look (`jw_ember`, `jw_inferno`, `jw_gold_hour`, `jw_noir_flame`, `jw_dusk`
+Each reel gets its own story shape, look (`ember`, `noir_ember` from the kit; `inferno`, `gold_hour`, `dusk`
 from the colorist, or the brief's own), signature device and transition family. No two reels share a signature
 device or transition family (playbook rule). Every reel still reads as Jawad: near-black + flame, serif keyword,
 `@jawad_mp4`.
@@ -116,7 +123,7 @@ device or transition family (playbook rule). Every reel still reads as Jawad: ne
 | lyric-visualizer (project) | song-led reels: licensing route, beat/lyric map, line-by-line visuals | `LYRICS_*.md`, `lyrics/*` |
 | reels-studio:blender-3d-artist (+ `blender-pro-reference` skill) | new props in `assets3d_jawad.py` | `<WS>/assets3d/` |
 | face-compositor (project) | Jawad's 2.5D cut-outs, rim light, expression swaps | `faces25d.py`, `<module>_faces.py` |
-| colorist (project) | `jw_*` looks, LUTs, finish, colour QA | `jawad_grade.py`, `luts/`, `GRADE.md` |
+| colorist (project) | per-reel looks on top of the kit, LUTs, finish, colour QA | `jawad_grade.py`, `luts/`, `GRADE.md` |
 | reels-studio:motion-timeline-builder / motion-toolkit-engineer | reel modules / toolkit features and `jawad_kit.py` | `<module>.py` / toolkit |
 | reels-studio:sound-designer, music-supervisor, caption-designer | SFX, music and VO mix, captions | `<module>_sfx.py`, `_music.py`, `captions/` |
 | reels-studio:motion-qa-reviewer, delivery-packager | two-lens QA + verifier; exports | `qa/`, `reel/jawad_reels/` |
@@ -133,7 +140,7 @@ script gate -> TTS + timing -> parallel builds (3D, faces, grade, timelines on p
   Blender 5.2 errata.
 - Plugins already available: social-media-skills `hook-writer` (scoring rubric), `reels-script`,
   `viral-reverse-engineering` (share triggers), motion-reel's critique pass; reels-studio's
-  `saas-motion-styles` (device recipes: use the code patterns, re-skin every look to the `jw_*` worlds).
+  `saas-motion-styles` (device recipes: use the code patterns, re-skin every look to Jawad's worlds).
 
 ## Brand checks before delivery (on top of the playbook checklist)
 - [ ] Nothing recognisable from the fostering / Floret examples (looks, props, copy, layouts).

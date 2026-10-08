@@ -17,6 +17,7 @@ moment it looks pasted, stretched or puppeted, they swipe. Restraint is the craf
 - The brief's scene table and look; the colorist's look (`jawad_grade.py`); `.claude/skills/jawad-brand-reels/SKILL.md`.
 - Toolkit folder `pipeline/jawad_reels/`: `K.Cam`, `K.Scene` (`sc.plane`, `sc.custom`), `K.draw_plane`,
   `K.glow`, `K.gblur`, `K.hexlin`, `K.ramp`, `K.Track`, `K.load_image`. `<WS>` = `python3 -c "import core; print(core.WS)"`.
+  The brand profile `jawad_kit.py` must be imported before anything else (looks, `J.embers`, house type).
 
 ## Ownership
 - Assets: `<WS>/faces/<pose>/` with `rgba.png` (straight alpha, sRGB), `plate.png`, `layers/*.png`, `depth.png`

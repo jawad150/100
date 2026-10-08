@@ -66,7 +66,8 @@ to stay | risk |`. Rules:
 ffprobe -v error -f lavfi -i "movie=<mp4>,trim=end_frame=1,signalstats" -show_entries frame_tags=lavfi.signalstats.YAVG,lavfi.signalstats.YHIGH -of csv=p=0  # frame 0: YAVG < 25 and YHIGH < 100 = dark and empty
 ffmpeg -hide_banner -i <WS>/audio/<module>_vo.wav -af silencedetect=n=-35dB:d=0.15 -f null - 2>&1 | grep silence_end | head -1  # VO onset
 ffmpeg -hide_banner -i <mp4> -vf "select='gt(scene,0.08)',showinfo" -an -f null - 2>&1 | grep -o 'pts_time:[0-9.]*'          # change events
-python3 $QA sheets <mp4> <ev>; ffmpeg -v error -y -i <ev>/sheet_01.jpg -vf scale=iw/3:-2 <ev>/phone_01.jpg       # phone-size check
+python3 $QA sheets <mp4> <ev>                                                                                    # 5 fps sheets
+ffmpeg -v error -y -i <mp4> -vf "fps=2,scale=360:-2,tile=6x2" <ev>/phone_%02d.jpg   # 360 px tiles ~ a phone at arm's length
 python3 $QA audio <mp4>                                                                                          # -14 LUFS with music
 ```
 List gaps > 2.5 s between change events. Swipe risks to check, each with a timestamp: dark or empty frame 0;

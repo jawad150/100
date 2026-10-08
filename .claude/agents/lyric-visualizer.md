@@ -14,7 +14,8 @@ visuals answer each line within half a second, then get out of the way of the ne
 - Lyrics from Jawad or typed by ear and checked line by line against the audio; note the language (Hindi/Urdu,
   Punjabi, mixed) and give each line a one-line English gloss.
 - `pipeline/jawad_reels/BRIEF.md`, `.claude/skills/jawad-brand-reels/SKILL.md`, the toolkit folder
-  `pipeline/jawad_reels/` (TOOLKIT.md: `K.beat`, `K.beat_pulse`, `T.Glyphs`, `T.render`, `T.measure`).
+  `pipeline/jawad_reels/` (TOOLKIT.md: `K.beat`, `K.beat_pulse`, `T.Glyphs`, `T.render`, `T.measure`) and the
+  brand profile `jawad_kit.py` (house type styles and helpers; `import jawad_kit` first).
 
 ## Ownership
 `pipeline/jawad_reels/LYRICS_<module>.md` (the plan), `pipeline/jawad_reels/lyrics/<module>.json` + `.lrc`
@@ -73,21 +74,23 @@ Limits: about one major hit per bar, accents at most 3 per second, no cut faster
 montage burst of <= 1 bar. Exits ease out over >= 0.2 s; no full-frame flash on drops (exposure push instead).
 
 ## 6. Lyric type
-- Roman lyrics with ONE serif-italic keyword per line (Instrument Serif Italic, `font='hand'` in this project,
-  glowing FLAME) and the rest in Poppins; <= 6 words on screen; each line visible >= max(0.8 s, words / 3 s).
+- Roman lyrics with ONE serif-italic keyword per line (jawad_kit style `'jw_key'`, Instrument Serif Italic in the
+  flame gradient) and the rest in `'jw_caps'` / `'jw_body'` (Poppins); `J.HouseTitle` and `J.underline` give the
+  house lockup. <= 6 words on screen; each line visible >= max(0.8 s, words / 3 s).
   A line sung faster than that shows only its keyword phrase.
 - Optional second line in Devanagari or Nastaliq only with a font that covers it (Poppins covers Devanagari,
   Instrument Serif does not; Nastaliq needs Noto Nastaliq Urdu): check the glyphs render, measure both lines.
   Render Devanagari as whole lines (`T.render`, raqm shaping); per-glyph animators (`T.Glyphs`) place characters
   one by one and can break conjuncts and matras, so look at a still before using them on Indic text.
-- Measure every line (`T.measure(text, 'flat', px=..., font='hand')`): <= 940 px wide, <= 780 px inside y
+- Measure every line (`T.measure(text, 'jw_key', px=...)`, `T.measure(text, 'jw_caps', px=...)`): <= 940 px wide, <= 780 px inside y
   1050-1700; key copy inside x 70-1010, y 230-1480; nothing in the bottom 300 px or the like/share column.
 - Lyrics on screen and burned captions never show the same words at once.
 
 ## Verify
 - With the guide mix: onset of each planned hit (`python3 $QA cues <guide.mp4> <WS>/out/<module>/cues.json`,
   QA = the reels-studio qa_measure.py) within 1 frame, plus stills at 8 line onsets and at every drop.
-- Phone-size readability of the 5 fps sheet (`scale=iw/3`).
+- Phone-size readability: `ffmpeg -v error -y -i <guide.mp4> -vf "fps=2,scale=360:-2,tile=6x2" phone_%02d.jpg`
+  (360 px wide tiles are roughly a phone at arm's length); every lyric word must read there.
 - For route A, shift the guide by +-100 ms and re-check that the big moves still read as on the beat.
 
 ## Hand-back

@@ -88,7 +88,8 @@ KINETIC (per-glyph; glyph sprites are rendered in the block's frame so gradients
     g.flip(cv, t, x, y, t0=0, stagger=0.05, dur=0.6, from_angle=-100)  3D rotateX per glyph (draw_quad)
     g.scramble(cv, t, x, y, t0=0, dur=0.7, stagger=0.04, rate=22, charset=None)  decode effect
     Any animator also takes out_t0=, out_dur=0.4, out_dist=0.3, out_blur=8 (lift, blur and fade out).
-    Draw kwargs for all: anchor=(.5, .5), scale=1, rot=0, opacity=1, blur=0, tilt=(rx, ry, rz) (3D tilt of the
+    Draw kwargs for all: anchor=(.5, .5), scale=1, rot=0, opacity=1, blur=0 (block_blur= for animators that have
+    their own blur: rise / slam / track), tilt=(rx, ry, rz) (3D tilt of the
     whole block, perspective focal=1600), sweep=None|u, sweep_kw, mblur=0|n|'auto' (+ mspan seconds: averaged
     sub-samples = motion smear on top of render_frame's own blur).
     Low level: states, blk = g.anim('rise', t, **kw); g.render(cv, states, x, y, block=blk, **draw_kw);
@@ -1486,7 +1487,13 @@ class Glyphs:
 
     # ---------------------------------------------------------------- convenience animators
     def _run(self, kind, cv, t, x, y, kw):
-        dkw = {k: kw.pop(k) for k in list(kw) if k in self.DRAW_KEYS}
+        # 'blur' belongs to the animator when it has one (rise / slam / track: the documented blur-in); it used
+        # to be taken as a draw kwarg, which blurred the settled block for good. block_blur= blurs the block.
+        fn = getattr(self, '_a_' + kind)
+        own = fn.__code__.co_varnames[:fn.__code__.co_argcount]
+        dkw = {k: kw.pop(k) for k in list(kw) if k in self.DRAW_KEYS and not (k == 'blur' and 'blur' in own)}
+        if 'block_blur' in kw:
+            dkw['blur'] = kw.pop('block_blur')
         mbl = dkw.pop('mblur', 0)
         span = dkw.pop('mspan', None)
         if kind == 'slam' and kw.pop('smear', True):

@@ -20,8 +20,10 @@ LOOKS (pass the name wherever the toolkit takes a look: K.background, K.post, ui
                   (linear; 0 = off), mono=0..1 (desaturate non-red colours to warm mono). ~140-190 ms.
     ui.LOOKS['ember'|'noir_ember']: smoky warm-black glass, flame accent, flame->red gradient, hot-orange rim
                   with red hot spot, GOLD ticks.   F.GRADES['ember'|'noir_ember']: footage / still grades.
+    J.register_look('jw_x', base='ember', bg={...}, post={...}, bokeh=(n, colours, (r0, r1), bright), ui_look={...},
+                  grade={...}) adds a look with the same finish (for the colorist's jw_* looks).
     Defaults: every ui function whose look defaulted to 'neon' now defaults to 'ember'; ui.app_window title/header,
-    ui.button and ui.badge no longer default to the original client's copy (pass your own text).
+    ui.button, ui.badge and T.Counter (prefix '') no longer default to the original client's copy / currency.
 
 TYPE STYLES (T.render(text, style, px=...); T.Glyphs(text, style, px=...))
     'jw_key'      the house keyword: Instrument Serif Italic, amber->flame->red vertical gradient, hot inner glow,
@@ -38,8 +40,8 @@ TYPE STYLES (T.render(text, style, px=...); T.Glyphs(text, style, px=...))
 
 HELPERS
     ul = J.underline(760)            glowing underline stroke (thin left -> thick right, hot comet head), cached
-    ul.draw(cv, x0, y, u=1, opacity=1)   x0 = left end, y = line centre; u = draw-on progress 0..1 (head rides
-                                      the tip).  ~3-6 ms.
+    ul.draw(cv, x0, y, u=1, opacity=1, smear=0)   x0 = left end, y = line centre; u = draw-on progress 0..1
+                                      (head rides the tip; smear = px of head travel per shutter).  ~3-6 ms.
     ht = J.HouseTitle('MEETING MY', 'younger self', caps_px=86, key_px=210)   house title lockup (cached)
     ht.draw(cv, t, x, y, t0=0, out_t0=None)   caps rise -> serif keyword rises per glyph -> underline draws on;
                                       (x, y) = centre of the keyword.  ht.height, ht.width.  ~15-60 ms.
@@ -64,7 +66,7 @@ import sprites3d as S3
 import audio as SFX
 
 J = sys.modules[__name__]
-LOOK_NAMES = ('ember', 'noir_ember')
+LOOK_NAMES = {'ember', 'noir_ember'}          # looks finished by the kit's post (register_look() adds more)
 
 # brand tokens (project.json carries them; the fallbacks keep the profile importable without it)
 _TOKENS = {'FLAME': '#FF6A1A', 'RED': '#F2312B', 'EMBER': '#B3120E', 'GOLD': '#FF9F1C', 'ASH': '#A8978C',
@@ -287,6 +289,7 @@ def apply():
     _set_default(ui.app_window, 'header', '')
     _set_default(ui.button, 'text', 'Follow')
     _set_default(ui.badge, 'text', HANDLE)
+    _set_default(T.Counter.__init__, 'prefix', '')
     ui.FONT_ALIAS.update(serif=SERIF, serif_roman=SERIF_ROMAN, mono=MONO, mono_bold=MONO_BOLD)
     # ---- type: aliases, re-tinted presets, house styles
     T.FONT_ALIAS.update(hand=SERIF, serif=SERIF, serif_roman=SERIF_ROMAN, grotesk=GROTESK, grotesk_bold=GROTESK_BOLD,
@@ -321,10 +324,31 @@ def apply():
     S['jw_body'] = T.Style(name='jw_body', font=GROTESK, px=72, tracking=0.0, **caps)
     S['jw_mono'] = T.Style(name='jw_mono', font=MONO, px=36, tracking=0.02, fill=('IVORY', 0.86), glow=0.25,
                            glow_color=('FLAME', 0.6), glow_radii=(0.08, 0.3), glow_weights=(0.5, 0.3))
-    S['jw_handle'] = T.Style(name='jw_handle', font=GROTESK_MEDIUM, px=34, tracking=0.03, fill=('IVORY', 0.92),
+    S['jw_handle'] = T.Style(name='jw_handle', font=GROTESK_MEDIUM, px=34, tracking=0.03, fill=('IVORY', 0.85),
                              glow=0.3, glow_color=('FLAME', 0.5), glow_radii=(0.1, 0.35), glow_weights=(0.5, 0.3),
                              shadow=0.5, shadow_offset=(0.0, 0.05), shadow_blur=0.1)
     K._jawad_kit_applied = True
+
+
+def register_look(name, base='ember', bg=None, post=None, bokeh=None, ui_look=None, grade=None):
+    """Add a look that gets the kit's finish (crush / mono / grain order, bokeh layer), e.g. the colorist's
+    jw_* looks:  J.register_look('jw_inferno', bg=dict(J.BG['ember'], noise=0.7), post=dict(bloom=0.8),
+    bokeh=(30, ('FLAME', 'RED'), (8, 60), 0.3)).  bg / post are merged over the base look's dicts; ui_look
+    and grade default to the base's (pass a ui.Look field dict / an F.GRADES dict to change them)."""
+    K._BG_LOOKS[name] = dict(K._BG_LOOKS[base], **(bg or {}))
+    K.LOOKS[name] = dict(K.LOOKS[base], **(post or {}))
+    if bokeh is not None or base in _BOKEH:
+        _BOKEH[name] = bokeh if bokeh is not None else _BOKEH[base]
+    f = dict(ui.LOOKS[base].__dict__)
+    f.pop('name')
+    f.update(ui_look or {})
+    ui.LOOKS[name] = ui.Look(name, **f)
+    F.GRADES[name] = dict(F.GRADES[base], **(grade or {}))
+    LOOK_NAMES.add(name)
+    return name
+
+
+BG = _BG
 
 
 # =============================================================================================== helpers
@@ -360,12 +384,14 @@ class Underline:
         self.yc_end = float(yc[-1])
         self.yc = yc
         hr = thick * 0.85 * head
+        self.hr = max(hr, 1.5)
         hd = K.disc(hr, _lin('WHITE') * 1.8)
         self.head = K.glow(hd, _lin('AMBER') * 1.2, sigmas=(4, 12, 30), strength=1.3 * head, weights=(1.0, 0.6, 0.35))
         self.head.flags.writeable = False
 
-    def draw(self, cv, x0, y, u=1.0, opacity=1.0, feather=36):
-        """Draw with its left end at x0 and its centre line at y; u = draw-on progress (0..1)."""
+    def draw(self, cv, x0, y, u=1.0, opacity=1.0, feather=36, smear=0.0):
+        """Draw with its left end at x0 and its centre line at y; u = draw-on progress (0..1). smear = px the
+        head travels during the shutter (HouseTitle passes it) so a fast draw-on gives a streak, not dots."""
         u = float(np.clip(u, 0, 1))
         if u <= 0 or opacity <= 0:
             return
@@ -381,7 +407,13 @@ class Underline:
         K.draw(cv, s, x0 - self.pad, y - self.pad - self.hh / 2, anchor=(0, 0), opacity=opacity)
         iy = min(len(self.yc) - 1, max(0, int(tip) - 1))
         hk = opacity * (0.55 + 0.45 * K.smoothstep(0.85, 1.0, u)) if u < 1 else opacity
-        K.draw(cv, self.head, x0 + tip, y + (self.yc[iy] - self.hh / 2), opacity=hk)
+        hy = y + (self.yc[iy] - self.hh / 2)
+        if smear > self.hr and u < 1:                    # spread the head along its shutter path (a streak)
+            n = min(12, int(smear / self.hr) + 1)
+            for k in range(n):
+                K.draw(cv, self.head, x0 + tip - smear * k / (n - 1), hy, opacity=hk * 1.6 / n)
+        else:
+            K.draw(cv, self.head, x0 + tip, hy, opacity=hk)
 
 
 @functools.lru_cache(maxsize=32)
@@ -435,9 +467,13 @@ class HouseTitle:
             else:
                 self.key_static.draw(cv, x, y, opacity=op)
         if self.ul is not None:
-            u = K.ramp(t, t0 + ul_t, t0 + ul_t + ul_dur, 'inout_cubic')
+            def uu(tt):
+                return K.ramp(tt, t0 + ul_t, t0 + ul_t + ul_dur, 'inout_cubic')
+            u = uu(t)
             if u > 0:
-                self.ul.draw(cv, x - self.ul_len / 2, y + self.kh / 2 + self.key_px * 0.36, u=u, opacity=op)
+                speed = (uu(t + 0.004) - uu(t - 0.004)) / 0.008 * self.ul_len        # px / s
+                self.ul.draw(cv, x - self.ul_len / 2, y + self.kh / 2 + self.key_px * 0.36, u=u, opacity=op,
+                             smear=speed * 0.25 / K.FPS)
 
 
 def signature(cv, x, y, opacity=1.0, px=34):
@@ -470,7 +506,7 @@ def selftest():
     os.makedirs(K.SELFTEST, exist_ok=True)
     out = []
     tm = {}
-    for look in LOOK_NAMES:
+    for look in ('ember', 'noir_ember'):
         t = 1.4
         K.background(look, t + 0.5)
         t0 = time.perf_counter()

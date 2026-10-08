@@ -72,8 +72,8 @@ stakes). Rank them; recommend one plus an A/B alternate that differs only in the
 - Spellings: hai, hain, nahi, kya, kyun, kaise, yeh, woh, mein (in), main (I), ka/ke/ki, ko, se, aur, bhi, bohat,
   bara/bari, wajah/wajahain, zaroor, sirf, abhi, phir, sab, kuch, ho gaya, karo, chalo. English words in English
   spelling. Sentence case. Digits on screen ("3 bari wajahain") even though the TTS says them in words.
-- Mark one keyword per on-screen line as `{word}` (rendered later in glowing serif italic, Instrument Serif
-  Italic). Keyword <= 12 characters, an emotional noun or verb ("{yaadein}", "{nahi}", "{asli}", "{better}").
+- Mark one keyword per on-screen line as `{word}` (rendered later in the house keyword style, jawad_kit
+  `'jw_key'`: glowing Instrument Serif Italic). Keyword <= 12 characters, an emotional noun or verb ("{yaadein}", "{nahi}", "{asli}", "{better}").
   At most 2 keywords per scene; the rest of the line is the white grotesk part.
 - **Token table.** Every caption token maps to its TTS token: `| line | i | roman | tts | keyword |`. faster-whisper
   (language `hi`) returns Devanagari words with timestamps; caption-designer maps them back to your Roman tokens
