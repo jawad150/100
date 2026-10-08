@@ -76,7 +76,14 @@ def cues(): return [dict(t=K.beat(4, BPM), name='impact_soft')]   # align='hit' 
 - Faces: use the footage editor's crop centres. Never cut an eye or face at the frame or card edge; never cover a
   face with a 3D icon or type.
 - Fast moves: 5-7 samples where things move faster than ~1500 px/s. Fast spins (coins) still step at 7: average
-  sprite frames over the angle swept inside each sample, or apply a directional/spin blur.
+  sprite frames over the angle swept inside each sample, or apply a directional/spin blur. Above ~60 px/frame or
+  ~25 deg/frame use 11-15 samples over exactly those windows or a per-layer directional smear (`K.whip_blur`,
+  `K.zoom_blur`); cap spins at ~25 deg/frame and never start a fast move on an `out_` ease (peak speed at t0).
+- Continuity at contact: a spring after a slam or landing starts where the approach ended (`exp(-k*d)*sin(w*d)`,
+  not `cos`), and squash/stretch eases into contact. A value that jumps inside the hit frame's shutter renders
+  as a pale double image on every slam.
+- Colour changes on text: draw the outgoing colour at full opacity and fade the new one over it (or lerp RGB);
+  cross-fading two sprites drops coverage and flashes pale for a few frames.
 - Exits ease out over >= 0.2 s (in_expo plus fade or blur). Never remove an element with a one-frame jump cut.
 - Contrast: a logo glow must not share the colour of the logo's elements; keep particles and bokeh out of logo,
   wordmark and copy areas (they read as stray dots or a full stop).

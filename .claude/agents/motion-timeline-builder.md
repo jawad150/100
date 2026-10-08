@@ -30,7 +30,9 @@ You build timelines for the Organic Fostering pieces with the toolkit in `pipeli
   - cut one frame from an element to nothing. Ease it out.
   - crop faces at frame or card edges, or cover them with props.
   - park particles on the logo.
-- Use 5–7 samples on fast moves, and spin or directional blur for coins.
+- Use 5–7 samples on fast moves, and spin or directional blur for coins. Above about 60 px/frame or 25°/frame, 5–7 samples still show stacked copies: use 11–15 samples for those exact windows, or a directional smear (`K.whip_blur`, `K.zoom_blur`) on the moving layer. Cap spins at about 25°/frame, and don't start a fast move on an `out_` ease (it starts at peak speed).
+- Keep every value continuous at contact. A spring after a slam or landing must start where the approach ended: use `sin`, not `cos`, in `exp(-k*d)*sin(w*d)`. A jump inside the hit frame's shutter shows as a double image (anim1 QA, round 1).
+- Colour changes on text: draw the outgoing colour at full opacity and fade the new one over it, or lerp the RGB. Cross-fading two sprites drops coverage and flashes pale.
 - Missing 3D props: draw a placeholder until `workspace3/assets3d/<name>/<variant>/meta.json` exists.
 
 ## Iterate (cheap first; the CPU is shared)
