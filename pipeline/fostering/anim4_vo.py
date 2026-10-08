@@ -30,7 +30,9 @@ SLOTS = [
     dict(lines=['everyday_life'], at=A['child'] + 0.25, delay=0.05, hold=(A['child'], M.T_FADE[0]), min_rate=0.35,
          tail=0.67),
     # FINAL: "£447.60 a week, per child aged nought to four" over a near-freeze on the settled number + statement
-    dict(lines=['final_amount'], at=M.T_NUM2, delay=0.35, hold=(M.T_STMT + 0.1, M.T_LOGO), min_rate=0.06,
+    # (the hold ends 0.35 s into the statement, before its text snaps from blurred sub-pixel to pixel-sharp drawing,
+    # so the snap happens at speed just before the flight, not as a visible one-frame sharpen mid-read)
+    dict(lines=['final_amount'], at=M.T_NUM2, delay=0.35, hold=(M.T_STMT + 0.1, M.T_STMT + 0.35), min_rate=0.035,
          tail=0.15),
     # END CARD: the child's flight into the logo, the question, the CTA pop and the click all run 1:1 (no settled
     # span between them: a hold there leaves the child hanging); the question is read as it lands and the CTA line
@@ -51,6 +53,9 @@ def cue_gain(cue, src_t, rate):
     if cue['name'] in ('pop', 'glass_tap') and M.T_CHIPS < src_t < M.T_CHIPS + 0.4:     # chips under "does it"
         return -3.0
     if cue['name'] == 'pop' and abs(src_t - 12.5) < 0.03:                                # clothes pop on "school"
+        return -4.0
+    if (cue['name'] == 'impact_soft' and abs(src_t - 13.25) < 0.03) or \
+            (cue['name'] == 'fabric_swish' and abs(src_t - 13.30) < 0.03):              # backpack on "personal"
         return -4.0
     return 0.0
 
