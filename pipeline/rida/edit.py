@@ -67,8 +67,22 @@ FK = 'InterDisplay-Black'
 # ====================================================================== sprites
 
 
+def _glyph_mask(ch, fname, size):
+    """Single glyph on a fixed ascent+descent box (no trimming) so letters share one baseline."""
+    from PIL import Image, ImageDraw
+    f = E.font(fname, size)
+    asc, desc = f.getmetrics()
+    wd = int(math.ceil(f.getlength(ch))) + 8
+    im = Image.new('L', (wd, asc + desc + 8), 0)
+    ImageDraw.Draw(im).text((4, 4), ch, font=f, fill=255)
+    return np.asarray(im).astype(np.float32) / 255.0
+
+
 def _mask(txt, fname, size, squeeze=1.0, tracking=-0.02):
-    a = E.text_mask(txt, fname, size, tracking)
+    if txt.startswith('\x00'):
+        a = _glyph_mask(txt[1:], fname, size)
+    else:
+        a = E.text_mask(txt, fname, size, tracking)
     if abs(squeeze - 1) > 1e-3:
         a = cv2.resize(a, (max(2, int(a.shape[1] * squeeze)), a.shape[0]), interpolation=cv2.INTER_AREA)
     return a
@@ -81,10 +95,10 @@ def tpad(size):
     return int(size * 1.1) + 10
 
 
-def text(txt, size, style='w', fname=None, squeeze=None, shadow=0.55, glow=None):
+def text(txt, size, style='w', fname=None, squeeze=None, shadow=0.55, glow=None, extrude=0):
     """Premultiplied text sprite. style 'w' white bold, 'y' yellow gradient heavy + glow,
     'g' green, 'r' red, 'd' dark."""
-    key = (txt, size, style, fname, squeeze, shadow, glow)
+    key = (txt, size, style, fname, squeeze, shadow, glow, extrude)
     if key in _tc:
         return _tc[key]
     if fname is None:
@@ -120,6 +134,14 @@ def text(txt, size, style='w', fname=None, squeeze=None, shadow=0.55, glow=None)
         gs = solid(ga, gcol + (1.0,))
         gs[..., 3] *= 0.0  # additive-ish glow: colour without occluding
         spr = spr + gs
+    if extrude:
+        # extruded 3D lettering: stacked, progressively darker copies behind the face
+        n = int(extrude)
+        base = np.array(YEL_BOT if style == 'y' else (0.75, 0.75, 0.78), np.float32)
+        for k in range(n, 0, -1):
+            m = np.roll(np.roll(a, k, 0), int(k * 0.55), 1)
+            shade = base * (0.30 + 0.32 * (1 - k / n))
+            spr = over_spr(spr, np.concatenate([shade * m[..., None], m[..., None]], 2).astype(np.float32))
     spr = over_spr(spr, fill)
     _tc[key] = spr
     return spr
@@ -298,6 +320,60 @@ def cached(key, fn):
 
 # ====================================================================== animation helpers
 
+_draw, _draw3d = draw, draw3d
+
+
+def _blurred(spr, blur):
+    lv = round(blur * 2) / 2
+    if lv < 0.75:
+        return spr
+    key = (id(spr), lv)
+    b = _blur_cache.get(key)
+    if b is None or b[0] is not spr:
+        if len(_blur_cache) > 300:
+            _blur_cache.clear()
+        b = (spr, blur_sprite(spr, lv))
+        _blur_cache[key] = b
+    return b[1]
+
+
+_blur_cache = {}
+
+
+def draw(canvas, spr, cx, cy, scale=1.0, rot=0.0, opacity=1.0, mode='over', ax=0.5, ay=0.5, blur=0.0):
+    """engine.draw + optional defocus/motion softness (padding is symmetric, so the centre holds)."""
+    return _draw(canvas, _blurred(spr, blur), cx, cy, scale, rot, opacity, mode, ax, ay)
+
+
+def draw3d(canvas, spr, cx, cy, cz=0, w=None, h=None, rx=0, ry=0, rz=0, cam=None, opacity=1.0, mode='over', blur=0.0):
+    b = _blurred(spr, blur)
+    if b is not spr:
+        if w is not None:
+            w = w * b.shape[1] / spr.shape[1]
+        if h is not None:
+            h = h * b.shape[0] / spr.shape[0]
+    return _draw3d(canvas, b, cx, cy, cz, w, h, rx, ry, rz, cam, opacity, mode)
+
+
+def pblur(t, t0, dur=0.28, amt=10.0):
+    """Blur-in: elements resolve from soft to sharp as they arrive."""
+    return amt * (1 - e_out_cubic(prog(t, t0, t0 + dur)))
+
+
+def sheen(spr, t, t0, dur=0.55, strength=0.55, width=0.10):
+    """A diagonal light sweep across a sprite (masked by its alpha) — glossy 'AE' highlight pass."""
+    p = prog(t, t0, t0 + dur)
+    if p <= 0 or p >= 1:
+        return spr
+    h, w = spr.shape[:2]
+    xs = np.arange(w, dtype=np.float32)[None, :] / w
+    ys = np.arange(h, dtype=np.float32)[:, None] / max(h, w)
+    pos = -0.35 + 1.7 * e_inout_cubic(p)
+    band = np.exp(-((xs - ys * 0.6 - pos) / width) ** 2) * strength
+    out = spr.copy()
+    out[..., :3] += band[..., None] * spr[..., 3:4]
+    return out
+
 def popv(t, t0, dur=0.36):
     """(scale, opacity) for a pop-in that overshoots like the reference's captions."""
     p = prog(t, t0, t0 + dur)
@@ -373,7 +449,11 @@ def devignette_gain():
     if 'g' not in _dv:
         ys, xs = np.mgrid[0:H, 0:W].astype(np.float32)
         r = np.sqrt(((xs - W / 2) / (W * 0.62)) ** 2 + ((ys - H * 0.47) / (H * 0.6)) ** 2)
-        g = (1 + 0.35 * np.clip(r - 0.45, 0, None) ** 1.6 * 2.2) ** 0.8
+        g = (1 + 0.35 * np.clip(r - 0.45, 0, None) ** 1.6 * 2.2) ** 0.45
+        # subject power-window: gently darken the set away from the talent so she separates from the wall
+        fx, fy = FACE['median'][0], FACE['median'][1]
+        rw = np.sqrt(((xs - (fx - 30)) / (W * 0.55)) ** 2 + ((ys - (fy + 360)) / (H * 0.62)) ** 2)
+        g = g * (1 - 0.20 * np.clip((rw - 0.55) / 0.6, 0, 1) ** 1.5)
         _dv['g'] = g[..., None].astype(np.float32)
     return _dv['g']
 
@@ -453,8 +533,8 @@ def talent(frame_bgr, t, fi, sdx=0.0, sdy=0.0):
     M = np.float32([[sx, 0, -(cx - cw / 2) * sx], [0, sx, -(cy - ch / 2) * sx]])
     out = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_REFLECT)
     # sharpen: stronger when punched in (up-scaled)
-    amt = 0.55 + 0.35 * clamp((z - 1.2) / 1.0)
-    bl = cv2.GaussianBlur(out, (0, 0), 1.3 + 0.4 * (z - 1))
+    amt = 0.40 + 0.25 * clamp((z - 1.2) / 1.0)
+    bl = cv2.GaussianBlur(out, (0, 0), 1.0 + 0.35 * (z - 1))
     out = out + amt * (out - bl)
     bl2 = cv2.GaussianBlur(out, (0, 0), 6)
     out = out + 0.12 * (out - bl2)  # local contrast / clarity
@@ -508,11 +588,59 @@ def draw_caption(cv, t, y, fr=None):
             size = 112 if len(c['txt']) <= 9 else (100 if len(c['txt']) <= 13 else 86)
             spr = text(c['txt'], size + (14 if yel else 0), 'y' if yel else 'w', fname=FK if yel else FB,
                        squeeze=0.9 if yel else 1.0, glow=0.5 if yel else None)
-            sc, op = popv(t, c['s'] - 0.04, 0.30)
-            out = prog(t, c['end'] - 0.07, c['end'])
-            sc = 0.90 + 0.10 * sc
-            draw(cv, spr, CX, y + 14 * (1 - min(1, sc / 1.0)) * 4, scale=sc, opacity=op * (1 - out))
+            e = e_out_cubic(prog(t, c['s'] - 0.04, c['s'] + 0.22))
+            out = prog(t, c['end'] - 0.08, c['end'])
+            k = CHUNKS.index(c)
+            if yel and len(c['txt']) <= 16:
+                caption_3d_letters(cv, t, c['s'] - 0.04, c['txt'], size + 14, y, out)
+            elif k % 6 == 3:
+                caption_3d_flip(cv, t, c['s'] - 0.04, spr, y, out)
+            else:
+                op = smooth(min(1.0, e * 1.5)) * (1 - out)
+                draw(cv, spr, CX, y + 26 * (1 - e) - 10 * out, scale=0.94 + 0.06 * e, opacity=op,
+                     blur=9 * (1 - e) + 7 * out)
             return
+
+
+_adv = {}
+
+
+def _char_layout(txt, size, fname, squeeze):
+    """Glyph centres along the word using the font's own advances (with the word sprites' tight tracking)."""
+    key = (txt, size, fname, squeeze)
+    if key not in _adv:
+        f = E.font(fname, size)
+        tr = -0.02 * size
+        xs = [(f.getlength(txt[:i]) + i * tr + f.getlength(ch) / 2) * squeeze for i, ch in enumerate(txt)]
+        _adv[key] = (xs, (f.getlength(txt) + (len(txt) - 1) * tr) * squeeze)
+    return _adv[key]
+
+
+def caption_3d_letters(cv, t, t0, txt, size, y, out):
+    """Key words: extruded 3D letters cascade in, each flipping up from its baseline."""
+    xs, total = _char_layout(txt, size, FK, 0.9)
+    x0 = CX - total / 2
+    for i, ch in enumerate(txt):
+        if ch == ' ':
+            continue
+        ti = t0 + i * 0.03
+        p = prog(t, ti, ti + 0.42)
+        if p <= 0:
+            continue
+        e = e_out_back(p, 1.3)
+        spr = text('\x00' + ch, size, 'y', fname=FK, squeeze=0.9, glow=0.45, extrude=max(4, size // 14))
+        spr = sheen(spr, t, t0 + 0.35 + i * 0.02, 0.45)
+        draw3d(cv, spr, x0 + xs[i], y + 30 * (1 - e) - 10 * out, 260 * (1 - min(1, e)) + 60 * out,
+               rx=-80 * (1 - e) + 25 * out, ry=0, opacity=smooth(min(1, p * 2.2)) * (1 - out),
+               blur=8 * (1 - min(1, e)) + 6 * out)
+
+
+def caption_3d_flip(cv, t, t0, spr, y, out):
+    """Whole word flips in on its horizontal axis, in perspective."""
+    p = prog(t, t0, t0 + 0.38)
+    e = e_out_back(p, 1.2)
+    draw3d(cv, spr, CX, y + 20 * (1 - e), 180 * (1 - min(1, e)), rx=70 * (1 - e) - 20 * out,
+           opacity=smooth(min(1, p * 2.0)) * (1 - out), blur=7 * (1 - min(1, e)) + 6 * out)
 
 
 def face_rect(fi, box):
@@ -532,12 +660,15 @@ def draw_stack(cv, t, st, dx=0, dy=0, fr=None):
         ys.append(y + hh / 2)
         y += hh + 10 + 0.06 * l[3]
     total = y
+    ry, rz = 12, -4  # one consistent tilt for every stack
     R = rotm(0, ry, rz)
     bw = 560
+    maxw = max(text(l[0], l[3], l[2]).shape[1] - 2 * tpad(l[3]) for l in lines)
+    bx = SAFE['x0'] + 46 + bw / 2  # flush-left on a common margin
     if fr is not None:
         # keep the whole stack clear of the face: drop it below the chin if it would overlap
         top, bot = by - total / 2 - 30, by + total / 2 + 30
-        left, right = bx - bw / 2 - 30, bx + bw / 2 + 30
+        left, right = bx - bw / 2 - 30, bx - bw / 2 + maxw + 30
         if right > fr[0] and left < fr[2] and bot > fr[1] and top < fr[3]:
             by = fr[3] + 40 + total / 2
             by = min(by, SAFE['y1'] - total / 2 - 20)
@@ -547,14 +678,15 @@ def draw_stack(cv, t, st, dx=0, dy=0, fr=None):
         spr = text(txt, size, style)
         P = tpad(size)
         w_vis = spr.shape[1] - 2 * P
-        lx = {'l': -bw / 2 + w_vis / 2, 'r': bw / 2 - w_vis / 2, 'c': 0}[align]
-        sc, op = popv(t, tw - 0.02, 0.28)
+        lx = -bw / 2 + w_vis / 2  # flush-left
+        e = e_out_cubic(prog(t, tw - 0.02, tw + 0.30))
+        op = smooth(min(1.0, e * 1.5))
+        sc = 1.10 - 0.10 * e if style == 'y' else 1.0  # heavy words settle in from slightly larger
         if style == 'y':
-            p = prog(t, tw - 0.02, tw + 0.30)
-            sc = 1.12 - 0.12 * e_out_cubic(p)  # heavy words settle in from slightly larger
-        v = R @ np.array([lx, ly - total / 2, 0.0])
+            spr = sheen(spr, t, tw + 0.28, 0.55)
+        v = R @ np.array([lx, ly - total / 2 + 34 * (1 - e), 0.0])
         draw3d(cv, spr, bx + dx + v[0], by + dy + v[1], v[2] - 40 * out, w=spr.shape[1] * sc, ry=ry, rz=rz,
-               opacity=op * (1 - out))
+               opacity=op * (1 - out), blur=10 * (1 - e) + 8 * out)
 
 
 # ====================================================================== talent overlays
@@ -738,8 +870,9 @@ def sc_connect(cv, t, a, b, cam):
     draw3d(cv, us, pb[0], pb[1], pb[2], ry=lerp(-60, -16, k2), rz=3, cam=cam, opacity=min(1, k2 * 2))
     if t >= 7.58:
         sc, op = popv(t, 7.58, 0.35)
+        _pb = pblur(t, 7.58)
         q = text('?', 300, 'y')
-        draw3d(cv, q, 800, 470, -80, w=q.shape[1] * sc, ry=-14, rz=8, cam=cam, opacity=op)
+        draw3d(cv, q, 800, 470, -80, w=q.shape[1] * sc, ry=-14, rz=8, cam=cam, opacity=op, blur=_pb)
 
 
 def sc_yields(cv, t, a, b, cam):
@@ -774,9 +907,10 @@ def sc_yields(cv, t, a, b, cam):
         draw(cv, cached('pulse', lambda: radial_sprite(90, YEL, 1.6, 1.0)), pts[-1][0], pts[-1][1], mode='add')
         if t >= 15.64:
             sc, op = popv(t, 15.64, 0.3)
-            draw(cv, asset('up_g'), pts[-1][0] - 40, pts[-1][1] - 30, scale=0.9 * sc, opacity=op)
+            _pb = pblur(t, 15.64)
+            draw(cv, asset('up_g'), pts[-1][0] - 40, pts[-1][1] - 30, scale=0.9 * sc, opacity=op, blur=_pb)
             u = text('YIELDS ↑', 92, 'g', fname=FK)
-            draw(cv, u, 500, 430, scale=0.8 + 0.2 * sc, opacity=op)
+            draw(cv, u, 500, 430, scale=0.8 + 0.2 * sc, opacity=op, blur=_pb)
 
 
 def sc_carry(cv, t, a, b, cam):
@@ -800,14 +934,16 @@ def sc_carry(cv, t, a, b, cam):
             draw3d(cv, pie, x, y, lerp(800, 0, k), ry=-10, cam=cam, opacity=min(1, 2 * k))
         if t >= tt - 0.05:
             sc, op = popv(t, tt - 0.05, 0.3)
+            _pb = pblur(t, tt - 0.05)
             s = text(title, 104 if len(title) < 8 else 84, 'y')
-            draw3d(cv, s, x, y + 330, 0, w=s.shape[1] * sc, cam=cam, opacity=op)
+            draw3d(cv, s, x, y + 330, 0, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
         if sub and ts and t >= ts:
             sc, op = popv(t, ts, 0.3)
+            _pb = pblur(t, ts)
             s = text(sub, 66, 'w' if i == 0 else 'g', fname=FK)
-            draw3d(cv, s, x, y - 330, 0, w=s.shape[1] * sc, cam=cam, opacity=op)
+            draw3d(cv, s, x, y - 330, 0, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
             if i == 2:
-                draw3d(cv, asset('up_g'), x + 300, y - 330, 0, w=90 * sc, cam=cam, opacity=op)
+                draw3d(cv, asset('up_g'), x + 300, y - 330, 0, w=90 * sc, cam=cam, opacity=op, blur=_pb)
     # animated dashed flow arrows between stations
     for x0, x1, tt in ((540 + 230, 1440 - 230, 25.9), (1440 + 230, 2340 - 300, 27.0)):
         p = e_out_cubic(prog(t, tt, tt + 0.7))
@@ -824,8 +960,9 @@ def sc_carry(cv, t, a, b, cam):
                 draw(cv, cached('chev', lambda: text('›', 120, 'y', glow=0.6, shadow=0)), q[0][0], q[0][1] - 6)
     if t >= 30.52:
         sc, op = popv(t, 30.52, 0.3)
+        _pb = pblur(t, 30.52)
         s = text('INVEST', 150, 'y')
-        draw3d(cv, s, 1440, 400, -300, w=s.shape[1] * sc, cam=cam, opacity=op)
+        draw3d(cv, s, 1440, 400, -300, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
 
 
 def cam_carry(t):
@@ -848,24 +985,28 @@ def sc_trillion(cv, t, a, b, cam):
                opacity=clamp(prog(t, a, a + 0.5)) * 0.8)
     if t >= 35.80:
         sc, op = popv(t, 35.80, 0.3)
+        _pb = pblur(t, 35.80)
         s = text('CROSS-BORDER YEN BORROWING', 54, 'w', fname=FX)
         draw3d(cv, s, CX, 640, 0, w=s.shape[1] * sc, rx=8, cam=cam, opacity=op * (1 - prog(t, 38.9, 39.2)))
     if t >= 37.16:
         v = int(round(360 * e_out_expo(prog(t, 37.16, 37.9))))
         sc, op = popv(t, 37.16, 0.3)
-        s = text(f'¥{v}', 330, 'y')
+        _pb = pblur(t, 37.16)
+        s = text(f'¥{v}', 330, 'y', extrude=14)
         k = prog(t, 39.1, 39.6)
-        draw3d(cv, s, CX, 900 - 200 * e_out_cubic(k), 500 * e_out_cubic(k), w=s.shape[1] * sc, rx=6 + 10 * k, ry=-6, cam=cam, opacity=op)
+        draw3d(cv, s, CX, 900 - 200 * e_out_cubic(k), 500 * e_out_cubic(k), w=s.shape[1] * sc, rx=6 + 10 * k, ry=-6, cam=cam, opacity=op, blur=_pb)
         if t >= 37.74:
             sc2, op2 = popv(t, 37.74, 0.3)
+            _pb2 = pblur(t, 37.74)
             s2 = text('TRILLION', 150, 'y')
             draw3d(cv, s2, CX, 1130 - 200 * e_out_cubic(k), 500 * e_out_cubic(k), w=s2.shape[1] * sc2, rx=6 + 10 * k, ry=-6,
-                   cam=cam, opacity=op2)
+                   cam=cam, opacity=op2, blur=_pb2)
     if t >= 39.28:
         sc, op = popv(t, 39.28, 0.35)
+        _pb = pblur(t, 39.28)
         c = cached('usd_card', lambda: card(820, 300, [(text('≈ $2.34 TRILLION', 104, 'g', fname=FK), 0, -30),
                                                         (lbl('U.S. DOLLARS', 50), 0, 90)], accent=GREEN))
-        draw3d(cv, c, CX, 1200, 0, w=c.shape[1] * (0.7 + 0.3 * sc), rx=8, ry=8, cam=cam, opacity=op)
+        draw3d(cv, c, CX, 1200, 0, w=c.shape[1] * (0.7 + 0.3 * sc), rx=8, ry=8, cam=cam, opacity=op, blur=_pb)
 
 
 YEARS = list(range(1996, 2027, 2))
@@ -887,19 +1028,21 @@ def sc_1996(cv, t, a, b, cam):
         draw3d(cv, s, x_of(i), 940 if big else 980, 0, cam=cam, opacity=on * dim * (1 if big else 0.5))
     if t >= 44.62:
         sc, op = popv(t, 44.62, 0.3)
+        _pb = pblur(t, 44.62)
         s = text('PEHLI DAFA SINCE 1996', 70, 'w', fname=FX)
         draw(cv, s, CX, 470, scale=sc, opacity=op * (1 - prog(t, 47.3, 47.6)))
     if t >= 46.10:
         sc, op = popv(t, 46.10, 0.3)
+        _pb = pblur(t, 46.10)
         c = cached('jgb', lambda: card(900, 170, [(cv2.resize(asset('jp'), (150, 100), interpolation=cv2.INTER_AREA), -340, 0), (lbl('10-YEAR JGB YIELD', 58), 80, 0)]))
-        draw(cv, c, CX, 640, scale=0.85 * (0.8 + 0.2 * sc), opacity=op)
+        draw(cv, c, CX, 640, scale=0.85 * (0.8 + 0.2 * sc), opacity=op, blur=_pb)
     if t >= 47.50:
         p = prog(t, 47.50, 47.68)
         sc, op = 1.6 - 0.6 * e_out_cubic(p), min(1, p * 4)
-        s = text('3%', 460, 'y')
+        s = text('3%', 460, 'y', extrude=18)
         dx, dy = shake(t, 47.68, 22)
-        draw(cv, s, CX - 50 + dx, 1080 + dy, scale=sc, opacity=op)
-        draw(cv, asset('up_g'), CX + 320 + dx, 1020 + dy, scale=1.1 * min(1, sc), opacity=op)
+        draw(cv, s, CX - 50 + dx, 1080 + dy, scale=sc, opacity=op, blur=_pb)
+        draw(cv, asset('up_g'), CX + 320 + dx, 1020 + dy, scale=1.1 * min(1, sc), opacity=op, blur=_pb)
 
 
 def cam_1996(t):
@@ -915,9 +1058,10 @@ def sc_flowback(cv, t, a, b, cam):
     draw3d(cv, fi, 300, 700, lerp(800, 0, k1), ry=24, cam=cam, opacity=min(1, 2 * k1))
     if t >= 58.42:
         sc, op = popv(t, 58.42, 0.3)
-        draw3d(cv, asset('down_r'), 520, 560, -60, w=110 * sc, cam=cam, opacity=op)
+        _pb = pblur(t, 58.42)
+        draw3d(cv, asset('down_r'), 520, 560, -60, w=110 * sc, cam=cam, opacity=op, blur=_pb)
         s = text('KAM', 96, 'r', fname=FK)
-        draw3d(cv, s, 300, 420, 0, w=s.shape[1] * sc, cam=cam, opacity=op)
+        draw3d(cv, s, 300, 420, 0, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
     k2 = fly(t, 59.2, 0.6)
     draw3d(cv, jp, 760, 1130, lerp(800, 0, k2), ry=-24, cam=cam, opacity=min(1, 2 * k2))
     if t >= 58.94:
@@ -929,8 +1073,9 @@ def sc_flowback(cv, t, a, b, cam):
                    cam=cam, opacity=min(1, (t - 58.94) * 3) * math.sin(u * 3.14) ** 0.5)
     if t >= 59.74:
         sc, op = popv(t, 59.74, 0.3)
+        _pb = pblur(t, 59.74)
         s = text('WAPAS', 150, 'y')
-        draw3d(cv, s, 300, 1120, 0, w=s.shape[1] * sc * 0.8, ry=14, cam=cam, opacity=op)
+        draw3d(cv, s, 300, 1120, 0, w=s.shape[1] * sc * 0.8, ry=14, cam=cam, opacity=op, blur=_pb)
 
 
 def sc_impact(cv, t, a, b, cam):
@@ -955,8 +1100,9 @@ def sc_commod(cv, t, a, b, cam):
     draw3d(cv, asset('gold'), 320, 640 + bob, lerp(900, 0, k), w=520, ry=lerp(40, 10, k), cam=cam, opacity=min(1, 2 * k))
     if t >= 67.52:
         sc, op = popv(t, 67.52, 0.3)
+        _pb = pblur(t, 67.52)
         s = text('GOLD', 130, 'y')
-        draw3d(cv, s, 320, 930, 0, w=s.shape[1] * sc, cam=cam, opacity=op)
+        draw3d(cv, s, 320, 930, 0, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
     if t >= 67.95:
         k2 = fly(t, 67.95, 0.6)
         oil = cached('oil', lambda: card(380, 400, [(_drop(), 0, -50), (lbl('OIL', 90), 0, 120)]))
@@ -965,12 +1111,14 @@ def sc_commod(cv, t, a, b, cam):
         for j, (txt, tt) in enumerate((('DOLLAR', 69.24), ('BOND YIELDS', 69.84))):
             if t >= tt:
                 sc, op = popv(t, tt, 0.3)
+                _pb = pblur(t, tt)
                 p = cached(('chip', txt), lambda txt=txt: card(400 if j == 0 else 520, 120, [(lbl(txt, 56), 0, 0)], radius=60))
-                draw3d(cv, p, 300 + j * 450, 1170, 0, w=p.shape[1] * sc * 0.9, rx=6, cam=cam, opacity=op)
+                draw3d(cv, p, 300 + j * 450, 1170, 0, w=p.shape[1] * sc * 0.9, rx=6, cam=cam, opacity=op, blur=_pb)
     if t >= 70.40:
         sc, op = popv(t, 70.40, 0.3)
+        _pb = pblur(t, 70.40)
         s = text('AHEM FACTORS', 120, 'y')
-        draw3d(cv, s, CX, 1300, 0, w=s.shape[1] * sc * 0.9, cam=cam, opacity=op)
+        draw3d(cv, s, CX, 1300, 0, w=s.shape[1] * sc * 0.9, cam=cam, opacity=op, blur=_pb)
 
 
 def _drop():
@@ -989,8 +1137,9 @@ def _drop():
 def sc_opps(cv, t, a, b, cam):
     if t >= 83.24:
         sc, op = popv(t, 83.24, 0.3)
+        _pb = pblur(t, 83.24)
         s = text('TRADING', 110, 'w', fname=FK)
-        draw3d(cv, s, CX, 470, 0, w=s.shape[1] * sc, cam=cam, opacity=op)
+        draw3d(cv, s, CX, 470, 0, w=s.shape[1] * sc, cam=cam, opacity=op, blur=_pb)
     for x, tt, txt, ic, col, ry in ((300, 83.52, 'OPPORTUNITIES', 'up_g', GREEN, 22), (760, 84.48, 'RISKS', 'down_r', RED, -22)):
         if t < tt - 0.3:
             continue
@@ -1051,29 +1200,38 @@ def dof_composite(cv, ov, t, focus_xy):
     return cv * (1 - ov[..., 3:4]) + ov[..., :3]
 
 
-def render(t, fi, frame_bgr):
+def render_one(t, fi, frame_bgr, ts):
     kind, a, b, name = seg_at(t)
     if kind == 'G':
-        cam = scene_cam(name, t, a, b)
-        cv = backdrop(cam, t)
-        SCENES[name](cv, t, a, b, cam)
-        draw_caption(cv, t, SAFE_CAP_G)
-        return cv, 'G'
+        acc = None
+        for u in ts:  # motion blur: average sub-frames of the whole 3D scene
+            cam = scene_cam(name, u, a, b)
+            cv = backdrop(cam, u)
+            SCENES[name](cv, u, a, b, cam)
+            draw_caption(cv, u, SAFE_CAP_G)
+            acc = cv if acc is None else acc + cv
+        return acc / len(ts), 'G'
     dx, dy = 0, 0
     for tt in (54.90, 74.72, 42.34):  # impact shakes
         sx, sy = shake(t, tt, 20)
         dx += sx; dy += sy
     cv, box = talent(frame_bgr, t, fi, dx, dy)
     fr = face_rect(fi, box)
-    ov = np.zeros((H, W, 4), np.float32)
     st = [s for s in STACKS if s[0] <= t < s[1]]
     if st:
         # darken the plate slightly behind kinetic type, like the reference
         k = min(prog(t, st[0][0], st[0][0] + 0.2), 1 - prog(t, st[0][1] - 0.15, st[0][1]))
         cv *= 1 - 0.16 * k
-        draw_stack(ov, t, st[0], 0, 0, fr)
-    elif t < 87.9:  # the CTA card carries the last words
-        draw_caption(ov, t, SAFE_CAP_T, fr)
+    ov = np.zeros((H, W, 4), np.float32)
+    for u in ts:  # motion blur on the 3D text layer (the host plate stays a single sharp frame)
+        lay = np.zeros((H, W, 4), np.float32)
+        stu = [s for s in STACKS if s[0] <= u < s[1]]
+        if stu:
+            draw_stack(lay, u, stu[0], 0, 0, fr)
+        elif u < 87.9:  # the CTA card carries the last words
+            draw_caption(lay, u, SAFE_CAP_T, fr)
+        ov += lay
+    ov /= len(ts)
     # face-locked overlays stay on the host plane (sharp)
     face_box(cv, t, fi, box, 9.70, 13.40)
     face_box(cv, t, fi, box, 76.84, 79.60)
@@ -1091,6 +1249,11 @@ def render(t, fi, frame_bgr):
     cv = dof_composite(cv, ov, t, to_screen(fx, fy, box))
     cta(cv, t)
     return cv, 'T'
+
+
+def render(t, fi, frame_bgr):
+    ts = [t + d / FPS for d in (-0.25, 0.0, 0.25)]
+    return render_one(t, fi, frame_bgr, ts)
 
 
 def transition(t):

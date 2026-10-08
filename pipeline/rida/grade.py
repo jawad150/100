@@ -22,26 +22,25 @@ def rgb2hsv(c):
 def grade(c):
     c = np.clip(c, 0, 1)
     h, s, v = rgb2hsv(c)
-    lum = (c @ np.array([0.2126, 0.7152, 0.0722]))[..., None]
-    # 1) white balance: the set lighting throws an olive/yellow cast on the walls -> pull those
-    #    hues (40-75 deg) most of the way to neutral; skin and the brown skirt (<35 deg) untouched
-    cast = (smoothstep(34, 46, h) * (1 - smoothstep(78, 100, h)))[..., None]
-    c = c + cast * 0.55 * (lum - c)
-    # gentle global cool-down of the warm cast in the whites
-    c = c * np.array([0.985, 1.0, 1.03])
-    # 2) skin: keep natural, a little more life (+8% chroma) for hue 5-35
-    skin = ((smoothstep(2, 10, h) * (1 - smoothstep(30, 38, h))) * smoothstep(0.12, 0.3, s))[..., None]
-    lum = (c @ np.array([0.2126, 0.7152, 0.0722]))[..., None]
-    c = c + skin * 0.16 * (c - lum) + skin * np.array([0.012, 0.0, -0.008])
-    # gentle vibrance on everything that isn't already saturated
-    lum = (c @ np.array([0.2126, 0.7152, 0.0722]))[..., None]
-    c = c + (0.10 * (1 - smoothstep(0.25, 0.6, s)))[..., None] * (1 - cast) * (c - lum)
-    # 3) tone: brighter, airy mids, soft contrast, lifted (neutral) blacks, rolled-off highlights
-    x = np.clip(c, 0, 1)
-    x = x ** 0.87
-    x = x + 0.10 * (x - 0.5) * (1 - np.abs(2 * x - 1))
-    x = 0.028 + x * (1 - 0.028)
-    x = np.where(x > 0.85, 0.85 + (x - 0.85) * 0.75, x)
+    w = np.array([0.2126, 0.7152, 0.0722])
+    lum = (c @ w)[..., None]
+    # 1) white balance: tame (not kill) the olive/yellow cast of the set lighting on the walls
+    cast = (smoothstep(36, 48, h) * (1 - smoothstep(78, 100, h)))[..., None]
+    c = c + cast * 0.35 * (lum - c)
+    # warm daylight balance like the reference
+    c = c * np.array([1.025, 1.0, 0.955])
+    # 2) skin / warm wardrobe: peachy and alive (+22% chroma, a hair toward orange-red)
+    skin = ((smoothstep(2, 10, h) * (1 - smoothstep(32, 40, h))) * smoothstep(0.12, 0.3, s))[..., None]
+    lum = (c @ w)[..., None]
+    c = c + skin * 0.18 * (c - lum) + skin * np.array([0.012, 0.003, -0.008])
+    # 3) vibrance: lift low-saturation colours, leave already-rich ones
+    lum = (c @ w)[..., None]
+    c = c + (0.14 * (1 - smoothstep(0.25, 0.65, s)))[..., None] * (c - lum)
+    # 4) tone: filmic S-curve, clean (not crushed) blacks, soft highlight roll-off
+    x = np.clip(c, 0, 1) ** 0.96
+    x = x + 0.17 * (x - 0.5) * (1 - np.abs(2 * x - 1) ** 1.1)
+    x = 0.012 + x * (1 - 0.012)
+    x = np.where(x > 0.82, 0.82 + (x - 0.82) * 0.72, x)
     return np.clip(x, 0, 1)
 
 
