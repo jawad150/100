@@ -10,6 +10,7 @@ Reads workspace3/out/<module>/<module>.mp4 (the render.py master) and writes
   organic_fostering_<slug>_master.mp4   the CRF 14 master (stored with Git LFS)
   organic_fostering_<slug>_sfx_stem.wav the 48 kHz 24-bit SFX stem (workspace3/audio/<module>_sfx_stem.wav)
   organic_fostering_<slug>_cover.jpg    a frame of the master at --cover seconds
+  organic_fostering_<slug>_vo_stem.wav  the voiceover stem, for voiceover versions (<module>_vo, retime.py)
 Another project sets its folder and file prefix in project.json:
   "deliver": {"dir": "reel/acme", "prefix": "acme"}   (add  reel/acme/*_master.mp4  to .gitattributes LFS)
 """
@@ -55,8 +56,11 @@ def main():
     stem = os.path.join(WS, 'audio', a.module + '_sfx_stem.wav')
     if os.path.exists(stem):
         shutil.copyfile(stem, base + '_sfx_stem.wav')
+    vo_stem = os.path.join(WS, 'audio', a.module + '_vo_stem.wav')        # voiceover versions (retime.py)
+    if os.path.exists(vo_stem):
+        shutil.copyfile(vo_stem, base + '_vo_stem.wav')
     run(['ffmpeg', '-v', 'error', '-y', '-ss', str(a.cover), '-i', master, '-frames:v', '1', '-q:v', '2', base + '_cover.jpg'])
-    for suffix in ('.mp4', '_master.mp4', '_sfx_stem.wav', '_cover.jpg'):
+    for suffix in ('.mp4', '_master.mp4', '_sfx_stem.wav', '_vo_stem.wav', '_cover.jpg'):
         p = base + suffix
         if os.path.exists(p):
             print(f'{os.path.getsize(p) / 1e6:8.1f} MB  {os.path.relpath(p, REPO)}')
