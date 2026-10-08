@@ -89,4 +89,4 @@ Return:
 - One line per reel: title, duration, BPM, look, hook.
 - Any copy line within 40 px of a safe-zone edge.
 - Open questions: ambiguous figures, missing assets, fonts, licences.
-- Who runs next, and on what: reels-studio:script-hook-writer, reels-studio:blender-3d-artist for missing 3D assets, reels-studio:footage-editor for clip moments, and reels-studio:motion-timeline-builder per reel or section.
+- Who runs next, and on what: reels-studio:script-hook-writer, reels-studio:blender-3d-artist for missing 3D assets, reels-studio:footage-editor for clip moments, reels-studio:motion-timeline-builder per reel or section, and reels-studio:caption-designer for reels with speech.

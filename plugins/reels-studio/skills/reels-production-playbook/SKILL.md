@@ -187,8 +187,9 @@ Cloud containers reset. Git-ignored workspace data and running jobs are lost; on
 - [ ] **Contrast:** no logo glow in the logo's own colours; no particles or bokeh on the logo, wordmark or copy.
 - [ ] **Performance:** ≤ 4 workers on 16 GB; `draw(t)` pure with no per-frame state or cycles; `nice`; Blender
       threads 2 when sharing; static sprites cached.
-- [ ] **Ops:** push early; setup_workspace.py plus the LFS 3D archive restore a reset container; fetch and merge,
-      never force; bracketed pgrep patterns.
+- [ ] **Ops:** push early; setup_workspace.py, the BRAND.md restore block and the LFS archives (3D, local footage,
+      bought or generated music) restore a reset container; the lead fetches and merges, never forces; bracketed
+      pgrep patterns.
 - [ ] **Audio, measured not heard:**
       - LUFS, true peak, spectrogram, and cue times checked against frames;
       - -18 LUFS SFX-only, about -14 LUFS with music, mix ≤ -2.0 dBTP;

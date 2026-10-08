@@ -79,7 +79,7 @@ Main options:
 - **Safe zones at 1080x1920.** The script scales them for other sizes.
   - Captions stay inside x 70-1010 and y 230-1480.
   - Nothing goes at x > 930 for y 1050-1700 (the like/share column), and nothing below y 1620.
-  - The default caption band is the lower middle (centre y 1240-1260, or 1390 for minimal). It overlaps the column zone, so the maximum line width is about 765 px around x 540.
+  - The default caption band is the lower middle (centre y 1240-1260, or 1390 for minimal). It overlaps the column zone, so the maximum line width around x 540 is about 760 px (about 710 px inside the boxed preset's box padding).
   - Lines are fitted, and the `SAFE-ZONE` check is measured, at their peak width: the active word at its pop scale (and its `--pill`), so a single long word that pops cannot reach the like/share column.
   - A phrase that would overflow first breaks into 2 balanced lines (no line ends on "the", "your", "to" ...). Only then does it shrink. A shrink below 85 % is a `SIZE` warning: shorten the phrase or lower `--size`.
 - **Legibility.** The text stays at UI-body size or bigger (well above 34-40 px). Use one accent colour. Highlight sparingly: hooks, numbers, the key noun, the punchline. Numbers, %, £, $ and € are emphasised automatically (`--no-number-emphasis` turns this off). Pass 1-3 keywords per reel with `--emphasis`; if every word is highlighted, none is.

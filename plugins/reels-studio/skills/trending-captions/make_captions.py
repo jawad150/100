@@ -33,7 +33,9 @@ PRESETS
 
 SAFE ZONES (1080x1920; scaled for other resolutions): captions stay inside x 70-1010, y 230-1480, never at
 x > 930 where y 1050-1700 (like/share column), nothing below y 1620. The default max line width is derived from
-these rules and the block centre; violations are printed as SAFE-ZONE lines (exit 1 with --strict).
+these rules and the block centre. Lines are fitted, and the bounding boxes in the report are measured, at their
+peak: the active word at its pop scale (plus its --pill), outline, drop shadow and blur. Violations are printed as
+SAFE-ZONE lines (exit 1 with --strict).
 """
 import argparse
 import json
