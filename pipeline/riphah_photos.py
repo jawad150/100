@@ -16,6 +16,7 @@ nobody looks brighter or darker from slide to slide.
 import os
 import sys
 
+import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -31,42 +32,40 @@ URL = "www.floretcapitals.com"
 WIN_TOP, WIN_BOT = 150, 1215
 FADE_TOP, FADE_BOT = 260, 170
 
-FACE_TARGET = 0.44  # mean sRGB value the faces are levelled to
+# Matching targets: every photo is pulled to the same white, black point,
+# face brightness and skin saturation, so the set reads as one grade.
+FACE_TARGET = 0.44             # mean sRGB value of the faces
+NEUTRAL_TARGET = (1.01, 1.0, 0.985)  # R:G:B of greys after WB (a touch warm)
+BLACK_TARGET = 0.012           # luma at the 0.5th percentile
+SKIN_CHROMA_TARGET = 0.235     # mean (max-min) chroma of lit skin (set median ~0.245)
 
 # Per photo:
 #   x0, w   source columns shown across the 1080 px width (sets the scale)
 #   y0      source row that lands on the window top (negative when the photo is
 #           shorter than the window; the gap is filled by extend())
 #   faces   source boxes (x0, y0, x1, y1) metered for levelling
-#   wb      RGB gains removing the colour cast
 PHOTOS = {
     "1": dict(name="handover", x0=312, w=1188, y0=530,
-              faces=[(750, 800, 820, 890), (1010, 810, 1090, 900)],
-              wb=(0.99, 1.0, 1.03)),
+              faces=[(750, 800, 820, 890), (1010, 810, 1090, 900)]),
     "2": dict(name="souvenir", x0=0, w=1240, y0=740,
-              faces=[(380, 1000, 470, 1110), (590, 990, 670, 1100), (810, 990, 890, 1110)],
-              wb=(0.99, 1.0, 1.02)),
+              faces=[(380, 1000, 470, 1110), (590, 990, 670, 1100), (810, 990, 890, 1110)]),
     "3": dict(name="trading_instruments", x0=110, w=1320, y0=6,
-              faces=[(410, 550, 550, 710)], wb=(0.95, 1.0, 1.06)),
+              faces=[(410, 550, 550, 710)]),
     "4": dict(name="floret_intro", x0=150, w=1500, y0=0,
-              faces=[(440, 520, 560, 700)], wb=(0.96, 1.0, 1.05)),
+              faces=[(440, 520, 560, 700)]),
     "5": dict(name="group", x0=75, w=1900, y0=-225,
-              faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)],
-              wb=(1.0, 1.0, 1.02)),
+              faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)]),
     # Second batch (source files 9-13).
     "6": dict(name="margin_trading", file="9.jpg", x0=0, w=1500, y0=47,
-              faces=[(350, 720, 410, 820)], wb=(0.96, 1.0, 1.05)),
+              faces=[(350, 720, 410, 820)]),
     "7": dict(name="classroom", file="10.jpg", x0=200, w=1521, y0=0,
-              faces=[(1530, 390, 1600, 470), (460, 570, 580, 700), (720, 560, 820, 660)],
-              wb=(0.97, 1.0, 1.04)),
+              faces=[(1530, 390, 1600, 470), (460, 570, 580, 700), (720, 560, 820, 660)]),
     "8": dict(name="presenter", file="11.jpg", x0=275, w=1300, y0=123,
-              faces=[(790, 520, 940, 700)], wb=(0.98, 1.0, 1.03)),
+              faces=[(790, 520, 940, 700)]),
     "9": dict(name="box_handover", file="12.jpg", x0=20, w=1350, y0=222,
-              faces=[(330, 600, 430, 720), (570, 600, 670, 720), (980, 700, 1080, 820)],
-              wb=(0.99, 1.0, 1.03)),
+              faces=[(330, 600, 430, 720), (570, 600, 670, 720), (980, 700, 1080, 820)]),
     "10": dict(name="pmex_bag", file="13.jpg", x0=0, w=1070, y0=523,
-               faces=[(350, 810, 430, 920), (710, 840, 790, 950)],
-               wb=(0.99, 1.0, 1.02)),
+               faces=[(350, 810, 430, 920), (710, 840, 790, 950)]),
 }
 
 # Cover background: the group photo at the Riphah gate, full width (the group is
@@ -74,13 +73,12 @@ PHOTOS = {
 # are out. It sits under the logo band with the same soft top edge; the title
 # panel overlaps from the knees.
 COVER = dict(file="8.jpg", x0=0, w=1280, y0=262, top=265, top_fade=150, dim=0.72,
-             faces=[(493, 435, 525, 480), (582, 422, 621, 474), (1005, 422, 1037, 474)],
-             wb=(1.0, 1.0, 1.02), panel=(56, 715, 1024, 1075))
+             faces=[(493, 435, 525, 480), (582, 422, 621, 474), (1005, 422, 1037, 474)], panel=(56, 715, 1024, 1075))
 
 # Shared look (same for every photo).
-LOOK = dict(highlights=0.5, shadows=0.10, contrast=0.12, clarity=0.10,
-            saturation=-0.08, vibrance=0.06, shadow_tint=(-0.010, 0.002, 0.016),
-            sharpen=0.5)
+LOOK = dict(highlights=0.5, shadows=0.10, contrast=0.12, clarity=0.06,
+            saturation=-0.04, vibrance=0.06, shadow_tint=(-0.010, 0.002, 0.016),
+            skin_smooth=0.65)
 
 
 # ---------------------------------------------------------------- colour
@@ -126,9 +124,12 @@ def tone(L):
     return np.clip(s + LOOK["contrast"] * (s - 0.5) * (1 - np.abs(2 * s - 1)) * 1.2, 0, 1)
 
 
-def grade(src, wb, exposure):
+def grade(src, wb, exposure, sat=1.0):
     lin = srgb_to_lin(src) * np.array(wb, np.float32) * (2 ** exposure)
     a = lin_to_srgb(lin)
+    # Same black point for every photo (filtered phone shots come in faded).
+    bp = float(np.percentile(luma(a[::6, ::6]), 0.5))
+    a = np.clip((a - bp) / (1 - bp), 0, 1) * (1 - BLACK_TARGET) + BLACK_TARGET
 
     L = luma(a)
     L2 = tone(L)
@@ -139,7 +140,7 @@ def grade(src, wb, exposure):
     L = luma(a)[..., None]
     chroma = a.max(-1, keepdims=True) - a.min(-1, keepdims=True)
     vib = LOOK["vibrance"] * (1 - np.clip(chroma * 1.6, 0, 1))
-    a = L + (a - L) * (1 + LOOK["saturation"] + vib)
+    a = L + (a - L) * (1 + LOOK["saturation"] + vib) * sat
     # Cool the shadows slightly so the photo sits in the navy template.
     a = a + np.array(LOOK["shadow_tint"], np.float32) * (1 - L) ** 2
     return np.clip(a, 0, 1)
@@ -149,18 +150,84 @@ def face_level(a, faces):
     return float(np.mean([a[y0:y1, x0:x1].mean() for x0, y0, x1, y1 in faces]))
 
 
+def denoise(rgb8):
+    """Non-local-means denoise, strength set from the photo's measured noise."""
+    gray = cv2.cvtColor(rgb8, cv2.COLOR_RGB2GRAY).astype(np.float32)
+    kern = np.array([[1, -2, 1], [-2, 4, -2], [1, -2, 1]], np.float32)
+    sigma = np.sqrt(np.pi / 2) / 6 * np.abs(cv2.filter2D(gray, -1, kern)).mean()
+    h = float(np.clip(sigma * 1.3, 2.0, 6.0))
+    out = cv2.fastNlMeansDenoisingColored(rgb8, None, h, h + 2, 7, 21)
+    return out, sigma
+
+
+def auto_wb(src):
+    """Gains that bring the photo's near-neutral midtones to NEUTRAL_TARGET."""
+    lin = srgb_to_lin(src[::4, ::4])
+    L = lin.mean(-1)
+    neutral = ((src[::4, ::4].max(-1) - src[::4, ::4].min(-1)) < 0.10) & (L > 0.05) & (L < 0.8)
+    m = lin[neutral].mean(0)
+    gains = np.array(NEUTRAL_TARGET, np.float32) / (m / m[1])
+    return 1 + (gains - 1) * 0.85
+
+
+def skin_chroma(a, faces):
+    vals = []
+    for x0, y0, x1, y1 in faces:
+        f = a[y0:y1, x0:x1].reshape(-1, 3)
+        lit = f[luma(f) > 0.3]
+        if len(lit):
+            vals.append((lit.max(-1) - lit.min(-1)).mean())
+    return float(np.mean(vals)) if vals else SKIN_CHROMA_TARGET
+
+
+FACE_CASCADE = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+
+def smooth_skin(rgb8, faces):
+    """Soften skin only: a skin-tone mask around each face (listed + detected),
+    bilateral-smoothed and blended back partly so natural texture stays."""
+    gray = cv2.cvtColor(rgb8, cv2.COLOR_RGB2GRAY)
+    found = FACE_CASCADE.detectMultiScale(gray, 1.1, 6, minSize=(36, 36))
+    boxes = list(faces) + [(x, y, x + w, y + h) for x, y, w, h in found]
+
+    ycc = cv2.cvtColor(rgb8, cv2.COLOR_RGB2YCrCb)
+    skin = ((ycc[..., 0] > 50) & (ycc[..., 1] >= 133) & (ycc[..., 1] <= 178) &
+            (ycc[..., 2] >= 77) & (ycc[..., 2] <= 130)).astype(np.float32)
+    mask = np.zeros(gray.shape, np.float32)
+    H_, W_ = gray.shape
+    for x0, y0, x1, y1 in boxes:
+        w, h = x1 - x0, y1 - y0
+        X0, X1 = max(0, int(x0 - 0.5 * w)), min(W_, int(x1 + 0.5 * w))
+        Y0, Y1 = max(0, int(y0 - 0.6 * h)), min(H_, int(y1 + 1.0 * h))
+        mask[Y0:Y1, X0:X1] = np.maximum(mask[Y0:Y1, X0:X1], skin[Y0:Y1, X0:X1])
+    mask = cv2.GaussianBlur(mask, (0, 0), 4)
+
+    smooth = cv2.bilateralFilter(rgb8, 0, 24, 5).astype(np.float32)
+    smooth = cv2.bilateralFilter(smooth.astype(np.uint8), 0, 18, 3).astype(np.float32)
+    k = (mask * LOOK["skin_smooth"])[..., None]
+    out = rgb8.astype(np.float32) * (1 - k) + smooth * k
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8), len(found)
+
+
 def graded_photo(path, p):
-    src = np.asarray(Image.open(path).convert("RGB"), np.float32) / 255
-    ev = 0.0
-    for _ in range(4):  # meter the faces and settle on the exposure
-        a = grade(src, p["wb"], ev)
+    rgb8 = np.asarray(Image.open(path).convert("RGB"))
+    rgb8, noise = denoise(rgb8)
+    src = rgb8.astype(np.float32) / 255
+    wb = auto_wb(src)
+    ev, sat = 0.0, 1.0
+    for _ in range(5):  # meter faces and skin, settle exposure and saturation
+        a = grade(src, wb, ev, sat)
         step = np.log2(FACE_TARGET / face_level(a, p["faces"])) * 0.9
+        sat = float(np.clip(sat * SKIN_CHROMA_TARGET / skin_chroma(a, p["faces"]), 0.7, 1.25))
         if abs(step) < 0.01:
             break
-        ev = float(np.clip(ev + step, -0.6, 0.6))
-    a = grade(src, p["wb"], ev)
-    print(f"  {os.path.basename(path)}: exposure {ev:+.2f} EV, faces {face_level(a, p['faces']):.3f}")
-    return Image.fromarray((a * 255 + 0.5).astype(np.uint8))
+        ev = float(np.clip(ev + step, -0.7, 0.7))
+    a = grade(src, wb, ev, sat)
+    out, n_found = smooth_skin((a * 255 + 0.5).astype(np.uint8), p["faces"])
+    print(f"  {os.path.basename(path)}: noise {noise:.1f}, EV {ev:+.2f}, sat x{sat:.2f}, "
+          f"faces {face_level(a, p['faces']):.3f}, skin {skin_chroma(a, p['faces']):.3f}, "
+          f"+{n_found} detected")
+    return Image.fromarray(out)
 
 
 # ---------------------------------------------------------------- layout
@@ -234,8 +301,9 @@ def post(photo, p):
     layer.paste(big, (0, top))
     base = np.full((H, W, 3), NAVY, np.float32)
     out = base + (np.asarray(layer, np.float32) - base) * alpha[:, None, None]
+    out += np.random.default_rng(3).normal(0, 0.6, out.shape)  # dither: no banding in the fades
     img = Image.fromarray(np.clip(out + 0.5, 0, 255).astype(np.uint8))
-    img = img.filter(ImageFilter.UnsharpMask(radius=1.2, percent=int(LOOK["sharpen"] * 100), threshold=2))
+    img = img.filter(ImageFilter.UnsharpMask(radius=0.9, percent=45, threshold=4))
 
     img = img.convert("RGBA")
     lk = lockup(floret_h=68, wiw_h=78, gap=32, divider_h=58)
@@ -314,10 +382,10 @@ def main():
     for k, p in PHOTOS.items():
         graded[k] = graded_photo(os.path.join(src_dir, p.get("file", f"{k}.jpg")), p)
         dst = os.path.join(out_dir, f"post_{int(k):02d}_{p['name']}.jpg")
-        post(graded[k], p).save(dst, quality=95, subsampling=0, optimize=True)
+        post(graded[k], p).save(dst, quality=98, subsampling=0, optimize=True)
         print(dst)
     dst = os.path.join(out_dir, "post_00_cover.jpg")
-    cover(graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(dst, quality=95, subsampling=0, optimize=True)
+    cover(graded_photo(os.path.join(src_dir, COVER["file"]), COVER)).save(dst, quality=98, subsampling=0, optimize=True)
     print(dst)
 
 
