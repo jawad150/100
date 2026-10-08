@@ -7,7 +7,7 @@ SRC_DIR holds the original photos (the Drive folder: IMG_96xx.jpg plus the
 exported u*.jpg edits); each slide names its file below. Output (1080x1350),
 in posting order:
     post_00_cover.jpg  title card
-    post_01..10_*.jpg  photos in the Floret post template: navy band with the
+    post_01..09_*.jpg  photos in the Floret post template: navy band with the
                        Floret + WIW 2026 logos, photo fading into navy, website.
 
 Grading is levelled across the set: every photo goes through the same tone and
@@ -54,8 +54,6 @@ PHOTOS = {
               faces=[(380, 1000, 470, 1110), (590, 990, 670, 1100), (810, 990, 890, 1110)]),
     "3": dict(name="trading_instruments", file="IMG_9653.jpg", ref_w=2000, x0=110, w=1320, y0=6,
               faces=[(410, 550, 550, 710)]),
-    "4": dict(name="floret_intro", file="IMG_9655.jpg", ref_w=2000, x0=150, w=1500, y0=0,
-              faces=[(440, 520, 560, 700)]),
     "5": dict(name="group", file="u6c5e1c03.jpg", ref_w=2000, x0=75, w=1900, y0=-225,
               faces=[(770, 680, 820, 750), (910, 660, 970, 740), (1570, 660, 1620, 740)]),
     # Second batch.
@@ -65,7 +63,8 @@ PHOTOS = {
               faces=[(1530, 390, 1600, 470), (460, 570, 580, 700), (720, 560, 820, 660)]),
     "8": dict(name="presenter", file="u272ba09b.jpg", ref_w=2000, x0=275, w=1300, y0=123,
               faces=[(790, 520, 940, 700)]),
-    "9": dict(name="box_handover", file="IMG_9669.jpg", ref_w=1500, x0=20, w=1350, y0=222,
+    "9": dict(name="box_handover", file="IMG_9669_clean.png", ref_w=1500,  # passer-by removed (riphah_cleanup.py)
+              x0=20, w=1350, y0=222,
               faces=[(330, 600, 430, 720), (570, 600, 670, 720), (980, 700, 1080, 820)]),
     "10": dict(name="pmex_bag", file="ue0e424ae.jpg", ref_w=1161, x0=0, w=1070, y0=523,
                faces=[(350, 810, 430, 920), (710, 840, 790, 950)]),
@@ -399,9 +398,9 @@ def main():
     src_dir = sys.argv[1]
     out_dir = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "riphah")
     os.makedirs(out_dir, exist_ok=True)
-    for k, p in PHOTOS.items():
+    for i, p in enumerate(PHOTOS.values(), 1):  # numbered in posting order
         photo, F = graded_photo(os.path.join(src_dir, p["file"]), p)
-        dst = os.path.join(out_dir, f"post_{int(k):02d}_{p['name']}.jpg")
+        dst = os.path.join(out_dir, f"post_{i:02d}_{p['name']}.jpg")
         post(photo, p, F).save(dst, quality=98, subsampling=0, optimize=True)
         print(dst)
     dst = os.path.join(out_dir, "post_00_cover.jpg")

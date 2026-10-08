@@ -47,11 +47,11 @@ To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Se
 
 ## World Investor Week 2026 at Riphah: Instagram carousel (4:5)
 
-Eleven 1080×1350 slides in [`riphah/`](riphah/), posted in filename order:
+Ten 1080×1350 slides in [`riphah/`](riphah/), posted in filename order:
 
 - `post_00_cover.jpg`: title card ("World Investor Week 2026 at Riphah International University" plus the WIW 2026 tagline) over the group photo at the Riphah gate (dimmed into navy), with the Floret Capitals and WIW 2026 logos.
-- `post_01` … `post_10`: event photos in the Floret post template. A navy band at the top carries the Floret | WIW 2026 logo lockup, the photo fades into navy with the same top and bottom gradient on every slide, and the website sits at the bottom.
-- `WIW2026_Riphah_carousel.pdf`: all 11 slides in posting order, one 1080×1350 page each. The JPEGs are embedded without recompression (img2pdf).
+- `post_01` … `post_09`: event photos in the Floret post template. A navy band at the top carries the Floret | WIW 2026 logo lockup, the photo fades into navy with the same top and bottom gradient on every slide, and the website sits at the bottom.
+- `WIW2026_Riphah_carousel.pdf`: all 10 slides in posting order, one 1080×1350 page each. The JPEGs are embedded without recompression (img2pdf).
 
 The script is `pipeline/riphah_photos.py SRC_DIR`. SRC_DIR is the folder of original photos (the shared Drive folder: `IMG_96xx.jpg` camera originals plus the exported `u*.jpg` edits), and each slide names its file in `PHOTOS`. Each original is cropped to the columns its slide uses and processed at up to 2× the output size (never upscaled), then reduced once to 1080×1350. Every photo is processed the same way:
 
@@ -62,5 +62,7 @@ The script is `pipeline/riphah_photos.py SRC_DIR`. SRC_DIR is the folder of orig
 5. Skin-only smoothing: a skin-tone mask around listed and detected faces, bilateral-filtered and partly blended back so texture remains.
 
 Slides are exported as 1080×1350 JPEG at quality 98 with 4:4:4 chroma, with gentle thresholded sharpening and a fine dither so the navy fades don't band. Crops centre the people horizontally. The wide group shot is continued with a blurred mirror of its own edges so its fades match the other slides. Needs `opencv-python-headless`.
+
+The passer-by behind the box handover (slide 8) is removed with LaMa inpainting: `pipeline/riphah_cleanup.py SRC_DIR` writes `IMG_9669_clean.png`, and the slide uses that file. It needs `onnxruntime` and the LaMa ONNX model.
 
 Assets in `riphah/assets/`: Floret logo, the official white WIW 2026 logo (from the IOSCO WIW 2026 campaign toolkit at worldinvestorweek.org), and the Poppins and Anton fonts (SIL OFL).
