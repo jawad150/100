@@ -55,10 +55,12 @@ PHOTOS = {
 }
 
 # Cover background: the group photo at the Riphah gate, full width (the group is
-# already centred), faces up top, the title panel overlapping from the knees.
-COVER = dict(file="8.jpg", x0=0, w=1280, y0=0, dim=0.70,
+# already centred), cut just below the "Welcome to Riphah" sign so the banners
+# are out. It sits under the logo band with the same soft top edge; the title
+# panel overlaps from the knees.
+COVER = dict(file="8.jpg", x0=0, w=1280, y0=262, top=265, top_fade=150, dim=0.72,
              faces=[(493, 435, 525, 480), (582, 422, 621, 474), (1005, 422, 1037, 474)],
-             wb=(1.0, 1.0, 1.02), panel=(56, 610, 1024, 970), lockup_y=1110)
+             wb=(1.0, 1.0, 1.02), panel=(56, 715, 1024, 1075))
 
 # Shared look (same for every photo).
 LOOK = dict(highlights=0.5, shadows=0.10, contrast=0.12, clarity=0.10,
@@ -237,12 +239,13 @@ def cover(photo, c=COVER):
     a = (L + (a - L) * 0.85) * c["dim"] + np.array(NAVY, np.float32) * (1 - c["dim"])
 
     canvas = np.full((H, W, 3), NAVY, np.float32)
-    h = min(a.shape[0], H)
-    y = np.arange(h, dtype=np.float32)
-    # Calm the top edge, then dissolve into navy behind the title panel.
-    top_fade = smoothstep((y + 60) / 260)
-    bot_fade = 1 - smoothstep((y - (c["panel"][1] - 40)) / (h - c["panel"][1] + 40))
-    canvas[:h] += (a[:h] - canvas[:h]) * (top_fade * bot_fade)[:, None, None]
+    t = c["top"]
+    h = min(a.shape[0], H - t)
+    y = np.arange(h, dtype=np.float32) + t  # canvas rows
+    # Soft top edge, then dissolve into navy behind the title panel.
+    top_fade = smoothstep((y - t) / c["top_fade"])
+    bot_fade = 1 - smoothstep((y - (c["panel"][1] - 40)) / (t + h - c["panel"][1] + 40))
+    canvas[t:t + h] += (a[:h] - canvas[t:t + h]) * (top_fade * bot_fade)[:, None, None]
     canvas += np.random.default_rng(7).normal(0, 1.2, canvas.shape)  # grain, no banding
     img = Image.fromarray(np.clip(canvas + 0.5, 0, 255).astype(np.uint8))
 
@@ -282,8 +285,8 @@ def cover(photo, c=COVER):
         center_text(d, y, t, f, col)
         y += hgt + gap
 
-    lk = lockup(floret_h=130, wiw_h=112, gap=44, divider_h=110)
-    img.alpha_composite(lk, ((W - lk.width) // 2, c["lockup_y"] - lk.height // 2))
+    lk = lockup(floret_h=68, wiw_h=78, gap=32, divider_h=58)  # same band as the photo slides
+    img.alpha_composite(lk, ((W - lk.width) // 2, 78 - lk.height // 2))
     center_text(d, 1250, URL, font("Poppins-Medium.ttf", 29))
     return img.convert("RGB")
 
