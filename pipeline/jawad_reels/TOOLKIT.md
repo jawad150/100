@@ -24,7 +24,7 @@ heart / house / coin_gbp, looks `neon` / `amber` / `airy`) are API illustrations
   `--footage` refuses without a `drive_folder`.
 
 ---------------------------------------------------------------------------------------------------------------
-# Organic Fostering toolkit: cheat-sheet for the timeline agents
+# jawad_reels toolkit: cheat-sheet for the timeline agents
 
 Read `BRIEF.md` first (copy, palette, safe zones, per-reel looks). This page tells you how to *build* a reel with the
 toolkit. Every module's docstring has the full API; `demo_looks.py` is a worked reference that uses almost all of
@@ -337,3 +337,60 @@ python3 demo_looks.py heroes | clip | selftest           # the reference demo
 16. `K.ramp(t, a, b)` defaults to `'out_expo'`, which makes about 60 % of the change happen in the first ~12 % of
     the ramp. Used as a fade, it gives one-frame exits, ghost frames and pops (anim4 QA). Always pass the ease:
     'inout_sine' or 'linear' for fades, 'in_cubic' for exits, 'out_cubic' for arrivals.
+
+---------------------------------------------------------------------------------------------------------------
+## 12. Shared motion foundations for Jawad's reels (jawad_tx, snake_captions, endcard, vo_chain)
+
+Every module: `import jawad_kit` first; full API in each module docstring; `python3 <module>.py --selftest` (or
+`selftest`) exits 1 on failure and writes `<WS>/out/selftest/<module>_*.png`. Worked example: `demo_foundation.py`.
+
+### jawad_tx.py - transition kit (bible: brand_reels/research/transitions_sound_music_bible.md)
+```python
+import jawad_tx as X
+plan = X.Plan([('C3', 2.0, dict(center=(540, 720), r0=200)), ('O6', 4.0), ('L1', 6.0)])   # cut times on the grid
+def draw(t):    return plan.draw(t, [S0, S1, S2, S3])      # scenes: PURE S(t) -> new canvas, global clock
+def samples(t): return plan.samples(t)                      # 3 outside windows, 5-7 inside (per transition)
+def post(cv, t): return X.finish(cv, t, LOOK, cuts=CUTS, **plan.post_kw(t))   # exposure push, L4 bloom-out...
+def cues():     return plan.cues()                           # paired SFX (audio.py names; 'alt' = custom sound)
+X.TX['Y1'](t, c, A, B, word='sapna')   # any single transition; X.TX[id].pre/.post (frames), .ease, .cues(c)
+G = X.Grid(90); G.at(2, 1)             # frame-locked beat grid; X.SPRINGS SLAM/POP/SETTLE/SNAP; X.side_b(t, c)
+```
+* 31 of the 43 catalogue entries have code: all 10 premium (C2 C3 M1 M6 Y1 Y5 L1 L4 L7 O6), all 5 editor
+  signatures (D1 D2 D3 D4 D9), the family-allocation set (Y3 O4) and glue L3, plus C1 C6 C8 M2 M3 Y2 L2 L5 L8 D7
+  D8 O1 O2. The other 12 are spec rows (frames, ease, samples, SFX); calling them raises NotImplementedError.
+* Cut rule: frame k = floor((t - c) * 30 + 0.5); frame c is all B, c - 1 all A (no blur across a cut).
+* Never `K.flash` / `post(flash=)`: `X.finish` pushes exposure multiplicatively (blacks never lift).
+* L1 is calmer than the bible's numbers (Jawad disliked leak washes): strength 0.6 + a wide band that only blooms
+  for the frames around the cut; `X.leak_coverage()` ~0.80 (> 0.06 linear). Use it sparingly.
+* Scene kwargs only where documented: C1 mode='3d' (yaw=/pitch=), C2 mode='3d' (cam=), M3 (move=).
+
+### snake_captions.py - Jawad's caption signature
+```python
+import snake_captions as SC
+cap = SC.Captions('<WS>/vo/reel3_final.words.json', band='lower', avoid=face_rects_or_fn, offset=VO_START)
+def prewarm(): cap.prewarm()
+cv = scene(t); cap.draw(cv, t)          # after the transitions, before post
+cap.check() == []; cap.report(); cap.save_srt(path)
+```
+White Poppins SemiBold words + one flame Instrument Serif Italic keyword per chunk ('*word' or "keyword": true)
+along a gentle snake path with a glowing guide line; 1-3 words per chunk (phrase cost model), words glide in on
+their VO times (pop/settle; the keyword settles without bounce), chunks never overlap, layout solved once per
+chunk inside the safe zones and off every avoid rect (falls back to the other band). No glass cards.
+
+### endcard.py - @jawad_mp4 end card + loop
+```python
+import endcard as E
+card = E.EndCard('COMMENT MEIN', 'batao', monogram='JD', dur=4.8)     # 4.5-5 s, hold >= 1.5 s, no 'watch full video'
+cv = E.loop_world(world, t, DUR, d=0.5); card.draw(cv, t, DUR - card.dur)   # card = layer over the moving world
+post: X.finish(cv, t, LOOK, cuts=[(0.0, 0.6)], **card.post_kw(t, DUR - card.dur, DUR));  cues += card.cues(...)
+E.seam_report(lambda t: render.render_still(mod, t, 1), DUR)          # loop QA: last frame vs frame 0
+```
+
+### vo_chain.py - VO stem + caption word timings (standalone; run on downloads with python3 -I)
+```bash
+nice -n 10 python3 -I vo_chain.py process <take.mp3> --dev dev.txt --rom rom.txt [--speed auto] [--realign]
+#  -> <WS>/vo/<take>_final.wav (48 kHz 24-bit mono, -16 LUFS, <= -2 dBTP) + .words.json + .report.json
+```
+Trim to 40 ms, pauses capped at 0.45 s (dramatic beats after '...' / '-' tokens kept up to 0.9 s), rubberband
+stretch to ~160 wpm (1.00-1.10x), HPF 70 Hz, de-ess, 2.5:1 compression, two-pass loudnorm; faster-whisper (hi)
+word times aligned to the DEV tokens, mapped to the ROM tokens 1:1, snapped to voiced onsets.

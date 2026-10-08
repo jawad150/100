@@ -1,8 +1,8 @@
 """jawad_tx.py - Jawad's shared transition kit: the foundations of the transitions bible (section 2: frame grid,
 eases, springs, the cut rule, finish) and its 43-transition catalogue (section 3), with code for the 10 premium
 (C2 C3 M1 M6 Y1 Y5 L1 L4 L7 O6), the 5 editor-signature (D1 D2 D3 D4 D9), every family-allocation signature
-(Y3 O4) and glue (L3), plus cheap extras (C1 C6 C8 M2 M3 D7 D8 L2 L8 Y2). Spec: brand_reels/research/
-transitions_sound_music_bible.md.
+(Y3 O4) and glue (L3), plus extras (C1 C6 C8 M2 M3 Y2 L2 L5 L8 D7 D8 O1 O2): 31 of 43; the other 12 are spec rows.
+Spec: brand_reels/research/transitions_sound_music_bible.md.
 
     import jawad_kit                                  # FIRST (looks, house type)
     import jawad_tx as X
@@ -61,9 +61,11 @@ CHOOSING (bible 3.0): one family per reel, no two reels share a family or signat
 transitions per reel (at most 2 premium), never two features within 2 bars; the rest are beat cuts + L3 push.
 Y5 as a full wipe in ONE reel only. L1 sparingly (Jawad disliked light-leak washes on cuts).
 
-COST (1 core, warm caches, one sample, without the scenes): masks/leaks 15-45 ms; C3/Y5/L7/O6 30-80 ms;
-D1/D3 40-90 ms; O4 60-140 ms (56 shards); Y1 40-120 ms (the zoomed word). Inside windows the scenes are rendered
-twice at most (A and B), and samples rise to 5-7: budget 2-4x a normal frame there.
+COST (measured by the self-test: shared 4-core box, warm caches, one sample, scenes excluded, median per frame):
+C1 21, C2 67, C3 33, C6 17, C8 44, M1 10, M2 72, M6 32, Y1 186, Y2 115, Y3 11, Y5 38, L1 104, L2 64, L5 31,
+L7 72, L8 72, D1 35, D2 60, D3 22, D4 134, O1 121, O2 107, O4 20 (+ shard build once), O6 68 ms; L3 L4 D7 D8
+M3 D9 cost nothing here (their work is in finish() or the scene clock). Inside a window both scenes render and
+samples rise to 5-7: budget 2-4x a normal frame there.
 Self-test: python3 jawad_tx.py selftest  (or --selftest) -> <WS>/out/selftest/jawad_tx_*.png, exits 1 on failure.
 """
 import functools
@@ -153,6 +155,11 @@ def spring(t, preset='POP'):
 def EMBERS():
     """Leak / flare colours (linear): FLAME, RED, AMBER."""
     return (K.C['FLAME'], K.C['RED'], K.C['AMBER'])
+
+
+def LEAK_COLS():
+    """L1 burn colours (deeper than EMBERS so the peak reads ember, not white): FLAME, RED, EMBER."""
+    return (K.C['FLAME'], K.C['RED'], K.C['EMBER'])
 
 
 # =============================================================================================== pixel helpers
@@ -309,15 +316,16 @@ def _rgb_split(cv, amount):
     return cv
 
 
-def finish(cv, t, look, cuts=(), push=0.0, bloomout=0.0, rgb_split=0.0, push_decay=16.0, **kw):
+def finish(cv, t, look, cuts=(), push=0.0, bloomout=0.0, rgb_split=0.0, push_decay=16.0, bloom_scale=1.0, **kw):
     """The ONLY post call in a reel module (bible 2.5): K.post(cv, look, t) with
     exposure push p = push + push_at(t, cuts): exposure += 1.4 p, bloom *= 1 + 0.9 p (multiplicative, blacks stay);
     bloomout k (L4): bloom -> 2.8, threshold -> 0.12, halation -> 0.9, exposure +0.6 k, vignette +0.17 k;
-    rgb_split (D7): channel offset + radial chroma.  Other kw go to K.post.
+    rgb_split (D7): channel offset + radial chroma; bloom_scale multiplies the look's bloom (L1 halves it at
+    its peak so the leak does not bloom into a full-frame wash).  Other kw go to K.post.
         def post(cv, t): return X.finish(cv, t, LOOK, cuts=CUTS, **plan.post_kw(t))"""
     cfg = K.LOOKS.get(look, {})
     p = float(push) + push_at(t, cuts, push_decay)
-    b = float(kw.pop('bloom', cfg.get('bloom', 0.55)))
+    b = float(kw.pop('bloom', cfg.get('bloom', 0.55))) * float(bloom_scale)
     e = float(kw.pop('exposure', cfg.get('exposure', 0.0)) or 0.0)
     if bloomout > 0:
         k = float(min(1.0, bloomout))
@@ -384,8 +392,9 @@ def _add_rgb(cv, m, col, gain=1.0):
     return cv
 
 
-def _emit(cv, m, col, gain=1.0, f=4, thr=1e-4):
-    """Add an emissive low-res mask (1/f res) to the canvas, upsampling only its non-zero bounding box."""
+def _emit(cv, m, col, gain=1.0, f=4, thr=1e-4, off=(0, 0)):
+    """Add an emissive low-res mask (1/f res, placed at low-res offset `off`) to the canvas, upsampling only its
+    non-zero bounding box."""
     rows = np.nonzero(m.max(1) > thr)[0]
     if len(rows) == 0 or gain == 0:
         return cv
@@ -394,7 +403,10 @@ def _emit(cv, m, col, gain=1.0, f=4, thr=1e-4):
     x0, x1 = max(0, cols[0] - 2), min(m.shape[1], cols[-1] + 3)
     sub = np.ascontiguousarray(m[y0:y1, x0:x1], np.float32)
     big = cv2.resize(sub, ((x1 - x0) * f, (y1 - y0) * f), interpolation=cv2.INTER_LINEAR)
-    Y0, X0 = y0 * f, x0 * f
+    Y0, X0 = (y0 + int(off[1])) * f, (x0 + int(off[0])) * f
+    if Y0 < 0 or X0 < 0:
+        big = big[max(0, -Y0):, max(0, -X0):]
+        Y0, X0 = max(0, Y0), max(0, X0)
     hh, ww = min(big.shape[0], cv.shape[0] - Y0), min(big.shape[1], cv.shape[1] - X0)
     reg = cv[Y0:Y0 + hh, X0:X0 + ww, :3]
     reg += big[:hh, :ww, None] * (np.asarray(col, np.float32) * np.float32(gain))
@@ -430,9 +442,10 @@ def _frozen(scene, t):
     return cv
 
 
-def wide_band(cv, u, angle=35.0, strength=0.45, width=3.2):
+def wide_band(cv, u, angle=35.0, strength=0.25, width=3.2, power=4.0):
     """A broad, soft ember wash travelling with K.light_leak(sweep=u, angle) (same band position, `width` x
-    wider, screen blend, sin(pi u) envelope): widens L1's cover to >= 70 % of the frame at the cut."""
+    wider, screen blend, sin(pi u) ** power envelope: it only blooms for the 2-4 frames around the cut): widens
+    L1's cover to >= 70 % of the frame at the cut without washing the whole window."""
     if strength <= 0:
         return cv
     lw, lh = W // 8, H // 8
@@ -445,7 +458,10 @@ def wide_band(cv, u, angle=35.0, strength=0.45, width=3.2):
     ext = abs(K.CX * dx) + abs(K.CY * dy)
     pos = (u * 2.6 - 1.3) * ext
     d = (proj - pos) / (ext * 0.42 * width)
-    g = np.exp(-d * d * 2.0) * math.sin(math.pi * K.clamp(u)) * strength
+    env = math.sin(math.pi * K.clamp(u)) ** power * strength
+    if env < 0.003:
+        return cv
+    g = np.exp(-d * d * 2.0) * env
     col = np.float32(K.C['EMBER']) * 0.5 + np.float32(K.C['FLAME']) * 0.9
     upm = cv2.resize(g.astype(np.float32), (cv.shape[1], cv.shape[0]), interpolation=cv2.INTER_CUBIC)
     np.maximum(upm, 0, out=upm)
@@ -454,20 +470,27 @@ def wide_band(cv, u, angle=35.0, strength=0.45, width=3.2):
     return cv
 
 
-def leak_coverage(seed=0, angle=35.0, strength=1.2, wide=0.45, thr=0.10):
-    """QA for L1: fraction of a black frame the ember leak (+ its wide band) lifts above `thr` (linear) at its
-    peak (u = 0.5). The bible asks >= 0.70 for an invisible cut (with the L3 push on the cut frame)."""
+def leak_coverage(seed=0, angle=35.0, strength=0.6, wide=0.25, thr=0.06):
+    """QA for L1: fraction of a black frame the ember leak (+ its wide band) lifts above `thr` (linear, 0.06 ~
+    sRGB 70/255, several times the ember void) at its peak (u = 0.5). The bible asks >= 0.70 for an invisible cut;
+    the defaults give ~0.80 without washing the frame out (Jawad disliked leak washes)."""
     cv = np.zeros((H, W, 4), np.float32)
     cv[..., 3] = 1
-    K.light_leak(cv, 0.0, colors=EMBERS(), strength=strength, seed=seed, sweep=0.5, angle=angle)
+    K.light_leak(cv, 0.0, colors=LEAK_COLS(), strength=strength, seed=seed, sweep=0.5, angle=angle)
     wide_band(cv, 0.5, angle, wide)
     return float((K.lum(cv[..., :3]) > thr).mean())
 
 
 # =============================================================================================== Tx + catalogue
+CUE_KEYS = ('lp', 'hp', 'rate', 'width')                 # mixer-level keys (audio._render_cue), not sound params
+
+
 def cue(t, name, gain_db=0.0, align='hit', pan=0.0, alt=None, **params):
-    """One SFX cue dict on an audio.py catalog name.  X.cue(2.0, 'whip', -3, direction=1)"""
-    d = dict(t=round(float(t), 4), name=name, gain_db=float(gain_db), align=align, pan=float(pan), params=params)
+    """One SFX cue dict on an audio.py catalog name.  X.cue(2.0, 'whip', -3, direction=1); lp= / hp= / rate= /
+    width= become mixer-level cue keys."""
+    extra = {k: params.pop(k) for k in CUE_KEYS if k in params}
+    d = dict(t=round(float(t), 4), name=name, gain_db=float(gain_db), align=align, pan=float(pan), params=params,
+             **extra)
     if alt:
         d['alt'] = alt
     return d
@@ -643,7 +666,7 @@ def _tx_dolly(t, w, A, B, subject=None, center=(K.CX, 900.0), s1=1.55, leak=0.9,
         cv = A(t, cam=dolly_cam(t, w.t0, w.c, D0, D1, subj_z))
     else:
         e = K.EASE['easy_ease'](u)
-        cv = zoom_canvas(A(t), K.lerp(1.0, s1, e), center, 'reflect')
+        cv = zoom_canvas(A(t), K.lerp(1.0, s1, e), center, 'night')
         de = K.EASE['easy_ease'](K.clamp(u + 1 / max(w.pre, 1))) - e
         K.zoom_blur(cv, min(0.06, abs(de) * (s1 - 1) * 1.8), center=center)
     if subject is not None:
@@ -671,19 +694,19 @@ def _tx_portal(t, w, A, B, center=(K.CX, 760.0), r0=220.0, rim=True, b_scale=1.0
     radius r0 at `center` (the lens / ring / screen of a prop in A) while the aperture glides to frame centre;
     B is screen-locked inside it (at b_scale), fills the frame at c, then settles b_scale -> 1 (out_expo)."""
     if side_b(t, w.c):
-        return zoom_canvas(B(t), K.lerp(b_scale, 1.0, K.EASE['out_expo'](w.ub(t))), (K.CX, K.CY), 'reflect')
+        return zoom_canvas(B(t), K.lerp(b_scale, 1.0, K.EASE['out_expo'](w.ub(t))), (K.CX, K.CY), 'night')
     u = w.ua(t)
     e = K.EASE['in_expo'](u)
     sfull = _portal_scale((K.CX, K.CY), r0) * 1.02
     s = sfull ** e
-    em = K.EASE['inout_cubic'](u)
-    px, py = K.lerp(center[0], K.CX, em), K.lerp(center[1], K.CY, em)
+    em = (s - 1.0) / max(1e-6, sfull - 1.0)            # the aperture glides to centre as it zooms: A always
+    px, py = K.lerp(center[0], K.CX, em), K.lerp(center[1], K.CY, em)       # covers the frame (no mirrored edges)
     M = [[s, 0, px - s * center[0]], [0, s, py - s * center[1]]]
-    cv = affine_canvas(A(t), M, 'reflect')
+    cv = affine_canvas(A(t), M, 'night')
     R = r0 * s
     X, Y = grid4()
     m = up(np.clip((R - np.hypot(X - px, Y - py)) / 3.0 + 0.5, 0, 1))
-    mix_mask(cv, zoom_canvas(B(t), b_scale, (K.CX, K.CY), 'reflect'), m)
+    mix_mask(cv, zoom_canvas(B(t), b_scale, (K.CX, K.CY), 'night'), m)
     if rim and R < 1400:
         rr = int(min(1200, max(8, round(R / 8) * 8)))           # quantised radius: a handful of cached rings
         spr = _ring_spr(rr, max(3.0, rr * 0.02), 0)
@@ -978,14 +1001,14 @@ def _tx_textwipe(t, w, A, B, word=None, x=K.CX, y=900.0, style='jw_caps', px=110
 
 
 # =============================================================================================== LIGHT / FILM
-def _tx_leak(t, w, A, B, strength=1.2, seed=0, angle=35.0, wide=0.45):
+def _tx_leak(t, w, A, B, strength=0.6, seed=0, angle=35.0, wide=0.25):
     """L1 light-leak burn (ember): K.light_leak sweep 0 -> 1 across the window (its sin envelope peaks at the
     cut, u = 0.5) plus a wide soft ember band (wide_band) so >= 70 % of the frame is covered at the cut, hard
     cut under it, and an L3 push at c (post_kw). Use sparingly (Jawad disliked leak washes on every cut)."""
     cv = (B if side_b(t, w.c) else A)(t)
     u = w.u(t)
     wide_band(cv, u, angle, wide)
-    K.light_leak(cv, t, colors=EMBERS(), strength=strength, seed=seed, sweep=u, angle=angle)
+    K.light_leak(cv, t, colors=LEAK_COLS(), strength=strength, seed=seed, sweep=u, angle=angle)
     return cv
 
 
@@ -1408,14 +1431,17 @@ def _tx_graph(t, w, A, B, x=K.CX, y=760.0, pw=820, ph=560, draw=10, travel=18, l
     pts = np.c_[gx0 + v * gw, gy0 - np.array([EASE_SHOW(q_) for q_ in v]) * gh]
     dr = K.ramp(t, w.t0, t_tr, 'out_cubic')
     if dr > 0:
+        ox, oy = int((x - pw / 2 - 20) / 2), int((y - ph / 2 - 20) / 2)        # panel-local half-res region
+        rw, rh = int(pw / 2 + 20), int(ph / 2 + 20)
         part = ui.trim_polyline(pts, 0.0, dr)
-        m = ui.stroke_mask([(part / 2.0, False)], W2, H2, 2.2)
-        _emit(cv, _gl(m, (1.0, 4.0, 10.0), (1.0, 0.6, 0.3)), np.float32(K.C['AMBER']) * 0.5 + np.float32(K.C['FLAME']) * 1.2, op, f=2)
+        m = ui.stroke_mask([(part / 2.0 - (ox, oy), False)], rw, rh, 2.2)
+        _emit(cv, _gl(m, (1.0, 4.0, 10.0), (1.0, 0.6, 0.3)), np.float32(K.C['AMBER']) * 0.5 + np.float32(K.C['FLAME']) * 1.2,
+              op, f=2, off=(ox, oy))
         # bezier handles
         hs = [((gx0, gy0), (gx0 + 0.7 * gw, gy0)), ((gx0 + gw, gy0 - gh), (gx0 + 0.2 * gw, gy0 - gh))]
         for (p0, p1) in hs:
-            hm = ui.stroke_mask([(np.array([p0, p1]) / 2.0, False)], W2, H2, 1.0)
-            _emit(cv, hm, K.C['ASH'], 0.5 * op * dr, f=2)
+            hm = ui.stroke_mask([(np.array([p0, p1]) / 2.0 - (ox, oy), False)], rw, rh, 1.0)
+            _emit(cv, hm, K.C['ASH'], 0.5 * op * dr, f=2, off=(ox, oy))
     # keyframe diamonds pop on 8ths of the draw-on
     for i, (px_, py_) in enumerate(((gx0, gy0), (gx0 + gw, gy0 - gh), (gx0 + 0.7 * gw, gy0), (gx0 + 0.2 * gw, gy0 - gh))):
         tk = w.t0 + i * 2.5 / FPS
@@ -1477,12 +1503,12 @@ def _tx_velocity(t, w, A, B, peak=6.0):
 def _ink_mask(t, w, p0, seed, soft=0.05):
     X, Y = grid4()
     d = np.hypot(X - p0[0], Y - p0[1]) / H + 0.25 * fbm(seed, 6.0)
-    r = K.lerp(-0.04, 0.98, K.EASE['out_sine'](w.u(t)))
+    r = K.lerp(-0.04, 0.9, K.EASE['inout_sine'](w.u(t)))
     return d, r
 
 
 def _tx_ink(t, w, A, B, p0=(540.0, 900.0), seed=7):
-    """O1 ink bleed (deep red ink): B is revealed through a domain-warped ink bloom from p0 (out_sine); the
+    """O1 ink bleed (deep red ink): B is revealed through a domain-warped ink bloom from p0 (inout_sine); the
     edge band darkens A (ink never glows)."""
     d, r = _ink_mask(t, w, p0, seed)
     m = np.clip((r - d) / 0.05, 0, 1)
@@ -1509,7 +1535,7 @@ def _tx_smoke(t, w, A, B, seed=31, rise=260.0):
     cover = np.clip((thr_a * 1.6 - (dens * 0.7 + (1 - vert) * 0.3)) / 0.12, 0, 1) * \
         (1 - np.clip((thr_b * 1.6 - (dens * 0.7 + vert * 0.3)) / 0.12, 0, 1))
     cv = (B if u >= 0.5 else A)(t)
-    C = up(cover)[..., None]
+    C = up(cover)[..., None] * np.float32(0.88)          # smoke stays slightly translucent
     lit = up((dens * vert ** 2).astype(np.float32))[..., None]
     smoke = np.float32(K.C['SMOKE']) * (0.5 + 0.6 * up(dens)[..., None]) + np.float32(K.C['FLAME']) * 0.45 * lit
     cv[..., :3] = cv[..., :3] * (1 - C) + smoke * C
@@ -1617,7 +1643,7 @@ def _ember_seed(scene, t0, n, seed):
 
 def _ember_ramp(k):
     """white-hot -> FLAME -> RED -> EMBER -> dark over k in 0..1 (vectorised, linear rgb x energy)."""
-    stops = np.array([0.0, 0.12, 0.4, 0.75, 1.0])
+    stops = np.array([0.0, 0.07, 0.32, 0.72, 1.0])
     cols = np.stack([np.float32([1.0, 0.85, 0.6]) * 3.0, np.float32(K.C['FLAME']) * 2.4,
                      np.float32(K.C['RED']) * 1.4, np.float32(K.C['EMBER']) * 0.7, np.zeros(3, np.float32)])
     out = np.empty((len(k), 3), np.float32)
@@ -1651,8 +1677,8 @@ def _tx_embers(t, w, A, B, direction='ltr', point=None, n=4000, seed=5, life=1.2
         cv = A(t)
         mA = np.clip((xn - front) / 6.0, 0, 1)
         mix_mask(cv, B(t), up(1.0 - mA))
-        edge = np.exp(-((xn - front - band * 0.5) / (band * 0.6)) ** 2).astype(np.float32)
-        _emit(cv, _gl(edge, (0.7, 3.0), (1.0, 0.5)), np.float32(K.C['FLAME']) * 2.2 + np.float32(K.C['AMBER']) * 0.6)
+        edge = np.exp(-((xn - front - band * 0.3) / (band * 0.35)) ** 2).astype(np.float32)
+        _emit(cv, _gl(edge, (0.6, 2.5), (1.0, 0.35)), np.float32(K.C['FLAME']) * 1.4 + np.float32(K.C['AMBER']) * 0.3)
     else:
         cv = B(t)
     # particles
@@ -1770,7 +1796,9 @@ _reg('Y6', 'scramble-decode cut', 'type', 9, 9, 'stepped (scramble)', 3,
      None, '', '15-21')
 _reg('L1', 'light-leak burn (ember)', 'light', 8, 8, 'built-in sin envelope', 3,
      lambda w, o: [cue(w.c, 'reverse_swell', -4, duration=round(w.pre / FPS, 3)), cue(w.c, 'shimmer', -8)],
-     _tx_leak, 'premium', '12-20 (24-36 dreamy)', _push_post(0.45))
+     _tx_leak, 'premium', '12-20 (24-36 dreamy)',
+     lambda t, w, o: {'push': o.get('push_gain', 0.2) * K.impulse(t, w.c - 0.02, 16.0),
+                      'bloom_scale': 1.0 - 0.6 * math.sin(math.pi * w.u(t)) if w.inside(t) else 1.0})
 _reg('L2', 'film burn', 'light', 14, 10, 'in_cubic -> in_expo', 3,
      lambda w, o: [cue(w.c, 'reverse_swell', -3, duration=round(w.pre / FPS, 3), alt='film_burn'),
                    cue(w.c, 'downlifter', -8)], _tx_burn, '', '18-30',
@@ -1821,7 +1849,7 @@ _reg('D9', 'undo / Ctrl+Z rewind', 'editor', 30, 2, 'in_cubic (reverse)', 5,
      lambda w, o: [cue(w.t0, 'typing', -6, n=2, cps=8),
                    cue(w.c, 'reverse_swell', -6, duration=round(w.pre / FPS - 0.2, 3), lp=3000, alt='tape_rewind'),
                    cue(w.c, 'impact_soft', 0)], _tx_undo, 'editor', '6 + 18-30 + 2', _push_post(0.6))
-_reg('O1', 'ink bleed (deep red ink)', 'organic', 36, 0, 'out_cubic', 3,
+_reg('O1', 'ink bleed (deep red ink)', 'organic', 36, 0, 'inout_sine radius', 3,
      lambda w, o: [cue(w.t0, 'reverse_swell', -4, duration=0.4, lp=800, alt='ink_bloom'),
                    cue(w.t0 + 0.2, 'whoosh_slow', -10)], _tx_ink, '', '30-45')
 _reg('O2', 'smoke wipe', 'organic', 15, 15, 'inout_sine', 3,
@@ -1908,6 +1936,8 @@ class Plan:
             for k, v in d.items():
                 if k == 'push':
                     out['push'] = out.get('push', 0.0) + v
+                elif k == 'bloom_scale':
+                    out[k] = out.get(k, 1.0) * v
                 else:
                     out[k] = v
         return out
@@ -2011,8 +2041,23 @@ def selftest():
         fails.append('Plan.segment')
     if pl.samples(3.0 - 2 / FPS) != 7 or pl.samples(2.0) != 3:
         fails.append('Plan.samples %s %s' % (pl.samples(3.0 - 2 / FPS), pl.samples(2.0)))
-    if not pl.post_kw(1.0).get('push', 0) > 0.3:
+    if not pl.post_kw(1.0).get('push', 0) > 0.15 or not pl.post_kw(1.0).get('bloom_scale', 1) < 0.6:
         fails.append('Plan.post_kw push')
+    # every suggested cue renders with its params (catalog name + valid parameters)
+    import audio as SFXA
+    seen = set()
+    for tid, x in TX.items():
+        for cu in x.cues(c, **opts.get(tid, {})):
+            key = (cu['name'], tuple(sorted(cu['params'].items())))
+            if key in seen:
+                continue
+            seen.add(key)
+            try:
+                snd = SFXA.sound(cu['name'], **cu['params'])
+                if not np.isfinite(np.asarray(snd)).all():
+                    fails.append('%s cue %s not finite' % (tid, cu['name']))
+            except Exception as e:                                   # noqa: BLE001 - report every bad cue
+                fails.append('%s cue %s%s: %r' % (tid, cu['name'], cu['params'], e))
     cov = leak_coverage()
     if cov < 0.70:
         fails.append('L1 leak coverage %.2f' % cov)
@@ -2042,7 +2087,7 @@ def selftest():
     print('transitions implemented: %d / %d' % (sum(x.implemented for x in TX.values()), len(TX)))
     print('median ms per transition frame, scenes excluded:',
           {k: round(float(np.median(v)), 0) for k, v in timings.items()})
-    print('L1 leak coverage at peak: %.2f' % cov)
+    print('L1 leak coverage at peak: %.2f;  cues rendered: %d distinct' % (cov, len(seen)))
     for p in paths:
         print('->', p)
     if fails:

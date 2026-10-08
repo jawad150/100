@@ -14,27 +14,31 @@ LOOKS (one per reel; all five are orange-red on deep black, told apart by world,
     so K.background / K.post / ui.* / F.Clip.get / F.still accept them like the kit looks.
 
 FINISH  G.finish(cv, look, t=0, grain=None, grain_size=None, skin=None, rays=None, rays_center=None, **ov)
-    In place on a linear premultiplied float32 canvas; returns it (alpha 1). ~45-70 ms on top of K.post.
+    In place on a C-contiguous linear premultiplied float32 (H, W, 4) canvas; returns it (alpha 1). Cost on top
+    of K.post: see GRADE.md (measured ~100-130 ms on the shared box, most of it the 2 M-pixel gain gather).
     1  K.post(cv, look, t, grain=0, **ov): exposure, bloom + halation, vignette, edge chroma, mono, crush (the toe)
     2  per-channel characteristic curve in log2 stops around 0.18 (slope `slope` at 0, mid-contrast bump of
-       half-width `width` stops, soft shoulder from +2.5 stops): one integer-index gain LUT (65536 entries)
+       half-width `width` stops, soft shoulder from +2.5 stops): one gain LUT (65536 entries) indexed by the
+       top 16 bits of each float (1/128-octave steps)
     3  split tone by luminance (shadows -> the look's shadow colour, highlights -> its highlight colour, mids
        neutral; multiplicative, so black stays black)
     4  blackbody roll-off of saturated emissive light (luminance > ~1): hue goes FLAME -> hot colour -> warm white
-    5  saturation by luminance (deep shadows down, mids up to +8 %); skin protection: skin pixels (hue ~8-45 deg,
-       moderate chroma, mid luminance, measured as drawn) keep 70 % of their value after the spatial half of
-       K.post (mono, crush and steps 2-4 reach skin at 30 %) and half of the rest of their chromaticity
-       (skin_chroma=0.5): no grey, orange or crushed skin
-    6  K.grain(cv, t, amount, size)  (film grain after the tone curve; size 1.5-1.6 px survives the IG encode)
+    5  saturation by luminance (deep shadows down, mids up to +8 %); skin protection: skin pixels (hue ~8-29 deg,
+       fading out by 0 / 43 deg, moderate chroma, mid luminance, measured as drawn) keep 70 % of their value
+       after the spatial half of K.post (mono, crush and steps 2-4 reach skin at 30 %) and half of the rest of
+       their chromaticity (skin_chroma=0.5): no grey, orange or crushed skin
+    6  K.grain(cv, t, amount, size)  (film grain after the tone curve; size 1.6-1.8 px survives the IG encode)
     ov: any K.post override (exposure=1.4 * push, bloom=..., footage=1, vignette=...); grain= / grain_size=;
-    skin=0..1 (0 = off); rays= god-ray strength (gold_hour default 0.30) and rays_center=(x, y) px.
+    skin=0..1 (0 = off); rays= god-ray strength (gold_hour default 0.26) and rays_center=(x, y) px.
     Exposure pushes on cut frames: G.finish(cv, LOOK, t, exposure=1.4 * push, bloom=G.bloom(LOOK) * (1 + .9 * push)).
 
 COLOUR ONLY (no spatial ops; this is what the LUTs contain)
     G.grade_rgb(lin, look) -> graded linear float32 (h, w, 3): exposure, mono, crush, steps 2-5 (no bloom,
-        halation, vignette, edge chroma or grain). G.display(lin) -> uint8 sRGB through the toolkit's shoulder.
-    G.cutout(spr, look, exposure=0.0) -> new premultiplied sprite graded with F.GRADES[look] (a footage-style
-        match for a cut-out; colour only, never smooths texture). The finish still grades the frame once.
+        halation, vignette, edge chroma or grain). G.display(lin) -> float sRGB 0..1 through the toolkit's
+        shoulder (exact, no dither).
+    G.cutout(spr, look, exposure=0.0) -> new premultiplied sprite graded with F.GRADES[look] plus the finish's
+        skin protection (an optional footage-style match for a cut-out; colour only, never smooths texture).
+        The frame is still finished once by G.finish; most scenes need no cut-out pre-grade at all.
 
 LUTS / CHART / QA (python3 jawad_grade.py <cmd>; outputs under <WS>/looks/)
     lut <look|all>        luts/<look>_33.cube (33^3, red fastest, sRGB in -> sRGB out, includes the shoulder)
@@ -56,7 +60,7 @@ import sys
 import time
 
 import jawad_kit as J                      # FIRST: brand palette, kit looks, house styles
-from jawad_kit import K, T, ui, F          # noqa: E402
+from jawad_kit import K, ui, F             # noqa: E402
 
 import cv2                                  # noqa: E402
 import numpy as np                          # noqa: E402
@@ -66,7 +70,6 @@ LUT_DIR = os.path.join(HERE, 'luts')
 OUT = os.path.join(K.WS, 'looks')
 FACES_TOOLS = '/home/user/100/workspace/brand_reels/charsheet/tools'
 CUTOUTS = '/home/user/100/workspace/brand_reels/charsheet/cutouts'
-CROPS = '/home/user/100/workspace/brand_reels/charsheet/crops'
 
 KIT_LOOKS = ('ember', 'noir_ember')
 NEW_LOOKS = ('inferno', 'gold_hour', 'dusk')
@@ -74,7 +77,6 @@ ALL_LOOKS = KIT_LOOKS + NEW_LOOKS
 
 LUMA = np.float32([0.2126, 0.7152, 0.0722])
 LUMA4 = np.float32([[0.2126, 0.7152, 0.0722, 0.0]])
-NS = 8192.0                                 # tone LUT: index steps per unit of linear light (0..8)
 
 # snapshot of the kit's own keys before anything here runs (the self-test proves they stay untouched)
 _KIT_SNAPSHOT = {k: repr(sorted(K.LOOKS[k].items())) for k in KIT_LOOKS}
@@ -101,28 +103,28 @@ FIN = {
         slope=1.16, width=1.6, shoulder=(2.5, 1.5), shadow=('EMBER', 0.05), highlight=('GOLD', 0.04),
         sat=(0.82, 1.06, 1.0),
         bb=dict(hot='GOLD', white=(1.0, 0.90, 0.74), k_hot=0.70, k_white=0.80, l0=1.0, l1=5.0, w0=3.0, w1=12.0),
-        skin=0.70, skin_chroma=0.5, grain=0.016, grain_size=1.5, rays=0.0),
+        skin=0.70, skin_chroma=0.5, grain=0.016, grain_size=1.8, rays=0.0),
     'noir_ember': dict(
-        slope=1.26, width=1.5, shoulder=(2.5, 1.5), shadow=('SMOKE', 0.05), highlight=('AMBER', 0.03),
-        sat=(0.78, 1.02, 1.0),
+        slope=1.26, width=1.5, shoulder=(2.5, 1.5), shadow=('SMOKE', 0.04), highlight=('AMBER', 0.03),
+        sat=(0.60, 0.92, 1.0),
         bb=dict(hot='AMBER', white=(1.0, 0.92, 0.80), k_hot=0.65, k_white=0.85, l0=1.0, l1=5.0, w0=3.0, w1=10.0),
-        skin=0.70, skin_chroma=0.5, grain=0.022, grain_size=1.6, rays=0.0),
+        skin=0.70, skin_chroma=0.5, grain=0.022, grain_size=1.7, rays=0.0),
     'inferno': dict(
         slope=1.30, width=1.7, shoulder=(2.5, 1.3), shadow=('EMBER', 0.08), highlight=('FLAME', 0.04),
         sat=(0.86, 1.05, 1.0),
         bb=dict(hot='FLAME', white=(1.0, 0.82, 0.62), k_hot=0.80, k_white=0.35, l0=1.0, l1=6.0, w0=5.0, w1=16.0),
-        skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.6, rays=0.0),
+        skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.7, rays=0.0),
     'gold_hour': dict(
         slope=1.10, width=1.8, shoulder=(2.5, 1.7), shadow=('#2B1407', 0.10), highlight=('GOLD', 0.07),
         sat=(0.86, 1.05, 1.0),
         bb=dict(hot='AMBER', white=(1.0, 0.93, 0.80), k_hot=0.70, k_white=0.85, l0=0.9, l1=4.0, w0=2.5, w1=9.0),
-        skin=0.70, skin_chroma=0.5, grain=0.018, grain_size=1.5, rays=0.30, rays_center=(0.52, 0.78), rays_threshold=0.30,
-        rays_length=0.42),
+        skin=0.70, skin_chroma=0.5, grain=0.018, grain_size=1.6, rays=0.26, rays_center=(0.52, 0.78),
+        rays_threshold=0.30, rays_length=0.42),
     'dusk': dict(
         slope=1.20, width=1.6, shoulder=(2.5, 1.5), shadow=('#171431', 0.20), highlight=('FLAME', 0.04),
         sat=(0.80, 1.06, 1.0),
         bb=dict(hot='GOLD', white=(1.0, 0.90, 0.76), k_hot=0.70, k_white=0.75, l0=1.0, l1=5.0, w0=3.0, w1=12.0),
-        skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.6, rays=0.0),
+        skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.7, rays=0.0),
 }
 
 # hue-budget rule per look (verify): 'share' = red-orange >= 60 % of saturated px; 'top5' = the brightest 5 %
@@ -158,12 +160,12 @@ def _new_look_defs():
                 accent=v(C['RED']), accent_hi=v(C['FLAME']), grad=(v(C['RED']), v(C['EMBER'])),
                 grad_hi=(v(C['FLAME']), v(C['RED'])), rim=v(C['FLAME']), rim2=v(C['RED']), glow=v(C['RED']),
                 ok=v(C['FLAME']), ok_hi=v(C['AMBER'])),
-        grade=dict(wb=(1.08, 0.97, 0.88), exposure=-0.06, contrast=1.10, pivot=0.40, black=0.0,
+        grade=dict(wb=(1.03, 0.99, 0.95), exposure=-0.06, contrast=1.10, pivot=0.40, black=0.0,
                    black_tint=(0.25, 0.04, 0.03), shadow_tint=(0.0, -0.010, -0.016),
-                   highlight_tint=(0.018, 0.002, -0.020), sat=1.0, shoulder=0.90))
+                   highlight_tint=(0.010, 0.0, -0.010), sat=0.96, shoulder=0.90))
     # ---- gold_hour: dusk-to-sunrise. Brown-black floor, gold horizon band with an amber sun core, flame edges.
     d['gold_hour'] = dict(
-        bg=dict(top='NIGHT_0', bottom='NIGHT_1', lift=0.45, base_tint=(3.4, 2.3, 1.05),
+        bg=dict(top='NIGHT_0', bottom='NIGHT_1', lift=0.45, base_tint=(2.85, 1.95, 0.92),
                 blobs=[
                     (0.50, 0.80, 0.90, 0.20, 0, 'GOLD', 0.24, 0.03, 0.01, 29.0, 0.5),     # horizon band
                     (0.52, 0.78, 0.24, 0.09, 0, 'AMBER', 0.20, 0.02, 0.01, 21.0, 0.0),    # sun core
@@ -181,9 +183,9 @@ def _new_look_defs():
                 accent=v(C['GOLD']), accent_hi=v(C['AMBER']), grad=(v(C['FLAME']), v(C['RED'])),
                 grad_hi=(v(C['AMBER']), v(C['FLAME'])), rim=v(C['AMBER']), rim2=v(C['FLAME']), glow=v(C['GOLD']),
                 ok=v(C['GOLD']), ok_hi=v(C['LEAF_HI'])),
-        grade=dict(wb=(1.07, 1.0, 0.86), exposure=0.0, contrast=1.04, pivot=0.42, black=0.0,
+        grade=dict(wb=(1.02, 1.0, 0.96), exposure=0.0, contrast=1.0, pivot=0.42, black=0.0,
                    black_tint=(0.11, 0.06, 0.03), shadow_tint=(0.0, -0.002, -0.012),
-                   highlight_tint=(0.024, 0.012, -0.026), sat=1.02, shoulder=0.92))
+                   highlight_tint=(0.006, 0.004, -0.008), sat=0.97, shoulder=0.92))
     # ---- dusk: a night interior. Indigo-violet base, a candle pool with an amber core, a torch beam, warm floor.
     d['dusk'] = dict(
         bg=dict(top='NIGHT_0', bottom='NIGHT_1', lift=0.55, base_tint=(1.05, 1.45, 7.0),
@@ -262,10 +264,14 @@ def _params(look):
     if look not in FIN:
         raise KeyError('jawad_grade: unknown look %r (use one of %s)' % (look, ', '.join(ALL_LOOKS)))
     P = FIN[look]
-    # 2: tone as a GAIN LUT indexed by round(x * NS) (precision holds in the deepest blacks)
-    x = np.arange(65536, dtype=np.float64) / NS
-    xs = np.maximum(x, 2.0 ** -12)
-    gain = (0.18 * 2.0 ** _stops(np.log2(xs / 0.18), P) / xs).astype(np.float32)
+    # 2: tone as a GAIN LUT indexed by the top 16 bits of the float32 value (sign, exponent, 7 mantissa bits:
+    #    a log-spaced index, 1/128 octave per step, 0.16 % gain steps at most); evaluated at each bucket's middle
+    codes = np.arange(65536, dtype=np.uint32)
+    with np.errstate(invalid='ignore', over='ignore'):
+        xm = ((codes << 16) | 0x8000).view(np.float32).astype(np.float64)
+        ok = np.isfinite(xm) & (xm >= 0) & (codes < 0x8000)
+    xs = np.maximum(np.where(ok, xm, 1.0), 2.0 ** -12)
+    gain = np.where(ok, 0.18 * 2.0 ** _stops(np.log2(xs / 0.18), P) / xs, 1.0).astype(np.float32)
     gain.flags.writeable = False
     # 3 + 5: split tone and saturation by luminance; index = round(255 * sqrt(L)) (L clipped to 1)
     i = np.arange(256, dtype=np.float64)
@@ -295,93 +301,96 @@ def _params(look):
 
 
 # =============================================================================================== colour steps
+def _ss32(a, b, x):
+    t = np.clip((x - np.float32(a)) * np.float32(1.0 / (b - a)), 0.0, 1.0)
+    return t * t * (np.float32(3.0) - np.float32(2.0) * t)
+
+
 def _blackbody(cv, L, Q):
     """Step 4: saturated pixels brighter than l0 move FLAME -> hot colour -> warm white with luminance."""
     bb = Q['bb']
-    m = L > np.float32(bb['l0'])
-    if not m.any():
+    idx = np.flatnonzero(L.ravel() > np.float32(bb['l0']))
+    if idx.size == 0:
         return
-    rgb = cv[..., :3]
-    c = rgb[m].astype(np.float32)
-    lm = L[m].astype(np.float32)
+    flat = cv.reshape(-1, cv.shape[-1])
+    c = flat[idx, :3]
+    lm = L.ravel()[idx]
     mx = c.max(1)
-    sat = (mx - c.min(1)) / np.maximum(mx, 1e-6)
-    wf = _sstep(0.35, 0.75, sat).astype(np.float32)
-    t1 = (_sstep(bb['l0'], bb['l1'], lm) * bb['k_hot']).astype(np.float32) * wf
-    t2 = (_sstep(bb['w0'], bb['w1'], lm) * bb['k_white']).astype(np.float32) * wf
-    n = c / np.maximum(lm, 1e-6)[:, None]
+    sat = (mx - c.min(1)) / np.maximum(mx, np.float32(1e-6))
+    wf = _ss32(0.35, 0.75, sat)
+    t1 = _ss32(bb['l0'], bb['l1'], lm) * np.float32(bb['k_hot']) * wf
+    t2 = _ss32(bb['w0'], bb['w1'], lm) * np.float32(bb['k_white']) * wf
+    n = c / np.maximum(lm, np.float32(1e-6))[:, None]
     n += (bb['n_hot'][None, :] - n) * t1[:, None]
     n += (bb['n_white'][None, :] - n) * t2[:, None]
-    rgb[m] = n * lm[:, None]
+    flat[idx, :3] = n * lm[:, None]
 
 
 def _color(cv, look):
-    """Steps 2-4 + saturation, in place on an (h, w, 4) float32 canvas (alpha kept)."""
+    """Steps 2-4 + saturation, in place on an (h, w, 4) float32 canvas (alpha comes back as 1)."""
     Q = _params(look)
-    x = cv[..., :3] * np.float32(NS)
-    x += np.float32(0.5)
-    np.clip(x, 0, 65535, out=x)
-    cv[..., :3] *= Q['gain'][x.astype(np.uint16)]
-    del x
+    cv2.multiply(cv, Q["gain"][cv.view(np.uint16)[..., 1::2]], dst=cv)               # tone (bf16-indexed gain)
+    cv[..., 3] = 1.0
     L = cv2.transform(cv, LUMA4)
-    np.maximum(L, 0, out=L)
-    i4 = cv2.cvtColor(cv2.convertScaleAbs(cv2.sqrt(L), alpha=255.0), cv2.COLOR_GRAY2RGBA)
+    i4 = cv2.cvtColor(cv2.convertScaleAbs(cv2.sqrt(cv2.max(L, 0.0)), alpha=255.0), cv2.COLOR_GRAY2RGBA)
     A = cv2.LUT(i4, Q['tabA'])
     B = cv2.LUT(i4, Q['tabB'])
     cv2.multiply(cv, A, dst=cv)
     cv2.multiply(B, cv2.cvtColor(L, cv2.COLOR_GRAY2RGBA), dst=B)
     cv2.add(cv, B, dst=cv)
     _blackbody(cv, L, Q)
-    np.maximum(cv, 0, out=cv)
     return cv
 
 
 def _skin_weight(rgb):
-    """Skin likelihood 0..1 of linear RGB (h, w, 3): hue ~8-45 deg, moderate chroma, mid luminance (computed on
-    sqrt-encoded values, close to display). Brand orange / red (high chroma) and warm blacks score 0."""
-    q = np.sqrt(np.maximum(rgb, 0.0))
+    """Skin likelihood 0..1 of linear RGB (h, w, 3): hue ~8-29 deg (fading out by 0 and 43), chroma 0.30-0.60
+    (HSV S of sqrt-encoded values), mid luminance (linear ~0.045-0.5). Brand orange / red (S ~0.9), warm-white
+    fabric under warm light (S ~0.2) and warm blacks score 0. Colour qualifier only (as on a grading desk)."""
+    q = np.sqrt(np.maximum(np.asarray(rgb, np.float32), 0.0))
     R, G, B = q[..., 0], q[..., 1], q[..., 2]
     d = R - B
-    hf = (G - B) / np.maximum(d, 1e-4)                     # HSV hue / 60 deg when R >= G >= B
-    S = d / np.maximum(R, 1e-4)                            # HSV saturation
-    Y = np.sqrt(np.maximum(rgb @ LUMA, 0.0))
-    w = (_sstep(0.05, 0.13, hf) * (1.0 - _sstep(0.70, 0.85, hf)) * _sstep(0.06, 0.13, S) *
-         (1.0 - _sstep(0.58, 0.74, S)) * _sstep(0.08, 0.18, Y) * (1.0 - _sstep(0.80, 0.93, Y)))
+    hf = (G - B) / np.maximum(d, np.float32(1e-4))         # HSV hue / 60 deg when R >= G >= B
+    S = d / np.maximum(R, np.float32(1e-4))                # HSV saturation
+    Y = np.sqrt(np.maximum((q * q) @ LUMA, 0.0))
+    w = _ss32(0.0, 0.13, hf) * (1 - _ss32(0.48, 0.72, hf))       # wide, smooth ramps: a 33-point LUT follows them
+    w *= _ss32(0.16, 0.30, S) * (1 - _ss32(0.60, 0.76, S))
+    w *= _ss32(0.11, 0.21, Y) * (1 - _ss32(0.70, 0.90, Y))
     return w.astype(np.float32)
 
 
 def _skin_map(cv):
-    """Half-res skin analysis of the canvas as drawn -> (weight (bh, bw) full-res, (y0, y1, x0, x1)) or None."""
+    """Quarter-res skin analysis of the canvas as drawn -> (flat pixel indices, full-res weights there) or None.
+    Only pixels near skin-like colour are touched later (gather / scatter), so the cost follows the skin area."""
     h, w = cv.shape[:2]
-    sm = cv2.resize(cv, (w // 2, h // 2), interpolation=cv2.INTER_AREA)
+    sm = cv2.resize(cv, (w // 4, h // 4), interpolation=cv2.INTER_AREA)
     wt = _skin_weight(sm[..., :3])
     if float(wt.max()) < 0.02:
         return None
-    wt = cv2.GaussianBlur(wt, (0, 0), 1.0)
-    rows = np.flatnonzero(wt.max(1) > 0.01)
-    cols = np.flatnonzero(wt.max(0) > 0.01)
-    if rows.size == 0:
+    wt = cv2.GaussianBlur(wt, (0, 0), 0.7)
+    m = cv2.dilate((wt > 0.01).astype(np.uint8), np.ones((3, 3), np.uint8))
+    idx = np.flatnonzero(cv2.resize(m, (w, h), interpolation=cv2.INTER_NEAREST))
+    if idx.size == 0:
         return None
-    r0, r1 = max(0, rows[0] - 2), min(wt.shape[0], rows[-1] + 3)
-    c0, c1 = max(0, cols[0] - 2), min(wt.shape[1], cols[-1] + 3)
-    full = cv2.resize(np.ascontiguousarray(wt[r0:r1, c0:c1]), ((c1 - c0) * 2, (r1 - r0) * 2),
-                      interpolation=cv2.INTER_LINEAR)
-    return full, (r0 * 2, r1 * 2, c0 * 2, c1 * 2)
+    wf = cv2.resize(wt, (w, h), interpolation=cv2.INTER_LINEAR).ravel()[idx]
+    return idx, wf
 
 
-def _skin_blend(out, ref, w, extra):
-    """Skin keeps share w of its ungraded value `ref`; then its chromaticity is pulled a further `extra` of the
-    way back (at the blended luminance), so a strong look never turns skin orange or grey."""
-    out += (ref - out) * w[..., None]
+def _skin_blend(flat, idx, ref, w, extra):
+    """flat = canvas.reshape(-1, C); pixels idx keep share w of their ungraded value `ref` (n, 3); then their
+    chromaticity is pulled a further `extra` of the way back (at the blended luminance), so a strong look never
+    turns skin orange or grey."""
+    o = flat[idx, :3]
+    o += (ref - o) * w[:, None]
     if extra > 0:
-        Lo = out @ LUMA
+        Lo = o @ LUMA
         Lr = ref @ LUMA
-        ok = (Lr > 1e-5).astype(np.float32)
-        tgt = ref * (Lo / np.maximum(Lr, 1e-5))[..., None]
-        out += (tgt - out) * (w * np.float32(extra) * ok)[..., None]
+        ok = Lr > 1e-5
+        k = np.where(ok, Lo / np.maximum(Lr, np.float32(1e-5)), 0.0).astype(np.float32)
+        wk = (w * np.float32(extra) * ok).astype(np.float32)
+        o += (ref * k[:, None] - o) * wk[:, None]
+    flat[idx, :3] = o
 
 
-# =============================================================================================== finish
 def _post_split(cv, look, t, ov):
     """K.post in two halves so the skin reference sits between them: the toolkit's spatial post (exposure,
     bloom + halation, vignette, edge chroma; grain off) and then the kit's per-pixel mono + crush, exactly as
@@ -410,16 +419,16 @@ def finish(cv, look, t=0.0, grain=None, grain_size=None, skin=None, rays=None, r
         c = rays_center or (P['rays_center'][0] * K.W, P['rays_center'][1] * K.H)
         K.god_rays(cv, c, strength=rs, threshold=P.get('rays_threshold', 0.3), length=P.get('rays_length', 0.4),
                    tint=(1.0, 0.78, 0.45))
+    if not (isinstance(cv, np.ndarray) and cv.dtype == np.float32 and cv.ndim == 3 and cv.flags.c_contiguous):
+        raise ValueError('G.finish needs a C-contiguous float32 (H, W, 4) canvas')
     sm = _skin_map(cv) if sk > 0 else None                           # skin as drawn (before exposure pushes)
     second = _post_split(cv, look, t, ov)
-    ref = None
-    if sm is not None:
-        wmap, (y0, y1, x0, x1) = sm
-        ref = cv[y0:y1, x0:x1, :3].copy()                            # skin's ungraded value (spatial post only)
+    flat = cv.reshape(-1, cv.shape[2])
+    ref = flat[sm[0], :3] if sm is not None else None                # skin's ungraded value (spatial post only)
     second()                                                         # mono + crush (the toe)
     _color(cv, look)                                                 # steps 2-5
     if ref is not None:
-        _skin_blend(cv[y0:y1, x0:x1, :3], ref, wmap * np.float32(sk), P.get('skin_chroma', 0.0))
+        _skin_blend(flat, sm[0], ref, sm[1] * np.float32(sk), P.get('skin_chroma', 0.0))
     g = P['grain'] if grain is None else float(grain)
     if g > 0:
         K.grain(cv, t, g, P['grain_size'] if grain_size is None else float(grain_size))
@@ -437,17 +446,19 @@ def grade_rgb(lin, look, skin=True):
     cv = np.ones(a.shape[:2] + (4,), np.float32)
     cv[..., :3] = a
     P, cfg = FIN[look], K.LOOKS[look]
-    w = _skin_weight(cv[..., :3]) * np.float32(P['skin']) if skin and P['skin'] > 0 else None
+    w = _skin_weight(cv[..., :3]).ravel() * np.float32(P['skin']) if skin and P['skin'] > 0 else None
     if cfg.get('exposure'):
         cv[..., :3] *= np.float32(2.0 ** cfg['exposure'])
-    ref = cv[..., :3].copy() if w is not None else None
+    flat = cv.reshape(-1, 4)
+    idx = np.flatnonzero(w > 0) if w is not None else None
+    ref = flat[idx, :3] if w is not None else None
     J._mono(cv, float(cfg.get('mono') or 0.0))
     if cfg.get('crush'):
         J._crush(cv, cfg['crush'])
     cv[..., 3] = 1.0
     _color(cv, look)
-    if w is not None:
-        _skin_blend(cv[..., :3], ref, w, P.get('skin_chroma', 0.0))
+    if w is not None and idx.size:
+        _skin_blend(flat, idx, ref, w[idx], P.get('skin_chroma', 0.0))
     return np.ascontiguousarray(cv[..., :3]).reshape(shp)
 
 
@@ -458,14 +469,34 @@ def display(lin):
 
 def cutout(spr, look, exposure=0.0):
     """Footage-style match for a cut-out sprite (premultiplied linear (h, w, 4)) -> NEW sprite graded with
-    F.GRADES[look] (white balance, contrast about the pivot, never-lifted blacks, split tints, saturation).
+    F.GRADES[look] (white balance, contrast about the pivot, never-lifted blacks, split tints, saturation), with
+    the finish's skin protection (skin keeps 70 % of its value + half of the rest of its chromaticity).
     Colour only: texture, pores and hair stay as they are. The frame is still finished once by G.finish."""
     a = spr[..., 3:4]
-    rgb = spr[..., :3] / np.maximum(a, 1e-6) * np.float32(2.0 ** exposure)
-    g = F.grade(np.clip(rgb, 0, 1), look)
+    rgb = np.clip(spr[..., :3] / np.maximum(a, 1e-6) * np.float32(2.0 ** exposure), 0, 1).astype(np.float32)
+    g = F.grade(rgb, look).astype(np.float32)
+    P = FIN[look]
+    w = _skin_weight(rgb).ravel() * np.float32(P['skin'])
+    idx = np.flatnonzero(w > 0)
+    if idx.size:
+        flat = g.reshape(-1, 3)
+        _skin_blend(flat, idx, rgb.reshape(-1, 3)[idx], w[idx], P.get('skin_chroma', 0.0))
     out = np.empty_like(spr)
     out[..., :3] = g * a
     out[..., 3:] = a
+    return out
+
+
+def footage_skin_check(look):
+    """F.GRADES[look] alone on the chart's skin patches -> [(name, dhue OKLab deg, chroma ratio, dL x 100)]
+    (footage read with F.Clip.get(look=...) / F.still(look=...) has no skin protection before the finish)."""
+    out = []
+    for name, hx in SKIN_PATCHES:
+        c = np.asarray(K.hexlin(hx), np.float32)[None, None]
+        b, a = _u8(display(c[0, 0])), _u8(display(F.grade(c, look)[0, 0]))
+        L0, C0, h0 = _lch(oklab_u8(b))
+        L1, C1, h1 = _lch(oklab_u8(a))
+        out.append((name, round(float(_dhue(h1, h0)), 2), round(float(C1 / C0), 3), round(float((L1 - L0) * 100), 2)))
     return out
 
 
@@ -549,7 +580,8 @@ def chart_canvas():
         for i, name in enumerate(SWATCHES):
             x0 = 40 + i * 100
             cv[y0:y0 + 90, x0:x0 + 92, :3] = K.C[name] * ex
-            reg['%s@%gx' % (name, ex)] = (y0, y0 + 90, x0, x0 + 92, 'swatch' if K.lum(K.C[name]) * ex <= 1 else 'emissive')
+            kind = 'swatch' if K.lum(K.C[name]) * ex <= 1 else 'emissive'
+            reg['%s@%gx' % (name, ex)] = (y0, y0 + 90, x0, x0 + 92, kind)
     # skin patches
     for i, (name, hx) in enumerate(SKIN_PATCHES):
         x0 = 40 + i * 252
@@ -606,6 +638,7 @@ def chart(look, out=None):
                                      chroma_ratio=round(float(Ca / max(Cb, 1e-6)), 3),
                                      hsv_hue_before=round(hsv_hue_deg(b[None])[0], 1),
                                      hsv_hue_after=round(hsv_hue_deg(a[None])[0], 1))
+    res['footage_grade_skin'] = footage_skin_check(look)
     res['FLAME@1x_dE'] = res['swatches']['FLAME@1x']['dE']
     res['RED@1x_dE'] = res['swatches']['RED@1x']['dE']
     res['skin_max_dhue'] = max(abs(v['dhue_oklab']) for v in res['skin'].values())
@@ -681,16 +714,32 @@ def read_cube(path):
     return n, np.asarray(vals, np.float64)
 
 
-def _ffmpeg_lut(src_png, cube, dst_png):
-    cmd = ['ffmpeg', '-v', 'error', '-y', '-i', src_png, '-vf', 'lut3d=file=%s:interp=tetrahedral' % cube,
-           '-pix_fmt', 'rgb24', dst_png]
+def _ffmpeg_lut(src_png, cube, dst_png, deep=True):
+    """Apply a .cube with ffmpeg (tetrahedral). deep=True runs lut3d in 16 bit and writes a 16-bit PNG (exact
+    LUT content; ffmpeg's 8-bit lut3d path truncates, ~-0.25 code on average) -> float RGB in 0..255."""
+    if deep:                                    # exact 16-bit input (v * 257), so no swscale conversion happens
+        src16 = src_png[:-4] + '_16.png'
+        if not os.path.exists(src16) or os.path.getmtime(src16) < os.path.getmtime(src_png):
+            cv2.imwrite(src16, cv2.imread(src_png, cv2.IMREAD_COLOR).astype(np.uint16) * 257)
+        src_png = src16
+    vf = 'lut3d=file=%s:interp=tetrahedral' % cube
+    cmd = ['ffmpeg', '-v', 'error', '-y', '-i', src_png, '-vf', vf, '-pix_fmt', 'rgb48be' if deep else 'rgb24',
+           dst_png]
     subprocess.run(cmd, check=True)
-    return cv2.cvtColor(cv2.imread(dst_png, cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+    im = cv2.imread(dst_png, cv2.IMREAD_UNCHANGED)
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB).astype(np.float64)
+    return im * (255.0 / 65535.0) if im.dtype == np.float64 and deep else im
+
+
+def _oklab_f(rgb255):
+    """float sRGB 0..255 (..., 3) -> OKLab."""
+    return K._oklab(K.to_lin(np.clip(np.asarray(rgb255, np.float32) / 255.0, 0, 1)).astype(np.float64))
 
 
 def lut_check(look, work=None):
-    """Identity orientation proof + the look's .cube vs the in-process grade on the chart (through ffmpeg).
-    Returns dict(identity_max, mean_dE, max_dE, p99_dE)."""
+    """Identity orientation proof + the look's .cube vs the in-process grade on the chart, both through ffmpeg
+    lut3d (tetrahedral). Errors in OKLab x 100 on non-emissive pixels: 'deep' = lut3d in 16 bit vs the float
+    in-process grade (the LUT itself), 'rgb24' = ffmpeg's 8-bit path vs the rounded in-process grade."""
     work = work or os.path.join(OUT, 'lutcheck')
     os.makedirs(work, exist_ok=True)
     cv, reg = chart_canvas()
@@ -698,22 +747,26 @@ def lut_check(look, work=None):
     src_png = os.path.join(work, 'chart_src.png')
     cv2.imwrite(src_png, cv2.cvtColor(src, cv2.COLOR_RGB2BGR))
     idc = os.path.join(work, 'identity_33.cube')
-    if not os.path.exists(idc):
-        write_identity(idc)
-    ident = _ffmpeg_lut(src_png, idc, os.path.join(work, 'chart_identity.png'))
-    id_max = int(np.abs(ident.astype(np.int32) - src.astype(np.int32)).max())
+    write_identity(idc)
+    ident8 = _ffmpeg_lut(src_png, idc, os.path.join(work, 'chart_identity.png'), deep=False)
+    ident16 = _ffmpeg_lut(src_png, idc, os.path.join(work, 'chart_identity16.png'), deep=True)
     cube = os.path.join(LUT_DIR, '%s_33.cube' % look)
-    via = _ffmpeg_lut(src_png, cube, os.path.join(work, 'chart_%s_lut.png' % look))
-    ref = _u8(display(grade_rgb(K.to_lin(src.astype(np.float32) / 255.0), look)))
+    via16 = _ffmpeg_lut(src_png, cube, os.path.join(work, 'chart_%s_lut16.png' % look), deep=True)
+    via8 = _ffmpeg_lut(src_png, cube, os.path.join(work, 'chart_%s_lut.png' % look), deep=False)
+    ref = display(grade_rgb(K.to_lin(src.astype(np.float32) / 255.0), look)).astype(np.float64) * 255.0
     mask = np.ones(src.shape[:2], bool)
     for r in reg.values():
         if r[4] == 'emissive':
             mask[r[0]:r[1], r[2]:r[3]] = False
-    lin_src = K.to_lin(src.astype(np.float32) / 255.0)
-    mask &= np.asarray(K.lum(lin_src) <= 1.0)
-    dE = np.linalg.norm(oklab_u8(via[mask]) - oklab_u8(ref[mask]), axis=-1) * 100
-    return dict(identity_max_code=id_max, mean_dE=round(float(dE.mean()), 3), max_dE=round(float(dE.max()), 3),
-                p99_dE=round(float(np.percentile(dE, 99)), 3), cube=cube)
+    d16 = np.linalg.norm(_oklab_f(via16[mask]) - _oklab_f(ref[mask]), axis=-1) * 100
+    d8 = np.linalg.norm(_oklab_f(via8[mask]) - _oklab_f(np.round(ref[mask])), axis=-1) * 100
+    code16 = np.abs(via16[mask] - ref[mask]).max(-1)
+    return dict(identity_max_code_rgb24=float(np.abs(ident8 - src).max()),
+                identity_max_code_16bit=round(float(np.abs(ident16 - src).max()), 3),
+                mean_dE=round(float(d16.mean()), 3), max_dE=round(float(d16.max()), 3),
+                p99_dE=round(float(np.percentile(d16, 99)), 3), max_code=round(float(code16.max()), 2),
+                rgb24_mean_dE=round(float(d8.mean()), 3), rgb24_max_dE=round(float(d8.max()), 3),
+                rgb24_mean_code=round(float((via8[mask] - np.round(ref[mask])).mean()), 3), cube=cube)
 
 
 # =============================================================================================== test scene
@@ -802,41 +855,49 @@ def _luma(rgb_u8):
 
 
 def find_dark_gradient(rgb_u8, size=300):
-    """(y, x) of the size x size window holding the darkest smooth gradient (no type / sparks)."""
+    """(y, x) of the size x size window holding the darkest smooth gradient of the world: not clipped to black
+    (5th percentile >= 6 full-range codes), mean 8-60, the widest ramp, no type / sparks / UI edges."""
     Y = _luma(rgb_u8).astype(np.float32)
     blur = cv2.GaussianBlur(Y, (0, 0), 12)
     hf = np.abs(Y - cv2.GaussianBlur(Y, (0, 0), 2.0))
-    best, pos = -1.0, (0, 0)
+    best, pos = -1.0, None
     for y in range(0, Y.shape[0] - size + 1, 40):
         for x in range(0, Y.shape[1] - size + 1, 40):
             b = blur[y:y + size, x:x + size]
             m = float(b.mean())
-            if m > 45 or m < 3:
+            if m > 60 or m < 8 or float(np.percentile(Y[y:y + size, x:x + size], 5)) < 6:
                 continue
             busy = float(np.percentile(hf[y:y + size, x:x + size], 99))
             rng = float(b.max() - b.min())
-            score = rng / (1.0 + busy) / (1.0 + m / 30.0)
+            score = rng / (1.0 + busy) / (1.0 + m / 40.0)
             if score > best:
                 best, pos = score, (y, x)
-    return pos
+    return pos if pos is not None else (Y.shape[0] - size, 0)
 
 
 def banding(y_patch):
-    """Luma banding numbers of a uint8 patch: distinct levels, share of perfectly flat 8x8 blocks, and the
-    staircase residual (codes) of the gradient profile."""
-    p = np.asarray(y_patch, np.float64)
+    """Luma banding numbers of a uint8 patch: distinct levels (> 0.5 % of px), share of perfectly flat 8x8
+    blocks (x264 zero-residual blocks = contour bands) and of pixels whose 5x5 neighbourhood is constant."""
+    p = np.asarray(y_patch, np.float32)
     h, w = p.shape
     blocks = p[:h // 8 * 8, :w // 8 * 8].reshape(h // 8, 8, w // 8, 8).std(axis=(1, 3))
-    flat8 = float((blocks == 0).mean())
     vals, cnt = np.unique(p.astype(np.int32), return_counts=True)
-    levels = int((cnt > p.size * 0.005).sum())
-    prof_r, prof_c = p.mean(1), p.mean(0)
-    prof = prof_r if np.ptp(prof_r) >= np.ptp(prof_c) else prof_c
-    xs = np.arange(prof.size)
-    fit = np.polyval(np.polyfit(xs, prof, 3), xs)
-    stair = float(np.std(prof - fit))
-    return dict(levels=levels, flat8=round(flat8, 4), stair=round(stair, 3), range=round(float(np.ptp(prof)), 2),
-                mean=round(float(p.mean()), 2), std=round(float(p.std()), 2))
+    mn = cv2.erode(p, np.ones((5, 5), np.uint8))
+    mx = cv2.dilate(p, np.ones((5, 5), np.uint8))
+    return dict(levels=int((cnt > p.size * 0.005).sum()), flat8=round(float((blocks == 0).mean()), 4),
+                flat5px=round(float((mx[2:-2, 2:-2] == mn[2:-2, 2:-2]).mean()), 4),
+                range=round(float(np.percentile(p, 99) - np.percentile(p, 1)), 1), mean=round(float(p.mean()), 2),
+                std=round(float(p.std()), 2))
+
+
+def _yplane(mp4, fps=1):
+    """Limited-range Y planes (uint8) at `fps`."""
+    probe = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
+                            'stream=width,height', '-of', 'csv=p=0', mp4], capture_output=True, text=True, check=True)
+    w, h = [int(v) for v in probe.stdout.strip().split(',')[:2]]
+    p = subprocess.run(['ffmpeg', '-v', 'error', '-i', mp4, '-vf', 'fps=%g,extractplanes=y' % fps, '-f', 'rawvideo',
+                        '-pix_fmt', 'gray', '-'], capture_output=True, check=True)
+    return np.frombuffer(p.stdout, np.uint8).reshape(-1, h, w)
 
 
 def _reencode(src, dst, mode):
@@ -899,6 +960,9 @@ def verify(mp4, look, out=None, skin_ref=None):
     res['signalstats_min_mean_max'] = rng
     res['frames'] = int(S.shape[0])
     res['ymin_jumps_gt6'] = jumps
+    yp = _yplane(mp4, 1)
+    res['luma_1fps'] = dict(p1=[int(np.percentile(y, 1)) for y in yp], p10=[int(np.percentile(y, 10)) for y in yp],
+                            below16_share=[round(float((y < 16).mean()), 5) for y in yp])
     # hue budget at 1 fps
     fr1 = _frames(mp4, 1)
     hb = [hue_budget(f) for f in fr1]
@@ -913,7 +977,8 @@ def verify(mp4, look, out=None, skin_ref=None):
     # skin: faces at 1 fps (Haar), vectorscope of the first face crop
     sk = []
     for i, f in enumerate(fr1):
-        for b in _faces_in(f):
+        fb = _faces_in(f)
+        for b in sorted(fb, key=lambda r: -r[2] * r[3])[:1]:              # the largest face only
             s = skin_stats(f, b)
             if s:
                 s['t'] = i + 0.5
@@ -932,7 +997,7 @@ def verify(mp4, look, out=None, skin_ref=None):
                                   dL=round(float(np.median([s['oklab_L'] for s in sk]) - skin_ref['oklab_L']), 1),
                                   dhue_oklab=round(float(_dhue(np.median([s['oklab_h'] for s in sk]),
                                                                skin_ref['oklab_h'])), 1))
-    # banding after the Instagram-like re-encodes
+    # banding after the Instagram-like re-encodes (CRF 23 and 3.5 Mbit/s x264), darkest smooth world gradient
     mid = fr1[len(fr1) // 2]
     y, x = find_dark_gradient(mid)
     res['banding_patch_yx'] = [int(y), int(x)]
@@ -943,7 +1008,8 @@ def verify(mp4, look, out=None, skin_ref=None):
         f = frs[len(frs) // 2]
         patch = _luma(f)[y:y + 300, x:x + 300]
         band[tag] = banding(patch)
-        st = cv2.normalize(patch.astype(np.float32), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        st = np.clip((patch.astype(np.float32) - np.percentile(patch, 1)) * 255.0 /
+                     max(1.0, float(np.percentile(patch, 99) - np.percentile(patch, 1))), 0, 255).astype(np.uint8)
         cv2.imwrite(os.path.join(out, 'band_%s.png' % tag), cv2.resize(st, (600, 600), interpolation=cv2.INTER_NEAREST))
     res['banding'] = band
     # k-means fingerprint at 2 fps
@@ -1016,9 +1082,20 @@ def sheet(t=1.6, out=None):
                                                     cv2.COLOR_BGR2RGB), (135, 240), interpolation=cv2.INTER_AREA)
                             for lk in ALL_LOOKS], 1)
     cv2.imwrite(os.path.join(out, 'looks_thumbs.png'), cv2.cvtColor(strip, cv2.COLOR_RGB2BGR))
+    info['_thumb_distance'] = thumb_distance({lk: cv2.cvtColor(cv2.imread(os.path.join(out, 'frame_%s.png' % lk)),
+                                                               cv2.COLOR_BGR2RGB) for lk in ALL_LOOKS})
     with open(os.path.join(out, 'looks_sheet.json'), 'w') as f:
         json.dump(info, f, indent=1)
     return p, info
+
+
+def thumb_distance(frames, size=(27, 48)):
+    """Pairwise mean OKLab distance (x 100) of feed-thumbnail-sized versions of frames {look: uint8 RGB}:
+    how far apart two looks read at a glance (same layout, so only the grade / world differ)."""
+    labs = {k: oklab_u8(cv2.resize(v, size, interpolation=cv2.INTER_AREA)) for k, v in frames.items()}
+    ks = list(labs)
+    return {'%s|%s' % (a, b): round(float(np.linalg.norm(labs[a] - labs[b], axis=-1).mean() * 100), 2)
+            for i, a in enumerate(ks) for b in ks[i + 1:]}
 
 
 # =============================================================================================== self-test
@@ -1049,7 +1126,8 @@ def selftest():
         Q = _params(lk)
         y = tone_curve(np.geomspace(1e-6, 8, 2000), lk)
         check(bool(np.all(np.diff(y) > 0)) and np.isfinite(Q['gain']).all(), '%s tone curve monotonic' % lk)
-        s0 = (math.log2(tone_curve(0.18 * 2 ** 0.01, lk) / 0.18) - math.log2(tone_curve(0.18 * 2 ** -0.01, lk) / 0.18)) / 0.02
+        s0 = (math.log2(tone_curve(0.18 * 2 ** 0.01, lk) / 0.18) -
+              math.log2(tone_curve(0.18 * 2 ** -0.01, lk) / 0.18)) / 0.02
         check(1.08 <= s0 <= 1.36, '%s slope at 0.18 = %.3f (1.1-1.35)' % (lk, s0))
     # black never lifted (finish, grain off)
     for lk in ALL_LOOKS:
@@ -1069,6 +1147,12 @@ def selftest():
         check(r['skin_max_dL'] <= 1.5, '%s: skin not lighter (dL max %+.2f <= 1.5)' % (lk, r['skin_max_dL']))
         lo, hi = r['skin_chroma_range']
         check(0.85 <= lo and hi <= 1.12, '%s: skin chroma ratio %.3f..%.3f (no grey, no orange)' % (lk, lo, hi))
+    for lk in NEW_LOOKS:
+        fs = footage_skin_check(lk)
+        mh = max(abs(v[1]) for v in fs)
+        mc = max(v[2] for v in fs)
+        check(mh <= 4.0 and mc <= 1.12 and min(v[2] for v in fs) >= 0.88,
+              '%s: F.GRADES skin hue <= %.1f deg, chroma ratio <= %.2f' % (lk, mh, mc))
     # LUTs through ffmpeg
     for lk in ALL_LOOKS:
         cube = os.path.join(LUT_DIR, '%s_33.cube' % lk)
@@ -1080,7 +1164,9 @@ def selftest():
         check(n == 33 and vals.shape == (33 ** 3, 3) and float(np.abs(vals - fresh).max()) < 2e-6,
               '%s: cube header + values current' % lk)
         r = lut_check(lk)
-        check(r['identity_max_code'] <= 1, 'identity cube through ffmpeg: max %d code' % r['identity_max_code'])
+        check(r['identity_max_code_rgb24'] <= 1 and r['identity_max_code_16bit'] <= 0.5,
+              'identity cube through ffmpeg: max %.0f code (rgb24), %.3f (16 bit)' % (
+                  r['identity_max_code_rgb24'], r['identity_max_code_16bit']))
         check(r['mean_dE'] < 1.0 and r['max_dE'] < 2.5,
               '%s: LUT vs in-process mean dE %.3f (< 1), max %.3f (< 2.5)' % (lk, r['mean_dE'], r['max_dE']))
     # finish timing on a real frame
