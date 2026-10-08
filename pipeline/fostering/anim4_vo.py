@@ -13,9 +13,10 @@ A, L = M.ARRIVE, M.LEAVE
 
 SLOTS = [
     # HOOK: "£447.60 a week." over the slam + "per week" (float), "But where does it go?" with the "?" and chips
-    # (the hold ends 0.12 s before the "?" slam so the ramp back to 1x is done when it lands)
+    # (the hold ends 0.12 s before the "?" slam so the ramp back to 1x is done when it lands; "But where..." starts
+    # after the slam's transient, ducked from its first word)
     dict(lines=['amount'], at=0.0, delay=0.35, hold=(0.6, 0.88), min_rate=0.085, tail=0.0),
-    dict(lines=['where'], at=M.T_Q, delay=0.08, hold=(1.9, 2.25), min_hold=1.2, tail=0.4, duck_lead=-0.03),
+    dict(lines=['where'], at=M.T_Q, delay=0.14, hold=(1.9, 2.25), min_hold=1.2, tail=0.4, duck_lead=0.0),
     # the coins break into the ribbon; the message writes in line by line
     # (tails: >= 0.7 s of reading after the speech ends, before each headline fades)
     dict(lines=['payments_help'], at=M.T_MSG, delay=0.05, hold=(M.T_MSG + 0.8, L['s0']), tail=0.69),

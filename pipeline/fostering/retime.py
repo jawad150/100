@@ -247,10 +247,13 @@ def _warp_cue(c, warp, gain=None):
     return c
 
 
-def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, **solve_kw):
+def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, cuts=(), **solve_kw):
     """Fill a VO module's namespace `ns` (pass globals()) from the wrapped module M. cue_filter(cue, src_t, rate)
     -> False drops a (single-hit) SFX cue, e.g. ticks that would land seconds apart inside a slowed hold;
-    cue_gain(cue, src_t, rate) -> dB added to a cue's gain (e.g. -5 for a hit that masks a word)."""
+    cue_gain(cue, src_t, rate) -> dB added to a cue's gain (e.g. -5 for a hit that masks a word).
+    cuts: SOURCE times of hard cuts (the switch instant). A motion-blur sub-sample on the far side of a cut from its
+    frame's centre is clamped to the frame's side, so a cut never blends two shots: the original puts every cut
+    between two frames' shutters, but in a speed ramp the warped switch can fall inside a shutter."""
     import core as K
     lines = load_lines(piece)
     warp, placed, rows = solve(slots, lines, float(M.DUR), getattr(M, 'BPM', None), quantize, **solve_kw)
@@ -258,8 +261,16 @@ def wrap(ns, M, piece, slots, quantize=True, cue_filter=None, cue_gain=None, **s
     src_post = getattr(M, 'post', None)
     look = getattr(M, 'LOOK', 'neon')
 
+    cuts = sorted(float(c) for c in cuts)
+
     def draw(t):
-        return M.draw(warp.src(t))
+        s = warp.src(t)
+        if cuts:
+            sc = warp.src(round(t * K.FPS) / K.FPS)          # the frame this sub-sample belongs to (shutter < 1 frame)
+            for c in cuts:
+                if (s - c) * (sc - c) < 0:
+                    s = c - 1e-4 if sc < c else c + 1e-4
+        return M.draw(s)
 
     def post(cv, t):
         _CLOCK['t'] = t
@@ -371,7 +382,7 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
             continue
         vo[i0:i0 + n] += (y[:n] * g)[:, None]
         rms = np.sqrt(np.convolve(y[:n] ** 2, np.ones(480) / 480, 'same'))
-        act = rms > 10 ** (-45 / 20)
+        act = rms > max(10 ** (-45 / 20), rms.max() * 10 ** (-30 / 20))   # speech, not breath or room tone
         active[i0:i0 + n] |= act
         # pauses inside a line (commas, between words) shorter than 0.25 s stay ducked: no SFX swell into a word
         on = np.flatnonzero(act)
@@ -390,7 +401,7 @@ def build_audio(name, target_lufs=-14.0, tp_ceiling=-2.0, vo_lufs=-16.0, duck_db
         ahead[j0:j1] |= act[:j1 - j0]
         if ld > 0:
             ahead[i0:i0 + n] |= act
-    env = _env(ahead, sr, attack=0.02, release=0.30)
+    env = _env(ahead, sr, attack=0.02, release=0.15)     # recovers in time for a hit just after a line
     sfx_d = sfx * (1 - (1 - A.undb(getattr(mod, 'DUCK_DB', duck_db))) * env)[:, None]
     # ---- master: gain G, true-peak limiter, iterate
     mix = vo + sfx_d
