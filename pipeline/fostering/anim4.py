@@ -622,7 +622,7 @@ def _num_state(t):
         t0 = T_SNAP - 0.07                      # re-forms out of the hub as the chips land in it (no empty frame)
         sp = K.spring(t - t0, freq=2.6, damping=0.62)
         return K.lerp(0.55, 1.0, sp), K.ramp(t, t0, t0 + 0.06)
-    u = K.ramp(t, T_BREAK, T_BREAK + 0.14, 'in_cubic')
+    u = K.ramp(t, T_BREAK, T_BREAK + 0.16, 'inout_sine')     # dissolves into the coins (no big last-frame step)
     return 1.0 + 0.12 * u, 1.0 - u
 
 
@@ -1153,10 +1153,12 @@ def _draw_station_text(cv, tc, t):
             for k, (pn, (lab, icn)) in enumerate(zip(pns, chips)):
                 t0 = ARRIVE[st] + 0.125 * k
                 sp = K.spring(t - t0, freq=2.8, damping=0.5) if t >= t0 else 0.0
+                w_set = K.ramp(t, t0 + 0.4, t0 + 0.7, 'inout_sine')       # spring tail -> exactly 1, once
+                sp = K.lerp(sp, 1.0, w_set)
                 op = K.ramp(t, t0, t0 + 0.08)
                 cx, cy, kk = screen_of(tc, S[0] + x + pn.w / 2, S[1] + CHIP_DY)
                 sc = kk * (0.6 + 0.4 * sp)
-                settled = abs(sc - 1.0) < 2e-3
+                settled = w_set >= 1.0 and abs(sc - 1.0) < 2e-3
                 if op > 0.003:
                     pn.draw(cv, round(cx) if settled else cx, round(cy) if settled else cy, scale=sc, opacity=op)
                     if X.REC is not None and op > 0.3:
@@ -1436,7 +1438,8 @@ def _draw_final(cv, c, tc, t, n_samples):
     # number "£447.60" + "/week"
     if t >= T_NUM2 - 0.02:
         sp = K.spring(t - T_NUM2, freq=2.6, damping=0.45)
-        s = K.lerp(1.35, 1.0, sp)
+        w_set = K.ramp(t, T_NUM2 + 0.5, T_NUM2 + 0.8, 'inout_sine')    # spring tail -> exactly 1, settles once
+        s = K.lerp(K.lerp(1.35, 1.0, sp), 1.0, w_set)
         x, y, k = screen_of(tc, S[0], wy(F_NUM_Y))
         wn, ww_ = Ty['fnum'].w, Ty['fweek'].w
         gap = 10.0
@@ -1446,7 +1449,7 @@ def _draw_final(cv, c, tc, t, n_samples):
         if sw >= 1:
             sw = K.ramp(t, B(48), B(49.5), 'inout_sine')
         op = K.ramp(t, T_NUM2, T_NUM2 + 0.05)
-        settled = abs(s - 1.0) < 1e-3
+        settled = w_set >= 1.0
         cxn = xl + wn / 2
         if settled:
             Ty['fnum'].draw(cv, round(cxn), round(y), opacity=op, sweep=sw if 0 < sw < 1 else None,
@@ -1473,8 +1476,9 @@ def _draw_final(cv, c, tc, t, n_samples):
         rip = 1.6 * (t - T_CLICK) if t >= T_CLICK else None        # ripple done at T_CLICK + 0.56
         spr = _feather(_pill(hover, press, rip))
         x, y, k = screen_of(tc, S[0], wy(F_BTN_Y))
-        sc = K.lerp(0.6, 1.0, pop)
-        settled = abs(sc - 1.0) < 1e-3
+        w_set = K.ramp(t, T_BTN + 0.35, T_BTN + 0.6, 'inout_sine')       # spring tail -> exactly 1, settles once
+        sc = K.lerp(K.lerp(0.6, 1.0, pop), 1.0, w_set)
+        settled = w_set >= 1.0
         ui.place(cv, spr, round(x) if settled else x, round(y) if settled else y, scale=sc,
                  opacity=K.ramp(t, T_BTN, T_BTN + 0.1))
         if X.REC is not None and settled:
