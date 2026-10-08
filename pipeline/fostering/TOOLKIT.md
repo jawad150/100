@@ -311,3 +311,41 @@ python3 demo_looks.py heroes | clip | selftest           # the reference demo
 16. `K.ramp(t, a, b)` defaults to `'out_expo'`, which makes about 60 % of the change happen in the first ~12 % of
     the ramp. Used as a fade, it gives one-frame exits, ghost frames and pops (anim4 QA). Always pass the ease:
     'inout_sine' or 'linear' for fades, 'in_cubic' for exits, 'out_cubic' for arrivals.
+
+## 12. Voiceover versions (`retime.py`, `vo_tools.py`)
+A `<module>_vo.py` wraps a finished module: `draw(t) = M.draw(WARP.src(t))`. Holds slow down to fit each VO line plus
+reading time. Motion, cuts and SFX keep their timing. The QA rounds on all five pieces turned up these rules:
+
+1. **Never start or end a hold inside motion.** Slams, springs, post-landing hops, glides, gusts, typing, light sweeps
+   and cursor moves all count. Put each hold edge on a settled frame and track the object frame by frame against the
+   original. When an action is continuous and has no settled span (reel2's calculator, reel3's end card), use a
+   voice-only slot (`hold=None`): the line plays over 1x motion.
+2. **Text before voice.** A line starts as or just after its copy lands, never before it. Anchor a spoken number on
+   the frame it lands with a negative `delay` (reel2: `at=NUM_ROLL[1], delay=-0.22`, so "four" follows £447.60).
+3. **Reading time.** Leave at least 0.7 s after the speech ends (`tail`) before the copy leaves.
+4. **Hard cuts inside a speed ramp blend two shots**, because the warped switch falls inside a frame's shutter.
+   Whole-frame shifts only help where the rate is 1, so pass the source switch times: `wrap(..., cuts=[...])`.
+5. **Continuous motion keeps its speed through a hold if it runs on its own clock.** An orbit, a spin or a beat
+   pulse slowed to 0.1x reads as a stall. Add a hook to the module (reel2 `ORBIT_CLOCK` / `BEAT_CLOCK`, None in the
+   original), and set it in the VO module from `WARP.out`. Grain already runs on output time.
+6. **Ducking.** Duck the SFX −10 dB (−14 dB on dense pieces), with a 0.1 s look-ahead.
+   - The duck holds to each line's last sound. Pauses under 0.25 s stay ducked.
+   - The voice-activity mask is relative to the line's peak (−30 dB), so breaths release the duck.
+   - Release is 0.15 s.
+   - A hero hit that lands just before a word gets `duck_lead < 0`.
+   - A hit that sits on a word gets `cue_gain` (−3 to −6 dB).
+   - Check every mix for hero hits ducked in pauses and for 100 ms masking windows.
+7. **Line clips.**
+   - The TTS clips the first and last sound of a take. Voice a throwaway `lead` / `pad` word ("Okay." / "Thanks."),
+     which `vo_tools` drops.
+   - A line starts at sustained sound (3 of the next 5 frames), so an isolated mouth click can't pull a breath into
+     the head.
+   - A click after the last word can be faded in the mix only with the slot's `trim={line: s}`, without changing the
+     plan.
+8. **Fixes after QA.**
+   - A fix that keeps DUR and the other holds can be spliced. Re-render the span between two IDR keyframes with
+     `render.py --range` and stream-copy it in, checking that every other frame is bit-identical.
+   - Audio-only fixes are a re-mix plus a re-mux (copy the video stream).
+   - Never rewrite a mix wav while a render's final encode is reading it.
+9. **Shell gotcha.** `pgrep -f "<pattern>"` inside a `bash -c` whose own command line contains the pattern always
+   matches itself. Wait on a PID or a log line instead.

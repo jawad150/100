@@ -72,10 +72,12 @@ Each piece also has a **voiceover version**. A warm British female narrator ("Ve
 | Piece | Voiceover version | Length | Music tempo |
 |---|---|---|---|
 | Reel 1 · Could You? | `organic_fostering_reel1_vo_could_you.mp4` | 49.5 s | 120 BPM |
-| Reel 2 · Financial Support | `organic_fostering_reel2_vo_financial_support.mp4` | 42.3 s | 128 BPM |
-| Reel 3 · Nurture · Develop · Grow | `organic_fostering_reel3_vo_nurture_develop_grow.mp4` | 47.2 s | 92 BPM |
+| Reel 2 · Financial Support | `organic_fostering_reel2_vo_financial_support.mp4` | 44.4 s | 128 BPM |
+| Reel 3 · Nurture · Develop · Grow | `organic_fostering_reel3_vo_nurture_develop_grow.mp4` | 48.2 s | 92 BPM |
 | #1 · Day in the Life | `organic_fostering_anim1_vo_day_in_the_life.mp4` | 31.2 s | 100 BPM |
-| #4 · £447.60: where does it go? | `organic_fostering_anim4_vo_where_does_it_go.mp4` | 50.8 s | 120 BPM |
+| #4 · £447.60: where does it go? | `organic_fostering_anim4_vo_where_does_it_go.mp4` | 51.3 s | 120 BPM |
+
+Numbers are spoken just after they land on screen. Each line keeps its copy up for at least 0.7 s after the voice ends. Continuous motion keeps its speed through the holds: the gold coin orbit in Reel 2 and the background beat pulse run on their own clocks. The Instagram files are encoded at 14–15 Mbps (Reel 1–3, #4) so each stays under GitHub's 100 MB file limit; Instagram re-encodes uploads to a few Mbps either way.
 
 Each one comes with:
 - `…_master.mp4`: CRF 14, stored in Git LFS.
