@@ -98,11 +98,27 @@ def scrims(img: Image.Image, top_frac=0.40, top_alpha=235, bot_frac=0.34, bot_al
 
 
 # ----------------------------------------------------------------- text
+def subject_mask(raw_path):
+    """Foreground (characters + props) mask, cached next to the raw render."""
+    raw_path = Path(raw_path)
+    cache = raw_path.with_name(raw_path.stem + "_mask.png")
+    if not cache.exists():
+        from rembg import new_session, remove
+        im = Image.open(raw_path).convert("RGB")
+        remove(im, session=new_session("birefnet-general"), only_mask=True).save(cache)
+    return Image.open(cache).convert("L")
+
+
 class Canvas:
-    def __init__(self, img):
-        self.base = img.convert("RGBA")
-        self.W, self.H = self.base.size
+    """Two text planes: `behind` (occluded by the subject = masking text) and `front`."""
+
+    def __init__(self, img, subject=None):
+        self.bg = img.convert("RGBA")
+        self.W, self.H = self.bg.size
         self.s = self.W / 1080  # design grid is 1080 wide
+        self.behind = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        self.front = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        self.subject = subject
         self.boxes = []  # placed text boxes, to assert no overlaps
 
     def font(self, path, size, wght=None):
@@ -117,99 +133,112 @@ class Canvas:
                 raise RuntimeError(f"text overlap: {label!r} hits {l!r}")
         self.boxes.append((box, label))
 
-    def _paste(self, layer):
-        self.base = Image.alpha_composite(self.base, layer)
+    def _paste(self, layer, plane):
+        setattr(self, plane, Image.alpha_composite(getattr(self, plane), layer))
 
-    # -- flat text with soft shadow ---------------------------------
-    def text(self, y, txt, font, fill, tracking=0, shadow=0.8, label=None, glow=None):
-        W, s = self.W, self.s
-        widths = [font.getlength(c) for c in txt]
-        total = sum(widths) + tracking * (len(txt) - 1)
-        x0 = (W - total) / 2
-        lay = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
-        d = ImageDraw.Draw(lay)
-        x = x0
-        for c, w in zip(txt, widths):
-            d.text((x, y), c, font=font, fill=fill)
-            x += w + tracking
-        bbox = lay.getbbox()
-        self._claim(bbox, label or txt)
-        a = lay.getchannel("A")
-        if shadow:
-            sh = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
-            sh.putalpha(a.filter(ImageFilter.GaussianBlur(6 * s)).point(lambda v: int(v * shadow)))
-            sh = ImageChops.offset(sh, int(3 * s), int(4 * s))
-            self._paste(sh)
-        if glow:
-            gl = Image.new("RGBA", self.base.size, glow + (0,))
-            gl.putalpha(a.filter(ImageFilter.GaussianBlur(14 * s)).point(lambda v: int(v * 0.55)))
-            self._paste(gl)
-        self._paste(lay)
-        return bbox
+    def _shift(self, im, dx, dy):
+        out = Image.new(im.mode, im.size, 0)
+        out.paste(im, (int(round(dx)), int(round(dy))))
+        return out
 
-    # -- extruded 3D headline ---------------------------------------
-    def title3d(self, y, txt, font, face_top, face_bot, side, tracking=0, dots=True,
-                depth=16, label=None):
-        W, s = self.W, self.s
-        dot_gap = font.size * 0.15 if dots else 0
-        widths = [font.getlength(c) for c in txt]
-        total = sum(widths) + (len(txt) - 1) * (tracking + dot_gap)
-        x = (W - total) / 2
-        mask = Image.new("L", self.base.size, 0)
-        dm = ImageDraw.Draw(mask)
-        dot_specs = []
+    def _glyph_mask(self, txt, font, tracking, dot_gap=0, dots=False):
+        """Render text at origin; return mask, dot centres, ink bbox."""
+        m = Image.new("L", self.bg.size, 0)
+        d = ImageDraw.Draw(m)
+        x, specs = 0.0, []
         asc, _ = font.getmetrics()
-        for i, (c, w) in enumerate(zip(txt, widths)):
-            dm.text((x, y), c, font=font, fill=255)
-            x += w
+        pad = self.H * 0.25  # keep ascenders inside the canvas
+        for i, c in enumerate(txt):
+            d.text((x, pad), c, font=font, fill=255)
+            x += font.getlength(c)
             if i < len(txt) - 1:
                 if dots and c != " " and txt[i + 1] != " ":
-                    dot_specs.append((x + (tracking + dot_gap) / 2, y + asc * 0.84, DOTS[i % 3]))
+                    specs.append([x + (tracking + dot_gap) / 2, pad + asc * 0.84, DOTS[i % 3]])
                 x += tracking + dot_gap
-        bbox = mask.getbbox()
+        return m, specs, m.getbbox()
+
+    # -- measuring helpers (for layout) ------------------------------
+    def ink_height(self, txt, font, tracking=0):
+        _, _, b = self._glyph_mask(txt, font, tracking)
+        return b[3] - b[1]
+
+    # -- flat text with soft shadow ---------------------------------
+    def text(self, top, txt, font, fill, tracking=0, shadow=0.85, label=None, glow=None,
+             plane="front"):
+        """Draw text whose INK top sits at `top`, centred on its ink box."""
+        s = self.s
+        m, _, b = self._glyph_mask(txt, font, tracking)
+        dx = (self.W - (b[2] - b[0])) / 2 - b[0]
+        dy = top - b[1]
+        m = self._shift(m, dx, dy)
+        box = m.getbbox()
+        self._claim(box, label or txt)
+        if shadow:
+            sh = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+            sh.putalpha(self._shift(m, 3 * s, 4 * s).filter(ImageFilter.GaussianBlur(6 * s))
+                        .point(lambda v: int(v * shadow)))
+            self._paste(sh, plane)
+        if glow:
+            gl = Image.new("RGBA", self.bg.size, glow + (0,))
+            gl.putalpha(m.filter(ImageFilter.GaussianBlur(14 * s)).point(lambda v: int(v * 0.5)))
+            self._paste(gl, plane)
+        face = Image.new("RGBA", self.bg.size, fill + (0,))
+        face.putalpha(m)
+        self._paste(face, plane)
+        return box
+
+    # -- extruded 3D headline ---------------------------------------
+    def title3d(self, top, txt, font, face_top, face_bot, side, tracking=0, dots=True,
+                depth=16, label=None, plane="behind"):
+        """3D headline: face ink top at `top`; face+extrusion mass centred horizontally."""
+        W, s = self.W, self.s
+        dot_gap = font.size * 0.15 if dots else 0
+        mask, specs, b = self._glyph_mask(txt, font, tracking, dot_gap, dots)
         dep = int(depth * s)
+        dx = (W - (b[2] - b[0] + dep)) / 2 - b[0]
+        dy = top - b[1]
+        mask = self._shift(mask, dx, dy)
+        for sp in specs:
+            sp[0] += dx
+            sp[1] += dy
+        bbox = mask.getbbox()
         self._claim((bbox[0], bbox[1], bbox[2] + dep, bbox[3] + dep), label or txt)
 
-        # Ground shadow
-        sh = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
-        sh.putalpha(ImageChops.offset(mask, int(dep * 1.2), int(dep * 1.6))
+        sh = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        sh.putalpha(self._shift(mask, dep * 1.2, dep * 1.6)
                     .filter(ImageFilter.GaussianBlur(10 * s)).point(lambda v: int(v * 0.85)))
-        self._paste(sh)
+        self._paste(sh, plane)
 
-        # Extrusion: stacked offset copies, darkening towards the back
-        ext = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
+        ext = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
         for k in range(dep, 0, -1):
             t = k / dep
             col = tuple(int(c * (0.30 + 0.45 * (1 - t))) for c in side) + (255,)
-            ext.paste(Image.new("RGBA", self.base.size, col), (0, 0), ImageChops.offset(mask, k, k))
-        self._paste(ext)
+            ext.paste(Image.new("RGBA", self.bg.size, col), (0, 0), self._shift(mask, k, k))
+        self._paste(ext, plane)
 
-        # Face: vertical gradient
-        top, bot = bbox[1], bbox[3]
+        top_y, bot_y = bbox[1], bbox[3]
         grad = np.zeros((self.H, 1, 3), np.float32)
-        yy = np.clip((np.arange(self.H) - top) / max(1, bot - top), 0, 1)[:, None]
+        yy = np.clip((np.arange(self.H) - top_y) / max(1, bot_y - top_y), 0, 1)[:, None]
         grad[:, 0, :] = np.array(face_top) * (1 - yy) + np.array(face_bot) * yy
         face = Image.fromarray(np.repeat(grad, W, 1).astype(np.uint8)).convert("RGBA")
         face.putalpha(mask)
-        self._paste(face)
+        self._paste(face, plane)
 
-        # Bevel highlight on the top-left edges
-        edge = ImageChops.subtract(mask, ImageChops.offset(mask, int(2 * s), int(2 * s)))
-        hl = Image.new("RGBA", self.base.size, (255, 255, 255, 0))
+        edge = ImageChops.subtract(mask, self._shift(mask, 2 * s, 2 * s))
+        hl = Image.new("RGBA", self.bg.size, (255, 255, 255, 0))
         hl.putalpha(edge.point(lambda v: int(v * 0.75)))
-        self._paste(hl)
+        self._paste(hl, plane)
 
-        # Glossy 3D sphere dots
-        lay = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
+        # Glossy sphere dots
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
         d = ImageDraw.Draw(lay)
-        dsh = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
+        dsh = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
         sd = ImageDraw.Draw(dsh)
         r = font.size * 0.05
-        for cx, cy, col in dot_specs:
+        for cx, cy, col in specs:
             dark = tuple(int(c * 0.45) for c in col)
             o = dep * 0.3
             sd.ellipse([cx - r + o, cy - r + o, cx + r + o, cy + r + o], fill=(0, 0, 0, 170))
-            # Shaded sphere: concentric discs drifting toward the top-left light
             steps = 14
             for k in range(steps):
                 t = k / (steps - 1)
@@ -223,59 +252,108 @@ class Canvas:
             hr = r * 0.16
             d.ellipse([cx - r * 0.42 - hr, cy - r * 0.42 - hr, cx - r * 0.42 + hr, cy - r * 0.42 + hr],
                       fill=(255, 255, 255, 235))
-        self._paste(dsh.filter(ImageFilter.GaussianBlur(3 * s)))
-        self._paste(lay)
-        return bbox
+        self._paste(dsh.filter(ImageFilter.GaussianBlur(3 * s)), plane)
+        self._paste(lay, plane)
+        return (bbox[0], bbox[1], bbox[2] + dep, bbox[3] + dep)
 
     # -- pill (rounded tag behind small text) -------------------------
-    def pill(self, y, txt, font, fg, bg, border, pad=(26, 12), tracking=0, label=None):
+    def pill(self, top, txt, font, fg, bg, border, pad=(28, 14), tracking=0, label=None,
+             plane="front"):
+        """Pill whose OUTER top is `top`; text optically centred inside by ink box."""
         s = self.s
-        w = sum(font.getlength(c) for c in txt) + tracking * (len(txt) - 1)
-        asc, desc = font.getmetrics()
+        m, _, b = self._glyph_mask(txt, font, tracking)
+        tw, th = b[2] - b[0], b[3] - b[1]
         pw, ph = pad[0] * s, pad[1] * s
-        x0 = (self.W - w) / 2 - pw
-        box = (int(x0), int(y), int(x0 + w + 2 * pw), int(y + asc + desc * 0.2 + 2 * ph))
+        box = (round((self.W - tw) / 2 - pw), round(top),
+               round((self.W + tw) / 2 + pw), round(top + th + 2 * ph))
         self._claim(box, label or txt)
-        lay = Image.new("RGBA", self.base.size, (0, 0, 0, 0))
-        d = ImageDraw.Draw(lay)
-        d.rounded_rectangle(box, radius=(box[3] - box[1]) / 2, fill=bg, outline=border, width=max(2, int(2.5 * s)))
-        x = x0 + pw
-        for c in txt:
-            d.text((x, y + ph), c, font=font, fill=fg)
-            x += font.getlength(c) + tracking
-        self._paste(lay)
-        self.boxes.pop()  # text drawn inside the pill shares its box
-        self.boxes.append((box, label or txt))
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        ImageDraw.Draw(lay).rounded_rectangle(box, radius=(box[3] - box[1]) / 2, fill=bg,
+                                              outline=border, width=max(2, int(2.5 * s)))
+        self._paste(lay, plane)
+        m = self._shift(m, (self.W - tw) / 2 - b[0], top + ph - b[1])
+        face = Image.new("RGBA", self.bg.size, fg + (0,))
+        face.putalpha(m)
+        self._paste(face, plane)
         return box
 
+    def render(self):
+        out = Image.alpha_composite(self.bg, self.behind)
+        if self.subject is not None:
+            s = self.s
+            # Soft contact shadow of the subject falling onto the masked text
+            text_a = np.asarray(self.behind.getchannel("A"), np.float32) / 255
+            sub = self._shift(self.subject, -6 * s, 10 * s).filter(ImageFilter.GaussianBlur(14 * s))
+            sh_a = (np.asarray(sub, np.float32) / 255) * text_a * 0.55
+            sh = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+            sh.putalpha(Image.fromarray((sh_a * 255).astype(np.uint8)))
+            out = Image.alpha_composite(out, sh)
+            # Subject back on top of the text (feathered edge)
+            fg = self.bg.copy()
+            fg.putalpha(self.subject.filter(ImageFilter.GaussianBlur(1.2 * s)))
+            out = Image.alpha_composite(out, fg)
+        return Image.alpha_composite(out, self.front)
+
     def save(self, out):
-        self.base.convert("RGB").save(out, quality=95, subsampling=0)
+        self.render().convert("RGB").save(out, quality=95, subsampling=0)
 
 
 # ----------------------------------------------------------------- slides
 def cover(raw, out):
-    img = Image.open(raw)
-    img = grade(img)
-    img = scrims(img, top_frac=0.42, top_alpha=240, bot_frac=0.34, bot_alpha=252)
-    c = Canvas(img)
-    s, H = c.s, c.H
+    subject = subject_mask(raw)
+    img = grade(Image.open(raw))
+    img = scrims(img, top_frac=0.46, top_alpha=240, bot_frac=0.40, bot_alpha=252)
+    c = Canvas(img, subject)
+    s, W, H = c.s, c.W, c.H
 
-    c.pill(40 * s, "A  BEGINNER'S  GUIDE  TO", c.font(MONT, 24, 800),
-           fg=CREAM, bg=(0, 0, 0, 150), border=YELLOW + (255,), tracking=4 * s, label="kicker")
-    c.title3d(90 * s, "MARGIN", c.font(ANTON, 128), face_top=(255, 255, 255),
-              face_bot=(226, 222, 214), side=(120, 110, 100), tracking=2 * s)
-    c.title3d(234 * s, "TRADING", c.font(ANTON, 128), face_top=(255, 222, 92),
-              face_bot=(240, 160, 30), side=(150, 80, 10), tracking=2 * s)
+    f_kick = c.font(MONT, 24, 800)
+    DEPTH = 16
+    gap = 30 * s  # identical rhythm between stacked headline rows
+    TOP_MARGIN = 56 * s
 
-    # Bottom block, over the black gradient
-    c.text(H - 196 * s, "Chandler explains.  Joey... tries.", c.font(MARKER, 40), GOLD,
-           tracking=0.5 * s, label="tagline", glow=(255, 150, 40))
-    c.text(H - 128 * s, "PS5s, GTA 6 & a lesson in trading", c.font(MONT, 25, 600), CREAM,
-           tracking=1 * s, label="sub")
-    c.pill(H - 78 * s, "SWIPE  TO  LEARN   →", c.font(MONT, 22, 800),
-           fg=(20, 14, 8), bg=YELLOW + (255,), border=YELLOW + (255,), tracking=3 * s, label="swipe")
+    # Subject top = highest foreground pixel in the centre band
+    sub_np = np.asarray(subject) > 128
+    rows = np.where(sub_np[:, int(W * 0.25):int(W * 0.75)].any(1))[0]
+    subject_top = rows[0]
+    kicker_h = c.ink_height("A BEGINNER'S GUIDE TO", f_kick) + 2 * 14 * s
+
+    # Auto-fit: largest headline whose stack fits between the top margin and the
+    # subject (subject covers the lower ~26% of TRADING = masking text), and whose
+    # width keeps a 72px side margin.
+    for size in range(190, 100, -2):
+        f_title = c.font(ANTON, size)
+        cap = c.ink_height("TRADING", f_title, 2 * s)
+        trading_top = subject_top - cap * 0.74
+        margin_top = trading_top - DEPTH * s - gap - cap
+        kicker_top = margin_top - gap - kicker_h
+        m, _, b = c._glyph_mask("TRADING", f_title, 2 * s, f_title.size * 0.15, True)
+        wide = (b[2] - b[0]) + DEPTH * s
+        if kicker_top >= TOP_MARGIN and wide <= W - 2 * 72 * s:
+            break
+    print("title size", size)
+
+    c.pill(kicker_top, "A  BEGINNER'S  GUIDE  TO", f_kick, fg=CREAM, bg=(0, 0, 0, 150),
+           border=YELLOW + (255,), tracking=4 * s, label="kicker")
+    c.title3d(margin_top, "MARGIN", f_title, face_top=(255, 255, 255),
+              face_bot=(226, 222, 214), side=(120, 110, 100), tracking=2 * s, depth=DEPTH)
+    c.title3d(trading_top, "TRADING", f_title, face_top=(255, 222, 92),
+              face_bot=(240, 160, 30), side=(150, 80, 10), tracking=2 * s, depth=DEPTH)
+
+    # Bottom block, built upward from a fixed bottom margin over the black gradient
+    f_sw, f_sub, f_tag = c.font(MONT, 22, 800), c.font(MONT, 25, 600), c.font(MARKER, 42)
+    bottom_margin, row_gap = 52 * s, 22 * s
+    sw_h = c.ink_height("SWIPE TO LEARN", f_sw) + 2 * 14 * s
+    sw_top = H - bottom_margin - sw_h
+    sub_top = sw_top - row_gap * 1.3 - c.ink_height("PS5s, GTA 6 & a lesson in trading", f_sub)
+    tag_top = sub_top - row_gap - c.ink_height("Chandler explains.  Joey... tries.", f_tag)
+
+    c.text(tag_top, "Chandler explains.  Joey... tries.", f_tag, GOLD, tracking=0.5 * s,
+           label="tagline", glow=(255, 150, 40))
+    c.text(sub_top, "PS5s, GTA 6 & a lesson in trading", f_sub, CREAM, tracking=1 * s, label="sub")
+    c.pill(sw_top, "SWIPE  TO  LEARN   \u2192", f_sw, fg=(20, 14, 8), bg=YELLOW + (255,),
+           border=YELLOW + (255,), tracking=3 * s, label="swipe")
     c.save(out)
-    print("saved", out, c.base.size)
+    print("saved", out, c.bg.size, "| subject top", subject_top, "| kicker top", round(kicker_top))
 
 
 if __name__ == "__main__":
