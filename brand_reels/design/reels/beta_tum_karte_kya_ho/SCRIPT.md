@@ -1,7 +1,9 @@
 # SCRIPT · Reel 4 (slot 4) · C02 · "Beta, tum karte kya ho?"
 
-Date 2026-10-08 · Author: hinglish-scriptwriter · Status: **script v2 (viral gate r1 fixes 4b + 5 applied), timings
-ESTIMATED** (no TTS rendered yet; the pronunciation test take in §6 comes first). Machine-readable twin: `script.json`
+Date 2026-10-08 (re-verified 2026-10-09) · Author: hinglish-scriptwriter · Status: **script v2 (viral gate r1 fixes 4b
++ 5 applied), timings ESTIMATED** (no TTS rendered yet; the pronunciation test take in §6 comes first). 2026-10-09
+re-check against the gate, BRIEF r2 and SLATE §4: token parity, word budget, hook length, slot gaps incl. the loop
+seam and the number lock all pass (`script.json` → `checks`); no line changed. Machine-readable twin: `script.json`
 (same folder, generated from one source table; DEV/ROM token parity, slot gaps incl. the loop seam, word cap, hook
 length and w/s limits asserted by the generator).
 
@@ -170,7 +172,9 @@ Caption keywords: L2 *translation*, L3 *ulta*, L4 *Seedha*, L5 *haar*, L7 *reel*
 - **English loans in Devanagari phonetics:** क्लाइंट, कार्टून, ट्रांसलेशन, फ़ैमिली ग्रुप, रील, फ़ॉरवर्ड. No Latin script in any TTS line (no audition has shown Vlad reads Latin better for these words).
 - **Spoken forms, not book forms:** वो (not वह), पे (not पर), हमसे, इसको, सब से (two tokens to match the Roman "Sab se"), के लिए (not के लिये), मम्मी / नानी (family words as said at home on both sides).
 - **Punctuation = prosody:** "..." only where a long beat is wanted (L5, L7, L8, L9 mid-line; L2, L6 trailing off); "," for short beats (L3 capped 0.2 s, L1B's beat before "cartoon" capped 0.3 s) and for L4's lead-in lift; "।" ends a sentence (L11: a dead stop, no trailing "..." so no breath tail before the seam). No "?" is left in the VO (v1's was in the old hook B). No colons, brackets, emoji, digits, symbols or tags in any TTS text.
-- No numbers or symbols occur in this script (SLATE §4 spoken-number lock for C02: none). The `Khandaan · 12 → 47 → 99+` count pill of gate fix 1 is picture only and is never spoken. "JD" is not voiced.
+- No numbers or symbols occur in this script (SLATE §4 spoken-number lock for C02: none). The only numeral token is
+  एक "ek", twice in the SLATE-locked L7 ("ek din", "ek reel" = one day / a reel): the indefinite article, not a count.
+  The `Khandaan · 12 → 47 → 99+` count pill of gate fix 1 is picture only and is never spoken. "JD" is not voiced.
 - Unicode NFC (nukta as the combining U+093C); the JSON `dev` and `tts` fields are identical.
 
 ## 6. Pronunciation-risk words: test these first
@@ -214,10 +218,11 @@ Check: faster-whisper (hi) on the take; listen to ranks 1-6 by ear; then measure
 - [x] Every line traces to SLATE §3.4 or BRIEF §6.7; universal POV; no first-person "main"; no fact about Jawad (no `[VERIFY]` item needed); CTA "Isko family group mein bhejo." is true (sending is a real action, no automation implied). L11 and the new L1B are inside the labelled POV skit (Nani and Mummy are generic, never Jawad's family).
 - [x] Both sides of the border: sawaal, jawab, mushkil, samjhao, ulta, seedha, haar, mahine, nazar, khud, samjhaati, behtar, bhejo, Mummy, Nani, "ke liye", "ki baari", family group, reel are daily words in Lahore and in Delhi; nothing Sanskritised or heavily Persianised; no religion, politics, region, rivalry or stereotype.
 - [x] House spelling (prior SRT): hai, hain, nahi, mein, woh, phir, kuch, sab; "baari" (turn) spelled with aa so it never reads as the house "bari" (big); English words in English; sentence case.
-- [x] Number lock (SLATE §4, C02: none): no number in any VO line; the fix-1 count pill is picture only.
+- [x] Number lock (SLATE §4, C02: none): no number in any VO line (L7's locked "ek" is the indefinite article); the
+  fix-1 count pill is picture only.
 - [x] Token table complete: 61 tokens, DEV count = ROM count per line (asserted); ≤ 1 caption keyword per line.
 - [x] Word budget: A 57 words (≤ 60), B 54, in ~22.3 s / 21.5 s of speech at 1.08x (61 % of the reel), every line ≤ 3.2 w/s; the loop line L11 hands to frame 0's bubble and L1.
-- [ ] Measured timings: pending the takes (this table is an estimate).
+- [x] Measured timings: done 2026-10-09, see §10 and `VO_TIMING.md` (the §3 table stays as the estimate it was).
 
 ## 9. Open questions and flags for the lead
 
@@ -229,4 +234,34 @@ Check: faster-whisper (hi) on the take; listen to ranks 1-6 by ear; then measure
 4. **Nobody can judge pronunciation by ear in the pipeline:** whisper CER flags gross errors only; ranks 1-6 of §6 (incl. मम्मी as hook B's first word) need one human listen (Jawad or the lead) before the final run.
 5. **L4 as a 2-word take** may come out with a final fall; if so retake once with "सीधा जवाब:" or fold it into the swipe as silence (the card B text says the honest answer anyway).
 6. Words that may still sound wrong after the test: भेजो (de-aspiration), ट्रांसलेशन / कार्टून (dental instead of retroflex), फ़ैमिली (f → p), मम्मी (stress), बारी (heard as भारी). Fallbacks are in §6 and in each line's `fallback`.
+7. **Twins out of sync (not this role's files; creative-director):** BRIEF r2 §6.7 still lists L1B as the SLATE line,
+   has no L11 row and says "Total A = 55 words" and "11 takes"; `packet.yaml` line 376 has the SLATE L1B, no L11 row
+   and `total_words: {A: 55, B: 54}`. This script is the source: A 57 / B 54, 12 takes (L1, L1B, L2-L11). BRIEF §6.2
+   and §6.4 place L11 "from ≈ 34.95"; the script uses 34.90 (f1047), because a 34.95 onset ends at 36.35 s at 1.06x
+   (0.01 s under the 36.36 s hard limit).
+
+## 10. Recorded VO (measured 2026-10-09; `VO_TIMING.md` has every number)
+
+The VO is recorded (Vlad, `elevenlabs_v4`, 32 line takes incl. retakes and variants + 11 pronunciation carriers (the L1 fallback take is carrier P1), 10.81 credits) and
+assembled: `workspace/jawad_reels/beta_tum_karte_kya_ho/vo/vo_stem.wav` (= `beta_tum_karte_kya_ho_vo_A.wav`),
+`beta_tum_karte_kya_ho_vo_B.wav`, `words.json` / `words_B.json`. `script.json` → `vo_final` holds the recorded text per
+line; where it differs from §2 it wins for the VO, the captions and QA.
+
+**Why text moved:** isolated Vlad lines run 25-40 % slower than the §3 rate model (L1 measured 3.28 s of voice for a 2.59 s
+slot; L3 2.52-2.62 s for 1.85 s), so the BRIEF 6.7 ladder (1.10x, tighter pause caps, then the fallbacks) was applied:
+
+| line | recorded (Roman) | change | status |
+|---|---|---|---|
+| L1 | Yeh sawaal client nahi poochta. | SLATE 3.4 fallback (5 words) | needs the lead's OK (SLATE-locked line; the locked wording cannot fit) |
+| L1B | Mummy ke liye, cartoon. | TTS spelling कारटून (both ASR models heard काटून, r dropped) | words unchanged |
+| L3 | Jitna samjhao, *ulta*. | word cut: "utna" dropped (4 words could not fit; ends 7.09) | needs the lead's OK (not locked; "Samjhao toh ulta." was tried: it came out as a question) |
+| L5 | Phir... *haar* maan li. | TTS "फिर," instead of "फिर..." ("Phir..." was drawn to 1.0 s) | words unchanged |
+| L6 | Mahine baad... | script.json fallback ("Kuch" dropped; the chip still reads "Kuch mahine baad") | ends 18.11 (0.01 s past the tolerance) |
+| L7 | Phir ek din family group mein... ek *reel* forward hoti hai. | TTS comma beat instead of "..." + spelling फ़ोरवर्ड | words unchanged (SLATE-locked wording kept) |
+| all | client | TTS spelling क्लायंट (carrier P0 with क्लाइंट was heard प्लैंट / प्लाइंट by both models) | words unchanged |
+
+**Still over the slot after all retakes (reported, picture not moved):** L2 ends 4.37 (target 4.15, +0.22; 3 takes all
+1.42-1.47 s), L4 ends 12.00 (target 11.70, +0.30; 2 takes), L6 18.11 (+0.16). L11 starts 34.73 (SCRIPT 7 onset ladder)
+and ends 36.35, loop seam 0.15 s. **Human listen before publishing:** "forward" is non-rhotic in every take and spelling
+(4 takes, 3 spellings), client (gate note 9), Mummy stress, bhejo.
 

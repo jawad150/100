@@ -1,8 +1,8 @@
 # BRIEF · Reel 4 (slot 4) · C02 · "Beta, tum karte kya ho?"
 
-Date 2026-10-08 · Author: creative-director · Status: **production brief r2, binding for every agent on this reel**
-(r2 = the viral gate's fixes from `GATE.md` §8 plus the approved script v1 lines; what changed is listed in the
-CHANGELOG at the end).
+Date 2026-10-08 (r2 2026-10-09) · Author: creative-director · Status: **production brief r2, binding for every agent
+on this reel** (r2 = the viral gate r1 fixes from `GATE.md` §8 (fixes 1-5, notes 6-8) plus the script v2 lines of
+`SCRIPT.md`; what changed is listed in the CHANGELOG at the end).
 Module `beta_tum_karte_kya_ho` · look `gold_hour` · BPM 85.714 (code: `BPM = 600 / 7`) · DUR 36.4 s = 1,092 frames.
 Machine-readable twin: `packet.yaml` (same folder). Layout proof (real assets, measured) in
 `workspace/jawad_reels/beta_tum_karte_kya_ho/brief_proof/`: r1 stills + `proof.json` + `layout_proof.py`; r2 stills
@@ -71,7 +71,7 @@ Source column: S = SLATE §3.4 (approved), B = this brief (new, universal POV, n
 | U9 | Kuch mahine baad | jw_mono | S | verified |
 | U10 | Khandaan · Forwarded · Kamaal! · Wah! · Mummy is typing | jw_body / jw_mono | S | verified |
 | U11 | Khandaan · 12 → 47 → 99+ (count pill on the face-down phone's chip) | jw_mono + `T.Counter` | B (gate fix 1; a fictional unread count) | brief copy |
-| VO | the 12 VO lines of §6.7 (A: L1-L11; B: L1B + L2-L11) | captions | S (L1, L5, L7, L9 locked) + script v1 (L2-L4, L6, L8, L10) + gate (L1B, L11) | verified / brief copy; **L1B needs the lead's OK** (it replaces a SLATE-locked line) |
+| VO | the 12 VO lines of §6.7 (A: L1-L11; B: L1B + L2-L11) | captions | S (L1, L5, L7, L9 locked) + script v2 (L2-L4, L6, L8, L10) + gate r1 (L1B fix 5, L11 fix 4b) | verified / brief copy; **L1B needs the lead's OK** (it replaces a SLATE-locked line) |
 
 **Do not claim / never show:** that this is Jawad's family, mother, relatives or history (it is "POV · har desi
 ghar"); any view count, client name, earning, number of followers or "viral"; Mummy's face, hands or voice; a real
@@ -129,7 +129,7 @@ count or duration.
 | parody fonts | `<WS>/fonts/c02_parody_wedding.ttf` (Cinzel 700), `c02_parody_cartoon.ttf` (Bungee) | OFL 1.1, sha256 recorded in `licences/` folder |
 | 3D props | **none** (SLATE §3.4) | wooden table, face-down phone, sun disc = 2D numpy sprites built once (reference: `table_tex`, `phone_sprite`, `phone_glow_sprite` in `layout_proof_r2.py`) |
 | REEL_THUMB | this reel's own cover canvas (`draw(1.0)` without captions, before post), downscaled to 300x533 | built once in `assets()`; fallback REEL_THUMB_ALT (§6.4 S8) |
-| SFX | `audio.py` catalog + `epic_sfx.register()` (notif_ping, tabla_hit) | all 56 cue names verified in `A.names()` |
+| SFX | `audio.py` catalog + `epic_sfx.register()` (notif_ping, tabla_hit) | all 17 cue names + 2 bed names verified in `A.names()` (r2 re-check 2026-10-09) |
 | music | per-reel arrangement on `epic_music` building blocks (§6.13) | not `EM.render('lofi_desi')` as is |
 | VO | Higgsfield Vlad (`vo_config.json`) → `vo_chain.py` | ≤ 30 credits for this reel (12 takes) |
 
@@ -225,7 +225,7 @@ Splice frame f84. Payoff 28.0 s = 76.9 %. Re-hooks 11.2 s (31 %) and 19.6 s (54 
 | 462 | 15.400 | 5.2 | window light starts dimming (-15 % over 1.4 s): time begins to pass | |
 | **504** | **16.800** | **6.0** | **c7 cut (L3) → S7 time skip: wooden table, glossy face-down phone, chip "Kuch mahine baad" POPs, buzz 1** (haptic pulses 16.8 + 17.0: shake + 6 px creep each; flame edge glow switches on) | r2, fix 1 |
 | 516 | 17.200 | 6.0+12f | buzz 1's own ping (sound pre-roll 0.40 s): edge-glow pulse | |
-| 540-545 | 18.000-18.167 | | chip text "Kuch mahine baad" rises 12 px and fades (in_cubic 0.2 s); L6 has ended (est. 17.98) | |
+| 540-545 | 18.000-18.167 | | chip text "Kuch mahine baad" rises 12 px and fades (in_cubic 0.2 s); L6 has ended (est. 17.98; rule for the measured end in §6.4 S7) | |
 | **546** | **18.200** | **6.2** | **count pill "Khandaan · 12" rises in (out_cubic 0.2 s) in the same rect; buzz 2** (haptic 18.2 + 18.4: shake + 6 px creep each) | r2, fix 1 |
 | 558 | 18.600 | | buzz 2's own ping: edge-glow pulse | |
 | 567 | 18.900 | 6.3 | ping: count rolls 12 → 47 (f567-f573, out_cubic); phone jolt + 5 px creep | |
@@ -244,9 +244,9 @@ Splice frame f84. Payoff 28.0 s = 76.9 %. Re-hooks 11.2 s (31 %) and 19.6 s (54 
 | 955-965 | 31.833-32.167 | | payoff lockup + bubble exit | |
 | **966** | **32.200** | **11.2** | **c11 cut (L3) → S11 end-card world; EndCard t0** | |
 | 1021 | 34.033 | | end card settled (t0 + 1.85) | |
-| **1050** | **35.000** | **12.2** | **"Nani" chip + typing pill POP over the end-card world in the frame-0 pill rect; POV label fades in; notif_ping A6; VO L11 "Ab Nani ki baari." from ≈ 34.95** | r2, fix 4 |
+| **1050** | **35.000** | **12.2** | **"Nani" chip + typing pill POP over the end-card world in the frame-0 pill rect; POV label fades in; notif_ping A6; VO L11 "Ab Nani ki baari." slot 34.90-36.35 (onset f1047, never after 34.95)** | r2, fix 4 |
 | **1071** | **35.700** | **12.3** | **c12 cut (L3) → S12 = hook scene at t − 36.4: suit_confused; the Nani pill carries across the cut** | |
-| 1081-1091 | 36.04-36.37 | | end-card type exits into the loop push; L11's last word ends ≤ 36.36 | |
+| 1081-1091 | 36.04-36.37 | | end-card type exits into the loop push; L11's last word ends ≤ 36.35 (slot; hard limit 36.36, no breath tail) | |
 | 1092 = 0 | 36.400 | 13.0 | loop to frame 0 (its bubble completes "Ab Nani ki baari." with the question) | |
 
 ### 6.3 Hook 0-2.8 s, frame by frame
@@ -315,18 +315,21 @@ change at the c12 cut.
   `r2_card_idle_6p5`.
 - Input text dims to ×0.5 while a parody plays (f147-f189, f210-f230); full while "Motion designer" types.
 
-**P1 Wedding parody (big window, f147-f189, 1.4 s).** Ground (r2): radial PLUM ×1.6 at the window centre → NIGHT_1
-at the edges (radius 0.62 of the window, falloff power 1.3) + ~74 AMBER glitter stars (K.disc r 2-5 + GOLD glow,
-opacity 0.25-0.8, twinkling), fading in f147-f159 (out_cubic) under the carried word. Reference `wedding_ground` in
+**P1 Wedding parody (big window, f147-f189, 1.4 s).** Ground (r2): radial PLUM ×1.6 at the window centre → NIGHT_1 at
+the edges (radius 0.62 of the window, falloff power 1.3) + ~74 AMBER glitter stars (K.disc r 2-5 + GOLD glow, opacity
+0.25-0.8, twinkling), fading in f147-f159 (out_cubic) under the carried word. Reference `wedding_ground` in
 `layout_proof_r2.py`. The r1 GOLD→AMBER→EMBER ground at 0.55 is dropped: at 23.6 % of the frame it put gold title on a
 gold field (illegible in the r2 test render) and broke the GOLD/AMBER ≤ 5 % budget. Title "Happy Wedding"
-`T.style('gold', font='c02_parody_wedding', px=96)` = **806.0 px** wide, centred (540, 875) (27 px clear of each window
-side; 100 px = 839.6 px left 10 px, too tight for the bevel); built in with `T.Glyphs('Happy Wedding', <that style>,
-px=96).wipe(cv, t, 540, 875, t0=5.1, dur=0.4)` (soft L→R mask wipe with a bright leading edge, f153-f165) + sparkle
-particles; hold; wipe out f180-f189 (exit `out_t0=6.0`). `ts.draw(sweep=u)` is a light-sweep glint, not a reveal (r1
-had this wrong); one glint may cross the settled title after f165. It is the only element allowed above 3× linear (proof
-f156 peak 4.35 linear for 0.4 s, gold, 0.01 % of window pixels ≥ 245 on all channels). No hearts, no shehnai, no mehndi,
-no religious motifs, no "Mubarak".
+`T.style('gold', font='c02_parody_wedding', px=96)` = **806.0 px** advance, centred (540, 875). Measured ink
+(2026-10-09): letters (141, 839)-(942, 928) = 31 / 28 px inside the window sides, glow halo (134, 837)-(953, 945) = 24 /
+17 px. The gate's ~100 px (839.6 px advance) puts the letters 14 / 12 px from the sides and the halo on the window edge
+(0 px): rejected, 96 px is the largest size that keeps the halo inside. Built in with `T.Glyphs('Happy Wedding', <that
+style>, px=96).wipe(cv, t, 540, 875, t0=5.1, dur=0.4)` (soft L→R mask wipe with a bright leading edge, f153-f165) +
+sparkle particles; hold; wipe out f180-f189 (exit `out_t0=6.0`). `ts.draw(sweep=u)` is a light-sweep glint, not a reveal
+(r1 had this wrong); one glint may cross the settled title after f165. Apart from the M6 spark's few-pixel core (the
+jawad_tx default carrier, peak ≈ 5.7 linear while it travels f135-f158; re-measured 2026-10-09), it is the only element
+allowed above 3× linear (proof f156 peak 4.35 linear for 0.4 s, gold, 0.01 % of window pixels ≥ 245 on all channels). No
+hearts, no shehnai, no mehndi, no religious motifs, no "Mubarak".
 **M6 carrier:** jawad_tx draws its default ember spark (`sprite=None`, trail 6) along the path **`((540, 736), (625,
 772), (615, 858), (540, 875))`** (r2: ends at the big window's centre; curve bbox x 540-631, so the 638 px word stays
 inside the card); the spark has no opacity control, so the word rides with it as a screen-space overlay drawn after
@@ -342,11 +345,17 @@ spark's end reads as the burst (no bare pop; paired with the `sparkle` cue at 5.
 halftone dots (grid 26 px, dot radius 2 → 9 px toward the bottom-right; no sunburst, no radial rays; reference
 `cartoon_ground`); the **output pill** = the collapsed output field, glass r 69 at (282, 607)-(798, 745) holding
 "Cartoon?" jw_key 130 (426.9 px) centred (540, 676) (UI POP on the pill, SETTLE on the word: no bounce on brand type);
-"MOTION" c02_parody_cartoon **180 px = 779.8 px** (≈ 806 px with the stroke) IVORY + NIGHT_0 stroke 0.068 em + FLAME
-drop shadow (0.053, 0.053) em, centred (540, 952), so the ±6° glyph wobble stays inside the 860 px window (190 px =
-823 px + stroke = 849 px would leave ~5 px a side). Rubber-hose wobble per glyph: y-scale = 1 + 0.25 × (1 −
-`X.spring(t − 7.0 − 0.05 i, 'JELLY')`), rot = 6° × sin(2π·2.5(t − 7.0) + i); second boing at f221. At peak stretch the
-glyphs stay inside y 855-1033 whichever scale anchor is used (< 1050). Proof `r2_card_cartoon_7p2_180` (and `_190` for the rejected size).
+"MOTION" c02_parody_cartoon **180 px = 779.8 px** (ink incl. stroke and shadow: 780 px) IVORY + NIGHT_0 stroke 0.068 em
++ FLAME drop shadow (0.053, 0.053) em, centred (540, 952). Measured ink at rest incl. stroke and shadow (2026-10-09):
+180 px = (150, 871)-(929, 1031), 780 px; the gate's ~190 px = (128, 868)-(950, 1036), 823 px. The wobble tilts each
+glyph ±6° about its ink bottom while it is stretched up to ×1.25, which swings the outer glyph tops ≈ 21-22 px further
+out: 180 px reaches x ≈ 129-950 (≥ 19 px inside the 110-970 window), 190 px reaches ≈ 106-972 (outside it), so 180 px is
+the largest size that keeps the wobble inside the window. Rubber-hose wobble per glyph: y-scale = 1 + 0.25 × (1 −
+`X.spring(t − 7.0 − 0.05 i, 'JELLY')`), rot = 6° × sin(2π·2.5(t − 7.0) + i); second boing at f221. Anchor each glyph's
+y-scale and rotation at its ink bottom (y 1031 with stroke and shadow; measured 2026-10-09: rest ink (150, 871)-(929,
+1031)): at peak stretch (×1.25) and ±6° the ink stays in y ≈ 831-1038 (< 1050, clear of the pill's 745) and x ≈
+129-950, so any ink at x > 930 sits above y 1038, outside the like-column band (y 1050-1700). A centre anchor would push
+the ink to y 1051 (into that band): not allowed. Proof `r2_card_cartoon_7p2_180` (and `_190` for the rejected size).
 
 **S3 Shocked punch-in (f231-f251).** JD `suit_shocked` look D, eyes (540, 1280), scale 0.92 × push × `FA.swap_push`.
 Room plate only. No text.
@@ -406,15 +415,19 @@ screen space; reference implementation `table_tex`, `table_frame`, `phone_sprite
   19.433, clamped to 1. On from buzz 1 (0.18), 0.34 at 18.3, 0.89 at 18.95, 1.0 from 19.45 to the M2 cut (f587 and f588
   both carry the FLAME highlight the M2 bridge needs). Linear peak in the frame 2.13 (≤ 3×).
 - **Chip → COUNT_PILL (gate 1b):** glass pill (310, 302)-(770, 378) r 38 throughout. "Kuch mahine baad" jw_mono 40
-  IVORY centred (540, 340), POP f504-f512; rises 12 px and fades f540-f545 (in_cubic 0.2 s), after L6 ends. From f546
-  (18.2, buzz 2) in the same pill: "Khandaan · " jw_mono 40 IVORY left x 366.8 (`'Khandaan · 99+'` = 346.4 px, so the
+  IVORY centred (540, 340), POP f504-f512; rises 12 px and fades f540-f545 (in_cubic 0.2 s), after L6 ends. **Measured
+  L6 end rule:** the exit starts on the frame after L6's measured last-word end, never before f540, and always ends on
+  f545 (so it shortens to ≥ 3 frames, in_cubic); if L6 ends after 18.07 s, L6 is re-processed at 1.10x (est. end
+  17.96, SCRIPT §3). The pill entry at f546 (beat 6.2, buzz 2) never moves. From f546 (18.2, buzz 2) in the same
+  pill: "Khandaan · " jw_mono 40 IVORY left x 366.8 (`'Khandaan · 99+'` = 346.4 px, so the
   full string is centred) + `T.Counter('jw_mono', px=40, fill='AMBER', prefix='', suffix='', decimals=0, sep='')` left
   x 639.0 (= 366.8 + 11 × 24.74 px mono advance), both rising 12 px in f546-f552 (out_cubic 0.2 s). Value track
   `K.Track([(18.9, 12, 'out_cubic'), (19.1, 47), (19.267, 47, 'out_cubic'), (19.4, 99)])`, `vel=trk.vel(t)` (odometer
   blur). "+" (jw_mono 40 AMBER) fades on at x 688.5 f583-f587 → "Khandaan · 99+". No green, no badge circle, no app
   icon, no ticks: same glass as every other pill (proof crop: `r2_skip_18p3`, `r2_skip_19p5`). Something changes at
   most 0.7 s apart from 18.2 to the cut: 18.2 pill + buzz 2, 18.6 glow pulse, 18.9 → 47, 19.27 → 99, 19.43 → 99+.
-- One text block in S7 (the chip / pill); captions are hidden 16.85-18.2 and there is no VO 18.0-19.75.
+- One text block in S7 (the chip / pill); captions are hidden 16.85-18.2 and there is no VO 18.0-19.75. The count is a
+  fictional unread badge in brand glass (U11): never spoken, never a view / like / follower figure.
 
 **S8 Family chat (f588-f839).** Panel = card rect (90, 296)-(990, 1176); header: avatar disc r 30 (FLAME→RED
 gradient, "K" jw_body 34 IVORY) at (156, 352); "Khandaan" jw_body 48 IVORY left x 202 cy 352. Message column clipped
@@ -442,7 +455,9 @@ to y 400-1150, messages stack from the bottom (newest at y 1150), each arrival p
   cy 390, slides under the header; "Forwarded" and the whole thumb visible); after f693 at y 210-870 (chip and
   "Forwarded" under the header, thumb top 86 px clipped, face and lockup visible); after f756 at y 120-780 (thumb top
   176 px clipped: the face stays). "Chachi" reads 21.7-22.4 s (0.7 s, one word), "Forwarded" 21.7-23.1 s (1.4 s).
-  Proof `r2_chat_22p0 / 23p5 / 25p5`.
+  Proof `r2_chat_22p0 / 23p5 / 25p5`. The thumb (with the tiny H1 lockup inside it) is a message of the chat panel,
+  so S8 stays at 2 text blocks (panel + caption chunk; §6.6), and it lies inside the panel rect that `AVOID` already
+  passes to the captions (§6.11), so no caption crosses it under L7's "ek *reel*" (≈ 22.4 s).
 - f756 typing pill (130, 1080)-(600, 1150): "Mummy is typing" jw_body 36 ASH left x 160 cy 1115 + dots r 9 at x
   510 / 536 / 562 (cy 1115); dots freeze and dim to 60 % f777-f797, resume f798, slow pulse f819-f824.
 - POV label right x 1000 cy 252 throughout.
@@ -463,8 +478,9 @@ behtar") `u = K.ramp(t, 30.8, 31.3, 'out_cubic')`; the room plate draws with `K.
 0.35 u)` and the SUN_DISC glow strength becomes 0.9 × (1 + 0.3 u); both hold to the c11 cut. No rays, no scale
 punch-in (the pose is at 0.987 of the 1.0 cap). Measured on `r2_payoff_31p4_swell` vs `_noswell`: world pixels
 outside the bust +13 % above black (limited-range mean 37.1 → 39.9), frame YAVG 56.1 → 58.4, linear peak unchanged
-2.55 (≤ 3×). A glow-only +20 % was tested and rejected: +1.2 %, invisible (the disc is behind his head). This ends the
-2.78 s static hold (29.05-31.83) at 1.75 s.
+2.55 (≤ 3×). (These two are `proof_r2.json` luma, limited-range mapped; ffmpeg signalstats on the same stills reads
+YAVG 49.4 → 52.2, YHIGH 104 → 109.) A glow-only +20 % was tested and rejected: +1.2 %, invisible (the disc is behind
+his head). This ends the 2.78 s static hold (29.05-31.83) at 1.75 s.
 
 **S11 End-card world (f966-f1070).** The same room; SUN_DISC sinks (540, 1420) → (540, 1520), r 100, intensity
 1.0 → 0.6 (linear) so its glow stays below the CTA (keyword box y 858-1082); slow push 1 %/s; motes.
@@ -478,7 +494,8 @@ opacity out_cubic over 5 f, dots per §6.3; POV label fades in 35.0-35.2 (out_cu
 monogram box by 20 px (420 vs 440) and the POV label (600-1000, 235-270) clears everything (proof `r2_end_nani_35p2`).
 At c12 (35.7) the same overlay continues over S12, so chip, pill and dots do not change at the cut; the confused pose
 still totals 3.5 s (0.7 + 2.8). Sound: notif_ping A6 (Mummy's message sound) at 35.0, not a pop (§6.12). VO L11 "Ab
-Nani ki baari." runs from ≈ 34.95 to ≤ 36.36 under it (§6.7). Text blocks f1050-f1091: end card + Nani widget = 2.
+Nani ki baari." runs from 34.90 (f1047) to ≤ 36.35 under it (§6.7), so the ping lands under "Ab" (ducked ≥ 6 LU below
+the VO). Text blocks f1050-f1091: end card + Nani widget = 2 (captions hidden 32.2-36.4).
 
 ### 6.5 Every on-screen string (house spelling; measured with `T.measure`)
 
@@ -537,33 +554,41 @@ Underline uses: P1 + E1 = 2 (≤ 3). Every width ≤ 940; lower-band strings ≤
 
 ### 6.7 VO beat plan (Vlad, `elevenlabs_v4`, Devanagari; ~2.7 words/s after `vo_chain`)
 
-Total A = 55 words, B = 54 (cap 80-90: comedy lives in bubbles; never pad). Locked = SLATE wording, do not edit.
-Every line has its on-screen explanation in the last column. Hero hits never sit on a word (payoff hit 28.0 →
-VO 28.25 = 250 ms clear).
+Final wording = `SCRIPT.md` v2 (scriptwriter; it wins on Devanagari spelling, caps and fallbacks). Total **A = 57 words,
+B = 54** (QA cap A ≤ 60; comedy lives in bubbles; never pad). Locked = SLATE wording, do not edit. Every line has its
+on-screen explanation in the last column. Hero hits never sit on a word (payoff hit 28.0 → VO 28.25 = 250 ms clear);
+the Nani notif_ping at 35.0 lands under L11's "Ab" and is ducked ≥ 6 LU below the VO (§6.12).
 
-| id | slot (s) | max w | Roman Urdu (caption track; *keyword*) | meaning | Devanagari draft (scriptwriter finalises) | on-screen moment that explains it |
+| id | slot (s) | words | Roman Urdu (caption track; *keyword*) | meaning | Devanagari (TTS, = script.json `dev`) | on-screen moment that explains it |
 |---|---|---|---|---|---|---|
 | L1 (locked) | 0.10-2.69 (end ≤ 2.75) | 7 | Sab se mushkil sawaal client nahi poochta. (no caption keyword) | The hardest question isn't asked by a client. | सब से मुश्किल सवाल क्लाइंट नहीं पूछता। | Mummy's bubble: BETA, TUM *karte kya* HO? |
-| L1B (locked, B) | 0.10-2.40 | 6 | Motion designer? Mummy ke liye: cartoon. (captions hidden) | Motion designer? To Mummy: cartoon. | मोशन डिज़ाइनर? मम्मी के लिए: कार्टून। | card: MOTION DESIGNER → *cartoon?* + wobbling MOTION |
-| L2 | 2.95-4.15 | 4 (fallback 3: drop "Aur") | Aur jawab ka *translation*... | And the answer's translation... | और जवाब का ट्रांसलेशन... | "Mummy translate" card; "Video editor" typed |
-| L3 | 5.10-6.95 | 4 | Jitna samjhao... utna *ulta*. | The more you explain... the more upside-down. | जितना समझाओ... उतना उल्टा। | "Happy Wedding" parody; "Motion designer" being typed |
-| L4 | 10.95-11.70 | 2 | *Seedha* jawab: | The straight answer: | सीधा जवाब: | card B pre-filled "Brands ke liye cinematic reels" |
+| L1B (B only; r2, gate fix 5, **lead's OK needed**) | 0.10-2.40 (end ≤ 2.45) | 4 | Mummy ke liye, cartoon. (captions hidden) | For Mummy: cartoon. | मम्मी के लिए, कार्टून। | card: MOTION DESIGNER → *cartoon?* + wobbling MOTION (the lockup is the headline; the voice adds whose reading it is) |
+| L2 | 2.95-4.15 | 3 | Jawab ka *translation*... | The answer's translation... | जवाब का ट्रांसलेशन... | "Mummy translate" card; "Video editor" typed |
+| L3 | 5.10-6.95 | 4 | Jitna samjhao, utna *ulta*. | The more you explain, the more upside-down. | जितना समझाओ, उतना उल्टा। | "Happy Wedding" parody; "Motion designer" being typed |
+| L4 | 10.95-11.70 | 2 | *Seedha* jawab: | The straight answer: | सीधा जवाब, | card B pre-filled "Brands ke liye cinematic reels" |
 | L5 (locked) | 14.15-16.15 | 4 | Phir... *haar* maan li. | Then... gave up. | फिर... हार मान ली। | JD neutral stare under "Naukri kab lagegi?" |
-| L6 | 16.95-17.95 | 3 | Kuch mahine baad... (captions hidden: chip) | A few months later... | कुछ महीने बाद... | chip "Kuch mahine baad", phone face-down |
-| L7 (locked) | 19.75-24.27 | 11 | Phir ek din family group mein... ek *reel* forward hoti hai. | Then one day in the family group... a reel gets forwarded. | फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है। | "Khandaan" floods; the "Forwarded" reel bubble lands at 21.7 |
-| L8 (optional; cut first if long) | 24.45-27.12 | 6 | Ab sab ki *nazar*... Mummy pe. | Now all eyes... on Mummy. | अब सब की नज़र... मम्मी पे। | "Kamaal!", "Wah!", then "Mummy is typing" (25.2) |
-| L9 (locked) | 28.25-31.97 | 9 | Ab woh sab ko khud samjhaati hain... humse behtar. (no caption keyword) | Now she explains it to everyone herself... better than us. | अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर। | MERA BETA *cinema* BANATA HAI; JD hand on chest |
+| L6 | 16.95-17.95 | 3 | Kuch mahine baad... (captions hidden: chip) | A few months later... | कुछ महीने बाद... | chip "Kuch mahine baad", phone face-down; its measured end gates the chip → count pill swap (§6.4 S7) |
+| L7 (locked) | 19.75-24.27 | 11 | Phir ek din family group mein... ek *reel* forward hoti hai. | Then one day in the family group... a reel gets forwarded. | फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है। | "Khandaan" floods; the "Forwarded" reel bubble (this reel's own cover) lands at 21.7 |
+| L8 (optional; cut first if long) | 24.45-27.12 | 5 | Sab ki *nazar*... Mummy pe. | All eyes... on Mummy. | सब की नज़र... मम्मी पे। | "Kamaal!", "Wah!", then "Mummy is typing" (25.2) |
+| L9 (locked) | 28.25-31.97 | 9 | Ab woh sab ko khud samjhaati hain... humse behtar. (no caption keyword) | Now she explains it to everyone herself... better than us. | अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर। | MERA BETA *cinema* BANATA HAI; JD hand on chest; sun swell under "humse behtar" (30.8) |
 | L10 | 32.55-34.40 | 5 | Isko family group mein bhejo. (captions hidden: end card) | Send this to the family group. | इसको फ़ैमिली ग्रुप में भेजो। | end card GROUP MEIN *bhejo* |
+| L11 (r2, gate fix 4b) | 34.90-36.35 (onset f1047, never after 34.95; end hard ≤ 36.36) | 4 | Ab Nani ki baari. (captions hidden: end card + Nani pill) | Now it's Nani's turn. | अब नानी की बारी। | "Nani" chip + typing pill pop at 35.0 over the settled end card and carry across c12 into frame 0, whose bubble completes the sentence: BETA, TUM *karte kya* HO? |
 
 Casting brief: warm, unhurried, wry; a narrator who smiles without laughing. Delivery: L1 plain statement, no
-pause; "..." = 0.45 s (L5's "Phir..." may hold to 0.6 s, L9's to 0.45 s for the bonus laugh); L10 friendly, not
-salesy. Pronunciation test before the run (≈ 2.5 credits): मम्मी, क्लाइंट, ट्रांसलेशन, फ़ैमिली ग्रुप, फ़ॉरवर्ड.
-Generation: one take per line (11 takes incl. L1B), `jobs_wait`, never blind re-submits; budget ≤ 30 credits incl.
-one retake round. Process each take with `vo_chain.py process` (python3 -I), then place lines at their slot starts
-(first voiced onset = slot start ± 1 frame) into `beta_tum_karte_kya_ho_vo_A.wav` / `_vo_B.wav` (DUR long,
-−16 LUFS) and write the reel-time word list `beta_tum_karte_kya_ho.words.json` (Roman tokens, `keyword` flags as above,
-`start`/`end` in reel seconds). If a line overruns its slot by > 0.15 s: cut words (fallbacks above), never speed
-beyond 1.10x, never move the picture events.
+pause; L1B plain on "Mummy ke liye", a short comma beat (cap 0.3 s), then a dry, flat "cartoon"; L3's comma beat is
+capped at 0.2 s (ends before the 7.0 pop); "..." = 0.45 s (L5's "Phir..." may hold to 0.6 s, L9's to 0.45 s for the
+bonus laugh); L10 friendly, not salesy; L11 light and knowing, "baari" falls and stops dead (no breath, tail trimmed
+to 40 ms). Pronunciation test before the run: the single 289-character paragraph of SCRIPT §6 (≈ 1.4 credits; covers
+क्लाइंट, मम्मी, भेजो, ट्रांसलेशन, फ़ैमिली ग्रुप, कार्टून, फ़ॉरवर्ड, उल्टा, सीधा, नानी / बारी); L1 is generated only after
+क्लाइंट passes ASR and one human listen (gate note 9). Generation: one take per line (**12 takes**: L1, L1B, L2-L11),
+`jobs_wait`, never blind re-submits; budget ≤ 30 credits incl. one retake round. Process each take with the
+`vo_chain.process` Python API (python3 -I; per-line `cap` / `keep_cap` from `script.json`), then place lines at their
+slot starts (first voiced onset = slot start ± 1 frame) into `beta_tum_karte_kya_ho_vo_A.wav` (L1 + L2-L11) /
+`_vo_B.wav` (L1B + L2-L11) (DUR long, −16 LUFS) and write the reel-time word list `beta_tum_karte_kya_ho.words.json`
+(Roman tokens, `keyword` flags as above, `start`/`end` in reel seconds). If a line overruns its slot by > 0.15 s: cut
+words (the line's `fallback` in `script.json`; L11 → "Ab Nani."), never speed beyond 1.10x, never move the picture
+events. Loop check: the last 2 s of VO A into its first 3 s ("...Ab Nani ki baari. | Sab se mushkil sawaal...") with
+0.15-0.30 s between the two lines.
 
 ### 6.8 Transitions (family: match; 4 features, 2 ★, ≥ 2 bars apart)
 
@@ -572,7 +597,7 @@ import jawad_tx as X
 # glue cuts (L3) with their exposure-push gains: c1 card, c3 punch-in, c4 stamp, c6 neutral, c7 time skip,
 # c10 punch-in, c11 end-card world, c12 Nani pre-roll
 GLUE = [(2.8, 0.5), (7.7, 0.7), (8.4, 0.4), (14.0, 0.6), (16.8, 0.4), (28.7, 0.7), (32.2, 0.3), (35.7, 0.3)]
-M6_OPTS = dict(pre=12, post=12, path=((540, 736), (610, 800), (600, 900), (540, 986)))   # default ember spark carrier
+M6_OPTS = dict(pre=12, post=12, path=((540, 736), (625, 772), (615, 858), (540, 875)))   # r2: ends at the big window's centre; default ember spark carrier
 MOVE = K.Track([(10.9, (540, 0), 'in_cubic'), (11.2, (140, 0), 'out_cubic'), (11.5, (-260, 0))])
 M3_OPTS = dict(pre=9, post=9, move=MOVE)
 M1_OPTS = dict(pre=15, post=15, a=dot3_pose, b=(540.0, 1260.0, 110.0), match=(540.0, 1260.0, 180.0))
@@ -593,11 +618,13 @@ def post(cv, t):
 **Do not pass `push_gain=` to an L3 or `look=` to M2 inside the Plan:** `Tx.__call__` forwards every option to the
 draw function and `_tx_cut` / `_tx_hue` raise TypeError (tested 2026-10-08; filed in `SHARED_REQUESTS.md`). The glue
 gains go through `cuts=` instead (`X.push_at` takes `(c, gain)`); M2's exposure post is identical for gold_hour and
-the default look (both exposure 0.0). This exact plan was smoke-tested (draw, samples, post kw at 15 times).
+the default look (both exposure 0.0). This exact plan was smoke-tested (draw, samples, post kw at 15 times); r2
+re-test with the new M6 path on 2026-10-09: `PLAN.draw` + `PLAN.samples` at 4.5-5.27, 11.2, 19.6, 28.0 run clean, 12
+windows as listed below, curve bbox x 540-631, y 736-875.
 
 | id | cut | frames | function | role | spacing |
 |---|---|---|---|---|---|
-| M6 ★ object carry-over | 4.900 (beat 7) | f135-f158 | `X.TX['M6']` = `_tx_carry` | the output word flies into its mini-scene and becomes its title | — |
+| M6 ★ object carry-over | 4.900 (beat 7) | f135-f158 | `X.TX['M6']` = `_tx_carry` | the output word flies into its mini-scene (r2: the big window, centre (540, 875)) and becomes its title | — |
 | M3 motion match | 11.200 (bar 4) | f327-f344 | `X.TX['M3']` = `_tx_motion_match`, scenes take `move=` | re-hook swipe | +6.3 s |
 | M2 colour match / hue bridge | 19.600 (bar 7) | f582-f593 | `X.TX['M2']` = `_tx_hue` (+ its exposure post) | phone glow → gold group scene | +8.4 s |
 | M1 ★ shape match (circle) | 28.000 (bar 10) | f825-f854 | `X.TX['M1']` = `_tx_shape_match` | typing dot → the sun (payoff light) | +8.4 s |
@@ -616,17 +643,17 @@ World Bible lines (verbatim in every entry): palette, light logic, lens set, cam
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | S0 | reveal | medium close-up bust | 85 mm | push +1.2 %/s linear | JD frozen mid-word, brows knitted, eyes on lens; the typing dots pulse above him | JD confused · MUMMY_BUBBLE | window backlight, rim camera-right; phone glow from below | dust motes in the window glow | one bokeh disc drifting past the bubble edge | 2.8 | dots tick, message pop, VO L1 | L3 cut (beat) | start_from S12 (loop) |
 | S1 | inform | insert, card fills width | 50 mm | card POP up, handheld float 4 px | the card answers itself: "Video editor" types, "Shaadi wala?" pops | TRANSLATE_CARD | rim of the glass only, room defocused | motes | the caret blinks once after typing ends | 2.1 | card_slide, typing, pop | M6 (word carried) | — |
-| S2 | change | same | 50 mm | float | the word becomes a gaudy wedding title; then "Motion designer" → "Cartoon?" and MOTION wobbles | TRANSLATE_CARD · PARODY 1, 2 | sparkles light the window only | sparkle dust | one sparkle lands outside the window frame | 2.8 | whoosh_by, shimmer, boings | L3 punch-in | start_from S1 |
+| S2 | change | same | 50 mm | float | the output field collapses and the window grows to 860x570 (r2); the word flies in and becomes a gaudy wedding title; then "Motion designer" → the "Cartoon?" pill and MOTION wobbles, big | TRANSLATE_CARD (big window) · PARODY 1, 2 | sparkles light the window only | sparkle dust | one sparkle lands outside the window frame | 2.8 | whoosh_by, shimmer, boings | L3 punch-in | start_from S1 |
 | S3 | change | MCU bust | 85 mm | swap push 1.00→1.03 out_cubic | JD stares wide-eyed, mouth shut | JD shocked | as S0 | motes | — | 0.7 | whip + impact + tabla ge | L3 cut | — |
-| S4 | change | insert | 50 mm | SLAM shake, 2 % push at 9.8 | "Content creator" is already typed; a red stamp slams across the answer | TRANSLATE_CARD · STAMP | glass rim; window darkened | — | stamp ink missing in patches | 2.8 | stamp impact + tabla ta | M3 swipe | — |
+| S4 | change | insert | 50 mm | SLAM shake, 2 % push at 9.8 | "Content creator" is already typed; a red stamp (76 px, big window) slams across the answer | TRANSLATE_CARD · STAMP | glass rim; window darkened | — | stamp ink missing in patches | 2.8 | stamp impact + tabla ta | M3 swipe | — |
 | S5 | change | insert | 50 mm | card B swipes in, then folds away rx 0→80° in_cubic | the honest answer sits there; loading dots; Mummy replies "Achha. Naukri kab lagegi?" | TRANSLATE_CARD · MUMMY_BUBBLE | card dims ×0.55 under the bubble | music dies (tape stop) | the empty lower card | 2.8 | ticks, killer ping in silence | L3 cut | — |
 | S6 | change | MCU bust | 85 mm | swap push, then +1.2 %/s | JD holds a level stare at the lens; the reply still hangs above him | JD neutral · MUMMY_BUBBLE | window light dims −15 % from 15.4 | motes slow | — | 2.8 | soft thud; VO L5 | L3 cut | — |
-| S7 | atmosphere | high angle on a table | 50 mm | locked; light band sweeps | a phone lies face-down; light crawls across the wood; the phone buzzes twice | PHONE_FACE_DOWN | window band GOLD 25 %; FLAME leak from under the phone | dust in the light band | a scratch in the wood grain | 2.8 | buzzes, pings accelerate | M2 hue bridge | — |
-| S8 | move | insert, panel fills width | 50 mm | float; message stack pushes up | the family group floods; a reel is forwarded; relatives react; Mummy starts typing, stops, starts | FAMILY_CHAT · REEL_THUMB | panel rim; dots glow | motes | one reply bubble slightly wider than the rest | 8.4 | pings in key; drop-out from 27.3 | M1 push into dot 3 | — |
+| S7 | atmosphere → inform (r2) | high angle on a table | 50 mm | locked; light band sweeps; the phone creeps 12 px per buzz and 5 px per ping (with a 2 px jolt; 39 px and +2.35° in all) | a glossy phone (camera bump up) lies face-down; light crawls across the wood; it buzzes twice, flame light leaking from its edges; the chip gives way to "Khandaan · 12", which rolls to 47, 99, 99+ on the pings | PHONE_FACE_DOWN · COUNT_PILL | window band GOLD; FLAME edge glow climbing from buzz 1 to full at the cut | dust in the light band | a scratch in the wood grain | 2.8 | buzzes (haptic + ping) 16.8 / 18.2, pings 18.9 / 19.267 / 19.433 | M2 hue bridge | — |
+| S8 | move | insert, panel fills width | 50 mm | float; message stack pushes up | the family group floods; a reel is forwarded (its thumbnail is this reel's own cover: confused JD under "BETA, TUM *karte kya* HO?"); relatives react; Mummy starts typing, stops, starts | FAMILY_CHAT · REEL_THUMB | panel rim; dots glow | motes | one reply bubble slightly wider than the rest | 8.4 | pings in key; drop-out from 27.3 | M1 push into dot 3 | — |
 | S9 | reveal | wide on the sun | 100 mm macro → 50 mm (pull back) | pull back out_expo 0.5 s | the dot becomes the low sun; Mummy's bubble arrives with the answer | SUN_DISC · MUMMY_BUBBLE | the sun is the key | haze glow | — | 0.7 | payoff hit stack + warm chord | L3 punch-in | start_from S8 (match) |
-| S10 | change (anchor) | MCU bust | 85 mm | swap push, then +1.2 %/s | JD's hand rests on his chest, eyes up-right, under Mummy's words | JD hand_on_chest · MUMMY_BUBBLE · SUN_DISC (hidden) | sun backlight, rim both sides | motes in the sun glow | — | 3.5 | VO L9 | L3 cut | **anchor (single image, f900)** |
-| S11 | atmosphere | wide room | 50 mm | push 1 %/s | the sun sinks; the end card writes itself over the room | SUN_DISC | setting sun | motes | — | 3.5 | card cues, VO L10 | L3 cut | — |
-| S12 | move (loop) | MCU bust | 85 mm | push +1.2 %/s (continues into f0) | Nani starts typing above the same confused JD | JD confused · MUMMY_BUBBLE ("Nani") | as S0 | motes | — | 0.7 | dots ticks; loop swell | loop seam | start_from S0 at t − 36.4 |
+| S10 | change (anchor) | MCU bust | 85 mm | swap push, then +1.2 %/s | JD's hand rests on his chest, eyes up-right, under Mummy's words; on the bar-11 downbeat (30.8) the sun behind him swells | JD hand_on_chest · MUMMY_BUBBLE · SUN_DISC (hidden) | sun backlight, rim both sides; world +35 %, sun glow ×1.3 from 30.8 | motes in the sun glow | — | 3.5 | VO L9 | L3 cut | **anchor (single image, f900)** |
+| S11 | atmosphere | wide room | 50 mm | push 1 %/s | the sun sinks; the end card writes itself over the room; at 35.0 Nani's chip and typing pill pop in the frame-0 pill position | SUN_DISC · MUMMY_BUBBLE ("Nani" typing pill, r2) | setting sun | motes | — | 3.5 | card cues, VO L10; notif_ping A6 35.0, VO L11 from 34.90 | L3 cut | — |
+| S12 | move (loop) | MCU bust | 85 mm | push +1.2 %/s (continues into f0) | the same confused JD appears under Nani's typing pill, which has not moved since 35.0 | JD confused · MUMMY_BUBBLE ("Nani") | as S0 | motes | — | 0.7 | dots ticks; VO L11 "...ki baari." ends ≤ 36.35; loop swell | loop seam | start_from S0 at t − 36.4 |
 
 IDs: `packet.yaml` groups these 13 shots into scenes: S0 = S1-01, S1 = S2-01, S2 = S2-02, S3 + S4 = S3-01, S5 = S3-02,
 S6 = S4-01, S7 = S5-01, S8 = S6-01, S9 = S7-01, S10 = S7-02, S11 = S8-01, S12 = S8-02, hook B = HB-01.
@@ -663,24 +690,38 @@ the head rect `(head_x0, head_top, head_x1, 1920)` as an avoid rect; UI never ov
 
 ```python
 CAP_HOOK = SC.Captions(words_L1, band='upper', y=880, avoid=lambda t: AVOID(min(t, 2.79)))      # version A only
-CAP_BODY = SC.Captions(words_L2_to_L10, band='upper', y=880, avoid=lambda t: AVOID(max(t, 2.8)),
-                       hide=[(16.85, 18.2), (32.2, 36.4)])
+CAP_BODY = SC.Captions(words_L2_to_L11, band='upper', y=880, avoid=lambda t: AVOID(max(t, 2.8)),
+                       hide=[(16.85, 18.2), (32.2, 36.4)],          # L6; L10 + L11 (end card / Nani pill)
+                       clear=[(4.2, 4.9), (7.0, 7.7)])             # r2, gate note 7
 draw: if t < 2.8: CAP_HOOK.draw(cv, t, opacity=1 - K.ramp(t, 2.6, 2.8, 'in_cubic'))   # never crosses the splice
       else:       CAP_BODY.draw(cv, t, opacity=1 - K.ramp(t, 32.0, 32.25, 'in_cubic'))
 hook B: no CAP_HOOK at all.
 ```
 `AVOID(t)` returns: S0 head rect + bubble (147, 280)-(933, 740) + chip (147, 232)-(320, 272) + POV (600, 235)-(1000,
 270); card scenes and S8: card (90, 296)-(990, 1176) + POV; S3/S6/S10: head rect (S6 also the killer bubble (150,
-252)-(930, 520) until 15.3); S7: chip (310, 302)-(770, 378) + phone (390, 640)-(690, 1160); S9: payoff bubble (147,
-280)-(933, 790) + chip + sun (430, 1150)-(650, 1370); S10: payoff bubble + chip + head rect.
+252)-(930, 520) until 15.3); S7: chip (310, 302)-(770, 378) + phone (316, 586)-(775, 1223) (r2: the phone body over
+the whole creep; captions are hidden in S7 anyway); S9: payoff bubble (147, 280)-(933, 790) + chip + sun (430,
+1150)-(650, 1370); S10: payoff bubble + chip + head rect.
 Keywords (one per line, chunker gives ≤ 1 per chunk): L2 *translation*, L3 *ulta*, L4 *Seedha*, L5 *haar*, L7 *reel*,
-L8 *nazar*; L1 and L9 none (a lockup keyword is on screen), L6/L10 hidden. No caption SFX.
+L8 *nazar*; L1 and L9 none (a lockup keyword is on screen), L6/L10/L11 hidden. No caption SFX.
+**Clear windows (r2, gate note 7):** the chunk holding "translation..." (L2, est. end 4.17 + 0.35 s hold) and the chunk
+"utna *ulta*" (L3, est. end 6.91) must be off screen before "Shaadi wala?" (4.2) and "Cartoon?" (7.0) pop, so two
+flame serif words of the same size (caption key 128 px vs output word 130 px) never share the screen. `clear=` makes a
+chunk on screen at the window start finish its 0.25 s in_cubic exit by 4.2 / 7.0 (`cap.report()` marks it 'early
+exit'); L3's first chunk enters at 5.05, after the first window, and nothing is spoken 6.95-10.95. Re-check on the real
+`words.json`: `cap.report()` shows both early exits and no chunk visible in 4.2-4.9 or 7.0-7.7. Tested 2026-10-09 on
+the SCRIPT v2 estimates: "Jawab ka translation..." 2.90 → exit 3.95-4.20, "utna *ulta*" 5.955 → exit 6.75-7.00, both
+'early exit', `check() == []`.
 Proof with synthetic timings: `cap.check() == []` for both objects; chunks land at baseline ≈ 880 above JD (S0, S6,
 S10) and ≈ 1310 under the card (UI scenes), all at scale 1.0. Re-run `check()` on the real `words.json`.
 
 ### 6.12 SFX cue list (sound-designer → `beta_tum_karte_kya_ho_sfx.py`; `epic_sfx.register()` first)
 
-55 cues (1.5/s, 29 designed events ≥ −8 dB = 0.8/s); no instant has > 3 starts; every name verified in `A.names()`.
+55 cues (1.5/s, 30 designed events ≥ −8 dB = 0.8/s); no instant has > 3 starts; every name verified in `A.names()`.
+**r2:** the Nani pill's sound is notif_ping A6 at 35.0 (was a generic pop at 35.7, gate fix 4a); it and the 35.8 / 36.1
+ticks sit under L11 and go through `fit_under_vo` like every VO-window cue (≥ 6 LU below the VO). S7's creep needs no
+extra cue: notif_ping `buzz=1` already plays the two 0.13 s haptic pulses at +0.0 / +0.2 s that the picture's two 6 px
+creeps are timed to (16.8 / 17.0 and 18.2 / 18.4), then its ping at +0.4 s (17.2 / 18.6).
 `pitch_to(880)` = the bible §4.2 helper (A5). notif_ping pitch 1.1225 = A6, 1.4983 = D7 (key D minor; Sa = D:
 `tabla_hit pitch 1.0` = D4). Duck and carve with the shared `sfx_jawad.fit_under_vo(cues, words_json)` (the bible
 §4.1 helper; `hero='raise'`; none of these cues is a HERO sound) against the real `words.json`. Call
@@ -740,9 +781,9 @@ S10) and ≈ 1310 under the card (UI scenes), all at scale 1.0. Re-run `check()`
 | 32.3000 | 969 | swish_small | {} | start | −12 | | `card.cues`: ring draw-on |
 | 32.7700 | — | shimmer | {} | hit | −10 | yes | `card.cues`: keyword |
 | 32.9500 | — | glass_tap | {} | hit | −12 | yes | `card.cues`: ring closes |
-| 35.7000 | 1071 | pop | pitch_to(880) | hit | −10 | | Nani pill |
-| 35.8000 | 1074 | ui_tick | {} | hit | −15 | | dots |
-| 36.1000 | 1083 | ui_tick | {} | hit | −15 | | dots |
+| 35.0000 | 1050 | notif_ping | pitch 1.1225 (A6) | hit | −8 | yes (L11 "Ab") | r2: Nani's chip + typing pill pop (Mummy's message sound, never a generic pop) |
+| 35.8000 | 1074 | ui_tick | {} | hit | −15 | yes | dots |
+| 36.1000 | 1083 | ui_tick | {} | hit | −15 | yes | dots |
 | 36.4000 | 1092 | reverse_swell | duration 0.8 | hit (ends) | −8 | | `card.cues`: loop swell → f0 |
 
 Version B cue set = the hook-B cues of §6.3 (bubble_pop 0.0 −4, impact_soft 0.0 −8, bubble_pop 0.7 pitch 0.8 −8,
@@ -771,7 +812,7 @@ voice), a tape stop at its end and a 1.2 s fade-out (breaks the loop). Key D min
 | — | 27.3-28.0 | — | gate after the reverbs, 4 ms fades | the drop-out (1 beat) |
 | 10 | 28.0-30.8 | D major add9 (D2 / D3 F#3 A3 E4) | warm EP + soft pad struck at 28.0, held; tabla re-enters −6 dB at 29.4 | the single warm chord on the payoff |
 | 11 | 30.8-33.6 | Bbmaj7 | tabla + EP, no kick | under VO L9 / end card |
-| 12 | 33.6-36.4 | A7b9 | tabla + EP; thin to EP + one 'tin' at 35.7 | dominant resolves into bar 0's Dm9 on the loop |
+| 12 | 33.6-36.4 | A7b9 | tabla + EP; thin to EP + one 'tin' at 35.7 | dominant resolves into bar 0's Dm9 on the loop; r2: L11 (34.90-36.35) lands on the already-thinned bar (`MUSIC.md` run 1: last theka stroke 34.69, a soft A7b9 re-strike at 35.0, the 'tin' at 35.7); no arrangement change, speech ≥ 8 LU over the bed and the 'tin' ≥ 6 LU under the VO |
 
 No tail fade; render DUR + 2.0 s and fold the overhang (reverb tails) onto the head (circular), then cut to exactly
 36.4 s. Stem −18 LUFS (VO present), ≤ −3 dBTP, `level_rider(amount=0.3)`. Verify `EM.beatgrid`: tempo 85.71 ± 0.1,
@@ -784,7 +825,9 @@ moment); the 19.6-27.3 groove stays ≥ 3 LU below it.
 and the same with `VO_B` (version B), each also rendered without music (the no-music mix = VO + SFX only). Targets:
 −14.0 ± 0.5 LUFS integrated, TP ≤ −2.0 dBTP (wav) / ≤ −1.5 after AAC, LRA 5-9 LU, VO stem −16 LUFS, speech ≥ 8 LU
 above music (median over voiced frames), SFX inside VO windows ≥ 6 LU below VO. Mux with `epic_mix.mux` (two-pass
-loudnorm, verify).
+loudnorm, verify). r2: L11 "Ab Nani ki baari." (34.90-36.35) is the last word before the seam: the reverse_swell
+(35.6-36.4), the 35.0 notif_ping and the 35.7 'tin' stay ≥ 6 LU under it, and the VO stem has no breath or tail after
+36.35, so the seam carries only music + SFX into L1 at 0.10.
 
 ### 6.15 3D props: **none** (SLATE §3.4). No work order for blender-3d-artist.
 
@@ -820,13 +863,13 @@ YMIN 16-22; frame 0 YAVG ≥ 40 (limited range; proof frame measured 45.2), face
 |---|---|---|
 | `beta_tum_karte_kya_ho.py` | motion-timeline-builder | `DUR = 36.4`, `LOOK = 'gold_hour'`, `BPM = 600 / 7`, `FPS = 30`, `SPLICE_F = 84`; scenes S0-S12, `PLAN`, `draw(t)`, `post(cv, t)`, `samples(t)`, `prewarm()`, `cues()` = delegate to the sfx module, `frame(t, version='A')`, `cover()`, `blocks(t)` (debug: active text blocks + bboxes for QA) |
 | `beta_tum_karte_kya_ho_hookb.py` | motion-timeline-builder | `DUR = 2.8`; f0-f73 hook B scene, f74-f83 = main `frame(t, 'B')` (no caption layer); own `cues()` for B |
-| `beta_tum_karte_kya_ho_ui.py` | motion-timeline-builder | pill / bubble / chip / translate card / chat panel / stamp builders (cached) |
-| `beta_tum_karte_kya_ho_parody.py` | motion-timeline-builder | P1-P3 window renderers (type3d + ui only, brand palette, ≤ 1.4 s each) |
+| `beta_tum_karte_kya_ho_ui.py` | motion-timeline-builder | pill / bubble / chip / translate card (small + big window states) / chat panel / stamp builders; r2: table texture + light band, face-down phone + edge-glow sprites, creep, count pill, REEL_THUMB (+ ALT), Nani `hook_ui` overlay (all cached; lift from `layout_proof_r2.py`) |
+| `beta_tum_karte_kya_ho_parody.py` | motion-timeline-builder | P1-P3 window renderers in the big window (110, 590)-(970, 1160) (type3d + ui only, brand palette, ≤ 1.4 s each; `wedding_ground`, `cartoon_ground`, `stamp_sprite`) |
 | `beta_tum_karte_kya_ho_faces.py` | face-compositor | `FACES` table (§6.10), `look(name)`, `draw_face(cv, shot, t)`, `head_rect(shot, t)` |
 | `beta_tum_karte_kya_ho_sfx.py` | sound-designer | `cues()` (§6.12), `BED`, `BED_GAIN_DB`, `build` CLI (A and B cue sets) |
 | `beta_tum_karte_kya_ho_music.py` | music-supervisor | §6.13 arrangement, writes wav + stems + json + png |
 | `beta_tum_karte_kya_ho_vo.py` | hinglish-scriptwriter | assembles processed takes at their slots → VO A / B wavs + `words.json` |
-| `vo/beta_tum_karte_kya_ho_script.md`, `vo/beta_tum_karte_kya_ho.json` | hinglish-scriptwriter | script, token table, timing table |
+| `brand_reels/design/reels/beta_tum_karte_kya_ho/SCRIPT.md`, `script.json` (v2) | hinglish-scriptwriter | script, token table, timing table (estimated until the takes are measured) |
 
 Rules: `import jawad_kit` first, then `jawad_grade as G`, `jawad_tx as X`, `snake_captions as SC`, `endcard as E`,
 `faces as FA` (sys.path += charsheet/tools). Shared modules are read-only. `draw(t)` pure; all sprites in
@@ -838,7 +881,7 @@ All heavy jobs through `pipeline/jawad_reels/tools/heavy.sh` (2 global slots, ni
 ```bash
 cd /home/user/100/pipeline/jawad_reels
 tools/heavy.sh python3 render.py beta_tum_karte_kya_ho --sheet 24 --samples 1 --workers 1
-tools/heavy.sh python3 render.py beta_tum_karte_kya_ho --stills 0,0.367,1.0,4.9,8.4,12.6,14.5,19.6,28.0,30.0,34.5,36.367
+tools/heavy.sh python3 render.py beta_tum_karte_kya_ho --stills 0,0.367,1.0,4.9,5.6,7.2,8.4,9.6,12.6,14.5,17.2,18.3,18.95,19.5,19.6,22.0,28.0,30.0,31.4,34.5,35.2,36.367
 tools/heavy.sh python3 render.py beta_tum_karte_kya_ho --range 27.0 29.0 --workers 1          # M1 + payoff
 tools/heavy.sh python3 beta_tum_karte_kya_ho_sfx.py build
 tools/heavy.sh python3 beta_tum_karte_kya_ho_music.py
@@ -847,7 +890,10 @@ tools/heavy.sh python3 render.py beta_tum_karte_kya_ho_hookb --workers 1 --no-sf
 ```
 Version B splice (delivery-packager): concat(hookb frames 0-83, master A frames 84-1091) re-encoded once with the
 delivery settings + version B's full mix; verify 1,092 frames. Gates before the master (SLATE §4): the translate card with one
-parody as a still (f160) and a `--range 4.4 6.4` clip.
+parody as a still (f160) and a `--range 4.4 6.4` clip; r2 adds: the S7 stills 17.2 / 18.3 / 18.95 / 19.5 next to
+`brief_proof/r2_skip_*` (phone reads at 360 px, count 12 / 47 / 99+), the chat still 22.0 next to `r2_chat_22p0`
+(thumb = cover, face legible at 360 px), the 35.2 still next to `r2_end_nani_35p2` and a `--range 34.6 36.4` clip
+looped twice (Nani pill continuous across c12, L11 into L1).
 
 ## 8. QA acceptance checklist (reel-specific, measurable)
 
@@ -857,11 +903,13 @@ parody as a still (f160) and a `--range 4.4 6.4` clip.
    near-black.
 3. H1 legible at f11: keyword-box mean luma at f11 ≥ 90 % of its value at f30. Hook B: H2 present at f0.
 4. VO: first voiced onset ≤ 0.30 s (A and B); L1 ends ≤ 2.75 s; L1B ends ≤ 2.45 s; every line inside its slot ±
-   0.15 s; total words A ≤ 60.
+   0.15 s; L11 onset 34.90 ± 1 frame (never after 34.95) and last word ends ≤ 36.36 with no breath after it; L11 → L1
+   gap across the seam 0.15-0.30 s; total words A = 57 (≤ 60), B = 54; the measured L6 end + 1 frame ≤ the chip
+   exit's first frame (§6.4 S7).
 5. Safe zones from `blocks(t)` at 5 fps: all text bboxes in x 70-1010, y 230-1480 (end-card signature 1563-1587
    allowed), none at x > 930 for y 1050-1700, none below y 1620; widths ≤ 940 (≤ 780 in y 1050-1700).
-6. ≤ 2 text blocks at every frame (`blocks(t)` against §6.6); captions hidden in 16.85-18.2 and 32.2-36.4 and absent in
-   hook B; no caption keyword while H1 or P1 is on screen.
+6. ≤ 2 text blocks at every frame (`blocks(t)` against §6.6); captions hidden in 16.85-18.2 and 32.2-36.4, cleared in
+   4.2-4.9 and 7.0-7.7, and absent in hook B; no caption keyword while H1, P1, "Shaadi wala?" or "Cartoon?" is on screen.
 7. `CAP_HOOK.check() == []` and `CAP_BODY.check() == []` on the real words; hook captions fully transparent at f84.
 8. Reading holds per §6.5 (stamp settled ≥ 1.97 s, killer ≥ 1.63 s, P1 ≥ 1.97 s, end card hold ≥ 1.5 s).
 9. Faces: max display scale ≤ 1.0 (expected 0.987); bust bottom ≥ 1926 every frame; eye midpoint within 6 px of
@@ -869,7 +917,7 @@ parody as a still (f160) and a `--range 4.4 6.4` clip.
    values; no face pixel under UI.
 10. Transitions: exactly 4 features (M6, M3, M2, M1), spacing ≥ 168 frames; cut rule (frame c−1 all A, c all B) at
    all 12 cuts; M1 HoughCircles f839 vs f840 centre ≤ 2 px, radius ≤ 2 %; M3 card velocity f335 vs f336 within 10 %;
-   M2 FLAME highlight present on f587 and f588.
+   M2 FLAME highlight present on f587 and f588; M6 carrier ends at (540, 875) ± 3 px on f158 (the big window's centre).
 11. Loop: `E.seam_report` ok; mean |Δ| last→first frame ≤ 1.5 × a normal frame step; the only text difference is
    the chip word (Nani → Mummy); audio: no gap at the seam (−40 dBFS RMS or louder across f1091-f0).
 12. Finish: every post call passes `rays=0.0` (code check) and f1030 shows no streaks around the monogram (side by side
@@ -877,53 +925,135 @@ parody as a still (f160) and a `--range 4.4 6.4` clip.
 13. Audio: −14 ± 0.5 LUFS, TP ≤ −2.0 dBTP wav and ≤ −1.5 after AAC, LRA 5-9 LU; speech ≥ 8 LU over music; SFX in VO
    windows ≥ 6 LU below VO; music bus ≤ −60 dBFS in 12.62-13.98 and 27.31-27.99 while room tone measures −45 ± 5
    LUFS short-term; music RMS drops ≥ 30 dB from 12.10 to 12.62 (tape stop); max momentary (music + SFX) in
-   28.0-28.4; beatgrid 85.71 ± 0.1, |phase| ≤ 5 ms; every hero cue (4.9, 7.7, 8.4, 11.2, 12.6, 19.6, 28.0) within ±1
-   frame of its picture event (`qa_measure.py cues`).
+   28.0-28.4; beatgrid 85.71 ± 0.1, |phase| ≤ 5 ms; every hero cue (4.9, 7.7, 8.4, 11.2, 12.6, 19.6, 28.0) and the r2
+   cues (buzz haptics 16.8 / 18.2, pings 18.9 / 19.267 / 19.433, Nani notif_ping 35.0) within ±1 frame of their picture
+   event (`qa_measure.py cues`); the 35.0 notif_ping, 35.7 'tin' and the loop swell ≥ 6 LU under L11.
 14. Palette / grade: red-orange ≥ 60 % of saturated pixels; YMIN 16-22; IVORY type never pure white; no saturated
    hue 90-170° (green / WhatsApp) above 0.2 % of any frame.
 15. Brand: no hearts, shehnai, ERROR dialog, real logos, Mummy's face or hands, centred ring with rays; replies
    religion-neutral; POV label visible in the hook and every UI scene; underline used exactly twice (P1, E1).
 16. Delivery: 2-pass ~22 Mbps + faststart < 100 MB, AAC 320k; CRF 14 master; stems 48 kHz 24-bit; cover = f30
    without captions; preview < 30 MB; reel workspace ≤ 2 GB (`du -sh`).
+17. **Parody window (r2, fix 2):** from f147 to f371 the window rect is (110, 590)-(970, 1160) ± 2 px (card float
+   excluded) and the output field, arrow and "Mummy ne suna" are fully transparent from f141; the input field (130,
+   462)-(950, 562) stays visible above it; "Happy Wedding" letters (alpha ≥ 0.3) ≥ 20 px inside each window side and
+   its glow inside the window; MOTION ink (stroke and shadow included) inside the window on every frame f210-f230, top
+   ≥ 750 (below the pill) and bottom < 1050; the
+   stamp's rotated ink inside (187, 726)-(893, 1024) ± 4 px; the M6 word is fully transparent by f153, before the
+   title wipe starts.
+18. **Time skip (r2, fix 1):** 360 px tile of f516 shows the phone as a phone (bump + lenses + glossy band; side by side
+   with `r2_skip_17p2_360.png`); S7 frames signalstats YAVG ≥ 34 (proof 35.0-37.0) and the wood in the light band ≥ 20
+   code values brighter than outside it (proof method 64.9-69.7 vs 36.8-37.7); phone centre (522, 896) ± 2 px on f504
+   and (559, 909) ± 2 px on f587 (12 px per buzz, 5 px per ping); edge glow > 0 from f505, peak on f587-f588; the count
+   reads 12 on f566, 47 on f574-f577, 99 on f582, 99+ from f587 (OCR or crop check); no saturated hue 90-170° in the
+   pill; no app icon, badge circle or ticks.
+19. **REEL_THUMB (r2, fix 3):** the thumb in f660 vs the cover JPG resized to 300x533 (×0.92 exposure): SSIM ≥ 0.85
+   inside the unclipped part (proof `r2_chat_22p0` vs `A_cover_f030`: 0.93); the play triangle sits bottom-left (its
+   centroid in the thumb's lower-left quarter); no centred ring, no count, no duration; at 360 px the confused face and
+   *karte kya* are legible (tile check).
+20. **Nani pill (r2, fix 4a):** pill + "Nani" chip present from f1052 (≥ 90 % opacity by f1055), the pill rect equals
+   (147, 280)-(467, 420) ± 1 px on f1070 and f1071 (pixel-continuous across c12) and ≥ 20 px clear of the monogram box
+   (420, 440)-(660, 680); POV label present f1056-f1091; confused pose on screen 0.7 + 2.8 = 3.5 s in total.
+21. **Sun swell (r2, note 6):** world mean outside the bust rises ≥ 10 % above black from f923 to f940 (proof: +13 %);
+   the disc never clips (max 8-bit inside the glow < 250) and linear peak ≤ 3× on f930-f965.
 
 ## 9. Agent work orders
 
 | # | agent | order | inputs → outputs | gate |
 |---|---|---|---|---|
-| 1 | hinglish-scriptwriter | finalise L1-L10 + L1B (§6.7) in Roman + Devanagari with token table; run the 5-word pronunciation test; after the takes, measure and assemble | §6.7 → `vo/beta_tum_karte_kya_ho_script.md`, `.json`, `beta_tum_karte_kya_ho_vo.py`, VO A/B wavs, `words.json` | slots ± 0.15 s |
-| 2 | viral-strategist | script gate on the final lines (hook ≤ 7 words by 2.7 s, re-hooks, send line) | script → `viral/` note | pass/fix |
-| 3 | lead (Higgsfield TTS) | generate 11 takes with Vlad per `vo_config.json`, ≤ 30 credits | Devanagari lines → `workspace/brand_reels/tts/hf_dl/beta_tum_karte_kya_ho/` | jobs_wait, no blind resubmits |
+| 1 | hinglish-scriptwriter | script v2 is done (L1-L11 + L1B, token table, `SCRIPT.md` + `script.json` in this folder); run the SCRIPT §6 pronunciation test (one take); after the 12 takes, measure, replace the estimated timing table and assemble | `SCRIPT.md` / `script.json` → `beta_tum_karte_kya_ho_vo.py`, VO A/B wavs, `words.json` | slots ± 0.15 s; L11 ≤ 36.36 |
+| 2 | viral-strategist | gate r2 check of this brief + script v2 (fixes 1-5 applied as in the CHANGELOG), then the red-team of the first preview | brief + script → `GATE.md` r2 | pass/fix |
+| 3 | lead (Higgsfield TTS) | OK or refuse L1B "Mummy ke liye, cartoon." (replaces a SLATE-locked line) and the meta REEL_THUMB; then generate the pronunciation test + 12 takes with Vlad per `vo_config.json`, ≤ 30 credits | Devanagari lines → `workspace/brand_reels/tts/hf_dl/beta_tum_karte_kya_ho/` | jobs_wait, no blind resubmits |
 | 4 | face-compositor | build looks A/D for the 4 poses, `beta_tum_karte_kya_ho_faces.py` per §6.10, stills at each shot start / mid / end and ±0.4 s of each punch-in | cut-outs → faces module + stills | halo, eye offset, scale |
 | 5 | colorist | verify `gold_hour` with `rays=0.0` on the proof stills and the first sheet; skin on 4 poses; hue budget; frame-0 luma | stills → `GRADE` note in this folder | §8 items 2, 12, 14 |
-| 6 | motion-timeline-builder | build the main module + hook B + `_ui` + `_parody` per §6.2-6.11 and §7; gates: f160 still and 4.4-6.4 range first | brief → modules, sheets, stills | §8 items 1-12 |
-| 7 | caption-designer | turn `words.json` into the two caption objects' inputs (keywords, hides), run `check()`, export SRT | words.json → `captions/`, SRT, check report | `check() == []` |
-| 8 | sound-designer | `beta_tum_karte_kya_ho_sfx.py` per §6.12 (A and B cue sets), spectrogram + ebur128 report | cue table → SFX stems | names, ≤ 3 starts, timing |
-| 9 | music-supervisor | run 1: `MUSIC.md` + `beta_tum_karte_kya_ho_music.py` per §6.13; run 2: full and no-music mixes for versions A and B per §6.14 | music + stems → mix wavs | §8 item 13 |
+| 6 | motion-timeline-builder | build the main module + hook B + `_ui` + `_parody` per §6.2-6.11 and §7, lifting the r2 reference code from `brief_proof/layout_proof_r2.py` (window states, grounds, stamp, table, phone, creep, edge glow, count pill, reel thumb, Nani overlay, sun swell); gates: f160 still and 4.4-6.4 range first, then the r2 stills of §7 | brief → modules, sheets, stills | §8 items 1-12, 17-21 |
+| 7 | caption-designer | turn `words.json` into the two caption objects' inputs (keywords, hides, r2 clear windows 4.2-4.9 / 7.0-7.7), run `check()` + `report()`, export SRT (incl. L11) | words.json → `captions/`, SRT, check report | `check() == []`; both early exits reported |
+| 8 | sound-designer | `beta_tum_karte_kya_ho_sfx.py` per §6.12 (A and B cue sets; r2: notif_ping A6 at 35.0 replaces the 35.7 pop), spectrogram + ebur128 report | cue table → SFX stems | names, ≤ 3 starts, timing |
+| 9 | music-supervisor | run 1 is done (`MUSIC.md`; its bar-12 row still says "Nani pill 35.7": now 35.0, no arrangement change); run 2: full and no-music mixes for versions A and B per §6.14 with L11 on top of bar 12 | music + stems → mix wavs | §8 item 13 |
 | 10 | motion-qa-reviewer | two lenses (copy/layout/safe zones; motion/transitions/finish/audio sync) + skeptical verifier per finding | masters → `qa/` report | §8 all |
 | 11 | delivery-packager | encodes A and B (splice at f84), cover, stems, preview, verify | masters → `reel/jawad_reels/` | §8 items 1, 16 |
 | — | blender-3d-artist | **none** (no 3D in this reel) | — | — |
 
-Order: 1 → 2 → 3 → (4, 5, 6 on placeholder VO timings in parallel) → 7 → 8 → 9 → preview → 10 → fixes → 11.
+Order (r2): 2 (gate r2 on paper) and the lead's two OKs (row 3) → 3 test take → 1 → 3 final takes → 1 measure +
+assemble → (4, 5, 6 start now on the script's estimated timings, in parallel) → 7 → 8 → 9 → preview → 10 → fixes → 11.
 
 ## 10. Changes from SLATE (and why) · open questions
 
 1. **Loop gag:** Nani's bubble shows her chip and the typing dots, not the question text. The end card holds its CTA
    to 36.04 s, 5 words cannot be read in 0.7 s, and frame 0 completes the question (by f11), so the seam differs only
-   by the chip word and the loop is seamless.
+   by the chip word and the loop is seamless. **r2 (gate fix 4):** the Nani chip + typing pill pop at 35.0 s (beat
+   12.2) over the end-card world, not at 35.7 (SLATE), in the frame-0 pill rect, carried unchanged across the c12 cut;
+   their sound is notif_ping A6 (Mummy's message sound); a new VO line L11 "Ab Nani ki baari." (34.90-36.35) makes a
+   sentence loop that frame 0's bubble completes. The confused pose stays at 3.5 s; the end card keeps its 1.99 s
+   settled hold (two text blocks: end card + Nani widget).
 2. **Gag 3 at 8.4 s (bar 3) instead of 9.8 s:** the 5-word stamp needs ≥ 1.97 s settled before the M3 window opens at
    10.9 s; the card returns pre-filled and the stamp slams on the downbeat (the three gags accelerate: typed, typed
    fast, instant). The stamp's animated parody (SLAM, shake, ink settle) runs 8.4-9.8 s = 1.4 s (SLATE's parody cap);
    the settled stamp then stays on the card until the swipe so it can be read. The killer bubble now persists over the
    first second of the neutral shot (reading 2.4 s).
 3. **Card B arrives pre-filled** with "Brands ke liye cinematic reels" (reading 2.37 s).
-4. **Phone buzz:** buzz 1 at 16.8 s with the chip (SLATE), then pings accelerate 18.2-19.43 s into the M2.
+4. **Phone buzz:** buzz 1 at 16.8 s with the chip (SLATE), then pings accelerate 18.2-19.43 s into the M2. **r2 (gate
+   fix 1):** the time skip now informs as well as waits: a glossy face-down phone with a camera bump (2D sprite, no 3D,
+   no logo) that creeps 12 px per buzz and 5 px per ping, a FLAME edge glow from buzz 1, wood that reads in the light
+   band, and the chip "Kuch mahine baad" giving way at 18.0-18.2 (after L6) to a new count pill `Khandaan · 12` that
+   rolls 12 → 47 → 99+ on the pings (new copy U11: a fictional unread count, never spoken; SLATE §4's spoken-number lock
+   for C02 stays "none").
 5. **`rays=0.0`** on gold_hour for this reel (artefact and banned radial burst measured in the proof); request filed in
    `SHARED_REQUESTS.md`.
 6. **VO:** SLATE's locked lines kept verbatim; L2-L4, L6, L8, L10 are new (universal POV); L2 is SLATE's example line
-   shortened to fit 1.2 s.
+   shortened to fit 1.2 s ("Jawab ka translation...", script v2). r2: L11 is new (item 1) and L1B is re-worded (item 10).
 7. **Music:** lofi_desi re-arranged per reel (no harmonium/sitar, no end tape stop or fade); the tape stop moves into
    the killer line as SLATE's sting asks.
+8. **Parody window (r2, gate fix 2):** while each parody plays the output field collapses and the window grows to
+   (110, 590)-(970, 1160) = 860x570 px = 23.6 % of the frame (SLATE cap ≤ 40 %), centre (540, 875), so the wrong-genre
+   films read as films at phone size. Parody type is sized by measured ink, not by the gate's estimate: "Happy Wedding"
+   96 px (not ~100: the glow would touch the window edge) and MOTION 180 px (not ~190: the ±6° wobble would leave the
+   window); the stamp grows to 76 px. Still type3d + ui only, brand palette, ≤ 1.4 s each.
+9. **Forwarded reel (r2, gate fix 3):** SLATE's generic "forwarded" reel bubble now carries this reel's own cover as its
+   thumbnail (300x533 in a 356x660 bubble, play triangle bottom-left, no count, no duration); fallback REEL_THUMB_ALT
+   (suit silhouette against the gold_hour sun, letterboxed) if the lead rejects the meta idea.
+10. **Hook B VO (r2, gate fix 5):** SLATE's locked "Motion designer? Mummy ke liye: cartoon." cannot land by 2.45 s
+   (est. ≥ 2.49 s even with no pauses at 1.10x), so L1B = "Mummy ke liye, cartoon." (4 words, est. end 1.80 s). Picture
+   unchanged. **Needs the lead's OK**; if refused, script v1 "Motion designer? Cartoon." (7/8 in the gate's hook lab).
+11. **Payoff hold (r2, gate note 6):** the sun behind JD swells on the bar-11 downbeat (30.8 s, world +35 %, sun glow
+   ×1.3, no rays, no punch-in), so the picture is never static for more than 1.75 s after the lockup settles.
+12. **Captions (r2, gate note 7):** clear windows 4.2-4.9 and 7.0-7.7 so no caption keyword shares the screen with
+   "Shaadi wala?" or "Cartoon?".
 
 Open questions (defaults applied, none blocks): AI label ON; "Mummy" (not "Ammi"); relatives' chips Chachi / Mamu /
 Chachu OK?; parody fonts Cinzel / Bungee (OFL) OK?; Trial Reels eligibility unknown (hook B is produced anyway);
-house spelling = prior SRT.
+house spelling = prior SRT. r2 adds: **L1B wording** (replaces a SLATE-locked line; default = the gate's "Mummy ke liye,
+cartoon."; fallback v1); **meta REEL_THUMB** (default = this reel's own cover; fallback ALT); on the loop the voice says
+"Nani" while frame 0's chip says "Mummy" (accepted: the seam differs only by the chip word, §10.1).
+
+---------------------------------------------------------------------------------------------------------------
+
+## CHANGELOG
+
+- **r1 · 2026-10-08** · first production brief from SLATE §3.4 (layout proof `brief_proof/layout_proof.py`, `proof.json`).
+- **r2 · 2026-10-08/09** · viral gate r1 (`GATE.md` §8, verdict FIX) + script v2 (`SCRIPT.md`). Proof stills `r2_*` (+ `_360`
+  tiles), `proof_r2.json`, reference code `layout_proof_r2.py`.
+  - **Fix 1 (15.0-19.4 s, drop risk):** S7 rebuilt: dark wood table with a sweeping light band (wood reads: band 64.9-69.7
+    vs 36.8-37.7 outside), glossy face-down phone sprite with camera bump (reads as a phone at 360 px), FLAME edge glow
+    from buzz 1, 12 px creep per buzz + 5 px per ping (39 px, +2.35°), chip "Kuch mahine baad" → count pill `Khandaan ·
+    12 → 47 → 99+` (`T.Counter`, jw_mono 40, same rect) at 18.2 / 18.9 / 19.267 / 19.433; L6-end rule; new copy U11.
+    S7 signalstats YAVG 32.8 → 35.0-37.0 (no longer the darkest frame). §2, §6.1, §6.2, §6.4 S7, §6.9, §6.11, §8.18.
+  - **Fix 2 (4.2-10.9 s):** output field collapses and the parody window grows to (110, 590)-(970, 1160) = 23.6 % during
+    the parodies (S2, S4, S5); M6 path ends at (540, 875); wedding ground re-designed (dark plum + glitter, gold-on-gold
+    was illegible); "Cartoon?" moves into an output pill; Happy Wedding 96 px, MOTION 180 px (measured ink: at the
+    gate's ~100 px the halo reaches the window edge, at ~190 px the wobble leaves the window), wobble anchored at the
+    glyph's ink bottom (keeps y < 1050); stamp 76 px.
+    §6.2, §6.4, §6.5, §6.8, §6.9, §8.10, §8.17.
+  - **Fix 3 (21.7-28.0 s):** REEL_THUMB = this reel's cover (f30, no captions, linear, before post) at 300x533 in a
+    356x660 bubble, play triangle bottom-left; stack geometry re-measured; fallback REEL_THUMB_ALT (silhouette + sun +
+    letterbox). Thumb vs cover SSIM 0.93 in the proof. §5, §6.4 S8, §6.9, §8.19.
+  - **Fix 4 (35.0-36.4 s):** Nani chip + pill pop at 35.0 over the end card in the frame-0 rect (20 px clear of the
+    monogram), continuous across c12; notif_ping A6 at 35.0 replaces the 35.7 pop; VO L11 "Ab Nani ki baari." (34.90-
+    36.35) for a sentence loop; captions hidden. §6.2, §6.4 S11/S12, §6.6, §6.7, §6.9, §6.12-6.14, §8.4, §8.20, §10.1.
+  - **Fix 5 (hook B):** L1B = "Mummy ke liye, cartoon." (lead's OK pending; fallback v1). §2, §6.3, §6.7, §10.10.
+  - **Notes 6-8:** sun swell at 30.8 s (§6.4 S10, §8.21); caption clear windows 4.2-4.9 / 7.0-7.7, tested on the
+    script's estimated timings (§6.11); f0 lights at its f11 levels with dot 1 at its peak (§6.3).
+  - **Script v2 lines merged** into §6.7: L2 "Jawab ka translation...", L3 comma beat, L4 DEV comma, L8 "Sab ki
+    nazar... Mummy pe.", L11 new; A 57 / B 54 words; 12 takes; the SCRIPT §6 pronunciation paragraph.
+  - **Housekeeping:** §7 r2 builders and stills, §9 work orders, §10 items 8-12 + open questions, SFX count (55 cues,
+    30 ≥ −8 dB, all names re-verified), the r2 transition plan re-smoke-tested, mixed luma methods labelled.

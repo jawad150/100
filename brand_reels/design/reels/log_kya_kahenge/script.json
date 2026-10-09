@@ -22,7 +22,7 @@
   "post": "vo_chain.py process --speed <per line, see speed_plan> (pitch-preserving rubberband; 1.00 = no stretch), -16 LUFS; one local pass per speed on the same take, each line cut from the pass at its speed"
  },
  "narrator": "hum (we) + tum imperatives (bhejo); never main / mera / meri; JD not spoken",
- "status": "script v2: viral gate r1 (GATE.md, verdict FIX) fixes 3, 4, 5 applied; windows match BRIEF r2 §5/§9 (V4 planned to f667, 2 frames inside f669); timings ESTIMATED (no take exists yet)",
+ "status": "script v2: viral gate r1 (GATE.md, verdict FIX) fixes 3, 4, 5 applied; windows match BRIEF r2 §5/§9 (V4 planned to f667, 2 frames inside f669); timings ESTIMATED (no take exists yet) | v3 (2026-10-09): V2 = the 14-word BRIEF fallback (overrun rule); measured timings in VO_TIMING.md",
  "gate_fixes_applied": [
   {
    "fix": 3,
@@ -210,7 +210,31 @@
    "fallback": null,
    "overrun_rule": "processed > 2.60 s (ends > 2.700): cut the comma pause to 0.10 s; hard ceiling: ends <= 2.850 s (<= 2.75 s long; the lockup is gone by 2.9 s); still over -> one T1 retake (reserve); never above 1.10x",
    "alternates": [],
-   "pause_after_s": 6.32
+   "pause_after_s": 6.32,
+   "measured": {
+    "take": "cuts/lkk_V1_cH1t2_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V1",
+      "on": 0.1,
+      "off": 2.52
+     }
+    ],
+    "start": 0.1,
+    "end": 2.52,
+    "keywords": [
+     [
+      "darr,",
+      0.933
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "2.670 s > 2.60 s: pause after \"darr,\" 0.350 -> 0.100 s (overrun rule)"
+    ],
+    "rule_fail": []
+   }
   },
   {
    "id": "V1B",
@@ -286,7 +310,29 @@
    "fallback": null,
    "overrun_rule": "processed > 2.60 s: cut the \"...\" pause to 0.30 s; still over -> one T1 retake",
    "alternates": [],
-   "pause_after_s": 6.71
+   "pause_after_s": 6.71,
+   "measured": {
+    "take": "cuts/lkk_V1B_cG1bt1_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V1B",
+      "on": 0.1,
+      "off": 2.54
+     }
+    ],
+    "start": 0.1,
+    "end": 2.54,
+    "keywords": [
+     [
+      "kaun?",
+      2.125
+     ]
+    ],
+    "cer_best": 0.1,
+    "rule_notes": [],
+    "rule_fail": []
+   }
   },
   {
    "id": "V2",
@@ -299,13 +345,12 @@
    "hard_end": 14.833,
    "f_start": 264,
    "f_end_max": 445,
-   "roman": "Hum apni zindagi unke hisaab se edit karte hain... jo poori video dekhte bhi nahi.",
-   "roman_marked": "Hum apni *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi.",
-   "dev": "हम अपनी ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
-   "tts": "हम अपनी ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+   "roman": "Hum zindagi unke hisaab se edit karte hain... jo poori video dekhte bhi nahi.",
+   "roman_marked": "Hum *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi.",
+   "dev": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+   "tts": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
    "tokens": [
     "Hum",
-    "apni",
     "zindagi",
     "unke",
     "hisaab",
@@ -322,7 +367,6 @@
    ],
    "dev_tokens": [
     "हम",
-    "अपनी",
     "ज़िंदगी",
     "उनके",
     "हिसाब",
@@ -339,7 +383,6 @@
    ],
    "rom_tokens_marked": [
     "Hum",
-    "apni",
     "*zindagi",
     "unke",
     "hisaab",
@@ -362,8 +405,8 @@
     "nahi."
    ],
    "lockup": null,
-   "words": 15,
-   "syllables": 27,
+   "words": 14,
+   "syllables": 25,
    "est": {
     "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
     "speed": 1.1,
@@ -387,8 +430,8 @@
    "placement": "one segment",
    "delivery": "wry on 'edit', a small smile on 'dekhte bhi nahi'",
    "emotion": "wry recognition",
-   "status": "approved (BRIEF §9 V2, 15 words; gate r1: keep 15)",
-   "approved_original": null,
+   "status": "v3 (measured): BRIEF r2 section 9 overrun rule applied - the 15-word take ran 6.51 s at 1.10x (about 6.34 s with the 0.30 s pause, window 6.03 s), so the line is the 14-word BRIEF fallback",
+   "approved_original": "Hum apni *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi. (15 words; recorded as lkk_V2_t1, overran its window)",
    "fallback": "Hum *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi. (14 words; BRIEF fallback)",
    "overrun_rule": "processed > 6.03 s with the \"...\" pause cut to 0.30 s: one T2 retake with the 14-word BRIEF fallback",
    "alternates": [
@@ -400,7 +443,43 @@
      "slack_s": 0.79
     }
    ],
-   "pause_after_s": 1.93
+   "pause_after_s": 1.93,
+   "measured": {
+    "take": "lkk_V2_t2.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V2",
+      "on": 8.8,
+      "off": 14.01
+     }
+    ],
+    "start": 8.8,
+    "end": 14.01,
+    "keywords": [
+     [
+      "zindagi",
+      9.015
+     ],
+     [
+      "edit",
+      10.742
+     ],
+     [
+      "video",
+      12.633
+     ],
+     [
+      "nahi.",
+      13.615
+     ]
+    ],
+    "cer_best": 0.065,
+    "rule_notes": [
+     "pause after \"hain...\" 0.500 -> 0.300 s"
+    ],
+    "rule_fail": []
+   }
   },
   {
    "id": "V3",
@@ -500,7 +579,38 @@
      "slack_s": 0.13
     }
    ],
-   "pause_after_s": 0.33
+   "pause_after_s": 0.33,
+   "measured": {
+    "take": "lkk_V3_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V3a",
+      "on": 16.367,
+      "off": 17.707
+     },
+     {
+      "label": "V3b",
+      "on": 18.2,
+      "off": 18.94
+     }
+    ],
+    "start": 16.367,
+    "end": 18.94,
+    "keywords": [
+     [
+      "flat",
+      17.064
+     ],
+     [
+      "Cardboard.",
+      18.2
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [],
+    "rule_fail": []
+   }
   },
   {
    "id": "V4",
@@ -604,7 +714,33 @@
      "slack_s": 0.01
     }
    ],
-   "pause_after_s": 0.27
+   "pause_after_s": 0.27,
+   "measured": {
+    "take": "cuts/lkk_V4_cG2t2_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V4",
+      "on": 19.333,
+      "off": 22.213
+     }
+    ],
+    "start": 19.333,
+    "end": 22.213,
+    "keywords": [
+     [
+      "phone",
+      21.678
+     ]
+    ],
+    "cer_best": 0.125,
+    "rule_notes": [
+     "pause after \"hain,\" 0.280 -> 0.200 s",
+     "1.06x ends 22.333 > 22.233: next pass",
+     "pause after \"hain,\" 0.280 -> 0.200 s"
+    ],
+    "rule_fail": []
+   }
   },
   {
    "id": "V5",
@@ -720,7 +856,44 @@
      "slack_s": 0.01
     }
    ],
-   "pause_after_s": 0.61
+   "pause_after_s": 0.61,
+   "measured": {
+    "take": "cuts/lkk_V5_cG2t2_t1.wav",
+    "take_part2": "lkk_V5_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V5a",
+      "on": 22.4,
+      "off": 23.51
+     },
+     {
+      "label": "V5b",
+      "on": 23.667,
+      "off": 25.327
+     }
+    ],
+    "start": 22.4,
+    "end": 25.327,
+    "keywords": [
+     [
+      "busy",
+      22.687
+     ],
+     [
+      "kahenge",
+      24.577
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "1.08x: part 1 1.120 s (ends 23.520, max 23.467), part 2 1.690 s (max 1.733): next pass",
+     "1.10x: part 1 1.110 s (ends 23.510, max 23.467), part 2 1.660 s (max 1.780): next pass"
+    ],
+    "rule_fail": [
+     "part 1 1.110 s ends 23.510 > 23.467 at 1.10x (no rule left; the pause still holds 23.600: yes)"
+    ]
+   }
   },
   {
    "id": "V6",
@@ -835,7 +1008,35 @@
      "slack_s": 0.19
     }
    ],
-   "pause_after_s": 2.83
+   "pause_after_s": 2.83,
+   "measured": {
+    "take": "cuts/lkk_V6_cG3t1_t1.wav",
+    "speed": 1.05,
+    "segments": [
+     {
+      "label": "V6",
+      "on": 26.0,
+      "off": 28.95
+     }
+    ],
+    "start": 26.0,
+    "end": 28.95,
+    "keywords": [
+     [
+      "nazar",
+      26.846
+     ],
+     [
+      "'log'",
+      28.276
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "pause after \"mein,\" 0.370 -> 0.200 s"
+    ],
+    "rule_fail": []
+   }
   },
   {
    "id": "V7",
@@ -958,7 +1159,38 @@
      "slack_s": 0.24
     }
    ],
-   "pause_after_s": 0.37
+   "pause_after_s": 0.37,
+   "measured": {
+    "take": "lkk_V7_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V7",
+      "on": 31.433,
+      "off": 35.073
+     }
+    ],
+    "start": 31.433,
+    "end": 35.073,
+    "keywords": [
+     [
+      "bhejo",
+      32.158
+     ]
+    ],
+    "cer_best": 0.053,
+    "rule_notes": [
+     "1.00x ends 35.580 > 35.100: next pass",
+     "1.03x ends 35.470 > 35.100: next pass",
+     "1.06x ends 35.370 > 35.100: next pass",
+     "1.10x ends 35.240 > 35.100: next pass",
+     "onset moved 31.600 -> 31.433 s (f943, -0.167 s) so the last word ends by 35.100: decision for the lead",
+     "1.10x is outside the gate band 1.00-1.06x: tell the lead"
+    ],
+    "rule_fail": [
+     "ends 35.240 > 35.100 at 1.10x even after the retakes: no rule left (V7 never shortens, never above 1.10x)"
+    ]
+   }
   }
  ],
  "tokens": [
@@ -1133,18 +1365,6 @@
   {
    "line": "V2",
    "i": 1,
-   "roman": "apni",
-   "dev": "अपनी",
-   "tts": "अपनी",
-   "keyword": false,
-   "hide": false,
-   "hide_suggested": false,
-   "est_start": 8.978,
-   "est_end": 9.334
-  },
-  {
-   "line": "V2",
-   "i": 2,
    "roman": "zindagi",
    "dev": "ज़िंदगी",
    "tts": "ज़िंदगी",
@@ -1156,7 +1376,7 @@
   },
   {
    "line": "V2",
-   "i": 3,
+   "i": 2,
    "roman": "unke",
    "dev": "उनके",
    "tts": "उनके",
@@ -1168,7 +1388,7 @@
   },
   {
    "line": "V2",
-   "i": 4,
+   "i": 3,
    "roman": "hisaab",
    "dev": "हिसाब",
    "tts": "हिसाब",
@@ -1180,7 +1400,7 @@
   },
   {
    "line": "V2",
-   "i": 5,
+   "i": 4,
    "roman": "se",
    "dev": "से",
    "tts": "से",
@@ -1192,7 +1412,7 @@
   },
   {
    "line": "V2",
-   "i": 6,
+   "i": 5,
    "roman": "edit",
    "dev": "एडिट",
    "tts": "एडिट",
@@ -1204,7 +1424,7 @@
   },
   {
    "line": "V2",
-   "i": 7,
+   "i": 6,
    "roman": "karte",
    "dev": "करते",
    "tts": "करते",
@@ -1216,7 +1436,7 @@
   },
   {
    "line": "V2",
-   "i": 8,
+   "i": 7,
    "roman": "hain...",
    "dev": "हैं...",
    "tts": "हैं...",
@@ -1228,7 +1448,7 @@
   },
   {
    "line": "V2",
-   "i": 9,
+   "i": 8,
    "roman": "jo",
    "dev": "जो",
    "tts": "जो",
@@ -1240,7 +1460,7 @@
   },
   {
    "line": "V2",
-   "i": 10,
+   "i": 9,
    "roman": "poori",
    "dev": "पूरी",
    "tts": "पूरी",
@@ -1252,7 +1472,7 @@
   },
   {
    "line": "V2",
-   "i": 11,
+   "i": 10,
    "roman": "video",
    "dev": "वीडियो",
    "tts": "वीडियो",
@@ -1264,7 +1484,7 @@
   },
   {
    "line": "V2",
-   "i": 12,
+   "i": 11,
    "roman": "dekhte",
    "dev": "देखते",
    "tts": "देखते",
@@ -1276,7 +1496,7 @@
   },
   {
    "line": "V2",
-   "i": 13,
+   "i": 12,
    "roman": "bhi",
    "dev": "भी",
    "tts": "भी",
@@ -1288,7 +1508,7 @@
   },
   {
    "line": "V2",
-   "i": 14,
+   "i": 13,
    "roman": "nahi.",
    "dev": "नहीं।",
    "tts": "नहीं।",
@@ -1781,8 +2001,8 @@
  ],
  "totals": {
   "hook_A": {
-   "words": 62,
-   "syllables": 91,
+   "words": 61,
+   "syllables": 89,
    "speech_s": 20.45,
    "line_spans_s": 22.54,
    "window_s": 23.9,
@@ -1794,8 +2014,8 @@
    ]
   },
   "hook_B": {
-   "words": 61,
-   "syllables": 88,
+   "words": 60,
+   "syllables": 86,
    "speech_s": 19.79,
    "line_spans_s": 22.15,
    "window_s": 23.9,
@@ -1988,5 +2208,6 @@
     "फोन (no nukta)"
    ]
   }
- ]
+ ],
+ "measured_note": "v3 2026-10-09: measured on the Vlad takes; stems + word timings in workspace/jawad_reels/log_kya_kahenge/vo/ (vo_stem.wav = hook A, words.json); full table VO_TIMING.md"
 }

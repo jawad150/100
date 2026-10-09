@@ -843,3 +843,6 @@ not; (3) the five covers' keyword bands are not at one common height (gate §6, 
   - Script v1 cuts approved by the gate folded in (V3 5 words, V6 9 words, V2 "..." 0.30 s; 62 / 61 words); hook B gets its own
     135 mm head-snap and hides all V1B captions; QA rule "a visible change ≤ 2.5 s apart"; cover checked at 210 px too.
   - `packet.yaml` → version 2.
+- **r3** 2026-10-09 (handoff, measured VO): see `HANDOFF.md` §2, which supersedes this brief where they differ: V2 = the 14-word
+  fallback "Hum zindagi ..." (and IG line 2); V7 onset 31.433 s (f943), picture unchanged; S3-01 camera = `LF.cam_s3`; S5-01 pinned at
+  the beard; captions `keep_pairs` + `clear=[(25.6, 25.9)]`; flap landing frames; hook-B render folder `<RW>/out_hookb`; QA §18 → HANDOFF §13.

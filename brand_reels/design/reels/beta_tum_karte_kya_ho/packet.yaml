@@ -1,8 +1,9 @@
 # Production Packet (cinematic-director format) for reel 4 / C02 "Beta, tum karte kya ho?"
 # Twin of BRIEF.md in this folder; BRIEF.md wins on any wording difference. No image or video is generated in this
 # project: every "directed_prompt" below is art direction for the toolkit builders (2.5D cut-outs, ui, type3d).
+# r2 (2026-10-09): viral gate r1 fixes 1-5 + notes 6-8 (GATE.md §8) and script v2 (SCRIPT.md); see BRIEF.md CHANGELOG.
 project: "@jawad_mp4 five-reel set · reel 4 · C02 Beta, tum karte kya ho? (module beta_tum_karte_kya_ho)"
-version: 1
+version: 2
 deliverable:
   type: reel
   platform: [reels]
@@ -59,22 +60,25 @@ locations:
 props:
   - tag: MUMMY_BUBBLE
     block: "Incoming glass chat bubble (ui.glass_card, look gold_hour, r 44) with an amber sender chip above it at (160, 252); as a typing pill (147,280)-(467,420) with three amber dots, as the hook bubble (147,280)-(933,740), as the killer bubble (150,640)-(930,880) then (150,280)-(930,520), as the payoff bubble (147,280)-(933,790)."
-    state_by_shot: {S1-01: "Mummy typing pill -> hook question", S3-02: "killer reply", S4-01: "killer reply persists, exits 15.0-15.3 s", S7-01: "payoff answer", S7-02: "payoff answer persists, exits 31.83-32.2 s", S8-02: "Nani typing pill"}
+    state_by_shot: {S1-01: "Mummy typing pill -> hook question", S3-02: "killer reply", S4-01: "killer reply persists, exits 15.0-15.3 s", S7-01: "payoff answer", S7-02: "payoff answer persists, exits 31.83-32.2 s", S8-01: "r2: 'Nani' chip + typing pill pop at 35.0 s over the end card (frame-0 pill rect, 20 px clear of the monogram), notif_ping A6", S8-02: "the same Nani typing pill, unchanged across the 35.7 s cut"}
   - tag: TRANSLATE_CARD
-    block: "Glass app card 900x880 r 48 at (90,296)-(990,1176): globe icon + 'Mummy translate', 'Aap ne kaha' input field, arrow, 'Mummy ne suna' output field, 820x300 parody window."
-    state_by_shot: {S2-01: "Video editor -> Shaadi wala?", S2-02: "wedding parody; Motion designer -> Cartoon?", S3-01: "Content creator pre-filled + red stamp", S3-02: "card B: Brands ke liye cinematic reels, loading, output area fades, folds away"}
+    block: "Glass app card 900x880 r 48 at (90,296)-(990,1176): globe icon + 'Mummy translate', 'Aap ne kaha' input field (130,462)-(950,562), arrow, 'Mummy ne suna' output field, parody window. Two window states (r2): small (130,836)-(950,1136) = 820x300 in S2-01 only (teaches the app); big (110,590)-(970,1160) = 860x570 = 23.6 % of the frame from the M6 cut (f147) to the window fade (f372-f377): the arrow, label and output field fade out f135-f141 and never return; the input field stays readable 28 px above the window."
+    state_by_shot: {S2-01: "Video editor -> Shaadi wala? (small window); from f135 the field collapses and the window grows", S2-02: "big window: wedding parody; Motion designer -> 'Cartoon?' output pill + MOTION", S3-01: "big window: Content creator pre-filled + red stamp", S3-02: "card B (big window, idle): Brands ke liye cinematic reels, loading dots, window fades, folds away"}
   - tag: PARODY
-    block: "Three wrong-genre mini-scenes inside the card window only (<= 1.4 s each, type3d + ui, brand palette): gold-chrome 'Happy Wedding' (Cinzel) with a sparkle wipe; rubber-hose 'MOTION' (Bungee) on ember halftone; a red rubber stamp 'PHONE PE LAGE / REHTE HO.'"
+    block: "Three wrong-genre mini-scenes inside the big card window only (<= 1.4 s each, type3d + ui, brand palette): gold-chrome 'Happy Wedding' (Cinzel, 96 px, centre (540, 875)) wiping in over a dark plum ground with amber glitter; rubber-hose 'MOTION' (Bungee, 180 px, centre (540, 952), wobble anchored at each glyph's ink bottom) on ember halftone under a 'Cartoon?' output pill (282,607)-(798,745); a red rubber stamp 'PHONE PE LAGE / REHTE HO.' (jw_caps_bold 76 px, -7 deg) over a darkened window."
     state_by_shot: {S2-02: "wedding then cartoon", S3-01: "stamp"}
   - tag: PHONE_FACE_DOWN
-    block: "A dark glass slab 300x560 r 46 lying face-down on the table (ui Panel.plane rot (55, 0, 12)), two camera-bump discs, flame light leaking from under it on each buzz."
-    state_by_shot: {S5-01: "buzz 16.8, 18.2; pings 18.9-19.43; glow peaks at 19.6"}
+    block: "r2: a 2D sprite (no 3D, no logo, no brand shape), 300x620 r 52: glossy back glass #2C1B15 -> #100705 with a broad specular band and a thin hot line at 62 deg, a 6 px bevel lit top-left; a camera-bump island 146x156 r 40 top-left with three lenses (NIGHT_0 discs, ASH rings, ivory catch-lights) and an amber flash dot. Drawn at scale (1.0, 0.92), rot 12 deg, centre (522, 896) on f504; reads as a phone at 360 px. A FLAME edge glow (K.glow of its alpha, under it) switches on with buzz 1 and climbs to full at the M2 cut."
+    state_by_shot: {S5-01: "buzz 16.8 and 18.2 (two haptic pulses each: shake + 6 px creep 20 deg below +x), pings 18.9 / 19.267 / 19.433 (2 px jolt + 5 px creep each): 39 px and +2.35 deg in all, centre (559, 909) on f587; edge glow 0.18 from 16.8, 1.0 from 19.45"}
+  - tag: COUNT_PILL
+    block: "r2: the S7 chip turned unread counter: glass pill (310,302)-(770,378) r 38 (the same rect as the 'Kuch mahine baad' chip); 'Khandaan · ' jw_mono 40 IVORY + T.Counter jw_mono 40 AMBER (no prefix, no decimals) + a '+' that fades on: Khandaan · 12 -> 47 -> 99+. A fictional unread count, never spoken; no green, no badge circle, no app icon, no ticks."
+    state_by_shot: {S5-01: "chip 'Kuch mahine baad' 16.8-18.0 (exit after L6 ends, by f545); pill rises in at 18.2; 12 -> 47 at 18.9-19.1; 47 -> 99 at 19.267-19.4; '+' 19.433-19.567"}
   - tag: FAMILY_CHAT
     block: "Group chat panel 'Khandaan' on the card rect: avatar disc 'K', bottom-anchored message stack (forwarded reel bubble from Chachi, 'Kamaal!' from Mamu, 'Wah!' from Chachu, 'Mummy is typing' pill)."
     state_by_shot: {S6-01: "flood, forwarded reel, replies, typing / stops / resumes; push into dot 3"}
   - tag: REEL_THUMB
-    block: "Textless 9:16 thumbnail 214x380 r 20 inside the forwarded bubble: letterboxed gold_hour sunset with embers, a 40 px play triangle at its bottom-left, never a centred ring."
-    state_by_shot: {S6-01: "lands 21.7 s"}
+    block: "r2: this reel's own cover as the forwarded reel: the frame-30 canvas (world, suit_confused, Mummy chip, bubble with BETA, TUM / karte kya / HO?, POV label; no captions; linear, before post) built once, downscaled (INTER_AREA) to 300x533 r 20, x0.92 exposure, inside a 356x660 r 36 bubble ('Chachi' chip, 'Forwarded' row); a 36x40 px ivory play triangle at its bottom-left, never a centred ring; no view count, no duration. Fallback REEL_THUMB_ALT if the lead rejects the meta idea: gold_hour room with the sun disc, suit_neutral as a NIGHT_0 silhouette with a FLAME edge, 150 px letterbox bars."
+    state_by_shot: {S6-01: "lands 21.7 s at (130,490)-(486,1150); pushed up by each reply; the face stays visible to the M1 push"}
   - tag: SUN_DISC
     block: "Emissive gold disc r 110 (AMBER x1.3 core, FLAME glow sigmas 12/36/90, strength 0.9) at (540, 1260): the payoff light; hidden behind JD's head from 28.7 s; sinks (540,1420)->(540,1520) under the end card."
     state_by_shot: {S7-01: "M1 target, pulls back r 180 -> 110", S7-02: "behind the head", S8-01: "setting"}
@@ -133,8 +137,8 @@ scenes:
         start_from: S2-01
         size: "insert"
         lens: "50 mm"
-        move: "float; M6 carry of the output word into the window"
-        action: "the word flies into the window and becomes a gaudy gold 'Happy Wedding' title; the card retypes 'Motion designer', answers 'Cartoon?', and MOTION wobbles like rubber"
+        move: "float; the output field collapses and the window grows to 860x570 (f135-f147); M6 carry of the output word to the window centre (540, 875)"
+        action: "the word flies into the big window and becomes a gaudy gold 'Happy Wedding' title; the card retypes 'Motion designer', answers 'Cartoon?' in a pill, and a big MOTION wobbles like rubber"
         cast: []
         props: [TRANSLATE_CARD, PARODY]
         light: "sparkles light the window only"
@@ -144,7 +148,7 @@ scenes:
         frames: "f147-f230"
         sound: "whoosh_by + shimmer 4.9, sparkle 5.3, boings 7.0 / 7.367, VO L3 5.10-6.95"
         transition_out: cut
-        directed_prompt: "Insert, 50mm. The flame word swoops into the card's window and turns into a cheap gold-chrome wedding title, then the card answers 'Cartoon?' and the word MOTION wobbles like a rubber hose. Same golden-hour room behind. Sparkles light only the window. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Handheld float. Sparkle dust. One sparkle lands outside the window frame. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: absurd."
+        directed_prompt: "Insert, 50mm. The card's answer field folds away and its window opens wide; the flame word swoops into it and turns into a cheap gold-chrome wedding title, then the card answers 'Cartoon?' and a big MOTION wobbles like a rubber hose. Same golden-hour room behind. Sparkles light only the window. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Handheld float. Sparkle dust. One sparkle lands outside the window frame. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: absurd."
   - id: S3
     location: HOME_GOLDEN
     time_of_day: "golden hour"
@@ -158,7 +162,7 @@ scenes:
         size: "MCU bust (7.7-8.4 s), then insert (8.4-11.2 s)"
         lens: "85 mm then 50 mm"
         move: "swap push 1.00 -> 1.03 out_cubic on JD; then a SLAM shake and a 2 % push at 9.8 on the card"
-        action: "JD stares wide-eyed, mouth shut; cut back: 'Content creator' already typed, a red stamp slams across the answer: PHONE PE LAGE / REHTE HO."
+        action: "JD stares wide-eyed, mouth shut; cut back: 'Content creator' already typed, a red stamp (76 px) slams across the big window: PHONE PE LAGE / REHTE HO."
         cast: [JD]
         props: [TRANSLATE_CARD, PARODY]
         light: "as S1 on JD; window darkened under the stamp"
@@ -218,23 +222,23 @@ scenes:
     light_plot: "a gold window band crawls across the wood; flame leak from under the phone on each buzz"
     shots:
       - id: S5-01
-        purpose: atmosphere
+        purpose: "atmosphere, then inform (r2)"
         anchor: true
         start_from: null
         size: "high-angle medium on a tabletop"
         lens: "50 mm"
-        move: "locked; the light band sweeps x -200 -> +200"
-        action: "a phone lies face-down; light crawls across the wood; it buzzes, then buzzes faster"
+        move: "locked; the light band sweeps x -200 -> +200; the phone creeps 12 px per buzz and 5 px per ping toward lower right"
+        action: "a glossy phone lies face-down, camera bump up; light crawls across the wood; it buzzes and creeps, flame light leaking from its edges; the 'Kuch mahine baad' chip gives way to 'Khandaan · 12', which rolls to 47, then 99+ as the pings speed up"
         cast: []
-        props: [PHONE_FACE_DOWN]
-        light: "window band GOLD 25 %, flame leak under the phone"
+        props: [PHONE_FACE_DOWN, COUNT_PILL]
+        light: "window band GOLD (wood grain visible inside it), FLAME edge glow from under the phone climbing to full at the cut"
         atmosphere: "dust in the light band"
         uncomposed_element: "a scratch in the wood grain"
         duration_s: 2.8
         frames: "f504-f587"
-        sound: "buzz 16.8 and 18.2 (haptic + ping), pings 18.9-19.43, VO L6 16.95-17.95"
+        sound: "buzz 16.8 and 18.2 (haptic pulses + ping 0.4 s later), pings 18.9 / 19.267 / 19.433, VO L6 16.95-17.95"
         transition_out: match
-        directed_prompt: "High-angle medium, 50mm. A phone lies face-down on a dark wooden table while a band of window light crawls across the grain; it buzzes, then buzzes faster, flame light leaking from under it. Months later, golden hour. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Locked camera. Dust in the light band. A scratch in the wood. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: waiting."
+        directed_prompt: "High-angle medium, 50mm. A glossy phone lies face-down on a dark wooden table, its camera bump catching the light, while a band of window light crawls across the grain; it buzzes and inches across the wood, flame light leaking from its edges, and a small glass pill above it counts up: Khandaan · 12, 47, 99+. Months later, golden hour. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Locked camera; the phone creeps a few pixels with each buzz. Dust in the light band. A scratch in the wood. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: waiting."
   - id: S6
     location: HOME_GOLDEN
     time_of_day: "golden hour"
@@ -248,7 +252,7 @@ scenes:
         size: "insert, panel fills the width"
         lens: "50 mm, then 100 mm macro push into dot 3 (27.5-28.0 s)"
         move: "float; message stack pushes up on every arrival; in_cubic push into the third typing dot"
-        action: "the family group floods, a reel is forwarded, relatives cheer, Mummy starts typing, stops, starts again"
+        action: "the family group floods, a reel is forwarded (its thumbnail is this reel's own cover: confused JD under BETA, TUM karte kya HO?), relatives cheer, Mummy starts typing, stops, starts again"
         cast: []
         props: [FAMILY_CHAT, REEL_THUMB]
         light: "panel rim; dots amber"
@@ -258,7 +262,7 @@ scenes:
         frames: "f588-f839"
         sound: "M2 swell 19.6, pings 21.7 / 22.4 / 23.1, typing ticks, drop-out 27.3-28.0, VO L7 19.75-24.27, L8 24.45-27.12"
         transition_out: match
-        directed_prompt: "Insert, 50mm. A family group chat named Khandaan floods with messages; a reel is forwarded, relatives reply Kamaal! and Wah!, then 'Mummy is typing' appears, stops, starts again, and the camera pushes into the third dot. Golden-hour room behind. Panel lit by its rim, dots amber. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Float, then a slow-to-fast push. Motes; silence before the answer. One reply bubble a little wider than the rest. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: suspense."
+        directed_prompt: "Insert, 50mm. A family group chat named Khandaan floods with messages; a reel is forwarded whose thumbnail is this very reel's cover, relatives reply Kamaal! and Wah!, then 'Mummy is typing' appears, stops, starts again, and the camera pushes into the third dot. Golden-hour room behind. Panel lit by its rim, dots amber. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Float, then a slow-to-fast push. Motes; silence before the answer. One reply bubble a little wider than the rest. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: suspense."
   - id: S7
     location: HOME_GOLDEN
     time_of_day: "late golden hour"
@@ -290,7 +294,7 @@ scenes:
         size: "MCU bust"
         lens: "85 mm"
         move: "swap push 1.00 -> 1.03, then 1.2 %/s"
-        action: "JD rests his hand on his chest and looks up-right, under Mummy's words"
+        action: "JD rests his hand on his chest and looks up-right, under Mummy's words; on the bar-11 downbeat (30.8 s) the sun behind him swells (world +35 %, glow x1.3, no rays)"
         cast: [JD]
         props: [MUMMY_BUBBLE, SUN_DISC]
         light: "sun backlight hidden behind his head, flame rim both sides"
@@ -298,7 +302,7 @@ scenes:
         uncomposed_element: "a thread of glow escaping past his hair on the right"
         duration_s: 3.5
         frames: "f861-f965 (single image f900)"
-        sound: "swish 28.7, VO L9 to 31.97"
+        sound: "swish 28.7, VO L9 to 31.97 (sun swell under 'humse behtar' with the 30.8 chord change)"
         transition_out: cut
         directed_prompt: "Medium close-up, 85mm. JD rests his hand flat on his chest, eyes up and to the right, beneath Mummy's glowing bubble MERA BETA / cinema / BANATA HAI. Late golden hour at home. A low sun hidden behind his head rims him in flame on both edges. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Slow push-in. Motes in the sun glow. A thread of light escapes past his hair on the right. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: proud."
   - id: S8
@@ -314,17 +318,17 @@ scenes:
         size: "wide room"
         lens: "50 mm"
         move: "push 1 %/s"
-        action: "the sun sinks while the end card writes itself: JD ring, GROUP MEIN / bhejo, @jawad_mp4"
+        action: "the sun sinks while the end card writes itself: JD ring, GROUP MEIN / bhejo, @jawad_mp4; at 35.0 s Nani's chip and typing pill pop in the frame-0 pill position"
         cast: []
-        props: [SUN_DISC]
+        props: [SUN_DISC, MUMMY_BUBBLE]
         light: "setting sun (540,1420)->(540,1520), intensity 1.0 -> 0.6"
         atmosphere: "motes"
         uncomposed_element: "none"
         duration_s: 3.5
         frames: "f966-f1070"
-        sound: "end-card cues, VO L10 32.55-34.40"
+        sound: "end-card cues, VO L10 32.55-34.40, notif_ping A6 35.0 (Nani), VO L11 34.90-36.35"
         transition_out: cut
-        directed_prompt: "Wide, 50mm. The room as the sun sinks behind the window while a flame ring draws itself and GROUP MEIN / bhejo settles over the dimmed world. Sunset at home. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Slow push. Motes. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: warm."
+        directed_prompt: "Wide, 50mm. The room as the sun sinks behind the window while a flame ring draws itself and GROUP MEIN / bhejo settles over the dimmed world. Sunset at home. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Slow push. Then a small glass typing pill from Nani pops in at the top left. Motes. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: warm, then here we go again."
       - id: S8-02
         purpose: move
         anchor: false
@@ -332,7 +336,7 @@ scenes:
         size: "medium close-up bust (= frame-0 composition)"
         lens: "85 mm"
         move: "push 1.2 %/s that continues into frame 0"
-        action: "above the same confused JD, Nani starts typing"
+        action: "the same confused JD appears under Nani's typing pill, which has not moved since 35.0"
         cast: [JD]
         props: [MUMMY_BUBBLE]
         light: "as S1"
@@ -340,9 +344,9 @@ scenes:
         uncomposed_element: "none"
         duration_s: 0.7
         frames: "f1071-f1091 (scene_hook(t - 36.4) with sender Nani)"
-        sound: "pop 35.7, ticks 35.8 / 36.1, loop swell ends on 36.4"
+        sound: "ticks 35.8 / 36.1, VO L11 ends <= 36.35, loop swell ends on 36.4"
         transition_out: loop_seam
-        directed_prompt: "Medium close-up, 85mm. JD frozen mid-word, brows knitted, as a new glass bubble from Nani begins to type above him. Golden hour at home. Flame rim camera-right, amber phone glow below. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Slow push-in that carries into frame 0. Motes. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: here we go again."
+        directed_prompt: "Medium close-up, 85mm. JD frozen mid-word, brows knitted, under Nani's glass typing pill. Golden hour at home. Flame rim camera-right, amber phone glow below. Palette: night #070404, flame #FF6A1A, gold #FF9F1C (accents red #F2312B, amber #FFB547, type ivory #FFF3E6). Slow push-in that carries into frame 0. Motes. Texture: gold_hour finish, brown-black floor, soft contrast, film grain 0.018 at 1.6 px, halation on the sun and type glow only, no god rays. Mood: here we go again."
   - id: SB
     location: HOME_GOLDEN
     time_of_day: "golden hour"
@@ -373,17 +377,19 @@ audio:
     casting_brief: "warm, unhurried, wry; a narrator who smiles without laughing (Higgsfield Vlad, elevenlabs_v4, Devanagari)"
     lines:
       - {shot_id: S1-01, id: L1, slot_s: [0.10, 2.69], max_words: 7, text: "Sab se mushkil sawaal client nahi poochta.", tts: "सब से मुश्किल सवाल क्लाइंट नहीं पूछता।", delivery: "plain statement, no pause", locked: true}
-      - {shot_id: HB-01, id: L1B, slot_s: [0.10, 2.40], max_words: 6, text: "Motion designer? Mummy ke liye: cartoon.", tts: "मोशन डिज़ाइनर? मम्मी के लिए: कार्टून।", delivery: "light question, dry answer", locked: true, version: B}
-      - {shot_id: S2-01, id: L2, slot_s: [2.95, 4.15], max_words: 4, text: "Aur jawab ka translation...", tts: "और जवाब का ट्रांसलेशन...", delivery: "trailing, leaves room for the pop", fallback: "Jawab ka translation..."}
-      - {shot_id: S2-02, id: L3, slot_s: [5.10, 6.95], max_words: 4, text: "Jitna samjhao... utna ulta.", tts: "जितना समझाओ... उतना उल्टा।", delivery: "dry, 0.45 s pause"}
-      - {shot_id: S3-02, id: L4, slot_s: [10.95, 11.70], max_words: 2, text: "Seedha jawab:", tts: "सीधा जवाब:", delivery: "determined"}
+      - {shot_id: HB-01, id: L1B, slot_s: [0.10, 2.40], max_words: 4, text: "Mummy ke liye, cartoon.", tts: "मम्मी के लिए, कार्टून।", delivery: "plain on 'Mummy ke liye', a short comma beat (cap 0.3 s), then a dry, flat 'cartoon'", version: B, status: "r2 gate fix 5: replaces the SLATE-locked line (cannot land by 2.45 s); needs the lead's OK; fallback 'Motion designer? Cartoon.'"}
+      - {shot_id: S2-01, id: L2, slot_s: [2.95, 4.15], max_words: 3, text: "Jawab ka translation...", tts: "जवाब का ट्रांसलेशन...", delivery: "trailing, leaves room for the pop"}
+      - {shot_id: S2-02, id: L3, slot_s: [5.10, 6.95], max_words: 4, text: "Jitna samjhao, utna ulta.", tts: "जितना समझाओ, उतना उल्टा।", delivery: "dry; comma beat capped at 0.2 s so it ends before the 7.0 pop"}
+      - {shot_id: S3-02, id: L4, slot_s: [10.95, 11.70], max_words: 2, text: "Seedha jawab:", tts: "सीधा जवाब,", delivery: "determined lead-in with a slight lift"}
       - {shot_id: S4-01, id: L5, slot_s: [14.15, 16.15], max_words: 4, text: "Phir... haar maan li.", tts: "फिर... हार मान ली।", delivery: "pause up to 0.6 s after Phir", locked: true}
       - {shot_id: S5-01, id: L6, slot_s: [16.95, 17.95], max_words: 3, text: "Kuch mahine baad...", tts: "कुछ महीने बाद...", delivery: "soft", captions: hidden}
       - {shot_id: S6-01, id: L7, slot_s: [19.75, 24.27], max_words: 11, text: "Phir ek din family group mein... ek reel forward hoti hai.", tts: "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।", delivery: "storyteller, rising", locked: true}
-      - {shot_id: S6-01, id: L8, slot_s: [24.45, 27.12], max_words: 6, text: "Ab sab ki nazar... Mummy pe.", tts: "अब सब की नज़र... मम्मी पे।", delivery: "hushed", optional: true}
+      - {shot_id: S6-01, id: L8, slot_s: [24.45, 27.12], max_words: 5, text: "Sab ki nazar... Mummy pe.", tts: "सब की नज़र... मम्मी पे।", delivery: "hushed", optional: true}
       - {shot_id: S7-02, id: L9, slot_s: [28.25, 31.97], max_words: 9, text: "Ab woh sab ko khud samjhaati hain... humse behtar.", tts: "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।", delivery: "warm, then a small smile on 'humse behtar'", locked: true}
       - {shot_id: S8-01, id: L10, slot_s: [32.55, 34.40], max_words: 5, text: "Isko family group mein bhejo.", tts: "इसको फ़ैमिली ग्रुप में भेजो।", delivery: "friendly, not salesy", captions: hidden}
-    total_words: {A: 55, B: 54}
+      - {shot_id: S8-01, id: L11, slot_s: [34.90, 36.35], max_words: 4, text: "Ab Nani ki baari.", tts: "अब नानी की बारी।", delivery: "light and knowing; 'baari' falls and stops dead, no breath (frame 0's bubble completes the sentence)", captions: hidden, status: "r2 gate fix 4b; onset f1047, never after 34.95; end hard <= 36.36; fallback 'Ab Nani.'"}
+    total_words: {A: 57, B: 54}
+    takes: 12
     credits_cap: 30
   music_brief: "Tempo 85.714 BPM (600/7), patient groove. Instrumentation: tabla kaharwa (the one desi voice), warm electric-piano chords, felt kick and clap only in the group-flood section. Arc: comedy groove (bars 0-4) -> tape stop into the killer line at 12.15-12.6 -> silence to 14.0 -> sparse muffled chords (bars 5-6) -> full groove when the family group floods (bars 7-9) -> drop-out 27.3-28.0 -> one warm D add9 chord on the payoff (bar 10) -> soft groove under the end card, bar 12 on A7b9 resolving into bar 0's Dm9 on the loop. Built per reel on epic_music blocks (no harmonium, no sitar, no shehnai, no end fade). Stem -18 LUFS."
   sfx:
@@ -393,12 +399,12 @@ audio:
     - {shot_id: S3-01, sound: "whip 7.667 (-6); impact_soft 7.7 (-2); tabla_hit ge 7.7 (-4); impact_soft 8.4 (0); tabla_hit ta 8.4 (-6); swish_small 8.4 (-10)", perspective: "punchy, centred"}
     - {shot_id: S3-02, sound: "whoosh_fast 11.2 (-3, pan -0.4); card_slide 11.5 (-8); ui_tick 12.133 (-14); notif_ping 12.6 (0); impact_soft 12.6 (-8); swish_small 13.667 (-8)", perspective: "close; killer ping in silence"}
     - {shot_id: S4-01, sound: "impact_soft 14.0 (-10); swish_small 15.0 (-14)", perspective: "soft"}
-    - {shot_id: S5-01, sound: "notif_ping buzz 16.8 and 18.2 (align start, -10); pop 16.8 (-10); pings 18.9 / 19.267 / 19.433 (-12)", perspective: "phone on wood, close"}
+    - {shot_id: S5-01, sound: "notif_ping buzz 16.8 and 18.2 (align start, -10; its two haptic pulses at +0.0 / +0.2 s drive the picture's creeps); pop 16.8 (-10); pings 18.9 / 19.267 / 19.433 (-12) = the count steps", perspective: "phone on wood, close"}
     - {shot_id: S6-01, sound: "reverse_swell 19.6 (-6, ends on cut); shimmer 19.6 (-10); whoosh_fast 19.6 (-8); pings 21.7 / 22.4 / 23.1; pop + ticks 25.2; tick 26.6; held-breath tick 27.3", perspective: "close UI"}
     - {shot_id: S7-01, sound: "tabla_hit dha 28.0 (0); sub_drop 28.0 (-6, lp 120); impact_soft 28.0 (-3); shimmer 28.233 (-8)", perspective: "the loudest moment"}
     - {shot_id: S7-02, sound: "swish_small 28.7 and 31.833 (-12)", perspective: "soft"}
-    - {shot_id: S8-01, sound: "EndCard.cues(32.2, 36.4): swish_small 32.3, shimmer 32.77, glass_tap 32.95, reverse_swell ending 36.4", perspective: "quiet"}
-    - {shot_id: S8-02, sound: "pop 35.7 (-10); ui_tick 35.8 / 36.1 (-15); frame 0 impact_soft (-8)", perspective: "close UI, loop"}
+    - {shot_id: S8-01, sound: "EndCard.cues(32.2, 36.4): swish_small 32.3, shimmer 32.77, glass_tap 32.95, reverse_swell ending 36.4; notif_ping A6 35.0 (-8, Nani pill, ducked under L11)", perspective: "quiet"}
+    - {shot_id: S8-02, sound: "ui_tick 35.8 / 36.1 (-15); frame 0 impact_soft (-8)", perspective: "close UI, loop"}
   beds: "room_tone throughout; desi_city -8 dB relative except 27.3-28.0; BED_GAIN_DB -32"
   mix_notes: "Final -14.0 +-0.5 LUFS, TP <= -2.0 dBTP (wav) / -1.5 after AAC, LRA 5-9 LU; VO stem -16 LUFS; speech >= 8 LU over music; SFX inside VO windows ducked via fit_under_vo; music silent 12.6-14.0 and 27.3-28.0 with room tone at about -45 LUFS; max momentary (music + SFX) at 28.0-28.4. Deliver per version (A, B): full mix, no-music mix (VO + SFX only), stems VO / SFX / music 48 kHz 24-bit."
 finish:
@@ -420,6 +426,10 @@ notes:
     - "8th notes are 10.5 frames: quantise up (21k + 11); never Grid.at(sub=0.5)"
     - "hook captions fade out by frame 84 so versions A and B share every frame from the splice"
     - "no caption keyword while a lockup keyword is on screen (L1, L9)"
+    - "r2: caption clear windows 4.2-4.9 and 7.0-7.7 (no caption keyword next to 'Shaadi wala?' / 'Cartoon?')"
+    - "r2: MOTION wobble anchored at each glyph's ink bottom (a centre anchor pushes the ink to y 1051)"
+    - "r2: REEL_THUMB is built once in assets() from the linear cover canvas before post (graded once by the S8 frame's own finish)"
+    - "r2: reference code for every r2 element in workspace/jawad_reels/beta_tum_karte_kya_ho/brief_proof/layout_proof_r2.py (lift it, do not import it)"
   client_mandatories:
     - "@jawad_mp4 signature on the end card; JD monogram; CTA GROUP MEIN / bhejo"
     - "POV · har desi ghar label in the hook and every UI scene (universal POV, not Jawad's family)"

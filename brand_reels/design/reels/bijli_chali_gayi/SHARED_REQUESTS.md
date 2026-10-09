@@ -24,3 +24,14 @@ C11 modules use today, so none of them blocks this reel. Owner of the shared mod
 - **Request.** Compare with a tolerance (`dur >= 4.0 - 1e-6`), or quantise `dur` to whole frames, and make the
   message say 4.0-6.0 s.
 - **C11 workaround.** Pass the literal `dur=4.0` and derive `T_END = DUR - card.dur` (frame 920 by the cut rule).
+
+## 3. `vo_chain.voiced_runs` measures a cut-out line shorter than the same audio inside a stem (found by the scriptwriter, 2026-10-09)
+
+- **What happens.** The threshold is `max(10th percentile + 10 dB, peak - 45 dB)`. On a line cut tightly out of a
+  grouped take there is almost no silence, so the 10th percentile sits inside the speech and the threshold rises: the
+  same V7 measured 2.38-2.45 s as a cut clip and 2.86 s in the stem (TA's V1: 1.07 vs 1.24 s). Placement built on the
+  clip spans then under-estimates every line.
+- **Request.** An optional absolute threshold (`voiced_runs(x, thr_db=-55)`) or a minimum-silence padding before the
+  percentile, so a mastered line and the stem it goes into are measured alike.
+- **C11 workaround.** `bijli_chali_gayi_vo.py` measures clips and stems with its own `runs_abs` at -55 dBFS (20 ms RMS,
+  the same windows and gap closing) and splits grouped takes at -45 dBFS gaps (`SPLIT_DBFS`).

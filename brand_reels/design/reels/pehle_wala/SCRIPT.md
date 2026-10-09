@@ -8,6 +8,12 @@ file is generated from it). Binding inputs: `BRIEF.md` §0, §5.3, §7, §9, §1
 replaced by measured onsets after the TTS run. Nothing here is a fact about Jawad: fictional client, fictional brand,
 labelled POV skit. Narrator = "har editor" (never "main"); JD is not voiced.
 
+**r3 (2026-10-09, after the Vlad run): timings are MEASURED in `VO_TIMING.md`** (this file's §3-§4 stay as the
+estimates they were). Words and Roman tokens unchanged. The chosen takes differ from the §6 prompts in final
+punctuation only: L1B "...ने कहा।" (§4 fallback 3), L9 "और एक! और एक! और एक!", L10 "...मैसेज।". Delivered:
+`<WS>/pehle_wala/vo/vo_stem.wav` (hook A) / `vo_stem_B.wav` (hook B) + `words.json` / `words_B.json`, made by
+`pipeline/jawad_reels/pehle_wala_vo.py`. Open: L9 ends 21.683 (hard end 21.100, D7 at 21.333), see `VO_TIMING.md` §5.
+
 **Revision r2 (viral gate r1, `GATE.md` §8, fixes 2 and 4; no Devanagari prompt changed, so the TTS run can start).**
 - Fix 2: L2 "Ho jayega." moves 2.933 -> **3.267 (f98)**, two frames after pin 3 "Thora left." lands (3.200), so it is
   the editor's reply to a visible note in both hooks (in hook B it is no longer heard as the client finishing "client ne
@@ -403,7 +409,7 @@ the loop-safe fade of SHARED_REQUESTS #3 takes it out with the end card.
       "Aur ek" ×3 is "one more", not a count.
 - [x] Loop: L12 is generated as the first half of "...bola, bas ek chhota sa change." so it ends on a continuation
       contour; it ends 0.18 s before frame 0's first word.
-- [ ] After the Vlad run: measured onsets, w/s and the pronunciation list re-checked against the takes.
+- [x] After the Vlad run: measured onsets, w/s and the pronunciation list re-checked against the takes (`VO_TIMING.md`, 2026-10-09).
 
 ---------------------------------------------------------------------------------------------------------------
 

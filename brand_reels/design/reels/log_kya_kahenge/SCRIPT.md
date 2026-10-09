@@ -1,6 +1,6 @@
 # SCRIPT: Reel 5 · C15 · Log Kya Kahenge (VO, Vlad · elevenlabs_v4)
 
-Date 2026-10-08 · Author: hinglish-scriptwriter · Status: **script v2** = v1 + the viral gate r1 fixes owned by the scriptwriter (`GATE.md`
+Date 2026-10-08 · Author: hinglish-scriptwriter · Status: **script v3 (measured, see the v3 section and VO_TIMING.md)**; v2 = v1 + the viral gate r1 fixes owned by the scriptwriter (`GATE.md`
 §7 fixes 3, 4, 5; verdict FIX) and the gate's sign-offs (V3 cut, V6 fallback, all of V1B hidden). Windows match BRIEF r2 §5/§9. Timings are
 ESTIMATES (no take exists yet), calibrated on Vlad's casting take (§4). Machine-readable twin: `script.json` (same folder).
 
@@ -10,6 +10,29 @@ of `vo_chain.py` (DEV and ROM tokens 1:1 by whitespace, `*word` = caption keywor
 
 Narrator: **hum** (we) plus friendly **tum** imperatives (*bhejo*), the register of the end card and the pinned comment. No "main /
 mera / meri", nothing about Jawad's life, no counts, "JD" not spoken. Every line is SLATE/BRIEF copy, a cut of it, or gate-r1 copy.
+
+---------------------------------------------------------------------------------------------------------------
+
+## v3 · MEASURED (2026-10-09, Vlad takes; the full table is `VO_TIMING.md`, this folder)
+
+The final VO exists: `workspace/jawad_reels/log_kya_kahenge/vo/vo_stem.wav` (= hook A, also `lkk_vo_A.wav`), `lkk_vo_B.wav`
+(hook B), 35.200 s, 48 kHz 24-bit mono, -16.0 LUFS, TP -2.14 dBTP; word timings `words.json` (= A) / `lkk_vo_B.words.json`.
+What changed against v2 (each a binding rule outcome, or flagged for the lead):
+
+| line | v2 plan | measured v3 | why |
+|---|---|---|---|
+| V2 | 15 words, ends 14.441 (est) | **14-word BRIEF fallback** "Hum zindagi unke hisaab se edit karte hain... jo poori video dekhte bhi nahi.", 8.800 -> 14.010 at 1.10x | overrun rule: the 15-word take ran 6.51 s at 1.10x (~6.34 s with the 0.30 s pause; window 6.03 s). Token table: V2 has 14 tokens (`apni` removed, indices shifted), 67 tokens in all; 61 words (A) / 60 (B) |
+| V7 | 31.600 at 1.00x | **31.433 (f943) -> 35.073 at 1.10x** | the six V7 recordings are 3.95-4.30 s raw; the fastest is still 3.64 s at 1.10x: from f948 the last word would end 35.24 s. The onset moved to the latest frame that ends by 35.100: **lead decision** (VO_TIMING "For the lead") |
+| V5 | parts at 1.08x | part 1 22.400 -> 23.510 (+0.043 s over 23.467), part 2 23.667 -> 25.327, both 1.10x | "hain..." trails; part 1 from the fastest recording (two-sentence take G2 t2), part 2 from V5 t1 |
+| V4 | 1.06x, ends 22.127 (est) | 19.333 -> 22.213 at 1.10x | rule: 1.06x ended 22.333 |
+| V6 | 1.05x, ends 28.769 (est) | 26.000 -> 28.950 at 1.05x | as planned |
+| V1 / V1B / V3 | 1.10x | V1 0.100 -> 2.520 (comma cut to 0.10 s by its rule), V1B 0.100 -> 2.540, V3 16.367 -> 17.707 + *Cardboard* 18.200 -> 18.940 | as planned |
+
+Calibration lesson: Vlad reads a short line on its own at 3.1-3.5 syllables/s (the casting paragraph: 4.35), so the v2 estimates
+were 10-25 % short. Lines read inside a two- or three-sentence take (vo_config allows 1-3 sentences per take) run faster when they
+come first; V1, V1B, V4, V5 part 1 and V6 are cut from such takes (`vo/raw/cuts/cuts.json`). Pronunciation test (batch 1): every
+§6 primary spelling kept, no fallback needed (details in VO_TIMING "Pronunciation test"). CER per line (whisper small, best of small /
+medium): V1 0.000, V1B 0.100, V2 0.065, V3 0.000, V4 0.125, V5 0.000, V6 0.000, V7 0.053. Credits: 11.50 (34 jobs).
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -318,6 +341,8 @@ as in the casting text), English loans in Devanagari (क्राउड, फ़
 
 ## 9. Changelog
 
+- v3 (measured, 2026-10-09): Vlad takes recorded and assembled; V2 -> the 14-word BRIEF fallback (overrun rule); V7 onset
+  31.433 (lead decision); measured timings in VO_TIMING.md and `script.json` -> `lines[].measured`.
 - v2 (gate r1): V7 + sub new copy (fix 4); V7 onset 31.600 at 1.00x, V6 window 29.100 at 1.05x (fix 3); V4 8-word fallback at 1.06x,
   V5 parts 22.400 / 23.667 at 1.08x, V1 and V5 overrun rules (fix 5); per-line speeds and passes; V3 cut and V6 fallback marked
   approved; all of V1B hidden; वजह risk removed; totals 62 / 61 words (A / B), was 64 / 63.

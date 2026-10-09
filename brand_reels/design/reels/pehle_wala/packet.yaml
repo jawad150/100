@@ -3,7 +3,7 @@
 # repeated inside every directed_prompt. Nothing in this reel is AI-generated except the voice: every "prompt" below
 # is a build description for the local toolkit (jawad_kit / jawad_tx / ui / type3d / Blender), not a generation prompt.
 project: "@jawad_mp4 brand reels, reel 1 of 5: C26 Pehle Wala Hi Theek Tha (module pehle_wala)"
-version: 1
+version: 2   # r2 2026-10-09: viral gate r1 fixes 1, 3, 5 + script r2 sync (BRIEF.md CHANGELOG)
 deliverable:
   type: reel
   platform: [reels]
@@ -51,7 +51,7 @@ cast:
     identity_ref: null
     block: "CLIENT: never shown; exists only as review pins with a flame ring and the initial C, name 'Client'; terse, polite, relentless."
     wardrobe_by_scene: {}
-    gesture: "a pin that hovers, undecided, before the last message"
+    gesture: "a pin that hovers, undecided, before the last message; and again over the end card, where its marker comes back for the next round and swoops onto the logo across the loop seam"
   - tag: MUMMY
     identity_source: incidental
     identity_ref: null
@@ -72,7 +72,7 @@ props:
     state_by_shot: {S1-01: "x1 then x2 then x3", S2-01: "x3, slid left", S3-01: "x3.75", S4-02: "x4.5, x5.4, left, right", S6-01: "x1"}
   - tag: REVIEW_PIN
     block: "44 px avatar disc with a flame (client) or gold (Mummy) ring and a pointer tip; a glass comment card in Poppins 44 px ivory; collapses to a 14 px dot that stays on the frame."
-    state_by_shot: {S1-01: "pins 1-2", S2-01: "pins 3-10", S3-01: "Mummy thread 11-14", S4-01: "pins 15-17", S4-02: "pins 18-26", S5-01: "hovering, no text", S5-02: "pin 27 'Pehle wala hi theek tha.'", S5-03: "un-landing in reverse", S6-01: "none"}
+    state_by_shot: {S1-01: "pin 1's marker mid-swoop on f0, lands f8; pins 1-2", S2-01: "pins 3-10", S3-01: "Mummy thread 11-14", S4-01: "pins 15-17", S4-02: "pins 18-26", S5-01: "hovering, no text", S5-02: "pin 27 'Pehle wala hi theek tha.'", S5-03: "un-landing in reverse", S6-01: "none", S6-02: "pin 1's marker re-enters at 32.633, hovers top-right of the ad (850, 560), glides toward the logo from 33.773"}
   - tag: VERSION_COUNTER
     block: "JetBrains Mono 56 px 'v1'..'v27' odometer in a glass chip, top-right of the title bar; spins back on Ctrl+Z."
     state_by_shot: {S1-01: "v1 to v3", S2-01: "v3 to v11", S3-01: "v12 to v15", S4-01: "v16 to v18", S4-02: "v19 to v27", S5-03: "v27 to v1", S6-01: "v1"}
@@ -93,7 +93,7 @@ scenes:
         size: "full player, product medium inside the ad"
         lens: "orthographic UI + 85 mm product"
         move: "locked; product plate push 2 % per bar already running from -0.4 s"
-        action: "A review pin drops onto the logo of a finished chai ad; the 'Approved' chip flips to 'Changes requested'; the logo swells on the beat."
+        action: "A review pin, already swooping in on the first frame, drops onto the logo of a finished chai ad; the 'Approved' chip flips to 'Changes requested'; the logo swells on the beat."
         cast: [CLIENT]
         props: [CHAI_GLASS, UBAAL_LOGO, REVIEW_PIN, VERSION_COUNTER, STATUS_CHIP]
         light: "ember backlight behind the glass; flame rims on the UI"
@@ -102,7 +102,7 @@ scenes:
         duration_s: 2.667
         sound: "impact_soft on f0, the pin thock at f8, a chip click at f12, VO 'Bas ek chhota sa change.' from 0.10 s, Dm downbeat"
         transition_out: cut
-        directed_prompt: "Full frame, orthographic review player with an 85 mm product shot inside. A client's review pin drops onto the logo of a finished chai ad, the status chip flips from Approved to Changes requested, the logo swells to twice its size on beat 2. Red-black edit void, the moment after delivery. Ember backlight behind the glass, flame rims on the player glass, the void lit from below. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked; only the product plate creeps in, 2 % per bar. Steam curling, slow bokeh, embers outside the player. The chip reading Approved for twelve frames before anyone notices. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: uh-oh."
+        directed_prompt: "Full frame, orthographic review player with an 85 mm product shot inside. A client's review pin, already swooping in on the first frame, drops onto the logo of a finished chai ad, the status chip flips from Approved to Changes requested, the logo swells to twice its size on beat 2. Red-black edit void, the moment after delivery. Ember backlight behind the glass, flame rims on the player glass, the void lit from below. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked; only the product plate creeps in, 2 % per bar. Steam curling, slow bokeh, embers outside the player. The chip reading Approved for twelve frames before anyone notices. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: uh-oh."
   - id: S2
     location: REVIEW_PLAYER
     time_of_day: "the revision night begins"
@@ -209,7 +209,7 @@ scenes:
         atmosphere: "steam slows to a fifth"
         uncomposed_element: "the marker frozen off-centre"
         duration_s: 2.133
-        sound: "heartbeat build under 'Phir aakhri message aaya.', 8 frames of true silence, one clock tick"
+        sound: "heartbeat build under 'Phir aakhri message...', 8 frames of true silence, one clock tick"
         transition_out: cut
         directed_prompt: "Full frame, orthographic review player. A client pin hovers over the ruined ad without landing, drifting between the logo and the glass, then freezes in mid-air. Red-black edit void, silence coming. Light unchanged. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked. Steam slowing to a fifth of its speed. The marker frozen off-centre. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: dread."
       - id: S5-02
@@ -262,11 +262,11 @@ scenes:
         action: "The pristine v1 is back, the chip says Approved, 'pehle wala' rises over 'HI THEEK THA', JD smirks."
         cast: [JD]
         props: [CHAI_GLASS, UBAAL_LOGO, VERSION_COUNTER, STATUS_CHIP]
-        light: "as S1"
+        light: "as S1; the ad's keyword garam dims to x0.35 while pehle wala rises (27.733-28.233)"
         atmosphere: "steam, embers"
         uncomposed_element: "the chip reading Approved again"
         duration_s: 2.133
-        sound: "impact on the restore, a warm Dm chord, the v1 motif restarts; VO 'Har editor jaanta hai: v1 hi final hota hai.'"
+        sound: "impact on the restore, a warm Dm chord, the v1 motif restarts; VO 'Har editor jaanta hai, v1 hi final hota hai.' (28.133-31.36)"
         transition_out: light_wipe
         directed_prompt: "Full frame, orthographic review player with a webcam bust tile docked lower-left. The first version is back exactly as it was, the status chip reads Approved, the flame keyword pehle wala rises over HI THEEK THA with a glowing underline, and JD smirks in the tile. Red-black edit void, calm again. Ember backlight behind the glass, the tile's rim from the ad side. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked. Steam curling, embers drifting. The chip reading Approved again. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: told you so."
       - id: S6-02
@@ -276,21 +276,21 @@ scenes:
         size: "full player under the end card layer"
         lens: "orthographic UI"
         move: "locked; the world under the card is frame 0's world one beat earlier"
-        action: "The JD ring draws on, 'US CLIENT KO bhejo' rises, @jawad_mp4 settles, everything lifts away into frame 0."
-        cast: []
-        props: [CHAI_GLASS, UBAAL_LOGO]
-        light: "world x0.58, player x0.35, exposure push into the last frame"
+        action: "The JD ring draws on, 'US CLIENT KO bhejo' rises, @jawad_mp4 settles; at 32.633 the client's marker drops back in and hovers over the ad's top-right; as everything lifts away into frame 0 it swoops toward the logo."
+        cast: [CLIENT]
+        props: [CHAI_GLASS, UBAAL_LOGO, REVIEW_PIN]
+        light: "world x0.58, player x0.35, garam x0.35, exposure push into the last frame; the marker drawn on top, undimmed"
         atmosphere: "steam"
-        uncomposed_element: "the ad still breathing under the card"
+        uncomposed_element: "the ad still breathing under the card; the client's marker waiting"
         duration_s: 4.267
-        sound: "card shimmer, the C-chord turnaround, a reverse swell ending on the loop; VO '...aur phir client ne bola'"
+        sound: "card shimmer, ui_hover -14 hp 5000 at 32.633 as the marker re-enters, the C-chord turnaround, a reverse swell (lp 1000) ending on the loop; VO '...aur phir client ne bola' (32.64-34.05)"
         transition_out: loop_seam
-        directed_prompt: "Full frame, orthographic review player under a type layer. A thin flame ring draws on around a serif JD, US CLIENT KO rises with the flame keyword bhejo and its underline, @jawad_mp4 settles at the bottom, and in the last third of a second everything lifts into the first frame. Red-black edit void. World dimmed, player dimmed further, an exposure push into the last frame. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked. Steam still curling. The ad still breathing under the card. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: send it."
+        directed_prompt: "Full frame, orthographic review player under a type layer. A thin flame ring draws on around a serif JD, US CLIENT KO rises with the flame keyword bhejo and its underline, @jawad_mp4 settles at the bottom, a client's review pin drops back in and hovers over the ad's top-right, and in the last third of a second everything lifts into the first frame while the pin swoops toward the logo. Red-black edit void. World dimmed, player dimmed further, an exposure push into the last frame. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Camera locked. Steam still curling. The ad still breathing under the card. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: send it."
   - id: S1B
     location: REVIEW_PLAYER
     time_of_day: "after the 26th revision (Trial hook only)"
     axis: "the player faces the viewer"
-    light_plot: "the v27 mess; a focus panel (blur 18 px x0.08) behind the lockup"
+    light_plot: "the v27 mess raw for f0-f11; then a focus panel ramping in over f12-f20 (blur 22 px x0.25 linear, plus a soft falloff behind the key 26) behind the lockup"
     shots:
       - id: S1B-01
         purpose: reveal
@@ -299,34 +299,34 @@ scenes:
         size: "full player, then a generic NLE pulled back"
         lens: "orthographic UI"
         move: "D1 playhead scrub: pull back 10 f, scrub, snap at f70, push in by f80"
-        action: "The ruined v27 ad with '26 REVISIONS BAAD'; the editor scrubs back to the start of the story."
+        action: "The ruined v27 ad, raw for 12 frames; then it softens under '26 REVISIONS BAAD'; the editor scrubs back to the start of the story."
         cast: [CLIENT]
         props: [UBAAL_LOGO, VERSION_COUNTER, REVIEW_PIN, CHAI_GLASS]
         light: "full clutter"
         atmosphere: "flares, glitter"
         uncomposed_element: "the counter reading v27 on the first frame"
         duration_s: 2.667
-        sound: "glitch + trailer hit on f0, VO 'Chhabbees revision baad, client ne kaha...', scrub chatter, click"
+        sound: "glitch + trailer hit on f0, VO 'Chhabbees revision baad client ne kaha...' (0.10-2.56, hard end 2.70), scrub chatter (hp 5000), click (-6 hp 4000)"
         transition_out: whip
-        directed_prompt: "Full frame, orthographic review player. The ruined version 27 of the chai ad, giant logo, starbursts, 50% OFF, CALL NOW, glitter and flares, with the flame keyword 26 over REVISIONS BAAD on a blurred dark panel; then the view pulls back into a generic edit timeline and the playhead scrubs back to the start. Red-black edit void. Full clutter. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Playhead scrub, snap, push in. Flares and glitter. The counter reading v27 on the first frame. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: result first."
+        directed_prompt: "Full frame, orthographic review player. The ruined version 27 of the chai ad, giant logo, starbursts, 50% OFF, CALL NOW, glitter and flares, raw for the first twelve frames, then softening into blurred colour shapes under the flame keyword 26 over REVISIONS BAAD; then the view pulls back into a generic edit timeline and the playhead scrubs back to the start. Red-black edit void. Full clutter. Palette: near-black warm void #070404, flame orange #FF6A1A, red #F2312B, ivory type #FFF3E6. Playhead scrub, snap, push in. Flares and glitter. The counter reading v27 on the first frame. inferno finish: deep red-black toe crush, film grain 0.020 at 1.7 px from the look only, halation on emissive edges, highlights roll off to orange. Mood: result first."
 audio:
   voice:
     present: true
     casting_brief: "warm, even, dry; the contradiction: a calm narrator describing chaos with a straight face (Higgsfield preset Vlad, elevenlabs_v4, Devanagari text)"
-    lines:
-      - {shot_id: S1-01, text: "Bas ek chhota sa change.", delivery: "matter-of-fact, the quote everyone knows; 0.10-1.90 s"}
-      - {shot_id: S1B-01, text: "Chhabbees revision baad, client ne kaha...", delivery: "result first, trailing off; 0.10-2.30 s (hook B only)"}
-      - {shot_id: S2-01, text: "Theek hai. Ho jayega.", delivery: "resigned compliance; 2.75-4.15 s"}
-      - {shot_id: S2-01, text: "Pop karo. Matlab? Kisi ko nahi pata.", delivery: "deadpan, a beat before 'Matlab?'; 4.40-6.30 s"}
-      - {shot_id: S2-01, text: "Clean.", delivery: "flat; 6.60-7.00 s"}
-      - {shot_id: S2-01, text: "Energetic.", delivery: "flat, on the drums; 8.65-9.25 s"}
-      - {shot_id: S2-01, text: "Fun.", delivery: "flatter; 10.80-11.10 s"}
-      - {shot_id: S3-01, text: "Ab Mummy bhi review karengi.", delivery: "a small sigh; 12.90-14.75 s"}
-      - {shot_id: S4-01, text: "Cinematic. Bilkul.", delivery: "dry; 15.05-16.10 s"}
-      - {shot_id: S4-02, text: "Aur ek. Aur ek. Aur ek.", delivery: "each right after a pin: 19.25, 19.78, 20.31 s"}
-      - {shot_id: S5-01, text: "Phir aakhri message aaya.", delivery: "lower, slower; 23.50-24.95 s"}
-      - {shot_id: S6-01, text: "Har editor jaanta hai: v1 hi final hota hai.", delivery: "warm, knowing; 28.05-31.00 s"}
-      - {shot_id: S6-02, text: "...aur phir client ne bola", delivery: "rising, unfinished, cut at word end + 40 ms by 34.093 s; completes into frame 0"}
+    lines:   # source of truth: SCRIPT.md / script.json r2 (expected timings until the Vlad takes are measured)
+      - {shot_id: S1-01, text: "Bas ek chhota sa change.", delivery: "matter-of-fact, the quote everyone knows; 0.10-1.63 s (cons 1.93, hard end 2.60)"}
+      - {shot_id: S1B-01, text: "Chhabbees revision baad client ne kaha...", delivery: "result first, one breath, trailing off; 0.10-2.56 s (cons 2.73, hard end 2.70 via SCRIPT §4 fallbacks; hook B only; 6 words)"}
+      - {shot_id: S2-01, text: "Ho jayega.", delivery: "resigned, the reply to pin 3 'Thora left.' (3.200); 3.267-4.06 s (f98)"}
+      - {shot_id: S2-01, text: "Pop? Kisi ko nahi pata.", delivery: "'Pop?' dry, echoing the pin, then the flat verdict; 4.40-6.55 s"}
+      - {shot_id: S2-01, text: "Clean.", delivery: "flat, falling, as the cream fill completes; 6.733-7.30 s"}
+      - {shot_id: S2-01, text: "Energetic.", delivery: "flat, on the drums; 8.60-9.47 s"}
+      - {shot_id: S2-01, text: "Fun.", delivery: "flatter still; 10.80-11.33 s"}
+      - {shot_id: S3-01, text: "Ab Mummy bhi review karengi.", delivery: "a small sigh carried by the words; 12.867-14.79 s"}
+      - {shot_id: S4-01, text: "Bilkul cinematic.", delivery: "dry, one breath, the keyword last; 15.00-16.37 s"}
+      - {shot_id: S4-02, text: "Aur ek, aur ek, aur ek.", delivery: "a tired count, one fragment 1 frame after each pin: 19.233, 19.767, 20.30 s; ends 20.88"}
+      - {shot_id: S5-01, text: "Phir aakhri message...", delivery: "lower, trailing off; 23.50-24.78 s (hard end 24.95)"}
+      - {shot_id: S6-01, text: "Har editor jaanta hai, v1 hi final hota hai.", delivery: "warm, knowing, unhurried; 28.133-31.36 s"}
+      - {shot_id: S6-02, text: "...aur phir client ne bola", delivery: "rising, unfinished, end-anchored: last word ends 34.050 (word end + 40 ms <= 34.093); completes into frame 0"}
   music_brief: "Original score in dark_pulse grammar, D minor, 112.5 BPM, i-VI-III-VII one chord per bar. It clutters with the frame: v1 motif, + hats, + strings, a 'clean' bar, drums arriving on the 'energetic' pin, + 808, Mummy thins it, a half-time 'cinematic' bar, everything bigger, peak clutter, then it thins out; a 1-beat drop-out at 25.067; the full bar returns for one beat on the payoff; tape-stop at the Ctrl+Z press (26.133); silence through the rewind; restart from bar 0's motif on v1 (27.733); a VII turnaround resolving into frame 0. No end fade. Desi voice: none."
   sfx:
     - {shot_id: S1-01, sound: "pin_thock (glass_tap D7 + impact_soft), ui_click, slot_tick", perspective: "close, UI layer"}
@@ -338,8 +338,8 @@ audio:
     - {shot_id: S5-02, sound: "pin_thock_big + sub_drop + flash_hit (loudest moment)", perspective: "huge"}
     - {shot_id: S5-03, sound: "typing x2, tape-stop, tape_rewind of the reel's own mix, 26 ui_ticks", perspective: "inside the machine"}
     - {shot_id: S6-01, sound: "impact_soft, glass_tap D6, underline swish, shimmer", perspective: "warm, close"}
-    - {shot_id: S6-02, sound: "end card swish, shimmer, glass_tap; reverse_swell ending on the loop", perspective: "soft"}
-  mix_notes: "-14 LUFS ±0.5, TP <= -2.0 dBTP (wav), <= -1.5 after AAC, LRA 5-9; VO -16 LUFS; music >= 8 LU under speech; pins inside VO words use the dark (lp 1100) variants; <= 3 sound starts per instant; max momentary at 25.6 ±0.2 s; Version A (full) and Version B (VO + SFX) for both hooks; audio name 'Original audio · Bas ek chhota sa change · @jawad_mp4'."
+    - {shot_id: S6-02, sound: "end card swish, shimmer, glass_tap -16; ui_hover -14 hp 5000 at 32.633 (the marker re-enters); reverse_swell lp 1000 ending on the loop", perspective: "soft"}
+  mix_notes: "-14 LUFS ±0.5, TP <= -2.0 dBTP (wav), <= -1.5 after AAC, LRA 5-9; VO -16 LUFS; music >= 8 LU under speech; pins inside VO words use the dark (lp 1100) variants (r2: 6.400, 19.733, 20.267, 20.800 dark; 3.200 full, the voice now follows the pin); <= 3 sound starts per instant; max momentary at 25.6 ±0.2 s; Version A (full) and Version B (VO + SFX) for both hooks; audio name 'Original audio · Bas ek chhota sa change · @jawad_mp4'."
 finish:
   grain: "inferno G.finish only: 0.020 at 1.7 px; no extra grain layers"
   grade: "inferno (jawad_grade): red-dominant world, harder contrast, deep red-black crush, highlights roll to orange; post = G.tx_finish only; exposure pushes, never flashes"
@@ -350,7 +350,7 @@ finish:
     - {name: "stems vo / sfx / music, Version A and B mixes", aspect: "-", duration_s: 34.1333, format: "wav 48 kHz 24-bit"}
     - {name: "pehle_wala_cover.jpg", aspect: "9:16", duration_s: 0, format: "jpg, frame 855, captions off"}
     - {name: "pehle_wala.srt", aspect: "-", duration_s: 34.1333, format: "srt, Roman Urdu house spelling"}
-  end_card: "endcard.EndCard('US CLIENT KO', 'bhejo', monogram='JD', dur=4.2667) from 29.8667 s (f896): JD ring, CTA, @jawad_mp4 at y 1575, settled hold 2.057 s, exit in the last 0.36 s into the loop push"
+  end_card: "endcard.EndCard('US CLIENT KO', 'bhejo', monogram='JD', dur=4.2667) from 29.8667 s (f896): JD ring, CTA, @jawad_mp4 at y 1575, settled hold 2.057 s, exit in the last 0.36 s into the loop push; from 32.633 pin 1's client marker hovers in the ad's top-right (no text) and glides toward the logo during the exit (BRIEF §6.3.1)"
 notes:
   forbidden_reminders:
     - "Ctrl+Z only as the jw_mono chip; suppress jawad_tx D9 keycaps with keys_y=-2000.0"

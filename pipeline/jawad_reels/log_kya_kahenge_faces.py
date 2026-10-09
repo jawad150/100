@@ -12,6 +12,8 @@ never-uncanny limits force (FACES.md in brand_reels/design/reels/log_kya_kahenge
     cam = LF.cam_s3(t)                                 # the shot camera: render the whole world of S3-01 with it
     sc = K.Scene(cam) ; ...tiers, barrier, people... ; sc.custom(LF.S3_FEET, lambda cv, c: LF.draw_s3(cv, c, t))
     # draw_s3 = floor contact shadow + JD plane (depth of field from cam) + light wrap from what is already drawn
+    # post, 9.6-12.8: LF.s3_rays(cv, t, rays_centre(t), 0.22) BEFORE the finish, then the finish with rays=0
+    #                 (the floodlight's god rays without JD acting as a ray source)
 
     # S5-01  f768-f863 (25.6-28.8 s): JD bust, chin up, look A rim, warm key from screen-left; 2D over the 85 mm plate
     cv = <85 mm plate> ; LF.draw_s5(cv, t)             # torso layer breathes, head is ONE rigid layer; push 1.00->1.03
@@ -465,6 +467,27 @@ def jd_alpha(t):
     return cv[..., 3].copy()
 
 
+def s3_rays(cv, t, center, strength=0.22, look=LOOK):
+    """S3-01 god rays with JD held out as a SOURCE (call in post BEFORE the finish, then pass rays=0 to the finish for
+    9.6-12.8). G.finish's rays smear every bright pixel away from the centre; his white tee, hand, watch and trainers
+    would stream a faint light trail down-left of his legs (measured on the stand-in: p99 +6, max +9 code values in
+    the floor band beside him), i.e. he would look like a light source. Same call as G.finish (K.god_rays, the look's
+    threshold / length, tint (1.0, 0.78, 0.45)); everything else in the frame still emits, and the rays still pass
+    over him. In place; returns cv."""
+    import jawad_grade as G                                        # read-only shared module (lazy: post only)
+    if strength <= 0 or not (S3_T0 <= t < S3_T1):
+        return cv
+    P = G.FIN[look]
+    a = jd_alpha(t)
+    src = cv.copy()
+    src[..., :3] *= (1.0 - np.clip(a, 0, 1))[..., None]
+    base = src[..., :3].copy()
+    K.god_rays(src, center, strength=strength, threshold=P.get('rays_threshold', 0.3),
+               length=P.get('rays_length', 0.4), tint=(1.0, 0.78, 0.45))
+    cv[..., :3] += src[..., :3] - base
+    return cv
+
+
 def jd_rect(t, margin=28):
     """Caption avoid rect: JD's projected subject bbox + margin px, clipped to the frame; None outside his shots.
     S3-01 follows cam_s3(t); S5-01 is the bust from the hair crest down to the frame bottom."""
@@ -501,7 +524,7 @@ FACES = [
          P=dict(world_feet=S3_FEET, height_mm=S3_HEIGHT_MM, plane='parallel to the sensor (yaw 0)', layer='K.Scene custom'),
          width='1800 mm tall: ~560 px on screen (0.28 of the 2x master)',
          cam_keys=dict(fn='cam_s3', pos=(S3_CAM_X, '-h', S3_CAM_Z), h_mm=(S3_H0, S3_H1, 'linear'),
-                       pitch_deg=(S3_P0, S3_P1, 'easy_ease'), yaw=0, roll=0, focal=S3_FOCAL, aperture=S3_APERTURE),
+                       pitch_deg=(S3_P0, S3_P1, 'inout_sine'), yaw=0, roll=0, focal=S3_FOCAL, aperture=S3_APERTURE),
          rim_dir=(0.35, -0.95), rim_gain=1.4, swap_on_beat=False,
          note='alone in front of the staring stands; flat floodlight (crown 1.0 -> feet 0.8), no cone, no light pool; '
               'floor contact shadow falls left; breathing 0.25 % only (no drift: the feet stay planted)'),

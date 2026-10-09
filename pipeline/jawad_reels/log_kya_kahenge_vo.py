@@ -7,13 +7,16 @@ BRIEF.md r2 section 9 (windows, overrun rules). Only this reel's files are writt
     cd pipeline/jawad_reels
     python3 -I log_kya_kahenge_vo.py requests                 # -> <RW>/vo/requests.json (Higgsfield payloads)
     tools/heavy.sh python3 -I log_kya_kahenge_vo.py pron      # whisper check of the carrier takes <RW>/vo/raw/lkk_P*_t*.mp3
+    tools/heavy.sh python3 -I log_kya_kahenge_vo.py cut       # context takes lkk_<G1a..H3>_t<N>.mp3 -> raw/cuts/ (one wav per line)
+    tools/heavy.sh python3 -I log_kya_kahenge_vo.py cands [--takes V1:cuts/x.wav,...]  # score candidates -> candidates.json
     tools/heavy.sh python3 -I log_kya_kahenge_vo.py process   # each line take -> vo_chain passes at the line's speeds + CER
     tools/heavy.sh python3 -I log_kya_kahenge_vo.py assemble  # rules, placement, stems, words, VO_TIMING.md, checks
     options: --raw DIR (takes, default <RW>/vo/raw) --work DIR (outputs, default <RW>/vo) --md PATH --label TEXT
              --lines V1,V2 (process only these)
 
-Takes are named lkk_<ID>_t<N>.mp3 (ID = V1, V1B, V2 ... V7; P1 ... P4 for the pronunciation carriers); the highest N
-wins unless <work>/select.json maps an ID to a file name.
+Takes are named lkk_<ID>_t<N>.mp3 (ID = V1, V1B, V2 ... V7; P1 ... P5 for the pronunciation carriers; G1a ... H3 for the
+two- and three-sentence context takes, see CONTEXT); the highest N wins unless <work>/select.json maps an ID to a file name
+inside --raw (e.g. "cuts/lkk_V6_cG3t1_t1.wav"); "V5b" names the take V5's part 2 is cut from (default: V5's own take).
 
 Outputs in <work>: proc/<ID>_t<N>_<speed>.wav (+ .words.json, .report.json from vo_chain), lines.json (every
 measurement and decision), vo_stem.wav (= hook A), lkk_vo_A.wav, lkk_vo_B.wav (35.200 s, 48 kHz 24-bit mono, -16 LUFS
@@ -22,6 +25,7 @@ plus line / i / dev / heard / ok / hide), check.json; the timing table goes to -
 """
 import glob
 import json
+import math
 import os
 import re
 import subprocess
@@ -52,14 +56,14 @@ VOICE_ID = 'e5666b9c-99a2-4fac-8b4e-abee078b186d'
 PLAN = {
     'V1': dict(speeds=[1.10], onset=0.100, end=2.700, hard=2.850, over_pause=(3, 0.10), over_dur=2.60),
     'V1B': dict(speeds=[1.10], onset=0.100, end=2.700, hard=2.700, over_pause=(1, 0.30), over_dur=2.60),
-    'V2': dict(speeds=[1.10], onset=8.800, end=14.833, hard=14.833, pauses={8: 0.30}),
+    'V2': dict(speeds=[1.10], onset=8.800, end=14.833, hard=14.833, pauses={7: 0.30}),   # 14-word fallback: 7 = hain...
     'V3': dict(speeds=[1.10], split=4, onset=16.367, onset2=18.200, onset2_range=(18.0, 18.3), end=19.133,
                hard=19.133, part1_max=1.45, part2_max=1.10),
     'V4': dict(speeds=[1.06, 1.10], onset=19.333, end=22.233, hard=22.233, pauses={4: 0.20}),
     'V5': dict(speeds=[1.08, 1.10], split=3, onset=22.400, onset2=23.667, end=25.400, hard=25.480,
                part1_end=23.467, part2_max={1.08: 1.733, 1.10: 1.78}, contains=23.600),
     'V6': dict(speeds=[1.05, 1.10], onset=26.000, onset_alt=25.933, end=29.100, hard=29.100, pauses={4: 0.20}),
-    'V7': dict(speeds=[1.00, 1.03, 1.06, 1.10], onset=31.600, end=35.100, hard=35.100),
+    'V7': dict(speeds=[1.00, 1.03, 1.06, 1.10], onset=31.600, end=35.100, hard=35.100, onset_min=31.200),
 }
 ORDER_A = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7']
 ORDER_B = ['V1B', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7']
@@ -76,6 +80,8 @@ PRON = [
          why='z / f nukta words (risks 3, 4, 7, 8); ASR normalises nuktas, so a listener must confirm z and f'),
     dict(id='P4', text="हम भी 'लोग' हैं। हम भी लोग हैं।", words=["'लोग'", 'लोग'],
          why="risk 6: does the quoted 'log' hiccup or lose stress against the plain one"),
+    dict(id='P5', text='लोग busy हैं। ये गत्ता है।', words=['बिज़ी', 'गत्ता'],
+         why='risk 3 fallback (Latin busy inside the DEV text) and risk 1 fallback (गत्ता)'),
 ]
 LOAN = {'crowd': 'क्राउड', 'flat': 'फ्लैट', 'cardboard': 'कार्डबोर्ड', 'card': 'कार्ड', 'board': 'बोर्ड',
         'busy': 'बिजी', 'edit': 'एडिट', 'video': 'वीडियो', 'phone': 'फोन'}
@@ -116,9 +122,25 @@ def cer(hyp, ref):
     return lev(norm_cer(hyp), r) / max(1, len(r))
 
 
+def _loan_split(w):
+    """A Latin token -> the DEV spelling of its loanwords; whisper glues them ('Crowdflat' = crowd + flat), so the token
+    is segmented into LOAN keys (longest first). Unknown Latin is returned unchanged."""
+    lw = w.lower()
+    if lw in LOAN:
+        return LOAN[lw]
+    best = {0: []}
+    for i in range(len(lw)):
+        if i not in best:
+            continue
+        for k in sorted(LOAN, key=len, reverse=True):
+            if lw.startswith(k, i) and (i + len(k)) not in best:
+                best[i + len(k)] = best[i] + [LOAN[k]]
+    return ' '.join(best[len(lw)]) if len(lw) in best else w
+
+
 def loan_map(hyp):
     """Latin loanwords that whisper wrote in English -> the Devanagari spelling (a word heard as 'cardboard' was said)."""
-    return re.sub(r'[A-Za-z]+', lambda m: LOAN.get(m.group(0).lower(), m.group(0)), hyp)
+    return re.sub(r'[A-Za-z]+', lambda m: _loan_split(m.group(0)), hyp)
 
 
 _WM = {}
@@ -184,7 +206,7 @@ def cmd_requests(work):
                     dialogue=[dict(text=text, voice_id=VOICE_ID, voice_type='preset')])
     out = dict(
         reel='log_kya_kahenge', voice='Vlad (preset) on elevenlabs_v4', voice_id=VOICE_ID,
-        rules=['balance first and before each batch; stop if the balance is below 7015',
+        rules=['balance first and before each batch; stop if the balance is below 6800 (task guard, 2026-10-09)',
                'preflight every request with get_cost: true; keep the running sum in vo/credits.json; reel budget 25',
                'leave use_unlim unset (answer an unlim_choice with false); omit folder_id; no stability override',
                'poll job ids with jobs_wait; never resubmit blindly',
@@ -245,6 +267,55 @@ def process_line(lid, take, work, speed, lines, force=False):
     return V.process(take, l['dev_tokens'], l['rom_tokens_marked'], out=out, speed=speed)
 
 
+def measure_take(lid, take, work, lines):
+    """Process one take of a line at every speed of its plan (vo_chain) and score it: CER (whisper small, no prompt;
+    medium as a second ear when small flags it), keyword check, vo_chain alignment. -> the lines.json entry."""
+    l = lines[lid]
+    t0 = time.time()
+    reps = {}
+    for sp in PLAN[lid]['speeds']:
+        reps['%.2f' % sp] = process_line(lid, take, work, sp, lines)
+    plan_sp = PLAN[lid]['speeds'][0]
+    fin = proc_path(work, take, plan_sp)
+    kw = [i for i, r in enumerate(l['rom_tokens_marked']) if r.startswith('*')]
+    words = json.load(open(os.path.splitext(fin)[0] + '.words.json'))
+
+    def score(model):
+        # CER: no initial prompt (the prompt would bias whisper toward the script)
+        txt, heard = transcribe(fin, model=model)
+        ks = []
+        for i in kw:
+            m, sc = best_match(l['dev_tokens'][i], heard)
+            ks.append(dict(i=i, word=words[i]['word'], dev=l['dev_tokens'][i], heard=m, sim=sc))
+        return dict(model=model, heard=txt, cer=round(cer(txt, l['tts']), 3),
+                    cer_loan=round(cer(loan_map(txt), l['tts']), 3), keywords=ks)
+    asr = [score('small')]
+    weak = asr[0]['cer_loan'] > CER_MAX or any(k['sim'] < KW_OK for k in asr[0]['keywords'])
+    if weak:                                   # independent second ear before calling a retake
+        asr.append(score('medium'))
+    best_cer = min(a['cer_loan'] for a in asr)
+    kw_chk = []
+    for j, i in enumerate(kw):
+        sims = [a['keywords'][j]['sim'] for a in asr]
+        best = max(sims)
+        kw_chk.append(dict(i=i, word=words[i]['word'], dev=l['dev_tokens'][i], aligned_ok=words[i]['ok'],
+                           aligned_heard=words[i]['heard'],
+                           free=[(a['model'], a['keywords'][j]['heard'], a['keywords'][j]['sim']) for a in asr],
+                           nukta='\u093c' in unicodedata.normalize('NFD', l['dev_tokens'][i]),
+                           verdict='ok' if words[i]['ok'] and best >= KW_OK else 'retake'))
+    return dict(take=os.path.relpath(take, REPO), take_dur=round(len(V.decode(take)) / SR, 3),
+                heard=asr[0]['heard'], cer=asr[0]['cer'], cer_loan=asr[0]['cer_loan'], asr=asr,
+                cer_best=best_cer, keywords=kw_chk,
+                matched='%d/%d' % (sum(w['ok'] for w in words), len(words)),
+                unmatched=[(w['word'], w['heard']) for w in words if not w['ok']],
+                passes={k: dict(final_dur=r['final_dur'], speed=r['speed'], lufs=r['loudness']['lufs'],
+                                tp=r['loudness']['tp'], pauses=r['pauses'], wpm_after=r['wpm_after'],
+                                out=r['output']) for k, r in reps.items()},
+                retake=bool(best_cer > CER_MAX or any(k['verdict'] == 'retake' for k in kw_chk)),
+                listen=[k['word'] for k in kw_chk if k['nukta']],
+                seconds=round(time.time() - t0, 1))
+
+
 def cmd_process(raw, work, only=None):
     d, lines = load_script()
     state_p = os.path.join(work, 'lines.json')
@@ -256,57 +327,156 @@ def cmd_process(raw, work, only=None):
         if not take:
             print(lid, 'no take in', raw)
             continue
-        l = lines[lid]
-        t0 = time.time()
-        reps = {}
-        for sp in PLAN[lid]['speeds']:
-            reps['%.2f' % sp] = process_line(lid, take, work, sp, lines)
-        plan_sp = PLAN[lid]['speeds'][0]
-        fin = proc_path(work, take, plan_sp)
-        kw = [i for i, r in enumerate(l['rom_tokens_marked']) if r.startswith('*')]
-        words = json.load(open(os.path.splitext(fin)[0] + '.words.json'))
+        cp = os.path.join(work, 'candidates.json')
+        cands = json.load(open(cp)) if os.path.exists(cp) else {}
 
-        def score(model):
-            # CER: no initial prompt (the prompt would bias whisper toward the script)
-            txt, heard = transcribe(fin, model=model)
-            ks = []
-            for i in kw:
-                m, sc = best_match(l['dev_tokens'][i], heard)
-                ks.append(dict(i=i, word=words[i]['word'], dev=l['dev_tokens'][i], heard=m, sim=sc))
-            return dict(model=model, heard=txt, cer=round(cer(txt, l['tts']), 3),
-                        cer_loan=round(cer(loan_map(txt), l['tts']), 3), keywords=ks)
-        asr = [score('small')]
-        weak = asr[0]['cer_loan'] > CER_MAX or any(k['sim'] < KW_OK for k in asr[0]['keywords'])
-        if weak:                                   # independent second ear before calling a retake
-            asr.append(score('medium'))
-        best_cer = min(a['cer_loan'] for a in asr)
-        kw_chk = []
-        for j, i in enumerate(kw):
-            sims = [a['keywords'][j]['sim'] for a in asr]
-            best = max(sims)
-            kw_chk.append(dict(i=i, word=words[i]['word'], dev=l['dev_tokens'][i], aligned_ok=words[i]['ok'],
-                               aligned_heard=words[i]['heard'],
-                               free=[(a['model'], a['keywords'][j]['heard'], a['keywords'][j]['sim']) for a in asr],
-                               nukta='\u093c' in unicodedata.normalize('NFD', l['dev_tokens'][i]),
-                               verdict='ok' if words[i]['ok'] and best >= KW_OK else 'retake'))
-        state[lid] = dict(take=os.path.relpath(take, REPO), take_dur=round(len(V.decode(take)) / SR, 3),
-                          heard=asr[0]['heard'], cer=asr[0]['cer'], cer_loan=asr[0]['cer_loan'], asr=asr,
-                          cer_best=best_cer, keywords=kw_chk,
-                          matched='%d/%d' % (sum(w['ok'] for w in words), len(words)),
-                          unmatched=[(w['word'], w['heard']) for w in words if not w['ok']],
-                          passes={k: dict(final_dur=r['final_dur'], speed=r['speed'], lufs=r['loudness']['lufs'],
-                                          tp=r['loudness']['tp'], pauses=r['pauses'], wpm_after=r['wpm_after'],
-                                          out=r['output']) for k, r in reps.items()},
-                          retake=bool(best_cer > CER_MAX or any(k['verdict'] == 'retake' for k in kw_chk)),
-                          listen=[k['word'] for k in kw_chk if k['nukta']],
-                          seconds=round(time.time() - t0, 1))
+        def measured(lid_, f):                  # a take scored by `cands` is not transcribed again
+            m = cands.get('%s:%s' % (lid_, os.path.relpath(f, raw)))
+            if m and all(os.path.exists(os.path.join(REPO, p_['out'])) for p_ in m['passes'].values()):
+                return {k: v for k, v in m.items() if k != 'decision'}
+            return measure_take(lid_, f, work, lines)
+        state[lid] = measured(lid, take)
+        part2 = part2_take(raw, work) if lid == 'V5' else None
+        if part2 and part2 != take:            # V5 part 2 cut from another take (select.json "V5b")
+            state['V5b'] = measured('V5', part2)
+        elif 'V5b' in state and lid == 'V5':
+            del state['V5b']
         print(lid, json.dumps({k: state[lid][k] for k in ('cer', 'cer_loan', 'cer_best', 'matched', 'retake', 'listen',
                                                           'heard')}, ensure_ascii=False), flush=True)
         json.dump(state, open(state_p, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
     return state
 
 
+# ------------------------------------------------------------------------------------------------ context takes
+# vo_config allows 1-3 sentences per take. Per-line takes of this voice run 3.2-3.5 syll/s (the casting paragraph:
+# 4.35), so the overrunning lines were also recorded inside two- or three-sentence takes and cut at the sentence pause.
+CONTEXT = {'G1a': ['V1', 'V1B'], 'G1b': ['V1B', 'V1'], 'G2': ['V4', 'V5'], 'G3': ['V6', 'V7'],
+           'H1': ['V7', 'V1'], 'H2': ['V5', 'V6'], 'H3': ['V4', 'V5', 'V6']}
+
+
+def cmd_cut(raw, work):
+    """Every context take lkk_<G>_t<N>.mp3 -> one wav per line in <raw>/cuts/lkk_<LID>_c<G>t<N>_t1.wav, cut in the middle
+    of the silence between the sentences (found from vo_chain word times on the whole take + the voiced runs)."""
+    d, lines = load_script()
+    out_dir = os.path.join(raw, 'cuts')
+    os.makedirs(out_dir, exist_ok=True)
+    log_p = os.path.join(out_dir, 'cuts.json')
+    log = json.load(open(log_p)) if os.path.exists(log_p) else {}
+    for gid, lids in CONTEXT.items():
+        for f in takes_for(raw, gid):
+            n = re.search(r'_t(\d+)\.', f).group(1)
+            dev = [t for lid in lids for t in lines[lid]['dev_tokens']]
+            rom = [t for lid in lids for t in lines[lid]['rom_tokens_marked']]
+            words, heard = V.align(f, dev, rom)
+            x = V.decode(f)
+            runs = V.voiced_runs(x)
+            bounds, k = [], 0
+            for lid in lids[:-1]:
+                k += len(lines[lid]['dev_tokens'])
+                # whisper stretches a sentence's last word over the pause, so search from that word's START to the
+                # next line's first word; the largest voiced-run gap in between is the sentence pause
+                e, s_ = words[k - 1]['start'], words[k]['start']
+                gaps = [(b0 - a1, a1, b0) for (a0, a1), (b0, b1) in zip(runs, runs[1:])
+                        if a1 > e and b0 <= s_ + 0.15 and b0 > a1]
+                if not gaps:
+                    raise ValueError('%s: no pause between %s and the next line' % (f, lid))
+                g, a1, b0 = max(gaps)
+                bounds.append(round((a1 + b0) / 2, 3))
+            edges = [0.0] + bounds + [len(x) / SR]
+            for j, lid in enumerate(lids):
+                name = 'lkk_%s_c%st%s_t1.wav' % (lid, gid, n)
+                seg = x[int(round(edges[j] * SR)):int(round(edges[j + 1] * SR))]
+                V.write_wav(os.path.join(out_dir, name), seg)
+                log[name] = dict(source=os.path.basename(f), line=lid, position=j + 1, of=len(lids),
+                                 cut_s=[round(edges[j], 3), round(edges[j + 1], 3)],
+                                 words=[(w['word'], w['start'], w['end'], w['ok']) for w in words
+                                        if edges[j] <= w['start'] < edges[j + 1]])
+                print(name, log[name]['cut_s'], ' '.join(w[0] for w in log[name]['words']), flush=True)
+    json.dump(log, open(log_p, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+    return log
+
+
+def cmd_cands(raw, work, only=None, takes=None):
+    """Score every candidate take of every line (direct takes in <raw>, cuts in <raw>/cuts) -> <work>/candidates.json:
+    CER, keywords, alignment and the rule decision (durations, ends, fails) of each."""
+    d, lines = load_script()
+    cp = os.path.join(work, 'candidates.json')
+    cands = json.load(open(cp)) if os.path.exists(cp) else {}
+    want = {}
+    for t in takes or []:                       # explicit "LID:relpath" list (relpath inside <raw>)
+        lid_, rp = t.split(':', 1)
+        want.setdefault(lid_, []).append(os.path.join(raw, rp))
+    for lid in ['V1', 'V1B', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7']:
+        if only and lid not in only:
+            continue
+        if want and lid not in want:
+            continue
+        fs = want.get(lid) or (takes_for(raw, lid) + takes_for(os.path.join(raw, 'cuts'), lid + '_c*'))
+        if lid == 'V2':                         # the 15-word take t1 is not the current text
+            fs = [f for f in fs if not f.endswith('lkk_V2_t1.mp3')]
+        if lid == 'V5':                         # t2 reads "हैं," (rule variant); its tokens differ from the script
+            fs = [f for f in fs if not f.endswith('lkk_V5_t2.mp3')]
+        for f in fs:
+            key = '%s:%s' % (lid, os.path.relpath(f, raw))
+            m = cands[key] if key in cands else measure_take(lid, f, work, lines)   # scored once; the rules re-run
+            dec = decide(lid, f, work, lines)
+            m['decision'] = dict(speed=dec['speed'], notes=dec['notes'], fail=dec['fail'],
+                                 segs=[dict(label=lab, onset=round(on, 3), dur=round(c.span()[1] - c.span()[0], 3),
+                                            end=round(on + c.span()[1] - c.span()[0], 3)) for c, on, lab in dec['segments']])
+            cands[key] = m
+            print(key, 'cer %.3f/%.3f' % (m['cer'], m['cer_best']), m['matched'], 'retake' if m['retake'] else '',
+                  dec['speed'], [(s_['label'], s_['dur'], s_['end']) for s_ in m['decision']['segs']], dec['fail'], flush=True)
+            json.dump(cands, open(cp, 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+    return cands
+
+
+def part2_take(raw, work):
+    """The take V5's part 2 is cut from: select.json "V5b" (a file name in <raw>), else V5's own take."""
+    sel = os.path.join(work, 'select.json')
+    if os.path.exists(sel):
+        name = json.load(open(sel)).get('V5b')
+        if name:
+            p = os.path.join(raw, name)
+            if not os.path.exists(p):
+                raise FileNotFoundError(p)
+            return p
+    return pick_take(raw, work, 'V5')
+
+
 # ------------------------------------------------------------------------------------------------ editing
+SPAN_DB = -35.0   # a segment's voice on / off: 20 ms RMS above (clip peak frame + SPAN_DB)
+
+
+def speech_runs(x, rel_db=SPAN_DB, win=0.02, hop=0.01, close=0.08, min_run=0.03):
+    """Voiced runs at a FIXED level relative to the clip's loudest 20 ms frame (vo_chain.voiced_runs uses
+    max(floor + 10 dB, peak - 45 dB), so a short split part with no silence of its own gets a high floor and loses
+    its soft tail, while a long one keeps tails down to -45 dB). -35 dB is where a fading word ('hain...') stops
+    being audible under the bed; the same rule for every segment makes onsets and ends comparable."""
+    n, h = int(win * SR), int(hop * SR)
+    if len(x) < n:
+        return []
+    fr = np.lib.stride_tricks.sliding_window_view(np.asarray(x, np.float32), n)[::h]
+    db = 10 * np.log10(np.mean(fr.astype(np.float64) ** 2, axis=1) + 1e-12)
+    v = db > db.max() + rel_db
+    runs, i = [], 0
+    while i < len(v):
+        if v[i]:
+            j = i
+            while j < len(v) and v[j]:
+                j += 1
+            runs.append([i * hop, (j - 1) * hop + win])
+            i = j
+        else:
+            i += 1
+    merged = []
+    for r in runs:
+        if merged and r[0] - merged[-1][1] < close:
+            merged[-1][1] = r[1]
+        else:
+            merged.append(r)
+    return [(a, b) for a, b in merged if b - a >= min_run]
+
+
 class Clip:
     """A processed line: 48 kHz float audio + word list (clip time)."""
 
@@ -316,7 +486,7 @@ class Clip:
 
     @property
     def runs(self):
-        return V.voiced_runs(self.x)
+        return speech_runs(self.x)
 
     @property
     def dur(self):
@@ -391,21 +561,41 @@ def load_clip(work, take, speed):
     words = json.load(open(os.path.splitext(p)[0] + '.words.json'))
     for i, w in enumerate(words):
         w['i'] = i
-    return Clip(V.decode(p), words)
+    return Clip(edge_fades(V.decode(p)), words)
+
+
+EDGE_IN, EDGE_OUT = 0.005, 0.030
+
+
+def edge_fades(x):
+    """Raised-cosine fade-in (5 ms) and fade-out (30 ms) on a processed line. vo_chain trims 40 ms after ITS voiced
+    end (max(floor + 10 dB, peak - 45 dB) on the raw take), which on a breathy sentence-final word cuts a decay that is
+    still -33 to -37 dBFS after mastering (V7 t1, V5 t1, V1B t1): without the fade the file edge is a click.
+    Request filed: SHARED_REQUESTS.md R4."""
+    x = np.asarray(x, np.float32).copy()
+    ni, no = int(EDGE_IN * SR), int(EDGE_OUT * SR)
+    if len(x) > ni + no:
+        x[:ni] *= (0.5 - 0.5 * np.cos(np.linspace(0, np.pi, ni))).astype(np.float32)
+        x[-no:] *= (0.5 + 0.5 * np.cos(np.linspace(0, np.pi, no))).astype(np.float32)
+    return x
 
 
 # ------------------------------------------------------------------------------------------------ rules
-def decide(lid, take, work, lines):
-    """Apply the line's rules on the measured take. -> dict(segments=[(clip, onset, label)], speed, notes, fail)."""
+def decide(lid, take, work, lines, part2=None):
+    """Apply the line's rules on the measured take. -> dict(segments=[(clip, onset, label)], speed, notes, fail).
+    part2: V5 only, the take its part 2 is cut from (default: the same take)."""
     P = PLAN[lid]
     notes, fail = [], []
 
-    def clip_at(sp):
-        if not os.path.exists(proc_path(work, take, sp)):
-            process_line(lid, take, work, sp, lines)
-            notes.append('processed the %.2fx pass on demand' % sp)
-        c = load_clip(work, take, sp)
+    def clip_at(sp, src=None):
+        src = src or take
+        if not os.path.exists(proc_path(work, src, sp)):
+            process_line(lid, src, work, sp, lines)
+            notes.append('processed the %.2fx pass of %s on demand' % (sp, os.path.basename(src)))
+        c = load_clip(work, src, sp)
         for i, cap in P.get('pauses', {}).items():
+            if not re.search(r'(,|\.\.\.)$', lines[lid]['dev_tokens'][i]):
+                raise ValueError('%s: pause rule on token %d %r (no comma / ellipsis)' % (lid, i, lines[lid]['dev_tokens'][i]))
             was, now = c.cap_gap(i, cap)
             notes.append('pause after "%s" %.3f -> %.3f s' % (c.words[i]['word'], was, now))
         return c
@@ -468,6 +658,8 @@ def decide(lid, take, work, lines):
         for sp in P['speeds']:
             c = clip_at(sp)
             c1, c2 = c.split_after(P['split'] - 1)
+            if part2 and part2 != take:
+                c2 = clip_at(sp, part2).split_after(P['split'] - 1)[1]
             d1 = c1.span()[1] - c1.span()[0]
             d2 = c2.span()[1] - c2.span()[0]
             ok1 = P['onset'] + d1 <= P['part1_end'] + 1e-6
@@ -477,7 +669,12 @@ def decide(lid, take, work, lines):
             notes.append('%.2fx: part 1 %.3f s (ends %.3f, max %.3f), part 2 %.3f s (max %.3f): next pass'
                          % (sp, d1, P['onset'] + d1, P['part1_end'], d2, P['part2_max'][sp]))
         else:
-            fail.append('part 2 %.3f s > 1.78 s at 1.10x (or part 1 late): retake with "हैं," and part 2 at 23.650' % d2)
+            if not ok2:
+                fail.append('part 2 %.3f s > 1.78 s at 1.10x: retake with "हैं," and part 2 at 23.650' % d2)
+            if not ok1:
+                fail.append('part 1 %.3f s ends %.3f > %.3f at 1.10x (no rule left; the pause still holds 23.600: %s)'
+                            % (d1, P['onset'] + d1, P['part1_end'], 'yes' if P['onset'] + d1 < P['contains'] < P['onset2']
+                               else 'NO'))
         on2 = P['onset2']
         if on2 + d2 > P['hard']:
             fail.append('part 2 ends %.3f > 25.480 (clunk guard)' % (on2 + d2))
@@ -506,10 +703,19 @@ def decide(lid, take, work, lines):
                 break
             notes.append('%.2fx ends %.3f > %.3f: next pass' % (sp, P['onset'] + s1 - s0, P['hard']))
         else:
-            fail.append('ends %.3f > %.3f at 1.10x: retake V7' % (P['onset'] + s1 - s0, P['hard']))
+            fail.append('ends %.3f > %.3f at 1.10x even after the retakes: no rule left (V7 never shortens, never '
+                        'above 1.10x)' % (P['onset'] + s1 - s0, P['hard']))
+        onset = P['onset']
+        if onset + s1 - s0 > P['hard'] + 1e-6:
+            # the reel ends at 35.2 s (the loop seam): the last word must not run into it, so the onset moves to the
+            # latest frame that ends by 35.100, never before the end card (31.2 s); the lead is told
+            f_on = int(math.floor((P['hard'] - (s1 - s0)) * 30 + 1e-6))
+            onset = max(P['onset_min'], f_on / 30.0)
+            notes.append('onset moved %.3f -> %.3f s (f%d, %+.3f s) so the last word ends by %.3f: decision for the lead'
+                         % (P['onset'], onset, f_on, onset - P['onset'], P['hard']))
         if sp > 1.06:
             notes.append('1.10x is outside the gate band 1.00-1.06x: tell the lead')
-        return dict(segments=[(c, P['onset'], lid)], speed=sp, notes=notes, fail=fail)
+        return dict(segments=[(c, onset, lid)], speed=sp, notes=notes, fail=fail)
     raise KeyError(lid)
 
 
@@ -631,7 +837,7 @@ def cmd_assemble(raw, work, md, label):
         take = pick_take(raw, work, lid)
         if not take:
             raise FileNotFoundError('no take for %s in %s' % (lid, raw))
-        dec[lid] = decide(lid, take, work, lines)
+        dec[lid] = decide(lid, take, work, lines, part2=part2_take(raw, work) if lid == 'V5' else None)
         print(lid, 'speed %.2f' % dec[lid]['speed'], dec[lid]['notes'], dec[lid]['fail'] or 'OK', flush=True)
     stems = {}
     for name, order in (('A', ORDER_A), ('B', ORDER_B)):
@@ -648,6 +854,7 @@ def cmd_assemble(raw, work, md, label):
     shutil.copyfile(stems['A']['path'], os.path.join(work, 'vo_stem.wav'))
     shutil.copyfile(os.path.splitext(stems['A']['path'])[0] + '.words.json', os.path.join(work, 'words.json'))
     chk = checks(stems, dec, state)
+    chk['xcheck'] = xcheck(stems)
     json.dump(dict(label=label, checks=chk, decisions={k: dict(speed=v['speed'], notes=v['notes'], fail=v['fail'])
                                                        for k, v in dec.items()},
                    stems={k: dict(loud=v['loud'], probe=v['probe'],
@@ -786,17 +993,19 @@ def write_md(md, label, stems, dec, state, lines, chk, work, raw):
         flag = []
         if abs(d_on) > 0.3:
             flag.append('onset off by %+.3f s' % d_on)
+        elif abs(d_on) > 0.0005:
+            flag.append('onset moved %+.3f s (rule note below)' % d_on)
         if d_end > 0.0:
             flag.append('ends %+.3f s after the window%s' % (d_end, ' (MISS > 0.3 s)' if d_end > 0.3 else ''))
         if lw > 3.2 and not lab.endswith('b'):
             flag.append('line %.2f w/s > 3.2 (syll/s %.2f)' % (lw, ls))
-        if any(f_ for f_ in flag if 'MISS' in f_ or 'onset' in f_):
+        if any(f_ for f_ in flag if 'MISS' in f_ or 'onset off' in f_):
             misses.append('%s: %s' % (lab, '; '.join(flag)))
         rows.append('| %s | %s | %.3f | %.3f | %+.3f | %.3f | %.3f | %+.3f | %.2fx | %.3f | %d | %.2f | %.2f | %s | %s |'
                     % (lab, l['beat'], tgt_on, p['voice_on'], d_on, tgt_end, p['voice_off'], -d_end, dec[lid]['speed'],
                        dur, n, lw, ls, kws or '-', '; '.join(flag) or 'ok'))
     cer_rows = []
-    for lid in ['V1', 'V1B', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7']:
+    for lid in ['V1', 'V1B', 'V2', 'V3', 'V4', 'V5'] + (['V5b'] if 'V5b' in state else []) + ['V6', 'V7']:
         s = state.get(lid, {})
         asr = s.get('asr', [])
         heard = ' / '.join('%s: %s' % (a['model'], a['heard']) for a in asr) or '-'
@@ -810,7 +1019,7 @@ def write_md(md, label, stems, dec, state, lines, chk, work, raw):
                                                                               if s.get('listen') else 'ok')))
     notes = []
     for lid, v in dec.items():
-        for n_ in v['notes']:
+        for n_ in dict.fromkeys(v['notes']):          # each pass re-applies the same pause cap: list it once
             notes.append('- %s: %s' % (lid, n_))
         for f_ in v['fail']:
             notes.append('- **%s FAIL**: %s' % (lid, f_))
@@ -858,27 +1067,166 @@ words whisper wrote in Latin mapped back to the DEV spelling; whisper medium is 
        cB['words'], 'PASS' if not cB['fails'] else '; '.join(cB['fails']),
        '\n'.join(rows), speech, len(wordsA), ', '.join('%s->%s %.3f' % g for g in cA['gaps']), '; '.join(misses) or 'none',
        '\n'.join(cer_rows), '\n'.join(notes) or '- none')
+    txt = txt.replace('\n## Per-beat timing', lead_notes(stems, dec, state) + '\n## Per-beat timing', 1)
+    txt += md_appendix(work, raw, state, dec)
     os.makedirs(os.path.dirname(md), exist_ok=True)
     open(md, 'w', encoding='utf8').write(txt)
     print('->', md)
+
+
+def lead_notes(stems, dec, state):
+    """The decisions and open items for the lead, from the measured run."""
+    pl = {p['label']: p for p in stems['A']['placed']}
+    v7, v5a = pl['V7'], pl['V5a']
+    speech = sum(p['voice_off'] - p['voice_on'] for p in stems['A']['placed'])
+    L_ = ['', '## For the lead (decisions and open items)', '',
+          '- **Total VO**: A %.2f s of speech (%d words) from %.3f to %.3f s; B %.2f s (%d words). Every line is placed on its '
+          'beat-table onset except V7.' % (speech, len(stems['A']['words']), stems['A']['placed'][0]['voice_on'], v7['voice_off'],
+                                           sum(p['voice_off'] - p['voice_on'] for p in stems['B']['placed']),
+                                           len(stems['B']['words'])),
+          '- **V2 = the 14-word BRIEF fallback** (overrun rule): the 15-word take ran 6.51 s at 1.10x (~6.34 s with the 0.30 s pause; '
+          'window 6.03 s). Now "Hum zindagi unke hisaab se edit karte hain... jo poori video dekhte bhi nahi." (5.21 s, ends 14.01). '
+          'script.json is updated (v3); still to update by their owners: BRIEF section 15 V2 chunk `Hum apni` -> `Hum zindagi`, '
+          'BRIEF section 9 / packet.yaml V2 text, and IG caption line 2 if it should quote the VO exactly.',
+          '- **V7 onset %.3f s (f%d) instead of 31.600 (f948)**: six V7 recordings (two alone, four inside two-sentence takes) '
+          'span 3.95-4.30 s raw; the fastest (V7 t1, 3.95 s) still runs 3.64 s at the 1.10x ceiling (3 processed: 3.64-3.72 s), so from 31.600 the last word would end at 35.24 s, past the 35.100 limit and 40 ms '
+          'from the loop seam. No BRIEF rule is left (V7 never shortens, never above 1.10x), so the onset moved to the latest '
+          'frame that ends by 35.100 (end %.3f; loop seam to V1 0.227 s). "Us dost ko" now starts 0.12 s before the CTA caps '
+          'rise (31.55); *bhejo* lands at %.3f s. Also 1.10x is outside the gate band 1.00-1.06x. Alternative if the picture '
+          'must keep f948: accept the tail clipped at the 35.2 s seam (not recommended) or widen the V7 window.'
+          % (v7['voice_on'], round(v7['voice_on'] * 30), v7['voice_off'],
+             [w['start'] for w in stems['A']['words'] if w['line'] == 'V7' and w['keyword']][0]),
+          '- **V5 part 1 ends %.3f s** (window 23.467, +%.3f s) at 1.10x: "Log busy hain..." trails off on the held "hain"; '
+          'the fastest of the 7 V5 recordings (part 1 spans 1.25-1.63 s raw). The O6-complete hit at 23.600 is still inside the pause (part 2 at 23.667; pause %.3f s).'
+          % (v5a['voice_off'], v5a['voice_off'] - 23.467, pl['V5b']['voice_on'] - v5a['voice_off']),
+          '- **Context takes**: per-line takes of Vlad read short lines at 3.1-3.5 syll/s (the casting paragraph: 4.35), so V1, '
+          'V1B, V4, V6 and V7 overran even at 1.10x with the allowed pause cuts. vo_config allows 1-3 sentences per take, so they '
+          'were also recorded in two- or three-sentence takes and cut at the sentence pause (`raw/cuts/cuts.json`): V1, V1B, '
+          'V4, V5 part 1 and V6 come from those. V5 part 2 comes from the per-line take V5 t1 (its part 2 is the only one '
+          'within 1.78 s); the two parts are separate segments with a pause between them.',
+          '- **Speeds**: V1, V1B, V2, V3, V4, V5 at 1.10x; V6 1.05x; V7 1.10x. V4 at 1.10x (the rule: 1.06x ended 22.333).',
+          '- **Edge fades** (local workaround, SHARED_REQUESTS.md R4): vo_chain cuts sentence-final decays at -33 to -37 dBFS; '
+          'each processed line gets a 5 ms fade-in / 30 ms fade-out before placement.',
+          '- **By ear before posting**: z / f in ज़िंदगी, बिज़ी, नज़र, फ़ोन, फ़्लैट (spectrograms say z and f; ASR cannot); V1 '
+          'whisper writes "kahenge?" (BRIEF wants no rise on V1: a listener should confirm); V7 ends on a full stop (the BRIEF '
+          'hoped for no final cadence; elevenlabs_v4 takes no delivery tags, so only a listener can judge it).',
+          '- **Timing measure**: segment on / off = 20 ms RMS above the segment\'s peak - 35 dB (`speech_runs`); the stem '
+          'checks (no-VO windows, first / last voice) use vo_chain\'s stricter runs (peak - 45 dB on the stem).', '']
+    return '\n'.join(L_) + '\n'
+
+
+def xcheck(stems):
+    """Independent word-onset check: whisper (small, no snapping) on each whole stem, aligned to the same tokens, against the
+    words.json starts. Whisper glues a leading silence to the first word after a long gap, so line-initial words are listed
+    apart (their start is the measured voiced onset, checked by the placement)."""
+    out = {}
+    for name, s in stems.items():
+        words = s['words']
+        dev = [w['dev'] for w in words]
+        rom = [('*' if w['keyword'] else '') + w['word'] for w in words]
+        ind, _ = V.align(V.decode(s['path'], 16000), dev, rom, snap=False)
+        first = set()
+        for k, w in enumerate(words):
+            if k == 0 or words[k - 1]['line'] != w['line'] or w['start'] - words[k - 1]['end'] > 0.4:
+                first.add(k)
+        d = [abs(a['start'] - b['start']) for a, b in zip(words, ind)]
+        inner = [x for k, x in enumerate(d) if k not in first]
+        out[name] = dict(matched_independent='%d/%d' % (sum(i['ok'] for i in ind), len(ind)),
+                         inner_mean=round(float(np.mean(inner)), 3), inner_median=round(float(np.median(inner)), 3),
+                         inner_max=round(float(np.max(inner)), 3),
+                         over_0_15=[(w['line'], w['word'], w['start'], i['start']) for k, (w, i, x) in
+                                    enumerate(zip(words, ind, d)) if x > 0.15],
+                         keywords=[(w['word'], w['start'], i['start']) for w, i in zip(words, ind) if w['keyword']])
+        print('xcheck', name, out[name], flush=True)
+    return out
+
+
+PRON_NOTE = """Batch 1 (carriers `lkk_P1..P5_t1.mp3`, `vo/pron_check.json`): every risk word in its script spelling, whisper small +
+medium per sentence. P1 `ये क्राउड फ़्लैट है। ये कार्डबोर्ड है।` medium heard \"Crowdflat ... Cardboard\" (the English words), per
+sentence \"ये Crowdflat है।\" / \"ये कार्टबोर्ड है।\"; P2 (fallbacks कार्ड-बोर्ड, फ्लैट without nukta) came out worse (\"कार्टबोड\",
+small \"ख्लाट\"); P3 बिज़ी / नज़र / ज़िंदगी / फ़ोन all heard (medium CER 0.043); P4 both sentences spoken (whisper drops the repeat), the
+quoted 'लोग' has no gap > 80 ms and runs 0.2 s longer than the plain one (the stress survives); P5 Latin \"busy\" is not better than
+बिज़ी and गत्ता is heard \"गता\". ASR normalises nuktas, so z / f were checked on spectrograms: बिज़ी, नज़र, ज़िंदगी are continuous
+4-6 kHz frication with an unbroken voicing bar (no stop closure = z, not j); फ़ोन, फ़्लैट are broadband frication with no closure
+silence before it (= f, not ph). Verdict: every primary spelling kept, no fallback needed. A human ear should still confirm z / f
+before the post (SCRIPT section 7.1)."""
+
+
+def md_appendix(work, raw, state, dec):
+    """Takes used (with the context take each cut came from), every candidate scored, and the credit ledger."""
+    cuts_p = os.path.join(raw, 'cuts', 'cuts.json')
+    cuts = json.load(open(cuts_p)) if os.path.exists(cuts_p) else {}
+    out = ['', '## Pronunciation test', '', PRON_NOTE]
+    chk_p = os.path.join(work, 'check.json')
+    xc = json.load(open(chk_p))['checks'].get('xcheck') if os.path.exists(chk_p) else None
+    if xc:
+        out += ['', '## Word timings cross-check (independent whisper pass on each whole stem, no snapping)', '']
+        for name, r in xc.items():
+            out.append('- %s: matched %s; within-phrase word starts differ from `words.json` by mean %.3f / median %.3f / '
+                       'max %.3f s. Over 0.15 s: %s (words right after a silence: whisper puts their start inside the '
+                       'silence, or late on the vowel for a soft onset such as l; words.json keeps the voiced onset, '
+                       'checked on the 20 ms envelope). Keywords (words.json vs independent): %s.'
+                       % (name, r['matched_independent'], r['inner_mean'], r['inner_median'], r['inner_max'],
+                          ', '.join('%s "%s" %.3f vs %.3f' % tuple(x) for x in r['over_0_15']) or 'none',
+                          ', '.join('%s %.3f / %.3f' % (re.sub(r'[,.?\u0964]+$', '', w), a, b) for w, a, b in r['keywords'])))
+    out += ['', '## Takes used', '', '| line | take | recorded as | speed | CER (best) | matched |', '|---|---|---|---|---|---|']
+    for lid in ['V1', 'V1B', 'V2', 'V3', 'V4', 'V5'] + (['V5b'] if 'V5b' in state else []) + ['V6', 'V7']:
+        s = state.get(lid)
+        if not s:
+            continue
+        name = os.path.basename(s['take'])
+        c = cuts.get(name)
+        src = ('sentence %d of %d of `%s` (cut %.3f-%.3f s)' % (c['position'], c['of'], c['source'], c['cut_s'][0], c['cut_s'][1])
+               if c else 'its own take')
+        sp = dec.get(re.sub(r'b$', '', lid), {}).get('speed', 0)
+        out.append('| %s | `%s` | %s | %.2fx | %.3f | %s |' % ('V5 part 2' if lid == 'V5b' else lid, name, src, sp,
+                                                              s['cer_best'], s['matched']))
+    cp = os.path.join(work, 'candidates.json')
+    if os.path.exists(cp):
+        cands = json.load(open(cp))
+        used = set(os.path.basename(s['take']) for s in state.values())
+        out += ['', '## Every candidate take scored (`log_kya_kahenge_vo.py cands`; segment end = reel time at the rule-chosen speed)',
+                '', '| line | take | CER small (best) | matched | speed | segments: dur -> end | rule fails | used |', '|---|---|---|---|---|---|---|---|']
+        for k, m in cands.items():
+            lid, rp = k.split(':', 1)
+            d_ = m.get('decision', {})
+            segs = '; '.join('%s %.3f -> %.3f' % (g['label'], g['dur'], g['end']) for g in d_.get('segs', []))
+            out.append('| %s | `%s` | %.3f (%.3f) | %s | %.2fx | %s | %s | %s |'
+                       % (lid, os.path.basename(rp), m['cer'], m['cer_best'], m['matched'], d_.get('speed', 0), segs,
+                          '; '.join(d_.get('fail', [])) or '-', 'yes' if os.path.basename(rp) in used else ''))
+    crp = os.path.join(work, 'credits.json')
+    if os.path.exists(crp):
+        cr = json.load(open(crp))
+        sub = [r for r in cr['requests'] if r['status'] == 'submitted']
+        out += ['', '## Higgsfield credits (Vlad, elevenlabs_v4; own get_cost preflights, ledger `vo/credits.json`)', '',
+                'Spent **%.2f** of the reel budget %d in %d jobs (%s). Balance checks: %s.'
+                % (cr['spent_credits'], cr['budget_credits'], len(sub),
+                   ', '.join('%s %.2f' % (r['id'], r['preflight_credits']) for r in sub),
+                   '; '.join('%.2f (%s)' % (b_['credits'], b_['note']) for b_ in cr['balance_checks']))]
+    return '\n'.join(out) + '\n'
 
 
 # ------------------------------------------------------------------------------------------------ CLI
 def main(argv=None):
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('cmd', choices=['requests', 'pron', 'process', 'assemble', 'all'])
+    ap.add_argument('cmd', choices=['requests', 'pron', 'cut', 'cands', 'process', 'assemble', 'all'])
     ap.add_argument('--raw', default=os.path.join(RW, 'vo', 'raw'))
     ap.add_argument('--work', default=os.path.join(RW, 'vo'))
     ap.add_argument('--md', default=os.path.join(DESIGN, 'VO_TIMING.md'))
     ap.add_argument('--label', default='MEASURED (Vlad takes)')
     ap.add_argument('--lines', default='')
+    ap.add_argument('--takes', default='', help='cands: LID:relpath,... (relpath inside --raw)')
     a = ap.parse_args(argv)
     only = [s for s in a.lines.split(',') if s]
     if a.cmd == 'requests':
         cmd_requests(a.work)
     if a.cmd == 'pron':
         cmd_pron(a.raw, a.work)
+    if a.cmd == 'cut':
+        cmd_cut(a.raw, a.work)
+    if a.cmd == 'cands':
+        cmd_cands(a.raw, a.work, only, [t for t in a.takes.split(',') if t])
     if a.cmd in ('process', 'all'):
         cmd_process(a.raw, a.work, only)
     if a.cmd in ('assemble', 'all'):

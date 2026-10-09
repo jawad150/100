@@ -7,7 +7,7 @@ the reveal). Key from MUSIC_log_kya_kahenge.md: D minor (tonal SFX pitched to D 
 in the same design folder.
 
 What this module owns
-    register()          adds the 6 local sounds to audio.SOUNDS (idempotent) + epic_sfx and sfx_jawad
+    register()          adds the 7 local sounds to audio.SOUNDS (idempotent) + epic_sfx and sfx_jawad
     raw_cues(hook)      the brief's cue list ('A' public hook, 'B' Trial hook), frame-exact, before the VO fit
     cues(hook)          raw_cues -> sfx_jawad.fit_under_vo against the VO word timings (+ the VO audio for the hero test)
     BEDS                exact bed automation (breakpoints, loop positions) for the circular mixer
@@ -38,6 +38,8 @@ Local sounds (each passes audio.qc == [] or, for beds, a seamless-loop check; sp
     lkk_flood_hum       bed, 10 s seamless loop: the warm lamp after the clunk. Fundamental f0 = 110 Hz (A2, a chord tone of
                         Bbmaj7 / F/A / Dm(add9)) + 2-4 f0 at -6/-12/-18 dB, 0.3 Hz wobble. The brief's 100 Hz sits between
                         G2 and Ab2 and rubs the A2/Bb2 pads (music map); the agent rule is "pitch tonal SFX into the key".
+    lkk_card_tap        (run 2) the f888 tap body, hit 0.0015 s: slap (noise 400-3200 Hz, tau 22 ms) + air puff (< 700 Hz,
+                        tau 45 ms) + damped 140 Hz thud (tau 28 ms); replaces impact_soft there (see run-2 notes below).
     The clunk is a cue stack (ui_click + impact_soft + sub_drop), not a sound.
 
 CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh)
@@ -46,14 +48,30 @@ CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh)
     python3 log_kya_kahenge_sfx.py build [--hook A|B|AB]  SFX stem(s) -> <RW>/audio/log_kya_kahenge[_hookb]_sfx_stem.wav
                                                           (+ _sfx.wav, _sfx_stem_fx.wav / _bed.wav, _sfx_overview.png,
                                                           _cues.json, _sfx_report.json); -18 LUFS, TP <= -2.0 dBTP, loop-exact
-    python3 log_kya_kahenge_sfx.py rough [--hook A|B|AB]  epic_mix (VO + SFX stem + music_full.wav) -> <RW>/audio/
-                                                          log_kya_kahenge[_hookb]_rough_*.wav/.json/.png + measurements
+    python3 log_kya_kahenge_sfx.py rough [--hook A|B|AB] [--loop]
+                                                          epic_mix (VO + SFX stem + music_full.wav) -> <RW>/audio/
+                                                          log_kya_kahenge[_hookb]_rough_*.wav/.json/.png + measurements;
+                                                          --loop: the same chain on a loop-padded copy -> *_roughloop_*
     python3 log_kya_kahenge_sfx.py verify                 whisper-wall ASR test (faster-whisper small + medium)
+    python3 log_kya_kahenge_sfx.py verify-control         medium/en control: rotated wall, first 20 s, pink-noise control
+                                                          (separates Whisper's end-of-clip "Thanks for watching!")
 
 VO source (cues / rough): the real stems <RW>/vo/lkk_vo_<A|B>.wav + .words.json (vo_stem.wav / words.json = A) when they
 exist; else the labelled STAND-IN <RW>/audio/standin_vo/ (Kokoro hm_psi scratch reads assembled by log_kya_kahenge_vo.py:
-NOT the VO, used only to prove the mix chain); else the brief's planned windows (section 9). Re-run build + rough when the
-real VO lands: the cue ducking follows the measured words.
+NOT the VO, used only to prove the mix chain; deleted in run 2); else the brief's planned windows (section 9). Re-run build + rough when the
+VO changes: the cue ducking follows the measured words.
+
+Run 2 (2026-10-09, real Vlad VO, VO_TIMING.md: V7 now starts 31.443 s, V5 part 1 ends 23.51 s, V6 starts 25.97 s). Changes
+measured through the final chain (epic_mix.mix_reel A/B, which the music-supervisor's `mix` also calls), see SOUND.md:
+    reveal      impact_big -2 -> -8 dB (sat 4 -> 8), braam 0 -> +4 dB (sat 4 -> 12): the bus glue in epic_mix.master (2:1 from
+                the 98th-percentile 10 ms level - 3 dB) took 4.7-5.3 dB off the spiky reveal but < 2 dB off the VO, so V1's
+                VO at 0.35 s was the reel's loudest momentary; a flatter, denser reveal is now the max (BRIEF 18)
+    hero carve  reveal tails -15 dB (REVEAL_CARVE_DB) under V3, the clunk / tap tails -10 dB as before; carve windows start
+                15 ms before the measured speech (words + VO activity), not 60 ms, so the reveal keeps its full 400 ms window
+    heartbeat   -12 -> -18 dB: the drop-out sat only 3-6 LU under the programme in the mix; now >= 10 LU under it
+    tap body    impact_soft (-14, lp 900) at f888 -> local lkk_card_tap (-13, same max momentary within 1 dB): impact_soft's
+                tonal body (65 Hz, and ~230 Hz even with hp 150) made a 15 ms ripple in qa_measure's 5 ms envelope that
+                its onset finder read as +55 ms (a 1.65-frame CHECK, rise 7.5 dB); the card_slide still carries the landing
 """
 import argparse
 import functools
@@ -93,7 +111,10 @@ MUSIC_JSON = os.path.join(RW, 'music', 'music_full.json')
 LIB = os.path.join(SFXDIR, 'library')
 SRC_CACHE = os.path.join(AUD, 'src')
 HERO_CARVE_DB = -10.0                          # hero tails under later speech (VO-first: >= 6 LU under the words)
+REVEAL_CARVE_DB = -15.0                        # ... the reveal pair (braam + impact_big) under V3 (cue key 'carve_db')
 HERO_CARVE_BRIDGE = 1.0                        # ... held through pauses shorter than this (no tail pumping in a line)
+HERO_CARVE_LEAD, HERO_CARVE_TAIL = 0.015, 0.06  # carve = measured speech (words + VO activity) - 15 ms .. + 60 ms
+CARVE_RAMP = 0.05                              # raised-cosine ramp into / out of each carve window (s)
 TARGET_LUFS, TP_CEILING = -18.0, -2.0          # SFX stem (bible 4.1); the final mix is -14 / -2.0 (epic_mix)
 BED, BED_GAIN_DB = None, -30.0                 # see module docstring: use `build`, never audio.mix, for this reel
 
@@ -332,6 +353,25 @@ def lkk_ember_crackle(seed=0, dur=1.6):
     return _finish(x, 0.0, -10.0, 'lkk_ember_crackle', fin=0.003)
 
 
+def lkk_card_tap(seed=0):
+    """The last cardboard figure landing flat (the f888 tap body, run 2; replaces impact_soft there): a broadband slap
+    (noise 400-3200 Hz, 1.5 ms attack, tau 22 ms), an air puff from under the falling panel (noise < 700 Hz, tau 45 ms)
+    and a damped floor thud (140 Hz, tau 28 ms, no ringing body), small room. hit = the slap's peak (0.0015 s). No
+    tonal body rings past ~0.15 s, so the 5 ms onset finder sees one clean rise."""
+    r = _rng(seed, 'lkk_card_tap')
+    D = 0.6
+    tt = _t(D)
+    slap = bp(r.standard_normal(len(tt)), 400.0, 3200.0, 2) * _ar(tt, 0.0015, 0.022)
+    puff = lp(r.standard_normal(len(tt)), 700.0, 2) * _ar(tt, 0.003, 0.045)
+    thud = np.sin(2 * np.pi * 140.0 * tt) * _ar(tt, 0.002, 0.028)
+    x = (slap / (np.max(np.abs(slap)) + 1e-12) + 0.5 * puff / (np.max(np.abs(puff)) + 1e-12)
+         + 0.6 * thud / (np.max(np.abs(thud)) + 1e-12))
+    x = _fade(x, 0.0005, 0.05)
+    st = np.stack([x, 0.9 * x + 0.1 * np.roll(x, 29)], 1)
+    st = A.reverb(_taper(st, 0.3), 'room', wet_db=-16.0)
+    return _finish(st, 0.0015, -4.0, 'lkk_card_tap')
+
+
 def lkk_flood_hum(seed=0, dur=10.0, f0=HUM_F0):
     """The warm lamp: seamless `dur` s loop, hum at f0 (integer cycles) + 2/3/4 f0 at -6/-12/-18 dB, 0.3 Hz wobble."""
     r = _rng(seed, 'lkk_flood_hum')
@@ -360,6 +400,8 @@ META = dict(   # name: (category, character, use)
     lkk_board_flex=('impact', 'cardboard creak: stick-slip clicks 600-1800 Hz + low flex thump', 'C15 cards flexing'),
     lkk_ember_crackle=('texture', 'ember crackle + pops + low roar (align start)', 'C15 O6 burn of the card layer'),
     lkk_flood_hum=('bed', 'floodlight ballast hum at A2 + harmonics, 0.3 Hz wobble', 'C15 warm lamp after the clunk'),
+    lkk_card_tap=('impact', 'cardboard panel landing flat: slap 400-3200 Hz + air puff + damped 140 Hz thud',
+                  'C15 the last card tips over (f888 tap body)'),
 )
 LOCAL = tuple(META)
 
@@ -415,9 +457,11 @@ def raw_cues(hook='A'):
     add(F(384), 'impact_soft', -16, 'f384: L3 cut to the 135 mm rows', lp=1100)                     # 10
     add(F(456), 'reverse_swell', -8, 'f456: the suck into the drop-out (ends here)', lp=1100,
         params=dict(duration=round(11 / FPS, 5)), send_db=-120.0)                                   # 11 (no room tail)
-    add(F(468), 'heartbeat', -12, 'f468: held breath in the drop-out: lub f468, dub f474 (16th grid)', lp=900,
+    add(F(468), 'heartbeat', -18, 'f468: held breath in the drop-out: lub f468, dub f474 (16th grid)', lp=900,
         params=dict(n=1, bpm=130.4))    # 12: bpm only sets the lub-dub gap (0.29 * sqrt(62 / bpm) = 0.200 s); at the
-    #                                     default 62 the dub fell at 15.90-15.96, a 40-100 ms flam before the reveal
+    #                                     default 62 the dub fell at 15.90-15.96, a 40-100 ms flam before the reveal.
+    #                                     Run 2: brief -12 -> -18: at -12 the drop-out read -17..-22 LUFS momentary in the
+    #                                     -14 LUFS mix (3-6 LU under the programme); at -18 it reads <= -24
     # 13-14 the reveal (brief: braam 0 / impact_big -2 on f480). Measured changes, all for VO-first and the limiter:
     #   impact_big: transient ON f480; tail 0.6 (shorter hall/rumble) + 'sat' 4 (loudness-matched, alias-safe
     #     saturation: peak-to-loudness 9.9 -> ~3 dB; with tail 0.6 its 0.4-3 s decay stays within ~2 dB of the raw sound)
@@ -426,10 +470,13 @@ def raw_cues(hook='A'):
     #     hold sat ~1 LU under V3's first words and moved the reel's max momentary to 16.9-17.7 s), 'sat' 4
     #   both tails are carved -6 dB under later speech (cues(): HERO_CARVE_DB). Stem limiter max GR 8.2 dB -> ~2.8 dB
     #   (+10 ms keeps the braam's blat peak, its designed hit at +40 ms, >= 300 ms clear of V3 at 16.367: fit_under_vo).
-    add(F(480), 'impact_big', -2, 'f480: REVEAL transient + body + hall tail (loudest moment)', hero=True, sat=4.0,
-        params=dict(tail=0.6))
-    add(F(480) + 0.010, 'braam', 0, 'f480: REVEAL braam (+10 ms), orbit already moving', hero=True, align='start',
-        sat=4.0, params=dict(root=36.71, dur=1.0))
+    #   Run 2 (real VO, final epic_mix chain): impact_big -2 -> -8 with sat 8, braam 0 -> +4 with sat 12 (lower
+    #     peak-to-loudness: the mix glue halves whatever a spike adds; stem limiter GR 5.1 -> 2.2 dB), tails carved
+    #     REVEAL_CARVE_DB under V3. Measured variants in SOUND.md section 3.
+    add(F(480), 'impact_big', -8, 'f480: REVEAL transient + body + hall tail (loudest moment)', hero=True, sat=8.0,
+        carve_db=REVEAL_CARVE_DB, params=dict(tail=0.6))
+    add(F(480) + 0.010, 'braam', 4, 'f480: REVEAL braam (+10 ms), orbit already moving', hero=True, align='start',
+        sat=12.0, carve_db=REVEAL_CARVE_DB, params=dict(root=36.71, dur=1.0))
     add(F(528), 'lkk_board_flex', -16, 'f528: cards flexing mid-orbit (backs, tape, struts)', lp=1100,
         align='start')                                                                              # 15
     add(F(576), 'whoosh_slow', -12, 'f576: edge-on pass, the single image', lp=1100)                # 16
@@ -454,7 +501,8 @@ def raw_cues(hook='A'):
     add(F(876), 'swish_small', -16, 'f876: the last card starts to fall (screen x ~820)', hp=5500, align='start',
         pan=0.35)                                                                                   # 29
     add(F(888), 'card_slide', -8, 'f888: THE TAP, the last card lands', hero=True, pan=0.35)        # 30
-    add(F(888), 'impact_soft', -14, 'f888: tap body', lp=900, hero=True, pan=0.35)                  # 31
+    add(F(888), 'lkk_card_tap', -13, 'f888: tap body (cardboard slap; run 2, was impact_soft -14 lp 900)', hero=True,
+        pan=0.35)                                                                                   # 31
     for cc in _endcard_cues():                                                                      # 32
         c.append(cc)
     for fr, rows in zip((967, 982, 996, 1011), ('0-1', '3-4', '6-7', '9')):                         # 33
@@ -555,7 +603,14 @@ def cues(hook='A', vo=None, report=False):
     src = vo or vo_source(hook)
     out, rep = SJ.fit_under_vo(raw_cues(hook), src['words'], vo_audio=src['wav'], hero='raise', report=True)
     # hero tails: the hit is clear of speech (checked above), but braam / impact_big / the clunk ring on for seconds;
-    # carve HERO_CARVE_DB out of each hero cue while later speech is active (word windows padded 60 ms)
+    # carve c['carve_db'] (default HERO_CARVE_DB) out of each hero cue while later speech is active. Speech = the
+    # UNPADDED words united with the VO audio's activity (sfx_jawad.hero_windows), each window from HERO_CARVE_LEAD
+    # before its start to HERO_CARVE_TAIL after its end (the gain reaches full depth at the window start).
+    if src['wav'] is not None:
+        speech, _src = SJ.hero_windows(src['words'], vo_audio=src['wav'])
+    else:
+        speech = SJ.vo_windows(src['words'], pad=0.0)
+    rep['carve_speech'] = speech
     rep['carved'] = []
     for c in out:
         if c.get('hero'):
@@ -564,17 +619,19 @@ def cues(hook='A', vo=None, report=False):
             start = float(c['t']) - (x.hit / rate if c['align'] == 'hit' else 0.0)
             hit, end = start + x.hit / rate, start + len(x) / SR / rate
             wins = []                                       # speech windows that START after the hit (+50 ms) ...
-            for a, b in rep['windows']:
+            for a, b in speech:
+                a, b = a - HERO_CARVE_LEAD, b + HERO_CARVE_TAIL
                 if a < hit + 0.05 or a >= end:
                     continue
                 if wins and a - wins[-1][1] < HERO_CARVE_BRIDGE:  # ... bridged across short pauses
                     wins[-1] = (wins[-1][0], b)
                 else:
                     wins.append((a, b))
-            w = [(a, b, HERO_CARVE_DB) for a, b in wins]
+            depth = float(c.get('carve_db', HERO_CARVE_DB))
+            w = [(round(a, 4), round(b, 4), depth) for a, b in wins]
             if w:
                 c['carve'] = w
-                rep['carved'].append(dict(name=c['name'], t=c['t'], windows=[(a, b) for a, b, _ in w]))
+                rep['carved'].append(dict(name=c['name'], t=c['t'], depth_db=depth, windows=[(a, b) for a, b, _ in w]))
     rep['vo'] = dict(kind=src['kind'], words=src['words'] if isinstance(src['words'], str) else 'planned windows',
                      wav=src['wav'])
     return (out, rep) if report else out
@@ -630,8 +687,9 @@ def _sat_matched(y, drive):
     return z * undb(A.momentary_max(y) - A.momentary_max(z))
 
 
-def _carve_gain(L, start, carve, ramp=0.05):
-    """Gain curve for one cue: depth_db inside each (t0, t1, depth_db) window (reel time), 50 ms raised-cosine ramps."""
+def _carve_gain(L, start, carve, ramp=CARVE_RAMP):
+    """Gain curve for one cue: depth_db inside each (t0, t1, depth_db) window (reel time), 50 ms raised-cosine ramps
+    (down over [t0 - ramp, t0], up over [t1, t1 + ramp])."""
     t = start + np.arange(L) / SR
     g_db = np.zeros(L)
     for a, b, d in carve:
@@ -896,9 +954,74 @@ def build(hook='A'):
     return rep, meas
 
 
-def rough(hook='A'):
+LOOP_PAD = 3.0                 # rough --loop: seconds of the loop's other end padded on each side before epic_mix
+
+
+def _stereo_n(path, n):
+    x = np.asarray(A.read_wav(path)[0], dtype=np.float64)
+    if x.shape[1] == 1:
+        x = np.repeat(x, 2, axis=1)
+    return np.pad(x[:n], ((0, max(0, n - len(x))), (0, 0)))
+
+
+def _loop_mix(M, rname, vo_wav, sfx, music):
+    """epic_mix.mix_reel on a circularly padded copy (LOOP_PAD s of the other end on each side), cropped back to DUR:
+    every sidechain / glue / limiter state at sample 0 then equals its state at the end, so the loop seam is continuous
+    (mix_reel itself starts each envelope from rest at t = 0). The crops get one small gain each (A and B) back to
+    -14.00 LUFS, capped so the true peak stays <= TP_CEILING."""
+    Nn, P = N, _n(LOOP_PAD)
+    tmpd = os.path.join(AUD, '_tmp_loop_' + rname)
+    os.makedirs(tmpd, exist_ok=True)
+    ins = {}
+    try:
+        for key, path in (('vo', vo_wav), ('sfx', sfx), ('music', music)):
+            if path is None:
+                ins[key] = None
+                continue
+            x = _stereo_n(path, Nn)
+            ins[key] = os.path.join(tmpd, key + '.wav')
+            A._write_wav(ins[key], np.concatenate([x[-P:], x, x[:P]]), 24)
+        rp = M.mix_reel(rname, DUR + 2 * LOOP_PAD, vo=ins['vo'], sfx=ins['sfx'], music=ins['music'], out_dir=tmpd,
+                        vo_offset=0.0)
+        cut = dict((k, np.asarray(A.read_wav(rp['files'][k])[0], dtype=np.float64)[P:P + Nn]) for k in
+                   ('mix', 'vo_sfx', 'stem_vo', 'stem_sfx', 'stem_music'))
+    finally:
+        for fn in os.listdir(tmpd):
+            os.remove(os.path.join(tmpd, fn))
+        os.rmdir(tmpd)
+    gains = {}
+    for key, stems in (('mix', ('stem_vo', 'stem_sfx', 'stem_music')), ('vo_sfx', ())):
+        g = TARGET_FINAL - A.loudness(cut[key])
+        g = min(g, TP_CEILING - 0.05 - A.true_peak(cut[key]))
+        gains[key] = round(g, 3)
+        for k in (key,) + stems:
+            cut[k] = cut[k] * undb(g)
+    files = {}
+    for k, x in cut.items():
+        files[k] = os.path.join(AUD, rname + '_' + k + '.wav')
+        A._write_wav(files[k], x, 24)
+    yA, yB = cut['mix'], cut['vo_sfx']
+    rep = dict(name=rname, dur=DUR, loop_pad_s=LOOP_PAD, crop_gain_db=gains, spec=M.SPEC,
+               A_full=dict(lufs=round(A.loudness(yA), 2), tp_dbtp=round(A.true_peak(yA), 2),
+                           lra=round(A.loudness_range(yA), 1), max_momentary=round(A.momentary_max(yA), 1)),
+               B_vo_sfx=dict(lufs=round(A.loudness(yB), 2), tp_dbtp=round(A.true_peak(yB), 2),
+                             lra=round(A.loudness_range(yB), 1)),
+               vo_lufs_in_mix=round(A.loudness(cut['stem_vo']), 2), music_lufs_in_mix=round(A.loudness(cut['stem_music']), 2)
+               if np.any(cut['stem_music']) else None, sfx_lufs_in_mix=round(A.loudness(cut['stem_sfx']), 2), files=files)
+    M._overview(yA, cut['stem_vo'], cut['stem_music'], cut['stem_sfx'], os.path.join(AUD, rname + '_mix.png'),
+                '%s (loop-padded epic_mix)  A=%.2f LUFS %.2f dBTP | B=%.2f LUFS %.2f dBTP' % (
+                    rname, rep['A_full']['lufs'], rep['A_full']['tp_dbtp'], rep['B_vo_sfx']['lufs'],
+                    rep['B_vo_sfx']['tp_dbtp']))
+    return rep
+
+
+TARGET_FINAL = -14.0
+
+
+def rough(hook='A', loop=False):
     """Rough mix with the music-supervisor's chain (epic_mix.mix_reel): VO -16, SFX stem -18 (-4 dB under the VO),
-    music -18 (-3 under SFX hits, -9 under the VO), master -14 LUFS / limiter -2.3 dBFS TP."""
+    music -18 (-3 under SFX hits, -9 under the VO), master -14 LUFS / limiter -2.3 dBFS TP. loop=True: the same chain
+    on a circularly padded copy (_loop_mix), written as <name>_roughloop_* (a recipe for a click-free loop seam)."""
     import epic_mix as M
     register()
     name, base = _paths(hook)
@@ -907,15 +1030,18 @@ def rough(hook='A'):
         sys.exit('rough: no VO stem (real or stand-in) for hook %s' % hook)
     sfx = base + '_sfx_stem.wav'
     music = MUSIC if os.path.exists(MUSIC) else None
-    rname = name + '_rough'
+    rname = name + ('_roughloop' if loop else '_rough')
     vo_wav, tmp = src['wav'], None
     xv, srv = A.read_wav(vo_wav)
     if xv.shape[1] == 1:          # epic_mix.load keeps a mono wav as (N, 1) and mix_reel's concatenate then fails
-        tmp = os.path.join(AUD, '_tmp_%s_vo_stereo.wav' % rname)   # (SHARED_REQUESTS R4): feed a stereo copy
+        tmp = os.path.join(AUD, '_tmp_%s_vo_stereo.wav' % rname)   # (SHARED_REQUESTS R5): feed a stereo copy
         A._write_wav(tmp, np.repeat(xv, 2, axis=1), 24)
         vo_wav = tmp
     try:
-        rep = M.mix_reel(rname, DUR, vo=vo_wav, sfx=sfx, music=music, out_dir=AUD, vo_offset=0.0)
+        if loop:
+            rep = _loop_mix(M, rname, vo_wav, sfx, music)
+        else:
+            rep = M.mix_reel(rname, DUR, vo=vo_wav, sfx=sfx, music=music, out_dir=AUD, vo_offset=0.0)
     finally:
         if tmp and os.path.exists(tmp):
             os.remove(tmp)
@@ -934,6 +1060,9 @@ def rough(hook='A'):
     sp = M.speech_mask(v)
     idx = np.clip((tt * SR).astype(int), 0, len(v) - 1)
     spk = sp[idx] & (lv > lv.max() - 15)
+    _, lmm = A.loudness_curve(m)
+    rep['vo_over_music_lu'] = round(float(np.median((lv - lmm)[spk])), 1)     # (recomputed on the written stems)
+    rep['vo_over_sfx_lu'] = round(float(np.median((lv - ls)[spk])), 1)
     rep['vo_over_bed_lu'] = round(float(np.median((lv - lb)[spk])), 1)        # bed = music + SFX together
     rep['vo_over_bed_p10_lu'] = round(float(np.percentile((lv - lb)[spk], 10)), 1)
     rep['vo_over_sfx_p10_lu'] = round(float(np.percentile((lv - ls)[spk], 10)), 1)
@@ -954,13 +1083,38 @@ def rough(hook='A'):
     k = int(np.argmax(ly))
     rep['max_momentary'] = dict(lufs=round(float(ly[k]), 2), window=(round(tt[k] - 0.2, 3), round(tt[k] + 0.2, 3)),
                                 centre=round(float(tt[k]), 3))
+    # BRIEF 18: max momentary within +-0.2 s of 16.0 (window centres 15.8-16.2 cover 15.6-16.4) and its margin over the
+    # loudest momentary anywhere else (both mixes: A full, B VO + SFX)
+    yb = A.read_wav(f['vo_sfx'])[0]
+    _, lyb = A.loudness_curve(yb)
+    rv = (tt >= 15.8 - 1e-6) & (tt <= 16.2 + 1e-6)
+    away = (tt < 15.6) | (tt > 16.8)                    # "elsewhere": windows that do not overlap the reveal's body
+    for key, lc in (('A', ly), ('B', lyb)):
+        kr, ko = int(np.argmax(np.where(rv, lc, -200))), int(np.argmax(np.where(away, lc, -200)))
+        rep['reveal_vs_rest_' + key] = dict(reveal_lufs=round(float(lc[kr]), 2), reveal_centre=round(float(tt[kr]), 3),
+                                            rest_max_lufs=round(float(lc[ko]), 2), rest_centre=round(float(tt[ko]), 3),
+                                            margin_lu=round(float(lc[kr] - lc[ko]), 2), lra=round(A.loudness_range(
+                                                y if key == 'A' else yb), 2))
+    # the clunk alone: window centres 25.40-25.77 (V5 ends 25.30 and V6 starts 25.97, so these 400 ms windows hold
+    # the clunk and no speech onset); the old 25.4-26.2 search caught V6's first words
     sel = (tt > 25.4) & (tt < 26.2)
     kc = int(np.argmax(np.where(sel, ly, -200)))
     rep['clunk_momentary'] = dict(lufs=round(float(ly[kc]), 2), centre=round(float(tt[kc]), 3),
-                                  below_reveal_lu=round(float(ly[k] - ly[kc]), 2))
+                                  below_reveal_lu=round(float(ly[k] - ly[kc]), 2), note='search 25.4-26.2 (incl. V6)')
+    sel2 = (tt >= 25.4 - 1e-6) & (tt <= 25.77 + 1e-6)
+    kc2 = int(np.argmax(np.where(sel2, ly, -200)))
+    kr = int(np.argmax(np.where(rv, ly, -200)))
+    rep['clunk_only_momentary'] = dict(lufs=round(float(ly[kc2]), 2), centre=round(float(tt[kc2]), 3),
+                                       below_reveal_lu=round(float(ly[kr] - ly[kc2]), 2))
     a, b = _n(F(456)), _n(F(480))
+    b4 = _n(F(480) - 0.004)                             # the score's own 4 ms fade-in edge starts at 15.996
     st_t, st_l = A.loudness_curve(y, 3.0, 0.05)
-    rep['dropout'] = dict(music_max_dbfs=round(float(db(np.abs(m[a:b]).max() + 1e-15)), 1),
+    rep['dropout'] = dict(music_max_dbfs=round(float(db(np.abs(m[a:b4]).max() + 1e-15)), 1),
+                          music_max_dbfs_incl_edge=round(float(db(np.abs(m[a:b]).max() + 1e-15)), 1),
+                          mix_momentary_at=dict((str(c), round(float(ly[np.argmin(np.abs(tt - c))]), 1))
+                                                for c in (15.4, 15.5, 15.6, 15.7, 15.8)),
+                          programme_minus_dropout_lu=round(float(A.loudness(y)
+                                                                 - np.max(ly[(tt >= 15.4) & (tt <= 15.8)])), 1),
                           mix_rms_dbfs=round(float(db(_rms(y[a:b]))), 1),
                           mix_momentary_lufs=round(float(A.loudness_curve(y[a:b], 0.4, 0.05)[1].mean()), 1),
                           mix_dropout_lufs=round(float(-0.691 + 10 * np.log10(np.mean(np.square(A.kweight(y[a:b])).sum(1))
@@ -986,10 +1140,27 @@ def rough(hook='A'):
             heroes.append(dict(name=p['name'], hit=h, speech_end_before=prev_end, speech_start_after=next_on,
                                clear=not before and not after))
     rep['heroes_vs_speech'] = heroes
+    # qa_measure.py `cues` on the mixes (mono fold-down, 5 ms bins, argmax of the rise within +-60 ms): every hero cue
+    # and every other align='hit' transient cue (whooshes / swells peak broadly and are timed in the build report)
+    qa = []
+    for key, yy in (('A', y), ('B', yb)):
+        for p in cj['cues']:
+            if p['align'] != 'hit' or not (p['hero'] or p['hit'] - p['start'] < 0.05):
+                continue
+            off, rise = _onset_near(yy, p['t'])
+            flag = 'CHECK' if abs(off) > 1.0 / FPS + 1e-9 and rise > 6 else ''
+            qa.append(dict(mix=key, name=p['name'], t=p['t'], hero=p['hero'], off_ms=round(off * 1000, 1),
+                           off_frames=round(off * FPS, 2), rise_db=round(rise, 1), flag=flag))
+    rep['qa_onsets'] = qa
     json.dump(rep, open(os.path.join(AUD, rname + '_mix.json'), 'w'), indent=1, default=str)
     keys = ('vo_kind', 'A_full', 'B_vo_sfx', 'ffmpeg_A', 'ffmpeg_B', 'vo_over_music_lu', 'vo_over_sfx_lu',
             'vo_over_bed_lu', 'vo_over_bed_p10_lu', 'vo_over_sfx_p10_lu', 'vo_lufs_in_mix', 'music_lufs_in_mix',
-            'sfx_lufs_in_mix', 'per_line', 'max_momentary', 'clunk_momentary', 'dropout', 'seam', 'heroes_vs_speech', 'files')
+            'sfx_lufs_in_mix', 'per_line', 'max_momentary', 'reveal_vs_rest_A', 'reveal_vs_rest_B', 'clunk_momentary',
+            'clunk_only_momentary', 'dropout', 'seam', 'heroes_vs_speech', 'files')
+    for o in qa:
+        if o['hero'] or o['flag']:
+            print('%5s mix %s %-12s t %7.3f  onset %+6.1f ms (%+.2f f) rise %.1f dB' % (
+                o['flag'], o['mix'], o['name'], o['t'], o['off_ms'], o['off_frames'], o['rise_db']))
     print(json.dumps(dict((k2, rep[k2]) for k2 in keys), indent=1, default=str))
     return rep
 
@@ -1079,10 +1250,47 @@ def verify_wall(models=('small', 'medium')):
     return out
 
 
+def verify_control(model_name='medium', lang='en'):
+    """Control for verify_wall (run 2): Whisper emits a canned "Thanks for watching!" at the END of non-speech audio. Runs
+    the same settings on the wall loop x2, the same rotated by 6 s, its first 20 s, and pink noise band-passed 300-3000 Hz
+    (no voice possible). A word that sits at the clip end (start >= dur - 0.1 s) in a wall clip AND at the clip end of the
+    noise control is attributed to that hallucination; any other word with p >= 0.5 fails."""
+    from faster_whisper import WhisperModel
+    register()
+    wd = os.path.join(REPO, 'workspace', 'brand_reels', 'tts', 'models', 'whisper', 'faster-whisper-%s' % model_name)
+    x = np.asarray(A.sound('lkk_whisper_wall'), dtype=np.float64).mean(1)
+    w2 = np.concatenate([x, x])
+    noise = bp(np.asarray(A.colored(len(w2), np.random.default_rng(7), -3.0), dtype=np.float64), 300.0, 3000.0, 2)
+    tests = {'wall_loop_x2': w2, 'wall_loop_x2_rot6': np.roll(w2, -_n(6.0)), 'wall_first20': w2[:_n(20.0)],
+             'control_pink_300_3000': noise}
+    model = WhisperModel(wd if os.path.isdir(wd) else model_name, device='cpu', compute_type='int8', cpu_threads=2)
+    out = {}
+    for tn, sig in tests.items():
+        y16 = signal.resample_poly(sig, 1, 3).astype(np.float32)
+        y16 = y16 / (np.max(np.abs(y16)) + 1e-9) * 0.5
+        segs, info = model.transcribe(y16, language=lang, word_timestamps=True, vad_filter=False, beam_size=5,
+                                      condition_on_previous_text=False)
+        d = len(sig) / SR
+        words = [dict(start=round(w.start, 2), end=round(w.end, 2), word=w.word.strip(), p=round(w.probability, 3),
+                      at_end=bool(w.start >= d - 0.1)) for sg in segs for w in (sg.words or [])]
+        out[tn] = dict(dur=round(d, 2), words=words)
+        print(tn, round(d, 2), [(w['start'], w['word'], w['p'], 'END' if w['at_end'] else '') for w in words])
+    ctrl_end = {w['word'] for w in out['control_pink_300_3000']['words'] if w['at_end']}
+    bad = [(tn, w) for tn, v in out.items() if tn.startswith('wall') for w in v['words']
+           if w['p'] >= 0.5 and not (w['at_end'] and w['word'] in ctrl_end)]
+    out['hallucination_words_at_clip_end_in_noise_control'] = sorted(ctrl_end)
+    out['content_words_p_ge_05'] = bad
+    out['PASS_content'] = not bad
+    json.dump(out, open(os.path.join(AUD, 'whisper_wall_asr_control.json'), 'w'), indent=1, ensure_ascii=False)
+    print('content words with p >= 0.5:', bad, '->', 'PASS' if not bad else 'FAIL')
+    return out
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('cmd', choices=('cues', 'audition', 'build', 'rough', 'verify'))
+    ap.add_argument('cmd', choices=('cues', 'audition', 'build', 'rough', 'verify', 'verify-control'))
     ap.add_argument('--hook', default='A', choices=('A', 'B', 'AB'))
+    ap.add_argument('--loop', action='store_true', help='rough: loop-padded epic_mix (click-free seam recipe)')
     a = ap.parse_args(argv)
     hooks = ['A', 'B'] if a.hook == 'AB' else [a.hook]
     os.makedirs(AUD, exist_ok=True)
@@ -1100,7 +1308,9 @@ def main(argv):
             build(h)
     elif a.cmd == 'rough':
         for h in hooks:
-            rough(h)
+            rough(h, loop=a.loop)
+    elif a.cmd == 'verify-control':
+        verify_control()
     else:
         verify_wall()
 

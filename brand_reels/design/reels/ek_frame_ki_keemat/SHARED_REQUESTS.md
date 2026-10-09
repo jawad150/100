@@ -39,3 +39,13 @@ nothing blocks the build. Owners decide; please do not change behaviour that oth
   writing it back moves some samples by 1 code (measured: max 1 LSB = 1.19e-7 on the C08 hook-B splice test).
 - **Ask:** use the same factor in both directions (8388608 on write, clipped to [-8388608, 8388607]).
 - **Workaround:** none needed; `ek_frame_ki_keemat_music.mix(hook='B')` documents that the B body equals A to 1 LSB.
+
+## R6 · `vo_chain.snap_to_voice`: a word can stay glued across a real pause (hinglish-scriptwriter, 2026-10-09)
+- **Found (final VO takes):** whisper put a word's start inside the voiced tail of the previous word, 0.14-0.48 s before a
+  0.21-0.37 s pause, and the tail-fragment rule (`frag=0.10`) did not catch it: `efk_V7_t1` "teen" 1.67 s while the voice
+  resumes after "second..." at 2.16 s; `efk_V9_t2` "banane" 0.52 s straddling the pause 0.79-1.00 s ("Keemat..." really
+  ends 0.79). `--realign` agreed with the mapped times (same whisper bias), so the report showed no disagreement.
+- **Ask:** after snapping, a word that straddles a voiced-run gap >= 0.12 s should move to the side that holds more of it
+  (after the gap when the previous token ends a clause), the previous word ending on the voice offset.
+- **Workaround (local):** `ek_frame_ki_keemat_vo.fix_gap_words()` applies exactly that rule to every placed clip before
+  placement; checked against the spectrograms (`<RW>/vo/asr/spec_V9.png`).

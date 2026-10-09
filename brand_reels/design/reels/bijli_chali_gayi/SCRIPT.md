@@ -21,6 +21,18 @@ creative-director mirrors them in BRIEF §2, §6.6 and §6.7 (list in §0).
   (fast pace: 18.78 / 18.26 s). The VO windows in BRIEF §6.7 add up to 20.6 s (A) / 20.8 s (B). The difference is
   absorbed by lines with free space next to them (V3a, V6, V7, V11, V12). The two blocks that cannot absorb it are in §4.
 
+## Recorded 2026-10-09 (final VO; measured table in `VO_TIMING.md`)
+
+The final VO is recorded and measured: stems `workspace/jawad_reels/bijli_chali_gayi/vo/vo_stem.wav` (A) and
+`vo_stem_B.wav` (B), words `words.json` / `words_B.json`, every take and decision in `VO_TIMING.md`. What differs
+from the v2 text above (caption tokens unchanged everywhere):
+- **V9 is not in the VO** (BRIEF 6.7 ladder **F4**): at Vlad's measured pace the dense block V7-V10 is 0.20-0.30 s too
+  long even with F3. U3F `Saved · har 30 sec` carries the line on screen (f712-f719). V10 keeps "humein" (F3 tested,
+  not used).
+- **V1B DEV punctuation:** `ये आवाज़, याद है?` (comma instead of "..."); the ellipsis made "ye awaaz" drawl to 1.4-1.6 s.
+- **V3b DEV spelling:** `मुहल्ला` (§9 fallback); `मोहल्ला` was heard as महला / मौल्ला in every context take.
+- **V2 measures 0.70 s** (all 8 takes): placed at the fix-5 fallback 1.545, "hai?" under the f60/f64 pulses (lead OK).
+
 ## 0. What changed in v2 (GATE r1 §7)
 
 | fix | line | v1 | v2 (Roman caption tokens · Devanagari TTS) | effect |

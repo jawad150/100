@@ -9,6 +9,9 @@ fit ladder = SCRIPT.md section 7) and BRIEF.md section 9. Only this reel's files
     tools/heavy.sh python3 -I ek_frame_ki_keemat_vo.py pron       # whisper check of the carriers <raw>/efk_P*_t*.mp3
     tools/heavy.sh python3 -I ek_frame_ki_keemat_vo.py process    # each line take -> vo_chain (1.08x, 1.10x) + CER
     tools/heavy.sh python3 -I ek_frame_ki_keemat_vo.py assemble   # fit ladder, placement, stems, words, VO_TIMING.md
+    nice -n 10 python3 -I ek_frame_ki_keemat_vo.py final [--v10 usey]  # FINAL (2026-10-09): the measured takes in
+             FINAL_TAKES placed on the grid (binding rules hold, soft picture anchors slip and are reported) -> stems,
+             words.json, final.json, vo_timeline.png; VO_TIMING.md is written from final*.json / cands.json / verify*.json
     options: --raw DIR (takes, default <RW>/vo/raw) --work DIR (outputs, default <RW>/vo) --md PATH (default the reel's
              VO_TIMING.md) --label TEXT --lines V2,V7 (process only these) --v10 usko|usey (C7; default usko)
 
@@ -1148,11 +1151,340 @@ z / f / q (nukta) consonants cannot be judged by ASR: the words marked (listen) 
     print('->', md)
 
 
+# ------------------------------------------------------------------------------------------------ final (measured)
+# Session 2 (2026-10-09): the measured Vlad takes run 1.1-1.7x longer than the script's syllable model, so the
+# zero-credit ladder above cannot hold every window. `final` places the chosen takes on the grid with the rules that
+# are binding (hook <= 2.70 s, body >= 3.03 s, V5 on the bar-5 stop 12.05, >= 0.15 s between sentences, V10 inside the
+# card) and lets the soft picture anchors slip; VO_TIMING.md lists every slip so the picture follows the voice.
+FINAL_TAKES = {   # line -> (raw take, speed). _t2.wav = cut from the running takes T1 (V5-V8), T2 (V2-V4), T3 (V9-V10)
+    'V1A': ('efk_V1A_t1.mp3', 1.08), 'V1B': ('efk_V1B_t2.mp3', 1.10), 'V2': ('efk_V2_t1.mp3', 1.10),
+    'V3': ('efk_V3_t2.wav', 1.10), 'V4': ('efk_V4_t1.mp3', 1.10), 'V5': ('efk_V5_t2.wav', 1.10),
+    'V6': ('efk_V6_t2.wav', 1.10), 'V7': ('efk_V7_t2.wav', 1.10), 'V8': ('efk_V8_t2.wav', 1.10),
+    'V9': ('efk_V9_t2.wav', 1.08), 'V10': ('efk_V10_t2.wav', 1.08), 'V10K': ('efk_V10K_t1.mp3', 1.08)}
+FINAL_CAPS = {'V5': (2, 0.25), 'V6': (2, 0.12), 'V7': (2, 0.25)}   # pause after token k capped to s (never longer)
+V3_DROP = 1                                                        # "Dhuaan." (SCRIPT 7 ladder: tag 02 carries it)
+# targets per segment: (onset target, end limit, hard end) from script.json / PLAN; anchors (line, token, t, tol, what)
+SEG_T = {'V1A': (0.10, 2.37, 2.70), 'V1B': (0.10, 2.61, 2.70), 'V2': (3.07, 5.91, 5.95),
+         'V3.0': (6.00, 6.70, 6.70), 'V3.2': (7.30, 7.85, 7.85), 'V3.3': (7.90, 8.36, 8.45),
+         'V4a': (10.03, 10.90, 10.90), 'V4b': (10.95, 11.61, 11.70), 'V5': (12.05, 15.79, 15.85),
+         'V6': (16.95, 18.75, 18.85), 'V7': (18.90, 21.99, 21.99), 'V8': (22.15, 24.04, 24.15),
+         'V9': (26.75, 29.50, 29.85), 'V10': (29.60, 33.24, 33.35)}
+ANCHORS = [('V2', 5, 4.80, 0.10, '"12" counter lands, side-on stack (f144, L3 push)'),
+           ('V5', 2, 12.45, 0.20, 'caption C1 *layer...* on the pane-12 stop'),
+           ('V5', 4, 13.80, 0.15, 'flick OFF f414 on "bina"'),
+           ('V5', 6, 14.45, 0.20, 'flick ON f432 on "zinda"'),
+           ('V7', 3, 20.45, 0.10, 'counter 360 lands 20.4 (glass_truth, L3 push 0.5)'),
+           ('V9', 0, 26.75, 0.05, '"Keemat" >= 0.30 s after the 26.4 hit; keyword glyphs rise from 26.62'),
+           ('V9', 1, 27.70, 0.10, 'sub "banane wala jaanta hai" rises 27.7; JD glint 28.2'),
+           ('V10', 8, 29.75, 2.0, 'card title from 29.75; "bhejo" inside the card (settled 31.25-33.24)')]
+
+
+def fix_gap_words(c, min_gap=0.12):
+    """Word edges vs the clip's real silences (vo_chain can leave a word straddling a pause: V9 'banane' started
+    inside 'Keemat...', V7 t1 'teen' inside 'second...'). For every silence >= min_gap: a word that straddles it moves
+    to the side holding more of it (after when the previous token ends a clause), the word before the pause ends at the
+    voice offset and the word after starts on the voice onset. In place; returns the changes."""
+    runs, ch = c.runs, []
+    for (a0, a1), (b0, b1) in zip(runs, runs[1:]):
+        if b0 - a1 < min_gap:
+            continue
+        for k, w in enumerate(c.words):
+            if w['start'] < a1 - 0.02 and w['end'] > b0 + 0.02:
+                prev_clause = k > 0 and V.CLAUSE_END.search(c.words[k - 1]['word'].rstrip('"'))
+                if (w['end'] - b0) >= (a1 - w['start']) or prev_clause:
+                    ch.append('%s start %.3f -> %.3f (pause %.3f-%.3f)' % (w['word'], w['start'], b0, a1, b0))
+                    w['start'] = round(b0, 3)
+                    if k > 0:
+                        c.words[k - 1]['end'] = round(a1, 3)
+                else:
+                    ch.append('%s end %.3f -> %.3f (pause %.3f-%.3f)' % (w['word'], w['end'], a1, a1, b0))
+                    w['end'] = round(a1, 3)
+                    if k + 1 < len(c.words) and c.words[k + 1]['start'] < b0:
+                        c.words[k + 1]['start'] = round(b0, 3)
+                break
+        else:
+            for k in range(len(c.words) - 1):
+                w, n = c.words[k], c.words[k + 1]
+                if w['start'] < a1 and n['start'] >= a1 - 0.02 and n['start'] < b0 + 0.3:
+                    if abs(w['end'] - a1) > 0.01:
+                        ch.append('%s end %.3f -> %.3f' % (w['word'], w['end'], a1))
+                        w['end'] = round(a1, 3)
+                    if n['start'] < b0 - 0.005:
+                        ch.append('%s start %.3f -> %.3f' % (n['word'], n['start'], b0))
+                        n['start'] = round(b0, 3)
+                    break
+    return ch
+
+
+def final_clip(lid, work, raw, lines):
+    f, sp = FINAL_TAKES[lid]
+    take = os.path.join(raw, f)
+    l = lines['V10'] if lid == 'V10K' else lines[lid]
+    if not os.path.exists(proc_path(work, take, sp)):
+        process_line(l, take, work, sp)
+    c = load_clip(work, take, sp)
+    notes = ['take %s at %.2fx' % (f, sp)]
+    notes += ['word edge: ' + x for x in fix_gap_words(c)]
+    t = c.trim_head()
+    if t > 0.02:
+        notes.append('%.3f s before the first word removed' % t)
+    if lid in FINAL_CAPS:
+        k, cp = FINAL_CAPS[lid]
+        was, now = c.cap_gap(k, cp)
+        notes.append('pause after "%s" %.3f -> %.3f s' % (c.words[k]['word'], was, now))
+    e = clean_edges(c)
+    if e:
+        notes.append(e)
+    return c, notes
+
+
+def clean_edges(c, blip=0.06, sil=0.10, keep=0.06, fin=0.005, fout=0.020):
+    """Drop a lone blip (a voiced run < `blip` s after >= `sil` s of silence) at the end of a take (V10 t2 ends on a
+    -22 dBFS click 0.2 s after "bhejo"), keep `keep` s after the last real voice, then fade in / out so no clip edge
+    steps (a step at a clip edge is a click in the stem). -> note or ''."""
+    note = ''
+    r = c.runs
+    if len(r) >= 2 and r[-1][1] - r[-1][0] < blip and r[-1][0] - r[-2][1] >= sil:
+        r = r[:-1]                                   # a lone short run at the end: not voice
+    cut = min(len(c.x), int(round((r[-1][1] + keep) * SR)))
+    if cut < len(c.x):
+        tail = c.x[cut:]
+        pk = 20 * np.log10(np.abs(tail).max() + 1e-12)
+        if pk > -45:
+            note = 'tail after the last voice (%.3f s) cut: peak %.1f dBFS in the %.3f s removed' % (
+                r[-1][1], pk, len(tail) / SR)
+        c.x = c.x[:cut].copy()
+        for w in c.words:
+            w['end'] = min(w['end'], round(cut / SR, 3))
+    a, b = int(fin * SR), int(fout * SR)
+    c.x[:a] *= np.linspace(0, 1, a, dtype=np.float32)
+    c.x[-b:] *= np.linspace(1, 0, b, dtype=np.float32)
+    return note
+
+
+def vdur(c):
+    return c.voice_off() - c.word_onset(0)
+
+
+def cmd_final(raw, work, md, v10='usko'):
+    d, lines = load_script(v10, work)
+    vis = {(t['line'], t['i']): bool(t.get('caption_visible')) for t in d['tokens']}
+    C, N = {}, {}
+    for lid in ('V1A', 'V1B', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10' if v10 == 'usko' else 'V10K'):
+        key = 'V10' if lid == 'V10K' else lid
+        C[key], N[key] = final_clip(lid, work, raw, lines)
+    # line levels: each line to -16 LUFS before the stem gain (vo_chain's -2 dBTP ceiling holds short takes lower)
+    lev = {}
+    for k, c in C.items():
+        li = lufs_tp(c.x)[0]
+        c.x = (c.x * 10 ** ((LUFS - li) / 20)).astype(np.float32)
+        lev[k] = (round(li, 2), round(LUFS - li, 2))
+    # splits
+    parts3, rest = [], C['V3']
+    for _ in range(3):
+        a, rest = rest.split_after(0)
+        parts3.append(a)
+    parts3.append(rest)
+    N['V3'].append('"%s" dropped (SCRIPT 7 ladder; tag 02 carries it)' % parts3[V3_DROP].words[0]['word'])
+    keep3 = [(j, p) for j, p in enumerate(parts3) if j != V3_DROP]
+    a4, b4 = C['V4'].split_after(1)
+    S = {}
+    S['V1A'] = seg(C['V1A'], SEG_T['V1A'][0], 'V1A')
+    S['V1B'] = seg(C['V1B'], SEG_T['V1B'][0], 'V1B')
+    S['V2'] = seg(C['V2'], SEG_T['V2'][0], 'V2')
+    S['V5'] = seg(C['V5'], SEG_T['V5'][0], 'V5')
+    # block 1 (3.07 -> V5 - 0.15): V4 backward from V5, V3 forward from V2
+    b4_on = min(SEG_T['V4b'][0], S['V5']['on'] - GAP_LINES - vdur(b4))
+    a4_on = min(SEG_T['V4a'][0], b4_on - GAP_LINES - vdur(a4))
+    S['V4b'] = seg(b4, b4_on, 'V4b')
+    S['V4a'] = seg(a4, a4_on, 'V4a')
+    prev_end = S['V2']['end']
+    for j, p in keep3:
+        lab = 'V3.%d' % j
+        S[lab] = seg(p, max(SEG_T[lab][0], prev_end + GAP_LINES), lab)
+        prev_end = S[lab]['end']
+    fails = []
+    if prev_end > a4_on - GAP_LINES + 1e-6:
+        fails.append('V3 ends %.3f, V4 starts %.3f: gap < %.2f' % (prev_end, a4_on, GAP_LINES))
+    # block 2
+    S['V6'] = seg(C['V6'], max(SEG_T['V6'][0], S['V5']['end'] + GAP_LINES), 'V6')
+    S['V7'] = seg(C['V7'], max(SEG_T['V7'][0], S['V6']['end'] + GAP_LINES), 'V7')
+    S['V8'] = seg(C['V8'], max(SEG_T['V8'][0], S['V7']['end'] + GAP_LINES), 'V8')
+    # block 3
+    S['V9'] = seg(C['V9'], SEG_T['V9'][0], 'V9')
+    S['V10'] = seg(C['V10'], max(SEG_T['V10'][0], S['V9']['end'] + GAP_LINES), 'V10')
+    orderA = ['V1A', 'V2', 'V3.0', 'V3.2', 'V3.3', 'V4a', 'V4b', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10']
+    yA, placedA = place([S[k] for k in orderA])
+    zA, gain = master(yA)
+    sfx = '' if v10 == 'usko' else '_usey'
+    pA = os.path.join(work, '%s_vo%s.wav' % (REEL, sfx))
+    loudA = write_checked(pA, zA)
+    loudA.update(gain)
+    wordsA = merge_words(placedA, lines, vis)
+    yB, placedB = place([S['V1B']], n=int(round(HOOK_B_DUR * SR)))
+    zB = (yB * 10 ** (gain['gain_db'] / 20)).astype(np.float32)
+    limB = False
+    if lufs_tp(zB)[1] > TP_MAX - 0.2:
+        zB, limB = limit(zB, TP_MAX - 0.5), True
+    pB = os.path.join(work, '%s_hookb_vo%s.wav' % (REEL, sfx))
+    loudB = write_checked(pB, zB)
+    loudB.update(gain_db=gain['gain_db'], limiter=limB)
+    wordsB = merge_words(placedB, lines, vis)
+    if v10 == 'usey':
+        for w in wordsA:
+            if w['line'] == 'V10' and w['i'] == 7:
+                assert w['word'] == 'usey', w
+    for p, w in ((pA, wordsA), (pB, wordsB)):
+        json.dump(w, open(os.path.splitext(p)[0] + '.words.json', 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+    if v10 == 'usko':
+        shutil.copyfile(pA, os.path.join(work, 'vo_stem.wav'))
+        shutil.copyfile(os.path.splitext(pA)[0] + '.words.json', os.path.join(work, 'words.json'))
+        shutil.copyfile(os.path.splitext(pA)[0] + '.words.json', os.path.join(work, 'vo_stem.words.json'))
+    stems = dict(A=dict(path=pA, loud=loudA, placed=placedA, words=wordsA, probe=probe(pA), dur=DUR),
+                 B=dict(path=pB, loud=loudB, placed=placedB, words=wordsB, probe=probe(pB), dur=HOOK_B_DUR))
+    chk = final_checks(stems, fails, lines)
+    rows, misses = final_rows(stems, lines)
+    out = dict(v10=v10, takes={k: FINAL_TAKES['V10K' if (k == 'V10' and v10 == 'usey') else k] for k in C},
+               notes=N, levels=lev, gain=gain, checks=chk, rows=rows, misses=misses,
+               loud=dict(A=loudA, B=loudB))
+    json.dump(out, open(os.path.join(work, 'final%s.json' % sfx), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
+    final_plot(stems, os.path.join(work, 'vo_timeline%s.png' % sfx))
+    print(json.dumps(dict(checks=chk, misses=misses), ensure_ascii=False, indent=1))
+    for r in rows:
+        print(r)
+    return out
+
+
+def final_checks(stems, fails, lines):
+    out = dict(fails=list(fails))
+    for name, s in stems.items():
+        y = V.decode(s['path'])
+        runs = V.voiced_runs(y)
+        st = s['probe']['streams'][0]
+        c = dict(duration=float(s['probe']['format']['duration']), sr=int(st['sample_rate']), channels=st['channels'],
+                 bits=st.get('bits_per_raw_sample'), lufs=s['loud']['lufs'], tp=s['loud']['tp'],
+                 lufs_precise=s['loud']['lufs_precise'], tp_precise=s['loud']['tp_precise'], lra=s['loud']['lra'],
+                 first_voice=round(runs[0][0], 3), last_voice=round(runs[-1][1], 3), fails=[])
+        if abs(c['duration'] - s['dur']) > 0.002:
+            c['fails'].append('duration %.4f' % c['duration'])
+        if c['sr'] != SR or c['channels'] != 1 or str(c['bits']) != '24':
+            c['fails'].append('format')
+        if name == 'A' and abs(c['lufs_precise'] - LUFS) > 0.1:
+            c['fails'].append('loudness %.2f' % c['lufs_precise'])
+        if max(c['tp'], c['tp_precise']) > TP_MAX:
+            c['fails'].append('true peak %.2f' % max(c['tp'], c['tp_precise']))
+        if c['first_voice'] > 0.15:
+            c['fails'].append('VO onset %.3f > 0.15' % c['first_voice'])
+        pl = s['placed']
+        c['gaps'] = [(p['label'], q['label'], round(q['voice_on'] - p['voice_off'], 3)) for p, q in zip(pl, pl[1:])]
+        for a, b, g in c['gaps']:
+            if g < GAP_LINES - 1e-3:
+                c['fails'].append('gap %s->%s %.3f' % (a, b, g))
+        quiet = [(round(a, 3), round(b, 3)) for a, b in runs if a < 3.03 and b > 2.70]
+        if quiet:
+            c['fails'].append('voice inside 2.70-3.03: %s' % quiet)
+        if name == 'A':
+            c['loop_seam'] = round(DUR - c['last_voice'] + c['first_voice'], 3)
+            if c['last_voice'] > 33.35:
+                c['fails'].append('last voice %.3f > 33.35' % c['last_voice'])
+            want = sum(len(lines[k]['req_tokens']) for k in ORDER_A) - 1        # "Dhuaan." dropped
+        else:
+            want = len(lines['V1B']['req_tokens'])
+            if c['last_voice'] > HOOK_B_DUR - 0.03:
+                c['fails'].append('hook B voice to %.3f' % c['last_voice'])
+        w = s['words']
+        c['words'] = len(w)
+        if len(w) != want:
+            c['fails'].append('%d words, want %d' % (len(w), want))
+        if any(b['start'] < a['start'] for a, b in zip(w, w[1:])):
+            c['fails'].append('word starts not monotone')
+        out[name] = c
+    return out
+
+
+def final_rows(stems, lines):
+    rows, misses = [], []
+    for s in (stems['A'], stems['B']):
+        for p in s['placed']:
+            lab = p['label']
+            on_t, lim, hard = SEG_T[lab]
+            d_on, d_end = p['voice_on'] - on_t, p['voice_off'] - lim
+            lid = re.sub(r'(a|b|\.\d)$', '', lab)
+            ws = p['words']
+            dur = p['voice_off'] - p['voice_on']
+            r = dict(seg=lab, beat=beat_of(p['voice_on']), target_on=on_t, on=p['voice_on'], d_on=round(d_on, 3),
+                     limit=lim, hard=hard, end=p['voice_off'], d_end=round(d_end, 3), d_hard=round(p['voice_off'] - hard, 3),
+                     dur=round(dur, 3), words=len(ws), wps=round(len(ws) / dur, 2),
+                     sps=round(syllables(' '.join(w['dev'] for w in ws)) / dur, 2),
+                     keywords=[(w['word'].strip(',.?!।"'), w['start']) for w in ws if w['keyword']],
+                     text=' '.join(w['word'] for w in ws))
+            rows.append(r)
+            if abs(d_on) > 0.3:
+                misses.append('%s onset %.3f vs %.2f (%+.2f s)' % (lab, p['voice_on'], on_t, d_on))
+            if d_end > 0.3:
+                misses.append('%s ends %.3f vs %.2f (%+.2f s; hard %.2f)' % (lab, p['voice_off'], lim, d_end, hard))
+    wa = stems['A']['words']
+    for lid, i, t, tol, what in ANCHORS:
+        w = next((x for x in wa if x['line'] == lid and x['i'] == i), None)
+        if w is None:
+            continue
+        dd = w['start'] - t
+        rows.append(dict(anchor='%s "%s"' % (lid, w['word']), t=t, tol=tol, at=w['start'], d=round(dd, 3), what=what))
+        if abs(dd) > 0.3 and lid != 'V10':
+            misses.append('anchor %s "%s" %.3f vs %.2f (%+.2f s): %s' % (lid, w['word'], w['start'], t, dd, what))
+    return rows, misses
+
+
+def final_plot(stems, path):
+    """QA image: stems A and B on the 100 BPM grid; grey = target window (onset -> limit), orange = placed voice
+    (red where it runs past the limit), red ticks = serif-keyword onsets, white ticks = anchors' targets."""
+    from PIL import Image, ImageDraw, ImageFont
+    W, H, X0 = 2400, 560, 60
+    sx = (W - 2 * X0) / DUR
+    img = Image.new('RGB', (W, H), (12, 8, 7))
+    dr = ImageDraw.Draw(img)
+    try:
+        f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 17)
+    except OSError:
+        f = ImageFont.load_default()
+    X = lambda t: X0 + t * sx  # noqa: E731
+    for k in range(int(DUR / BEAT) + 1):
+        t = k * BEAT
+        dr.line([(X(t), 40), (X(t), H - 40)], fill=(70, 50, 45) if k % 4 else (140, 100, 90), width=1 if k % 4 else 2)
+        if k % 4 == 0:
+            dr.text((X(t) + 3, 8), 'bar %d  %.1f s' % (k // 4, t), fill=(200, 180, 170), font=f)
+    for name, yc in (('A', 150), ('B', 400)):
+        s = stems[name]
+        y = V.decode(s['path'])
+        hop = max(1, int(SR / sx))
+        env = np.sqrt(np.convolve(y.astype(np.float64) ** 2, np.ones(hop) / hop, 'same'))[::hop]
+        env = env / (env.max() + 1e-9)
+        for i, e in enumerate(env):
+            dr.line([(X0 + i, yc - e * 70), (X0 + i, yc + e * 70)], fill=(255, 106, 26))
+        for p in s['placed']:
+            on_t, lim, hard = SEG_T[p['label']]
+            dr.rectangle([X(on_t), yc + 80, X(lim), yc + 94], outline=(180, 180, 180), width=2)
+            dr.rectangle([X(p['voice_on']), yc + 98, X(p['voice_off']), yc + 110],
+                         fill=(255, 159, 28) if p['voice_off'] <= lim + 1e-6 else (242, 49, 43))
+            dr.text((X(p['voice_on']), yc + 114), p['label'], fill=(255, 243, 230), font=f)
+            for w in p['words']:
+                if w['keyword']:
+                    dr.line([(X(w['start']), yc - 85), (X(w['start']), yc + 75)], fill=(242, 49, 43), width=3)
+                    dr.text((X(w['start']) + 4, yc - 100), w['word'].strip(',.?!।"'), fill=(255, 181, 71), font=f)
+        if name == 'A':
+            for lid, i, t, tol, what in ANCHORS:
+                if lid != 'V10':
+                    dr.line([(X(t), yc - 70), (X(t), yc + 78)], fill=(255, 243, 230), width=1)
+        dr.text((8, yc - 10), name, fill=(255, 243, 230), font=f)
+    img.save(path)
+    return path
+
+
 # ------------------------------------------------------------------------------------------------ CLI
 def main(argv=None):
     import argparse
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    ap.add_argument('cmd', choices=['requests', 'pron', 'process', 'assemble', 'all'])
+    ap.add_argument('cmd', choices=['requests', 'pron', 'process', 'assemble', 'all', 'final'])
     ap.add_argument('--raw', default=os.path.join(RW, 'vo', 'raw'))
     ap.add_argument('--work', default=os.path.join(RW, 'vo'))
     ap.add_argument('--md', default=os.path.join(DESIGN, 'VO_TIMING.md'))
@@ -1170,6 +1502,8 @@ def main(argv=None):
         cmd_process(a.raw, a.work, only, a.v10)
     if a.cmd in ('assemble', 'all'):
         cmd_assemble(a.raw, a.work, a.md, a.label, a.v10, a.p2)
+    if a.cmd == 'final':
+        cmd_final(a.raw, a.work, a.md, a.v10)
     return 0
 
 
