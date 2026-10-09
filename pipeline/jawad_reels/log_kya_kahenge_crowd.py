@@ -862,7 +862,9 @@ def _fig_rot(st, F, k, sw):
     if st.flap is not None:
         rx = float(st.flap[int(F['row'][k])])
     if k == F['last']:
-        rx = min(rx, 0.0) + float(st.last_tip) if st.flap is None else rx
+        # S6: it stands while its row lies flat, tips back f876-f888 (last_tip 0 -> -90), lies flat, then rises with
+        # its row (flap -90 -> 0): both angles are <= 0, so the more upright one wins in every phase
+        rx = min(rx, 0.0) + float(st.last_tip) if st.flap is None else max(rx, float(st.last_tip))
     return rx, rz
 
 
@@ -927,8 +929,33 @@ def _draw_fig(cv, cam, t, st, F, T, k, sw, sp):
         if w > 0 and st.eyes > 0:
             _draw_eyes(cv, cam, st, F, k, tex, B, fw, fh, rot, w * st.eyes * op, tilt=tilt, jolt=jolt,
                        head_w=w)
+        lift = _last_lift(cam, st, F, k, B)
+        if lift > 0:                                   # S6-01 gag: the lone card catches the low warm rake light
+            K.draw_plane(cv, tex['front'] if w >= 0.5 else tex['turned'], cam, tuple(B), fw, height=fh, rot=rot,
+                         anchor=(0.5, 1.0), opacity=op * lift, mode='add')
+            K.draw_plane(cv, tex['band'], cam, tuple(B), fw, height=fh, rot=rot, anchor=(0.5, 1.0),
+                         opacity=op * lift * 0.5, mode='add')
     if st.lines and ad < LINE_DOT and F['j'][k] == 1:
         _draw_line(cv, cam, F, k, B, fw, fh, rot, (1.0 - ad / LINE_DOT) * op)
+
+
+LAST_LIGHT = 0.38                                   # effective light on the lone last card in S6-01 (warm map ~0.11 there)
+
+
+def _last_lift(cam, st, F, k, B):
+    """Extra 'add' gain for the last card while it stands alone in S6-01 (State.empty, its row still flat): the low
+    warm light from screen-left falls off to ~0.11 at its seat (x ~815), where the tip gag would be invisible at
+    phone size. The card's own rake light is pre-compensated against the layer's light map (applied after the
+    painter). 0 everywhere else, and 0 once its row starts rising (f1004), so the rise matches its neighbours."""
+    if not st.empty or k != F['last'] or st.mask is not None or st.flap is None:
+        return 0.0
+    if float(st.flap[int(F['row'][k])]) > -89.0:
+        return 0.0
+    xy, _ = cam.project(np.asarray(B)[None] + np.array([[0.0, -FIG_H / 2, 0.0]]))
+    if not np.isfinite(xy).all():
+        return 0.0
+    lm = float(np.mean(light_at(st.light, 'flood', xy)[0])) * float(st.light_gain)
+    return max(0.0, LAST_LIGHT / max(lm, 0.02) - 1.0)
 
 
 def _black_like(spr):
@@ -1270,9 +1297,12 @@ def scroller_xy(t, psi=70.0, focus=16000.0):
 def scroller_rect(t, margin=28):
     """Caption avoid rect (x0, y0, x1, y1): the scroller's projected head + phone bbox + margin (S4-02)."""
     xy, z = scroller_xy(t)
-    hpx = 260.0 * 7200.0 / float(z[1])                       # head + shoulders extent in px
-    x0, x1 = xy[:, 0].min() - hpx * 0.6, xy[:, 0].max() + hpx * 0.6
-    y0, y1 = xy[:, 1].min() - hpx * 0.6, xy[:, 1].max() + hpx * 0.5
+    f = 7200.0                                                # CAM_ROWS focal (px)
+    hr = 130.0 * f / float(z[1])                              # head half-extent (~115 mm half-width + hair), px
+    pw, ph = 45.0 * f / float(z[0]), 60.0 * f / float(z[0])   # phone half-extent incl. its visible glow core, px
+    (px_, py_), (hx, hy) = xy[0], xy[1]
+    x0, x1 = min(hx - hr, px_ - pw), max(hx + hr, px_ + pw)
+    y0, y1 = min(hy - hr, py_ - ph), max(hy + hr, py_ + ph)
     return (int(x0 - margin), int(y0 - margin), int(x1 + margin), int(y1 + margin))
 
 

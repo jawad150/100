@@ -35,6 +35,11 @@ view would otherwise be filled by the near flank); CAM_ROWS far side darkened by
 the scroller is the row-3 seat whose phone lands nearest the brief's (600, 1080) at 14-15 m (the brief's row-2 seat sits
 at the pivot depth, where a focus pull shows nothing); struts reach 230 mm behind the card (450 mm went through the
 people sitting 350 mm behind).
+Session 3 (2026-10-09): every L3 cut is drawn by plan_draw (jawad_tx passes push_gain to _tx_cut: TypeError, SHARED_REQUESTS
+R7); O6 embers spawn from the card layer with the luminance capped (O6_LCAP: the edge-on lines no longer rise as vertical
+red columns); the caption avoid rect around the scroller is his head + phone (CR.scroller_rect), so the V4 / V5 chunks stay
+in the lower band (y 1350-1390) instead of jumping to y 700; the last card stands in S6-01 until it tips (it was culled with
+its flat row) and is lifted by its own warm rake light (CR.LAST_LIGHT), else the gag is invisible at phone size.
 
 Contract: DUR / LOOK / BPM, assets(), prewarm(), pure draw(t), post(cv, t) -> G.tx_finish, samples(t), cues() = [].
 Env: LKK_NOTEXT=1 skips every text overlay (hook lockups, J lines, payoff, end card, captions); LKK_DEBUG=1 appends the
@@ -77,6 +82,7 @@ def fr(n):
 # ============================================================================================== timeline constants
 T_S3, T_ROWS, T_REVEAL, T_ONE, T_O6, T_PAY, T_WIDE, T_CARD = 9.6, 12.8, 16.0, 19.2, 23.6, 25.6, 28.8, 31.2
 O6_PRE, O6_POST = 36, 12
+O6_LCAP = 0.12                     # card-layer luminance cap for the ember spawn weights / brightness
 CUTS = [(0.0, 0.6), (T_REVEAL, 0.8)]
 STEPS = [('O2', T_S3, dict(pre=18, post=18, seed=37, rise=320.0)), ('L3', T_ROWS, dict(push_gain=0.5)),
          ('L3', T_PAY, dict(push_gain=0.6)), ('L3', T_WIDE, dict(push_gain=0.4))]
@@ -385,13 +391,15 @@ def o6_seed(n=4000, seed=5):
     small = cv2.resize(np.ascontiguousarray(lay[..., :3]), (X.W2, X.H2), interpolation=cv2.INTER_AREA)
     asmall = cv2.resize(np.ascontiguousarray(lay[..., 3]), (X.W2, X.H2), interpolation=cv2.INTER_AREA)
     L = (K.lum(small) * (asmall > 0.5)).ravel().astype(np.float64)
-    p = np.clip(L, 0, 4) ** 1.5
+    # capped and flattened: with the plain luminance weighting (clip 4, ^1.5) 29 % of the embers spawned from the 1 %
+    # brightest card pixels (the edge-on lines of light) and rose as vertical red columns; now 2.5 % (measured)
+    p = np.clip(L, 0, O6_LCAP) ** 0.5
     p /= p.sum()
     rng = np.random.default_rng(seed)
     idx = rng.choice(L.size, n, p=p)
     y, x = np.divmod(idx, X.W2)
     pts = np.c_[(x + rng.random(n)) * 2.0, (y + rng.random(n)) * 2.0]
-    out = (pts, rng.uniform(0, 1, n), rng.normal(0, 1, (n, 2)), L[idx])
+    out = (pts, rng.uniform(0, 1, n), rng.normal(0, 1, (n, 2)), np.minimum(L[idx], O6_LCAP) / O6_LCAP)
     for a in out:
         a.flags.writeable = False
     return out
@@ -438,7 +446,7 @@ def o6_cards(t, n=4000, seed=5, life=1.2, band=20.0, noise=120.0):
         x = P[:, 0] + vx * drag * 2.0 + 6 * np.sin(a * 7 + rnd[alive] * 40)
         y = P[:, 1] + vy * a - 30 * a * a
         k = a / life_i[alive]
-        col = X._ember_ramp(k) * (0.25 + 1.1 * np.clip(lumv[alive] * 3, 0, 1))[:, None]
+        col = X._ember_ramp(k) * (0.45 + 0.6 * lumv[alive])[:, None]          # lumv: 0..1 (capped spawn luminance)
         buf = np.zeros((X.H2, X.W2, 3), np.float32)
         xi = (x / 2).astype(int)
         yi = (y / 2).astype(int)
@@ -490,13 +498,19 @@ def o2_smoke(t, w, A, B, seed=31, rise=260.0):
 
 
 def plan_draw(plan, t, scenes):
-    """plan.draw with every O2 window drawn by the local seam-free o2_smoke (windows, cut rule, samples unchanged)."""
+    """plan.draw with every O2 window drawn by the local seam-free o2_smoke and every hard-cut transition (L3) drawn
+    here as the plain cut (windows, cut rule, samples and post_kw unchanged). jawad_tx's Tx.__call__ hands the step
+    options (push_gain) to _tx_cut, which takes none: TypeError on the 4 frames after every L3 cut (SHARED_REQUESTS R7)."""
     for i, (x, c, o) in enumerate(plan.steps):
+        w = x.win(c, **o)
+        if not w.inside(t):
+            continue
         if x.id == 'O2':
-            w = x.win(c, **o)
-            if w.inside(t):
-                return o2_smoke(t, w, scenes[i], scenes[i + 1], seed=o.get('seed', 31), rise=o.get('rise', 260.0))
-    return plan.draw(t, scenes)
+            return o2_smoke(t, w, scenes[i], scenes[i + 1], seed=o.get('seed', 31), rise=o.get('rise', 260.0))
+        if x.fn is X._tx_cut:
+            return (scenes[i + 1] if X.side_b(t, c) else scenes[i])(t)
+        return x(t, c, scenes[i], scenes[i + 1], **o)
+    return scenes[plan.segment(t)](t)
 
 
 # ============================================================================================== text
@@ -521,6 +535,10 @@ def _jline_state(i, t):
             s = K.lerp(s, 0.72, v)
             b = K.lerp(b, 6.0, v)
             op = K.lerp(op, 0.45, v) * (1.0 - K.ramp(t, n0 + fr(9), n0 + fr(24), 'inout_sine'))
+    else:
+        # J4 dissolves into the O2 smoke as it thickens (f276-f287) instead of showing at ~12 % through the densest
+        # smoke and vanishing on the cut frame f288
+        op *= 1.0 - K.ramp(t, fr(276), fr(287), 'inout_sine')
     if op <= 0.002:
         return None
     return x, y, s, op, b

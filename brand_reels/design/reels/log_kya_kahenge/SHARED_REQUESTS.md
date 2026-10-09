@@ -98,3 +98,14 @@ Two entries above are headed R5. `HANDOFF.md` §12 keeps R5 for the god-ray hold
   `glue()`, so the stems are missing the glue's gain curve (up to 3.6 dB on C15). **Ask:** apply the same glue curve to the
   stems. **Local workaround:** `log_kya_kahenge_mix.py` multiplies each stem by the whole bus curve (glue · gain · limiter).
   Measured residual of the sum against A: -138.5 dBFS (24-bit rounding).
+
+## R7 · `jawad_tx` L3 (and every `_tx_cut` transition): step options crash the cut (motion-timeline-builder, 2026-10-09, session 3)
+
+- **Why:** `Tx.__call__` strips only `pre` / `post` and passes the remaining step options to `self.fn`. L3 / L4 / D7 use
+  `_tx_cut(t, w, A, B)`, which takes no keyword arguments, but their post functions read options (`_l3_post` reads
+  `push_gain`). So `X.Plan([('L3', 12.8, dict(push_gain=0.5))]).draw(t, scenes)` raises
+  `TypeError: _tx_cut() got an unexpected keyword argument 'push_gain'` on the 4 frames after every L3 cut (window pre 0,
+  post 4). Reproduced in this reel at 12.8 s (f384); any reel that sets `push_gain` on an L3 hits it.
+- **Ask:** `def _tx_cut(t, w, A, B, **_o)` (the cut ignores its options; `post_kw` keeps reading them). Default behaviour unchanged.
+- **Local workaround now:** `log_kya_kahenge.plan_draw()` draws every window whose `fn is X._tx_cut` itself as the plain
+  HALF-rule cut (`X.side_b(t, c)`); windows, samples and `plan.post_kw` (the push) are untouched.
