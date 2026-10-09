@@ -205,6 +205,16 @@ def focus_at(t):
     return K.lerp(16000.0, scroller_depth(), u)
 
 
+PULL_AP = 180.0                     # CAM_ROWS aperture after the pull (brief 60 throughout)
+
+
+def aperture_at(t):
+    """The aperture opens with the focus pull (f600-f624, same ease), 60 -> PULL_AP, and stays open to the f768 cut. At
+    60 the pull moved the scroller's CoC 1.52 -> 0.06 px and the card lines' 0 -> 1.46 px (invisible at phone size);
+    at 180 the lines go 0 -> 4.4 px and the far rows soften while the scroller's row stays sharp."""
+    return K.lerp(60.0, PULL_AP, K.ramp(t, fr(600), fr(624), 'inout_cubic'))
+
+
 def people_at(t):
     """The real people (and their phones) exist for the camera only from the reveal on."""
     return K.ramp(t, T_REVEAL, T_REVEAL + 0.5, 'inout_sine')
@@ -326,7 +336,7 @@ def S_C_state(t, part='all'):
 
 def S_C_layers(t, part='all'):
     """S3-02 / S4 rows world. part 'all' | 'nocards' -> full frame; 'cards' -> the card layer alone (transparent)."""
-    cam = CR.cam_rows(psi_at(t), focus_at(t))
+    cam = CR.cam_rows(psi_at(t), focus_at(t), aperture_at(t))
     st = S_C_state(t, part)
     lay = CR.render(cam, t, st, 'rows')
     if part == 'cards':

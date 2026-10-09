@@ -85,9 +85,10 @@ def cam_wide():
 ROWS_PITCH = float(os.environ.get('LKK_ROWS_PITCH', '7.0'))   # BRIEF 3; tuned within its <= 8 deg allowance (7.4)
 
 
-def cam_rows(psi=0.0, focus=16000.0):
-    """CAM_ROWS (S1-01B, S3-02, S4): 135 mm orbit about the row-3 pivot; psi 0 -> 70 deg turns the pivot cards edge-on."""
-    return K.Cam.orbit(PIVOT, 16000.0, yaw=psi, pitch=ROWS_PITCH, focal=7200.0, aperture=60.0, focus_dist=focus)
+def cam_rows(psi=0.0, focus=16000.0, aperture=60.0):
+    """CAM_ROWS (S1-01B, S3-02, S4): 135 mm orbit about the row-3 pivot; psi 0 -> 70 deg turns the pivot cards edge-on.
+    aperture: 60 (brief); the reel opens it during the S4-02 focus pull so the pull reads at phone size."""
+    return K.Cam.orbit(PIVOT, 16000.0, yaw=psi, pitch=ROWS_PITCH, focal=7200.0, aperture=aperture, focus_dist=focus)
 
 
 def cam_jd():
