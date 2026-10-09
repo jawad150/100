@@ -7,10 +7,11 @@
   "google_fonts": {
     "Poppins": "Poppins:wght@400;500;600;700;800;900",
     "InstrumentSerif": "Instrument+Serif:ital@0;1",
-    "JetBrainsMono": "JetBrains+Mono:wght@400;500;600;700;800"
+    "JetBrainsMono": "JetBrains+Mono:wght@400;500;600;700;800",
+    "Caveat": "Caveat:wght@700"
   },
   "font_map": {"Nunito": "Poppins", "Poppins": "Poppins", "Caveat": "InstrumentSerif"},
-  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic"},
+  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic", "pw_parody_fun": "Caveat-Bold"},
   "logo_src": "pipeline/jawad_reels/brand_src/logo_full.svg",
   "logo_dark_lum": 0.12,
   "palette": {

@@ -79,6 +79,7 @@ def main():
         ap.add_argument('--' + k, required=True)
     ap.add_argument('--dur', type=float, required=True)
     ap.add_argument('--cover', type=float, required=True)
+    ap.add_argument('--cover-png', help='use this rendered still (e.g. captions off) instead of a master frame')
     ap.add_argument('--minor', action='append', default=[])
     ap.add_argument('--qa', default='')
     a = ap.parse_args()
@@ -123,8 +124,11 @@ def main():
         stems[k] = dict(file=os.path.relpath(dst, OUT), size_mb=round(os.path.getsize(dst) / 1e6, 2), ebur128=ebur(dst))
     rep['stems'] = stems
     # 5. cover
-    run(['ffmpeg', '-v', 'error', '-y', '-ss', '%.4f' % (a.cover + 0.5 / 30), '-i', mA, '-frames:v', '1', '-q:v', '2',
-         B + '_cover.jpg'])
+    if a.cover_png:
+        run(['ffmpeg', '-v', 'error', '-y', '-i', a.cover_png, '-q:v', '2', B + '_cover.jpg'])
+    else:
+        run(['ffmpeg', '-v', 'error', '-y', '-ss', '%.4f' % (a.cover + 0.5 / 30), '-i', mA, '-frames:v', '1', '-q:v', '2',
+             B + '_cover.jpg'])
     run(['ffmpeg', '-v', 'error', '-y', '-i', B + '_cover.jpg', '-vf', 'crop=1080:1440:0:240', '-q:v', '2',
          B + '_cover_grid_3x4.jpg'])
     # 6. text
