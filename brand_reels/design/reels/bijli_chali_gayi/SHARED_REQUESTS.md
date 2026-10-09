@@ -60,3 +60,13 @@ C11 modules use today, so none of them blocks this reel. Owner of the shared mod
   `SPEC['vo_lufs']` (equal-power centre), or load mono with `-ac 2` plus a -3.01 dB pan law.
 - **C11 workaround.** `bijli_chali_gayi_sfx.rough()` duplicates the mono stem and re-normalises it to -16.00 LUFS
   before the mix.
+
+## 6. `endcard.EndCard` exit puts most of the dim lift on the reel's last frame (timeline builder, 2026-10-09)
+
+- **What happens.** The exit ramps `ex = K.ramp(t, t0 + dur - exit_dur, t_last, 'in_cubic')`, and the background dim
+  (0.58) is released by `1 - ex`: on C11 (1 sample, finished) the step f1037 -> f1038 is mean |diff| 5.7 levels, but
+  f1038 -> f1039 is 15.3 levels (16.4 % of pixels > 25 levels). The loop seam itself is clean (f1039 -> f0: 3.6 levels,
+  1.1 % > 25), so it reads as the designed push into the loop rather than a glitch.
+- **Request (endcard owner).** Optional: release the dim on `inout_sine` (or end the in_cubic one frame earlier) so the
+  last-frame step matches its neighbours.
+- **C11 workaround.** None needed for delivery (listed as minor, LEAD_DECISIONS 7); no change in `bijli_chali_gayi.py`.
