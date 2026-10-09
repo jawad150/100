@@ -1,3 +1,5 @@
+> **Also in this repo:** [`treats-redesign/`](treats-redesign/) is a motion-graphics website redesign concept for Treats Foods (GSAP scroll animations, SVG food illustrations).
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.
