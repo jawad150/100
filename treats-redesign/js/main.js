@@ -22,7 +22,9 @@
   const Sprites = (() => {
     const list = [];
     let manifest = null;
-    const ready = fetch(SPRITE_DIR + "manifest.json").then((r) => r.json()).then((m) => (manifest = m)).catch(() => null);
+    const ready = window.SPRITE_MANIFEST
+      ? Promise.resolve((manifest = window.SPRITE_MANIFEST))
+      : fetch(SPRITE_DIR + "manifest.json").then((r) => r.json()).then((m) => (manifest = m)).catch(() => null);
     const load = (sp) => {
       if (sp.loading || !manifest || !manifest[sp.seq]) return;
       sp.loading = true;

@@ -82,3 +82,6 @@ for f in sorted(glob.glob(os.path.join(work, "range", "*.png"))):
 
 with open(os.path.join(out, "manifest.json"), "w") as fp:
     json.dump(manifest, fp, indent=1)
+# same data as a script, so the page also works opened straight from disk (file://)
+with open(os.path.join(out, "manifest.js"), "w") as fp:
+    fp.write("window.SPRITE_MANIFEST = " + json.dumps(manifest) + ";\n")
