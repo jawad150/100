@@ -653,10 +653,24 @@ def cues(hook='A', report=False, include_music=False):
             if not any(a - 0.02 <= hit <= b + 0.02 for a, b in rep["hero_windows"]):
                 c['gain_db'] = raw_gain[id(c0)]
                 rep['exempt'].append(dict(name=c['name'], hit=round(hit, 3), was=c.pop('vo')))
+    rep['ducked_activity'] = []
     for c in out:
         if c.get('music'):
             continue
         start, hit, end = _cue_span(c)
+        # fit_under_vo ducks by the (padded) WORD windows; whisper word ends run early on TTS, so a hit can sit on the
+        # measured speech tail (e.g. hook B's f40 beep on the "z" of "awaaz", activity to 1.381 s): same duck by band
+        if (not c.get('vo') and not c.get('hero') and SJ.band_of(c['name'], c) in ('mid', 'air', 'dark')
+                and any(a <= hit <= b for a, b in rep['hero_windows'])):
+            band = SJ.band_of(c['name'], c)
+            c['gain_db'] = float(c['gain_db']) - 6.0 - (2.0 if band == 'mid' else 0.0)
+            if band == 'air':
+                c.setdefault('hp', 5500.0)
+            if band == 'dark':
+                c.setdefault('lp', 1100.0)
+            c['vo'] = 'speech tail %+.1f dB%s' % (-6.0 - (2.0 if band == 'mid' else 0.0),
+                                                 {'air': ', hp 5500', 'dark': ', lp 1100'}.get(band, ''))
+            rep['ducked_activity'].append(dict(name=c['name'], hit=round(hit, 3), note=c['vo']))
         if c['name'] == 'keycap_thock' and any(a <= hit <= b for a, b in wins):
             c['lp'] = KEY_LP_UNDER_VO
             rep['keycap_lp'].append(round(hit, 3))
