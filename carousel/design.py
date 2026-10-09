@@ -142,6 +142,7 @@ class Rich:
         "b": (INK, 800, F_YELLOW),
         "g": (WHITE, 800, F_GREEN),
         "r": (WHITE, 800, F_RED),
+        "w": (WHITE, 800, None),
     }
 
     def __init__(self, canvas, size, lh=1.56, pgap=0.42):
@@ -159,11 +160,13 @@ class Rich:
         out = []
         for para in markup.split("\n"):
             units, glue = [], False
-            for part in re.split(r"(\*\*.+?\*\*|\+\+.+?\+\+|~~.+?~~)", para):
+            for part in re.split(r"(\*\*.+?\*\*|\+\+.+?\+\+|~~.+?~~|__.+?__)", para):
                 if not part:
                     continue
                 st = "n"
-                if part.startswith("**"):
+                if part.startswith("__"):
+                    st, part = "w", part[2:-2]
+                elif part.startswith("**"):
                     st, part = "b", part[2:-2]
                 elif part.startswith("++"):
                     st, part = "g", part[2:-2]

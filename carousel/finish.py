@@ -161,11 +161,23 @@ class Canvas:
         pad = self.H * 0.25  # keep ascenders inside the canvas
         hb = font.getbbox("H")
         wi = 0
+        fb = self._fallback(font)
         for i, c in enumerate(txt):
+            if fb and c in fb[0]:
+                ffont, yoff, kern = fb[1], fb[2], fb[3]
+                x += kern if c == "'" else 0
+                d.text((x, pad + yoff), c, font=ffont, fill=255)
+                x += ffont.getlength(c) + (kern if c == "'" else 0)
+                if i < len(txt) - 1:
+                    x += tracking
+                continue
             if dots == "words" and c == " ":
                 gapw = font.getlength(" ") + font.size * 0.30
-                specs.append([x + gapw / 2 - tracking / 2, pad + (hb[1] + hb[3]) / 2, DOTS[wi % 3]])
-                wi += 1
+                if i == 0 or txt[i - 1] not in ".,!?:":
+                    specs.append([x + gapw / 2 - tracking / 2, pad + (hb[1] + hb[3]) / 2, DOTS[wi % 3]])
+                    wi += 1
+                else:
+                    gapw = font.getlength(" ") + font.size * 0.12
                 x += gapw + tracking
                 continue
             d.text((x, pad), c, font=font, fill=255)
@@ -175,6 +187,24 @@ class Canvas:
                     specs.append([x + (tracking + dot_gap) / 2, pad + asc * 0.84, DOTS[i % 3]])
                 x += tracking + (dot_gap if dots is True else 0)
         return m, specs, m.getbbox()
+
+    def _fallback(self, font):
+        """Gabriel Weiss' Friends draws '5' like an S and a tiny apostrophe:
+        take those from Permanent Marker, scaled to the same cap height."""
+        path = getattr(font, "path", "")
+        if "GabrielWeiss" not in str(path):
+            return None
+        key = font.size
+        cache = self.__dict__.setdefault("_fb", {})
+        if key not in cache:
+            g = font.getbbox("H")
+            probe = ImageFont.truetype(ui.MARKER, 100)
+            m = probe.getbbox("H")
+            size = max(1, int(round(100 * (g[3] - g[1]) / (m[3] - m[1]))))
+            mk = ImageFont.truetype(ui.MARKER, size)
+            mb = mk.getbbox("H")
+            cache[key] = ("5'", mk, g[1] - mb[1], font.size * 0.06)
+        return cache[key]
 
     # -- measuring helpers (for layout) ------------------------------
     def ink_height(self, txt, font, tracking=0):
@@ -542,7 +572,7 @@ def headline(c, kicker, lines, subject, dots="words", spec_max=108):
     def reads_cleanly(masks, cap):
         band = max(4, int(cap * 0.45))
         for i, ink in enumerate(masks):
-            limit = 0.16 if i == len(masks) - 1 else 0.06
+            limit = 0.16 if i == len(masks) - 1 else 0.10
             cols = np.where(ink.any(0))[0]
             for x in range(cols[0], cols[-1] + 1, band // 2):
                 sl = ink[:, x:x + band]
@@ -647,7 +677,7 @@ def content_slide(spec, raw, out):
     else:
         content_h = sum(rich.height(b, text_w - 46 * s) for _, b in spec["bullets"]) \
             + bullet_gap * (len(spec["bullets"]) - 1) + rich.L * 0.0
-    f_disc = c.font(ui.MONT, 16, 500)
+    f_disc = c.font(ui.MONT, 21, 560)
     disc_h = (f_disc.getbbox("H")[3] - f_disc.getbbox("H")[1] + 30 * s) if spec.get("disclaimer") else 0
     pad_top, pad_bot = AV / 2 + spec.get("pad_top", 30) * s, spec.get("pad_bot", 40) * s
     card_h = pad_top + content_h + disc_h + pad_bot
@@ -685,6 +715,8 @@ def content_slide(spec, raw, out):
     if spec.get("sticker"):
         st = spec["sticker"]
         im = ui.sticker_img(c, st["kind"], st["lines"], st.get("color"))
+        if st.get("scale"):
+            im = im.resize((int(im.size[0] * st["scale"]), int(im.size[1] * st["scale"])), Image.LANCZOS)
         ang = st.get("angle", 7)
         rw = im.rotate(ang, expand=True).size
         cy_st = min(card_top - 8 * s, card_top + pad_top - 14 * s - rw[1] / 2)
@@ -722,19 +754,20 @@ def content_slide(spec, raw, out):
         d_top = card_bottom - pad_bot - (f_disc.getbbox("H")[3] - f_disc.getbbox("H")[1])
         lay = Image.new("RGBA", c.bg.size, (0, 0, 0, 0))
         ImageDraw.Draw(lay).text((tx, d_top - f_disc.getbbox("H")[1]), spec["disclaimer"], font=f_disc,
-                                 fill=(255, 255, 255, 170))
+                                 fill=(255, 255, 255, 215))
         c._claim(lay.getchannel("A").getbbox(), "disclaimer")
         c._paste(lay, "front")
 
     # ---- Joey's reply bubble + avatar (right-aligned to the margin)
     if bub is not None:
-        cy = joey_top + joey_h / 2
+        cy = joey_bottom - AVJ / 2
         jx = X1 - AVJ / 2
         ui.paste_center(c, ui.avatar_img(c, "joey", AVJ, F_BLUE, F_ORANGE), jx, cy, label="joey_avatar")
         jt = ui.name_tag_img(c, "JOEY", F_BLUE, (255, 255, 255))
         ui.paste_center(c, jt, jx, cy + AVJ / 2 + 2 * s, label="joey_tag", claim=False)
         bx1 = X1 - AVJ - 12 * s
-        ui.paste_center(c, bub, bx1 - bub.size[0] / 2 + 3 * s, cy + 3 * s, label="joey_bubble")
+        bcy = min(cy, joey_bottom - bub.size[1] / 2) + 3 * s
+        ui.paste_center(c, bub, bx1 - bub.size[0] / 2 + 3 * s, bcy, label="joey_bubble")
 
     if jpos:  # speech-bubble pop-up right next to Joey, tail pointing at him
         pb = ui.bubble_img(c, spec["joey"], 480, tail="down")
@@ -829,31 +862,34 @@ def cover(raw, out):
 
 SLIDES = {
     2: dict(kicker="THE  SETUP", lines=["A PS5 COSTS", "RS. 200,000"],
-            body="That's the price **today**.\nBut Chandler thinks **GTA 6** is coming soon, "
+            body="That's the price **today**.\nBut I think **GTA 6** is coming soon, "
                  "so PS5 prices will ++rise++.",
-            sticker=dict(kind="burst", lines=["GTA 6", "HYPE!"], color=F_YELLOW, angle=8),
+            sticker=dict(kind="burst", lines=["GTA 6", "HYPE!"], color=F_YELLOW, angle=8, scale=0.85),
             joey="Wait... it gets MORE expensive?"),
     3: dict(kicker="THE  DEAL", lines=["THE TOKEN", "MONEY"],
-            body="Chandler pays a token amount of **Rs. 10,000** as **margin** "
+            body="I pay a token amount of **Rs. 10,000** as **margin** "
                  "to lock the PS5 at **Rs. 200,000**.\n"
-                 "**30 days from now**, he buys the PS5 for **Rs. 200,000**.",
+                 "**30 days from now**, I buy the PS5 for **Rs. 200,000**.",
             sticker=dict(kind="calendar", lines=["EXPIRY", "30", "DAYS"], angle=6),
             joey="So you paid for a PS5... and didn't get a PS5?"),
     4: dict(kicker="SCENARIO  1", lines=["GTA 6", "RELEASES!"],
             body="30 days later, the PS5 goes up to ++Rs. 220,000++.\n"
-                 "Chandler gets it at **Rs. 200,000** and sells it at ++Rs. 220,000++. "
-                 "He only paid **Rs. 10,000** as margin upfront.",
-            sticker=dict(kind="burst", lines=["+Rs. 20,000", "PROFIT"], color=F_GREEN, angle=7, pos=(0.855, 0.12)),
+                 "I get it at **Rs. 200,000** and sell it at ++Rs. 220,000++. "
+                 "And I only paid **Rs. 10,000** upfront.",
+            sticker=dict(kind="burst", lines=["+Rs. 20,000", "PROFIT"], color=F_GREEN, angle=7,
+                         scale=0.85, pos=(0.80, 0.14)),
             joey="We're rich! ...Right?"),
     5: dict(kicker="SCENARIO  2", lines=["GTA 6 GETS", "DELAYED"],
             body="30 days later, the PS5 drops to ~~Rs. 180,000~~.\n"
-                 "Chandler bought at **Rs. 200,000** and now sells at ~~Rs. 180,000~~, "
-                 "so he bears a ~~loss of Rs. 20,000~~.",
-            sticker=dict(kind="burst", lines=[MINUS + "Rs. 20,000", "LOSS"], color=F_RED, angle=-7),
+                 "I bought at **Rs. 200,000** and now sell at ~~Rs. 180,000~~, "
+                 "so I bear a ~~loss of Rs. 20,000~~.",
+            sticker=dict(kind="burst", lines=[MINUS + "Rs. 20,000", "LOSS"], color=F_RED, angle=-7,
+                         scale=0.8),
             joey="Can we at least still play it?"),
     6: dict(kicker="THE  BIG  IDEA", lines=["WHAT DID CHANDLER", "ACTUALLY CREATE?"],
-            body="A **margin contract / trade**: a financial agreement to buy or sell an asset "
-                 "at a **fixed price** on a **future date**, by paying a **small upfront amount**.",
+            body="A **margin\u00a0contract\u00a0/\u00a0trade**: a financial agreement to buy or sell "
+                 "an asset at a __fixed price__ on a __future date__, by paying a "
+                 "**small\u00a0upfront\u00a0amount**.",
             sticker=dict(kind="stamp", lines=["CONTRACT"], angle=-8),
             joey="Could you say that again... slower?"),
     7: dict(kicker="PLOT  TWIST", lines=["NOW REPLACE THE PS5", "WITH A COMMODITY"],
