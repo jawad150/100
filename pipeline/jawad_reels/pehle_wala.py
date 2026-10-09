@@ -39,6 +39,15 @@ Render ladder (always through tools/heavy.sh, --workers 1, --no-sfx-build --audi
     python3 render.py pehle_wala --sheet 16 --samples 1 --workers 1 --no-audio
     python3 render.py pehle_wala --stills 0,0.267,0.533,2.133,... --workers 1 --no-audio
     python3 render.py pehle_wala --range 25.2 28.2 --workers 1 --no-audio
+
+BUILD STATUS (2026-10-09, measured): 53 full-quality beat stills (every row of HANDOFF 2), a 32-frame sheet and the
+15 fps preview (VO stem only: no mix exists yet, the shared sound kit is being rebuilt) checked frame by frame.
+Cost: 1 sample 0.88 s/frame mean (p90 1.03 s), full samples (3-7) ~2 s/frame, prewarm ~20 s, worker peak 2.3 GB.
+f0 luma 38.7 (full range), f0 -> f1 mean abs diff 8.2; loop seam 3.7 vs step 8.2 (E.seam_report ok); pre1 path on the
+BRIEF 6.3.1 numbers (f1023 (656, 465), f0 (618, 443)). Known: the p1 luma of the L3 push frames rises 1.9-3.2 code
+values (f768, push 1.0: 6.3) over the previous frame (the shared X.finish push, kept as specified); card hand-overs
+overlap the outgoing and incoming card for ~4 frames (BRIEF 6.3 collapse / POP timings, kept); hook B
+(pehle_wala_hookb.py) not built (LEAD_DECISIONS 6: bonus after version A).
 """
 import functools
 import math
