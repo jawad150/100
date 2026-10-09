@@ -30,7 +30,22 @@ THE FRAME: FRAME[i](cv, tl, lock), i = 1..12 (BRIEF 7.2, true by construction: e
 Assembled states draw them in order on one canvas; exploded states draw the 12 cached pane sprites (tl 0.3, hook lock)
 as planes at z_i = (6.5 - i) * gap. Layer clock = FF.layer_clock(t); lock 'hook' (t < 26.4), 'pay' (26.4-29.45), None.
 
+BUILD DEVIATIONS from HANDOFF r3 / BRIEF r2 (each seen on a still; reasons in SHARED_REQUESTS R8 where shared):
+ - Tags: the brief's offsets put 03, 05/06, 07, 08, 09/10, 11 on top of the frame's own copy (or clamped them onto it) in
+   the yawed fly-through views; tag_offset(k) picks, once per tag from its arrival camera, the candidate side with the
+   least overlap (tag 12 keeps the brief's frontal box). Leaders end on the pill's nearest edge; two visible blocks are
+   pushed apart vertically (fixed side per pair). Defocused foreground panes (CoC > 25 px, in front of focus) draw at
+   down to 45 % opacity so blurred white type does not read as grey stains.
+ - Corridor: billboards nearer than the live stack fade (to 20 %) where they cover it from 19.8 (the brake) to 24.6.
+ - Lane legend at (90, 590 / 640 / 690) instead of y 1330-1440 (that crossed JD's face on the live stack); C3 avoids it.
+ - Caption C2 also avoids JD's face on the live stack (live_face_rect): its last chunk sits at y 638-786.
+ - End card: dur 4.0 with the type faded 32.94-33.27 (CARD_OUT) and the loop crossfade 33.15-33.6 (LOOP_D 0.45), so the
+   card no longer overlaps the returning hook lockup; hold 1.69 s.
+ - Lanes: <RW>/audio/ek_frame_ki_keemat_env.json is used when the mix stage writes it; until then VO = vo_stem.wav RMS,
+   SFX / MUSIC = labelled PLACEHOLDER envelopes (envelopes()['placeholder']).
+
 CLI: python3 ek_frame_ki_keemat.py --selftest   (geometry, timing, text blocks, safe zones, captions; no full renders)
+     python3 ek_frame_ki_keemat.py --srt        (<RW>/captions/ek_frame_ki_keemat.srt, the three caption windows)
 Render: run from pipeline/jawad_reels through tools/heavy.sh, render.py --workers 1 (HANDOFF §10).
 """
 import functools
@@ -1250,6 +1265,9 @@ def S_CORR(t):
             if d < 60:
                 continue
             op *= min(1.0, max(0.15, (9500.0 - d) / 4000.0))
+            kr = ramp(t, 24.0, 24.4, 'inout_sine')         # rush: a stack flying through the lens would fill the
+            if kr > 0:                                      # screen (black / busy frames): fade it near the camera
+                op *= 1.0 - kr * (1.0 - K.smoothstep(250.0, 1200.0, d))
             items.append((d, 'bb', (pos, op, flare)))
     live_d = cam.depth((0.0, 0.0, LIVE_Z))
     lb = _bbox(cam, stack_corners(gap, LIVE_Z))
