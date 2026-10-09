@@ -16,7 +16,7 @@ What this module owns
                       under words; tails carved under later speech)
     beds(hook)        exact bed automation (power timeline, loop phase locked so the A seam f1039 -> f0 is continuous)
     mix_loop(...)     audio.mix's chain on a LOOP: duck_under -> studio room send -> drop-out gate -> fold tails past DUR
-                      onto t = 0 -> -18 LUFS -> 2:1 glue -> beds (exact levels, sidechained 5 dB under the SFX) ->
+                      onto t = 0 -> -18 LUFS -> 2:1 glue -> beds (exact levels, sidechained 2 dB under the SFX) ->
                       4x true-peak limiter (circular) at -2.0 dBTP
     BED, BED_GAIN_DB  None / -30: audio.mix cannot reproduce the per-frame beds or the loop. Do not let render.py build
                       this reel's SFX: render with `--no-sfx-build --audio <final mix>`.
@@ -43,8 +43,10 @@ Local sounds (each audio.qc() == [] at its default and used params; spectrograms
     mohalla_cheer(dur, cut) the neighbourhood cheering, WORDLESS: granular resynthesis of the CC0 "Crowd shouting/speaking
                             ambience" (starninjas, OpenGameArt; crowd_cheer_real's source) - reversed 60-100 ms grains
                             from random positions, +-1.5 st, 80 grains/s, band 180-6500 Hz, outdoor reverb. The raw
-                            sample is NOT wordless (faster-whisper small/medium hear "Oh my God, look at that!" at
-                            p 0.52-0.82), so crowd_cheer_real is never used. `verify` re-checks with whisper.
+                            sample is NOT wordless (faster-whisper small: "Oh my God, look at that! It's just that!",
+                            4 words at p 0.62-0.69; medium: "Oh my God!", p 0.82 / 0.52), so crowd_cheer_real is never
+                            used. `verify` re-checks with whisper (small: no word; medium: only its pure-noise
+                            hallucination "Thanks for watching!", which it also returns on pink noise and room tone).
     room_mains   (bed)      8 s loop: fan run (13.5 Hz AM, 108 cycles) + 100 Hz motor -24 + tube buzz -30 + CRT whine
                             15.625 kHz -42 + room tone -6
     night_crickets (bed)    DUR-long loop (34.667 s, so one phase reference is seamless at the seam): 6 field-cricket
@@ -101,6 +103,7 @@ MUSIC_JSON = os.path.join(RW, 'music', 'music_full.json')
 TARGET_LUFS, TP_CEILING = -18.0, -2.0          # SFX stem (BRIEF 0 / bible 4.1)
 FINAL_LUFS, FINAL_TP, LIMIT_CEIL = -14.0, -2.0, -2.3
 BED, BED_GAIN_DB = None, -30.0                 # see the docstring: never audio.mix / render.py's auto-build
+BED_DUCK_DB = 2.0                              # bed sidechain depth under the SFX bus (audio.mix: 5)
 
 
 def F(f):
@@ -533,15 +536,16 @@ def raw_cues(hook='A'):
           _c(160, 'whoosh_slow', -10, 'tilt through the ceiling: loudest pass on the f160 cut', lp=1100),
           _c(220, 'tube_flicker', -24, 'far window false start f220-f221 (hum blip only)', lp=250, pan=-0.4,
              params=dict(n=2)),
-          _c(240, 'power_thunk', -4, 'power back: bulbs cascade f240-f245', hero=True, params=dict(on=1)),
-          _c(240, 'impact_soft', -4, '"AA GAYI!" slams (SLAM spring)', hero=True, sat=3.0),
+          _c(240, 'power_thunk', -5, 'power back: bulbs cascade f240-f245', hero=True, sat=3.0, params=dict(on=1)),
+          _c(240, 'impact_soft', -6, '"AA GAYI!" slams (SLAM spring)', hero=True, sat=3.0),
           _c(241, 'mohalla_cheer', -10, 'the street cheers (wordless), cut dead at f300', params=dict(
               dur=round(F(300) - F(241), 4), cut=1)),
           _c(242, 'fan_wind', -12, 'rooftop fans spin up (held until the f300 death)', align='start',
              params=dict(mode='up', duration=1.9, hold=round(F(300) - F(242) - 1.9, 4), release=0.03)),
           _c(243, 'tube_light_on', -12, 'distant tube lights / windows snap on', lp=2500, pan=-0.35,
              params=dict(tinks=0)),
-          _c(300, 'power_thunk', -6, 'the gag: everything dies again (beat 15)', hero=True, params=dict(on=0)),
+          _c(300, 'power_thunk', -6, 'the gag: everything dies again (beat 15)', hero=True, sat=3.0,
+             params=dict(on=0)),
           _c(301, 'fan_wind', -14, 'rooftop fans wind down', align='start', params=dict(mode='down', duration=2.0)),
           _c(310, 'backup_beep', -8, 'a backup box beeps downstairs (far)', pan=-0.3, params=dict(far=1)),
           dict(L[('L7', 'whoosh_slow')], f=320.0, gain_db=-9.0, ev='L7 torch-beam sweep crosses frame centre (bar 4)',
@@ -551,9 +555,8 @@ def raw_cues(hook='A'):
           _c(400, 'power_thunk', -6, 'lights on: the modern desk (on-word cut)', lp=1100, params=dict(on=1)),
           _c(440, 'ui_tick', -12, 'render 63 -> 64 %', pan=0.3),
           _c(470, 'tube_flicker', -14, 'brownout dip f470-f472 (desk lamp, monitor)', pan=-0.5, params=dict(n=2)),
-          _c(480, 'power_thunk', -3, 're-hook 2: the power dies mid-render (sub_drop carries the sub)', hero=True, hp=80,
-             params=dict(on=0)),
-          _c(480, 'crt_off', -6, 'the monitor collapses (f480-f485)', params=dict(whine=0)),
+          _c(480, 'power_thunk', -3, 're-hook 2: the power dies mid-render', hero=True, sat=3.0, params=dict(on=0)),
+          _c(480, 'crt_off', -6, 'the monitor collapses (f480-f485)', sat=3.0, params=dict(whine=0)),
           _c(480, 'sub_drop', -9, 're-hook weight', lp=120, sat=3.0)]
     C += [_c(481, 'fan_wind', -16, 'PC fans wind down', align='start', lp=1500,
              params=dict(mode='down', duration=1.5, rate=40.0, fc=700.0))]
@@ -569,8 +572,9 @@ def raw_cues(hook='A'):
           dict(L[('L8', 'reverse_swell')], f=571.0, gain_db=-12.0, ev='L8 iris fully open (ends f571)', ver='AB')]
     for p in PRESSES:
         post = p >= 700                                # the presses after V8 ends (23.06 s): 4 dB under the rest so
-        C += [_c(p - 1, 'keycap_thock', -14 if post else -10, 'Ctrl keycap down (leads S by 1 f)', pan=-0.3,  # the
-                 params=dict(pitch=0.94)),                # rhythm does not jump when the VO duck releases
+        C += [_c(p - 1, 'keycap_thock', -20 if post else -16, 'Ctrl keycap down (leads S by 1 f: a grace note, 8 dB '
+                 'under S so S stays the beat)', pan=-0.3, params=dict(pitch=0.94)),  # post: the rhythm does not jump
+                                                          # when the VO duck releases
               _c(p, 'keycap_thock', -12 if post else -8, 'S keycap down (%s)' % ('quarter' if p < 640 else '8th'),
                  pan=0.25),
               _c(p + 2, 'ui_tick', -16, '"Saved" chip pops (x 780)', hp=5500, pan=0.3)]
@@ -583,11 +587,10 @@ def raw_cues(hook='A'):
                                                     seed=0)),
           _c(817, 'swish_small', -16, 'underline draws on (f817-f838)', align='start', hp=5500),
           _c(880, 'riser', -8, 'into the power return (starts f856, clear of V11)', params=dict(duration=0.8)),
-          _c(880, 'power_thunk', 0, 'POWER RETURNS (loudest moment, bar 11; sub_drop carries the sub)', hero=True, hp=80,
-             params=dict(on=1)),
+          _c(880, 'power_thunk', 0, 'POWER RETURNS (loudest moment, bar 11)', hero=True, sat=3.0, params=dict(on=1)),
           _c(880, 'sub_drop', -8, 'power return weight', lp=120, sat=3.0),
           dict(L[('L4', 'shimmer')], f=880.0, ev='L4 halation bloom-out peaks', ver='AB'),
-          dict(L[('L4', 'reverse_swell')], f=880.0, ev='L4 bloom into the cut (ends f880)', ver='AB'),
+          dict(L[('L4', 'reverse_swell')], f=880.0, ev='L4 bloom into the cut (ends f880)', ver='AB', sat=3.0),
           _c(881, 'impact_soft', -4, 'JD smiling in the lit room', sat=3.0),
           _c(881, 'fan_wind', -6, 'ceiling fan spins up 2.5 s (out_cubic), hands over to the room_mains bed',
              align='start', params=dict(mode='up', duration=2.5, hold=0.3, release=0.6)),
@@ -604,7 +607,7 @@ def raw_cues(hook='A'):
         elif c['name'] == 'shimmer':
             c.update(f=round(c['t'] * FPS, 2), ev='end card: keyword "batao" rises')
         elif c['name'] == 'reverse_swell':             # 0.8 -> 0.5 s: starts after V12 ends (34.111 s VO activity)
-            c.update(f=1040.0, ev='loop swell into frame 0 (ends on DUR)', params=dict(duration=0.5))
+            c.update(f=1040.0, ev='loop swell into frame 0 (ends on DUR)', params=dict(duration=0.5), sat=3.0)
         C.append(c)
     for c in C:
         c.setdefault('hero', False)
@@ -674,7 +677,7 @@ def cues(hook='A', report=False, include_music=False):
 
 
 # ============================================================================================ beds (BRIEF 6.10 bed table)
-L_DROP = -44.0                                 # drop-out room tone (tuned so the rough mix holds RMS ~ -46.5 dBFS)
+L_DROP = -37.0                                 # drop-out room tone: -45.8 LUFS / RMS -47 dBFS in the rough mixes
 
 
 def _seg(t0, t1, lv, fin=0.004, fout=0.004):
@@ -843,7 +846,9 @@ def mix_loop(cue_list, bed_list, out_base=None, target=TARGET_LUFS, tp_ceiling=T
     gr_comp = _circ(lambda z: A.compressor_gain(z, thresh_db=target + 8.0, ratio=2.0), fx)
     fx *= undb(gr_comp)[:, None]
     bed, bed_info = _bed_bus(bed_list, target)
-    bed = _circ(lambda z: A.sidechain(z[:, :2], z[:, 2:], depth_db=5.0), np.concatenate([bed, fx], 1))
+    # beds ride BED_DUCK_DB under the SFX (audio.mix uses 5 dB; these beds are diegetic and switch with the power, so a
+    # deep duck would pump the room under every keycap and lower the loop seam's first 0.5 s vs its last)
+    bed = _circ(lambda z: A.sidechain(z[:, :2], z[:, 2:], depth_db=BED_DUCK_DB), np.concatenate([bed, fx], 1))
     pk_fx, pk_bed = _circ(A.tp_envelope, fx), _circ(A.tp_envelope, bed)
     G, ceil, best = 0.0, tp_ceiling - 0.2, None
     for attempt in range(4):
@@ -929,6 +934,29 @@ def starts_per_frame(placed, music_events=()):
     busy = sorted((f, v) for f, v in per.items() if len(v) >= 3)
     fused = max(sum(1 for t2, _ in ev if abs(t2 - t) <= 0.025) for t, _ in ev)
     return worst, busy, fused
+
+
+def _onset_near(x, t, win=0.06, hop=240):
+    """qa_measure.py's `cues` method on an array: the largest 5 ms energy rise within t +- win -> (offset s, rise dB)."""
+    m = np.asarray(x, dtype=np.float64)
+    m = m.mean(1) if m.ndim == 2 else m
+    e = np.sqrt(np.convolve(m * m, np.ones(hop) / hop, 'same')[::hop] + 1e-12)
+    d = 20 * np.log10(e)
+    on = np.maximum(np.diff(d, prepend=d[0]), 0)
+    rate = SR / hop
+    i0, i1 = max(0, int((t - win) * rate)), min(len(on) - 1, int((t + win) * rate) + 1)
+    k = i0 + int(np.argmax(on[i0:i1]))
+    return k / rate - t, float(on[k])
+
+
+def sync_events(hook):
+    """BRIEF 8 sync list: (label, frame, search window s)."""
+    ev = [('backup_beep LED', f, 0.03) for f in ((40, 60) if hook == 'A' else (0, 40))]
+    ev += [('match_strike', 80, 0.03)]
+    ev += [('power_thunk', f, 0.03) for f in (240, 300, 400, 480, 880)]
+    for p in PRESSES:
+        ev += [('keycap Ctrl', p - 1, 0.015), ('keycap S', p, 0.015)]
+    return ev
 
 
 def _music_events():
@@ -1031,6 +1059,19 @@ def build(hook='A'):
                        for s0, s1 in secs])
     tt, lc = A.loudness_curve(x)
     meas['max_momentary_at'] = round(float(tt[np.argmax(lc)]), 3)
+    sync = []
+    for lab, f, win in sync_events(hook):                 # measured on the fx split (no bed), as qa_measure does
+        off, rise = _onset_near(fx, F(f), win)
+        sync.append(dict(event=lab, f=f, off_ms=round(off * 1000, 1), off_frames=round(off * FPS, 2),
+                         rise_db=round(rise, 1), ok=abs(off) <= 1.0 / FPS))
+    meas['sync'] = sync
+    band = lambda z: _rms_db(bp(z, 1000.0, 4000.0, 4))                # noqa: E731
+    meas['hum_blip_1_4k'] = dict(before_7p10_7p30=band(x[_n(7.10):_n(7.30)]), during_7p30_7p50=band(x[_n(7.30):_n(7.50)]))
+    meas['hum_blip_1_4k']['ok'] = meas['hum_blip_1_4k']['during_7p30_7p50'] <= meas['hum_blip_1_4k']['before_7p10_7p30'] + 1.0
+    meas['loop_bed'] = dict(first_0p5=_rms_db(bo[:_n(0.5)]), last_0p5=_rms_db(bo[-_n(0.5):]),
+                            first_0p3=_rms_db(bo[:_n(0.3)]), last_0p3=_rms_db(bo[-_n(0.3):]))
+    meas['loop_swell_end'] = [dict(t=p['t'], end_40db=p['end_abs'], hit=p['hit']) for p in rep['placed']
+                              if p['name'] == 'reverse_swell' and abs(p['t'] - DUR) < 1e-3]
     overview(x, rep['placed'], base + '_overview.png', '%s SFX stem, hook %s (VO-fitted, loop-mixed)' % (MODULE, hook),
              words, 'I %.2f LUFS  TP %.2f dBTP  LRA %.1f  limiter GR %.2f dB   [amber = power on, white = VO words, blue = '
              'drop-out, red ticks = hero hits]' % (rep['integrated_lufs'], rep['true_peak_dbtp'], rep['lra_lu'],
@@ -1040,7 +1081,9 @@ def build(hook='A'):
     json.dump(cj, open(base + '_cues.json', 'w'), indent=1, default=str)
     json.dump(meas, open(base + '_report.json', 'w'), indent=1, default=str)
     show = ('stem', 'ffmpeg', 'max_momentary_at', 'dropout', 'seam', 'starts_per_frame', 'violations', 'keycap_lp',
-            'sections_lufs')
+            'hum_blip_1_4k', 'loop_bed', 'loop_swell_end')
+    print('sync (fx stem, onset vs event frame):', ', '.join('%s f%d %+.1f ms%s' % (
+        o['event'], o['f'], o['off_ms'], '' if o['ok'] else ' FAIL') for o in sync))
     print(json.dumps(dict((k, meas[k]) for k in show), indent=1, default=str))
     for o in timing:
         if o['flag']:
@@ -1066,13 +1109,17 @@ def _load_fix(path):
     return x
 
 
-def _master(bus, target=FINAL_LUFS, ceiling=LIMIT_CEIL, tp_max=FINAL_TP):
-    """epic_mix.master on a loop: 2:1 glue from the 98th-percentile 10 ms level - 3 dB, then gain + 4x true-peak
-    limiter to target LUFS, TP <= tp_max (circular)."""
+def _master(bus, target=FINAL_LUFS, ceiling=LIMIT_CEIL, tp_max=FINAL_TP, glue=False):
+    """Gain + 4x true-peak limiter to target LUFS, TP <= tp_max, on a loop (circular). glue=True adds epic_mix's
+    2:1 bus glue (98th-percentile 10 ms level - 3 dB) first; it is OFF here: measured on this reel it took 4.4 dB off
+    the power return and tied it with the loudest VO word (BRIEF 8: the reel's max momentary must sit in 29.333-29.933 s),
+    while no glue keeps the power return 0.9 LU clear with the limiter at < 2 dB."""
     import epic_mix as M
-    gr = _circ(lambda z: A.compressor_gain(z, thresh_db=M._level_pct(bus, 98) - 3.0, ratio=2.0, knee_db=6.0,
-                                           attack=0.006, release=0.15, rms=0.008), bus)
-    bus = bus * undb(gr)[:, None]
+    gr = np.zeros(len(bus))
+    if glue:
+        gr = _circ(lambda z: A.compressor_gain(z, thresh_db=M._level_pct(bus, 98) - 3.0, ratio=2.0, knee_db=6.0,
+                                               attack=0.006, release=0.15, rms=0.008), bus)
+        bus = bus * undb(gr)[:, None]
     pk = _circ(A.tp_envelope, bus)
     g, c = target - A.loudness(bus), ceiling
     for attempt in range(4):
@@ -1091,6 +1138,8 @@ def _master(bus, target=FINAL_LUFS, ceiling=LIMIT_CEIL, tp_max=FINAL_TP):
 
 
 HARM_V11_MARGIN = 8.5                          # speech >= 8 LU over (harmonium + SFX) on V11's voiced frames, + 0.5
+HARM_GAIN_DB = -0.5                            # music_full.wav gain in mix FULL (both hooks): the search below gave
+                                               # -0.5 dB (A) / -0.25 dB (B); one value keeps A and B identical
 
 
 def rough(hook='A'):
@@ -1099,7 +1148,8 @@ def rough(hook='A'):
     import epic_mix as M
     register()
     src = vo_source(hook)
-    v = _load_fix(src['wav'])
+    v = _load_fix(src['wav'])                         # mono -16 LUFS stem -> dual-mono stereo reads +3.01 dB:
+    v = v * undb(M.SPEC['vo_lufs'] - A.loudness(v))  # back to -16 LUFS (equal-power centre pan)
     s = _load_fix(_paths(hook) + '.wav')
     s = s * undb(TARGET_LUFS - A.loudness(s))
     s = _circ(lambda z: A.sidechain(z[:, :2], z[:, 2:], depth_db=M.SPEC['sfx_duck_vo_db'], attack=0.03, release=0.3),
@@ -1114,15 +1164,15 @@ def rough(hook='A'):
     sp = M.speech_mask(v)
     idx = np.clip((tt * SR).astype(int), 0, N - 1)
     spk = sp[idx] & (lv > lv.max() - 15)
-    g_h = None
-    if have_music and v11:
-        a0, b0 = v11[0]['start'], max(b for a, b in acts if a < v11[-1]['end'] + 0.2)
-        sel = spk & (tt >= a0) & (tt <= b0)
+    g_h, g_search = (HARM_GAIN_DB if have_music else None), None
+    if have_music and v11:                             # same frames as the per-line report below
+        sel = spk & (tt >= v11[0]['start']) & (tt <= v11[-1]['end'])
         for gdb in np.arange(0.0, -30.01, -0.25):     # loudest static gain that keeps V11 >= margin over the bed
             _, lb = A.loudness_curve(s + m0 * undb(gdb))
             if np.median((lv - lb)[sel]) >= HARM_V11_MARGIN:
-                g_h = float(gdb)
+                g_search = float(gdb)
                 break
+        assert g_search is not None and HARM_GAIN_DB <= g_search + 1e-9, (HARM_GAIN_DB, g_search)
     out = {}
     versions = [('full', True), ('dry', False)] if hook == 'A' else [('full', True)]
     for tag, full in versions:
@@ -1151,10 +1201,11 @@ def rough(hook='A'):
         kmax = int(np.argmax(ly))
         a, b = _n(F(791)), _n(F(799))
         pk_t = None
-        if np.any(mm):
-            env = np.sqrt(uniform_filter1d(np.square(mm).mean(1), _n(0.01)))
-            pk_t = round(float(np.argmax(env)) / SR, 4)
+        if np.any(mm):                                 # 10 ms RMS envelope maximum of the harmonium layer
+            env = uniform_filter1d(np.square(mm).mean(1), _n(0.01))
+            pk_t = round(float(np.argmax(np.maximum(env, 0.0))) / SR, 4)
         rep = dict(file=path, hook=hook, version=tag, vo=src, harmonium_gain_db=g_h if (full and g_h is not None) else None,
+                   harmonium_gain_search_db=g_search,
                    lufs=round(A.loudness(y), 2), tp_dbtp=round(A.true_peak(np.concatenate([y[-_n(0.05):], y,
                                                                                             y[:_n(0.05)]])), 2),
                    lra=round(A.loudness_range(y), 1), master_gain_db=round(g, 2), glue_gr_db=round(glue_gr, 2),
@@ -1164,11 +1215,15 @@ def rough(hook='A'):
                    music_lufs_in_mix=round(A.loudness(mm), 2) if np.any(mm) else None,
                    vo_over_bed_med_lu=round(float(np.median((lvv - lbb)[spk])), 1),
                    vo_over_bed_p10_lu=round(float(np.percentile((lvv - lbb)[spk], 10)), 1),
-                   vo_over_music_med_lu=round(float(np.median((lvv - lmm)[spk])), 1) if np.any(mm) else None,
+                   vo_over_music_med_lu=(round(float(np.median((lvv - lmm)[spk & (lmm > -70)])), 1)
+                                         if np.any(mm) and (spk & (lmm > -70)).any() else None),
                    vo_over_sfx_p10_lu=round(float(np.percentile((lvv - lss)[spk], 10)), 1),
                    per_line=per_line,
                    max_momentary=dict(lufs=round(float(ly[kmax]), 2), centre=round(float(ty[kmax]), 3),
-                                      frame=round(float(ty[kmax]) * FPS, 1)),
+                                      frame=round(float(ty[kmax]) * FPS, 1),
+                                      in_power_return=bool(29.333 - 1e-3 <= ty[kmax] <= 29.933 + 1e-3),
+                                      power_return_max=round(float(ly[(ty >= 29.333) & (ty <= 29.933)].max()), 2),
+                                      elsewhere_max=round(float(ly[(ty < 29.133) | (ty > 30.133)].max()), 2)),
                    dropout=dict(window='f791-f798', rms_dbfs=_rms_db(y[a:b]), lufs=_lufs_seg(y[a:b]),
                                 music_peak_dbfs=round(float(db(np.abs(mm[a:b]).max() + 1e-15)), 1)),
                    harmonium_peak_t=pk_t, harmonium_peak_frame=None if pk_t is None else round(pk_t * FPS, 2),
@@ -1255,6 +1310,18 @@ def verify():
                 bad = [w for w in ws if w['p'] >= 0.5 and any(ch.isalpha() for ch in w['w'])]
                 res['cheer'].append(dict(params=prm, model=model, lang=lang, detected=lg, words=ws, words_p50=bad))
                 print('cheer %s %-6s %-4s -> %s, words p>=0.5: %s' % (prm, model, lang, lg, bad))
+    res['mix_segments'] = []
+    for hk in ('A', 'B'):                              # BRIEF 8: small, hi and en, on 8.0-10.0 and 29.5-31.1 of the mix
+        pm = os.path.join(AUD, '%s_rough_%s_full.wav' % (MODULE, hk))
+        if not os.path.exists(pm):
+            continue
+        ym = _load_fix(pm)
+        for a0, b0 in ((8.0, 10.0), (29.5, 31.1)):
+            for lang in ('hi', 'en'):
+                ws, lg = _whisper(ym[_n(a0):_n(b0)], 'small', lang)
+                bad = [w for w in ws if w['p'] >= 0.5 and any(ch.isalpha() for ch in w['w'])]
+                res['mix_segments'].append(dict(hook=hk, seg=(a0, b0), lang=lang, words=ws, words_p50=bad))
+                print('mix %s %.1f-%.1f small %s -> words p>=0.5: %s' % (hk, a0, b0, lang, bad))
     p = os.path.join(AUD, '%s_rough_A_full.wav' % MODULE)
     if os.path.exists(p):
         y = _load_fix(p)[:_n(1.40)]

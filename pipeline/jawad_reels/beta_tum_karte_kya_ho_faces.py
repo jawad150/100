@@ -72,6 +72,8 @@ EYES = (540.0, 1280.0)          # screen eye midpoint in every JD shot (continui
 S0 = 0.92                       # display scale (of the 2x master) at each shot's push origin t_push0
 PUSH = 0.012                    # slow dolly, +1.2 % per second
 SWAP_AMT, SWAP_DUR = 0.03, 0.9  # punch-in on the new pose after a hard cut: 1.00 -> 1.03 ...
+
+
 def _out_quad(x):
     return 1.0 - (1.0 - x) * (1.0 - x)
 
@@ -91,18 +93,36 @@ DEPTH_MIN_PX = 0.2                                # skip the torso micro-paralla
 RIM_A = dict(gain=2.2, back=0.45, outline=0.04, depth_wrap=0.30, halo_strength=0.16, halo_sigmas=(6, 18, 48))
 RIM_D = dict(gain=1.4, back=0.40, outline=0.03, depth_wrap=0.25, halo_strength=0.10, halo_sigmas=(6, 18, 48))
 BASE_A = dict(exposure=0.42)                      # FA.warm_dark (low-key warm, backlit room)
-BASE_D = dict(exposure=0.80)                      # FA.cine_grade (S-curve with a toe, warm split tone)
-VEIL = 0.0                                        # NIGHT_1 airlight on the subject (black match; measured, see check)
+BASE_D = dict(exposure=0.52)                      # FA.cine_grade (S-curve with a toe, warm split tone); 0.52 puts
+                                                  # the D face at the A face's level (0.80 read +30 code values)
+TORSO_FALL = dict(start=30.0, bottom=0.62)        # front fill aimed at the face: x1 at the chin + 30 px -> x0.62 at
+                                                  # the bust bottom (backlit room: the shirt is not front-lit)
+KNEE = dict(k0=0.19, ymax=0.225)                  # subject highlight shoulder (linear luminance, A scale): the white
+                                                  # shirt never outshines the window glow behind him
+VEIL = {'A': 0.0, 'D': 0.35}                      # NIGHT_1 airlight on the subject per look: D's toe crushes the
+                                                  # suit 2 code values under the room's blacks; +0.35 x NIGHT_1 matches
 WRAP = dict(width=14.0, sigma=30.0, amount=0.22)  # light wrap: blurred plate screened over the outer 14 px
 PHONE = dict(center=(540.0, 1790.0), radius=560.0, strength=0.22)   # phone screen below frame: amber uplight
 SILL = dict(y0=1540.0, y1=1770.0, opacity=0.86)  # wall under the window sill: the plate darkens below his collar
 FADE_FRAC = 0.05                                  # soft blend of the panel-cut sides into the dark wall
 
-TEX_K = {'suit_confused': 0.29, 'suit_shocked': 0.25, 'suit_neutral': 0.31, 'suit_hand_on_chest': 0.28}
+TEX_K = {'suit_confused': 0.27, 'suit_shocked': 0.23, 'suit_neutral': 0.29, 'suit_hand_on_chest': 0.26}
 # Skin-only SR detail pull-back (human-realism): rgb = lanczos2x + k (sr - lanczos2x) on SKIN pixels of the face
 # (eyes, brows, lashes, beard, hair, lips' edges, shirt and suit keep the full SR detail, k = 1). Real-ESRGAN x4plus
 # put 7.6-11.4x the cheek Laplacian variance of the 2x Lanczos source into these small suit faces (smooth-wax skin with
-# crisp edges); k is the largest value that brings each pose's cheek patch to <= 1.5x (measured by `check`).
+# crisp edges); k is the largest value (bisection, 0.01 steps) that brings each pose's cheek patch to <= 1.45x.
+
+# Eye anchor: the midpoint of the two eyes' canthi (inner + outer corners), MARKED BY HAND on 4x crops of the 2x masters
+# (cut-out px). meta['eye_mid'] (YuNet) sits 10-15 px right / 8-15 px above the eyes and its bias differs between
+# poses by up to 7 px, so it cannot lock eyes across shots within 6 px. Corners (x, y): outer-left, inner-left,
+# inner-right, outer-right.
+EYE_CORNERS = {
+    'suit_confused': ((283.0, 340.0), (367.5, 343.75), (432.5, 350.0), (508.75, 355.0)),
+    'suit_shocked': ((335.0, 342.5), (406.0, 347.0), (482.5, 349.5), (553.75, 353.75)),
+    'suit_neutral': ((351.0, 377.5), (447.5, 380.0), (512.5, 382.0), (595.0, 395.0)),
+    'suit_hand_on_chest': ((297.5, 317.5), (383.75, 304.25), (440.75, 293.75), (496.25, 286.25)),
+}
+EYE_MID = {k: (sum(p[0] for p in v) / 4.0, sum(p[1] for p in v) / 4.0) for k, v in EYE_CORNERS.items()}
 
 POSES = ('suit_confused', 'suit_shocked', 'suit_neutral', 'suit_hand_on_chest')
 
@@ -162,6 +182,17 @@ def scale(key, t):
     if d['swap_on_beat'] is not None:
         s *= 1.0 + SWAP_AMT * K.ramp(t, d['swap_on_beat'], d['swap_on_beat'] + SWAP_DUR, SWAP_EASE)
     return s
+
+
+def _fill_table():
+    """Complete FACES with the face-compositor table fields: P (screen eye midpoint), width (on-screen bust width
+    at t_push0, px), cam_keys ((t, head-plane scale) at the shot's first and last frame)."""
+    for d in FACES:
+        w = plain(d['pose']).shape[1] if '_w' not in d else d['_w']
+        d['P'] = EYES
+        d['width'] = round(w * S0, 1)
+        d['cam_keys'] = [(round(d['f0'] / FPS, 4), round(scale(d['key'], d['f0'] / FPS), 4)),
+                         (round((d['f1'] - 1) / FPS, 4), round(scale(d['key'], (d['f1'] - 1) / FPS), 4))]
 
 
 def _cam_state(key, t):
@@ -278,7 +309,7 @@ def _screen_of_sprite(pose, s=S0):
     """Screen x, y grids of the cut-out pixels at scale s with the eye midpoint on EYES (for the phone uplight)."""
     p = plain(pose)
     h, w = p.shape[:2]
-    ex, ey = meta(pose)['eye_mid']
+    ex, ey = EYE_MID[pose]
     xs = EYES[0] + (np.arange(w, dtype=np.float32) + 0.5 - ex) * s
     ys = EYES[1] + (np.arange(h, dtype=np.float32) + 0.5 - ey) * s
     return xs, ys
@@ -297,6 +328,25 @@ def _phone_light(pose):
     col = np.asarray(K.C['AMBER'], np.float32)
     out = np.zeros_like(p)
     out[..., :3] = alb * col * (PHONE['strength'] * fall * a)[..., None]
+    return out
+
+
+def _shade(pose, base, kind):
+    """Torso fill falloff below the chin and a soft highlight shoulder on the subject (colour ratios kept: the
+    luminance is compressed, the hue / saturation of shirt and skin stay). Face values sit under the knee."""
+    m = meta(pose)
+    a = base[..., 3]
+    h = a.shape[0]
+    ys = np.arange(h, dtype=np.float32)
+    y0 = m['face_box'][3] + TORSO_FALL['start']
+    f = 1.0 - (1.0 - TORSO_FALL['bottom']) * _smooth(y0, float(h), ys)
+    out = base * np.concatenate([np.repeat(f[:, None], 3, 1), np.ones((h, 1), np.float32)], 1)[:, None, :]
+    rgb = FA.unpremult(out)
+    Y = K.lum(rgb)
+    k0, ym = KNEE['k0'], KNEE['ymax']                                 # one knee: D is exposure-matched to A (BASE_D)
+    Yc = np.where(Y > k0, k0 + (ym - k0) * (1.0 - np.exp(-(Y - k0) / (ym - k0))), Y)
+    g = np.where(Y > 1e-6, Yc / np.maximum(Y, 1e-6), 1.0).astype(np.float32)
+    out[..., :3] *= g[..., None]
     return out
 
 
@@ -329,8 +379,9 @@ def look(pose, kind='A', phone=False, rim_dir=(0.8, -0.5), rim_back=None):
     base = FA.warm_dark(p, **BASE_A) if kind == 'A' else FA.cine_grade(p, **BASE_D)
     if phone:
         base = base + _phone_light(pose)
-    if VEIL > 0:
-        base[..., :3] += np.asarray(K.C['NIGHT_1'], np.float32) * VEIL * base[..., 3:4]
+    base = _shade(pose, base, kind)
+    if VEIL[kind] > 0:
+        base[..., :3] += np.asarray(K.C['NIGHT_1'], np.float32) * VEIL[kind] * base[..., 3:4]
     zero = FA.premult(np.zeros((h, w, 3), np.float32), a)
     em = FA.rim_light(p, dep, light=rim_dir, base=zero, **rim_kw)       # emission only (+ alpha of the silhouette)
     dx, dy = FA.offset(p, em)
@@ -365,7 +416,9 @@ def look(pose, kind='A', phone=False, rim_dir=(0.8, -0.5), rim_back=None):
     torso_ref = float(np.median(d[int(seam_y):][al[int(seam_y):] > 0.9])) if (al[int(seam_y):] > 0.9).any() else 0.5
     keep = np.clip(1.0 - cv2.GaussianBlur(mk, (0, 0), fe / 2) * 1.6, 0, 1)
     L['delta'] = _ro((torso_ref - d) * DEPTH_RANGE * keep)
-    L['eye'] = (m['eye_mid'][0] + dx, m['eye_mid'][1] + dy)              # hero px
+    L['eye'] = (EYE_MID[pose][0] + dx, EYE_MID[pose][1] + dy)           # hero px (hand-marked canthi midpoint)
+    L['_dist'] = _ro(np.sqrt((np.arange(W, dtype=np.float32)[None, :] - L['eye'][0]) ** 2 +
+                             (np.arange(H, dtype=np.float32)[:, None] - L['eye'][1]) ** 2))
     L['pivot'] = (dx + w / 2.0, dy + h)                                  # bust bottom centre (sway pivot, hero px)
     L['seam_y'] = float(seam_y)
     L['shape'] = (H, W)
@@ -383,6 +436,7 @@ def _look_for(key):
 def prewarm():
     for d in FACES:
         _look_for(d['key'])
+    _fill_table()
 
 
 # ============================================================================================ motion
@@ -528,15 +582,18 @@ def _torso_micro(key, t, spr):
     H, W = delta.shape
     xs = np.arange(W, dtype=np.float32) - ex
     ys = np.arange(H, dtype=np.float32) - ey
-    mx = float(np.abs(delta).max() * k * math.hypot(max(abs(xs[0]), abs(xs[-1])), max(abs(ys[0]), abs(ys[-1]))))
-    if abs(mx) < DEPTH_MIN_PX:
-        return spr, abs(mx)
     kd = (np.float32(k) * delta)
+    dist = L.get('_dist')
+    if dist is None:
+        dist = np.sqrt(xs[None, :] ** 2 + ys[:, None] ** 2).astype(np.float32)
+    mx = float(np.abs(kd * dist * (L['alpha_hero'] > 0.02)).max())
+    if mx < DEPTH_MIN_PX:
+        return spr, mx
     mapx = (np.arange(W, dtype=np.float32)[None, :] - kd * xs[None, :])
     mapy = (np.arange(H, dtype=np.float32)[:, None] - kd * ys[:, None])
     out = cv2.remap(np.ascontiguousarray(spr), mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
                     borderValue=(0, 0, 0, 0))
-    return out, abs(mx)
+    return out, mx
 
 
 def sill(cv, key, t):
@@ -589,9 +646,11 @@ def draw_face(cv, key, t, mode='full', micro=True):
     c, rot = P['cam'], P['rot']
     g = window_gain(t)
     if mode == 'full':
-        base_k = 1.0 + 0.3 * (g - 1.0)                       # the room bounce follows the window a little
-        head = L['base_head'] * np.float32(base_k) + L['em_head'] * np.float32(g)
-        torso = L['base_torso'] * np.float32(base_k) + L['em_torso'] * np.float32(g)
+        base_k = g if g < 1.0 else 1.0 + 0.3 * (g - 1.0)    # the room bounce IS window light: it dims with it (S6);
+                                                             # the S10 swell lifts it a little (the sun is the key)
+        kk = np.float32([base_k, base_k, base_k, 1.0])                # light only: alpha is never scaled
+        head = L['base_head'] * kk + L['em_head'] * np.float32(g)
+        torso = L['base_torso'] * kk + L['em_torso'] * np.float32(g)
         sill(cv, key, t)
     else:
         pp = L['plain_pad']
@@ -633,3 +692,309 @@ def jd_alpha(key, t):
     lay = np.zeros((K.H, K.W, 4), np.float32)
     draw_face(lay, key, t, mode='alpha', micro=False)
     return lay[..., 3].copy()
+
+
+# ============================================================================================ QA (python3 <this> check)
+def _luma(u8):
+    return u8[..., 0] * 0.2126 + u8[..., 1] * 0.7152 + u8[..., 2] * 0.0722
+
+
+def shot_frames(key):
+    d = SHOTS[key]
+    return list(range(d['f0'], d['f1']))
+
+
+def _frame_u8(t, finish=True, samples=1):
+    """A finished preview frame (world + JD + stand-ins) as uint8 RGB, through the preview harness."""
+    import beta_tum_karte_kya_ho_faces_preview as PV
+    cv = K.render_frame(PV.draw, t, samples)
+    if finish:
+        cv = PV.post(cv, t)
+    return K.to_srgb8(cv, t, dither=False)
+
+
+def _halo_ring(key, t, mode):
+    """Mean luma (8-bit, no finish) of a 3 px ring OUTSIDE JD's alpha 0.5 minus the plate's, over the plate he stands
+    on (gold_hour world + sill). The panel-cut sides / bottom (faded on purpose) are excluded."""
+    wc = world_cam(t, key)
+    plate = K.background(LOOK, t, wc, bokeh=0.0, intensity=window_gain(t))
+    sill(plate, key, t)
+    comp = plate.copy()
+    draw_face(comp, key, t, mode=mode, micro=False)
+    a = jd_alpha(key, t)
+    m = (a > 0.5).astype(np.uint8)
+    ring = (cv2.dilate(m, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))) - m).astype(bool)
+    L = _look_for(key)
+    ring[int(min(K.H, bust_bottom(key, t) - 60)):] = False
+    # exclude the cut sides: columns within 60 px of the bust's left / right screen edges below the shoulders
+    q = _hero_to_screen(key, t, [(0, L['shape'][0] * 0.5), (L['shape'][1], L['shape'][0] * 0.5)], layer='torso')
+    xl, xr = int(q[0][0]) + 60, int(q[1][0]) - 60
+    yc = int(_hero_to_screen(key, t, [(0, L['shape'][0] * 0.55)], layer='torso')[0][1])
+    side = np.zeros_like(ring)
+    side[yc:, :max(0, xl)] = True
+    side[yc:, max(0, xr):] = True
+    ring &= ~side
+    lp = _luma(K.to_srgb8(plate, t, dither=False).astype(np.float32))
+    lc = _luma(K.to_srgb8(comp, t, dither=False).astype(np.float32))
+    return float((lc[ring] - lp[ring]).mean()), float(np.percentile(lc[ring] - lp[ring], 95)), int(ring.sum())
+
+
+def _parallax(key):
+    """Per-frame screen motion (px/frame, max over the shot) of head points, torso points and the plate at the same
+    screen points; head-to-plate relative speed in % of the frame width per second."""
+    L = _look_for(key)
+    m = meta(SHOTS[key]['pose'])
+    dx, dy = L['off']
+    hx0, _, hx1, hy1 = m['head_box']
+    top = m['subject_bbox'][1]
+    ex, ey = L['eye']
+    hp = [(ex, top + dy + 4), (hx0 + dx, ey), (hx1 + dx, ey), (ex, m['face_box'][3] + dy)]
+    H, W = L['shape']
+    tp = [(30, H * 0.62), (W - 30, H * 0.62), (W * 0.5, H * 0.75)]
+    fr = shot_frames(key)
+    prev = None
+    out = dict(head=0.0, torso=0.0, plate=0.0, rel=0.0)
+    for f in fr:
+        t = f / FPS
+        qh = _hero_to_screen(key, t, hp, 'head')
+        qt = _hero_to_screen(key, t, tp, 'torso')
+        wc = world_cam(t, key)
+        s, rot, tx, ty = K._bg_transform(wc, 1.0)
+        if prev is not None:
+            ph, pt, (ps, prot, ptx, pty) = prev
+            dh = np.hypot(*(qh - ph).T)
+            dt_ = np.hypot(*(qt - pt).T)
+            # plate point under each head point at the previous frame -> where it is now
+            pp = (ph - [K.CX + ptx, K.CY + pty]) / ps
+            pn = pp * s + [K.CX + tx, K.CY + ty]
+            dp = np.hypot(*(pn - ph).T)
+            rel = np.hypot(*((qh - ph) - (pn - ph)).T)
+            out['head'] = max(out['head'], float(dh.max()))
+            out['torso'] = max(out['torso'], float(dt_.max()))
+            out['plate'] = max(out['plate'], float(dp.max()))
+            out['rel'] = max(out['rel'], float(rel.max()) * FPS / K.W * 100.0)
+        prev = (qh, qt, (s, rot, tx, ty))
+    return {k: round(v, 3) for k, v in out.items()}
+
+
+def eye_measured(u8, key, t, rx=130, ry=45, search=40):
+    """Independent check of where the eyes really land in a rendered frame: the plain cut-out's eye band (EYE_MID
+    +- rx, ry, cut-out px) scaled to the shot's scale is template-matched (normalised cross-correlation of the gradient
+    magnitude, so the grade does not matter) inside +- search px of the expected point. Returns ((x, y), score)."""
+    pose = SHOTS[key]['pose']
+    p = plain(pose)
+    ex, ey = EYE_MID[pose]
+    sub = p[int(ey - ry):int(ey + ry), int(ex - rx):int(ex + rx)]
+    s_ = scale(key, t)
+    rgb = sub[..., :3] + (1 - sub[..., 3:4]) * 0.18
+    g = K.to_srgb(np.clip(K.lum(rgb), 0, 1)).astype(np.float32)
+    g = cv2.resize(g, None, fx=s_, fy=s_, interpolation=cv2.INTER_AREA)
+
+    def grad(im):
+        im = cv2.GaussianBlur(im, (0, 0), 1.0)
+        return cv2.magnitude(cv2.Sobel(im, cv2.CV_32F, 1, 0), cv2.Sobel(im, cv2.CV_32F, 0, 1))
+    tpl = grad(g)
+    fr = _luma(u8.astype(np.float32)) / 255.0
+    exp_ = eye_point(key, t)
+    cx0 = int(exp_[0] - rx * s_ - search)
+    cy0 = int(exp_[1] - ry * s_ - search)
+    win = grad(np.ascontiguousarray(fr[cy0:cy0 + tpl.shape[0] + 2 * search, cx0:cx0 + tpl.shape[1] + 2 * search]))
+    res = cv2.matchTemplate(win, tpl, cv2.TM_CCOEFF_NORMED)
+    _, mxv, _, loc = cv2.minMaxLoc(res)
+    # sub-pixel peak (parabola fit)
+    x, y = loc
+    dxs = dys = 0.0
+    if 0 < x < res.shape[1] - 1:
+        l_, c_, r_ = res[y, x - 1], res[y, x], res[y, x + 1]
+        dxs = 0.5 * (l_ - r_) / max(l_ - 2 * c_ + r_, -1e9) if (l_ - 2 * c_ + r_) < 0 else 0.0
+    if 0 < y < res.shape[0] - 1:
+        u_, c_, d_ = res[y - 1, x], res[y, x], res[y + 1, x]
+        dys = 0.5 * (u_ - d_) / max(u_ - 2 * c_ + d_, -1e9) if (u_ - 2 * c_ + d_) < 0 else 0.0
+    mx_ = cx0 + x + dxs + (ex - int(ex - rx)) * s_
+    my_ = cy0 + y + dys + (ey - int(ey - ry)) * s_
+    return (float(mx_), float(my_)), float(mxv)
+
+
+def check(render=True):
+    import jawad_grade as G
+    rep = dict(texture={}, shots={}, source_skin={})
+    for pose in POSES:
+        p = plain(pose)
+        u8 = K.to_srgb8(np.ascontiguousarray(p[..., :3] + (1 - p[..., 3:4]) * 0.5), 0.0, dither=False)
+        fx0, fy0, fx1, fy1 = [int(v) for v in meta(pose)['face_box']]
+        rep['source_skin'][pose] = G.skin_stats(u8, (fx0, fy0, fx1 - fx0, fy1 - fy0))
+    for pose in POSES:
+        rep['texture'][pose] = dict(k=TEX_K[pose], cheek_ratio_shipped=round(cheek_ratio(pose), 3),
+                                    cheek_ratio_sr=round(cheek_ratio(pose, 1.0), 3))
+    prewarm()
+    for d in FACES:
+        key = d['key']
+        fr = shot_frames(key)
+        ts = [f / FPS for f in fr]
+        sc = [scale(key, t) for t in ts]
+        eyes = np.array([eye_point(key, t) for t in ts])
+        eoff = np.hypot(eyes[:, 0] - EYES[0], eyes[:, 1] - EYES[1])
+        rates = [(scale(key, t + 0.002) / scale(key, t) - 1) / 0.002 * 100 for t in ts]
+        idl = [idle(key, t) for t in ts]
+        r = dict(frames=[fr[0], fr[-1]], t=[round(ts[0], 3), round(ts[-1] + 1 / FPS, 3)], pose=d['pose'],
+                 look=d['kind'], dur_s=round(len(fr) / FPS, 3),
+                 scale=[round(min(sc), 4), round(max(sc), 4)], push_max_pct_s=round(max(rates), 2),
+                 eye_max_off_px=round(float(eoff.max()), 2), eye_first=[round(v, 1) for v in eyes[0]],
+                 eye_last=[round(v, 1) for v in eyes[-1]],
+                 roll_max_deg=round(max(abs(i[2]) for i in idl), 3),
+                 breath_max_pct=round(max(abs(i[3]) for i in idl) * 100, 3),
+                 face_first=[round(v) for v in face_rect(key, ts[0])], face_last=[round(v) for v in face_rect(key, ts[-1])],
+                 head_rect_first=[round(v) for v in head_rect(key, ts[0])],
+                 bust_bottom_min=round(min(bust_bottom(key, t) for t in ts), 1),
+                 parallax=_parallax(key))
+        # torso micro-parallax: measured on the real layer at the last frame (largest dolly)
+        L = _look_for(key)
+        _, mpx = _torso_micro(key, ts[-1], L['base_torso'])
+        r['micro_px_max'] = round(mpx, 3)
+        # cost
+        cvb = K.background(LOOK, ts[len(ts) // 2])
+        t0 = time.time()
+        for t in ts[:: max(1, len(ts) // 5)][:5]:
+            c2 = cvb.copy()
+            draw_face(c2, key, t)
+        r['ms_per_draw_face'] = round((time.time() - t0) * 1000 / min(5, len(ts[:: max(1, len(ts) // 5)][:5])), 1)
+        # guards: JD never becomes see-through or subtracts light (alpha <= 1, canvas >= 0) at start / mid / end
+        bad = []
+        for t in (ts[0], ts[len(ts) // 2], ts[-1]):
+            c2 = K.background(LOOK, t, world_cam(t, key), bokeh=0.6, intensity=window_gain(t))
+            lay = np.zeros_like(c2)
+            draw_face(lay, key, t)
+            draw_face(c2, key, t)
+            if float(lay[..., 3].max()) > 1.0 + 1e-4 or float(c2[..., :3].min()) < -1e-4:
+                bad.append(round(t, 3))
+        r['guard_alpha_le1_canvas_ge0'] = 'ok' if not bad else bad
+        # copy distance: the brief's text rects over this shot vs the face rect (>= 60 px)
+        texts = {'S0': [(147, 280, 933, 740)], 'S12': [(147, 280, 467, 420)], 'S3': [], 'S6': [(150, 280, 930, 520)],
+                 'S10': [(147, 280, 933, 790)]}[key]
+        fr0 = min((face_rect(key, t) for t in ts), key=lambda b: b[1])
+        r['copy_gap_px'] = round(min([fr0[1] - b[3] for b in texts]), 1) if texts else None
+        tm = ts[len(ts) // 2]
+        # the scene's key: the plate's brightest light behind / around JD (no UI), finished, 8-bit luma
+        pl = K.background(LOOK, tm, world_cam(tm, key), bokeh=0.6, intensity=window_gain(tm))
+        if key == 'S10':
+            import beta_tum_karte_kya_ho_faces_preview as PV
+            K.draw(pl, PV._sun(), 540, 1260, mode='add', opacity=1.0 + 0.3 * K.ramp(tm, 30.8, 31.3, 'out_cubic'))
+        sill(pl, key, tm)
+        G.finish(pl, LOOK, tm, rays=0.0)
+        r['plate_key_p99_5'] = round(float(np.percentile(_luma(K.to_srgb8(pl, tm, dither=False).astype(np.float32))
+                                                         [1250:1560, 300:780], 99.5)), 1)
+        r['halo_plain_cv'] = [round(v, 2) for v in _halo_ring(key, tm, 'plain')[:2]]
+        r['halo_look_cv'] = [round(v, 2) for v in _halo_ring(key, tm, 'full')[:2]]
+        if render:
+            u8 = _frame_u8(tm)
+            a = jd_alpha(key, tm)
+            inner = cv2.erode((a > 0.98).astype(np.uint8), np.ones((13, 13), np.uint8)).astype(bool)
+            inner[1880:] = False
+            outer = cv2.dilate((a > 0.01).astype(np.uint8), np.ones((61, 61), np.uint8)) == 0
+            lu = _luma(u8.astype(np.float32))
+            fx0, fy0, fx1, fy1 = [int(round(v)) for v in face_rect(key, tm)]
+            r['luma'] = dict(jd_p2=round(float(np.percentile(lu[inner], 2)), 1),
+                             scene_p2=round(float(np.percentile(lu[outer], 2)), 1),
+                             jd_p99=round(float(np.percentile(lu[inner], 99)), 1),
+                             scene_max=round(float(np.percentile(lu[outer], 99.9)), 1),
+                             face_mean=round(float(lu[fy0:fy1, fx0:fx1][inner[fy0:fy1, fx0:fx1]].mean()), 1))
+            r['skin'] = G.skin_stats(u8, (fx0, fy0, fx1 - fx0, fy1 - fy0))
+            em, score = eye_measured(u8, key, tm)
+            r['eye_measured'] = dict(mid=[round(v, 1) for v in em], ncc=round(score, 3),
+                                     off_from_EYES_px=round(math.hypot(em[0] - EYES[0], em[1] - EYES[1]), 2),
+                                     off_from_model_px=round(math.hypot(em[0] - eye_point(key, tm)[0],
+                                                                        em[1] - eye_point(key, tm)[1]), 2))
+        rep['shots'][key] = r
+    return rep
+
+
+def export():
+    """Write this reel's face assets for reuse / inspection: <reel ws>/faces/<pose>/{rgba.png (16-bit straight sRGB,
+    texture-corrected), depth.png (16-bit, as source), rim_mask.png (8-bit, look A rim emission luma),
+    layers/head.png + layers/torso.png (16-bit straight sRGB of look A), meta.json}."""
+    out = {}
+    for pose in POSES:
+        d = os.path.join(ASSET_DIR, pose)
+        os.makedirs(os.path.join(d, 'layers'), exist_ok=True)
+        rgb, a = textured_rgb(pose)
+        img = np.dstack([np.round(rgb * 257.0), np.round(a * 65535.0)]).astype(np.uint16)
+        cv2.imwrite(os.path.join(d, 'rgba.png'), img)
+        cv2.imwrite(os.path.join(d, 'depth.png'), cv2.imread(os.path.join(CUT, pose + '_depth.png'),
+                                                             cv2.IMREAD_UNCHANGED))
+        L = look(pose, 'A')
+        em = L['em_head'], L['em_torso']
+        emf = np.zeros(L['shape'] + (3,), np.float32)
+        emf += L['em_torso'][..., :3]
+        hox, hoy = L['head_off']
+        hh, hw = L['em_head'].shape[:2]
+        emf[hoy:hoy + hh, hox:hox + hw] += L['em_head'][..., :3]
+        cv2.imwrite(os.path.join(d, 'rim_mask.png'), np.clip(K.lum(emf) / 2.0 * 255, 0, 255).astype(np.uint8))
+        for nm, spr in (('head', L['base_head'] + L['em_head']), ('torso', L['base_torso'] + L['em_torso'])):
+            al = spr[..., 3:4]
+            st = K.to_srgb(np.clip(spr[..., :3] / np.maximum(al, 1e-4), 0, 1))
+            im = np.dstack([st[..., ::-1] * 65535.0, al * 65535.0])
+            cv2.imwrite(os.path.join(d, 'layers', nm + '.png'), np.round(im).astype(np.uint16))
+        m = dict(meta(pose))
+        m.update(tex_k=TEX_K[pose], cheek_ratio=round(cheek_ratio(pose), 3), hero_offset=L['off'],
+                 head_layer_offset=L['head_off'], head_pivot_hero=L['pivot'], seam_y_hero=L['seam_y'],
+                 layer_z=dict(head=0.0, torso=Z_TORSO, plate=Z_PLATE), focal_px=F85, s0=S0,
+                 eye_screen=EYES, sources=dict(cutout=os.path.join(CUT, pose + '.png'),
+                                               sr=os.path.join(CROPS, pose + '_2x.png'),
+                                               native=os.path.join(CROPS, pose + '.png')))
+        with open(os.path.join(d, 'meta.json'), 'w') as f:
+            json.dump(m, f, indent=1)
+        out[pose] = d
+    return out
+
+
+def boards():
+    """200 % edge boards of the shipped cut-outs (texture-corrected, plain) over black / FLAME / white: hair crest,
+    ear + beard edge, and (hand pose) the fingers. -> <reel ws>/out/faces_preview/boards/edges_<pose>.jpg"""
+    od = os.path.join(REEL_WS, 'out', 'faces_preview', 'boards')
+    os.makedirs(od, exist_ok=True)
+    bgs = [(0.0, 0.0, 0.0), tuple(K.C['FLAME']), (1.0, 1.0, 1.0)]
+    paths = []
+    for pose in POSES:
+        p = plain(pose)
+        m = meta(pose)
+        ex, ey = EYE_MID[pose]
+        fx0, fy0, fx1, fy1 = m['face_box']
+        crops = [(int(ex - 180), 0, int(ex + 180), 200),                              # hair crest
+                 (max(0, int(fx0 - 150)), int(ey - 40), int(fx0 + 110), int(ey + 220)),   # left ear / beard edge
+                 (int(fx1 - 110), int(ey - 40), min(p.shape[1], int(fx1 + 150)), int(ey + 220))]
+        if pose == 'suit_hand_on_chest':
+            crops.append((260, 850, 620, 1050))
+        rows = []
+        for (x0, y0, x1, y1) in crops:
+            sub = p[y0:y1, x0:x1]
+            cols = []
+            for b in bgs:
+                c = np.asarray(b, np.float32) * (1 - sub[..., 3:4]) + sub[..., :3]
+                u8 = K.to_srgb8(np.ascontiguousarray(c), 0.0, dither=False)
+                u8 = cv2.resize(u8, None, fx=2, fy=2, interpolation=cv2.INTER_NEAREST)
+                cols.append(u8)
+                cols.append(np.full((u8.shape[0], 6, 3), 128, np.uint8))
+            rows.append(np.hstack(cols[:-1]))
+        wmax = max(r.shape[1] for r in rows)
+        rows = [np.pad(r, ((0, 6), (0, wmax - r.shape[1]), (0, 0)), constant_values=128) for r in rows]
+        path = os.path.join(od, 'edges_%s.jpg' % pose)
+        cv2.imwrite(path, np.vstack(rows)[..., ::-1], [cv2.IMWRITE_JPEG_QUALITY, 92])
+        paths.append(path)
+    return paths
+
+
+if __name__ == '__main__':
+    cmd = sys.argv[1] if len(sys.argv) > 1 else 'check'
+    if cmd == 'check':
+        rep = check(render='--no-render' not in sys.argv)
+        js = json.dumps(rep, indent=1)
+        print(js)
+        os.makedirs(os.path.join(REEL_WS, 'out', 'faces_preview'), exist_ok=True)
+        with open(os.path.join(REEL_WS, 'out', 'faces_preview', 'check.json'), 'w') as f:
+            f.write(js)
+    elif cmd == 'export':
+        print(json.dumps(export(), indent=1))
+    elif cmd == 'boards':
+        print('\n'.join(boards()))
+    else:
+        raise SystemExit('usage: %s [check [--no-render] | export | boards]' % sys.argv[0])

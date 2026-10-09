@@ -16,7 +16,7 @@ D minor (Sa = D3 146.83 Hz, sub D1 36.71 Hz), 75 BPM (24 frames per beat at 30 f
                              accented), sub D1 + D2 (lp 120 Hz) to 25.2, dark pad (cutoff 700) Dm | Bb | Gm/D, closed
                              hat on the off-8ths 22.8 / 23.6 / 24.4; 25.2-25.6 pad only
     bars 8-10 (25.6-35.2)  C warm, no drums: pad (cutoff 1400) Bbmaj7 (on the clunk) | F/A | Dm(add9); EP motif
-                             A4 26.4, F4 28.0, D4 30.4, C4 31.2, A3 32.8, D4 34.4 (-6 dB inside the VO windows); the
+                             A4 26.4, F4 28.0, D4 30.4, C4 31.2, A3 32.8, D4 34.4 (-6 dB in the measured VO windows); the
                              tap at 29.6 stays empty; dark_drone fades back in 33.6-35.2 at loop position
                              (t - 35.2) mod 24 s, so the sample after 35.2 is the drone's sample at 0.0 (loop seam)
 
@@ -29,9 +29,11 @@ CLI (run from pipeline/jawad_reels; heavy work through tools/heavy.sh):
     python3 log_kya_kahenge_music.py build  [--out DIR]   -> DIR/music_full.wav (+ lkk_music.wav link), DIR/stems/,
                                                              DIR/music_full.json (map, events, render numbers)
     python3 log_kya_kahenge_music.py verify [--out DIR]   -> DIR/music_full.verify.json + spectrogram PNGs
-    python3 log_kya_kahenge_music.py mix [--hook A|B] [--vo WAV] [--sfx WAV|none] [--music WAV] [--out-dir DIR]
-                                                          -> epic_mix: <name>_mix.wav (A: VO+SFX+music),
-                                                             <name>_vo_sfx.wav (B), stems, report (run 2)
+    python3 log_kya_kahenge_music.py mix [--hook A|B]     -> delegates to log_kya_kahenge_mix.py (the final mix:
+                                                             <RW>/audio/final/<name>_mix.wav, _vo_sfx.wav, stems)
+
+EP duck windows (r2, 2026-10-09): measured from the VO stems (vo_windows(): V6 25.97-28.99, V7 31.43-35.08 today);
+a note inside a window is -6 dB whole, the C4 at 31.2 that rings into V7 dips from 31.31 to -6 dB at 31.37.
 """
 import argparse
 import hashlib
@@ -78,7 +80,104 @@ def T(bar, beat=0.0):
 DROP_OUT = (T(4, 3), T(5))                      # 15.2 -> 16.0 (beat 3 of bar 4 -> bar 5): the reveal's silence
 LOOP_LEN = 24.0                                 # dark_drone loop length (s)
 DRONE_BACK = (33.6, DUR)                        # dark_drone fades back in (bar 10 beat 2 -> end)
-VO_WINDOWS = ((26.0, 28.667), (32.0, 35.133))   # BRIEF §9 V6 / V7 target windows (EP notes inside them -6 dB)
+# EP duck windows (r2, 2026-10-09): MEASURED from the VO stems in <RW>/vo/ (vo_windows() below), no longer the BRIEF r2
+# targets ((26.0, 28.667), (32.0, 35.133)). Fallback = the HANDOFF r3 measurements, used only when the stems are absent.
+VO_DIR = os.path.join(RW, 'vo')
+VO_WINDOWS_FALLBACK = ((25.970, 28.990), (31.443, 35.070))
+VO_C_FROM = T(8)                                # only the C section's VO lines (V6, V7) carry EP notes
+DUCK_PRE, DUCK_RAMP = 0.06, 0.06                # the -6 dB dip is fully down 60 ms before the first voiced sample
+                                                # (raised-cosine ramp over the 60 ms before that); it never swells back
+                                                # up inside a note (a note that starts in a window stays -6 dB to its end)
+
+
+def _voiced_runs(x, win=0.02, hop=0.01, rel_db=-45.0, close=0.5):
+    """Voiced runs of a VO stem (HANDOFF / vo_chain convention: 20 ms RMS above peak - 45 dB), gaps < close merged."""
+    m = A._st(x).mean(1)
+    w, h = _n(win), _n(hop)
+    c = np.concatenate([[0.0], np.cumsum(m * m)])
+    st = np.arange(0, len(m) - w, h)
+    lv = 10 * np.log10(np.maximum((c[st + w] - c[st]) / w, 1e-20))
+    on = lv > lv.max() + rel_db
+    runs, i = [], 0
+    while i < len(on):
+        if on[i]:
+            j = i
+            while j + 1 < len(on) and on[j + 1]:
+                j += 1
+            runs.append([st[i] / SR, (st[j] + w) / SR])
+            i = j + 1
+        else:
+            i += 1
+    out = []
+    for a, b in runs:
+        if out and a - out[-1][1] < close:
+            out[-1][1] = b
+        else:
+            out.append([a, b])
+    return out
+
+
+def vo_windows():
+    """-> (windows, provenance). The C-section VO lines measured from BOTH hook stems (lkk_vo_A/B.wav, identical from
+    8.8 s on): per line, onset = min(first word start, first voiced sample) and end = max(last word end, last voiced
+    sample) over A and B. Deterministic; falls back to VO_WINDOWS_FALLBACK when a stem or its words file is missing."""
+    import json as _json
+    lines, prov = {}, {}
+    for h in ('A', 'B'):
+        wav = os.path.join(VO_DIR, 'lkk_vo_%s.wav' % h)
+        wj = os.path.join(VO_DIR, 'lkk_vo_%s.words.json' % h)
+        if not (os.path.exists(wav) and os.path.exists(wj)):
+            return VO_WINDOWS_FALLBACK, dict(source='fallback (HANDOFF r3 measured values)', missing=[wav, wj])
+        words = [w for w in _json.load(open(wj)) if w['start'] >= VO_C_FROM]
+        x = A.read_wav(wav)[0]
+        runs = [r for r in _voiced_runs(x) if r[1] > VO_C_FROM]
+        for ln in sorted({w['line'] for w in words}):
+            ws = [w for w in words if w['line'] == ln]
+            a0, b0 = ws[0]['start'], ws[-1]['end']
+            rr = [r for r in runs if r[0] < b0 + 0.3 and r[1] > a0 - 0.3]
+            a1 = min([a0] + [r[0] for r in rr])
+            b1 = max([b0] + [r[1] for r in rr])
+            lo, hi = lines.get(ln, (a1, b1))
+            lines[ln] = (min(lo, a1), max(hi, b1))
+        prov['vo_%s_sha256' % h] = _sha(wav)
+    win = tuple((round(a, 3), round(b, 3)) for _, (a, b) in sorted(lines.items(), key=lambda kv: kv[1][0]))
+    prov.update(source='measured from %s/lkk_vo_{A,B}.wav + .words.json' % VO_DIR,
+                lines={k: [round(a, 3), round(b, 3)] for k, (a, b) in lines.items()})
+    return win, prov
+
+
+_VOW = []
+
+
+def windows_used():
+    """The VO windows of this process (measured once, cached): (windows, provenance)."""
+    if not _VOW:
+        _VOW.append(vo_windows())
+    return _VOW[0]
+
+
+def ep_duck_plan(t, d, windows=None):
+    """Gain plan of one EP note (onset t, length d) against the VO windows: (duck point s or None, mode).
+    mode 'free' = 0 dB; 'whole' = the duck for the whole note (it starts inside, or within DUCK_RAMP of, a window's duck
+    point); 'from' = 0 dB, then a DUCK_RAMP raised-cosine fall to the duck ending at the duck point, held to the end."""
+    windows = windows_used()[0] if windows is None else windows
+    for a, b in windows:
+        dp = a - DUCK_PRE
+        if t < b and t + d > dp - DUCK_RAMP:
+            return (round(dp, 3), 'whole') if t >= dp - DUCK_RAMP else (round(dp, 3), 'from')
+    return None, 'free'
+
+
+def ep_gain_curve(t, n, duck_db, windows=None):
+    """Per-sample linear gain (n samples) for one EP note at onset t, from ep_duck_plan."""
+    dp, mode = ep_duck_plan(t, n / SR, windows)
+    if mode == 'free':
+        return np.ones(n)
+    if mode == 'whole':
+        return np.full(n, undb(duck_db))
+    u = t + np.arange(n) / SR
+    p = np.clip((u - (dp - DUCK_RAMP)) / DUCK_RAMP, 0, 1)
+    return undb(duck_db * (0.5 - 0.5 * np.cos(np.pi * p)))
 
 # midi notes (D3 = 50)
 PADS = [  # (t0, t1, notes, cutoff, gain key, label): t0/t1 straddle the bar line so chords cross-fade on it
@@ -118,11 +217,7 @@ SECTIONS = [  # (name, t0, t1, bars, music)
 
 
 # ============================================================================================ composition
-def _under_vo(t):
-    return any(a <= t < b for a, b in VO_WINDOWS)
-
-
-def compose(seed=SEED):
+def compose(seed=SEED, ep_duck=True):
     """-> (EM.Song with raw stems in s.st and the sidechain key in s.kick_key, event list)."""
     E.register()
     s = EM.Song(DUR, BPM, KEY, seed)
@@ -174,13 +269,21 @@ def compose(seed=SEED):
         s.put('harmony', EM.pad_chord(list(notes), b - a, r, fc), a, G[gk])
         ev.append(dict(t=max(a, T(5)), what='pad %s, cutoff %d Hz, %.2f-%.2f s' % (label, fc, a, b), stem='harmony'))
 
-    # ---- C: EP motif (bright 0.6, lp 2200 Hz), quieter inside the VO windows
+    # ---- C: EP motif (bright 0.6, lp 2200 Hz), -6 dB under the MEASURED VO windows (ep_duck_plan / ep_gain_curve):
+    # a note that starts inside a window is -6 dB whole; one that rings into a window (C4 31.2 under V7) dips from
+    # 60 ms before the first voiced sample and stays down to its end
     for t, m, d in EP_MOTIF:
         x = A.lp(EM.epiano(E.midi_hz(m), d, r, 0.6), 2200.0, 2)
-        g = G['ep'] + (G['ep_vo'] if _under_vo(t) else 0.0)
-        s.put('lead', x, t, g, 0.1)
-        ev.append(dict(t=t, what='EP %s (%.2f s)%s' % (_name(m), d, ', under VO -6 dB' if _under_vo(t) else ''),
-                       stem='lead'))
+        dp, mode = ep_duck_plan(t, d)
+        if ep_duck and mode != 'free':
+            x = np.asarray(x, dtype=np.float64)
+            gc = ep_gain_curve(t, len(x), G['ep_vo'])
+            x = x * (gc if x.ndim == 1 else gc[:, None])
+        s.put('lead', x, t, G['ep'], 0.1)
+        how = {'free': '', 'whole': ', under VO %+g dB (whole note)' % G['ep_vo'],
+               'from': ', under VO %+g dB from %.3f s (ramp %.0f ms)' % (G['ep_vo'], dp or 0, DUCK_RAMP * 1000)}[mode]
+        ev.append(dict(t=t, what='EP %s (%.2f s)%s' % (_name(m), d, how if ep_duck else ''), stem='lead',
+                       duck_mode=mode if ep_duck else 'off', duck_point=dp))
 
     # ---- dark_drone back in 33.6 -> 35.2 at loop position (t - 35.2) mod 24 (seamless into frame 0)
     j0 = _n(DRONE_BACK[0])
@@ -284,11 +387,20 @@ def build(out=OUT, seed=SEED):
                 licence='original work for @jawad_mp4; no samples of songs, no AI generation',
                 drop_out=list(DROP_OUT), loop_seam='35.2 -> 0.0: dark_drone at loop position 0, pads released',
                 gains_db=GAINS, sections=[dict(name=a, t0=b, t1=c, bars=d, music=e) for a, b, c, d, e in SECTIONS],
+                vo_windows=dict(windows=windows_used()[0], provenance=windows_used()[1], duck_pre_s=DUCK_PRE,
+                                duck_ramp_s=DUCK_RAMP, ep_duck_db=GAINS['ep_vo'],
+                                ep_plan=[dict(t=t, note=_name(m), d=d, mode=ep_duck_plan(t, d)[1],
+                                              duck_point=ep_duck_plan(t, d)[0]) for t, m, d in EP_MOTIF]),
                 events=ev, render=info, sha256=_sha(full),
                 deps_sha256={os.path.basename(m.__file__): _sha(m.__file__) for m in (A, EM, E)})
     json.dump(meta, open(os.path.join(out, 'music_full.json'), 'w'), indent=1)
-    print(json.dumps(dict(file=full, **info, sha256=meta['sha256']), indent=1))
+    print(json.dumps(dict(file=full, **info, sha256=meta['sha256'], vo_windows=meta['vo_windows']['windows'],
+                          ep_plan=meta['vo_windows']['ep_plan']), indent=1))
     return meta
+
+
+def _rms_(x):
+    return float(np.sqrt(np.mean(np.square(x)))) if len(x) else 0.0
 
 
 def _sha(p):
@@ -494,6 +606,32 @@ def verify(out=OUT):
                        top_energy=[round(float(v), 2) for v in en[:len(exp) + 2]], match=set(order[:len(exp)]) == exp,
                        mix_top=morder[:len(exp) + 1], mix_top_energy=[round(float(v), 2) for v in men[:len(exp) + 1]]))
     rep['harmony'] = ch
+    # ---- EP dips under the MEASURED VO windows: the lead stem with the dips vs the same score composed without them
+    # (raw stems, before the bus), plus the bussed lead stem's level step across the C4's duck point
+    wins, prov = windows_used()
+    s_d, _ = compose(ep_duck=True)
+    s_0, _ = compose(ep_duck=False)
+    ld, l0 = A._st(s_d.st['lead']), A._st(s_0.st['lead'])
+    seg_db = lambda a, b: round(float(A.db(_rms_(ld[_n(a):_n(b)]) / max(_rms_(l0[_n(a):_n(b)]), 1e-15))), 2)
+    notes = []
+    for t, m, d in EP_MOTIF:
+        dp, mode = ep_duck_plan(t, d)
+        o = dict(t=t, note=_name(m), d=d, mode=mode, duck_point=dp, head_db=seg_db(t + 0.01, t + 0.11))
+        if mode == 'from':
+            o['before_ramp_db'] = seg_db(dp - DUCK_RAMP - 0.1, dp - DUCK_RAMP)
+            o['after_duck_point_db'] = seg_db(dp, min(t + d, dp + 0.3))
+        notes.append(o)
+    lead_file = st['lead']
+    c4 = [(t, d) for t, m, d in EP_MOTIF if ep_duck_plan(t, d)[1] == 'from']
+    bussed = []
+    for t, d in c4:
+        dp = ep_duck_plan(t, d)[0]
+        pre, post = (dp - DUCK_RAMP - 0.08, dp - DUCK_RAMP), (dp + 0.02, dp + 0.10)
+        r = lambda x, ab: _rms_(x[_n(ab[0]):_n(ab[1])])
+        bussed.append(dict(t=t, step_db_file=round(float(A.db(r(lead_file, post) / r(lead_file, pre))), 2),
+                           natural_decay_db_raw_undipped=round(float(A.db(r(l0, post) / r(l0, pre))), 2)))
+    rep['ep_duck'] = dict(windows=wins, provenance=prov, duck_db=GAINS['ep_vo'], pre_s=DUCK_PRE, ramp_s=DUCK_RAMP,
+                          notes_raw=notes, bussed_lead_step=bussed)
     # ---- drop-out, sections, loudness curve
     a, b = _n(DROP_OUT[0]), _n(DROP_OUT[1] - 0.004)
     rep['drop_out'] = dict(window_s=[DROP_OUT[0], DROP_OUT[1] - 0.004],
@@ -583,28 +721,14 @@ def _zooms(x, path):
 
 # ============================================================================================ final mix (run 2)
 def mix(hook='A', vo=None, sfx=None, music=None, out_dir=None):
-    """epic_mix A (VO + SFX + this score) and B (VO + SFX only) for hook A or the Trial hook B."""
-    import epic_mix as M
-    name = MODULE if hook == 'A' else MODULE + '_hookb'
-    vo = vo or os.path.join(RW, 'vo', 'lkk_vo_%s.wav' % hook)
-    sfx = sfx or os.path.join(RW, 'audio', name + '_sfx_stem.wav')
-    music = music or os.path.join(OUT, 'music_full.wav')
-    out_dir = out_dir or os.path.join(RW, 'audio')
-    need = [vo, music] + ([] if sfx == 'none' else [sfx])
-    miss = [p for p in need if not os.path.exists(p)]
-    if miss:
-        sys.exit('mix: missing input(s): %s' % ', '.join(miss))
-    rep = M.mix_reel(name, DUR, vo=vo, sfx=None if sfx == 'none' else sfx, music=music, out_dir=out_dir,
-                     vo_offset=0.0)
-    rep['ffmpeg_A'] = _ebur128(rep['files']['mix'])
-    rep['ffmpeg_B'] = _ebur128(rep['files']['vo_sfx'])
-    x = A.read_wav(rep['files']['stem_music'])[0]
-    a, b = _n(DROP_OUT[0]), _n(DROP_OUT[1] - 0.004)
-    rep['music_stem_dropout_max_dbfs'] = round(float(A.db(np.abs(x[a:b]).max() + 1e-15)), 1)
-    y = A.read_wav(rep['files']['mix'])[0]
-    tm, lm = A.loudness_curve(y)
-    rep['max_momentary_at_s'] = round(float(tm[np.argmax(lm)]), 2)
-    print(json.dumps({k: v for k, v in rep.items() if k != 'spec'}, indent=1))
+    """The final mix now lives in log_kya_kahenge_mix.py (loop-safe, mono-VO-safe, measured duck windows; the old
+    epic_mix.mix_reel call crashed on the mono VO stem and clicked at the loop seam: SHARED_REQUESTS R6a / R6c).
+    `mix` delegates to it; the --vo / --sfx / --music / --out-dir overrides are no longer supported."""
+    if any((vo, sfx, music, out_dir)):
+        sys.exit('mix: path overrides are not supported; run log_kya_kahenge_mix.py (inputs are fixed, see its docstring)')
+    import log_kya_kahenge_mix as LX
+    rep, _ = LX.mix(hook)
+    LX.verify(hook)
     return rep
 
 

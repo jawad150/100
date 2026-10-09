@@ -304,9 +304,14 @@ def _c(t, name, gain_db, why, ev, **kw):
     return d
 
 
+# Tail ducks (apply_env): the hit stays whole, its tail drops before the next word's first voiced frame.
+ENV_PAYOFF = ((0.0, 0.0), (0.20, 0.0), (0.25, -8.0))    # 28.20 -> 28.25, -8 dB under L9 "Ab woh" (onset 28.25)
+ENV_F0 = ((0.0, 0.0), (0.05, 0.0), (0.10, -8.0))        # 0.05 -> 0.10, -8 dB under L1 "Yeh" / L1B "Mummy" (0.10)
+
+
 def hook_a_cues(ev):
     return [
-        _c(ev['f0'], 'impact_soft', -8, 'loop landing: the end card swell ends on 36.4 = f0', 'f0'),
+        _c(ev['f0'], 'impact_soft', -8, 'loop landing: the end card swell ends on 36.4 = f0', 'f0', env=ENV_F0),
         _c(ev['f0'], 'ui_tick', -12, 'typing dots on the Mummy pill (motif, part 2)', 'f0', hp=5000),
         _c(ev['msg'], 'notif_ping', -4, "Mummy's message lands, H1 legible (motif)", 'msg',
            params=dict(pitch=tune('ping_a6'))),
@@ -317,7 +322,7 @@ def hook_b_cues(ev):
     return [
         _c(ev['b_f0'], 'bubble_pop', -4, 'hook B f0: MOTION mid-wobble (boing, F6)', 'b_f0',
            params=dict(pitch=tune('hb_boing1_f6')), seed=0),
-        _c(ev['b_f0'], 'impact_soft', -8, 'hook B f0 weight', 'b_f0'),
+        _c(ev['b_f0'], 'impact_soft', -8, 'hook B f0 weight', 'b_f0', env=ENV_F0),
         _c(ev['b_boing2'], 'bubble_pop', -8, 'hook B boing 2 (JELLY re-trigger, D6)', 'b_boing2',
            params=dict(pitch=tune('hb_boing2_d6')), seed=0),
         _c(ev['b_droop'], 'swish_small', -10, 'hook B MOTION droops and squashes', 'b_droop'),
@@ -336,7 +341,7 @@ def body_cues(ev):
         _c(ev['card'], 'card_slide', -6, 'translate card lands (slide from the c1 cut)', 'card', params=dict(dur=0.42)),
         _c(ev['type1'], 'typing', -14, 'input "Video editor" types (f98-f116)', 'type1', params=dict(n=12, cps=20)),
         _c(ev['shaadi'], 'pop', -4, 'output "Shaadi wala?" pops (A5)', 'shaadi', params=dict(pitch=a5), seed=0),
-        _c(ev['m6'], 'whoosh_by', -6, 'M6 carry-over: the word flies into the window (fastest point)', 'm6',
+        _c(ev['m6'], 'whoosh_by', -8, 'M6 carry-over: the word flies into the window (fastest point)', 'm6',
            params=dict(dur=0.8, direction=1), pan=0.1, hero=True),
         _c(ev['m6'], 'shimmer', -8, 'wedding parody: sparkle wipe', 'm6', params=dict(dur=1.2)),
         _c(ev['spark'], 'sparkle', -8, 'M6 spark lands, "Happy Wedding" wipes in', 'spark'),
@@ -346,22 +351,22 @@ def body_cues(ev):
            params=dict(pitch=tune('boing1_d6')), seed=0),
         _c(ev['boing2'], 'bubble_pop', -6, 'boing 2 (Bb5, the droop)', 'boing2',
            params=dict(pitch=tune('boing2_bb5')), seed=0),
-        _c(ev['whip'], 'whip', -6, 'punch-in whip (c3 - 1 f)', 'whip', params=dict(direction=1)),
-        _c(ev['c3'], 'impact_soft', -5, 'c3 punch-in to suit_shocked', 'c3', hero=True),
-        _c(ev['c3'], 'tabla_hit', -4, "comic bass bend (tabla 'ge'; the bed's theka rests here)", 'c3',
+        _c(ev['whip'], 'whip', -9, 'punch-in whip (c3 - 1 f)', 'whip', params=dict(direction=1)),
+        _c(ev['c3'], 'impact_soft', -8, 'c3 punch-in to suit_shocked', 'c3', hero=True),
+        _c(ev['c3'], 'tabla_hit', -7, "comic bass bend (tabla 'ge'; the bed's theka rests here)", 'c3',
            params=dict(stroke='ge', pitch=1.0)),
         # ---- S4 gag 3 (stamp) -------------------------------------------------------------------------------------
-        _c(ev['stamp'], 'impact_soft', -4, 'stamp SLAM on the bar-3 downbeat', 'stamp', hero=True),
-        _c(ev['stamp'], 'tabla_hit', -6, "stamp: dry slap (tabla 'ta')", 'stamp', params=dict(stroke='ta', pitch=1.0)),
+        _c(ev['stamp'], 'impact_soft', -8, 'stamp SLAM on the bar-3 downbeat', 'stamp', hero=True),
+        _c(ev['stamp'], 'tabla_hit', -9, "stamp: dry slap (tabla 'ta')", 'stamp', params=dict(stroke='ta', pitch=1.0)),
         _c(ev['stamp'], 'swish_small', -10, 'card returns (c4)', 'stamp'),
         # ---- S5 re-hook 1, the killer --------------------------------------------------------------------------------
         _c(ev['m3'], 'whoosh_fast', -3, 'M3 momentum swipe left (re-hook 1; under "Seedha jawab" by design)', 'm3',
            params=dict(direction=-1), pan=-0.4),
         _c(ev['m3_land'], 'card_slide', -8, 'card B lands pre-filled', 'm3_land', params=dict(dur=0.3)),
         _c(ev['loading'], 'ui_tick', -14, 'loading dots', 'loading'),
-        _c(ev['killer'], 'notif_ping', 0, 'KILLER bubble "Achha. Naukri kab lagegi?" (music silent; A6)', 'killer',
+        _c(ev['killer'], 'notif_ping', -4, 'KILLER bubble "Achha. Naukri kab lagegi?" (music silent; A6)', 'killer',
            params=dict(pitch=a6), hero=True),
-        _c(ev['killer'], 'impact_soft', -8, 'killer weight', 'killer'),
+        _c(ev['killer'], 'impact_soft', -10, 'killer weight', 'killer'),
         _c(ev['fold'], 'swish_small', -8, 'card folds away', 'fold'),
         _c(ev['c6'], 'impact_soft', -10, 'c6 cut to suit_neutral', 'c6'),
         _c(ev['killer_exit'], 'swish_small', -14, 'killer bubble exits', 'killer_exit'),
@@ -376,10 +381,10 @@ def body_cues(ev):
         _c(ev['plus'], 'notif_ping', -12, 'ping: "+" -> 99+ (C#7, the leading tone into D)', 'plus',
            params=dict(pitch=cs7)),
         # ---- S8 re-hook 2: the family group floods ---------------------------------------------------------------------
-        _c(ev['m2'], 'reverse_swell', -6, 'M2: the suck into the hue bridge (ENDS on the cut)', 'm2',
+        _c(ev['m2'], 'reverse_swell', -9, 'M2: the suck into the hue bridge (ENDS on the cut)', 'm2',
            params=dict(duration=0.3)),
         _c(ev['m2'], 'shimmer', -10, 'M2 hue bridge into the gold group scene', 'm2', params=dict(dur=1.0)),
-        _c(ev['m2'], 'whoosh_fast', -8, '"Khandaan" floods (scroll)', 'm2', params=dict(direction=1), hero=True),
+        _c(ev['m2'], 'whoosh_fast', -9, '"Khandaan" floods (scroll)', 'm2', params=dict(direction=1), hero=True),
         _c(ev['fwd'], 'notif_ping', -6, 'the forwarded reel bubble lands (A6)', 'fwd', params=dict(pitch=a6)),
         _c(ev['kamaal'], 'notif_ping', -8, '"Kamaal!" (D7 over Bbmaj7)', 'kamaal', params=dict(pitch=d7)),
         _c(ev['wah'], 'notif_ping', -8, '"Wah!" (A6)', 'wah', params=dict(pitch=a6)),
@@ -389,10 +394,10 @@ def body_cues(ev):
         _c(ev['drop'], 'ui_tick', -16, 'held breath: the only start in the drop-out (27.3-28.0)', 'drop'),
         # ---- S9-S10 payoff ---------------------------------------------------------------------------------------------
         _c(ev['payoff'], 'tabla_hit', 0, "PAYOFF: M1 tonal hit (tabla 'dha' on Sa = D over D add9)", 'payoff',
-           params=dict(stroke='dha', pitch=1.0), hero=True),
+           params=dict(stroke='dha', pitch=1.0), hero=True, env=ENV_PAYOFF),
         _c(ev['payoff'], 'sub_drop', -6, 'payoff sub (the bed has no kick / 808 here)', 'payoff',
-           params=dict(dur=1.6), lp=120),
-        _c(ev['payoff'], 'impact_soft', -3, 'payoff body', 'payoff', hero=True),
+           params=dict(dur=1.6), lp=120, env=ENV_PAYOFF),
+        _c(ev['payoff'], 'impact_soft', -3, 'payoff body', 'payoff', hero=True, env=ENV_PAYOFF),
         _c(ev['cinema'], 'shimmer', -8, '*cinema* starts rising', 'cinema', params=dict(dur=1.5)),
         _c(ev['c10'], 'swish_small', -12, 'c10 punch-in to hand_on_chest', 'c10'),
         _c(ev['lockup_exit'], 'swish_small', -12, 'payoff lockup + bubble exit', 'lockup_exit'),
@@ -481,6 +486,18 @@ def start_time(c):
 
 def _overlap(a, b, wins):
     return sum(max(0.0, min(b, w1) - max(a, w0)) for w0, w1 in wins)
+
+
+def apply_env(y, hit, env):
+    """Cue key 'env' = [(t from the hit (s), gain dB), ...]: a gain envelope (linear in dB, ends held) on the
+    rendered cue. Used to duck a hit's TAIL under the next word while its transient stays untouched (the payoff
+    stack before L9 "Ab", frame 0's impact before L1). audio.mix ignores the key (render.py's fallback build)."""
+    if not env:
+        return y
+    pts = sorted((float(a), float(b)) for a, b in env)
+    t = np.arange(len(y)) / SR - hit
+    g = np.interp(t, [a for a, b in pts], [b for a, b in pts])
+    return np.asarray(y, float) * undb(g)[:, None]
 
 
 def fit(cs, version='A'):
@@ -638,6 +655,7 @@ def _place(cs, M, vary=True):
         counts[k] = counts.get(k, -1) + 1
         seed = c['seed'] if 'seed' in c else ((counts[k] % 4) if vary else 0)
         y, hit = A._render_cue(c, (counts[k] % 4) if vary else None)
+        y = apply_env(y, hit, c.get('env'))
         L = len(y)
         start = float(c['t']) - (hit if c['align'] == 'hit' else 0.0)
         side = 'pre' if start + hit < DROP[0] - 0.002 else 'post'
@@ -743,6 +761,8 @@ def mix_loop(cs, *, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEILING, fixed=None, 
                limiter_max_gr_db=round(max(0.0, float(-A.db(np.min(gl)))), 2),
                comp_max_gr_db=round(float(-np.min(gr_comp)), 2),
                limiter_pct_over_1db=round(100.0 * float(np.mean(gl < undb(-1.0))), 2),
+               limiter_ms_over_1db=round(1000.0 * float(np.sum(gl < undb(-1.0))) / SR, 1),
+               limiter_ms_over_3db=round(1000.0 * float(np.sum(gl < undb(-3.0))) / SR, 1),
                bed=[dict(name=b['name'], t0=b['t0'], t1=b['t1'], rel_gain_db=b['gain_db']) for b in BED],
                bed_lufs=round(A.loudness(bed_out), 2), placed=placed, files={},
                gains=dict(g_fx=float(g_fx), G=float(G), ceil=float(ceil), bed_g=float(bed_g)),
@@ -805,7 +825,9 @@ def build(out_dir=AUD):
     nz = np.nonzero(d[:_n(DROP[0])] > 1e-6)[0]
     same_from = round(float(nz[-1] + 1) / SR, 3) if len(nz) else 0.0
     allrep['splice'] = dict(identical_from_s=same_from,
-                            max_abs_diff_after_6s=float(d[_n(6.0):].max()),
+                            max_abs_diff_6s_to_last_frame=float(d[_n(6.0):_n(DUR - 1.0 / FPS)].max()),
+                            note='the last 25 ms differ by design: each version loops into its own head (wrapped '
+                                 'pre-hit attacks of its f0 cues + circular glue / limiter look-around)',
                             max_abs_diff_2p8_to_identical_dbfs=round(float(A.db(d[_n(SPLICE):_n(max(same_from,
                                                                                                     SPLICE + 0.01))].max() + 1e-15)), 1))
     with open(os.path.join(out_dir, '%s_sfx_report.json' % MODULE), 'w') as fh:
@@ -835,20 +857,20 @@ def _seg_lufs(x, t0, t1):
 
 
 def _momentary(x, hop=0.01):
-    tt, lv = A.loudness_curve(x, win=0.4, hop=hop)
-    return np.asarray(tt) + 0.2, np.asarray(lv)          # centre of each 400 ms block
+    tt, lv = A.loudness_curve(x, win=0.4, hop=hop)         # tt = the centre of each 400 ms block
+    return np.asarray(tt), np.asarray(lv)
 
 
 def onset_lag(stem, cue, seed=None, search=0.06):
     """Lag (s) of a cue's own rendered waveform (the seed the mixer used) inside a stem (normalised
-    cross-correlation over its first 120 ms after the hit, +-search)."""
+    cross-correlation over its whole body, at least 120 ms after the hit, +-search)."""
     c = A._norm_cue(cue)
     if seed is not None:
         c['seed'] = seed
     y, hit = A._render_cue(c, None)
-    y = np.asarray(y, float).mean(1)
+    y = np.asarray(apply_env(y, hit, c.get('env')), float).mean(1)
     start = float(c['t']) - (hit if c.get('align', 'hit') == 'hit' else 0.0)
-    L = min(len(y), _n(0.12) + _n(hit))
+    L = min(len(y), _n(hit + max(0.12, body_len(cue))))     # the whole body: unique even for periodic sounds
     tmpl = y[:L]
     s = stem.mean(1)
     best, lag = -2.0, None
@@ -879,8 +901,15 @@ def rough(out_dir=ROUGH):
     os.makedirs(out_dir, exist_ok=True)
     report = dict(inputs=dict(vo_A=VO['A'][0], vo_B=VO['B'][0], music=MUSIC, sfx_A=STEM['A'], sfx_B=STEM['B']))
     for v, name in (('A', MODULE), ('B', MODULE + '_hookb')):
-        rep = EMX.mix_reel(name, dur=DUR, vo=VO[v][0], sfx=STEM[v], music=MUSIC if os.path.exists(MUSIC) else None,
-                           out_dir=out_dir, vo_offset=0.0)
+        # epic_mix.load keeps a mono wav as (N, 1) and mix_reel's concatenate then fails: feed it a bit-exact
+        # dual-mono copy (ffmpeg pcm_s24le, -ac 2), deleted afterwards (SHARED_REQUESTS.md item 4)
+        vo2 = os.path.join(out_dir, '_tmp_vo_%s_stereo.wav' % v)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', VO[v][0], '-ac', '2', '-c:a', 'pcm_s24le', vo2], check=True)
+        try:
+            rep = EMX.mix_reel(name, dur=DUR, vo=vo2, sfx=STEM[v], music=MUSIC if os.path.exists(MUSIC) else None,
+                               out_dir=out_dir, vo_offset=0.0)
+        finally:
+            os.remove(vo2)
         f = rep['files']
         mix = A._st(A.read_wav(f['mix'])[0]).astype(np.float64)
         vos = A._st(A.read_wav(f['stem_vo'])[0]).astype(np.float64)
@@ -904,21 +933,44 @@ def rough(out_dir=ROUGH):
                                      min=round(float(d_mus.min()), 1))
         m['vo_over_sfx_lu'] = dict(median=round(float(np.median(d_sfx)), 1), p10=round(float(np.percentile(d_sfx, 10)), 1),
                                    min=round(float(d_sfx.min()), 1), at=round(float(tc[act][np.argmin(d_sfx)]), 2))
-        # every cue whose hit is in a speech window: VO minus SFX momentary at its hit (block centred on the hit)
+        # per WORD (words.json spans): K-weighted loudness of the VO, the SFX and the music over the word itself
+        words = [w for w in json.load(open(VO[v][1])) if w['end'] - w['start'] >= 0.1]
+        kv, ks, km = (np.square(A.kweight(x)).sum(1) for x in (vos, sfx, mus))
+        wl = lambda k, a, b: float(-0.691 + 10 * np.log10(k[_n(a):_n(b)].mean() + 1e-30))
+        per_w = [dict(start=w['start'], end=w['end'], word=w['word'], line=w['line'], vo=round(wl(kv, w['start'], w['end']), 1),
+                      vo_minus_sfx=round(wl(kv, w['start'], w['end']) - wl(ks, w['start'], w['end']), 1),
+                      vo_minus_music=round(wl(kv, w['start'], w['end']) - wl(km, w['start'], w['end']), 1)) for w in words]
+        dsf = np.array([w['vo_minus_sfx'] for w in per_w])
+        dmu = np.array([w['vo_minus_music'] for w in per_w])
+        m['per_word'] = dict(n=len(per_w), vo_minus_sfx=dict(min=float(dsf.min()), p10=round(float(np.percentile(dsf, 10)), 1),
+                                                              median=round(float(np.median(dsf)), 1)),
+                             vo_minus_music=dict(min=float(dmu.min()), p10=round(float(np.percentile(dmu, 10)), 1),
+                                                 median=round(float(np.median(dmu)), 1)),
+                             sfx_under_6=[w for w in per_w if w['vo_minus_sfx'] < 6.0],
+                             music_under_8=[w for w in per_w if w['vo_minus_music'] < 8.0],
+                             L11=[w for w in per_w if w['line'] == 'L11'])
+        # every cue that sounds under a word: the worst word it overlaps (from its start to its body end)
         cs = json.load(open(os.path.join(AUD, '%s_cues_%s.json' % (MODULE, v))))
         per = []
         for c in cs:
-            h = hit_time(c)
-            if any(a <= h <= b for a, b in wins) or c.get('vo'):
-                i = int(np.argmin(np.abs(tc - (h + 0.1))))
-                per.append(dict(t=c['t'], name=c['name'], vo_minus_sfx_lu=round(float(lvo[i] - lsf[i]), 1),
-                                vo_lufs=round(float(lvo[i]), 1), sfx_lufs=round(float(lsf[i]), 1), note=c.get('vo', '')))
-        m['cues_in_speech'] = per
-        # silences and the drop-out
+            st, he = start_time(c), hit_time(c)
+            be = he + body_len(c)
+            ov = [w for w in per_w if w['start'] < be and w['end'] > st]
+            if ov:
+                w = min(ov, key=lambda w: w['vo_minus_sfx'])
+                per.append(dict(t=c['t'], name=c['name'], worst_word=w['word'], at=w['start'],
+                                vo_minus_sfx_lu=w['vo_minus_sfx'], note=c.get('vo', '')))
+        m['cues_under_words'] = per
+        # silences and the drop-out (music bus; the room tone = this reel's bed stem at the SFX stem's mix gain)
         m['music_peak_dbfs'] = {'12.62-13.98': _peak_db(mus, 12.62, 13.98), '27.31-27.99': _peak_db(mus, 27.31, 27.99)}
-        m['room_tone_in_mix_lufs'] = {'12.62-13.98': _seg_lufs(mix, 12.62, 13.98),
-                                      '13.0-13.6 (no cue sounding)': _seg_lufs(mix, 13.0, 13.6),
-                                      '27.35-27.95 (drop-out)': _seg_lufs(mix, 27.35, 27.95)}
+        bed = A._st(A.read_wav(STEM[v][:-4] + '_bed.wav')[0]).astype(np.float64)
+        stem = A._st(A.read_wav(STEM[v])[0]).astype(np.float64)
+        g_sfx = A.loudness(sfx) - A.loudness(stem)                 # dB the mix applied to the SFX stem (approx.)
+        m['sfx_stem_gain_in_mix_db'] = round(g_sfx, 2)
+        m['room_tone_in_mix_lufs'] = {k: round(_seg_lufs(bed, a, b) + g_sfx, 1) for k, (a, b) in
+                                      {'12.62-13.98 (killer silence)': (12.62, 13.98),
+                                       '27.31-27.99 (drop-out)': (27.31, 27.99)}.items()}
+        m['mix_lufs_in_silences'] = {'12.62-13.98': _seg_lufs(mix, 12.62, 13.98), '27.35-27.95': _seg_lufs(mix, 27.35, 27.95)}
         m['sfx_stem_dropout_peak_dbfs'] = _peak_db(sfx, 27.31, 27.99)
         m['music_rms_db'] = {'12.10': _rms_db(mus, 12.05, 12.15), '12.62': _rms_db(mus, 12.57, 12.67)}
         # loudest moment of music + SFX (VO excluded)
@@ -928,18 +980,12 @@ def rough(out_dir=ROUGH):
             sel = (tc >= a) & (tc <= b)
             m['max_momentary_music_sfx'][('%.1f-%.1f' % (a, b))] = round(float(lms[sel].max()), 2)
         # loop seam: last frame + first frame of the mix
-        f1 = _n(1.0 / FPS)
         m['seam'] = dict(rms_last_frame_dbfs=_rms_db(mix, DUR - 1.0 / FPS, DUR), rms_first_frame_dbfs=_rms_db(mix, 0, 1.0 / FPS),
                          step=round(float(np.abs(mix[0] - mix[-1]).max()), 5),
                          median_step_last_100ms=round(float(np.median(np.abs(np.diff(mix[-_n(0.1):], axis=0)))), 5))
-        assert f1 > 0
-        # L11 vs the 35.0 notif_ping, the loop swell (35.6-36.4) and the music's 35.7 'tin'
-        l11 = [(a, b) for a, b in wins if b > 34.6]
-        sel = np.zeros(len(tc), bool)
-        for a, b in l11:
-            sel |= (tc >= a + 0.2) & (tc <= b - 0.2)
-        sel &= lvo > top - 15.0
-        m['L11_vo_over'] = dict(sfx_min=round(float((lvo - lsf)[sel].min()), 1), music_min=round(float((lvo - lmu)[sel].min()), 1))
+        m['seam']['sfx_stem_step'] = round(float(np.abs(stem[0] - stem[-1]).max()), 5)
+        m['seam']['sfx_stem_step_f0_tick_elsewhere'] = round(float(np.abs(np.diff(stem[_n(12.1333) - 48:_n(12.1333) + 48],
+                                                                                axis=0)).max()), 5)
         # hero / r2 cue sync in the SFX stem of the mix (own waveform, normalised cross-correlation)
         sync = []
         srep = json.load(open(os.path.join(AUD, '%s_sfx_report.json' % MODULE)))
@@ -999,6 +1045,10 @@ def table(version='A'):
         filt = ', '.join('%s %d' % (k, c[k]) for k in ('hp', 'lp') if c.get(k)) or '-'
         if c.get('pan'):
             filt = ('pan %+.1f' % c['pan']) if filt == '-' else filt + ', pan %+.1f' % c['pan']
+        if c.get('env'):
+            e = sorted(c['env'])
+            txt = 'tail duck %+.0f dB from hit+%.2f s (ramp %.2f s)' % (e[-1][1], e[-1][0], e[-1][0] - e[-2][0])
+            filt = txt if filt == '-' else filt + ', ' + txt
         g0 = brief.get((c['t'], c['name'], c['ev']), c['gain_db'])
         rows.append('| %d | %.4f | %d | %s%s | %s | %s | %+.0f -> %+.0f | %s | %s | %s |' % (
             i, c['t'], int(round(c['t'] * FPS)), c['name'], ' **hero**' if c.get('hero') else '',
@@ -1033,8 +1083,9 @@ def main():
             print('splice', r['splice'])
         if a.cmd in ('rough', 'all'):
             r = rough()
-            print(json.dumps({v: {k: r[v][k] for k in ('ffmpeg_mix', 'ffmpeg_vo_sfx', 'vo_over_music_lu',
-                                                       'vo_over_sfx_lu')} for v in 'AB'}, indent=1))
+            print(json.dumps({v: {k: r[v][k] for k in ('ffmpeg_mix', 'ffmpeg_vo_sfx', 'vo_over_music_lu', 'vo_over_sfx_lu',
+                                                       'per_word', 'room_tone_in_mix_lufs', 'max_momentary_music_sfx',
+                                                       'seam')} for v in 'AB'}, indent=1))
 
 
 if __name__ == '__main__':

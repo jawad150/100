@@ -8,6 +8,7 @@ show the tile in its true light, scale and neighbourhood. Render contract of ren
 samples, prewarm). Outputs: <WS>/out/pehle_wala_faces_proof -> symlink to <WS>/pehle_wala/qa/faces/render.
 
     tools/heavy.sh python3 render.py pehle_wala_faces_proof --stills 14.9333,16.0,17.0333 --workers 1 --no-audio
+    tools/heavy.sh python3 pehle_wala_faces_proof.py measure 15.6 16.0 28.5    # post-finish QA numbers (JSON)
 """
 import functools
 import json
@@ -198,3 +199,103 @@ def prewarm():
     win()
     ad_canvas('v1')
     ad_canvas('v16')
+
+
+# ============================================================================================ QA measurements
+QA_OUT = '/home/user/100/workspace/jawad_reels/pehle_wala/qa/faces'
+SKIN_PATCH = {'street_smirk': {'cheekL': (246, 433, 302, 489), 'cheekR': (395, 400, 465, 445), 'forehead': (300, 250, 380, 300)},
+         'street_sunglasses': {'cheekL': (252, 394, 300, 442), 'cheekR': (395, 395, 460, 440), 'forehead': (300, 230, 380, 290)}}
+
+
+def _still(t, mode, finish=True):
+    import render
+    M = sys.modules[__name__]
+    os.environ['PWF_MODE'] = mode
+    if finish:
+        u8 = render.render_still(M, t, samples=1)
+    else:
+        u8 = K.to_srgb8(M.draw(t), t, dither=False)
+    os.environ['PWF_MODE'] = 'full'
+    return u8
+
+
+def _luma(u8):
+    return u8.astype(np.float32) @ np.float32([0.2126, 0.7152, 0.0722])
+
+
+def _screen_of(t, sh, p):
+    L = PF.layers(sh['pose'])
+    m = PF.meta(sh['pose'])
+    uv = (L['eye'][0] + (p[0] - m['eye_mid'][0]) * PF.SCALE, L['eye'][1] + (p[1] - m['eye_mid'][1]) * PF.SCALE)
+    return PF._screen(t, sh, PF.feed_point(t, uv, sh))
+
+
+def _hsv(rgb8):
+    hsv = cv2.cvtColor(rgb8[None].astype(np.uint8), cv2.COLOR_RGB2HSV)[0].astype(np.float32)
+    return dict(hue_deg=round(float(np.median(hsv[:, 0])) * 2, 1), sat=round(float(np.median(hsv[:, 1])) / 255, 3),
+                val=round(float(np.median(hsv[:, 2])), 1))
+
+
+
+def measure(ts):
+    """Post-finish QA numbers per time: halo ring, blacks (with / without the finish's bloom), key, skin."""
+    import render
+    M = sys.modules[__name__]
+    res = {}
+    PF.prewarm()
+    M.prewarm()
+    for t in ts:
+        sh = PF.shot_at(t)
+        r = {}
+        full, plate, matte = _still(t, 'full'), _still(t, 'plate'), _still(t, 'matte')
+        jd = PF.jd_alpha(t)
+        tile = PF.tile_alpha(t) > 0.999
+        hard = (jd > 0.05).astype(np.uint8)
+        ring = (cv2.dilate(hard, np.ones((7, 7), np.uint8)) - hard).astype(bool) & tile
+        lf, lp, lm = _luma(full), _luma(plate), _luma(matte)
+        r['halo_ring_post_finish'] = dict(full_minus_plate=round(float((lf - lp)[ring].mean()), 2),
+                                          matte_minus_plate=round(float((lm - lp)[ring].mean()), 2), ring_px=int(ring.sum()))
+        pf, pp = _still(t, 'full', False), _still(t, 'plate', False)
+        r['halo_ring_pre_finish'] = round(float((_luma(pf) - _luma(pp))[ring].mean()), 2)
+        body = (jd > 0.95) & tile
+        away = tile & ~cv2.dilate(hard, np.ones((31, 31), np.uint8)).astype(bool)
+        r['black'] = dict(subject_p2=round(float(np.percentile(lf[body], 2)), 1),
+                          tile_plate_p2=round(float(np.percentile(lf[away], 2)), 1),
+                          frame_p2=round(float(np.percentile(lf, 2)), 1),
+                          frame_p0_5=round(float(np.percentile(lf, 0.5)), 1),
+                          plate_render_same_px_p2=round(float(np.percentile(lp[body], 2)), 1))
+        import jawad_grade as G
+        os.environ['PWF_MODE'] = 'full'; c1 = M.draw(t); G.finish(c1, 'inferno', t, grain=0, bloom=0.0)
+        os.environ['PWF_MODE'] = 'plate'; c2 = M.draw(t); G.finish(c2, 'inferno', t, grain=0, bloom=0.0)
+        os.environ['PWF_MODE'] = 'full'
+        b1, b2 = _luma(K.to_srgb8(c1, t, dither=False)), _luma(K.to_srgb8(c2, t, dither=False))
+        r['black_bloom_off'] = dict(subject_p2=round(float(np.percentile(b1[body], 2)), 2),
+                                    tile_plate_p2=round(float(np.percentile(b1[away], 2)), 2),
+                                    frame_p2=round(float(np.percentile(b1, 2)), 2),
+                                    plate_render_same_px_p2=round(float(np.percentile(b2[body], 2)), 2))
+        ad = np.zeros(lf.shape, bool); ad[468:1228, 430:960] = True
+        r['key'] = dict(subject_p99=round(float(np.percentile(lf[body], 99)), 1),
+                        subject_p99_9=round(float(np.percentile(lf[body], 99.9)), 1),
+                        ad_p99=round(float(np.percentile(lf[ad], 99)), 1), frame_p99_5=round(float(np.percentile(lf, 99.5)), 1))
+        # skin: final frame vs the native source patch
+        src = cv2.cvtColor(cv2.imread('/home/user/100/workspace/brand_reels/charsheet/crops/%s_2x.png' % sh['pose']), cv2.COLOR_BGR2RGB)
+        sk = {}
+        for nm, (x0, y0, x1, y1) in SKIN_PATCH[sh['pose']].items():
+            a = _screen_of(t, sh, (x0, y0)); b = _screen_of(t, sh, (x1, y1))
+            X0, Y0, X1, Y1 = int(round(a[0])) + 1, int(round(a[1])) + 1, int(round(b[0])) - 1, int(round(b[1])) - 1
+            sk[nm] = dict(final=_hsv(full[Y0:Y1, X0:X1].reshape(-1, 3)), source=_hsv(src[y0:y1, x0:x1].reshape(-1, 3)),
+                          screen_box=(X0, Y0, X1, Y1))
+        r['skin'] = sk
+        fr = PF.face_rect(t)
+        x0, y0, x1, y1 = [int(round(v)) for v in fr]
+        crop = full[max(0, y0 - 40):y1 + 20, max(0, x0 - 40):x1 + 40]
+        p = os.path.join(QA_OUT, 'skin_%s_t%.2f_x3.png' % (sh['pose'], t))
+        cv2.imwrite(p, cv2.cvtColor(cv2.resize(crop, None, fx=3, fy=3, interpolation=cv2.INTER_NEAREST), cv2.COLOR_RGB2BGR))
+        r['face_crop_x3'] = p
+        res['%.4f' % t] = r
+    return res
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 2 and sys.argv[1] == 'measure':
+        print(json.dumps(measure([float(x) for x in sys.argv[2:]]), indent=1))

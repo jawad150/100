@@ -190,21 +190,29 @@ def tune(key):
 
 
 # ================================================================================================ cue list
-# Levels that differ from BRIEF 11 (brief value kept on the cue as 'brief_db'). The brief's levels were set before the
-# stem existed; measured on the -18 LUFS stem (mix_loop) these keep the true-peak limiter off the clicks and the C3 hit,
-# keep the reveal the loudest moment of the SFX stem (C3 >= 1.5 LU under it), and leave the reveal's peak shaving
-# (impact_big's kick punch, crest 9.9 dB) to the master limiter in context. See SOUND.md "levels".
+# Levels that differ from BRIEF 11 (each cue keeps the brief value as 'brief_db'). The brief's levels were set before
+# the stem existed. Measured through mix_loop (-18 LUFS stem) AND the final chain (epic_mix A, real VO + music), these
+# levels give: the reveal = the loudest momentary of mix A (window centred 26.55 s, >= 1.1 LU over the next loudest),
+# every VO word >= 6 dB (K-weighted) over the SFX under it, the riser / rush >= 6 LU and C3 >= 3.5 LU under the reveal
+# in the stem, and the stem limiter <= ~4 dB (it shaves only the stacked crack of flash_hit + impact_big at 26.397).
+# Why the cuts are this large: epic_mix places the SFX stem by its INTEGRATED loudness (-18 LUFS); in this sparse stem
+# the integrated is set by a few loud VO-free events, so every carve or duck under the VO raises the gain on the rest.
+# The VO-free events therefore have to be balanced against the reveal inside the stem (SOUND.md "levels").
 LV = dict(
-    pause_click=+3.0,            # brief +4: limited at +4 (a 21.9 dB-crest click); fit_under_vo then takes -8 (inside "Aap")
-    play_click=-4.0,             # brief +4: 10 dB of limiting at +4 on the lone click after the silence
-    c3_swell=-6.0, c3_air=-7.0, c3_hit=-3.0,       # brief -3 / -6 / -1 (plan): C3 was the stem's loudest moment
-    rush=(-7.0, -7.0, -9.0),     # brief -6 / -6 / -8
-    flash_hit=-9.0,              # brief -3 (crest 14.5 dB, the limiter's first victim); + transient saturation 3
-    impact_big=0.0,              # brief 0; + transient saturation 4 (crest 9.9 -> 4.8 dB)
-    c8_whip=-12.0,               # brief -6 (crest 15.5 dB, 30 ms before the slam)
-    riser=-4.0,                  # brief -4
+    pause_click=-2.0,            # brief +4 (crest 21.9 dB: limited at +4); fit_under_vo takes -8 more inside "Aap"
+    play_click=-11.0,            # brief +4: 10 dB of limiting at +4 on the lone click after the 8-frame silence
+    c3_swell=-7.0, c3_air=-9.0, c3_hit=-5.0,       # brief -3 / -6 / -1 (plan cues): C3 was the stem's loudest moment
+    rush=(-10.0, -10.0, -12.0),  # brief -6 / -6 / -8: the rush + music build at 25.6 out-shouted the reveal
+    riser=-8.0,                  # brief -4: bible 4.5, a riser stays >= 4 LU under the hit it feeds
+    flash_hit=-15.0,             # brief -3: its crack lands 3 ms before impact_big's and the two stack in the limiter
+    impact_big=0.0,              # brief 0; + transient saturation (SAT)
+    c8_whip=-16.0,               # brief -6 (crest 15.5 dB, 30 ms before the slam, same limiter event)
 )
-SAT = dict(impact_big=4.0, flash_hit=3.0)   # transient saturation drive (sat_transient)
+# Transient saturation drives (sat_transient: loudness-matched, tail from 0.5 s untouched), measured on the raw sounds,
+# true peak minus max momentary: impact_big 8: 9.9 -> 4.7 dB (first 50 ms -2.1 dB, 0.1-0.3 s +1.0/+1.2 dB);
+# flash_hit 3: 14.5 -> 8.3 dB; impact_soft 4 (C3): 9.8 -> 3.7 dB. The reveal is dense rather than spiky, so it keeps its
+# loudness through the master's glue + limiter.
+SAT = dict(impact_big=8.0, flash_hit=3.0, c3_hit=4.0)
 
 
 def _c(t, name, gain_db=0.0, why='', **kw):
@@ -270,7 +278,8 @@ def body_cues(ev, SJ):
     c.append(_c(s1, 'reverse_swell', LV['c3_swell'], 'C3 approach into the portal disc (plan cue)',
                 params=dict(duration=round(s1 - s0, 4)), tx='C3', span_min=SPAN_MIN, brief_db=-3))
     c.append(_c(ev['c3'], 'air_zoom', LV['c3_air'], 'C3 portal cut (plan cue)', tx='C3', brief_db=-6))
-    c.append(_c(ev['c3'], 'impact_soft', LV['c3_hit'], 'C3 portal cut, corridor (plan cue)', tx='C3', brief_db=-1))
+    c.append(_c(ev['c3'], 'impact_soft', LV['c3_hit'], 'C3 portal cut, corridor (plan cue)', tx='C3', brief_db=-1,
+                **({'sat': SAT['c3_hit']} if SAT.get('c3_hit') else {})))
     c.append(_c(ev['wave'], 'jd_sparkle', -12, 'light wave runs down the corridor'))
     c.append(_c(ev['roll360'], 'slot_tick', -10, 'counter 12 -> 360 (rolls to the landing)', align='start',
                 params=dict(n=29, dur=round(ev['land360'] - ev['roll360'], 4)), hp=4500))
@@ -286,7 +295,7 @@ def body_cues(ev, SJ):
                 params=dict(duration=0.3, pitch=tune('lanes_bb'))))
     for t, gdb, bdb, d, p in zip(ev['rush'], LV['rush'], (-6, -6, -8), (1, -1, 1), (-0.5, 0.5, -0.5)):
         c.append(_c(t, 'whoosh_by', gdb, 'rush: frame-stacks fly back', pan=p, params=dict(dur=1.0, direction=d),
-                    brief_db=bdb))
+                    brief_db=bdb, **({'sat': SAT['rush']} if SAT.get('rush') else {})))
     slam = SJ.ember_slam(ev['payoff'], bpm=BPM, riser_beats=2, gap_beats=1)
     for x in slam:
         x['why'] = ('riser into the drop-out (stops dead at 25.8)' if x['name'] == 'riser'
@@ -412,13 +421,13 @@ def instants(cues, tol=0.025):
     return out
 
 
-CARVE_DB = dict(hero=-10.0, other=-8.0)   # body/tail of a cue under speech (the hit itself is never carved)
+CARVE_DB = dict(hero=-14.0, other=-8.0)   # body/tail of a cue under speech (the hit itself is never carved)
 CARVE_LEAD, CARVE_RAMP, CARVE_GUARD = 0.015, 0.03, 0.03
 
 
 def assign_carve(cs, words, vo):
     """Tails (and pre-hit bodies) of cues that fit_under_vo did not duck, where they run under speech (words + VO
-    activity, unpadded): carve 'carve_db' there (heroes -10 dB, others -8 dB), starting CARVE_LEAD before the speech,
+    activity, unpadded): carve 'carve_db' there (heroes -14 dB, others -8 dB), starting CARVE_LEAD before the speech,
     CARVE_RAMP ramps, never within [hit - 20 ms, hit + CARVE_GUARD]. The hit stays whole; the boom's hall, the sub and
     the shimmer bloom step back under the line (bible 4.1: SFX >= 6 LU under the VO in VO windows)."""
     import sfx_jawad as SJ
@@ -480,8 +489,8 @@ def sat_transient(y, hit, drive, t1=0.30, xf=0.20, pre=0.005):
     """Loudness-matched saturation of a hit's TRANSIENT only (bible 4.2: "saturation helps the hit cut through"):
     sfx_jawad.shape (alias-safe tanh, 8x oversampled) of the cue normalised to the peak of [hit - pre, hit + t1],
     cross-faded in over 2 ms before the hit and out over xf after hit + t1, scaled so the cue's max momentary loudness
-    is unchanged. The tail after hit + t1 + xf is the raw sound. impact_big, drive 4: peak-to-loudness 9.9 -> 4.8 dB,
-    first 50 ms -1.4 dB, 0.1-0.3 s +0.5/+0.9 dB, decay from 0.5 s identical (measured)."""
+    is unchanged. The tail after hit + t1 + xf is the raw sound. impact_big, drive 8: true peak - max momentary
+    9.9 -> 4.7 dB, first 50 ms -2.1 dB, 0.1-0.3 s +1.0/+1.2 dB, decay from 0.5 s identical (measured)."""
     import sfx_jawad as SJ
     y = np.asarray(y, dtype=np.float64)
     t = np.arange(len(y)) / SR
@@ -629,6 +638,7 @@ def mix_loop(cues_, dur=DUR, *, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEILING, 
                sample_peak_dbfs=round(float(A.db(np.max(np.abs(y)))), 2), lra_lu=round(A.loudness_range(y), 2),
                max_momentary_lufs=round(A.momentary_max(y), 2), max_short_term_lufs=round(A.momentary_max(y, 3.0), 2),
                limiter_max_gr_db=round(max(0.0, float(-A.db(np.min(gl)))), 2),
+               limiter_max_gr_at_s=round(float(np.argmin(gl)) / SR, 4),
                comp_max_gr_db=round(float(-np.min(gr_comp)), 2),
                limiter_pct_over_1db=round(100.0 * float(np.mean(gl < undb(-1.0))), 2),
                bed=[], bed_lufs=None, placed=placed, files={}, gains=(float(g_fx), float(G), float(ceil)),

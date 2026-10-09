@@ -9,15 +9,19 @@ Write-up with every measured number: brand_reels/design/reels/pehle_wala/FACES.m
     PF.prewarm()                                      # builds both poses' layers once per worker (~3 s)
     PF.draw_tile(cv, t)                               # in draw(t), after the world / pins / chips, BEFORE captions;
                                                       # draws nothing outside the two showings (pure f(t), in place)
-    PF.avoid_rect(t)   -> (70, 952, 430, 1282) while the tile shows, else None   (snake_captions avoid=)
+    PF.avoid_rect(t)   -> (70, 952, 430, 1284) while the tile shows, else None   (snake_captions avoid=)
     PF.tile_rect(t)    -> drawn tile + label box this frame (POP / exit applied), else None
     PF.face_rect(t)    -> screen face box (YuNet box of the pose, idle applied), else None  (copy >= 60 px from it)
     PF.eye_screen(t)   -> screen (x, y) of the eye midpoint, else None
+    PF.jd_alpha(t)     -> (1920, 1080) alpha of JD's cut-out (QA masks, e.g. the colorist's skin check), else None
+    PF.tile_alpha(t)   -> (1920, 1080) alpha of the feed's rounded rect, else None
+    PF.draw_tile(cv, t, mode='plate' | 'matte')      -> QA variants (room only / plain cut-out, no look)
     PF.FACES           -> the shot table (BRIEF section 14 keys + t0, t1, pose, P, width, cam_keys, rim_dir, rim_gain,
-                          swap_on_beat, note)
+                          swap_on_beat, note); look='A' (rim, both showings) or 'D' (cine) per shot
     python3 pehle_wala_faces.py check                -> limits, placement, texture, halo, eye lock, cost (JSON)
-    python3 pehle_wala_faces.py boards               -> QA boards (matte over black / FLAME / white at 200 %, face
-                                                        crops for the colorist) in <WS>/pehle_wala/qa/faces/
+    python3 pehle_wala_faces.py boards               -> matte over black / FLAME / white at 200 % (display scale)
+                                                        in <WS>/pehle_wala/qa/faces/
+    Proof on a stand-in world (until pehle_wala.py exists): pehle_wala_faces_proof.py (render.py contract).
 
 What is in the tile (back to front, all at display scale, built once per pose):
     L0 webcam room plate: NIGHT_1 -> NIGHT_0 wall + K.radial(480, FLAME x0.35) at the tile's top-right (the ad /
@@ -81,20 +85,29 @@ FACE_COPY_GAP = 60                          # no copy within 60 px of the face b
 # Real-ESRGAN x4plus over-sharpens one cheek and waxes the other on these two headshots. Measured at the DISPLAY scale
 # (0.4 of the 2x master = 0.8 of the native crop), cheek / forehead Laplacian variance vs the Lanczos 2x of the native
 # crop: smirk L 2.12x, R 0.77x, forehead 0.95x; sunglasses L 1.97x, R 1.87x, forehead 0.95x. Pull the SR detail
-# back toward the source in the opaque interior (rgb = lanczos2x + k (sr - lanczos2x)): k = 0.5 puts every patch in
-# 0.81-1.42x (inside the 1.5x band both ways) and keeps the SR eyes, brows, beard and chains crisper than the source.
-TEX_K = {'street_smirk': 0.5, 'street_sunglasses': 0.5}
-# warm-dark base (look A, faces.warm_dark): low key so the baked frontal studio light never out-shines the ad
-BASE = dict(exposure=0.42, warmth=(1.0, 0.86, 0.74), contrast=1.12, sat=0.90)
+# back toward the source in the opaque interior (rgb = lanczos2x + k (sr - lanczos2x)): k = 0.3 puts every patch in
+# 0.87-1.21x (k = 0.5: 0.81-1.42x) and keeps a little of the SR crispness on eyes, brows, beard and chains. Looked at
+# 3x side by side (k 0 / 0.5 / 1): k = 1 waxes the smirk's right cheek and wipes the forehead's pores and spots.
+TEX_K = {'street_smirk': 0.3, 'street_sunglasses': 0.3}
+# look A (BRIEF 14, hero): warm-dark base (faces.warm_dark), low key so the baked frontal studio light never
+# out-shines the ad. Warmth / saturation set so that AFTER the inferno finish the skin keeps the source's OKLab chroma
+# (lit cheek / forehead 0.069-0.071 vs 0.071-0.074) and hue (+-4 deg), only darker (L 0.73 -> 0.53): never lightened,
+# never orange (faces.warm_dark's default warmth (1, .80, .66) and (1, .86, .74) both pushed the chroma up).
+BASE = dict(exposure=0.42, warmth=(1.0, 0.92, 0.84), contrast=1.12, sat=0.85)
 # rim from screen-right / up (the ad and its ember glow are right of the tile). Emission inside the silhouette, peak
 # ~2.4x linear FLAME (<= 3x); counter-rim and all-round outline kept low (a full glowing outline reads as a sticker at
 # 360 px); the outer halo is mostly left to the finish's bloom (keeps the 3 px ring within +6 code values).
 RIM = dict(light=(0.8, -0.5), gain=2.4, back=0.08, outline=0.02, depth_wrap=0.3, halo_strength=0.0)
+# look D (cine, narration; not used by the BRIEF's two showings, available per shot with look='D'): faces.cine_grade
+# base, softer rim (face_assets.md section 3), same light direction and the same geometry as A.
+BASE_D = dict(exposure=0.72)
+RIM_D = dict(light=(0.8, -0.5), gain=1.4, back=0.06, outline=0.02, depth_wrap=0.3, halo_strength=0.0)
 
 # black-point toe on the subject (linear luminance, hue kept): f(Y) = max(0, Y - b (1 - smoothstep(Y / 4b))), identity
-# above 4b. Before the finish his p2 already equals the wall's (0.0011 vs 0.0012 linear); the finish's bloom of his
-# own FLAME rim then veils his hair / beard blacks by ~2.5 code values more than the wall at the same pixels. The toe
-# pre-compensates so his p2 lands within 2 code values of the scene blacks AFTER the finish (FACES.md, measured).
+# above 4b. Before the finish his p2 already equals the wall's (0.0011 vs 0.0012 linear); the inferno bloom (threshold
+# 0.38, radii 8-170 px) of his own skin / rim and of the ad then veils his hair / beard blacks (p2 4.7 vs 2.1 for the
+# wall at the same pixels). The toe pre-compensates (everything it touches is below the finish's crush anyway, so no
+# visible shadow detail is lost); the remaining veil is the lens bloom every element in that spot gets (FACES.md).
 BLACK_TOE = 0.004
 PLATE_GLOW = 0.35                           # K.radial(480, FLAME x0.35) at the tile's top-right (BRIEF 14)
 SHADOW = dict(dx=-12.0, dy=7.0, sigma=13.0, k=0.30)     # wall shadow (tile px): light is up-right -> falls down-left
@@ -109,7 +122,8 @@ PARALLAX_PX = 1.2                           # max depth-driven shift of torso / 
 # ============================================================================================ timing (BRIEF 7, 14)
 ENTER_F = 6                                 # POP: scale 0.92 -> 1 (POP spring), opacity inout_sine over 6 f
 POP_S0 = 0.92
-EXIT_F = 10                                 # exit: 10 f in_cubic, y + 24, opacity -> 0, gone on t1
+EXIT_F = 10                                 # exit: 10 f in_cubic, y + 24, opacity -> 0, gone half a frame before t1
+                                            # (motion-blur samples of the next frame never catch a ghost of the tile)
 EXIT_DY = 24.0
 
 FACES = [
@@ -155,7 +169,7 @@ def envelope(t, sh=None):
     op = K.EASE['inout_sine'](K.clamp(u / (ENTER_F / FPS)))
     s = POP_S0 + (1.0 - POP_S0) * K.spring(u, 2.6, 0.50)             # jawad_tx SPRINGS['POP'] = (2.6, 0.50)
     te = sh['t1'] - EXIT_F / FPS
-    e = K.EASE['in_cubic'](K.clamp((t - te) / (EXIT_F / FPS)))
+    e = K.EASE['in_cubic'](K.clamp((t - te) / ((EXIT_F - 0.5) / FPS)))
     return op * (1.0 - e), s, EXIT_DY * e
 
 
@@ -199,11 +213,6 @@ def plain(pose):
     return _ro(K.sprite(rgba16(pose)))
 
 
-def _smooth(x):
-    x = np.clip(x, 0, 1)
-    return x * x * (3 - 2 * x)
-
-
 def toe(spr, b):
     """Black-point toe on a premultiplied linear sprite (luminance-based, hue kept, monotone, identity above 4b)."""
     if b <= 0:
@@ -218,8 +227,8 @@ def toe(spr, b):
     return out.astype(np.float32)
 
 
-@functools.lru_cache(maxsize=2)
-def layers(pose):
+@functools.lru_cache(maxsize=4)
+def layers(pose, look='A'):
     """Look A + split + display-scale layers for one pose, built once (read-only arrays):
     base (warm-dark subject) and em (rim emission: back-rim, counter-rim, outline, depth wrap, halo) so a shot can
     scale the rim alone; mk / wt = rigid-head mask and torso weight (head over torso == the whole look exactly);
@@ -228,8 +237,12 @@ def layers(pose):
     p = plain(pose)
     m = meta(pose)
     dep = FA.depth(pose)
-    base = toe(FA.warm_dark(p, **BASE), BLACK_TOE)
-    hero = FA.rim_light(p, dep, base=base, **RIM)
+    if look == 'D':
+        base = toe(FA.cine_grade(p, **BASE_D), BLACK_TOE)
+        hero = FA.rim_light(p, dep, base=base, **RIM_D)
+    else:
+        base = toe(FA.warm_dark(p, **BASE), BLACK_TOE)
+        hero = FA.rim_light(p, dep, base=base, **RIM)
     dx0, dy0 = FA.offset(p, hero)
     basep = np.zeros(hero.shape, np.float32)
     basep[dy0:dy0 + p.shape[0], dx0:dx0 + p.shape[1]] = base
@@ -292,9 +305,9 @@ def layers(pose):
 
 
 @functools.lru_cache(maxsize=4)
-def _lit(pose, rim_gain):
-    """(head, torso) display layers of the look with the shot's rim gain on the emission only (1.0 = look A)."""
-    L = layers(pose)
+def _lit(pose, look, rim_gain):
+    """(head, torso) display layers of the look with the shot's rim gain on the emission only (1.0 = as built)."""
+    L = layers(pose, look)
     hero = L['base'] + L['em'] * np.float32(rim_gain)
     return _ro(hero * L['mk'][..., None]), _ro(hero * L['wt'][..., None])
 
@@ -320,7 +333,6 @@ def _plate_blur():
 
 @functools.lru_cache(maxsize=1)
 def _vignette():
-    xs, ys = np.meshgrid(np.arange(TILE_W, dtype=np.float32) + 0.5, np.arange(TILE_H, dtype=np.float32) + 0.5)
     d = K.rrect_sdf(TILE_W, TILE_H, TILE_R)                            # negative inside
     return _ro(1.0 - VIGNETTE * np.exp(d / 40.0))
 
@@ -364,7 +376,7 @@ def turn(t, sh):
 
 def _xf(t, sh):
     """Feed-px mapping of the HEAD layer: X = B + R (U - Ub) (+ lift). Returns (B, R, rot, br, lift)."""
-    L = layers(sh['pose'])
+    L = layers(sh['pose'], sh.get('look', 'A'))
     dx, dy, rot, br = idle(t, sh)
     ex, ey = L['eye']
     bx, by = L['bust']
@@ -378,7 +390,7 @@ def _xf(t, sh):
 def feed_point(t, uv, sh=None):
     """Tile (feed) px of a display-layer px uv on the head layer (e.g. layers(pose)['eye'])."""
     sh = sh or shot_at(t)
-    L = layers(sh['pose'])
+    L = layers(sh['pose'], sh.get('look', 'A'))
     B, R, rot, br, lift = _xf(t, sh)
     return B + lift + R @ (np.asarray(uv, np.float64) - np.asarray(L['bust']))
 
@@ -408,7 +420,7 @@ def feed(t, sh=None, mode='full'):
     if mode == 'plate' or sh is None:
         out[..., :3] *= _vignette()[..., None]
         return out
-    L = layers(sh['pose'])
+    L = layers(sh['pose'], sh.get('look', 'A'))
     Wd, Hd = L['size']
     B, R, rot, br, lift = _xf(t, sh)
     anc = (L['bust'][0] / Wd, L['bust'][1] / Hd)
@@ -416,7 +428,7 @@ def feed(t, sh=None, mode='full'):
     if mode == 'matte':
         K.draw(lay, L['matte'], B[0], B[1], rot=rot, anchor=anc)
     else:
-        head, torso = _lit(sh['pose'], float(sh.get('rim_gain', 1.0)))
+        head, torso = _lit(sh['pose'], sh.get('look', 'A'), float(sh.get('rim_gain', 1.0)))
         torso = _parallax(torso, L, turn(t, sh))
         K.draw(lay, torso, B[0], B[1], scale=(1.0, 1.0 + br), rot=rot, anchor=anc)
         K.draw(lay, head, B[0] + lift[0], B[1] + lift[1], rot=rot, anchor=anc)
@@ -482,7 +494,7 @@ def eye_screen(t):
     sh = shot_at(t)
     if sh is None:
         return None
-    return _screen(t, sh, feed_point(t, layers(sh['pose'])['eye'], sh))
+    return _screen(t, sh, feed_point(t, layers(sh['pose'], sh.get('look', 'A'))['eye'], sh))
 
 
 def face_rect(t):
@@ -490,7 +502,7 @@ def face_rect(t):
     sh = shot_at(t)
     if sh is None:
         return None
-    x0, y0, x1, y1 = layers(sh['pose'])['face']
+    x0, y0, x1, y1 = layers(sh['pose'], sh.get('look', 'A'))['face']
     pts = [_screen(t, sh, feed_point(t, (x, y), sh)) for x in (x0, x1) for y in (y0, y1)]
     xs, ys = [p[0] for p in pts], [p[1] for p in pts]
     return (min(xs), min(ys), max(xs), max(ys))
@@ -502,7 +514,7 @@ def jd_alpha(t):
     sh = shot_at(t)
     if sh is None:
         return None
-    L = layers(sh['pose'])
+    L = layers(sh['pose'], sh.get('look', 'A'))
     Wd, Hd = L['size']
     B, R, rot, br, lift = _xf(t, sh)
     lay = np.zeros((TILE_H, TILE_W, 4), np.float32)
@@ -540,8 +552,8 @@ def tile_rect(t):
 
 
 # static caption avoid rect: tile + tab, bottom pushed so snake_captions' 28 px gap keeps ink >= 60 px below the
-# lowest face box of either pose (idle included): sunglasses face bottom 1249.4 + 1.4 -> ink >= 1310.8
-AVOID = (TILE[0], TAB[1], TILE[2], 1282)
+# lowest settled face box of either pose (idle included): sunglasses face bottom 1250.1 -> ink >= 1312 (61.9 px)
+AVOID = (TILE[0], TAB[1], TILE[2], 1284)
 
 
 def avoid_rect(t):
@@ -551,8 +563,8 @@ def avoid_rect(t):
 
 def prewarm():
     for sh in FACES:
-        layers(sh['pose'])
-        _lit(sh['pose'], float(sh.get('rim_gain', 1.0)))
+        layers(sh['pose'], sh.get('look', 'A'))
+        _lit(sh['pose'], sh.get('look', 'A'), float(sh.get('rim_gain', 1.0)))
     plate()
     _plate_blur()
     _vignette()
@@ -584,7 +596,7 @@ def _check():
         fs = np.array([face_rect(t) for t in settled])
         half = [t for t in ts if envelope(t, sh)[0] >= 0.5]
         fh = np.array([face_rect(t) for t in half])
-        L = layers(sh['pose'])
+        L = layers(sh['pose'], sh.get('look', 'A'))
         fr_frames = np.array([eye_screen(sh['t0'] + (i + 0.5) / FPS) for i in range(sh['f1'] - sh['f0'] + 1)])
         v_settled = np.linalg.norm(np.diff(es, axis=0), axis=1).max() * 240 / FPS
         par = PARALLAX_PX * float(np.abs(np.diff([turn(t, sh) for t in ts])).max()) * 240 / FPS
@@ -643,7 +655,7 @@ def _check():
     halo = {}
     for sh in FACES:
         t = sh['t0'] + 1.0
-        L = layers(sh['pose'])
+        L = layers(sh['pose'], sh.get('look', 'A'))
         a_lay = np.zeros((TILE_H, TILE_W, 4), np.float32)
         B, R, rot, br, lift = _xf(t, sh)
         Wd, Hd = L['size']
@@ -659,8 +671,8 @@ def _check():
         halo[sh['pose']] = dict(ring_px=int(ring.sum()), full_minus_plate=r['full'], matte_minus_plate=r['matte'])
     out['halo_3px_ring_code_values'] = halo
     # emissive peak (linear) of the rim on the face layers
-    out['rim_peak_linear'] = {sh['pose']: round(float(np.max(np.concatenate([_lit(sh['pose'], sh['rim_gain'])[0][..., 0].ravel(),
-                                                                            _lit(sh['pose'], sh['rim_gain'])[1][..., 0].ravel()]))), 3)
+    out['rim_peak_linear'] = {sh['pose']: round(float(np.max(np.concatenate([_lit(sh['pose'], sh.get('look', 'A'), sh['rim_gain'])[0][..., 0].ravel(),
+                                                                            _lit(sh['pose'], sh.get('look', 'A'), sh['rim_gain'])[1][..., 0].ravel()]))), 3)
                               for sh in FACES}
     # cost
     cv = np.zeros((K.H, K.W, 4), np.float32)
@@ -679,7 +691,7 @@ def _boards():
     prewarm()
     paths = []
     for sh in FACES:
-        L = layers(sh['pose'])
+        L = layers(sh['pose'], sh.get('look', 'A'))
         m = L['matte']
         rows = []
         for bg in ((0, 0, 0), tuple(K.C['FLAME']), (1, 1, 1)):

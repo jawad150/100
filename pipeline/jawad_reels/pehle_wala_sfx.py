@@ -15,8 +15,10 @@ What this module owns
     BED, BED_GAIN_DB    audio.mix fallback form of the bed (edit_suite at -32; drop-out off; held breath -8 rel.)
     mix_loop(...)       audio.mix's chain on a LOOP (tails past DUR land on t = 0, cues before 0 on the loop end, no tail
                         fade), plus: exact bed levels (circular edit_suite, 4 ms gates), the drop-out gate (every SFX that
-                        started before 25.0667 is cut there, with its room tail), per-cue carve windows (gain + low-pass
-                        crossfade under later speech). build() uses it; never audio.mix for this reel.
+                        started before 25.0667 is cut there, with its room tail), the press tape-stop (everything started
+                        in the drop-out / payoff is tape-stopped with the music at 26.1333 over 0.4 s, epic_sfx.tape_stop_fx),
+                        per-cue carve windows (gain + low-pass crossfade under later speech), loudness-matched saturation
+                        ('sat') on the payoff's hit layers. build() uses it; never audio.mix for this reel.
     build(hook)         SFX stem -> <RW>/audio/pehle_wala_sfx_<hook>_stem.wav (+ _fx / _bed, overview PNG, cues.json, report)
     rough(hook)         epic_mix.mix_reel (VO + SFX stem + music) on a loop-padded copy -> <RW>/audio/pehle_wala_<hook>_rough_*.wav
     audition()          local sounds -> <RW>/audio/audition/*.wav + spectrogram PNG + qc + pitch in cents
@@ -30,9 +32,11 @@ Local sounds (BRIEF 11; pitches measured with the bible's f0_of on the rendered 
     pw_tape_rewind       the D9 rewind as SOUND (BRIEF: processing of the reel's own music + SFX, not the VO): 25 ms Hann grains
                          every 8 ms read BACKWARDS from tau_a(t) = 26.1333 - 26.1333 * u^3 (u over 26.3333 -> 27.7333, the
                          jawad_tx D9 curve minus its 0.2 s press offset so the read never enters the tape-stop), each grain
-                         resampled by |dtau/dt| (0 -> 56x), amplitude sqrt(min(rate, 1)), lp 3000; hit = END (27.7333)
+                         resampled by |dtau/dt| (0 -> 56x), amplitude sqrt(min(rate, 1)), lp 3000, partial leveller; hit =
+                         END, cued 15 ms before the D9 cut (REWIND_GAP) at REWIND_DB; source = hook A's body for both hooks
     The brief's pitch multipliers (1.0926 / 0.8186 / 0.5463) assumed glass_tap f0 = 2150 Hz; it measures 2096.3 Hz, so they
     land 44 cents flat. The multipliers here are recomputed from the measurement (audition() prints the cents).
+Measured results, deviations from the brief and open items: brand_reels/design/reels/pehle_wala/SOUND.md.
 
 CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh)
     python3 pehle_wala_sfx.py cues [--hook A|B]       cue table after the VO fit
@@ -96,6 +100,8 @@ T_RESTORE = F(832)                              # 27.7333: v1 restored (D9 cut)
 R_REW = T_PRESS                                 # D9 R = 26.1333 (BRIEF 8)
 T_CARD = F(896)                                 # 29.8667: end card
 GATE_EDGE = 0.004                               # drop-out edges (bible 4.4: 4 ms)
+TAPE_STOP = 0.4                                 # the music's tape stop at the press (MUSIC_pehle_wala.md); the SFX started
+                                                # in the drop-out / payoff (tick + payoff stack, their room) stop with it
 
 # ------------------------------------------------------------------------------------------------- pitch (measured)
 GT_F0 = 2096.3                                  # glass_tap f0 at pitch 1.0 (f0_of, 2026-10-09)
@@ -284,8 +290,12 @@ def register():
 
 # =============================================================================================== VO words
 def _stereo_n(path, n):
+    """Any wav -> (n, 2) float64 (mono files come back from read_wav as (N, 1): duplicated to both channels)."""
     x = np.asarray(A.read_wav(path)[0], dtype=np.float64)
-    x = _st(x)
+    if x.ndim == 1:
+        x = np.stack([x, x], 1)
+    elif x.shape[1] == 1:
+        x = np.repeat(x, 2, axis=1)
     return np.pad(x[:n], ((0, max(0, n - len(x))), (0, 0)))
 
 
@@ -320,6 +330,8 @@ PINS = [   # (frame, kind, marker-tip x, event) BRIEF 6.3 (pin 27 = the payoff)
     (624, 'client', 800, 'pin 23 "Shadow wapas." v24'), (640, 'client', 540, 'pin 24 "Aur energetic" v25 (D7)'),
     (656, 'client', 400, 'pin 25 "Thora left." v26'), (672, 'client', 400, 'pin 26 "Thora right." v27'),
 ]
+PIN_IN_WORD_DB = {640: -8.0}                    # the D7 pin lands inside the measured "ek." (L9 runs to 21.683): -6 left the
+                                                # word only 5.3 LU over the SFX; -8 keeps every word >= 6 LU (bible 4.9)
 PAN_K = 0.4                                     # pan = PAN_K * (x - 540) / 540 (screen x of the element)
 PAN_COUNTER = 0.3                               # the version counter chip sits top-right (x 838-978)
 SLOT = dict(n=3, dur=0.133)                     # the counter's roll: 3 ticks over 4 frames, landing on the step
@@ -327,6 +339,23 @@ SLOT = dict(n=3, dur=0.133)                     # the counter's roll: 3 ticks ov
 
 def _pan(x):
     return round(PAN_K * (x - 540.0) / 540.0, 3)
+
+
+PAYOFF = dict(big=4.0, sub=-2.0, flash=0.0, sat=3.0)  # the reveal stack: BRIEF 0 / -4 / -3 made the hook's VO
+# ("Bas ek", -9.9 LUFS momentary) the loudest moment of the rough mix (payoff -11.3: epic_mix's glue takes ~2 dB off it).
+# +4 / -2 / 0 with loudness-matched tanh drive 3 on the hit layers: payoff -9.4 at 25.80 (the 400 ms window that starts
+# on the hit), stem limiter GR 0.98 dB (was 3.1).
+
+
+REWIND_DB = 0.0     # BRIEF -6 was set before the sound existed: once the payoff tails are tape-stopped at the press the
+                    # rewind is the only thing sounding 26.53-27.73 and sat at -22.7 LUFS in the rough mix (bar 11 music
+                    # -13.1); 0 dB puts it ~6 LU under the clutter it rewinds. The source is hook A's body for both hooks
+                    # (the picture rewinds W_core, identical in A and B from f80).
+
+
+REWIND_GAP = 0.015  # the rewind's hard stop sits 15 ms (0.45 f) before f832: with the rewind running into the cut, the
+                    # restore's 5 ms energy rise (+8.8 dB) tied with a 60 Hz ripple of impact_soft 40 ms later, which
+                    # qa_measure's argmax-of-rise reported as +41.7 ms; from silence the restore onset reads clean
 
 
 def raw_cues(hook='A'):
@@ -346,7 +375,8 @@ def raw_cues(hook='A'):
         inside = word_at(t, hook)
         base = 'pin_thock_mummy' if kind == 'mummy' else 'pin_thock'
         if inside:
-            add(t, base + '_dark', -6, ev + ' (inside "%s")' % inside, pan=_pan(x), designed='pin in word')
+            add(t, base + '_dark', PIN_IN_WORD_DB.get(f, -6.0), ev + ' (inside "%s")' % inside, pan=_pan(x),
+                designed='pin in word')
         else:
             add(t, base, 0, ev, pan=_pan(x), designed='pin in gap')
     for f in VERSION_FRAMES:
@@ -418,11 +448,13 @@ def raw_cues(hook='A'):
         '-15 dB by the drop-out gate', lp=1200, params=dict(duration=1.2, bpm0=100.0, bpm1=160.0),
         designed='lp 1200 dark under L10')
     add(T_DROP1, 'clock_tick', -14, 'held breath: one tick in the drop-out', params=dict(n=1, bpm=60.0))
-    add(T_PAYOFF, 'pin_thock_big', 0, 'PAYOFF: "Pehle wala hi theek tha." slams on the glass', hero=True)
-    add(T_PAYOFF, 'sub_drop', -4, 'PAYOFF sub', lp=120, params=dict(dur=1.6))
-    add(T_PAYOFF, 'flash_hit', -3, 'PAYOFF L3 push 1.0')
+    add(T_PAYOFF, 'pin_thock_big', PAYOFF['big'], 'PAYOFF: "Pehle wala hi theek tha." slams on the glass', hero=True,
+        sat=PAYOFF['sat'])
+    add(T_PAYOFF, 'sub_drop', PAYOFF['sub'], 'PAYOFF sub', lp=120, params=dict(dur=1.6))
+    add(T_PAYOFF, 'flash_hit', PAYOFF['flash'], 'PAYOFF L3 push 1.0', sat=PAYOFF['sat'])
     add(T_PRESS, 'typing', -6, 'Ctrl+Z press: "Ctrl+Z x26" chip POPs', params=dict(n=2, cps=8.0))
-    add(T_RESTORE, 'pw_tape_rewind', -6, 'D9 rewind v27 -> v1 (ends on the cut)', params=dict(hook=hook))
+    add(T_RESTORE - REWIND_GAP, 'pw_tape_rewind', REWIND_DB, 'D9 rewind v27 -> v1 (stops 15 ms before the cut so the '
+        'restore transient rises from silence)', params=dict(hook='A'), ev_t=round(T_RESTORE, 4))
     for t, f in rewind_ticks():
         k = VERSION_FRAMES.index(f) + 2
         add(t, 'ui_tick', -14, 'rewind: counter v%d -> v%d (the f%d step undone)' % (k, k - 1, f), hp=4000,
@@ -474,9 +506,10 @@ def _endcard_cues():
 
 
 # ------------------------------------------------------------------------------------------------- VO fit + carve
-CARVE_DB, CARVE_LP = -10.0, 600.0               # hero / swell tails under later speech (VO-first)
+CARVE_DB, CARVE_LP = -10.0, 600.0               # tails under later speech (VO-first): -10 dB + low-pass 600 Hz crossfade
 CARVE_LEAD, CARVE_TAIL, CARVE_BRIDGE = 0.015, 0.06, 1.0
-CARVE_RAMP = 0.05
+CARVE_RAMP = 0.05                               # heroes / swells: the ramp down starts ON the hit
+GAP_HOLD, GAP_RAMP = 0.03, 0.02                 # gap cues (hit in a VO gap, a word right after): 30 ms of transient kept
 
 
 def _cue_span(c):
@@ -488,16 +521,24 @@ def _cue_span(c):
     return start, start + hit, start + L
 
 
-def _carve_windows(c, speech):
-    """(t0, t1, depth_db, lp) windows for a cue: the measured speech it overlaps, widened by CARVE_LEAD / CARVE_TAIL and
-    bridged across pauses < CARVE_BRIDGE. Heroes and spans (risers, swells: hit = end) keep their hit whole: their carve
-    starts no earlier than hit + CARVE_RAMP (the ramp down begins ON the hit). Other carved cues (a swell's body) may be
-    carved from their start."""
+def _carve_windows(c, speech, mode):
+    """(t0, t1, depth_db, lp, ramp) windows for a cue: the measured speech it overlaps, widened by CARVE_LEAD / CARVE_TAIL
+    and bridged across pauses < CARVE_BRIDGE.
+      'hero'  heroes and spans (risers / swells: hit = end): carve no earlier than hit + CARVE_RAMP (ramp starts ON the hit)
+      'body'  a swell whose body runs under speech before its hit (carve=True): carve from its start
+      'gap'   a cue whose hit sits in a VO gap with a word right after it: GAP_HOLD s of transient kept, GAP_RAMP ramp;
+              only words that start after the hit."""
     start, hit, end = _cue_span(c)
-    protect = bool(c.get('hero')) or A.resolve(c['name']) in SJ.HERO or A.resolve(c['name']) in SJ.SPAN
-    lo = hit + CARVE_RAMP if protect else start
+    if mode == 'hero':
+        lo, ramp = hit + CARVE_RAMP, CARVE_RAMP
+    elif mode == 'body':
+        lo, ramp = start, CARVE_RAMP
+    else:
+        lo, ramp = hit + GAP_HOLD + GAP_RAMP, GAP_RAMP
     w = []
     for a, b in speech:
+        if mode == 'gap' and a < hit:
+            continue
         a2, b2 = max(a - CARVE_LEAD, lo), b + CARVE_TAIL
         if b2 <= a2 or a2 >= end:
             continue
@@ -505,7 +546,7 @@ def _carve_windows(c, speech):
             w[-1] = (w[-1][0], max(w[-1][1], b2))
         else:
             w.append((a2, b2))
-    return [(round(a, 4), round(b, 4), CARVE_DB, CARVE_LP) for a, b in w]
+    return [(round(a, 4), round(b, 4), CARVE_DB, CARVE_LP, ramp) for a, b in w]
 
 
 def cues(hook='A', report=False, _with_rewind=True):
@@ -526,13 +567,24 @@ def cues(hook='A', report=False, _with_rewind=True):
     speech, src = SJ.hero_windows(words, 0.0, 0.0, 'auto')
     carved = []
     for c in out:
-        if c.get('hero') or A.resolve(c['name']) in SJ.HERO or c.get('carve'):
-            w = _carve_windows(c, speech)
-            if w:
-                c['carve'] = w
-                carved.append(dict(name=c['name'], t=c['t'], windows=w))
-            elif c.get('carve') is True:
-                c.pop('carve')
+        nm = A.resolve(c['name'])
+        if A.SOUNDS[nm]['category'] == 'bed':
+            continue
+        if c.get('hero') or nm in SJ.HERO or nm in SJ.SPAN or nm == 'pw_tape_rewind':
+            mode = 'hero'
+        elif c.get('carve') is True:
+            mode = 'body'
+        else:
+            start, hit, end = _cue_span(c)
+            if any(a - 1e-6 <= hit <= b + 1e-6 for a, b in speech):
+                c.pop('carve', None)
+                continue                            # hit inside speech: the VO fit (or its design) already handles it
+            mode = 'gap'
+        w = _carve_windows(c, speech, mode)
+        c.pop('carve', None)
+        if w:
+            c['carve'] = w
+            carved.append(dict(name=c['name'], t=c['t'], mode=mode, windows=w))
     out.sort(key=lambda d: (float(d['t']), d['name']))
     if report:
         frep = dict(frep)
@@ -570,15 +622,25 @@ def _rc(x):
 
 
 def _carve(y, start, windows):
-    """Crossfade y into (lp(y) at depth) inside each window, raised-cosine ramps of CARVE_RAMP s."""
+    """Crossfade y into (lp(y) at depth) inside each (t0, t1, depth, lp, ramp) window, raised-cosine ramps."""
     t = start + np.arange(len(y)) / SR
     w = np.zeros(len(y))
-    for a, b, d, f in windows:
-        w = np.maximum(w, np.minimum(_rc((t - (a - CARVE_RAMP)) / CARVE_RAMP), _rc(((b + CARVE_RAMP) - t) / CARVE_RAMP)))
+    for a, b, d, f, r in windows:
+        w = np.maximum(w, np.minimum(_rc((t - (a - r)) / r), _rc(((b + r) - t) / r)))
     if not w.any():
         return y
     d, f = windows[0][2], windows[0][3]
     return y * (1 - w)[:, None] + lp(y, f, 2) * (undb(d) * w)[:, None]
+
+
+def _sat_matched(y, drive):
+    """Alias-safe tanh saturation (sfx_jawad.shape, oversampled) of one cue, peak-normalised into the curve and scaled
+    back to the cue's own max momentary loudness: same loudness, lower crest, so the bus limiter and the final mix's glue
+    shave less off the reveal."""
+    y = np.asarray(y, dtype=np.float64)
+    pk = float(np.max(np.abs(y))) + 1e-12
+    z = SJ.shape(y / pk, drive)
+    return z * undb(A.momentary_max(y) - A.momentary_max(z))
 
 
 def _bed_bus(target_lufs=TARGET_LUFS):
@@ -631,20 +693,22 @@ def mix_loop(cue_list, out_stem=None, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEI
     PRE, POST = _n(1.0), _n(9.0)
     L = PRE + N + POST
     cs = A.duck_under([A._norm_cue(c) for c in cue_list])
-    buses = {k: np.zeros((L, 2)) for k in ('pre', 'post')}
-    sends = {k: np.zeros((L, 2)) for k in ('pre', 'post')}
+    buses = {k: np.zeros((L, 2)) for k in ('pre', 'mid', 'post')}
+    sends = {k: np.zeros((L, 2)) for k in ('pre', 'mid', 'post')}
     placed, counts = [], {}
     for c in sorted(cs, key=lambda c: float(c['t'])):
         k = (c['name'], A._key(c['params']))
         counts[k] = counts.get(k, -1) + 1
         y, hit = A._render_cue(c, counts[k] % 4)
         start = float(c['t']) - (hit if c['align'] == 'hit' else 0.0)
+        if c.get('sat'):
+            y = _sat_matched(y, float(c['sat']))
         tm = _timing(y, start, start + hit)
         if c.get('carve'):
             y = _carve(y, start, c['carve'])
         i = PRE + _n(start)
         assert 0 <= i and i + len(y) <= L, (c['name'], start)
-        grp = 'pre' if 0.0 <= start < T_DROP0 else 'post'
+        grp = 'pre' if 0.0 <= start < T_DROP0 else ('mid' if T_DROP0 <= start < T_PRESS else 'post')
         buses[grp][i:i + len(y)] += y
         cat = A.SOUNDS[c['name']]['category']
         sdb = c.get('send_db', A.SOUNDS[c['name']]['send'] if A.SOUNDS[c['name']]['send'] is not None
@@ -654,21 +718,25 @@ def mix_loop(cue_list, out_stem=None, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEI
         warn = 'wraps to the loop end' if start < 0 else ('tail wraps to t=0' if start + len(y) / SR > DUR else '')
         if grp == 'pre' and start + len(y) / SR > T_DROP0:
             warn = (warn + '; ' if warn else '') + 'cut at the drop-out'
+        if grp == 'mid' and start + len(y) / SR > T_PRESS:
+            warn = (warn + '; ' if warn else '') + 'tape-stopped at the Ctrl+Z press'
         placed.append(dict(t=float(c['t']), name=c['name'], start=round(start, 4), hit=round(start + hit, 4),
                            len=round(len(y) / SR, 3), gain_db=round(float(c['gain_db']), 2),
                            duck_db=c.get('duck_db', 0.0), align=c['align'], params=c['params'], lp=c.get('lp'),
                            hp=c.get('hp'), pan=c.get('pan', 0.0), dur=c.get('dur'), hero=bool(c.get('hero')),
                            vo=c.get('vo', ''), designed=c.get('designed', ''), ev=c.get('ev', ''), warn=warn,
-                           carve=c.get('carve'), ev_t=c.get('ev_t'), **tm))
+                           carve=c.get('carve'), sat=c.get('sat'), ev_t=c.get('ev_t'), **tm))
     gate = _drop_gate(L, PRE)
     fxb = np.zeros((L, 2))
-    for grp in ('pre', 'post'):
+    for grp in ('pre', 'mid', 'post'):
         wet = A.reverb(sends[grp], 'studio', wet_db=0.0, dry=0.0)
         if len(wet) > L and np.max(np.abs(wet[L:])) > 1e-7:
             raise RuntimeError('room tail beyond the post-roll')
         b = buses[grp] + wet[:L]
         if grp == 'pre':
             b = b * gate[:, None]
+        elif grp == 'mid':                         # the payoff's tails undo WITH the music (BRIEF 12: tape_stop_fx at
+            b = ES.tape_stop_fx(b, T_PRESS + PRE / SR, TAPE_STOP)   # 26.1333 over 0.4 s), then the rewind takes over
         fxb += b
     fx = _fold(fxb, PRE, N)
     fx *= undb(target_lufs - A.loudness(fx))

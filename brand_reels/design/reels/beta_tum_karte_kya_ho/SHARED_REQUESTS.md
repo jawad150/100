@@ -37,3 +37,24 @@ Filed 2026-10-08 by creative-director. Neither request blocks this reel: both ha
 - **C02 workaround (local):** `beta_tum_karte_kya_ho_vo.load_clip` level-matches each processed take to -16 LUFS before
   placement; the stem's master limiter (-2.6 dBFS, latency-compensated) then holds TP at -2.46 dBTP with gain reduction
   above 1 dB on 0.8 % of the loud 10 ms windows (max 2.1 dB). Per-line loudness in the stem is now -15.2 to -16.1 LUFS.
+
+## 4. epic_mix.load: a mono wav stays (N, 1) and mix_reel crashes (filed 2026-10-09 by sound-designer)
+
+- **What:** `epic_mix.load()` returns `A._st(A.read_wav(path)[0])`, but `audio.read_wav` gives a mono 24-bit wav as a
+  2-D `(N, 1)` array, which `audio._st` passes through unchanged (it only converts 1-D input). `mix_reel` then fails at
+  `np.concatenate([np.zeros((_n(vo_offset), 2)), v])` with "dimension 1 ... size 2 and ... size 1". This reel's VO
+  stems (`vo/vo_stem.wav`, `_vo_B.wav`) are mono, so `mix_reel(..., vo=<vo_stem.wav>)` crashes as written in BRIEF 6.14.
+- **Suggested fix:** in `load()`, `x = A.read_wav(path)[0]; x = np.repeat(x, 2, 1) if x.ndim == 2 and x.shape[1] == 1
+  else A._st(x)` (or make `audio._st` handle `(N, 1)`).
+- **C02 workaround (local, in `beta_tum_karte_kya_ho_sfx.rough`):** a bit-exact dual-mono copy (`ffmpeg -ac 2 -c:a
+  pcm_s24le`) is passed to `mix_reel` and deleted afterwards. The music-supervisor's run 2 needs the same.
+
+## 5. sfx_jawad.band_of: epic_sfx `tabla_hit` is treated as an AIR sound (filed 2026-10-09 by sound-designer)
+
+- **What:** `band_of()` falls back to the catalog category, and epic_sfx registers `tabla_hit` as `'texture'`, which
+  maps to AIR. Under a word, `fit_under_vo` therefore gives a tabla stroke `hp 5500`, which removes the stroke (measured:
+  `tabla_hit` 'na' is 87 % 250-1000 Hz, 'dha' 70 % below 250 Hz, < 0.5 % above 4 kHz).
+- **Suggested fix:** add `tabla_hit`, `dholak_roll`, `sitar_pluck`, `harmonium_swell` to the MID set (or an explicit
+  band per epic_sfx sound).
+- **C02 workaround (local):** `beta_tum_karte_kya_ho_sfx.BAND_FIX` treats `tabla_hit` as MID (-8 dB under a word, no
+  filter); affects only hook B's 2.1 s 'na'.

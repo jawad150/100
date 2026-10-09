@@ -35,3 +35,28 @@ C11 modules use today, so none of them blocks this reel. Owner of the shared mod
   percentile, so a mastered line and the stem it goes into are measured alike.
 - **C11 workaround.** `bijli_chali_gayi_vo.py` measures clips and stems with its own `runs_abs` at -55 dBFS (20 ms RMS,
   the same windows and gap closing) and splits grouped takes at -45 dBFS gaps (`SPLIT_DBFS`).
+
+## 4. `epic_sfx.crowd_cheer_real` is not wordless (found by the sound-designer, 2026-10-09)
+
+- **What happens.** faster-whisper on the registered 5.0 s render (`opengameart/crowd_shouting/crowd_shouting_0.ogg`,
+  "Crowd shouting/speaking ambience", CC0) hears English: small, auto/en: "Oh my God, look at that! It's just that!"
+  (word probabilities 0.02-0.69; "God,", "look", "that!", "It's" >= 0.5); medium, auto/en: "Oh my God!" ("my" 0.82,
+  "God!" 0.52). SLATE 2.8 / BRIEF 6.10 and
+  QA 8 require a *wordless* cheer.
+- **Request (owner of `workspace/brand_reels/sfx/epic_sfx.py` / its LICENSES.md).** Re-label the sample's catalog line
+  ("real crowd shouting / cheering") as containing English speech, or register a de-worded variant.
+- **C11 workaround.** `bijli_chali_gayi_sfx.mohalla_cheer` re-synthesises the same CC0 recording granularly (reversed
+  60-100 ms grains, random positions, +-1.5 st, 80 grains/s). faster-whisper small (auto / hi / en) hears no word on
+  either cue render; medium returns only its noise hallucination ("Thanks for watching!", p 0.83-0.95), which it
+  also returns on pink noise and on `room_tone` (control in SOUND.md).
+
+## 5. A mono VO stem reads +3.01 LU once duplicated to stereo (sound-designer, 2026-10-09)
+
+- **What happens.** `vo_stem.wav` is mono, -16.00 LUFS. `audio.read_wav` returns it as (N, 1); `epic_mix.load` keeps
+  that shape (`_st` only widens 1-D arrays), and duplicating it to two equal channels measures -13.0 LUFS (BS.1770
+  sums the channel powers). A mix built that way puts the VO 3 dB hotter than the -16 LUFS spec relative to the
+  -18 LUFS SFX stem.
+- **Request (`epic_mix.py` owner / music-supervisor).** After converting a mono VO to stereo, re-normalise it to
+  `SPEC['vo_lufs']` (equal-power centre), or load mono with `-ac 2` plus a -3.01 dB pan law.
+- **C11 workaround.** `bijli_chali_gayi_sfx.rough()` duplicates the mono stem and re-normalises it to -16.00 LUFS
+  before the mix.
