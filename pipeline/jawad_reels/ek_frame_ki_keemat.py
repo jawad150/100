@@ -934,10 +934,10 @@ def draw_counter12(cv, t):
 
 
 def draw_counter360(cv, t):
-    if t < 18.9 or t >= 22.25:
+    if t < 18.9 or t >= fr(667):                        # HANDOFF: exit f660-f667, gone ON f667
         return
     C = counters()
-    op = ramp(t, 18.9, fr(571), 'inout_sine') * (1.0 - ramp(t, 22.0, 22.25, 'in_cubic'))
+    op = ramp(t, 18.9, fr(571), 'inout_sine') * (1.0 - ramp(t, 22.0, fr(667), 'in_cubic'))
     if op <= 0:
         return
     K.draw(cv, C['scrim'], 540.0, 430.0, scale=2.0, opacity=op)
