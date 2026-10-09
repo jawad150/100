@@ -4,7 +4,10 @@ This is a pitch redesign of [treatsfoods.co.uk](https://www.treatsfoods.co.uk/).
 
 ![Hero scroll sequence](preview/hero-scroll-sequence.jpg)
 
-**Scroll-through demo video:** [`preview/scroll-demo.mp4`](preview/scroll-demo.mp4) (43 s, 1280×800)
+**Pitch kit**
+- [`PITCH.md`](PITCH.md): talking points, a short message to send, and likely client questions
+- [`preview/before-after.jpg`](preview/before-after.jpg) and [`before-after-mobile.jpg`](preview/before-after-mobile.jpg): the current site next to the concept
+- [`preview/scroll-demo.mp4`](preview/scroll-demo.mp4) (63 s, desktop) and [`scroll-demo-mobile.mp4`](preview/scroll-demo-mobile.mp4) (65 s, phone): recorded scroll-throughs, including drag-to-spin
 
 ## Run it
 

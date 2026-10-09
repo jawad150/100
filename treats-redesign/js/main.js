@@ -48,11 +48,18 @@
       const c = f % sp.meta.cols, r = Math.floor(f / sp.meta.cols);
       sp.el.style.backgroundPosition = `${(c / (sp.meta.cols - 1)) * 100}% ${(r / Math.max(1, sp.meta.rows - 1)) * 100}%`;
     };
+    // the five hidden hero products wait for the page load, so the first product's sheet goes first
+    const pageLoaded = new Promise((res) => {
+      if (document.readyState === "complete") res();
+      else addEventListener("load", () => setTimeout(res, 400));
+    });
     const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         const sp = e.target._sprite;
         sp.visible = e.isIntersecting;
-        if (e.isIntersecting) ready.then(() => load(sp));
+        if (!e.isIntersecting) return;
+        const deferred = e.target.closest(".hero__products .product:not(:first-child)");
+        (deferred ? Promise.all([ready, pageLoaded]) : ready).then(() => load(sp));
       });
     }, { rootMargin: "600px 0px" }) : null;
     $$(".sprite[data-seq]").forEach((el, k) => {
