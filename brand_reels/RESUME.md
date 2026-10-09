@@ -18,7 +18,17 @@ re-buildable scratch only, except what is saved under `brand_reels/assets/`.
   script headers / SLATE), shared context `pipeline/jawad_reels/workflows/ctx.txt`.
 
 
-## Exact status when this session stopped (2026-10-09, ~14:30 PKT)
+## Session 2 (2026-10-09, resumed in a fresh container) - read this first
+- Workspace restore is now one command: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
+  (deps: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy`).
+- **The shared sound kit was lost**: `epic_sfx.py` / `epic_music.py` / `epic_mix.py` and the CC0/PD sample library lived only in the
+  git-ignored `workspace/brand_reels/sfx/`. It is being rebuilt to the spec in `brand_reels/research/sound_design.md` as committed code
+  in `pipeline/jawad_reels/` (samples re-fetched by `pipeline/jawad_reels/tools/fetch_sfx_library.py`). Music beds / SFX stems are
+  regenerated from the per-reel modules.
+- No Higgsfield connector in session 2: the saved Vlad takes are final (LEAD_DECISIONS 3); no credits spent in session 2.
+- Agent shared context for this session: `workspace/brand_reels/wf/ctx.txt` (generated from `pipeline/jawad_reels/workflows/ctx.txt`).
+
+## Exact status when session 1 stopped (2026-10-09, ~14:30 PKT)
 All agents were stopped on purpose so the project can continue on another account. Nothing is rendered or delivered yet
 (`reel/jawad_reels/` is empty).
 
