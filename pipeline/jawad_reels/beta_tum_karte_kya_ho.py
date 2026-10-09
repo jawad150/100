@@ -178,9 +178,10 @@ def S0(t):
 
 
 def _enter(t):
-    """Card POP up from y + 520 over 2.7-3.2 (already moving at f84; lands ~3.1)."""
+    """Card rises from y + 520 over 2.7-3.2 (already moving at f84; within 4 px of rest by 3.1). out_cubic: an
+    out_back overshoot lifted the card rim ~50 px over the POV label for 4 frames (preview check)."""
     u = K.clamp((t - 2.7) / 0.5)
-    return 520.0 * (1.0 - K.EASE['out_back'](u))
+    return 520.0 * (1.0 - K.EASE['out_cubic'](u))
 
 
 def S1(t):
@@ -413,8 +414,10 @@ def captions():
 
 
 def cap_draw(cv, t, version='A'):
+    """Hook captions on f0-f83, body captions from f84: dispatched on the frame (HALF rule), so no shutter
+    sample of the splice frame f84 carries a hook-caption ghost (measured 12 % on one sample before)."""
     hook, main = captions()
-    if t < 2.8:
+    if fidx(t) < SPLICE_F:
         if version == 'A':
             hook.draw(cv, t, opacity=1.0 - K.ramp(t, 2.6, 2.8, 'in_cubic'))
     else:
@@ -449,7 +452,9 @@ def post(cv, t):
 def samples(t):
     s = PLAN.samples(t)
     k = fidx(t)
-    if 84 <= k <= 92 or 252 <= k <= 256 or 410 <= k <= 419:
+    if 84 <= k <= 85:                            # card entry ~60-67 px / frame
+        s = max(s, 9)
+    if 86 <= k <= 92 or 252 <= k <= 256 or 410 <= k <= 419:
         s = max(s, 5)
     if 829 <= k <= 845:                          # M1: the push into dot 3 / the sun's pull-back (fast zoom)
         s = max(s, 11)
