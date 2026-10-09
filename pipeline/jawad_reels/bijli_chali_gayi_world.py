@@ -937,6 +937,10 @@ def s3_static():
     edge = poly_mask(h, w, [np.array([[a + 2, tp], [b - 2, tp], [b - 2, tp + 2.5], [a + 2, tp + 2.5]]) for a, b, tp in mids])
     rgb += edge[..., None] * (AMBER * 0.035)
     face_m = poly_mask(h, w, [np.array([[a, tp], [b, tp], [b, tp + 44], [a, tp + 44]]) for a, b, tp in mids])
+    # candle-lit dust hanging over the terraces (in front of the mid roofs, behind the people): the silhouettes
+    # read as dark shapes against it
+    haze2 = np.exp(-((yy - 1330.0) / 120.0) ** 2) * (yy < 1500)
+    rgb += haze2[..., None] * (SMOKE * 1.15 + AMBER * 0.004)
     # near parapet (top 1500, coping 16 px) + charpai
     par = poly_mask(h, w, [np.array([[-10, 1500], [w + 10, 1500], [w + 10, h + 10], [-10, h + 10]])])
     paint(rgb, par, SMOKE * 0.30)
@@ -962,8 +966,8 @@ def s3_static():
             cy = [tp for a, b, tp in mids if a <= cx < b][0]
         cand.append((cx, cy, fh, kind))
         if kind == 'near':
-            light += gauss2(h, w, cx, cy, 230, 34) * 0.30 * par
-            light += gauss2(h, w, cx, cy + 60, 160, 90) * 0.18 * par
+            light += gauss2(h, w, cx, cy, 190, 30) * 0.30 * par
+            light += gauss2(h, w, cx, cy + 50, 130, 70) * 0.18 * par
             glow += gauss2(h, w, cx, cy - 14, 70, 60)
         elif kind == 'charpai':
             light += gauss2(h, w, cx, cy + 10, 200, 60) * 0.30 * char * weave
@@ -971,7 +975,7 @@ def s3_static():
         else:
             light += gauss2(h, w, cx, cy + 22, 110, 45) * 0.16 * face_m
             glow += gauss2(h, w, cx, cy - 6, 40, 34) * 0.8
-    rgb += (light * PLASTER)[..., None] * AMBER * 2.2
+    rgb += (light * PLASTER)[..., None] * AMBER * 1.3
     rgb += glow[..., None] * (AMBER * 0.030 + FLAME * 0.012)
     for (cx, cy, fh, kind) in cand:
         stub_h, stub_w = (14.0, 8.0) if kind != 'mid' else (7.0, 4.0)
@@ -1153,7 +1157,7 @@ def s5_static():
     mon = (np.exp(-mon_r ** 2) * desk)[..., None] * (FLAME * 0.035 + IVORY * 0.025)
     halo = np.exp(-(((xx - 540) / 620.0) ** 2 + ((yy - 700) / 420.0) ** 2))[..., None] * (FLAME * 0.022) * (~desk)[..., None]
     mon = (mon + halo).astype(np.float32)
-    lamp_l += gauss2(H, W, 150, 200, 46, 46)[..., None] * AMBER * 0.45            # the lamp's bulb, seen soft
+    lamp_l += gauss2(H, W, 150, 190, 90, 70)[..., None] * AMBER * 0.10            # the lamp's glow, off-frame-ish
     # monitor stand + housing (dark, always)
     stand = poly_mask(H, W, [np.array([[516, 958], [564, 958], [572, 1150], [508, 1150]]),
                              ellipse_pts(540, 1158, 150, 16)])
