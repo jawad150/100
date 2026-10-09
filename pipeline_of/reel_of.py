@@ -143,17 +143,21 @@ def sweep(spr, p, width=0.12, angle=0.35, strength=0.9):
     return out
 
 
-def colorize(spr, dark, light, gamma=1.0):
-    """Map a rendered sprite's luminance onto a dark->light brand ramp (keeps 3D shading)."""
+def colorize(spr, dark, light, gamma=1.0, light_top=None):
+    """Map a rendered sprite's luminance onto a dark->light brand ramp (keeps 3D shading).
+    Clipped faces take `light` (optionally a vertical light_top->light gradient)."""
     a = spr[..., 3:4]
     rgb = spr[..., :3] / np.maximum(a, 1e-4)
     lum = rgb.mean(axis=2, keepdims=True)
     lum = np.clip(lum / max(float(lum.max()), 1e-3), 0, 1) ** gamma
     d = np.array(dark[:3], np.float32)
-    l = np.array(light[:3], np.float32)
-    hi = np.clip((lum - 0.97) / 0.03, 0, 1) * 0.7
+    h = spr.shape[0]
+    if light_top is not None:
+        ys = np.linspace(0, 1, h, dtype=np.float32)[:, None, None]
+        l = np.array(light_top[:3], np.float32) * (1 - ys) + np.array(light[:3], np.float32) * ys
+    else:
+        l = np.array(light[:3], np.float32)
     out = d * (1 - lum) + l * lum
-    out = out * (1 - hi) + hi
     return np.concatenate([out * a, a], 2).astype(np.float32)
 
 
@@ -165,7 +169,7 @@ def colorized(name, idx, dark, light, gamma=1.0):
     if key not in _col_cache:
         if len(_col_cache) > 200:
             _col_cache.clear()
-        _col_cache[key] = colorize(seq(name).frame(idx / 24.0), dark, light, gamma)
+        _col_cache[key] = colorize(seq(name).frame(idx / 24.0), dark, light, gamma, light_top=hexc('#E83C9C'))
     return _col_cache[key]
 
 
@@ -569,7 +573,7 @@ def sc_money(t):
         f = seq('text_money').frame(idx / 24.0)
         if f.shape[0] > 16:
             sc = 860 / f.shape[1]
-            ff = colorized('text_money', idx, hexc('#2A0826'), hexc('#D4127F'), 2.4)
+            ff = colorized('text_money', idx, hexc('#2A0826'), hexc('#A3005F'), 1.8)
             sh = blur_sprite(tint(f, (0.25, 0.04, 0.2)), 16)
             draw(c, sh, W / 2, 1197, scale=sc, opacity=0.45 * (1 - ex))
             pp = (t - 2.0) / 0.6 * 1.6 - 0.3
