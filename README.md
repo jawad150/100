@@ -7,7 +7,7 @@ A 41-second vertical reel (1080×1920, 23.976 fps). It adds the following to the
 - transitions at every cut
 - a color grade
 
-**Video:** [`reel/medspa/PS_MedSpa_Reel_1080x1920.mp4`](reel/medspa/PS_MedSpa_Reel_1080x1920.mp4) · **Resolve LUT:** [`reel/medspa/PS_MedSpa_Look_Rec709.cube`](reel/medspa/PS_MedSpa_Look_Rec709.cube) · **Subtitles:** [`reel/medspa/PS_MedSpa_Reel.srt`](reel/medspa/PS_MedSpa_Reel.srt) · **How it's built:** [`pipeline/medspa/README.md`](pipeline/medspa/README.md)
+**Video:** [`reel/medspa/PS_MedSpa_Reel_1080x1920.mp4`](reel/medspa/PS_MedSpa_Reel_1080x1920.mp4) (master, 65 MB) · [`reel/medspa/PS_MedSpa_Reel_share.mp4`](reel/medspa/PS_MedSpa_Reel_share.mp4) (share copy, 26 MB) · **Resolve LUT:** [`reel/medspa/PS_MedSpa_Look_Rec709.cube`](reel/medspa/PS_MedSpa_Look_Rec709.cube) · **Subtitles:** [`reel/medspa/PS_MedSpa_Reel.srt`](reel/medspa/PS_MedSpa_Reel.srt) · **How it's built:** [`pipeline/medspa/README.md`](pipeline/medspa/README.md)
 
 # Higgsfield Genjutsu — orange × black SaaS reel
 
