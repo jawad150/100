@@ -20,7 +20,9 @@ re-buildable scratch only, except what is saved under `brand_reels/assets/`.
 
 ## Session 2 (2026-10-09, resumed in a fresh container) - read this first
 - Workspace restore is now one command: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
-  (deps: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy`).
+  (deps: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`; session 3 found
+  fonttools missing: type3d needs it). restore_workspace.py also rebuilds `workspace/brand_reels/charsheet/crops/` from the
+  cut-outs (`tools/rebuild_crops.py`; the character sheets themselves are lost).
 - **The shared sound kit was lost**: `epic_sfx.py` / `epic_music.py` / `epic_mix.py` and the CC0/PD sample library lived only in the
   git-ignored `workspace/brand_reels/sfx/`. It is being rebuilt to the spec in `brand_reels/research/sound_design.md` as committed code
   in `pipeline/jawad_reels/` (samples re-fetched by `pipeline/jawad_reels/tools/fetch_sfx_library.py`). Music beds / SFX stems are

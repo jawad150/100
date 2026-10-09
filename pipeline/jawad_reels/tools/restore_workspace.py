@@ -8,6 +8,7 @@ brand_reels/assets/<slug>/**.json (top+final) -> workspace/jawad_reels/<slug>/vo
 brand_reels/assets/<slug>/props|assets3d      -> workspace/jawad_reels/<slug>/props|assets3d  (+ the alias symlink)
 brand_reels/assets/charsheet/cutouts          -> workspace/brand_reels/charsheet/cutouts
 brand_reels/assets/charsheet/faces.py         -> workspace/brand_reels/charsheet/tools/faces.py
+(derived)                                     -> workspace/brand_reels/charsheet/crops/ (tools/rebuild_crops.py)
 """
 import glob
 import os
@@ -51,6 +52,7 @@ def main():
     os.makedirs(os.path.join(WB, 'charsheet', 'tools'), exist_ok=True)
     shutil.copy2(os.path.join(A, 'charsheet', 'faces.py'), os.path.join(WB, 'charsheet', 'tools', 'faces.py'))
     print('charsheet: %d cut-out files' % len(os.listdir(os.path.join(WB, 'charsheet', 'cutouts'))))
+    subprocess.run(['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rebuild_crops.py')], check=True)
 
 
 if __name__ == '__main__':
