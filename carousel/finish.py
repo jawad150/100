@@ -310,6 +310,7 @@ class Canvas:
         Returns paragraphs of units; a unit is a list of (text, style) segments
         that must stay together (e.g. a highlighted word and the full stop after it)."""
         import re
+        markup = re.sub(r"Rs\. (?=\d)", "Rs.\u00a0", markup)
         out = []
         for para in markup.split("\n"):
             units, glue = [], False
@@ -592,9 +593,28 @@ def headline(c, kicker, lines, subject):
     return bottom
 
 
+def shift_down(img, mask, frac):
+    """Move the scene down by `frac` of the height; extend the top with a blurred,
+    darkened mirror of the top strip (it sits under the dark top gradient anyway)."""
+    W, H = img.size
+    dy = int(H * frac)
+    img = img.convert("RGB")
+    out = Image.new("RGB", (W, H))
+    out.paste(img, (0, dy))
+    strip = img.crop((0, 0, W, dy)).transpose(Image.FLIP_TOP_BOTTOM)
+    strip = strip.filter(ImageFilter.GaussianBlur(W * 0.02)).point(lambda v: int(v * 0.6))
+    out.paste(strip, (0, 0))
+    m = Image.new("L", (W, H), 0)
+    m.paste(mask, (0, dy))
+    return out, m
+
+
 def content_slide(spec, raw, out):
     subject = subject_mask(raw)
-    c = Canvas(grade(Image.open(raw)), subject)
+    img = Image.open(raw)
+    if spec.get("shift"):
+        img, subject = shift_down(img, subject, spec["shift"])
+    c = Canvas(grade(img), subject)
     s, W, H = c.s, c.W, c.H
     head_bottom = headline(c, spec["kicker"], spec["lines"], subject)
 
@@ -621,7 +641,7 @@ def content_slide(spec, raw, out):
         block_top = top
     elif "rows" in spec:
         fl, fr = c.font(MONT, 30, 800), c.font(MONT, 30, 520)
-        row_h = 62 * s
+        row_h = spec.get("row_h", 62) * s
         n = len(spec["rows"])
         top = y - 34 * s - n * row_h + (row_h - c.ink_height("H", fl))
         card_top = top - 40 * s
@@ -644,7 +664,7 @@ def content_slide(spec, raw, out):
         block_top = card_top
     elif "bullets" in spec:
         size = 32
-        maxw = 760
+        maxw = 800
         items = spec["bullets"]
         widths, heights = [], []
         for col, mk in items:
@@ -696,14 +716,14 @@ SLIDES = {
     7: dict(kicker="PLOT  TWIST", lines=["NOW REPLACE THE PS5", "WITH A COMMODITY"],
             body="People make similar agreements on the "
                  "**Pakistan Mercantile Exchange (PMEX)**.\nThis is called **Margin Trading**."),
-    8: dict(kicker="THE  LINGO", lines=["TERMS USED IN", "MARGIN TRADING"],
+    8: dict(kicker="TERMS  USED  IN", shift=0.085, lines=["MARGIN TRADING"], row_h=56,
             rows=[("PS5", "Underlying Asset"), ("Rs. 200,000", "Futures Price"),
                   ("Rs. 10,000", "Margin"), ("30 Days Later", "Expiry Date"),
                   ("Chandler's Deal", "Margin Trade")]),
     9: dict(kicker="THE  WHY", lines=["WHY DO PEOPLE", "TRADE ON MARGIN?"],
             bullets=[((60, 200, 100), "They think prices will ++rise++."),
                      ((235, 70, 60), "They think prices will ~~fall~~."),
-                     (GOLD, "They want to **lock in today's price** and **reduce risk**.")]),
+                     (GOLD, "They want to **lock in today's price** and\u00a0**reduce\u00a0risk**.")]),
     10: dict(kicker="THE  TAKEAWAY", lines=["THAT'S HOW MARGIN", "TRADING WORKS"],
              body="Margin trading lets you trade **futures contracts** by paying a small "
                   "upfront amount known as **Margin** or **Token Money**.",
