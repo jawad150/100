@@ -1,0 +1,1885 @@
+{
+ "V12": [
+  {
+   "take": "V12_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "आप के घर लाइट जाने पे क्या होता था?",
+   "span": 2.54,
+   "span_108": 2.587,
+   "span_106": 2.636,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.54,
+   "cer_small": 0.188,
+   "heard_small": "अपके गर लाइड जाने पे क्या होता था?",
+   "kw_small": [
+    "गर",
+    1.2
+   ],
+   "cer_medium": 0.062,
+   "heard_medium": "आपके घ़र लाइड जाने पे क्या होता था?",
+   "kw_medium": [
+    "घ़र",
+    3.0
+   ],
+   "span_abs": 2.58,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "V12_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "आप के घर लाइट जाने पे क्या होता था?",
+   "span": 2.69,
+   "span_108": 2.74,
+   "span_106": 2.792,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.69,
+   "cer_small": 0.25,
+   "heard_small": "अपके गर लाईट जाने पे क्या हुता ता?",
+   "kw_small": [
+    "गर",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "आपके घर लाइट जाने पे क्या हुता था?",
+   "kw_medium": [
+    "घर",
+    3.0
+   ],
+   "span_abs": 2.75,
+   "anchor_off_abs": 0.01
+  }
+ ],
+ "V1": [
+  {
+   "take": "V1_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.32,
+   "span_108": 1.344,
+   "span_106": 1.37,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.32,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "बिजली चली गई।",
+   "kw_medium": [
+    "बिजली",
+    3.0
+   ],
+   "span_abs": 1.42,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "V1_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.22,
+   "span_108": 1.243,
+   "span_106": 1.266,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.22,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "विजली चली गई",
+   "kw_medium": [
+    "विजली",
+    0.76
+   ],
+   "span_abs": 1.38,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "TA_r1.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.22,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "विजली चली गई",
+   "kw_medium": [
+    "विजली",
+    0.76
+   ],
+   "span_abs": 1.22,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r2.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.22,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "विजली चली गई",
+   "kw_medium": [
+    "विजली",
+    0.76
+   ],
+   "span_abs": 1.22,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r3.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.35,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "बिजली चली गई",
+   "kw_medium": [
+    "बिजली",
+    3.0
+   ],
+   "span_abs": 1.35,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r4.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.27,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "विजली चली गई",
+   "kw_medium": [
+    "विजली",
+    0.76
+   ],
+   "span_abs": 1.27,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r5.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "बिजली चली गई।",
+   "span": 1.23,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "बिजली चली गई",
+   "kw_small": [
+    "बिजली",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "विजली चली गई",
+   "kw_medium": [
+    "विजली",
+    0.76
+   ],
+   "span_abs": 1.23,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V2": [
+  {
+   "take": "TA_r1.mp3",
+   "group": "TA",
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.62,
+   "span_108": 0.631,
+   "span_106": 0.643,
+   "anchor_off": -0.01,
+   "tail_after_anchor": 0.63,
+   "cer_small": 0.333,
+   "heard_small": "यादे?",
+   "kw_small": [
+    "यादे?",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है?",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.7,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r2.mp3",
+   "group": "TA",
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.63,
+   "span_108": 0.642,
+   "span_106": 0.654,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 0.65,
+   "cer_small": 0.0,
+   "heard_small": "याद है",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद हैं।",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.71,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "V2_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.67,
+   "span_108": 0.682,
+   "span_106": 0.695,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 0.67,
+   "cer_small": 0.0,
+   "heard_small": "याद है?",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है।",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.75,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "V2_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.71,
+   "span_108": 0.723,
+   "span_106": 0.737,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 0.71,
+   "cer_small": 0.0,
+   "heard_small": "याद है?",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है?",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.77,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "V2_r3.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.6,
+   "span_108": 0.611,
+   "span_106": 0.623,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 0.6,
+   "cer_small": 0.0,
+   "heard_small": "याद है?",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है?",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.73,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "TA_r3.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.73,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "याद है?",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद हैं।",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.73,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "TA_r4.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.7,
+   "anchor_off": -0.01,
+   "cer_small": 0.333,
+   "heard_small": "यादे",
+   "kw_small": [
+    "यादे",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है।",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.7,
+   "anchor_off_abs": -0.01
+  },
+  {
+   "take": "TA_r5.mp3",
+   "group": "TA",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "याद है?",
+   "span": 0.7,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "याद है",
+   "kw_small": [
+    "याद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "याद है?",
+   "kw_medium": [
+    "याद",
+    3.0
+   ],
+   "span_abs": 0.7,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V1B": [
+  {
+   "take": "V1B_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "ये आवाज़... याद है?",
+   "span": 2.69,
+   "span_108": 2.74,
+   "span_106": 2.792,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.69,
+   "part1": 1.37,
+   "part2": 0.68,
+   "cer_small": 0.0,
+   "heard_small": "ये आवाज याद है?",
+   "kw_small": [
+    "आवाज",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "ये आवाज याद है?",
+   "kw_medium": [
+    "आवाज",
+    3.0
+   ],
+   "span_abs": 2.68,
+   "anchor_off_abs": 0.0,
+   "part1_abs": 1.53,
+   "part2_abs": 0.72
+  },
+  {
+   "take": "V1B_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "ये आवाज़... याद है?",
+   "span": 2.42,
+   "span_108": 2.465,
+   "span_106": 2.511,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.42,
+   "part1": 1.25,
+   "part2": 0.57,
+   "cer_small": 0.0,
+   "heard_small": "ये आवाज याद है?",
+   "kw_small": [
+    "आवाज",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "ये आवाज याद है?",
+   "kw_medium": [
+    "आवाज",
+    3.0
+   ],
+   "span_abs": 2.41,
+   "anchor_off_abs": -0.01,
+   "part1_abs": 1.38,
+   "part2_abs": 0.69
+  },
+  {
+   "take": "V1Bc_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "ये आवाज़, याद है?",
+   "span": 2.12,
+   "span_108": 2.159,
+   "span_106": 2.2,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.12,
+   "part1": 1.02,
+   "part2": 0.64,
+   "cer_small": 0.0,
+   "heard_small": "ये आवाज याद है?",
+   "kw_small": [
+    "आवाज",
+    3.0
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "यह आवाज याद है?",
+   "kw_medium": [
+    "आवाज",
+    3.0
+   ],
+   "span_abs": 2.11,
+   "anchor_off_abs": 0.0,
+   "part1_abs": 1.12,
+   "part2_abs": 0.68
+  },
+  {
+   "take": "V1Bc_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "ये आवाज़, याद है?",
+   "span": 2.02,
+   "span_108": 2.057,
+   "span_106": 2.096,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.02,
+   "part1": 0.99,
+   "part2": 0.61,
+   "cer_small": 0.0,
+   "heard_small": "ये आवाज याद है?",
+   "kw_small": [
+    "आवाज",
+    3.0
+   ],
+   "cer_medium": 0.286,
+   "heard_medium": "यह अवाज याद है?",
+   "kw_medium": [
+    "अवाज",
+    1.2
+   ],
+   "span_abs": 2.01,
+   "anchor_off_abs": 0.0,
+   "part1_abs": 1.08,
+   "part2_abs": 0.65
+  }
+ ],
+ "V3a": [
+  {
+   "take": "T2m_r1.mp3",
+   "group": "T2",
+   "speed": 1.1,
+   "dev": "लाइट जाती थी,",
+   "span": 0.97,
+   "span_108": 0.988,
+   "span_106": 1.007,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 0.99,
+   "cer_small": 0.167,
+   "heard_small": "लाइट जाती ती",
+   "kw_small": [
+    "लाइट",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "light जाती थी",
+   "kw_medium": [
+    "लाइट",
+    3.0
+   ],
+   "span_abs": 1.06,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "V3a_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "लाइट जाती थी,",
+   "span": 1.18,
+   "span_108": 1.202,
+   "span_106": 1.225,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.18,
+   "cer_small": 0.167,
+   "heard_small": "लाइट जाती ती",
+   "kw_small": [
+    "लाइट",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "लाइट जाती थी।",
+   "kw_medium": [
+    "लाइट",
+    3.0
+   ],
+   "span_abs": 1.31,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "V3a_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "लाइट जाती थी,",
+   "span": 1.15,
+   "span_108": 1.171,
+   "span_106": 1.193,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.15,
+   "cer_small": 0.167,
+   "heard_small": "लाइट जाती ती",
+   "kw_small": [
+    "लाइट",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "लाइट जाती थी।",
+   "kw_medium": [
+    "लाइट",
+    3.0
+   ],
+   "span_abs": 1.31,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "T2m_r2.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "लाइट जाती थी,",
+   "span": 1.16,
+   "anchor_off": 0.0,
+   "cer_small": 0.333,
+   "heard_small": "लाइट जातित ही",
+   "kw_small": [
+    "लाइट",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "लाइट जाती थी",
+   "kw_medium": [
+    "लाइट",
+    3.0
+   ],
+   "span_abs": 1.14,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T2m_r3.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "लाइट जाती थी,",
+   "span": 1.08,
+   "anchor_off": 0.0,
+   "cer_small": 0.167,
+   "heard_small": "लाइट जाती ती",
+   "kw_small": [
+    "लाइट",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "लाइट जाती थी।",
+   "kw_medium": [
+    "लाइट",
+    3.0
+   ],
+   "span_abs": 1.08,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V3b": [
+  {
+   "take": "T2m_r1.mp3",
+   "group": "T2",
+   "speed": 1.1,
+   "dev": "तो पूरा मुहल्ला छत पे होता था।",
+   "span": 1.99,
+   "span_108": 2.027,
+   "span_106": 2.065,
+   "anchor_off": 0.979,
+   "tail_after_anchor": 1.011,
+   "cer_small": 0.231,
+   "heard_small": "तो पूरा महला च्छत्बे होताता",
+   "kw_small": [
+    "तो",
+    0.47
+   ],
+   "cer_medium": 0.077,
+   "heard_medium": "तो पूरा महला च्छात पे होता था।",
+   "kw_medium": [
+    "च्छात",
+    0.76
+   ],
+   "span_abs": 2.04,
+   "anchor_off_abs": 0.989
+  },
+  {
+   "take": "V3bm_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "तो पूरा मुहल्ला छत पे होता था।",
+   "span": 2.33,
+   "span_108": 2.373,
+   "span_106": 2.418,
+   "anchor_off": 1.186,
+   "tail_after_anchor": 1.144,
+   "cer_small": 0.077,
+   "heard_small": "तो पूरा मुहला च्छत्पे होता था",
+   "kw_small": [
+    "तो",
+    0.47
+   ],
+   "cer_medium": 0.077,
+   "heard_medium": "तो पूरा मुहला च्छत पे होता था.",
+   "kw_medium": [
+    "च्छत",
+    0.76
+   ],
+   "span_abs": 2.4,
+   "anchor_off_abs": 1.206
+  },
+  {
+   "take": "V3b_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "तो पूरा मोहल्ला छत पे होता था।",
+   "span": 2.38,
+   "span_108": 2.424,
+   "span_106": 2.47,
+   "anchor_off": 1.215,
+   "tail_after_anchor": 1.165,
+   "cer_small": 0.231,
+   "heard_small": "तो पूरा महल्ला आच्छत्पे होताता",
+   "kw_small": [
+    "तो",
+    0.47
+   ],
+   "cer_medium": 0.231,
+   "heard_medium": "तो पूरा महला चाथ पे होता था।",
+   "kw_medium": [
+    "चाथ",
+    1.2
+   ],
+   "span_abs": 2.47,
+   "anchor_off_abs": 1.235
+  },
+  {
+   "take": "V3b_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "तो पूरा मोहल्ला छत पे होता था।",
+   "span": 2.43,
+   "span_108": 2.475,
+   "span_106": 2.522,
+   "anchor_off": 1.205,
+   "tail_after_anchor": 1.225,
+   "cer_small": 0.231,
+   "heard_small": "तो पूरा महला च्हत्पे होताता",
+   "kw_small": [
+    "च्हत्पे",
+    0.76
+   ],
+   "cer_medium": 0.154,
+   "heard_medium": "तो पूरा महला च्छाथ पे होता था.",
+   "kw_medium": [
+    "च्छाथ",
+    0.76
+   ],
+   "span_abs": 2.5,
+   "anchor_off_abs": 1.215
+  },
+  {
+   "take": "T2m_r2.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "तो पूरा मुहल्ला छत पे होता था।",
+   "span": 2.32,
+   "anchor_off": 1.26,
+   "cer_small": 0.154,
+   "heard_small": "तो पूरा महला च्हत्पे होता था",
+   "kw_small": [
+    "च्हत्पे",
+    0.76
+   ],
+   "cer_medium": 0.077,
+   "heard_medium": "तो पूरा मुहला च्छत पे होता था।",
+   "kw_medium": [
+    "च्छत",
+    0.76
+   ],
+   "span_abs": 2.13,
+   "anchor_off_abs": 1.076
+  },
+  {
+   "take": "T2m_r3.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "तो पूरा मुहल्ला छत पे होता था।",
+   "span": 2.13,
+   "anchor_off": 1.095,
+   "cer_small": 0.154,
+   "heard_small": "तो पूरा महला च्छत्बे होता था",
+   "kw_small": [
+    "तो",
+    0.47
+   ],
+   "cer_medium": 0.154,
+   "heard_medium": "तो पूरा मुहला च्छात भे होता था।",
+   "kw_medium": [
+    "च्छात",
+    0.76
+   ],
+   "span_abs": 2.13,
+   "anchor_off_abs": 1.095
+  }
+ ],
+ "V4": [
+  {
+   "take": "T2m_r1.mp3",
+   "group": "T2",
+   "speed": 1.1,
+   "dev": "जब वापस आती थी...",
+   "span": 1.17,
+   "span_108": 1.192,
+   "span_106": 1.214,
+   "anchor_off": -0.01,
+   "tail_after_anchor": 1.18,
+   "cer_small": 0.125,
+   "heard_small": "जब वापस आती ती",
+   "kw_small": [
+    "वापस",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "जब वापस आती थी।",
+   "kw_medium": [
+    "वापस",
+    3.0
+   ],
+   "span_abs": 1.27,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T2_r1.mp3",
+   "group": "T2",
+   "speed": 1.1,
+   "dev": "जब वापस आती थी...",
+   "span": 1.15,
+   "span_108": 1.171,
+   "span_106": 1.193,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 1.17,
+   "cer_small": 0.125,
+   "heard_small": "जब वापस आती ती",
+   "kw_small": [
+    "वापस",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "जब वापस आती थी",
+   "kw_medium": [
+    "वापस",
+    3.0
+   ],
+   "span_abs": 1.28,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "V4_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "जब वापस आती थी...",
+   "span": 1.49,
+   "span_108": 1.518,
+   "span_106": 1.546,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.49,
+   "cer_small": 0.125,
+   "heard_small": "जब वापस आती ती",
+   "kw_small": [
+    "वापस",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "जब वापस आती थी।",
+   "kw_medium": [
+    "वापस",
+    3.0
+   ],
+   "span_abs": 1.64,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "T2m_r2.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "जब वापस आती थी...",
+   "span": 1.27,
+   "anchor_off": 0.0,
+   "cer_small": 0.125,
+   "heard_small": "जब वापस आती ती",
+   "kw_small": [
+    "वापस",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "जब वापस आती थी।",
+   "kw_medium": [
+    "वापस",
+    3.0
+   ],
+   "span_abs": 1.27,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T2m_r3.mp3",
+   "group": "T2",
+   "variant": null,
+   "speed": 1.1,
+   "dev": "जब वापस आती थी...",
+   "span": 1.3,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "जब वापस आती थी",
+   "kw_small": [
+    "वापस",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "जब वापस आती थी।",
+   "kw_medium": [
+    "वापस",
+    3.0
+   ],
+   "span_abs": 1.3,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V5": [
+  {
+   "take": "T3_r1.mp3",
+   "group": "T3",
+   "speed": 1.1,
+   "dev": "फिर वो बच्चे बड़े हुए।",
+   "span": 1.59,
+   "span_108": 1.619,
+   "span_106": 1.65,
+   "anchor_off": 0.475,
+   "tail_after_anchor": 1.115,
+   "cer_small": 0.1,
+   "heard_small": "फिर वो बच्छे बड़े हुए",
+   "kw_small": [
+    "बच्छे",
+    1.2
+   ],
+   "cer_medium": 0.1,
+   "heard_medium": "फिर वो बच्छे बड़े हुए।",
+   "kw_medium": [
+    "बच्छे",
+    1.2
+   ],
+   "span_abs": 1.74,
+   "anchor_off_abs": 0.515
+  },
+  {
+   "take": "V5_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "फिर वो बच्चे बड़े हुए।",
+   "span": 1.55,
+   "span_108": 1.579,
+   "span_106": 1.608,
+   "anchor_off": 0.413,
+   "tail_after_anchor": 1.137,
+   "cer_small": 0.1,
+   "heard_small": "फिर वो बच्छे बड़े हुए",
+   "kw_small": [
+    "बच्छे",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "फिर वो बच्चे बड़े हुए।",
+   "kw_medium": [
+    "बच्चे",
+    3.0
+   ],
+   "span_abs": 1.7,
+   "anchor_off_abs": 0.443
+  }
+ ],
+ "V6": [
+  {
+   "take": "T3_r1.mp3",
+   "group": "T3",
+   "speed": 1.1,
+   "dev": "कुछ एडिटर बन गए।",
+   "span": 1.28,
+   "span_108": 1.304,
+   "span_106": 1.328,
+   "anchor_off": 0.224,
+   "tail_after_anchor": 1.056,
+   "cer_small": 0.1,
+   "heard_small": "कुछ एडिटर बन गाई",
+   "kw_small": [
+    "एडिटर",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "कुछ एडिटर बन गए।",
+   "kw_medium": [
+    "एडिटर",
+    3.0
+   ],
+   "span_abs": 1.38,
+   "anchor_off_abs": 0.234
+  },
+  {
+   "take": "V6_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "कुछ एडिटर बन गए।",
+   "span": 1.43,
+   "span_108": 1.456,
+   "span_106": 1.484,
+   "anchor_off": 0.47,
+   "tail_after_anchor": 0.96,
+   "cer_small": 0.3,
+   "heard_small": "कुछ आदिटर बन गय.",
+   "kw_small": [
+    "आदिटर",
+    1.2
+   ],
+   "cer_medium": 0.1,
+   "heard_medium": "कुछ एडितर बन गए।",
+   "kw_medium": [
+    "एडितर",
+    1.2
+   ],
+   "span_abs": 1.56,
+   "anchor_off_abs": 0.49
+  }
+ ],
+ "V7": [
+  {
+   "take": "V7_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.936,
+   "span_108": 2.991,
+   "span_106": 3.047,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.936,
+   "cer_small": 0.111,
+   "heard_small": "और बिजली बन गई सब से बड़ी तुष्मन",
+   "kw_small": [
+    "बड़ीतुष्मन",
+    0.76
+   ],
+   "cer_medium": 0.056,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुष्मन।",
+   "kw_medium": [
+    "दुष्मन।",
+    1.2
+   ],
+   "span_abs": 2.9,
+   "anchor_off_abs": -0.03
+  },
+  {
+   "take": "V7_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.38,
+   "span_108": 2.424,
+   "span_106": 2.47,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.38,
+   "cer_small": 0.111,
+   "heard_small": "और भिजली बन गई सब से बड़ी दुष्मन",
+   "kw_small": [
+    "दुष्मन",
+    1.2
+   ],
+   "cer_medium": 0.056,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुष्मन।",
+   "kw_medium": [
+    "दुष्मन।",
+    1.2
+   ],
+   "span_abs": 2.85,
+   "anchor_off_abs": 0.09
+  },
+  {
+   "take": "T4_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.4,
+   "span_108": 2.444,
+   "span_106": 2.491,
+   "anchor_off": -0.05,
+   "tail_after_anchor": 2.45,
+   "cer_small": 0.111,
+   "heard_small": "और भिजली बन गई सब से बड़ी दुष्मन",
+   "kw_small": [
+    "दुष्मन",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "kw_medium": [
+    "दुश्मन।",
+    3.0
+   ],
+   "span_abs": 2.87,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T4_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.62,
+   "span_108": 2.669,
+   "span_106": 2.719,
+   "anchor_off": -0.03,
+   "tail_after_anchor": 2.65,
+   "cer_small": 0.111,
+   "heard_small": "और बिजली बन गई सब से बड़ी तुष्मन",
+   "kw_small": [
+    "बड़ीतुष्मन",
+    0.76
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "kw_medium": [
+    "दुश्मन।",
+    3.0
+   ],
+   "span_abs": 2.86,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T4_r3.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.45,
+   "span_108": 2.495,
+   "span_106": 2.542,
+   "anchor_off": -0.04,
+   "tail_after_anchor": 2.49,
+   "cer_small": 0.0,
+   "heard_small": "और बिजली बन गई सब से बड़ी दुश्मन",
+   "kw_small": [
+    "दुश्मन",
+    3.0
+   ],
+   "cer_medium": 0.056,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुष्मन।",
+   "kw_medium": [
+    "दुष्मन।",
+    1.2
+   ],
+   "span_abs": 2.87,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "T4p_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.79,
+   "span_108": 2.842,
+   "span_106": 2.895,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 2.81,
+   "cer_small": 0.056,
+   "heard_small": "और बिजली बन गई सब से बड़ी दुष्मन",
+   "kw_small": [
+    "दुष्मन",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "kw_medium": [
+    "दुश्मन।",
+    3.0
+   ],
+   "span_abs": 3.07,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T4p_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "span": 2.65,
+   "span_108": 2.699,
+   "span_106": 2.75,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 2.67,
+   "cer_small": 0.056,
+   "heard_small": "और भिजली बन गई सब से बड़ी दुश्मन",
+   "kw_small": [
+    "दुश्मन",
+    3.0
+   ],
+   "cer_medium": 0.056,
+   "heard_medium": "और बिजली बन गई सब से बड़ी दुष्मन।",
+   "kw_medium": [
+    "दुष्मन।",
+    1.2
+   ],
+   "span_abs": 2.85,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V8": [
+  {
+   "take": "T4_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "span": 3.47,
+   "span_108": 3.534,
+   "span_106": 3.601,
+   "anchor_off": 2.209,
+   "tail_after_anchor": 1.261,
+   "cer_small": 0.042,
+   "heard_small": "हर देसी एडिटर की उंगली खुद कंट्रूलिस दबाती है",
+   "kw_small": [
+    "खुद",
+    3.0
+   ],
+   "cer_medium": 0.042,
+   "heard_medium": "हर देसी एडिटर की उंगली खुद कुंटुरूलिस दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 3.61,
+   "anchor_off_abs": 2.239
+  },
+  {
+   "take": "T4_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "span": 3.7,
+   "span_108": 3.769,
+   "span_106": 3.84,
+   "anchor_off": 2.085,
+   "tail_after_anchor": 1.615,
+   "cer_small": 0.042,
+   "heard_small": "हर देशी एडिटर की उंगली खुद कंट्रोल एस दबाती है",
+   "kw_small": [
+    "खुद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "हर देसी एडिटर की उंगली खुद कंट्रोल-S दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 3.75,
+   "anchor_off_abs": 2.095
+  },
+  {
+   "take": "T4_r3.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "span": 3.6,
+   "span_108": 3.667,
+   "span_106": 3.736,
+   "anchor_off": 2.057,
+   "tail_after_anchor": 1.543,
+   "cer_small": 0.042,
+   "heard_small": "हर देशी एडिटर की उंगली खुद कंट्रोल एस दबाती है",
+   "kw_small": [
+    "खुद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "हर देसी एडिटर की उंगली खुद कंट्रोल-S दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 3.7,
+   "anchor_off_abs": 2.087
+  },
+  {
+   "take": "T4p_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है,",
+   "span": 3.86,
+   "span_108": 3.931,
+   "span_106": 4.006,
+   "anchor_off": 2.311,
+   "tail_after_anchor": 1.549,
+   "cer_small": 0.125,
+   "heard_small": "हर देशी एड़िटर की उंगली हुद कंट्रोलस दबाती है",
+   "kw_small": [
+    "की",
+    0.47
+   ],
+   "cer_medium": 0.083,
+   "heard_medium": "हर देसी एडिटर की उंग्ली हुद कंट्रोलिस दबाती है.",
+   "kw_medium": [
+    "की",
+    0.47
+   ],
+   "span_abs": 3.91,
+   "anchor_off_abs": 2.321
+  },
+  {
+   "take": "T4p_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है,",
+   "span": 3.75,
+   "span_108": 3.819,
+   "span_106": 3.892,
+   "anchor_off": 2.148,
+   "tail_after_anchor": 1.602,
+   "cer_small": 0.042,
+   "heard_small": "हर देसी एडिटर की उंगली हुद कंट्रोल एस दबाती है",
+   "kw_small": [
+    "की",
+    0.47
+   ],
+   "cer_medium": 0.042,
+   "heard_medium": "हर देसी एडिटर की अंगली खुद कंट्रोल-S दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 3.8,
+   "anchor_off_abs": 2.158
+  },
+  {
+   "take": "V8_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "span": 4.11,
+   "span_108": 4.186,
+   "span_106": 4.265,
+   "anchor_off": 2.396,
+   "tail_after_anchor": 1.714,
+   "cer_small": 0.125,
+   "heard_small": "हर देसी एदिटर की उंगली हुद कंट्रोल एच दबाती है",
+   "kw_small": [
+    "की",
+    0.47
+   ],
+   "cer_medium": 0.042,
+   "heard_medium": "हर देसी एडिटर की अंग्ली खुद कंट्रोल-S दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 4.17,
+   "anchor_off_abs": 2.406
+  },
+  {
+   "take": "V8_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "span": 4.02,
+   "span_108": 4.094,
+   "span_106": 4.172,
+   "anchor_off": 2.332,
+   "tail_after_anchor": 1.688,
+   "cer_small": 0.083,
+   "heard_small": "हर देशी एदिटर की उंगली खुद कंट्रोल एस दबाती है",
+   "kw_small": [
+    "खुद",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "हर देसी एडिटर की उंग्ली खुद कंट्रोल-S दबाती है।",
+   "kw_medium": [
+    "खुद",
+    3.0
+   ],
+   "span_abs": 4.11,
+   "anchor_off_abs": 2.352
+  }
+ ],
+ "V9": [
+  {
+   "take": "T4_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.34,
+   "span_108": 1.365,
+   "span_106": 1.391,
+   "anchor_off": 0.39,
+   "tail_after_anchor": 0.95,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सेकिन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.36,
+   "anchor_off_abs": 0.39
+  },
+  {
+   "take": "T4_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.26,
+   "span_108": 1.283,
+   "span_106": 1.308,
+   "anchor_off": 0.38,
+   "tail_after_anchor": 0.88,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सेकिन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.27,
+   "anchor_off_abs": 0.38
+  },
+  {
+   "take": "T4_r3.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.26,
+   "span_108": 1.283,
+   "span_106": 1.308,
+   "anchor_off": 0.39,
+   "tail_after_anchor": 0.87,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सिकन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.26,
+   "anchor_off_abs": 0.39
+  },
+  {
+   "take": "T4p_r1.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.33,
+   "span_108": 1.355,
+   "span_106": 1.38,
+   "anchor_off": 0.42,
+   "tail_after_anchor": 0.91,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सेकिन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.33,
+   "anchor_off_abs": 0.42
+  },
+  {
+   "take": "T4p_r2.mp3",
+   "group": "T4",
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.3,
+   "span_108": 1.324,
+   "span_106": 1.349,
+   "anchor_off": 0.41,
+   "tail_after_anchor": 0.89,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सेकिन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.3,
+   "anchor_off_abs": 0.41
+  },
+  {
+   "take": "V9_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.34,
+   "span_108": 1.365,
+   "span_106": 1.391,
+   "anchor_off": 0.41,
+   "tail_after_anchor": 0.93,
+   "cer_small": 0.571,
+   "heard_small": "फर्ती सेकिन्ट",
+   "kw_small": [
+    "फर्ती",
+    0.1
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.34,
+   "anchor_off_abs": 0.41
+  },
+  {
+   "take": "V9_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.38,
+   "span_108": 1.406,
+   "span_106": 1.432,
+   "anchor_off": 0.42,
+   "tail_after_anchor": 0.96,
+   "cer_small": 0.429,
+   "heard_small": "हर ती सेकिन्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.39,
+   "anchor_off_abs": 0.42
+  },
+  {
+   "take": "V9_r3.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "हर तीस सेकंड।",
+   "span": 1.26,
+   "span_108": 1.283,
+   "span_106": 1.308,
+   "anchor_off": 0.39,
+   "tail_after_anchor": 0.87,
+   "cer_small": 0.571,
+   "heard_small": "और ती सेक्न्ट",
+   "kw_small": [
+    "ती",
+    0.76
+   ],
+   "cer_medium": 0.143,
+   "heard_medium": "हर ती सेकंड।",
+   "kw_medium": [
+    "ती",
+    0.76
+   ],
+   "span_abs": 1.3,
+   "anchor_off_abs": 0.4
+  }
+ ],
+ "V10": [
+  {
+   "take": "T5_r1.mp3",
+   "group": "T5",
+   "speed": 1.1,
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+   "span": 2.03,
+   "span_108": 2.068,
+   "span_106": 2.107,
+   "anchor_off": -0.02,
+   "tail_after_anchor": 2.05,
+   "cer_small": 0.0,
+   "heard_small": "बिज्ली ने हमें एडिटिग नहीं सिखाई",
+   "kw_small": [
+    "एडिटिग",
+    1.03
+   ],
+   "cer_medium": 0.067,
+   "heard_medium": "विजली ने हमें एडिटिंग नहीं सिखाई.",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.2,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T5_r2.mp3",
+   "group": "T5",
+   "speed": 1.1,
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+   "span": 1.93,
+   "span_108": 1.966,
+   "span_106": 2.003,
+   "anchor_off": -0.01,
+   "tail_after_anchor": 1.94,
+   "cer_small": 0.067,
+   "heard_small": "बिजली ने हमें एदिटिग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिग",
+    0.89
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "बिजली ने हमें एडिटिंग नहीं सिखाई।",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.2,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "V10_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+   "span": 2.14,
+   "span_108": 2.18,
+   "span_106": 2.221,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.14,
+   "cer_small": 0.067,
+   "heard_small": "बिज्ली ने हमें एदिटिंग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिंग",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "बिजली ने हमें एडिटिंग नहीं सिखाई.",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.32,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "V10c_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+   "span": 2.23,
+   "span_108": 2.271,
+   "span_106": 2.314,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.23,
+   "cer_small": 0.067,
+   "heard_small": "बिज्ली ने हमें एदिटिंग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिंग",
+    1.2
+   ],
+   "cer_medium": 0.133,
+   "heard_medium": "विजली ने हमें एडिटिटिंग नहीं सिखाई.",
+   "kw_medium": [
+    "एडिटिटिंग",
+    0.96
+   ],
+   "span_abs": 2.35,
+   "anchor_off_abs": 0.03
+  },
+  {
+   "take": "V10c_r2.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+   "span": 2.11,
+   "span_108": 2.149,
+   "span_106": 2.19,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 2.11,
+   "cer_small": 0.067,
+   "heard_small": "बिजली ने हमें एदिटिंग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिंग",
+    1.2
+   ],
+   "cer_medium": 0.067,
+   "heard_medium": "विजली ने हमें एडिटिंग नहीं सिखाई।",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.3,
+   "anchor_off_abs": 0.01
+  },
+  {
+   "take": "T5f3_r1.mp3",
+   "group": "T5",
+   "variant": "F3",
+   "speed": 1.1,
+   "dev": "बिजली ने एडिटिंग नहीं सिखाई...",
+   "span": 2.02,
+   "anchor_off": 0.0,
+   "cer_small": 0.077,
+   "heard_small": "बिज्ली ने एदिटिंग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिंग",
+    1.2
+   ],
+   "cer_medium": 0.077,
+   "heard_medium": "विजली ने एडिटिंग नहीं सिखाई।",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.01,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T5f3_r2.mp3",
+   "group": "T5",
+   "variant": "F3",
+   "speed": 1.1,
+   "dev": "बिजली ने एडिटिंग नहीं सिखाई...",
+   "span": 2.02,
+   "anchor_off": 0.0,
+   "cer_small": 0.077,
+   "heard_small": "बिज्ली ने एदिटिंग नहीं सिखाई",
+   "kw_small": [
+    "एदिटिंग",
+    1.2
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "बिजली ने एडिटिंग नहीं सिखाई।",
+   "kw_medium": [
+    "एडिटिंग",
+    3.0
+   ],
+   "span_abs": 2.02,
+   "anchor_off_abs": 0.0
+  }
+ ],
+ "V11": [
+  {
+   "take": "T5_r1.mp3",
+   "group": "T5",
+   "speed": 1.1,
+   "dev": "सब्र सिखाया।",
+   "span": 1.0,
+   "span_108": 1.019,
+   "span_106": 1.038,
+   "anchor_off": -0.04,
+   "tail_after_anchor": 1.04,
+   "cer_small": 0.0,
+   "heard_small": "सब्र सिखाया",
+   "kw_small": [
+    "सब्र",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "सब्र सिखाया।",
+   "kw_medium": [
+    "सब्र",
+    3.0
+   ],
+   "span_abs": 1.15,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T5_r2.mp3",
+   "group": "T5",
+   "speed": 1.1,
+   "dev": "सब्र सिखाया।",
+   "span": 1.0,
+   "span_108": 1.019,
+   "span_106": 1.038,
+   "anchor_off": -0.03,
+   "tail_after_anchor": 1.03,
+   "cer_small": 0.0,
+   "heard_small": "सब्र सिखाया",
+   "kw_small": [
+    "सब्र",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "सब्र सिखाया।",
+   "kw_medium": [
+    "सब्र",
+    3.0
+   ],
+   "span_abs": 1.16,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "V11_r1.mp3",
+   "group": null,
+   "speed": 1.1,
+   "dev": "सब्र सिखाया।",
+   "span": 1.06,
+   "span_108": 1.08,
+   "span_106": 1.1,
+   "anchor_off": 0.0,
+   "tail_after_anchor": 1.06,
+   "cer_small": 0.0,
+   "heard_small": "सब्र सिखाया",
+   "kw_small": [
+    "सब्र",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "सब्र सिखाया।",
+   "kw_medium": [
+    "सब्र",
+    3.0
+   ],
+   "span_abs": 1.2,
+   "anchor_off_abs": 0.02
+  },
+  {
+   "take": "T5f3_r1.mp3",
+   "group": "T5",
+   "variant": "F3",
+   "speed": 1.1,
+   "dev": "सब्र सिखाया।",
+   "span": 1.17,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "सब्र सिखाया",
+   "kw_small": [
+    "सब्र",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "सब्र सिखाया।",
+   "kw_medium": [
+    "सब्र",
+    3.0
+   ],
+   "span_abs": 1.17,
+   "anchor_off_abs": 0.0
+  },
+  {
+   "take": "T5f3_r2.mp3",
+   "group": "T5",
+   "variant": "F3",
+   "speed": 1.1,
+   "dev": "सब्र सिखाया।",
+   "span": 1.18,
+   "anchor_off": 0.0,
+   "cer_small": 0.0,
+   "heard_small": "सब्र सिखाया",
+   "kw_small": [
+    "सब्र",
+    3.0
+   ],
+   "cer_medium": 0.0,
+   "heard_medium": "सब्र सिखाया।",
+   "kw_medium": [
+    "सब्र",
+    3.0
+   ],
+   "span_abs": 1.18,
+   "anchor_off_abs": 0.0
+  }
+ ]
+}

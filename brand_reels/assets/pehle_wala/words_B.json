@@ -1,0 +1,462 @@
+[
+ {
+  "word": "26",
+  "start": 0.1,
+  "end": 0.625,
+  "keyword": true,
+  "line": "L1B",
+  "dev": "छब्बीस",
+  "heard": "छब्बीस",
+  "ok": true
+ },
+ {
+  "word": "revision",
+  "start": 0.625,
+  "end": 1.051,
+  "keyword": false,
+  "line": "L1B",
+  "dev": "रिविज़न",
+  "heard": "रिविज़न",
+  "ok": true
+ },
+ {
+  "word": "baad",
+  "start": 1.051,
+  "end": 1.58,
+  "keyword": false,
+  "line": "L1B",
+  "dev": "बाद",
+  "heard": "बाद",
+  "ok": true
+ },
+ {
+  "word": "client",
+  "start": 1.64,
+  "end": 1.98,
+  "keyword": false,
+  "line": "L1B",
+  "dev": "क्लाइंट",
+  "heard": "क्लाइंट",
+  "ok": true
+ },
+ {
+  "word": "ne",
+  "start": 1.98,
+  "end": 2.129,
+  "keyword": false,
+  "line": "L1B",
+  "dev": "ने",
+  "heard": "ने",
+  "ok": true
+ },
+ {
+  "word": "kaha...",
+  "start": 2.129,
+  "end": 2.58,
+  "keyword": false,
+  "line": "L1B",
+  "dev": "कहा...",
+  "heard": "कहा...",
+  "ok": true
+ },
+ {
+  "word": "Ho",
+  "start": 3.267,
+  "end": 3.523,
+  "keyword": false,
+  "line": "L2",
+  "dev": "हो",
+  "heard": "हो",
+  "ok": true
+ },
+ {
+  "word": "jayega.",
+  "start": 3.523,
+  "end": 4.227,
+  "keyword": true,
+  "line": "L2",
+  "dev": "जाएगा।",
+  "heard": "जाएगा।",
+  "ok": true
+ },
+ {
+  "word": "Pop?",
+  "start": 4.4,
+  "end": 4.84,
+  "keyword": true,
+  "line": "L3",
+  "dev": "पॉप?",
+  "heard": "पॉप?",
+  "ok": true
+ },
+ {
+  "word": "Kisi",
+  "start": 5.09,
+  "end": 5.34,
+  "keyword": false,
+  "line": "L3",
+  "dev": "किसी",
+  "heard": "किसी",
+  "ok": true
+ },
+ {
+  "word": "ko",
+  "start": 5.34,
+  "end": 5.488,
+  "keyword": false,
+  "line": "L3",
+  "dev": "को",
+  "heard": "को",
+  "ok": true
+ },
+ {
+  "word": "nahi",
+  "start": 5.488,
+  "end": 5.673,
+  "keyword": false,
+  "line": "L3",
+  "dev": "नहीं",
+  "heard": "नहीं",
+  "ok": true
+ },
+ {
+  "word": "pata.",
+  "start": 5.673,
+  "end": 6.117,
+  "keyword": false,
+  "line": "L3",
+  "dev": "पता।",
+  "heard": "पता।",
+  "ok": true
+ },
+ {
+  "word": "Clean.",
+  "start": 6.733,
+  "end": 7.533,
+  "keyword": true,
+  "line": "L4",
+  "dev": "क्लीन।",
+  "heard": "क्लीन।",
+  "ok": true
+ },
+ {
+  "word": "Energetic.",
+  "start": 8.6,
+  "end": 9.57,
+  "keyword": true,
+  "line": "L5",
+  "dev": "एनर्जेटिक।",
+  "heard": "एनर्जेटिक।",
+  "ok": true
+ },
+ {
+  "word": "Fun.",
+  "start": 10.8,
+  "end": 11.55,
+  "keyword": true,
+  "line": "L6",
+  "dev": "फ़न।",
+  "heard": "फवन",
+  "ok": true
+ },
+ {
+  "word": "Ab",
+  "start": 12.867,
+  "end": 13.131,
+  "keyword": false,
+  "line": "L7",
+  "dev": "अब",
+  "heard": "अब",
+  "ok": true
+ },
+ {
+  "word": "Mummy",
+  "start": 13.131,
+  "end": 13.594,
+  "keyword": true,
+  "line": "L7",
+  "dev": "मम्मी",
+  "heard": "मम्मी",
+  "ok": true
+ },
+ {
+  "word": "bhi",
+  "start": 13.594,
+  "end": 13.742,
+  "keyword": false,
+  "line": "L7",
+  "dev": "भी",
+  "heard": "भी",
+  "ok": true
+ },
+ {
+  "word": "review",
+  "start": 13.742,
+  "end": 14.057,
+  "keyword": false,
+  "line": "L7",
+  "dev": "रिव्यू",
+  "heard": "रिव्यू",
+  "ok": true
+ },
+ {
+  "word": "karengi.",
+  "start": 14.057,
+  "end": 14.657,
+  "keyword": false,
+  "line": "L7",
+  "dev": "करेंगी।",
+  "heard": "करेंगी।",
+  "ok": true
+ },
+ {
+  "word": "Bilkul",
+  "start": 15.0,
+  "end": 15.59,
+  "keyword": false,
+  "line": "L8",
+  "dev": "बिल्कुल",
+  "heard": "बिल्कुल",
+  "ok": true
+ },
+ {
+  "word": "cinematic.",
+  "start": 15.59,
+  "end": 16.42,
+  "keyword": true,
+  "line": "L8",
+  "dev": "सिनेमैटिक।",
+  "heard": "सिनेमैटिक।",
+  "ok": true
+ },
+ {
+  "word": "Aur",
+  "start": 19.233,
+  "end": 19.564,
+  "keyword": false,
+  "line": "L9",
+  "dev": "और",
+  "heard": "और",
+  "ok": true
+ },
+ {
+  "word": "ek,",
+  "start": 19.564,
+  "end": 20.213,
+  "keyword": false,
+  "line": "L9",
+  "dev": "एक,",
+  "heard": "एक,",
+  "ok": true
+ },
+ {
+  "word": "aur",
+  "start": 20.243,
+  "end": 20.525,
+  "keyword": false,
+  "line": "L9",
+  "dev": "और",
+  "heard": "और",
+  "ok": true
+ },
+ {
+  "word": "ek,",
+  "start": 20.525,
+  "end": 20.943,
+  "keyword": false,
+  "line": "L9",
+  "dev": "एक,",
+  "heard": "एक,",
+  "ok": true
+ },
+ {
+  "word": "aur",
+  "start": 20.973,
+  "end": 21.27,
+  "keyword": false,
+  "line": "L9",
+  "dev": "और",
+  "heard": "और",
+  "ok": true
+ },
+ {
+  "word": "ek.",
+  "start": 21.27,
+  "end": 21.683,
+  "keyword": true,
+  "line": "L9",
+  "dev": "एक।",
+  "heard": "एक",
+  "ok": true
+ },
+ {
+  "word": "Phir",
+  "start": 23.5,
+  "end": 23.88,
+  "keyword": false,
+  "line": "L10",
+  "dev": "फिर",
+  "heard": "फिर",
+  "ok": true
+ },
+ {
+  "word": "aakhri",
+  "start": 23.94,
+  "end": 24.38,
+  "keyword": true,
+  "line": "L10",
+  "dev": "आख़री",
+  "heard": "आख़री",
+  "ok": true
+ },
+ {
+  "word": "message...",
+  "start": 24.38,
+  "end": 24.93,
+  "keyword": false,
+  "line": "L10",
+  "dev": "मैसेज...",
+  "heard": "मैसेज...",
+  "ok": true
+ },
+ {
+  "word": "Har",
+  "start": 28.133,
+  "end": 28.408,
+  "keyword": false,
+  "line": "L11",
+  "dev": "हर",
+  "heard": "हर",
+  "ok": true
+ },
+ {
+  "word": "editor",
+  "start": 28.408,
+  "end": 28.889,
+  "keyword": false,
+  "line": "L11",
+  "dev": "एडिटर",
+  "heard": "एडिटर",
+  "ok": true
+ },
+ {
+  "word": "jaanta",
+  "start": 28.889,
+  "end": 29.371,
+  "keyword": false,
+  "line": "L11",
+  "dev": "जानता",
+  "heard": "जानता",
+  "ok": true
+ },
+ {
+  "word": "hai,",
+  "start": 29.371,
+  "end": 29.723,
+  "keyword": false,
+  "line": "L11",
+  "dev": "है,",
+  "heard": "है,",
+  "ok": true
+ },
+ {
+  "word": "v1",
+  "start": 29.873,
+  "end": 30.49,
+  "keyword": false,
+  "line": "L11",
+  "dev": "वी-वन",
+  "heard": "वी-वन",
+  "ok": true
+ },
+ {
+  "word": "hi",
+  "start": 30.49,
+  "end": 30.75,
+  "keyword": false,
+  "line": "L11",
+  "dev": "ही",
+  "heard": "ही",
+  "ok": true
+ },
+ {
+  "word": "final",
+  "start": 30.75,
+  "end": 31.305,
+  "keyword": false,
+  "line": "L11",
+  "dev": "फ़ाइनल",
+  "heard": "फ़ाइनल",
+  "ok": true
+ },
+ {
+  "word": "hota",
+  "start": 31.305,
+  "end": 31.639,
+  "keyword": false,
+  "line": "L11",
+  "dev": "होता",
+  "heard": "होता",
+  "ok": true
+ },
+ {
+  "word": "hai.",
+  "start": 31.639,
+  "end": 31.993,
+  "keyword": false,
+  "line": "L11",
+  "dev": "है।",
+  "heard": "है।",
+  "ok": true
+ },
+ {
+  "word": "...aur",
+  "start": 32.6,
+  "end": 32.783,
+  "keyword": false,
+  "line": "L12",
+  "dev": "और",
+  "heard": "और",
+  "ok": true
+ },
+ {
+  "word": "phir",
+  "start": 32.783,
+  "end": 33.042,
+  "keyword": false,
+  "line": "L12",
+  "dev": "फिर",
+  "heard": "फिर",
+  "ok": true
+ },
+ {
+  "word": "client",
+  "start": 33.042,
+  "end": 33.431,
+  "keyword": false,
+  "line": "L12",
+  "dev": "क्लाइंट",
+  "heard": "क्लाइंट",
+  "ok": true
+ },
+ {
+  "word": "ne",
+  "start": 33.431,
+  "end": 33.579,
+  "keyword": false,
+  "line": "L12",
+  "dev": "ने",
+  "heard": "ने",
+  "ok": true
+ },
+ {
+  "word": "bola",
+  "start": 33.579,
+  "end": 34.05,
+  "keyword": false,
+  "line": "L12",
+  "dev": "बोला",
+  "heard": "बोला,",
+  "ok": true
+ }
+]

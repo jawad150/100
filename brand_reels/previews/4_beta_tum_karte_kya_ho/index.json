@@ -1,0 +1,21 @@
+{
+ "title": "Beta, tum karte kya ho?",
+ "tiles_left_to_right": [
+  "frame 0",
+  "hook 1.0s",
+  "wrong genre 1 5.6s",
+  "JD shocked 8.0s",
+  "stamp 9.6s",
+  "killer 13s",
+  "JD 14.7s",
+  "chat 22.8s",
+  "chat 25s",
+  "payoff 28.5s",
+  "31.8s",
+  "end card 34.5s",
+  "hook B (trial)"
+ ],
+ "audio_sources": [
+  "beta_tum_karte_kya_ho/audio/rough/beta_tum_karte_kya_ho_mix.wav"
+ ]
+}

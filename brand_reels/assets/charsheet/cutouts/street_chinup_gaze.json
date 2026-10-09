@@ -1,0 +1,87 @@
+{
+ "name": "street_chinup_gaze",
+ "sheet": "sheet_streetwear.webp",
+ "sheet_box": [
+  1325,
+  565,
+  1795,
+  1047
+ ],
+ "native_wh": [
+  470,
+  482
+ ],
+ "cutout_wh": [
+  940,
+  964
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  27,
+  47,
+  917,
+  964
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": true,
+  "left": false,
+  "right": false
+ },
+ "halo_cv": -1.22,
+ "halo_cv_p95": 0.0,
+ "halo_cv_raw": 10.3,
+ "face_box": [
+  279.9,
+  134.3,
+  621.2,
+  558.6
+ ],
+ "eyes": [
+  [
+   328.5,
+   278.0
+  ],
+  [
+   454.1,
+   296.9
+  ]
+ ],
+ "nose": [
+  335.7,
+  369.8
+ ],
+ "mouth": [
+  [
+   322.0,
+   442.3
+  ],
+  [
+   427.9,
+   456.1
+  ]
+ ],
+ "face_score": 0.921,
+ "head_box": [
+  204.7,
+  0.0,
+  696.4,
+  592.6
+ ],
+ "face_h_native": 212.2,
+ "eye_mid": [
+  391.3,
+  287.4
+ ],
+ "tex_ratio": 8.05,
+ "cheek_patch": [
+  274,
+  330,
+  334,
+  390
+ ],
+ "tex_ratio_native": 2.27,
+ "max_display_w": 890,
+ "max_display_h": 917
+}

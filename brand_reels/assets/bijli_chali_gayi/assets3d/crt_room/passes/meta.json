@@ -1,0 +1,140 @@
+{
+ "name": "crt_room",
+ "variant": "passes",
+ "mode": "static",
+ "frames": 5,
+ "fps_hint": 30,
+ "size": [
+  490,
+  407
+ ],
+ "loop": false,
+ "labels": [
+  "room",
+  "key_l",
+  "key_r",
+  "screen_mask",
+  "emit"
+ ],
+ "notes": "CRT monitor (no text/logo): SMOKE bezel with a chamfered lip, convex #0C0807 glass (6 mm bulge, roughness 0.04, coat 1), tapered #3B2A22 back housing, bottom vents, 4 buttons, power button + power LED, swivel stand. screen_mask = visible glass (white emission), emit = power LED (FLAME).",
+ "features": {
+  "power_led": [
+   401.2,
+   324.7
+  ],
+  "screen_tl": [
+   75.0,
+   65.0
+  ],
+  "screen_tr": [
+   415.0,
+   65.0
+  ],
+  "screen_br": [
+   415.0,
+   305.0
+  ],
+  "screen_bl": [
+   75.0,
+   305.0
+  ],
+  "frame_xy": [
+   225.0,
+   985.0
+  ]
+ },
+ "samples": {
+  "room": 96,
+  "key_l": 96,
+  "key_r": 96,
+  "screen_mask": 16,
+  "emit": 16
+ },
+ "preview": false,
+ "render_seconds": {
+  "room": 66.9,
+  "key_l": 51.9,
+  "key_r": 52.1,
+  "screen_mask": 8.9,
+  "emit": 8.7
+ },
+ "device": "CPU",
+ "threads": 2,
+ "camera": {
+  "lens": 28.0,
+  "sensor_fit": "VERTICAL",
+  "location": [
+   0.0,
+   0.0,
+   0.9131
+  ],
+  "rotation_deg": [
+   90.0,
+   0.0,
+   0.0
+  ],
+  "shift": [
+   0.0,
+   0.13125
+  ]
+ },
+ "builder": "pipeline/jawad_reels/assets3d_bijli_chali_gayi.py",
+ "frame_xy": [
+  225,
+  985
+ ],
+ "crop_rect_frame": [
+  225,
+  985,
+  715,
+  1392
+ ],
+ "screen_quad": [
+  [
+   75.0,
+   65.0
+  ],
+  [
+   415.0,
+   65.0
+  ],
+  [
+   415.0,
+   305.0
+  ],
+  [
+   75.0,
+   305.0
+  ]
+ ],
+ "screen_quad_frame": [
+  [
+   300.0,
+   1050.0
+  ],
+  [
+   640.0,
+   1050.0
+  ],
+  [
+   640.0,
+   1290.0
+  ],
+  [
+   300.0,
+   1290.0
+  ]
+ ],
+ "anchor": [
+  245.5,
+  203.5
+ ],
+ "bbox": [
+  25,
+  25,
+  466,
+  382
+ ],
+ "ground_y": 381,
+ "rendered": "2026-10-08 22:45:29"
+}

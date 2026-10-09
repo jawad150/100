@@ -1,0 +1,73 @@
+{
+ "name": "desk_plate",
+ "variant": "passes",
+ "mode": "static",
+ "frames": 2,
+ "fps_hint": 30,
+ "size": [
+  1080,
+  1920
+ ],
+ "loop": false,
+ "labels": [
+  "lit",
+  "practicals"
+ ],
+ "notes": "CAM_ROOM plate (opaque): lime-wash wall, NIGHT_1 ceiling, iron-grille window on a dusk sky card, blank switchboard, 2 ft tube-light batten, fan canopy, dark-teak table with water rings, homework copy (kraft cover, ruled pages fanned by the breeze), red-oxide floor. lit = tube light (IVORY) + faint CRT spill (AMBER) + faint window spill; practicals = only the 0.5 W FLAME LED point (near-black). No props in it.",
+ "features": {
+  "tube_xy": [
+   235.0,
+   268.0
+  ],
+  "crt_slot": [
+   469.5,
+   1372.4
+  ],
+  "box_slot": [
+   860.9,
+   1375.3
+  ]
+ },
+ "samples": {
+  "lit": 96,
+  "practicals": 96
+ },
+ "preview": false,
+ "render_seconds": {
+  "lit": 445.9,
+  "practicals": 259.8
+ },
+ "device": "CPU",
+ "threads": 2,
+ "camera": {
+  "lens": 28.0,
+  "sensor_fit": "VERTICAL",
+  "location": [
+   0.0,
+   0.0,
+   0.9131
+  ],
+  "rotation_deg": [
+   90.0,
+   0.0,
+   0.0
+  ],
+  "shift": [
+   0.0,
+   0.13125
+  ]
+ },
+ "builder": "pipeline/jawad_reels/assets3d_bijli_chali_gayi.py",
+ "anchor": [
+  540.0,
+  960.0
+ ],
+ "bbox": [
+  0,
+  0,
+  1080,
+  1920
+ ],
+ "ground_y": 1919,
+ "rendered": "2026-10-08 22:42:07"
+}

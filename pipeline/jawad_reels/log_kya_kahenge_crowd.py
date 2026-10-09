@@ -624,6 +624,7 @@ class State:
         self.empty = kw.get('empty', False)            # S6: the empty row-1 seat and the phone-only seat
         self.fog = kw.get('fog', 0.0)                  # 0..1 depth darkening beyond fog_d0 (the orbit's far side)
         self.fog_d0 = kw.get('fog_d0', 16800.0)
+        self.light_gain = kw.get('light_gain', 1.0)    # scales the light map (S5's key ignition); emissives keep level
 
 
 def sway(F, t):
@@ -738,8 +739,6 @@ def render(cam, t, st, light_kind='flood'):
     items = []
     mask = st.mask
     sp = specials()
-    camR = cam.R
-    cpos = cam.pos
     # -------- walls (barrier + bench / riser walls), floor
     if st.walls > 0 and mask is None:
         wt = wall_texture()
@@ -774,15 +773,8 @@ def render(cam, t, st, light_kind='flood'):
             sel = np.array([F['last']])
         vis, zs = _vis_fig(cam, F, sel)
         sw = sway(F, t)
-        hx_state = None
-        if callable(st.head):
-            hx_state = st.head
         for k, z in zip(vis, zs):
-            if st.part == 'cards' and k == F['last'] and not st.last:
-                continue
             items.append((float(cam.depth(F['B'][k] + np.array([0.0, -500.0, 0.0]))), 2, ('fig', int(k), float(sw[k]))))
-            del hx_state
-            hx_state = None
     # -------- people + phones
     if st.people > 0 and st.part in ('all', 'nocards') and mask is None:
         occ = np.flatnonzero(P['occ'])
@@ -819,8 +811,9 @@ def render(cam, t, st, light_kind='flood'):
             _draw_phone(cv, cam, t, st, P, it[1], sp, light_kind)
     if mask is None:
         lm = light_map(st.light, light_kind)
+        if st.light_gain != 1.0:
+            lm *= np.float32(st.light_gain)
         cv[..., :3] *= lm
-    del camR, cpos
     return cv
 
 
@@ -861,8 +854,7 @@ def _draw_fig(cv, cam, t, st, F, T, k, sw, sp):
     fw, fh = FIG_W * lean * wmul, FIG_H * lean
     rot = (rx, yaw, rz)
     # facing: n points to F; the camera sees the back when dot(n, card - cam) > 0
-    r = math.radians(yaw)
-    n = np.array([-math.sin(r), 0.0, -math.cos(r)])
+    n = K._rot(*rot) @ np.array([0.0, 0.0, -1.0])                 # the printed side's normal (toward the field)
     mid = K.plane_point(B, fw, fh, rot=rot, uv=(0.5, 0.5), anchor=(0.5, 1.0))
     v = mid - cam.pos
     dist = float(np.linalg.norm(v))
@@ -912,11 +904,6 @@ def _draw_fig(cv, cam, t, st, F, T, k, sw, sp):
                        head_w=w)
     if st.lines and ad < LINE_DOT and F['j'][k] == 1:
         _draw_line(cv, cam, F, k, B, fw, fh, rot, (1.0 - ad / LINE_DOT) * op)
-
-
-@functools.lru_cache(maxsize=2)
-def _black_like_cached(key):
-    return None
 
 
 def _black_like(spr):
@@ -1103,18 +1090,15 @@ def _draw_phone(cv, cam, t, st, P, k, sp, light_kind):
         base = 1.0
         fl = (1.0 + 0.15 * math.sin(2 * math.pi * 2.5 * t)) * st.tap
     gain = op * base * fl
-    lm = light_at(st.light, light_kind, xy)[0] if st.mask is None else np.ones(3, np.float32)
+    lm = light_at(st.light, light_kind, xy)[0] * np.float32(st.light_gain) if st.mask is None else np.ones(3, np.float32)
     comp = 1.0 / np.maximum(lm, 0.08)
     coc = float(cam.coc(z)) if cam.aperture > 0 else 0.0
     if coc > 4.0:
         # bokeh: a disc of radius coc with the core's energy (floored so a far phone still reads as a dot)
         core_px = 70.0 * cam.focal / z
         e = (core_px * core_px * 2.0) / (math.pi * coc * coc)
-        a = gain * max(e * 1.8, 0.10)
-        spr = bokeh_disc(int(round(coc)))
-        tmp = spr
-        K.draw(cv, tmp, float(xy[0, 0]), float(xy[0, 1]), opacity=1.0, mode='add') if False else None
-        _add_tinted(cv, spr, xy[0], a * comp)
+        a = gain * max(e * 0.9, 0.035)
+        _add_tinted(cv, bokeh_disc(int(round(coc))), xy[0], a * comp)
     else:
         spr = phone_sprite()
         width = spr.shape[1] / PPX

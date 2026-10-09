@@ -1,0 +1,85 @@
+{
+ "name": "box_room",
+ "variant": "passes",
+ "mode": "static",
+ "frames": 4,
+ "fps_hint": 30,
+ "size": [
+  265,
+  200
+ ],
+ "loop": false,
+ "labels": [
+  "room",
+  "key_l",
+  "key_r",
+  "emit"
+ ],
+ "notes": "Unlabelled power-backup box: matte powder-coated #120C0A metal (roughness 0.6), side vents, rocker switch, one round LED with a chrome bezel (emit, FLAME), rubber feet. No text, no logo, no UPS/inverter marks.",
+ "features": {
+  "led_xy": [
+   74.5,
+   63.0
+  ],
+  "frame_xy": [
+   725.0,
+   1202.0
+  ]
+ },
+ "samples": {
+  "room": 96,
+  "key_l": 96,
+  "key_r": 96,
+  "emit": 16
+ },
+ "preview": false,
+ "render_seconds": {
+  "room": 31.0,
+  "key_l": 21.8,
+  "key_r": 21.7,
+  "emit": 4.2
+ },
+ "device": "CPU",
+ "threads": 2,
+ "camera": {
+  "lens": 28.0,
+  "sensor_fit": "VERTICAL",
+  "location": [
+   0.0,
+   0.0,
+   0.9131
+  ],
+  "rotation_deg": [
+   90.0,
+   0.0,
+   0.0
+  ],
+  "shift": [
+   0.0,
+   0.13125
+  ]
+ },
+ "builder": "pipeline/jawad_reels/assets3d_bijli_chali_gayi.py",
+ "frame_xy": [
+  725,
+  1202
+ ],
+ "crop_rect_frame": [
+  725,
+  1202,
+  990,
+  1402
+ ],
+ "anchor": [
+  132.5,
+  100.5
+ ],
+ "bbox": [
+  25,
+  25,
+  240,
+  176
+ ],
+ "ground_y": 172,
+ "rendered": "2026-10-08 22:48:43"
+}

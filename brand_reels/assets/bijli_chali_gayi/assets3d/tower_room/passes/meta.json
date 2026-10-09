@@ -1,0 +1,85 @@
+{
+ "name": "tower_room",
+ "variant": "passes",
+ "mode": "static",
+ "frames": 4,
+ "fps_hint": 30,
+ "size": [
+  345,
+  435
+ ],
+ "loop": false,
+ "labels": [
+  "room",
+  "key_l",
+  "key_r",
+  "emit"
+ ],
+ "notes": "Desktop tower under the table (no logos): SMOKE body, NIGHT_1 bezel, #3B2A22 5.25-inch drive tray, blank bay, 3.5-inch floppy slot, power button with a satin ring, reset, HDD LED (emit, RED), lower vents.",
+ "features": {
+  "hdd_led": [
+   169.8,
+   312.3
+  ],
+  "frame_xy": [
+   732.0,
+   1485.0
+  ]
+ },
+ "samples": {
+  "room": 96,
+  "key_l": 96,
+  "key_r": 96,
+  "emit": 16
+ },
+ "preview": false,
+ "render_seconds": {
+  "room": 40.1,
+  "key_l": 24.1,
+  "key_r": 28.9,
+  "emit": 3.4
+ },
+ "device": "CPU",
+ "threads": 2,
+ "camera": {
+  "lens": 28.0,
+  "sensor_fit": "VERTICAL",
+  "location": [
+   0.0,
+   0.0,
+   0.9131
+  ],
+  "rotation_deg": [
+   90.0,
+   0.0,
+   0.0
+  ],
+  "shift": [
+   0.0,
+   0.13125
+  ]
+ },
+ "builder": "pipeline/jawad_reels/assets3d_bijli_chali_gayi.py",
+ "frame_xy": [
+  732,
+  1485
+ ],
+ "crop_rect_frame": [
+  732,
+  1485,
+  1077,
+  1920
+ ],
+ "anchor": [
+  168.5,
+  229.0
+ ],
+ "bbox": [
+  24,
+  25,
+  313,
+  433
+ ],
+ "ground_y": 417,
+ "rendered": "2026-10-08 22:47:11"
+}

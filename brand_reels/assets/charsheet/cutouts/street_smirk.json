@@ -1,0 +1,87 @@
+{
+ "name": "street_smirk",
+ "sheet": "sheet_streetwear.webp",
+ "sheet_box": [
+  1090,
+  30,
+  1547,
+  503
+ ],
+ "native_wh": [
+  457,
+  473
+ ],
+ "cutout_wh": [
+  914,
+  946
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  14,
+  47,
+  902,
+  946
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": true,
+  "left": false,
+  "right": false
+ },
+ "halo_cv": -1.24,
+ "halo_cv_p95": 0.0,
+ "halo_cv_raw": 8.01,
+ "face_box": [
+  236.5,
+  212.2,
+  554.7,
+  628.6
+ ],
+ "eyes": [
+  [
+   275.7,
+   388.7
+  ],
+  [
+   390.1,
+   367.6
+  ]
+ ],
+ "nose": [
+  305.6,
+  467.2
+ ],
+ "mouth": [
+  [
+   311.9,
+   534.8
+  ],
+  [
+   410.4,
+   517.6
+  ]
+ ],
+ "face_score": 0.91,
+ "head_box": [
+  166.4,
+  0.0,
+  624.7,
+  661.9
+ ],
+ "face_h_native": 208.2,
+ "eye_mid": [
+  332.9,
+  378.2
+ ],
+ "tex_ratio": 8.13,
+ "cheek_patch": [
+  246,
+  433,
+  302,
+  489
+ ],
+ "tex_ratio_native": 2.24,
+ "max_display_w": 888,
+ "max_display_h": 899
+}

@@ -1,0 +1,368 @@
+{
+ "reel": "beta_tum_karte_kya_ho",
+ "voice": "Vlad (preset e5666b9c-99a2-4fac-8b4e-abee078b186d) on elevenlabs_v4",
+ "budget_credits": 25,
+ "global_guard_min_balance": 6800,
+ "note": "spent_credits = the sum of this reel's own get_cost preflights for submitted requests (never the account delta: the owner spends too)",
+ "balance_checks": [
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "credits": 6954.41,
+   "when": "start"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "credits": 6945.21,
+   "when": "before batch 1 (pron)"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "credits": 6939.23,
+   "when": "before batch 2 (lines)"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "credits": 6931.41,
+   "when": "before batch 3 (retakes / variants)"
+  },
+  {
+   "at": "2026-10-09T07:01:11Z",
+   "credits": 6928.19,
+   "when": "before batch 4 (L11-F)"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "credits": 6926.35,
+   "when": "before batch 5 (round-2 retakes / cuts)"
+  },
+  {
+   "at": "2026-10-09T07:24:03Z",
+   "credits": 6924.97,
+   "when": "before batch 6 (L7-O)"
+  },
+  {
+   "at": "2026-10-09T07:33:02Z",
+   "credits": 6924.51,
+   "when": "end (informational)"
+  }
+ ],
+ "spent_credits": 10.81,
+ "requests": [
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P0",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "57e252b0-a15f-4bf7-b174-352679627f64"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "377ea627-d3ed-41dc-8ba1-6a3168df7e30"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "9a604728-03bc-4ec6-a0ff-f04e3e1e8954"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P3",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "07dd4c6f-321a-434c-8403-2edc55abd75a"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P4",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "00e3243a-81dd-4aa9-9e1a-d909796c48bc"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P5",
+   "cost": 0.0,
+   "status": "submission_failed (429 rate_limit_reached): no job, not charged"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P6",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "9d2b359d-c582-4249-b858-2264788e84c0"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P7",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "18f2efd3-d97a-4b76-8d6b-032174860bde"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P8",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "ad915a08-1040-4c76-8361-f99f5b8ca6cd"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P9",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "80c9bc22-1c12-4a99-976a-72f0143df777"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P10",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "404ad866-3284-42e7-825c-e27de1186a13"
+  },
+  {
+   "at": "2026-10-09T06:26:56Z",
+   "label": "pron P11",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "1f51ff66-a5f9-4712-a70c-17ef2970a55f"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L1 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "d7fa9bcf-89f8-4aab-a9fa-aecfc1ca8df3"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L1B t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "b48f2f8b-2d31-4324-8490-f5023aeedc4a"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L2 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "81b6ed71-1faf-4385-a529-6607fc9a8678"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L3 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "768718e0-71ca-4a40-b3ce-8f8e7e0951ef"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L4 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "a466ea9c-d797-4723-88da-b133ebce481d"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L5 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "d7e553c3-9945-4175-a7ed-d929178bf51f"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L6 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "57fd8bb9-0bb1-4920-a79b-cea649a2684c"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L7 t1",
+   "cost": 0.46,
+   "status": "submitted",
+   "job_id": "72888b99-c5e2-4e51-8ac7-8b80b0531026"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L8 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "c94685c3-f1a8-457e-93fa-f783343a3f02"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L9 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "96c99cab-f182-46a3-99a9-ed085e7f3438"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L10 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "995c71eb-e820-4ed3-b6e0-f87a67863efa"
+  },
+  {
+   "at": "2026-10-09T06:43:39Z",
+   "label": "line L11 t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "6a7ef530-03d4-475e-9b5c-de38ef213e06"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L1B_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "bd92f0ae-c97a-4b58-b15c-05ce61da8cf2"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L2-C_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "0cd8b69b-7fd4-4112-85fc-454b959d2b2e"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L3-N_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "6064ebad-c83f-4570-adb5-f4e93b796403"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L4_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "a4f4daf9-b1b8-43a9-806a-a3895cda1084"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L5-C_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "36ce2911-b18e-4241-92d4-eb7610b77e39"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L6-C_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "261d6d87-091d-4512-809e-10114c406a84"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L6-F_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "1d0d1a67-86a4-4527-bbe0-d6b0f476f6ec"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L7_t2",
+   "cost": 0.46,
+   "status": "submitted",
+   "job_id": "8ac8f1e4-acaa-4c3a-b52b-36dffb6a1b2c"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L7-C_t1",
+   "cost": 0.46,
+   "status": "submitted",
+   "job_id": "82460f5b-a62b-40ab-92b8-1d107171a253"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L9_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "75fffe91-e601-4524-bd29-33102704ce34"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L10_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "6bbaf6c5-fb80-4a1d-a291-aa8d64ec4992"
+  },
+  {
+   "at": "2026-10-09T07:00:56Z",
+   "label": "retake L11_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "a00332cf-387b-459e-855e-757874d4472d"
+  },
+  {
+   "at": "2026-10-09T07:01:11Z",
+   "label": "variant L11-F_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "190230f2-e8e2-4358-b53d-973b0a16be69"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L2_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "e5936a3e-7f34-4aa2-b2ba-2c5ac4291cbc"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L2_t3",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "499eedaf-d1fa-42e5-8b8d-1c6bc433d813"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L3-S_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "13cc7861-8a95-4c18-b4cb-eb4313adaeec"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L3-J_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "b18527e7-1fa2-41fc-8877-b8fb6f861897"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L6-F_t2",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "d743a3cd-d65e-488f-9271-34b4e0438785"
+  },
+  {
+   "at": "2026-10-09T07:19:05Z",
+   "label": "round2 L1B-R_t1",
+   "cost": 0.23,
+   "status": "submitted",
+   "job_id": "1c6a27d0-79ef-4b52-9b38-3876c66b19a0"
+  },
+  {
+   "at": "2026-10-09T07:24:03Z",
+   "label": "round2 L7-O_t1",
+   "cost": 0.46,
+   "status": "submitted",
+   "job_id": "36edc30c-c9a7-444d-a73d-b937146bdfd8"
+  }
+ ],
+ "summary": {
+  "submitted_requests": 43,
+  "pron_carriers": 11,
+  "line_takes": 32,
+  "spent_credits": 10.81,
+  "budget": 25,
+  "remaining": 14.19,
+  "note": "balance never below the 6800 guard (lowest seen 6924.51); the account delta includes the owner's own spend"
+ }
+}

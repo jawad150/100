@@ -1,0 +1,18 @@
+{
+ "title": "Ek Frame ki Keemat",
+ "tiles_left_to_right": [
+  "frame 0 / hook",
+  "12 layers / cover 5.1s",
+  "fly-through 7.8s",
+  "re-hook 13.2s",
+  "16.0s",
+  "payoff 26.4s",
+  "end card 29.4s",
+  "contact sheet"
+ ],
+ "audio_sources": [
+  "ek_frame_ki_keemat/vo/vo_stem.wav",
+  "ek_frame_ki_keemat/music/music_full.wav",
+  "ek_frame_ki_keemat/audio/ek_frame_ki_keemat_sfx_stem.wav"
+ ]
+}

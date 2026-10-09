@@ -322,20 +322,13 @@ def body_cues(ev, SJ):
 
 
 def _words(hook):
-    """(word dicts in reel time, VO audio (samples, sr)) for the hook: B = hook-B VO before 3.0 s + the A body."""
-    wa = json.load(open(VO_A_WORDS))
-    xa, sr = A.read_wav(VO_A)
-    if hook == 'A':
-        return wa, (xa, sr)
-    wb = json.load(open(VO_B_WORDS))
-    xb, srb = A.read_wav(VO_B)
-    assert sr == srb == SR
-    xa = A._st(xa).copy()
-    xb = A._st(xb)
-    i = _n(SPLICE)
-    xa[:i] = 0.0
-    xa[:min(i, len(xb))] = xb[:min(i, len(xb))]
-    return [w for w in wb if w['start'] < SPLICE] + [w for w in wa if w['start'] >= SPLICE], (xa, sr)
+    """(word dicts in reel time, VO audio (samples, sr)) of one VO stem: 'A' = the reel-time A stem (33.6 s), 'B' = the
+    hook-B stem (0-3.0 s). Hook-B cue lists fit their head (0-3.0 s) against 'B' and their body against 'A', so the body
+    cues are identical in both hooks (the VO-activity threshold is relative to each file's own speech level)."""
+    w = json.load(open(VO_A_WORDS if hook == 'A' else VO_B_WORDS))
+    x, sr = A.read_wav(VO_A if hook == 'A' else VO_B)
+    assert sr == SR
+    return w, (np.asarray(x, dtype=np.float64).reshape(len(x), -1).mean(1), sr)
 
 
 def _speech(words, vo, pad=0.06):
@@ -385,7 +378,12 @@ def raw_cues(hook='A', ev=None):
     SJ = register()
     ev = ev or events()
     head = hook_a_cues(ev) if hook == 'A' else hook_b_cues(ev)
-    return _seed(head) + _seed(body_cues(ev, SJ))
+    for c in head:
+        c['part'] = 'head'
+    body = body_cues(ev, SJ)
+    for c in body:
+        c['part'] = 'body'
+    return _seed(head) + _seed(body)
 
 
 def check_names(cues):
@@ -471,13 +469,22 @@ def carve_env(n, start, wins, depth_db, ramp=CARVE_RAMP):
 def cues(hook='A', report=False):
     """Fitted cue list (BRIEF 11): clear_spans + sfx_jawad.fit_under_vo against the final VO (words + audio)."""
     SJ = register()
-    words, vo = _words(hook)
-    c = clear_spans(raw_cues(hook), words, vo)
-    check_names(c)
-    fitted, rep = SJ.fit_under_vo(c, words, vo_audio=vo, report=True)       # hero='raise'
-    fitted = assign_carve(fitted, words, vo)
-    rep['carved'] = [dict(name=x['name'], t=x['t'], carve_db=x['carve_db'], windows=x['carve'])
-                     for x in fitted if x.get('carve')]
+    raw = raw_cues(hook)
+    check_names(raw)
+    fitted, rep = [], dict(heroes_ok=[], ducked=[], spans=[], violations=[], carved=[], span_notes=[], hero_source={})
+    for part, src in (('head', hook), ('body', 'A')):
+        words, vo = _words(src)
+        c = clear_spans([x for x in raw if x['part'] == part], words, vo)
+        f, r = SJ.fit_under_vo(c, words, vo_audio=vo, report=True)          # hero='raise'
+        f = assign_carve(f, words, vo)
+        for k in ('heroes_ok', 'ducked', 'spans', 'violations'):
+            rep[k] += r[k]
+        rep['hero_source'][part] = '%s VO: %s' % (src, r['hero_source'])
+        rep['carved'] += [dict(name=x['name'], t=x['t'], carve_db=x['carve_db'], windows=x['carve'])
+                          for x in f if x.get('carve')]
+        rep['span_notes'] += [dict(name=x['name'], t=x['t'], note=x['span_note']) for x in f if x.get('span_note')]
+        fitted += f
+    fitted.sort(key=lambda x: float(x['t']))
     worst = max(len(g) for g in instants(fitted))
     if worst > 3:
         raise ValueError('more than 3 sounds on one instant: %s' % [g for g in instants(fitted) if len(g) > 3])

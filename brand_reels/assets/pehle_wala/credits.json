@@ -1,0 +1,460 @@
+{
+ "reel": "pehle_wala",
+ "voice": "Vlad (preset e5666b9c-99a2-4fac-8b4e-abee078b186d) on elevenlabs_v4",
+ "budget_credits": 25,
+ "global_guard_min_balance": 6800,
+ "balance_checks": [
+  {
+   "at": "2026-10-09T06:22Z (approx.)",
+   "balance": 6954.41,
+   "when": "before pronunciation batch B1"
+  },
+  {
+   "at": "2026-10-09T06:23Z (approx.)",
+   "balance": 6950.96,
+   "when": "before B1a"
+  },
+  {
+   "at": "2026-10-09T06:28Z (approx.)",
+   "balance": 6942.68,
+   "when": "before B2 (line takes)"
+  },
+  {
+   "at": "2026-10-09T06:44Z (approx.)",
+   "balance": 6936.24,
+   "when": "before B3 (re-takes)"
+  },
+  {
+   "at": "2026-10-09T06:56Z (approx.)",
+   "balance": 6933.02,
+   "when": "before B4 (second re-takes)"
+  },
+  {
+   "at": "2026-10-09T07:15Z (approx.)",
+   "balance": 6926.81,
+   "when": "before B5 (L1B third round)"
+  },
+  {
+   "at": "2026-10-09T07:27Z (approx.)",
+   "balance": 6924.51,
+   "when": "final (after all jobs)"
+  }
+ ],
+ "spent_credits": 9.2,
+ "requests": [
+  {
+   "at": "2026-10-09T06:23:58Z",
+   "batch": "B1a",
+   "id": "P1",
+   "text": "पहले पॉप, फिर फ़न, फिर क्लीन।",
+   "chars": 29,
+   "cost_preflight": 0.23,
+   "job_id": "20c6b3cf-68f7-4229-95c5-07b59f661a37",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:23:58Z",
+   "batch": "B1a",
+   "id": "P2",
+   "text": "पहले Pop, फिर Fun, फिर Clean।",
+   "chars": 29,
+   "cost_preflight": 0.23,
+   "job_id": "9d8d6168-d3fb-4630-ac1f-1eee7f16866e",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:23:58Z",
+   "batch": "B1a",
+   "id": "P3",
+   "text": "उसने कहा, छब्बीस रिविज़न।",
+   "chars": 25,
+   "cost_preflight": 0.23,
+   "job_id": "b18ff620-8d9f-4e5d-9ff2-1cd10db376cd",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:24:11Z",
+   "batch": "B1b",
+   "id": "P4",
+   "text": "थोड़ा सिनेमैटिक, थोड़ा एनर्जेटिक।",
+   "chars": 33,
+   "cost_preflight": 0.23,
+   "job_id": "6fccd556-d1ec-46ee-8ed3-82b686d41fbb",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:24:11Z",
+   "batch": "B1b",
+   "id": "P5",
+   "text": "वी-वन ही फ़ाइनल है, आख़री बार।",
+   "chars": 30,
+   "cost_preflight": 0.23,
+   "job_id": "2eb53f35-28ef-4e8a-badf-c3b3c4021f11",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:24:20Z",
+   "batch": "B1c",
+   "id": "P6",
+   "text": "मम्मी ने रिव्यू किया, क्लाइंट ने नहीं।",
+   "chars": 38,
+   "cost_preflight": 0.23,
+   "job_id": "5d6af34d-325e-429f-a16d-c44729f2e1b9",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:24:20Z",
+   "batch": "B1c",
+   "id": "P7",
+   "text": "थोड़ा सिनेमेटिक, थोड़ा एनर्जैटिक, क्लायंट का रिवीज़न।",
+   "chars": 53,
+   "cost_preflight": 0.46,
+   "job_id": "5b55ab4d-2bf0-4bef-8ee4-23d520f59206",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:02Z",
+   "batch": "B2a",
+   "id": "L1_t1",
+   "cost_preflight": 0.23,
+   "job_id": "46c6d9b0-87fc-4569-b02f-d91e6e928be4",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:02Z",
+   "batch": "B2a",
+   "id": "L1B_t1",
+   "cost_preflight": 0.23,
+   "job_id": "369c4fee-ac25-47f8-81f7-6c5a492b6565",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:02Z",
+   "batch": "B2a",
+   "id": "L2_t1",
+   "cost_preflight": 0.23,
+   "job_id": "dee1a62c-5748-4c37-bdc5-e9db1abdb02c",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:02Z",
+   "batch": "B2a",
+   "id": "L3_t1",
+   "cost_preflight": 0.23,
+   "job_id": "ec78e580-11f1-478c-9324-f637ec73d176",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:16Z",
+   "batch": "B2b",
+   "id": "L4_t1",
+   "cost_preflight": 0.23,
+   "job_id": "af8b39d2-c585-4d7d-89b8-9392864f6eec",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:16Z",
+   "batch": "B2b",
+   "id": "L5_t1",
+   "cost_preflight": 0.23,
+   "job_id": "3fec5c44-18b1-4003-9716-35efda57261d",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:16Z",
+   "batch": "B2b",
+   "id": "L6_t1",
+   "cost_preflight": 0.23,
+   "job_id": "22883440-86a2-4ee0-a2ec-e5ff0f762227",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:16Z",
+   "batch": "B2b",
+   "id": "L7_t1",
+   "cost_preflight": 0.23,
+   "job_id": "00bc1b9d-a80f-4d78-a81e-10ea5cf73e3f",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:36Z",
+   "batch": "B2c",
+   "id": "L8_t1",
+   "cost_preflight": 0.23,
+   "job_id": "add03118-8022-4396-bcbd-fc2f594d8754",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:36Z",
+   "batch": "B2c",
+   "id": "L9_t1",
+   "cost_preflight": 0.23,
+   "job_id": "040a65f4-ec60-4726-a201-d3811601fa16",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:36Z",
+   "batch": "B2c",
+   "id": "L10_t1",
+   "cost_preflight": 0.23,
+   "job_id": "6627f720-1c9f-4b31-9809-d6bd86391be4",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:38Z",
+   "batch": "B2d",
+   "id": "L11_t1",
+   "cost_preflight": 0.23,
+   "job_id": "ac8b5073-96f2-4ccd-a573-871925afb9fa",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:29:38Z",
+   "batch": "B2d",
+   "id": "L12_t1 (with continuation ', बस एक छोटा सा चेंज।')",
+   "cost_preflight": 0.23,
+   "job_id": "9b572d1e-7d83-4d91-83eb-0cc4b42bd317",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:44:54Z",
+   "batch": "B3a",
+   "id": "L1_t2",
+   "note": "same text",
+   "cost_preflight": 0.23,
+   "job_id": "f31890f6-72b6-496d-86e9-5ca54822da0a",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:44:54Z",
+   "batch": "B3a",
+   "id": "L1_t3",
+   "note": "same text",
+   "cost_preflight": 0.23,
+   "job_id": "4dc3b155-fa5e-4672-a881-549081a99df6",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:44:54Z",
+   "batch": "B3a",
+   "id": "L1B_t2",
+   "note": "same text",
+   "cost_preflight": 0.23,
+   "job_id": "3469e83c-4d93-4a60-95a9-1cf4ed988f8d",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:44:54Z",
+   "batch": "B3a",
+   "id": "L1B_t3",
+   "note": "fallback 3: कहा। (no drawl)",
+   "cost_preflight": 0.23,
+   "job_id": "2b94054d-d1f0-4c90-8f73-f1eaedf24f11",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:10Z",
+   "batch": "B3b",
+   "id": "L9_t2",
+   "note": "run-on: और एक और एक और एक। (t1 too slow: 0.93 s per fragment)",
+   "cost_preflight": 0.23,
+   "job_id": "79627216-e80a-4bad-a935-387ac020c548",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:10Z",
+   "batch": "B3b",
+   "id": "L9_t3",
+   "note": "run-on: और एक और एक और एक।",
+   "cost_preflight": 0.23,
+   "job_id": "90ddacc8-f58e-4cac-a4a6-70eb301b2b3b",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:10Z",
+   "batch": "B3b",
+   "id": "L10_t2",
+   "note": "same text (t1 over hard end 24.95 by 0.21 s)",
+   "cost_preflight": 0.23,
+   "job_id": "ab5c2463-e545-4cf9-9b53-b18fed1616db",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:10Z",
+   "batch": "B3b",
+   "id": "L10_t3",
+   "note": "फिर आख़री मैसेज। (no drawl)",
+   "cost_preflight": 0.23,
+   "job_id": "2d776976-799e-46d5-851a-247b2047c695",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:23Z",
+   "batch": "B3c",
+   "id": "L5_t2",
+   "note": "same text (t1 CER small 0.167; over hard end 9.55 by 0.02 s)",
+   "cost_preflight": 0.23,
+   "job_id": "55ec3b24-0d27-47fa-94b4-a75018a4d558",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:45:23Z",
+   "batch": "B3c",
+   "id": "L4_t2",
+   "note": "same text (t1 over hard end 7.45 by 0.08 s)",
+   "cost_preflight": 0.23,
+   "job_id": "5cf0cfc1-c991-4f9d-a87c-1f3932cea046",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:23Z",
+   "batch": "B4a",
+   "id": "L1B_t4",
+   "note": "कहा। variant (t3 fits 2.70 with gap closing but its 'client' was heard as 'plaint')",
+   "cost_preflight": 0.23,
+   "job_id": "4aca0ab7-de65-4295-82c6-0e4aaa8b077f",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:23Z",
+   "batch": "B4a",
+   "id": "L1B_t5",
+   "note": "कहा। variant",
+   "cost_preflight": 0.23,
+   "job_id": "3730e900-30dd-4b35-a79a-31a9e92b1f60",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:23Z",
+   "batch": "B4a",
+   "id": "L10_t4",
+   "note": "मैसेज। variant (t1-t3 end 0.08-0.28 s past 24.95)",
+   "cost_preflight": 0.23,
+   "job_id": "e7b3d2bc-293e-4b0b-997b-cb0654bf627c",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:23Z",
+   "batch": "B4a",
+   "id": "L10_t5",
+   "note": "मैसेज। variant",
+   "cost_preflight": 0.23,
+   "job_id": "cdc82faf-ef5a-4bf2-9b97-df515910f4fd",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:38Z",
+   "batch": "B4b",
+   "id": "L9_t4",
+   "note": "और एक! और एक! और एक! (punchier count; t1-t3 fragments 0.9 s each)",
+   "cost_preflight": 0.23,
+   "job_id": "81bb1b6f-68d1-494e-9df0-407d4084c043",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:38Z",
+   "batch": "B4b",
+   "id": "L9_t5",
+   "note": "carrier: वो लिखता गया, और एक, और एक, और एक, पूरी रात। (cut the 3 fragments)",
+   "cost_preflight": 0.23,
+   "job_id": "a0eba508-f663-4819-bb13-d964846dd0fc",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T06:57:38Z",
+   "batch": "B4b",
+   "id": "L9_t6",
+   "note": "merged: औरएक, औरएक, औरएक।",
+   "cost_preflight": 0.23,
+   "job_id": "802dab03-3a2a-48ca-92e9-92f913736d1f",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T07:15:44Z",
+   "batch": "B5",
+   "id": "L1B_t6",
+   "note": "कहा। variant (t5 fits but its 'client' /k/ is heard as /p/ on 3 of 8 ASR passes; t1/t4 clean but end 2.76/2.82)",
+   "cost_preflight": 0.23,
+   "job_id": "f4949b60-3b53-46cb-bf9f-80d1b0d05d86",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  },
+  {
+   "at": "2026-10-09T07:15:44Z",
+   "batch": "B5",
+   "id": "L1B_t7",
+   "note": "कहा। variant",
+   "cost_preflight": 0.23,
+   "job_id": "eb42da90-853e-4b53-9b0c-3a7d17d8107f",
+   "status": "downloaded",
+   "at_source": "job creation time from the result file name"
+  }
+ ],
+ "failed_submissions": [
+  {
+   "at": "2026-10-09T06:23Z (approx.)",
+   "batch": "B1 (P1-P7)",
+   "result": "0/7 submitted: elevenlabs_v4 backend 429 rate_limit_reached; no job ids, no charge expected"
+  }
+ ],
+ "summary": {
+  "jobs": 39,
+  "pronunciation": 7,
+  "line_takes": 32,
+  "spent_credits_own_preflights": 9.2,
+  "budget_left": 15.8,
+  "note": "balance fell 6954.41 -> 6924.51 (29.90) over the session; only 9.20 of that is this reel's (own preflights); the rest is other reels / the owner's own work running in parallel",
+  "selected": {
+   "L1": "t3",
+   "L1B": "t5",
+   "L2": "t1",
+   "L3": "t1",
+   "L4": "t1",
+   "L5": "t1",
+   "L6": "t1",
+   "L7": "t1",
+   "L8": "t1",
+   "L9": "t4",
+   "L10": "t5",
+   "L11": "t1",
+   "L12": "t1"
+  }
+ }
+}

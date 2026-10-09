@@ -1,0 +1,53 @@
+{
+ "_note": "Chosen takes per line (bijli_chali_gayi_vo.py cands -> cands.json: span at 1.10x, anchor offset, CER whisper small + medium). A dict = the line is cut out of that grouped take. _variants: BRIEF 6.7 overrun-ladder steps in force.",
+ "_variants": [
+  "F4"
+ ],
+ "V1": {
+  "take": "TA_r2.mp3",
+  "group": "TA"
+ },
+ "V2": {
+  "take": "TA_r2.mp3",
+  "group": "TA"
+ },
+ "V1B": "V1Bc_r1.mp3",
+ "V3a": {
+  "take": "T2m_r1.mp3",
+  "group": "T2"
+ },
+ "V3b": {
+  "take": "T2m_r2.mp3",
+  "group": "T2"
+ },
+ "V4": {
+  "take": "T2m_r2.mp3",
+  "group": "T2"
+ },
+ "V5": "V5_r1.mp3",
+ "V6": {
+  "take": "T3_r1.mp3",
+  "group": "T3"
+ },
+ "V7": {
+  "take": "T4_r2.mp3",
+  "group": "T4"
+ },
+ "V8": {
+  "take": "T4_r3.mp3",
+  "group": "T4"
+ },
+ "V9": {
+  "take": "T4_r3.mp3",
+  "group": "T4"
+ },
+ "V10": {
+  "take": "T5_r2.mp3",
+  "group": "T5"
+ },
+ "V11": {
+  "take": "T5_r2.mp3",
+  "group": "T5"
+ },
+ "V12": "V12_r1.mp3"
+}

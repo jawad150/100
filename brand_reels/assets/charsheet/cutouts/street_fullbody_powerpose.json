@@ -1,0 +1,87 @@
+{
+ "name": "street_fullbody_powerpose",
+ "sheet": "sheet_streetwear.webp",
+ "sheet_box": [
+  120,
+  40,
+  600,
+  1054
+ ],
+ "native_wh": [
+  480,
+  1014
+ ],
+ "cutout_wh": [
+  960,
+  2028
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  79,
+  55,
+  888,
+  2009
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": false,
+  "left": false,
+  "right": false
+ },
+ "halo_cv": -1.4,
+ "halo_cv_p95": 0.0,
+ "halo_cv_raw": 7.32,
+ "face_box": [
+  236.4,
+  116.8,
+  410.0,
+  322.2
+ ],
+ "eyes": [
+  [
+   295.0,
+   190.7
+  ],
+  [
+   367.7,
+   181.2
+  ]
+ ],
+ "nose": [
+  346.0,
+  228.5
+ ],
+ "mouth": [
+  [
+   311.3,
+   265.4
+  ],
+  [
+   375.0,
+   257.8
+  ]
+ ],
+ "face_score": 0.93,
+ "head_box": [
+  198.2,
+  3.8,
+  448.2,
+  338.6
+ ],
+ "face_h_native": 102.7,
+ "eye_mid": [
+  331.4,
+  185.9
+ ],
+ "tex_ratio": 3.49,
+ "cheek_patch": [
+  277,
+  213,
+  307,
+  243
+ ],
+ "tex_ratio_native": 0.96,
+ "max_display_w": 809,
+ "max_display_h": 1954
+}

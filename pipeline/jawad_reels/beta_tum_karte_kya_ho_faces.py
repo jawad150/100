@@ -905,6 +905,17 @@ def check(render=True):
                                      off_from_model_px=round(math.hypot(em[0] - eye_point(key, tm)[0],
                                                                         em[1] - eye_point(key, tm)[1]), 2))
         rep['shots'][key] = r
+    # loop seam S12 -> S0: JD alone over black (no finish), mean |delta| f1091 -> f0 vs a normal step f1090 -> f1091
+    def jd_only(f):
+        c = np.zeros((K.H, K.W, 4), np.float32)
+        draw_face(c, shot_at(f / FPS), f / FPS, micro=True)
+        return K.to_srgb8(c, 0.0, dither=False).astype(np.float32)
+    a90, a91, a0 = jd_only(1090), jd_only(1091), jd_only(0)
+    rep['loop_seam'] = dict(step_f1090_f1091=round(float(np.abs(a91 - a90).mean()), 3),
+                            seam_f1091_f0=round(float(np.abs(a0 - a91).mean()), 3),
+                            eye_f1091=[round(v, 2) for v in eye_point('S12', 1091 / FPS)],
+                            eye_f0=[round(v, 2) for v in eye_point('S0', 0.0)],
+                            scale_f1091=round(scale('S12', 1091 / FPS), 5), scale_f0=round(scale('S0', 0.0), 5))
     return rep
 
 

@@ -1,0 +1,368 @@
+{
+ "reel": "log_kya_kahenge",
+ "budget_credits": 25,
+ "global_guard_min_balance": 6800.0,
+ "spent_credits": 11.5,
+ "requests": [
+  {
+   "at": "2026-10-09T06:03",
+   "id": "P1",
+   "preflight_credits": 0.23,
+   "batch": "B1",
+   "status": "submitted",
+   "job_id": "2d112e02-65cb-4608-9904-57e0e628f1d5"
+  },
+  {
+   "at": "2026-10-09T06:03",
+   "id": "P2",
+   "preflight_credits": 0.23,
+   "batch": "B1",
+   "status": "submitted",
+   "job_id": "f02e604c-42f7-4794-829d-617dfbbd7b0e"
+  },
+  {
+   "at": "2026-10-09T06:03",
+   "id": "P3",
+   "preflight_credits": 0.46,
+   "batch": "B1",
+   "status": "submitted",
+   "job_id": "b586a13e-b37f-46fa-a043-524e7bf2a87c"
+  },
+  {
+   "at": "2026-10-09T06:03",
+   "id": "P4",
+   "preflight_credits": 0.23,
+   "batch": "B1",
+   "status": "submitted",
+   "job_id": "0d8bc53d-92d3-4bfa-be70-9ea0eb5571a6"
+  },
+  {
+   "at": "2026-10-09T06:03",
+   "id": "P5",
+   "preflight_credits": 0.23,
+   "batch": "B1",
+   "status": "submitted",
+   "job_id": "59b35f11-47e8-4887-945a-76b1be9a1045"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V1_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "2f8b5d0f-ea49-4f32-9706-a9989de2fe5a"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V1B_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "45d34867-9bb1-4557-9dbf-a2845edddc75"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V2_t1",
+   "preflight_credits": 0.46,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "d4627e84-e248-4494-ba36-7eb3e34c41e1"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V3_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "8f31355f-f2fd-4d4e-8e83-697798c663dc"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V4_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "986e74b0-fbe9-421d-9179-29f6c2bd80d8"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V5_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "d87f806a-8aff-411b-a9e5-fc7e45fccc46"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V6_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "287160da-7bbb-4abe-903c-d3013403d78e"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "id": "V7_t1",
+   "preflight_credits": 0.23,
+   "batch": "B2",
+   "status": "submitted",
+   "job_id": "bf1d20bc-25e9-461f-9819-1d08eb91f8b3"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V1_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "ded4666a-7b44-42bd-bd15-86767b243b77"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V1_t3",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "0157e897-5dd1-4816-89b5-eeb2b550a3ee"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V1_t4",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "277a73c5-d70b-41a4-8a17-c5b2cc24fa5e"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V1B_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "9c327d54-acfc-4894-bbe5-4cb749c3ff6d"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V2_t2",
+   "preflight_credits": 0.46,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "e9e75238-890f-4d18-8df8-02201a23e40f"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V2_t3",
+   "preflight_credits": 0.46,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "b36125a9-85dc-495d-844c-acdd39500ac4"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V4_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submission_failed (429 rate_limit_reached; no job created, not counted)"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V4_t3",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "25e2d57f-c709-47eb-87b2-8ed9ba804d66"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V5_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "939559f0-a9b0-4f78-99c7-67bdab14e9d6"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V6_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "37858a62-a5f4-4c75-b4f9-814374a29ae1"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V6_t3",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submission_failed (429 rate_limit_reached; no job created, not counted)"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "id": "V7_t2",
+   "preflight_credits": 0.23,
+   "batch": "B3",
+   "status": "submitted",
+   "job_id": "bead8b36-6ac2-4e61-9b46-f0fa3b913588"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G1a_t1",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "b4933177-6a10-4f8d-90ea-c29e98ce488e"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G1b_t1",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "252340ef-6f7c-4843-978b-42d26cb4be93"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G2_t1",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "9b21a2b2-bab9-4ffd-89b3-79ecab212236"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G2_t2",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "c6b2726b-687b-4401-9e88-f23999705613"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G3_t1",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "5c5a9246-1a9a-4765-aa75-d23ec8260075"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "id": "G3_t2",
+   "preflight_credits": 0.46,
+   "batch": "B4",
+   "status": "submitted",
+   "job_id": "6994b43e-b185-433d-abe1-3c31a629f617"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "id": "H1_t1",
+   "preflight_credits": 0.46,
+   "batch": "B5",
+   "status": "submitted",
+   "job_id": "b5d2eae1-65c5-4542-88d5-ce41e7400133"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "id": "H1_t2",
+   "preflight_credits": 0.46,
+   "batch": "B5",
+   "status": "submitted",
+   "job_id": "ec860d34-8888-42c8-9a55-6020026b113c"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "id": "H2_t1",
+   "preflight_credits": 0.46,
+   "batch": "B5",
+   "status": "submitted",
+   "job_id": "1e420942-a3f8-4197-b31f-19046d068da0"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "id": "H2_t2",
+   "preflight_credits": 0.46,
+   "batch": "B5",
+   "status": "submitted",
+   "job_id": "2ac50f96-5bcd-42f6-b65a-50ff355dd33c"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "id": "H3_t1",
+   "preflight_credits": 0.69,
+   "batch": "B5",
+   "status": "submitted",
+   "job_id": "10d28f4a-e1c6-430c-8855-d4b7b8da69ea"
+  }
+ ],
+ "balance_checks": [
+  {
+   "at": "2026-10-09T06:03",
+   "credits": 6978.56,
+   "note": "before batch 1 (pronunciation carriers)"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "credits": 6973.73,
+   "note": "before batch 2 (line takes V1..V7, t1)"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "credits": 6965.68,
+   "note": "before batch 3 (retakes for the timing overruns and the V2 fallback)"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "credits": 6962.92,
+   "note": "before batch 4 (two-sentence context takes); drop since batch 3 = 2.76 = exactly my batch-3 jobs"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "credits": 6956.94,
+   "note": "before batch 5 (context takes with the overrunning line first)"
+  },
+  {
+   "at": "2026-10-09T06:50",
+   "credits": 6933.02,
+   "note": "after the run (no further jobs); the drop since batch 5 beyond my 2.53 is other spend on the account"
+  }
+ ],
+ "log": [
+  {
+   "at": "2026-10-08T22:45",
+   "event": "blocked before any request",
+   "detail": "mcp__Higgsfield__generate_audio / generate_audio_batch / jobs_wait / balance are not exposed to this agent: ToolSearch does not exist here, and a direct call returns 'MCP server Higgsfield is connected but does not offer this tool here'. No balance read, no get_cost preflight, no job submitted, 0 credits spent."
+  },
+  {
+   "at": "2026-10-08T23:00",
+   "event": "prepared, not submitted",
+   "detail": "requests.json: batch 1 = 4 pronunciation carriers (154 chars), batch 2 = 8 line takes V1, V1B, V2-V7 (329 chars). Costs unknown until get_cost preflight. Pipeline log_kya_kahenge_vo.py validated end-to-end on local Kokoro scratch reads (scratchpad only, never a take)."
+  },
+  {
+   "at": "2026-10-09T06:03",
+   "event": "tools available",
+   "detail": "Higgsfield generate_audio / batch / jobs_wait / balance loaded via ToolSearch in this run; guard updated to 6800 per the current task"
+  },
+  {
+   "at": "2026-10-09T06:11",
+   "event": "pron verdict",
+   "detail": "P1-P5 checked (whisper small+medium per sentence, spectrograms): every primary spelling kept (क्राउड, फ़्लैट, कार्डबोर्ड, बिज़ी, नज़र, ज़िंदगी, फ़ोन, quoted 'लोग'); z and f are fricatives without closure in the spectrogram; P4 both sentences spoken (whisper dropped the repeat); fallbacks not needed"
+  },
+  {
+   "at": "2026-10-09T06:15",
+   "event": "batch 3 plan",
+   "detail": "V1 t2,t3 same text, t4 stability 0.55 (test); V1B t2 same; V2 t2,t3 = BRIEF r2 14-word fallback (rule: V2 > 6.03 s); V4 t2,t3 same; V5 t2 'हैं,' (rule variant); V6 t2 same, t3 without quotes (SCRIPT risk-6 fallback); V7 t2 same"
+  },
+  {
+   "at": "2026-10-09T06:17",
+   "event": "batch 4 plan",
+   "detail": "per-line takes run 3.2-3.5 syll/s (casting paragraph 4.35): V1, V1B, V4, V5 part 1, V6, V7 overrun at 1.10x even after the allowed pause cuts and one retake each. vo_config allows 1-3 sentences per take, so two-sentence context takes: G1a = V1+V1B, G1b = V1B+V1, G2 = V4+V5 (x2), G3 = V6+V7 (x2); lines are cut at the sentence pause"
+  },
+  {
+   "at": "2026-10-09T06:19",
+   "event": "batch 5 plan",
+   "detail": "batch 4 showed the first sentence of a take runs fastest and the last slowest (V1 fits in G1b, V6 in G3_t1; V7 and V5 part 1 still over): H1 = V7+V1 (the loop order) x2, H2 = V5+V6 x2, H3 = V4+V5+V6 x1"
+  },
+  {
+   "at": "2026-10-09T06:50",
+   "event": "done",
+   "detail": "final VO assembled: vo_stem.wav (= lkk_vo_A.wav), lkk_vo_B.wav, words.json; 34 jobs, 11.50 credits from own get_cost preflights; 2 submissions rejected with 429 (no job, not counted)"
+  }
+ ]
+}

@@ -1,0 +1,108 @@
+{
+ "note": "pronunciation batch (9 carrier phrases, 2.07 credits); faster-whisper small + medium int8, language hi, no prompt, 16 kHz arrays decoded by ffmpeg",
+ "rows": [
+  {
+   "file": "raw/pron/P0.mp3",
+   "text": "ये शब्द है सब्र। सब्र सिखाया।",
+   "word": "सब्र",
+   "caption": "sabr (primary)",
+   "heard_medium": "ये शब्द है सब्र, सब्र सिखाया",
+   "cer_medium": 0.0,
+   "heard_small": "ये शब्द है, सब्र, सब्र सिखाया",
+   "cer_small": 0.0,
+   "verdict": "ok: heard सब्र by both models; kept"
+  },
+  {
+   "file": "raw/pron/P1.mp3",
+   "text": "ये शब्द है सबर। सबर सिखाया।",
+   "word": "सबर",
+   "caption": "sabr (fallback)",
+   "heard_medium": "ये शब्द है सबर, सबर सिखाया।",
+   "cer_medium": 0.0,
+   "heard_small": "ये शब्द है, सबर, सबर सिखाया",
+   "cer_small": 0.0,
+   "verdict": "ok, not needed"
+  },
+  {
+   "file": "raw/pron/P2.mp3",
+   "text": "ये शब्द है कंट्रोल-एस। ख़ुद कंट्रोल-एस दबाती है।",
+   "word": "कंट्रोल-एस / ख़ुद",
+   "caption": "Ctrl+S (hyphen) + khud (nukta)",
+   "heard_medium": "ये शब्ध है कुंट्रोल -ऐस। खुद कुंट्रोल -ऐस दबाती है।",
+   "cer_medium": 0.182,
+   "heard_small": "ये शब्द है कुट्रूल एस खुट कुट्रूल एस दबाती है",
+   "cer_small": 0.182,
+   "verdict": "ok: longest silence inside कंट्रोल-एस 0.055 s (< 0.12); ख़ुद heard खुद (medium) / खुट (small); kept both"
+  },
+  {
+   "file": "raw/pron/P3.mp3",
+   "text": "ये शब्द है कंट्रोल एस। खुद कंट्रोल एस दबाती है।",
+   "word": "कंट्रोल एस / खुद",
+   "caption": "P-ctrl fallback + khud fallback",
+   "heard_medium": "ये शब्ध है खुट -कुंट्रोल -एस दबाती है।",
+   "cer_medium": 0.311,
+   "heard_small": "ये शब्द है कंट्रोल एस कुत कंट्रोल एस दबाती है",
+   "cer_small": 0.044,
+   "verdict": "worse: 0.090-0.095 s gaps inside कंट्रोल एस; खुद heard कुत (small): fallbacks rejected"
+  },
+  {
+   "file": "raw/pron/P4.mp3",
+   "text": "ये शब्द है आवाज़। ये आवाज़ याद है?",
+   "word": "आवाज़",
+   "caption": "awaaz (nukta z)",
+   "heard_medium": "ये शब्द है आवाज, ये आवाज याद है?",
+   "cer_medium": 0.062,
+   "heard_small": "ये शब्द है, आवाज ये आवाज याज है?",
+   "cer_small": 0.094,
+   "verdict": "ok: ASR folds the nukta (आवाज), the spectrogram shows continuous frication to the end of the word, no closure/burst (z, not j)"
+  },
+  {
+   "file": "raw/pron/P5.mp3",
+   "text": "ये शब्द है एडिटिंग। हमें एडिटिंग नहीं सिखाई।",
+   "word": "एडिटिंग",
+   "caption": "editing",
+   "heard_medium": "ये शब्द है एडिटिंग। हमें एडिटिंग नहीं सिखाई।",
+   "cer_medium": 0.0,
+   "heard_small": "ये शब्द है, एदिटिं, हमें एदिटिं नहीं सिखाई",
+   "cer_small": 0.095,
+   "verdict": "ok: heard एडिटिंग exactly (medium)"
+  },
+  {
+   "file": "raw/pron/P6.mp3",
+   "text": "ये शब्द है मोहल्ला। पूरा मोहल्ला छत पे था।",
+   "word": "मोहल्ला",
+   "caption": "mohalla",
+   "heard_medium": "ये शब्द है मुहल्ला पूरा मुहल्ला च्छत पे था।",
+   "cer_medium": 0.1,
+   "heard_small": "ये शब्द है, महल्ला पूरा महल्ला चथपे ता",
+   "cer_small": 0.15,
+   "verdict": "carrier ok (medium: मुहल्ला, double l kept), but in the line context all three takes were heard महला / मौल्ला (V3b CER 0.172): SCRIPT 9 fallback मुहल्ला used for V3b (T2m, V3bm)"
+  },
+  {
+   "file": "raw/pron/P7.mp3",
+   "text": "ये शब्द है सेकंड। हर तीस सेकंड।",
+   "word": "सेकंड / तीस",
+   "caption": "second / tees",
+   "heard_medium": "ये शब्द है सेकिंड, हर तीस सेकिंड।",
+   "cer_medium": 0.069,
+   "heard_small": "ये शब्द है, सेकिन्ट, हर ती सेकिन्ट",
+   "cer_small": 0.31,
+   "verdict": "ok: heard सेकिंड with its final stop, तीस (medium)"
+  },
+  {
+   "file": "raw/pron/P8.mp3",
+   "text": "ये शब्द है दुश्मन। सब से बड़ी दुश्मन।",
+   "word": "दुश्मन / बड़ी",
+   "caption": "dushman / bari",
+   "heard_medium": "ये शब्द है दुष्मन, सब से बड़ी दुष्मन।",
+   "cer_medium": 0.057,
+   "heard_small": "ये शब्द है दूश्मन, सब से बड़ी दूश्मन",
+   "cer_small": 0.057,
+   "verdict": "ok: दुष्मन (same sound), बड़ी"
+  }
+ ],
+ "decisions": {
+  "मोहल्ला": "मुहल्ला (line V3b only, after the context takes failed)",
+  "others": "primary spellings kept"
+ }
+}

@@ -1,0 +1,663 @@
+{
+ "v10": "usey",
+ "takes": {
+  "V1A": [
+   "efk_V1A_t1.mp3",
+   1.08
+  ],
+  "V1B": [
+   "efk_V1B_t2.mp3",
+   1.1
+  ],
+  "V2": [
+   "efk_V2_t1.mp3",
+   1.1
+  ],
+  "V3": [
+   "efk_V3_t2.wav",
+   1.1
+  ],
+  "V4": [
+   "efk_V4_t1.mp3",
+   1.1
+  ],
+  "V5": [
+   "efk_V5_t2.wav",
+   1.1
+  ],
+  "V6": [
+   "efk_V6_t2.wav",
+   1.1
+  ],
+  "V7": [
+   "efk_V7_t2.wav",
+   1.1
+  ],
+  "V8": [
+   "efk_V8_t2.wav",
+   1.1
+  ],
+  "V9": [
+   "efk_V9_t2.wav",
+   1.08
+  ],
+  "V10": [
+   "efk_V10K_t1.mp3",
+   1.08
+  ]
+ },
+ "notes": {
+  "V1A": [
+   "take efk_V1A_t1.mp3 at 1.08x"
+  ],
+  "V1B": [
+   "take efk_V1B_t2.mp3 at 1.10x"
+  ],
+  "V2": [
+   "take efk_V2_t1.mp3 at 1.10x"
+  ],
+  "V3": [
+   "take efk_V3_t2.wav at 1.10x",
+   "\"Dhuaan.\" dropped (SCRIPT 7 ladder; tag 02 carries it)"
+  ],
+  "V4": [
+   "take efk_V4_t1.mp3 at 1.10x",
+   "word edge: lafz. end 1.000 -> 1.130"
+  ],
+  "V5": [
+   "take efk_V5_t2.wav at 1.10x",
+   "pause after \"layer...\" 0.310 -> 0.250 s"
+  ],
+  "V6": [
+   "take efk_V6_t2.wav at 1.10x",
+   "pause after \"mein\" 0.200 -> 0.120 s"
+  ],
+  "V7": [
+   "take efk_V7_t2.wav at 1.10x",
+   "pause after \"second...\" 0.270 -> 0.250 s"
+  ],
+  "V8": [
+   "take efk_V8_t2.wav at 1.10x"
+  ],
+  "V9": [
+   "take efk_V9_t2.wav at 1.08x",
+   "word edge: banane start 0.519 -> 1.000 (pause 0.790-1.000)",
+   "tail after the last voice (2.450 s) cut: peak -38.4 dBFS in the 0.009 s removed"
+  ],
+  "V10": [
+   "take efk_V10K_t1.mp3 at 1.08x"
+  ]
+ },
+ "levels": {
+  "V1A": [
+   -19.11,
+   3.11
+  ],
+  "V1B": [
+   -16.13,
+   0.13
+  ],
+  "V2": [
+   -16.0,
+   0.0
+  ],
+  "V3": [
+   -16.03,
+   0.03
+  ],
+  "V4": [
+   -16.72,
+   0.72
+  ],
+  "V5": [
+   -15.87,
+   -0.13
+  ],
+  "V6": [
+   -16.54,
+   0.54
+  ],
+  "V7": [
+   -16.2,
+   0.2
+  ],
+  "V8": [
+   -17.39,
+   1.39
+  ],
+  "V9": [
+   -16.8,
+   0.8
+  ],
+  "V10": [
+   -16.19,
+   0.19
+  ]
+ },
+ "gain": {
+  "pre_lufs": -16.23,
+  "pre_tp": 0.81,
+  "gain_db": 0.23,
+  "limiter": true,
+  "iterations": [
+   [
+    -16.23,
+    0.81
+   ],
+   [
+    -16.04,
+    -2.22
+   ]
+  ]
+ },
+ "checks": {
+  "fails": [],
+  "A": {
+   "duration": 33.6,
+   "sr": 48000,
+   "channels": 1,
+   "bits": "24",
+   "lufs": -16.0,
+   "tp": -2.2,
+   "lufs_precise": -16.04,
+   "tp_precise": -2.22,
+   "lra": 2.3,
+   "first_voice": 0.09,
+   "last_voice": 33.07,
+   "fails": [],
+   "gaps": [
+    [
+     "V1A",
+     "V2",
+     0.85
+    ],
+    [
+     "V2",
+     "V3.0",
+     0.15
+    ],
+    [
+     "V3.0",
+     "V3.2",
+     0.15
+    ],
+    [
+     "V3.2",
+     "V3.3",
+     0.15
+    ],
+    [
+     "V3.3",
+     "V4a",
+     0.45
+    ],
+    [
+     "V4a",
+     "V4b",
+     0.15
+    ],
+    [
+     "V4b",
+     "V5",
+     0.15
+    ],
+    [
+     "V5",
+     "V6",
+     0.9
+    ],
+    [
+     "V6",
+     "V7",
+     0.15
+    ],
+    [
+     "V7",
+     "V8",
+     0.15
+    ],
+    [
+     "V8",
+     "V9",
+     2.39
+    ],
+    [
+     "V9",
+     "V10",
+     0.44
+    ]
+   ],
+   "loop_seam": 0.62,
+   "words": 61
+  },
+  "B": {
+   "duration": 3.0,
+   "sr": 48000,
+   "channels": 1,
+   "bits": "24",
+   "lufs": -16.0,
+   "tp": -2.4,
+   "lufs_precise": -16.11,
+   "tp_precise": -2.36,
+   "lra": 20.0,
+   "first_voice": 0.09,
+   "last_voice": 2.66,
+   "fails": [],
+   "gaps": [],
+   "words": 6
+  }
+ },
+ "rows": [
+  {
+   "seg": "V1A",
+   "beat": "[0.0] +3 f",
+   "target_on": 0.1,
+   "on": 0.1,
+   "d_on": 0.0,
+   "limit": 2.37,
+   "hard": 2.7,
+   "end": 2.22,
+   "d_end": -0.15,
+   "d_hard": -0.48,
+   "dur": 2.12,
+   "words": 6,
+   "wps": 2.83,
+   "sps": 5.66,
+   "keywords": [
+    [
+     "palak",
+     1.03
+    ]
+   ],
+   "text": "Aap ne ise palak jhapakte dekha."
+  },
+  {
+   "seg": "V2",
+   "beat": "[1.1] +2 f",
+   "target_on": 3.07,
+   "on": 3.07,
+   "d_on": 0.0,
+   "limit": 5.91,
+   "hard": 5.95,
+   "end": 6.65,
+   "d_end": 0.74,
+   "d_hard": 0.7,
+   "dur": 3.58,
+   "words": 8,
+   "wps": 2.23,
+   "sps": 3.07,
+   "keywords": [
+    [
+     "12",
+     5.23
+    ]
+   ],
+   "text": "Lekin is ek frame mein... 12 layers hain."
+  },
+  {
+   "seg": "V3.0",
+   "beat": "[2.3] +6 f",
+   "target_on": 6.0,
+   "on": 6.8,
+   "d_on": 0.8,
+   "limit": 6.7,
+   "hard": 6.7,
+   "end": 7.53,
+   "d_end": 0.83,
+   "d_hard": 0.83,
+   "dur": 0.73,
+   "words": 1,
+   "wps": 1.37,
+   "sps": 4.11,
+   "keywords": [],
+   "text": "Andhera."
+  },
+  {
+   "seg": "V3.2",
+   "beat": "[3.0] +14 f",
+   "target_on": 7.3,
+   "on": 7.68,
+   "d_on": 0.38,
+   "limit": 7.85,
+   "hard": 7.85,
+   "end": 8.49,
+   "d_end": 0.64,
+   "d_hard": 0.64,
+   "dur": 0.81,
+   "words": 1,
+   "wps": 1.23,
+   "sps": 3.7,
+   "keywords": [],
+   "text": "Roshni."
+  },
+  {
+   "seg": "V3.3",
+   "beat": "[3.2] +7 f",
+   "target_on": 7.9,
+   "on": 8.64,
+   "d_on": 0.74,
+   "limit": 8.36,
+   "hard": 8.45,
+   "end": 9.27,
+   "d_end": 0.91,
+   "d_hard": 0.82,
+   "dur": 0.63,
+   "words": 1,
+   "wps": 1.59,
+   "sps": 4.76,
+   "keywords": [
+    [
+     "Chehra",
+     8.64
+    ]
+   ],
+   "text": "Chehra."
+  },
+  {
+   "seg": "V4a",
+   "beat": "[4.0] +4 f",
+   "target_on": 10.03,
+   "on": 9.72,
+   "d_on": -0.31,
+   "limit": 10.9,
+   "hard": 10.9,
+   "end": 10.72,
+   "d_end": -0.18,
+   "d_hard": -0.18,
+   "dur": 1.0,
+   "words": 2,
+   "wps": 2.0,
+   "sps": 3.0,
+   "keywords": [],
+   "text": "Har lafz."
+  },
+  {
+   "seg": "V4b",
+   "beat": "[4.2] +2 f",
+   "target_on": 10.95,
+   "on": 10.87,
+   "d_on": -0.08,
+   "limit": 11.61,
+   "hard": 11.7,
+   "end": 11.9,
+   "d_end": 0.29,
+   "d_hard": 0.2,
+   "dur": 1.03,
+   "words": 2,
+   "wps": 1.94,
+   "sps": 3.88,
+   "keywords": [
+    [
+     "chamak",
+     11.124
+    ]
+   ],
+   "text": "Har chamak."
+  },
+  {
+   "seg": "V5",
+   "beat": "[5.0] +2 f",
+   "target_on": 12.05,
+   "on": 12.05,
+   "d_on": 0.0,
+   "limit": 15.79,
+   "hard": 15.85,
+   "end": 16.05,
+   "d_end": 0.26,
+   "d_hard": 0.2,
+   "dur": 4.0,
+   "words": 9,
+   "wps": 2.25,
+   "sps": 4.25,
+   "keywords": [
+    [
+     "layer",
+     12.82
+    ],
+    [
+     "zinda",
+     14.869
+    ]
+   ],
+   "text": "Aur ek layer... jiske bina frame zinda nahi lagta."
+  },
+  {
+   "seg": "V6",
+   "beat": "[7.0] +4 f",
+   "target_on": 16.95,
+   "on": 16.95,
+   "d_on": 0.0,
+   "limit": 18.75,
+   "hard": 18.85,
+   "end": 18.83,
+   "d_end": 0.08,
+   "d_hard": -0.02,
+   "dur": 1.88,
+   "words": 5,
+   "wps": 2.66,
+   "sps": 3.72,
+   "keywords": [
+    [
+     "30",
+     17.96
+    ]
+   ],
+   "text": "Ek second mein 30 frames."
+  },
+  {
+   "seg": "V7",
+   "beat": "[7.3] +11 f",
+   "target_on": 18.9,
+   "on": 18.98,
+   "d_on": 0.08,
+   "limit": 21.99,
+   "hard": 21.99,
+   "end": 22.2,
+   "d_end": 0.21,
+   "d_hard": 0.21,
+   "dur": 3.22,
+   "words": 7,
+   "wps": 2.17,
+   "sps": 3.42,
+   "keywords": [],
+   "text": "Yaani har second... teen sau saath layers."
+  },
+  {
+   "seg": "V8",
+   "beat": "[9.1] +4 f",
+   "target_on": 22.15,
+   "on": 22.35,
+   "d_on": 0.2,
+   "limit": 24.04,
+   "hard": 24.15,
+   "end": 24.36,
+   "d_end": 0.32,
+   "d_hard": 0.21,
+   "dur": 2.01,
+   "words": 5,
+   "wps": 2.49,
+   "sps": 3.48,
+   "keywords": [
+    [
+     "awaaz",
+     22.555
+    ]
+   ],
+   "text": "Aur awaaz ke 3 tracks."
+  },
+  {
+   "seg": "V9",
+   "beat": "[11.0] +10 f",
+   "target_on": 26.75,
+   "on": 26.75,
+   "d_on": 0.0,
+   "limit": 29.5,
+   "hard": 29.85,
+   "end": 29.16,
+   "d_end": -0.34,
+   "d_hard": -0.69,
+   "dur": 2.41,
+   "words": 5,
+   "wps": 2.07,
+   "sps": 4.56,
+   "keywords": [
+    [
+     "Keemat",
+     26.75
+    ]
+   ],
+   "text": "Keemat... banane wala jaanta hai."
+  },
+  {
+   "seg": "V10",
+   "beat": "[12.1] +6 f",
+   "target_on": 29.6,
+   "on": 29.6,
+   "d_on": 0.0,
+   "limit": 33.24,
+   "hard": 33.35,
+   "end": 33.05,
+   "d_end": -0.19,
+   "d_hard": -0.3,
+   "dur": 3.45,
+   "words": 9,
+   "wps": 2.61,
+   "sps": 4.35,
+   "keywords": [
+    [
+     "bhejo",
+     32.644
+    ]
+   ],
+   "text": "Jo kehta hai \"editing mein kya hai\", usey bhejo."
+  },
+  {
+   "seg": "V1B",
+   "beat": "[0.0] +3 f",
+   "target_on": 0.1,
+   "on": 0.1,
+   "d_on": 0.0,
+   "limit": 2.61,
+   "hard": 2.7,
+   "end": 2.63,
+   "d_end": 0.02,
+   "d_hard": -0.07,
+   "dur": 2.53,
+   "words": 6,
+   "wps": 2.37,
+   "sps": 3.95,
+   "keywords": [],
+   "text": "Ek second. Teen sau saath layers."
+  },
+  {
+   "anchor": "V2 \"12\"",
+   "t": 4.8,
+   "tol": 0.1,
+   "at": 5.23,
+   "d": 0.43,
+   "what": "\"12\" counter lands, side-on stack (f144, L3 push)"
+  },
+  {
+   "anchor": "V5 \"layer...\"",
+   "t": 12.45,
+   "tol": 0.2,
+   "at": 12.82,
+   "d": 0.37,
+   "what": "caption C1 *layer...* on the pane-12 stop"
+  },
+  {
+   "anchor": "V5 \"bina\"",
+   "t": 13.8,
+   "tol": 0.15,
+   "at": 14.051,
+   "d": 0.251,
+   "what": "flick OFF f414 on \"bina\""
+  },
+  {
+   "anchor": "V5 \"zinda\"",
+   "t": 14.45,
+   "tol": 0.2,
+   "at": 14.869,
+   "d": 0.419,
+   "what": "flick ON f432 on \"zinda\""
+  },
+  {
+   "anchor": "V7 \"teen\"",
+   "t": 20.45,
+   "tol": 0.1,
+   "at": 20.59,
+   "d": 0.14,
+   "what": "counter 360 lands 20.4 (glass_truth, L3 push 0.5)"
+  },
+  {
+   "anchor": "V9 \"Keemat...\"",
+   "t": 26.75,
+   "tol": 0.05,
+   "at": 26.75,
+   "d": 0.0,
+   "what": "\"Keemat\" >= 0.30 s after the 26.4 hit; keyword glyphs rise from 26.62"
+  },
+  {
+   "anchor": "V9 \"banane\"",
+   "t": 27.7,
+   "tol": 0.1,
+   "at": 27.71,
+   "d": 0.01,
+   "what": "sub \"banane wala jaanta hai\" rises 27.7; JD glint 28.2"
+  },
+  {
+   "anchor": "V10 \"bhejo.\"",
+   "t": 29.75,
+   "tol": 2.0,
+   "at": 32.644,
+   "d": 2.894,
+   "what": "card title from 29.75; \"bhejo\" inside the card (settled 31.25-33.24)"
+  }
+ ],
+ "misses": [
+  "V2 ends 6.650 vs 5.91 (+0.74 s; hard 5.95)",
+  "V3.0 onset 6.800 vs 6.00 (+0.80 s)",
+  "V3.0 ends 7.530 vs 6.70 (+0.83 s; hard 6.70)",
+  "V3.2 onset 7.680 vs 7.30 (+0.38 s)",
+  "V3.2 ends 8.490 vs 7.85 (+0.64 s; hard 7.85)",
+  "V3.3 onset 8.640 vs 7.90 (+0.74 s)",
+  "V3.3 ends 9.270 vs 8.36 (+0.91 s; hard 8.45)",
+  "V4a onset 9.720 vs 10.03 (-0.31 s)",
+  "V8 ends 24.360 vs 24.04 (+0.32 s; hard 24.15)",
+  "anchor V2 \"12\" 5.230 vs 4.80 (+0.43 s): \"12\" counter lands, side-on stack (f144, L3 push)",
+  "anchor V5 \"layer...\" 12.820 vs 12.45 (+0.37 s): caption C1 *layer...* on the pane-12 stop",
+  "anchor V5 \"zinda\" 14.869 vs 14.45 (+0.42 s): flick ON f432 on \"zinda\""
+ ],
+ "loud": {
+  "A": {
+   "lufs": -16.0,
+   "lra": 2.3,
+   "tp": -2.2,
+   "lufs_precise": -16.04,
+   "tp_precise": -2.22,
+   "pre_lufs": -16.23,
+   "pre_tp": 0.81,
+   "gain_db": 0.23,
+   "limiter": true,
+   "iterations": [
+    [
+     -16.23,
+     0.81
+    ],
+    [
+     -16.04,
+     -2.22
+    ]
+   ]
+  },
+  "B": {
+   "lufs": -16.0,
+   "lra": 20.0,
+   "tp": -2.4,
+   "lufs_precise": -16.11,
+   "tp_precise": -2.36,
+   "gain_db": 0.23,
+   "limiter": true
+  }
+ }
+}

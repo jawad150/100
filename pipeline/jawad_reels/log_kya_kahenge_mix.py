@@ -34,7 +34,7 @@ SHARED_REQUESTS R6a/b/c, shared modules imported read-only)
     4. Bus glue 2:1 (threshold 3 dB under the crop's 98th-percentile 10 ms level, 6 / 150 ms), limited to
        PROTECT_GR_CAP = 1.5 dB inside the reveal window PROTECT (R6b: the VO-set threshold no longer flattens the hero
        hit; the 1.5 dB keeps the limiter <= ~3 dB there).
-    5. Master gain + 4x-oversampled true-peak lookahead limiter at -2.3 dBFS, iterated to -14.00 +- 0.05 LUFS.
+    5. Master gain + 4x-oversampled true-peak lookahead limiter at -2.3 dBFS, iterated to -14.00 +- 0.015 LUFS.
        Version B: the same VO + SFX (same internal balance), its own glue threshold, gain and limiter.
     6. Crop to 35.2 s. Stems = each processed input x the bus's own gain curves (glue x gain x limiter), so they sum
        to version A to within 24-bit rounding (epic_mix's stems leave the glue out).
@@ -44,8 +44,8 @@ CLI (run from pipeline/jawad_reels; heavy work through the semaphore)
     tools/heavy.sh python3 log_kya_kahenge_mix.py verify [--hook A|B|AB]  -> ffmpeg ebur128, AAC 320k test encode,
                                                                             onsets, seam, grid, PNGs (into the json)
     tools/heavy.sh python3 log_kya_kahenge_mix.py all    [--hook A|B|AB]  -> build + verify
-    tools/heavy.sh python3 log_kya_kahenge_mix.py determinism              -> rebuilds hook A into a scratch folder
-                                                                            and compares sha256 (then deletes it)
+    tools/heavy.sh python3 log_kya_kahenge_mix.py determinism [--hook AB]  -> rebuilds into a scratch folder and
+                                                                            compares every sha256 (then deletes it)
 """
 import argparse
 import hashlib
@@ -213,15 +213,15 @@ def glue_gain(bus_p, p, protect=None):
 
 
 def master(bus_p, p, target=FINAL_LUFS, ceiling=LIMIT_CEIL):
-    """Gain + true-peak limiter on the padded bus, iterated until the CROP is at target (+-0.05 LU)."""
+    """Gain + true-peak limiter on the padded bus, iterated until the CROP is at target (+-0.015 LU)."""
     pk = A.tp_envelope(bus_p)
     g = target - A.loudness(crop(bus_p, p))
-    for _ in range(16):
+    for _ in range(24):
         gl = A.limiter_gain(bus_p * undb(g), ceiling, pk=pk * undb(g))
         L = A.loudness(crop(bus_p, p) * undb(g) * crop(gl[:, None], p))
-        if abs(L - target) < 0.05:
+        if abs(L - target) < 0.015:
             break
-        g += target - L
+        g += (target - L) * 1.1                    # limiter GR grows with g: a slight over-step converges faster
     return g, gl
 
 
@@ -601,17 +601,20 @@ def _pngs(name, yA, yB, st, rep):
     return [p1, p2]
 
 
-def determinism():
-    """Rebuild hook A into a scratch folder and compare every output's sha256 with final/ (then delete the folder)."""
-    ref = json.load(open(os.path.join(FINAL, MODULE + '_mix.json')))['sha256']
-    tmp = os.path.join(AUD, '_detcheck')
-    try:
-        rep, _ = mix('A', out=tmp, verbose=False)
-        same = {k: rep['sha256'][k] == ref[k] for k in ref}
-    finally:
-        shutil.rmtree(tmp, ignore_errors=True)
-    print(json.dumps(dict(identical=same, all=all(same.values())), indent=1))
-    return same
+def determinism(hooks='AB'):
+    """Rebuild each hook into a scratch folder and compare every output's sha256 with final/ (then delete it)."""
+    res = {}
+    for hk in hooks:
+        name = HOOKS[hk]['name']
+        ref = json.load(open(os.path.join(FINAL, name + '_mix.json')))['sha256']
+        tmp = os.path.join(AUD, '_detcheck_' + hk)
+        try:
+            rep, _ = mix(hk, out=tmp, verbose=False)
+            res[name] = {k: rep['sha256'][k] == ref[k] for k in ref}
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+    print(json.dumps(dict(identical=res, all=all(all(d.values()) for d in res.values())), indent=1))
+    return res
 
 
 def main(argv=None):
@@ -620,7 +623,7 @@ def main(argv=None):
     ap.add_argument('--hook', choices=('A', 'B', 'AB'), default='AB')
     a = ap.parse_args(argv)
     if a.cmd == 'determinism':
-        return determinism()
+        return determinism(a.hook)
     for hk in a.hook:
         if a.cmd in ('build', 'all'):
             mix(hk)

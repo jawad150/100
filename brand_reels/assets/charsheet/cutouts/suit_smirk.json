@@ -1,0 +1,87 @@
+{
+ "name": "suit_smirk",
+ "sheet": "sheet_suit.webp",
+ "sheet_box": [
+  1645,
+  0,
+  2000,
+  556
+ ],
+ "native_wh": [
+  355,
+  556
+ ],
+ "cutout_wh": [
+  710,
+  1112
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  0,
+  65,
+  710,
+  1112
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": true,
+  "left": true,
+  "right": true
+ },
+ "halo_cv": -1.3,
+ "halo_cv_p95": 4.05,
+ "halo_cv_raw": 7.31,
+ "face_box": [
+  127.9,
+  224.0,
+  492.1,
+  686.5
+ ],
+ "eyes": [
+  [
+   179.3,
+   395.5
+  ],
+  [
+   316.4,
+   390.3
+  ]
+ ],
+ "nose": [
+  208.3,
+  484.6
+ ],
+ "mouth": [
+  [
+   195.8,
+   562.4
+  ],
+  [
+   316.3,
+   558.5
+  ]
+ ],
+ "face_score": 0.899,
+ "head_box": [
+  47.8,
+  0.0,
+  572.3,
+  723.5
+ ],
+ "face_h_native": 231.3,
+ "eye_mid": [
+  247.8,
+  392.9
+ ],
+ "tex_ratio": 5.61,
+ "cheek_patch": [
+  133,
+  446,
+  197,
+  510
+ ],
+ "tex_ratio_native": 1.54,
+ "max_display_w": 710,
+ "max_display_h": 1047
+}
