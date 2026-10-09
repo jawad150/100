@@ -46,7 +46,9 @@ of glyph overlap; now 1 contact frame); (2) the S4-02 focus pull also opens CAM_
 the pull changed the CoC by 1.5 px (invisible at phone size); now the card lines go 0 -> 4.4 px, the far rows soften, the
 scroller's row stays sharp and the far phones bloom into small discs; the single image f576-f599 is untouched; (3) the S5
 look-A rim falls off to the right of the face centre (log_kya_kahenge_faces._s5_layers; HANDOFF risk 9): the all-round outline
-read as a sticker edge on the real plate.
+read as a sticker edge on the real plate; (4) the end card is drawn CARD_LEAD = 1/90 s ahead from 34.0 s (inside its static hold):
+EndCard reaches zero exactly on f1055's centre, so the blur sample before it left a ghost on the last frame (up to 49 code values);
+now f1055 has no text and E.seam_report gives 3.87 against a normal step of 6.97 (ok).
 
 Contract: DUR / LOOK / BPM, assets(), prewarm(), pure draw(t), post(cv, t) -> G.tx_finish, samples(t), cues() = [].
 Env: LKK_NOTEXT=1 skips every text overlay (hook lockups, J lines, payoff, end card, captions); LKK_DEBUG=1 appends the
