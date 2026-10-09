@@ -38,7 +38,8 @@ Behaviour:
       User-Agent, retries with exponential backoff on 429 / 5xx / time-outs / HTML error pages, honouring Retry-After;
       the Commons metadata is ONE batched API query, its records cached in wikimedia/commons_api.json
     * Wikimedia rate limits never block the run: upload.wikimedia.org answers shared IPs with HTML 429 pages and
-      Retry-After: 600, so the Wikimedia stage spends at most --wm-budget seconds (default 240) in all. A file whose
+      Retry-After: 600, so the Wikimedia stage spends at most --wm-budget seconds (default 240) in all (a budget of
+      >= 1200 s lets it wait out one Retry-After per file, e.g. a patient background run with --wm-budget 3000). A file whose
       original stays rate-limited falls back to Commons' own MP3 transcode of it (same recording, same licence; duration
       checked against the API record; stored as <file>.mp3, --no-transcode to skip); otherwise it is QUEUED: listed in
       LICENSES.md and wikimedia/manifest.json, and the *_real sound that needs it does not register until a later run
@@ -663,7 +664,8 @@ def fetch_wikimedia(net, man, lib, extras=False, force=False, budget=240.0, tran
             else:
                 log('  wikimedia/%s <- %s (%.2f MB)' % (rel, url, ii.get('size', 0) / 1e6))
                 for attempt in range(3):    # a truncated / rate-limit body fails the sha1: fetch again, slowly
-                    net.get(url, to_file=tmp, tries=3, deadline=deadline, max_wait=min(90.0, budget))
+                    net.get(url, to_file=tmp, tries=4, deadline=deadline,   # waits out Retry-After when the
+                            max_wait=max(90.0, min(RETRY_CAP, budget / 2.0)))  # budget allows (--wm-budget 3000)
                     if sha1_of(tmp) == ii.get('sha1'):
                         break
                     log('    sha1 mismatch (truncated or rate-limited body), retrying')
@@ -681,13 +683,14 @@ def fetch_wikimedia(net, man, lib, extras=False, force=False, budget=240.0, tran
         finally:
             if os.path.exists(tmp):
                 os.remove(tmp)
-        if got is None and transcode and why_q.startswith('upload') and _transcode_url(url):
+        if (got is None and transcode and why_q.startswith('upload') and _transcode_url(url)
+                and 'wikimedia/' + rel not in REEL_PATHS):       # a reel module reads that exact original path
             turl = _transcode_url(url)
             tdst = dst + '.mp3'
             ttmp = tdst + '.part'
             try:
                 log('    falling back to the Commons MP3 transcode: %s' % turl)
-                net.get(turl, to_file=ttmp, tries=3, deadline=deadline + 60.0, max_wait=60.0)
+                net.get(turl, to_file=ttmp, tries=3, deadline=deadline + 60.0, max_wait=max(60.0, min(RETRY_CAP, budget / 2.0)))
                 pr = verify_audio(ttmp if ttmp.endswith('.mp3') else ttmp)
                 want = float(ii.get('duration') or 0.0)
                 if want and abs(pr['duration'] - want) > max(0.5, 0.02 * want):
@@ -763,7 +766,11 @@ def write_licenses(lib, files, queued=()):
     for rel in sorted(USED_BY):
         L.append('| `%s` | %s |' % (rel, USED_BY[rel]))
     for title, rel, used in WIKIMEDIA:
-        if not used.startswith('('):
+        if used.startswith('('):
+            continue
+        if 'wikimedia/' + rel in REEL_PATHS:
+            L.append('| `wikimedia/%s` (this exact original: a reel module reads the path) | %s |' % (rel, used))
+        else:
             L.append('| `wikimedia/%s` (or its Commons MP3 transcode `wikimedia/%s.mp3`) | %s |' % (rel, rel, used))
     L += ['', 'A `*_real` sound registers only when its file is present (epic_sfx.register()); the reel modules read '
           '`%s` directly.' % '` and `'.join(REEL_PATHS), '']

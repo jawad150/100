@@ -67,7 +67,7 @@ CATALOG (default params; dur = rendered length; Mmax = max momentary LUFS)      
     timeline_scrub   hit 0      1.8 s  -31  duration=1.5, speed=2   NLE audio-scrub chatter (39 ms grains per 30 fps frame,
                      reversed when dragged back), drag friction, mouse-up at duration -> playhead drag (align='start')
     clock_tick       hit 0.001  5.8 s  -29  n=6, bpm=60, accel=1   escapement tick / tock; every interval / accel (1.05-1.1)
-    clock_real, typing_modelm_real  hit onset  6 / 5 s  -29 / -30  (samples, Wikimedia PD)
+    clock_real, typing_modelm_real  hit onset  6 / 5 s  -29 / -30  (samples, Wikimedia Commons PD / CC0)
   TEXTURE
     tension_drone    hit END    8.8 s  -26  duration=8, root=36.71   beating harmonic stack on the root (D / A only),
                      creeping whine, rising air band, crescendo to the hit (= duration exactly), 0.8 s release
@@ -115,9 +115,9 @@ CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh)
                                                (all sounds: also epic_catalog.wav + _index.json); exit 1 on a failure
     python3 epic_sfx.py play <name> '<json params>' out.wav   -> wav + spectrogram png
     python3 epic_sfx.py contract               renders every CONTRACT entry (qc, TP, hit)
+    python3 epic_sfx.py alias [names]          aliasing residual vs a 32x reference render (sfx_jawad's method)
     python3 epic_sfx.py catalog                names, categories, hits, params
 """
-import functools
 import json
 import math
 import os
@@ -371,7 +371,7 @@ def trailer_hit(seed=0, pitch=1.0):
     mono = shape((0.95 * skin + 0.5 * shell + 0.35 * slap) * 0.9, 2.2)
     mono = benhance(mono, 0.9, fc=110.0, band=(160.0, 750.0), drive=5.0) + 0.10 * anvil
     st = _taper(decorrelate(mono, r, 0.25), sec=0.8)
-    out = reverb(st, 'hall', wet_db=-8.0, send_hp=110.0)
+    out = reverb(st, 'hall', wet_db=-8.0, send_hp=110.0, rt60=3.2)
     return _done(out, 0.003, _lvl('trailer_hit'), 'trailer_hit')
 
 
@@ -1243,7 +1243,7 @@ def rain_city_night(seed=0, dur=20.0):
         lf = np.log2(np.maximum(f, 20.0))[None, :]
         inten = 0.8 + 0.2 * np.sin(TWO_PI * 2 * tl_ / dur + ph[0])[:, None]
         wash = np.exp(-0.5 * ((lf - np.log2(4500.0)) / 1.3) ** 2)
-        low = 0.2 * np.exp(-0.5 * ((lf - np.log2(300.0)) / 1.0) ** 2)
+        low = 0.4 * np.exp(-0.5 * ((lf - np.log2(450.0)) / 1.0) ** 2)
         return inten * (wash + low)
     rain = _loop_mask_noise(L, r, mask, corr=0.2)
     rain = rain / (A._rms(rain) + 1e-12)
@@ -1263,7 +1263,7 @@ def rain_city_night(seed=0, dur=20.0):
         sw = sw * (np.sin(np.pi * tc / cd) ** 2)[:, None]
         _add_wrap(cars, pan(sw, r.uniform(-0.6, 0.6)), r.uniform(0, dur))
     mix = (0.62 * rain + 0.30 * drops / (A._rms(drops) + 1e-12) + 0.10 * drips / (A._rms(drips) + 1e-12)
-           + 0.045 * city / (A._rms(city) + 1e-12) + 0.06 * cars / (A._rms(cars) + 1e-12))
+           + 0.06 * city / (A._rms(city) + 1e-12) + 0.07 * cars / (A._rms(cars) + 1e-12))
     mix = reverb_circular(mix, 'outdoor', wet_db=-10.0)
     return _bed_out(mix, 'rain_city_night')
 
@@ -1783,6 +1783,25 @@ def check(names=None, sheets=True, catalog_wav=True):
     return rows, fails
 
 
+def alias_residual(name, params=None):
+    """Aliasing estimate (dB) of a procedural sound, as sfx_jawad.alias_residual: the normal render (sfx_jawad's
+    oversampled stages at 8x, the toolkit's _sat / _asat at 1x) against a reference with all of them at 32x; the
+    gain-matched residual relative to the reference. None when the sound has no such stage."""
+    fn = SYNTH[name]['fn']
+    p = dict(params or {})
+    c0 = SJ._STATE['os_calls']
+    with SJ.toolkit_saturators('count') as nsat:
+        a = np.asarray(fn(**p), dtype=np.float64)
+    if SJ._STATE['os_calls'] == c0 and not nsat[0]:
+        return None
+    with SJ.reference_quality(), SJ.toolkit_saturators('ref'):
+        b = np.asarray(fn(**p), dtype=np.float64)
+    n = min(len(a), len(b))
+    a, b = a[:n], b[:n]
+    g = float((a * b).sum() / ((b * b).sum() + 1e-30))
+    return round(float(10 * np.log10(((a - g * b) ** 2).sum() / ((b * b).sum() + 1e-30) + 1e-30)), 1)
+
+
 def contract():
     """Render every CONTRACT entry with the exact params the reel modules pass: qc, true peak, hit vs documented."""
     register()
@@ -1793,17 +1812,18 @@ def contract():
             print('MISSING %-16s %s  (%s)' % (name, params, where))
             continue
         r = check_sound(name, params)
+        hx = float(A.sound(name, **params).hit)                       # exact, not the rounded table value
         extra = []
-        if name == 'tension_drone' and abs(r['hit'] - float(params['duration'])) > 1e-9:
-            extra.append('hit %r != duration' % r['hit'])
+        if name == 'tension_drone' and abs(hx - float(params['duration'])) > 1e-9:
+            extra.append('hit %r != duration' % hx)
         if name == 'dark_drone' and len(A.sound(name, **params)) != _n(24.0):
             extra.append('loop length %d != %d' % (len(A.sound(name, **params)), _n(24.0)))
         if name == 'desi_city' and len(A.sound(name, **params)) != _n(params['dur']):
             extra.append('loop length != dur')
         if name == 'harmonium_swell':
-            hs = r['hit'] * SR
+            hs = hx * SR
             if abs(hs - round(hs)) > 1e-6:
-                extra.append('hit %.9f s is not a whole sample' % r['hit'])
+                extra.append('hit %.9f s is not a whole sample' % hx)
         pr = r['problems'] + r['qc'] + extra
         if pr:
             bad.append((name, params, pr))
@@ -1840,6 +1860,17 @@ def main(argv):
         return 0
     if cmd == 'contract':
         return 1 if contract() else 0
+    if cmd == 'alias':
+        worst = None
+        for n in (a[1:] or list(SYNTH)):
+            t0 = time.time()
+            v = alias_residual(n)
+            print('%-18s alias residual %s dB  (%.1f s)' % (n, '-' if v is None else '%.1f' % v, time.time() - t0),
+                  flush=True)
+            if v is not None:
+                worst = v if worst is None else max(worst, v)
+        print('worst alias residual: %s dB (sfx_jawad accepts <= -60)' % worst)
+        return 1 if (worst is not None and worst > -60.0) else 0
     if cmd == 'catalog':
         register()
         for n, d in table().items():
