@@ -79,6 +79,7 @@ def main():
         ap.add_argument('--' + k, required=True)
     ap.add_argument('--dur', type=float, required=True)
     ap.add_argument('--cover', type=float, required=True)
+    ap.add_argument('--tp', type=float, default=None, help='loudnorm TP target for the mux (default epic_mix aac_tp_dbtp -1.5)')
     ap.add_argument('--cover-png', help='use this rendered still (e.g. captions off) instead of a master frame')
     ap.add_argument('--minor', action='append', default=[])
     ap.add_argument('--qa', default='')
@@ -92,8 +93,8 @@ def main():
     rep = {}
     # 1. masters A / B: the picture's video stream copied, the final mixes muxed with two-pass loudnorm
     mA, mB = os.path.join(W, 'master', '%s_master_A.mp4' % S), os.path.join(W, 'master', '%s_master_B.mp4' % S)
-    rep['mux_A'] = M.mux(a.picture, a.mix_a, mA, dur=dur)['ebur128']
-    rep['mux_B'] = M.mux(a.picture, a.mix_b, mB, dur=dur)['ebur128']
+    rep['mux_A'] = M.mux(a.picture, a.mix_a, mA, dur=dur, tp=a.tp)['ebur128']
+    rep['mux_B'] = M.mux(a.picture, a.mix_b, mB, dur=dur, tp=a.tp)['ebur128']
     # 2. IG video stream: 2-pass at the highest bitrate that keeps the file <= 90 MB (audio 320k), capped at 20 Mbps
     vb = min(20.0, (90.0 * 8 / dur) * 0.97 - 0.33)
     tmp = tempfile.mkdtemp()
