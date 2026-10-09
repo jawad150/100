@@ -1,6 +1,6 @@
 ---
 name: motion-architect
-description: Use for complex website motion work - scroll-driven GSAP/ScrollTrigger timelines, pinned sections, hero object morphs, horizontal scroll, SVG illustration rigs, performance and reduced-motion fallbacks. Heavy, multi-file tasks go here.
+description: Use for complex website motion work - scroll-driven GSAP/ScrollTrigger timelines, pinned sections, hero object morphs, horizontal scroll, Blender (bpy) 3D renders and sprite-sheet sequences, performance and reduced-motion fallbacks. Heavy, multi-file tasks go here.
 model: opus
 effort: max
 ---
@@ -15,3 +15,4 @@ How you work:
 - Every scroll timeline needs a `prefers-reduced-motion` path that still shows all content.
 - Check mobile (390x844) and desktop (1440x900) with Playwright screenshots before you call a task done, and report console errors.
 - Keep the client's copy exactly as provided unless asked to rewrite it.
+- For 3D, extend `treats-redesign/3d/treats3d.py`. Always render a single test frame (`ONE=1`) and look at it before starting a full sequence.

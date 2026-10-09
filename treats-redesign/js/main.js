@@ -11,21 +11,72 @@
   if (reduced) html.classList.add("rm");
 
   /* ---------------------------------------------------------
-     Clone hero product illustrations into cards / gallery tiles
+     3D sprites — Blender turntables packed as WebP sprite sheets.
+     Each .sprite[data-seq] shows a poster first, then swaps to its sheet
+     when near the viewport. Frames are driven by idle spin, hover and scroll.
      --------------------------------------------------------- */
-  const sources = {};
-  $$(".hero__products .product").forEach((svg) => (sources[svg.dataset.name] = svg));
-  $$("[data-clone]").forEach((host) => {
-    const src = sources[host.dataset.clone];
-    if (!src) return;
-    const copy = src.cloneNode(true);
-    copy.querySelectorAll("defs").forEach((d) => d.remove()); // gradients resolve to the hero originals
-    copy.removeAttribute("class");
-    copy.setAttribute("aria-hidden", "true");
-    copy.removeAttribute("role");
-    copy.removeAttribute("aria-label");
-    (host.querySelector(".pcard__art, .gtile__art") || host).appendChild(copy);
-  });
+  const SPRITE_DIR = "assets/3d/";
+  const Sprites = (() => {
+    const list = [];
+    let manifest = null;
+    const ready = fetch(SPRITE_DIR + "manifest.json").then((r) => r.json()).then((m) => (manifest = m)).catch(() => null);
+    const load = (sp) => {
+      if (sp.loading || !manifest || !manifest[sp.seq]) return;
+      sp.loading = true;
+      const meta = manifest[sp.seq];
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        sp.meta = meta;
+        sp.el.style.backgroundImage = `url(${img.src})`;
+        sp.el.style.backgroundSize = `${meta.cols * 100}% ${meta.rows * 100}%`;
+        sp.el.classList.add("is-sheet");
+        sp.last = -1;
+        draw(sp);
+      };
+      img.src = SPRITE_DIR + sp.seq + ".webp";
+    };
+    const draw = (sp) => {
+      if (!sp.meta) return;
+      const n = sp.meta.frames;
+      const f = ((Math.floor(sp.t + sp.extra) % n) + n) % n;
+      if (f === sp.last) return;
+      sp.last = f;
+      const c = f % sp.meta.cols, r = Math.floor(f / sp.meta.cols);
+      sp.el.style.backgroundPosition = `${(c / (sp.meta.cols - 1)) * 100}% ${(r / Math.max(1, sp.meta.rows - 1)) * 100}%`;
+    };
+    const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const sp = e.target._sprite;
+        sp.visible = e.isIntersecting;
+        if (e.isIntersecting) ready.then(() => load(sp));
+      });
+    }, { rootMargin: "600px 0px" }) : null;
+    $$(".sprite[data-seq]").forEach((el, k) => {
+      const sp = { el, seq: el.dataset.seq, t: (k * 7) % 40, extra: 0, speed: 6, boost: 1, visible: !io, last: -1 };
+      el._sprite = sp;
+      list.push(sp);
+      const host = el.closest(".pcard, .gtile, .bars__cup");
+      if (host) {
+        host.addEventListener("pointerenter", () => (sp.boost = 5));
+        host.addEventListener("pointerleave", () => (sp.boost = 1));
+      }
+      if (io) io.observe(el);
+      else ready.then(() => load(sp));
+    });
+    return {
+      list,
+      get: (el) => el && el._sprite,
+      tick(dt) {
+        for (const sp of list) {
+          if (!sp.visible || !sp.meta) continue;
+          sp.t += dt * sp.speed * sp.boost;
+          draw(sp);
+        }
+      },
+      draw,
+    };
+  })();
 
   /* ---------------------------------------------------------
      Text splitting
@@ -203,6 +254,7 @@
       countCur.textContent = String(i + 1).padStart(2, "0");
     };
     let lastIdx = 0;
+    const heroSprites = products.map((p) => Sprites.get($(".sprite", p)));
 
     const htl = gsap.timeline({
       defaults: { ease: "power2.inOut" },
@@ -217,6 +269,8 @@
         onUpdate: (self) => {
           const i = Math.round(self.progress * steps);
           if (i !== lastIdx) { lastIdx = i; setActive(i); }
+          // scrolling spins the 3D products: one full turn per product
+          heroSprites.forEach((sp) => sp && (sp.extra = self.progress * steps * 40));
         },
       },
     });
@@ -225,8 +279,8 @@
       const at = i - 1;
       const dir = i % 2 ? 1 : -1;
       htl
-        .to(products[i - 1], { rotation: 120 * dir, scale: 0.25, xPercent: 70 * dir, yPercent: -50, autoAlpha: 0, duration: 1 }, at)
-        .fromTo(products[i], { rotation: -120 * dir, scale: 0.25, xPercent: -70 * dir, yPercent: 50, autoAlpha: 0 },
+        .to(products[i - 1], { rotation: 45 * dir, scale: 0.3, xPercent: 70 * dir, yPercent: -50, autoAlpha: 0, duration: 1 }, at)
+        .fromTo(products[i], { rotation: -45 * dir, scale: 0.3, xPercent: -70 * dir, yPercent: 50, autoAlpha: 0 },
           { rotation: 0, scale: 1, xPercent: 0, yPercent: 0, autoAlpha: 1, duration: 1, ease: "back.out(1.2)" }, at)
         .to(words[i - 1], { yPercent: -40, opacity: 0, duration: 0.6 }, at)
         .fromTo(words[i], { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6 }, at + 0.4)
@@ -243,14 +297,20 @@
       }, 0);
     });
 
-    // idle floating for ingredients
+    // idle floating for the 3D shapes + glass chips
+    $$(".chip").forEach((c, k) => {
+      htl.to(c, { y: (k ? 1 : -1) * 120, duration: steps, ease: "none" }, 0);
+      gsap.to(c, { yPercent: k ? 18 : -18, duration: 2.6 + k * 0.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    });
     $$(".fl").forEach((fl, k) => {
-      gsap.to(fl.firstElementChild || fl, {
-        y: "+=" + (8 + (k % 3) * 5), x: "+=" + (k % 2 ? 6 : -6),
+      gsap.to(fl, {
+        yPercent: (k % 2 ? -1 : 1) * (14 + (k % 3) * 6), xPercent: k % 2 ? 8 : -8,
         duration: 2.2 + k * 0.25, ease: "sine.inOut", yoyo: true, repeat: -1,
       });
     });
   }
+
+  if (!reduced) gsap.ticker.add((time, dt) => Sprites.tick(Math.min(dt, 64) / 1000));
 
   /* ---------------------------------------------------------
      Marquee — infinite, speeds up & skews with scroll velocity
@@ -340,17 +400,60 @@
       },
     });
     tl.to(track, { x: () => -dist(), ease: "none" });
-    $$(".pcard__art svg", track).forEach((svg, k) => {
-      gsap.fromTo(svg, { rotation: -25 + (k % 2) * 50 }, {
-        rotation: 0, ease: "none",
-        scrollTrigger: { trigger: svg.closest(".pcard"), containerAnimation: tl, start: "left right", end: "center center", scrub: true },
-      });
-    });
+    const cardSprites = $$(".pcard .sprite", track).map(Sprites.get);
+    tl.eventCallback("onUpdate", () => cardSprites.forEach((sp) => sp && (sp.extra = tl.progress() * 80)));
   });
   gsap.fromTo(".pcard", { y: 120, rotation: (i) => (i % 2 ? 6 : -6), autoAlpha: 0 }, {
     y: 0, rotation: 0, autoAlpha: 1, duration: 1.2, stagger: 0.08, ease: "expo.out",
     scrollTrigger: { trigger: ".products", start: "top 60%" },
   });
+
+  /* ---------------------------------------------------------
+     Full range — sticky 3D stage swaps product as each row passes,
+     with a mouse-driven tilt
+     --------------------------------------------------------- */
+  const rangeItems = $$(".range__item");
+  const stageImgs = $(".range__imgs");
+  if (stageImgs && rangeItems.length) {
+    const imgs = rangeItems.map((li) => {
+      const im = document.createElement("img");
+      im.alt = "";
+      im.loading = "lazy";
+      im.src = li.dataset.img;
+      stageImgs.appendChild(im);
+      return im;
+    });
+    const counter = $(".range__counter b");
+    let cur = -1;
+    const show = (i) => {
+      if (i === cur) return;
+      const prev = imgs[cur];
+      const dir = i > cur ? 1 : -1;
+      cur = i;
+      rangeItems.forEach((li, k) => li.classList.toggle("is-active", k === i));
+      counter.textContent = String(i + 7).padStart(2, "0");
+      if (prev) gsap.to(prev, { autoAlpha: 0, scale: 0.6, rotation: -25 * dir, yPercent: -20 * dir, duration: 0.5, ease: "power3.in", onComplete: () => prev.classList.remove("is-on") });
+      imgs[i].classList.add("is-on");
+      gsap.fromTo(imgs[i], { autoAlpha: 0, scale: 0.6, rotation: 25 * dir, yPercent: 20 * dir },
+        { autoAlpha: 1, scale: 1, rotation: 0, yPercent: 0, duration: 0.8, ease: "back.out(1.6)", overwrite: true });
+    };
+    rangeItems.forEach((li, k) => {
+      ScrollTrigger.create({ trigger: li, start: "top 55%", end: "bottom 55%", onToggle: (self) => self.isActive && show(k) });
+      li.addEventListener("pointerenter", () => finePointer && show(k));
+    });
+    show(0);
+    if (finePointer) {
+      const stage = $(".range__stage");
+      const rx = gsap.quickTo(stageImgs, "rotationX", { duration: 0.6, ease: "power3" });
+      const ry = gsap.quickTo(stageImgs, "rotationY", { duration: 0.6, ease: "power3" });
+      $(".range").addEventListener("pointermove", (e) => {
+        const r = stage.getBoundingClientRect();
+        ry(((e.clientX - (r.left + r.width / 2)) / r.width) * 24);
+        rx(-((e.clientY - (r.top + r.height / 2)) / r.height) * 18);
+      });
+    }
+    gsap.to(".range__disc", { rotation: 90, scale: 1.06, ease: "none", scrollTrigger: { trigger: ".range", start: "top bottom", end: "bottom top", scrub: 1 } });
+  }
 
   /* ---------------------------------------------------------
      Sandwich bars — triangles spin with scroll, steam rises
@@ -359,11 +462,16 @@
     rotation: (i) => [40, 220, -60][i], ease: "none",
     scrollTrigger: { trigger: ".bars__visual", start: "top bottom", end: "bottom top", scrub: 1 },
   });
+  const cupSprite = Sprites.get($(".bars__cup .sprite"));
+  if (cupSprite) cupSprite.speed = 4;
   gsap.fromTo(".bars__cup", { y: 60 }, {
     y: -40, ease: "none",
-    scrollTrigger: { trigger: ".bars__visual", start: "top bottom", end: "bottom top", scrub: 1 },
+    scrollTrigger: {
+      trigger: ".bars__visual", start: "top bottom", end: "bottom top", scrub: 1,
+      onUpdate: (self) => cupSprite && (cupSprite.extra = self.progress * 40),
+    },
   });
-  gsap.fromTo(".steam", { strokeDasharray: 40, strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: 1.8, repeat: -1, ease: "none" });
+  gsap.fromTo(".steam path", { strokeDasharray: 40, strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: 1.8, repeat: -1, ease: "none" });
 
   gsap.from(".food__chips span", {
     scale: 0, rotation: () => gsap.utils.random(-20, 20), duration: 0.8, stagger: 0.07, ease: "back.out(2)",
@@ -374,6 +482,8 @@
      Factory — exploded burger, layers map to production areas
      --------------------------------------------------------- */
   const layerItems = $$(".layers li");
+  const xSprite = Sprites.get($(".sprite--explode"));
+  if (xSprite) { xSprite.speed = 0; xSprite.t = 0; } // scroll-driven only
   const explode = (pinIt) => {
     const tl = gsap.timeline({
       defaults: { ease: "power2.inOut" },
@@ -388,16 +498,14 @@
         },
       },
     });
-    tl.to(".xl--top", { y: -130, rotation: -6, x: -14 }, 0)
-      .to(".xl--lettuce", { y: -82, rotation: 4, x: 18 }, 0)
-      .to(".xl--tomato", { y: -42, rotation: -3, x: -10 }, 0)
-      .to(".xl--cheese", { y: -6, rotation: 5, x: 14 }, 0)
-      .to(".xl--patty", { y: 30, rotation: -2 }, 0)
-      .to(".xl--bottom", { y: 66, rotation: 3 }, 0)
-      .to(".xl--shadow", { y: 72, scaleX: 1.2, transformOrigin: "50% 50%", opacity: 0.6 }, 0)
-      .fromTo(".factory__badge", { rotation: -40, scale: 0.6 }, { rotation: -12, scale: 1 }, 0)
+    // frames 0 → 39 of the Blender render: the burger flies apart as you scroll
+    const frame = { f: 0 };
+    tl.to(frame, {
+      f: 39, ease: "none", duration: 1,
+      onUpdate: () => { if (xSprite) { xSprite.t = frame.f; Sprites.draw(xSprite); } },
+    }, 0)
+      .fromTo(".factory__badge", { rotation: -40, scale: 0.6 }, { rotation: -12, scale: 1, duration: 1 }, 0)
       .to({}, { duration: 0.25 });
-    gsap.set(".xl", { transformOrigin: "50% 50%" });
   };
   mm.add("(min-width: 901px)", () => explode(true));
   mm.add("(max-width: 900px)", () => explode(false));
@@ -471,8 +579,8 @@
     yPercent: 110, rotation: 8, duration: 1, stagger: 0.035, ease: "expo.out",
     scrollTrigger: { trigger: ".contact__phone", start: "top 88%" },
   });
-  gsap.from(".footer__logo span", {
-    yPercent: 100, rotation: (i) => (i % 2 ? 10 : -10), duration: 1.2, stagger: 0.07, ease: "back.out(1.4)",
+  gsap.from(".footer__logo img", {
+    yPercent: 30, scale: 0.92, autoAlpha: 0, duration: 1.4, ease: "expo.out",
     scrollTrigger: { trigger: ".footer__logo", start: "top 95%" },
   });
 

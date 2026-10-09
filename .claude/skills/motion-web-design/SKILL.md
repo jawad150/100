@@ -8,7 +8,7 @@ description: Design and motion system for scroll-driven marketing websites (GSAP
 ## Stack
 - GSAP 3.12 + ScrollTrigger (vendored in `treats-redesign/vendor/`), Lenis 1.1 for smooth scroll.
 - Plain HTML/CSS/JS, no build step. Fonts: Bricolage Grotesque (display), DM Sans (body).
-- Food is drawn as inline SVG so every layer can be animated (see `.hero__products` and `.xburger`).
+- 3D comes from Blender, scripted with `bpy` in `treats-redesign/3d/treats3d.py` (Cycles, transparent film, shadow catcher). Sequences are packed into WebP sprite sheets by `3d/pack.py`, and the `Sprites` engine in `js/main.js` drives the frames.
 
 ## Design tokens (Treats)
 | Token | Value | Use |
@@ -28,7 +28,16 @@ The logo motif is a row of six lilac letter tiles (T R E A T S). Reuse it for th
 4. **Exploded build**: SVG layers fly apart on scroll, and a list of facts lights up in step with them.
 5. **Line draw**: `strokeDasharray = getTotalLength()`, scrub the offset to 0.
 6. **Velocity marquee**: infinite xPercent loop. Scroll velocity changes its timeScale and skew.
-7. **Micro-interactions**: a cursor that grows with a label on `[data-cursor]`, and `.magnetic` buttons that use `quickTo` with elastic easing.
+7. **3D turntable scrub**: sprite frames follow scroll progress (one turn per hero product), with an idle spin added on top.
+8. **Glass UI chips**: frosted cards (`backdrop-filter`) that bob and drift with parallax, for a SaaS feel.
+9. **Micro-interactions**: a cursor that grows with a label on `[data-cursor]`, and `.magnetic` buttons that use `quickTo` with elastic easing.
+
+## 3D pipeline (Blender → web)
+1. Model procedurally in `treats3d.py`. Add a `make_<name>()` that returns `(rig, focus_z)` and register it in `PRODUCTS` (turntable) or `RANGE` (still).
+2. Test a single frame: `ONE=1 SAMPLES=8 python3.11 treats3d.py <job>`. Composite onto lilac to check exposure and framing.
+3. Render the full set, then run `python3 pack.py work ../assets/3d`.
+4. In HTML use `<div class="sprite" data-seq="<name>" style="background-image:url(assets/3d/<name>-poster.webp)">`. The engine lazy-loads the sheet near the viewport. Set `sp.extra` from a ScrollTrigger to tie rotation to scroll, and `sp.speed` for the idle spin.
+5. Keep sheets ≤ 448 px frames × 40 frames. Decoded size is width × height × 4 bytes, so watch memory on mobile.
 
 ## Rules
 - Animate transform and opacity only. Use `will-change` sparingly.
