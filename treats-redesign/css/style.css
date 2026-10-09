@@ -522,7 +522,7 @@ em { font-style: normal; }
 .footer__products { font-size: .92rem; opacity: .9; }
 .footer__logo { margin: 0 -2% 12px; }
 .footer__logo img { width: 100%; height: auto; }
-.footer__bottom { display: flex; justify-content: space-between; font-size: .85rem; opacity: .85; }
+.footer__bottom { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: .85rem; opacity: .85; }
 .footer__bottom a { text-decoration: none; }
 @media (max-width: 860px) { .footer__top, .footer__cols { grid-template-columns: 1fr; } }
 
