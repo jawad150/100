@@ -753,9 +753,53 @@ def pane12_hidden(t):
     return 396 <= f < 405 or 422 <= f < 446
 
 
-def tag_pos(cam, gap, k):
-    """Projected reticle and the clamped text left-middle of tag k at the camera."""
+# frame-px keep-out boxes of the frame's own content (pane: boxes): tags avoid covering them
+KEEP_OUT = {3: [(754, 1062, 870, 1178), (796, 296, 876, 364)], 4: [(172, 925, 634, 1600)],
+            8: [(293, 441, 787, 501), (386, 854, 694, 915)], 9: [(262, 564, 819, 716)], 11: [(220, 780, 860, 802)]}
+
+
+def _tag_offset_cands(k, tw, th):
     (ax, ay), (ox, oy) = TAG_ANCHOR[k]
+    return [(ox, oy), (ox, -oy if oy < 0 else oy + 60), (-abs(ox) - tw, oy), (-tw / 2, -abs(oy) - 40 - th / 2),
+            (-tw / 2, abs(oy) + 40 + th / 2), (ox, oy - 70), (ox, oy + 70)]
+
+
+@functools.lru_cache(maxsize=32)
+def tag_offset(k):
+    """Screen offset (reticle -> text left-middle) of tag k, chosen ONCE from the arrival-frame camera: the brief's
+    offset unless the tag would cover the frame's own copy / JD there (or need a large clamp); then the candidate
+    with the least overlap (right, mirrored, left, above, below)."""
+    if k == 12:                                         # tag 12 lives in the frontal re-hook view: BRIEF 8 box
+        return TAG_ANCHOR[12][1]
+    t_in = [b[0] for b in TAG_BLOCKS if b[2] == k][0]
+    lines = [b[3] for b in TAG_BLOCKS if b[2] == k][0]
+    cam, gap = stack_cam(t_in)
+    tw, th = tag_sprite(lines, 'ON' if k == 12 else None)[2:4]
+    (ax, ay), _ = TAG_ANCHOR[k]
+    xy, _ = cam.project(np.array([[ax - 540.0, ay - 960.0, zk(k, gap)]]))
+    rx, ry = float(xy[0, 0]), float(xy[0, 1])
+    boxes = []
+    for pk, bl in KEEP_OUT.items():
+        for (x0, y0, x1, y1) in bl:
+            P = np.array([[x - 540.0, y - 960.0, zk(pk, gap)] for x in (x0, x1) for y in (y0, y1)])
+            q, _ = cam.project(P)
+            if np.isfinite(q).all():
+                boxes.append((q[:, 0].min(), q[:, 1].min(), q[:, 0].max(), q[:, 1].max()))
+    best = None
+    for n, (ox, oy) in enumerate(_tag_offset_cands(k, tw, th)):
+        x, y = _clamp_tag(rx + ox, ry + oy, tw, th)
+        bx0, by0, bx1, by1 = x - TAG_PAD, y - th / 2 - TAG_PAD, x + tw + TAG_PAD, y + th / 2 + TAG_PAD
+        ov = sum(max(0.0, min(bx1, b[2]) - max(bx0, b[0])) * max(0.0, min(by1, b[3]) - max(by0, b[1])) for b in boxes)
+        score = ov + 40.0 * math.hypot(x - rx - ox, y - ry - oy) + (0 if n == 0 else 500.0)
+        if best is None or score < best[0]:
+            best = (score, (ox, oy))
+    return best[1]
+
+
+def tag_pos(cam, gap, k):
+    """Projected reticle and the (unclamped) text left-middle of tag k at the camera."""
+    (ax, ay), _ = TAG_ANCHOR[k]
+    ox, oy = tag_offset(k)
     xy, z = cam.project(np.array([[ax - 540.0, ay - 960.0, zk(k, gap)]]))
     rx, ry = float(xy[0, 0]), float(xy[0, 1])
     return rx, ry, rx + ox, ry + oy
@@ -1096,12 +1140,16 @@ def envelopes():
         vo = np.full(n, -90.0)
     out['vo'] = np.pad(vo, (0, max(0, n - len(vo))), constant_values=-90.0)[:n].astype(np.float32)
     tt = np.arange(n) / FPS
+    rng = np.random.default_rng(7)
+    b8 = (tt % (BEAT / 2)) / (BEAT / 2)
     bt = (tt % BEAT) / BEAT
-    out['music'] = (-24.0 + 7.0 * np.exp(-bt * 6.0) + 2.0 * np.sin(tt * 1.7)).astype(np.float32)
-    sfx = np.full(n, -60.0)
-    for v in SFX_EVENTS.values():
-        for tv in (v if isinstance(v, (tuple, list)) else (v,)):
-            sfx = np.maximum(sfx, -12.0 - 30.0 * np.clip((tt - tv) / 0.5, 0, 1) - 200.0 * (tt < tv))
+    out['music'] = (-30.0 + 9.0 * np.exp(-bt * 5.0) + 4.0 * np.exp(-b8 * 7.0) + 3.0 * rng.standard_normal(n)
+                    ).astype(np.float32)
+    sfx = np.full(n, -60.0) + 2.0 * rng.standard_normal(n)
+    hits = [v for v in SFX_EVENTS.values() for v in (v if isinstance(v, (tuple, list)) else (v,))]
+    hits += [22.2 + 0.3 * i for i in range(8)] + [19.2, 19.8, 24.3, 24.75, 25.2]
+    for tv in hits:
+        sfx = np.maximum(sfx, -10.0 - 36.0 * np.clip((tt - tv) / 0.45, 0, 1) - 200.0 * (tt < tv))
     out['sfx'] = sfx.astype(np.float32)
     return out
 
@@ -1172,11 +1220,15 @@ def legend():
     return out
 
 
+LEGEND_Y = (590.0, 640.0, 690.0)       # r3 deviation: BRIEF's y 1330-1440 crossed JD's face on the live stack (x 376-553)
+LEGEND_BOX = (80, 570, 480, 710)
+
+
 def draw_legend(cv, t):
     op = ramp(t, fr(666), 22.4, 'inout_sine') * (1.0 - ramp(t, fr(729), 24.6, 'in_cubic'))
     if op <= 0.002:
         return
-    for (sw, lab), y in zip(legend(), (1330.0, 1385.0, 1440.0)):
+    for (sw, lab), y in zip(legend(), LEGEND_Y):
         K.draw(cv, sw, 90.0, y, anchor=(0, 0.5), opacity=op)
         lab.draw(cv, 122.0, y, anchor=(0, 0.5), opacity=op)
 
@@ -1199,7 +1251,20 @@ def S_CORR(t):
                 continue
             op *= min(1.0, max(0.15, (9500.0 - d) / 4000.0))
             items.append((d, 'bb', (pos, op, flare)))
-    items.append((cam.depth((0.0, 0.0, LIVE_Z)), 'live', None))
+    live_d = cam.depth((0.0, 0.0, LIVE_Z))
+    lb = _bbox(cam, stack_corners(gap, LIVE_Z))
+    kf = ramp(t, 19.8, 20.6, 'inout_sine') * (1.0 - ramp(t, 24.0, 24.6, 'inout_sine'))
+    if kf > 0:
+        for n, (d, kind, data) in enumerate(items):
+            pos, op, flare = data
+            if d >= live_d:
+                continue
+            q, _ = cam.project(np.array([[pos[0] - 410.0, pos[1], pos[2]], [pos[0] + 410.0, pos[1], pos[2]]]))
+            if not np.isfinite(q).all():
+                continue
+            ov = (min(q[:, 0].max(), lb[2]) - max(q[:, 0].min(), lb[0])) / max(1.0, lb[2] - lb[0])
+            items[n] = (d, kind, (pos, op * (1.0 - 0.8 * kf * K.smoothstep(0.0, 0.25, ov)), flare))
+    items.append((live_d, 'live', None))
     items.sort(key=lambda r: -r[0])
     for d, kind, data in items:
         if kind == 'bb':
@@ -1237,24 +1302,30 @@ def captions():
                      avoid=lambda t: [stack_rect(max(t, 13.2)), (245, 565, 715, 635)])
     c2 = SC.Captions(_words(16.9, 20.5), band='lower', hold=0.15, max_words=3, clear=[(20.6, 22.3)],
                      avoid=lambda t: [(100, 280, 980, 560)] if t >= 18.9 else [])
-    c3 = SC.Captions(_words(22.1, 24.7), band='upper', y=420, hold=0.15, max_words=3, avoid=[(80, 1300, 470, 1470)])
+    c3 = SC.Captions(_words(22.1, 24.7), band='upper', y=420, hold=0.15, max_words=3, avoid=[LEGEND_BOX])
     return (c1, c2, c3)
+
+
+CARD_DUR = 4.0          # r3 deviation (HANDOFF: 4.2, exit 33.24-33.6): the card's type now fades 32.94-33.27 (CARD_OUT,
+CARD_OUT = (32.94, fr(998))   # through EndCard.draw's opacity) and the loop crossfade is 33.15-33.6, so the card no
+LOOP_D = 0.45           # longer sits on top of the returning hook lockup; hold 31.25-32.94 = 1.69 s (>= 1.5)
 
 
 @functools.lru_cache(maxsize=1)
 def card():
-    return E.EndCard(CTA, 'bhejo', sub='jo kehta hai "editing mein kya hai?"', handle=False, monogram='JD', dur=4.2,
-                     y_mono=365.0, y_key=715.0, y_sub=922.0)
+    return E.EndCard(CTA, 'bhejo', sub='jo kehta hai "editing mein kya hai?"', handle=False, monogram='JD',
+                     dur=CARD_DUR, y_mono=365.0, y_key=715.0, y_sub=922.0)
 
 
 def draw(t):
-    cv = E.loop_world(world, t, DUR, d=0.6)
+    cv = E.loop_world(world, t, DUR, d=LOOP_D)
     if 11.9 <= t < 24.9:
         for cap in captions():
             cap.draw(cv, t)
     if t >= T_CARD:
-        card().draw(cv, t, T_CARD)
-        op = ramp(t, 30.4, 30.85, 'inout_sine') * (1.0 - ramp(t, 33.24, 33.5667, 'in_cubic'))
+        out = 1.0 - ramp(t, CARD_OUT[0], CARD_OUT[1], 'inout_sine')
+        card().draw(cv, t, T_CARD, opacity=out)
+        op = ramp(t, 30.4, 30.85, 'inout_sine') * out
         if op > 0:
             J.signature(cv, 760.0, 1575.0, opacity=op)
     return cv
@@ -1347,10 +1418,10 @@ def text_blocks(t):
     if 18.9 <= t < 22.0:
         out.append(('360 lockup', (108, 294, 972, 550)))
     if fr(666) <= t < fr(729):
-        out.append(('lane legend', (90, 1315, 476, 1455)))
+        out.append(('lane legend', LEGEND_BOX))
     if T_PLAY <= t < 29.1:
         out.append(('payoff lockup', (200, 441, 880, 915)))
-    if t >= T_CARD:
+    if T_CARD <= t < CARD_OUT[0]:
         out.append(('end card', None))
     return out
 
@@ -1426,12 +1497,14 @@ def selftest():
     check('no camera snaps (stack f27-479, corridor f504-791)', not s1 and not s2, 'stack %s corridor %s' % (s1, s2))
     # end card
     c = card()
-    check('end card hold >= 1.5 s', c.hold >= 1.5, 'hold %.2f s' % c.hold)
+    hold = CARD_OUT[0] - (T_CARD + c.settle)
+    check('end card hold >= 1.5 s', hold >= 1.5 and c.hold >= 1.5, 'hold %.2f s (%.2f-%.2f)' % (hold, T_CARD + c.settle,
+                                                                                            CARD_OUT[0]))
     # text blocks <= 2 per frame (the loop's 33.0-33.6 lockup + chip are frame 0 coming back: not counted)
     over = [f for f in range(0, 990) if len(text_blocks(f / 30.0)) > 2]
     check('<= 2 text blocks per frame (f0-f989)', not over, str(over[:10]))
     # safe zones of the fixed boxes
-    boxes = [('counter', (373, 297, 708, 548)), ('360', (108, 294, 972, 550)), ('legend', (90, 1315, 476, 1455)),
+    boxes = [('counter', (373, 297, 708, 548)), ('360', (108, 294, 972, 550)), ('legend', LEGEND_BOX),
              ('signature', (631, 1563, 889, 1587))]
     bad = [n for n, (x0, y0, x1, y1) in boxes if x0 < 70 or x1 > 1010 or y0 < 230 or y1 > 1620 or (x1 > 930 and y1 > 1050
                                                                                                      and y0 < 1700)]
