@@ -6,10 +6,45 @@
   "w": 448,
   "h": 448
  },
- "burger": {
-  "frames": 3,
+ "croissant": {
+  "frames": 40,
   "cols": 8,
-  "rows": 1,
+  "rows": 5,
+  "w": 448,
+  "h": 448
+ },
+ "burger": {
+  "frames": 40,
+  "cols": 8,
+  "rows": 5,
+  "w": 448,
+  "h": 448
+ },
+ "finger": {
+  "frames": 40,
+  "cols": 8,
+  "rows": 5,
+  "w": 448,
+  "h": 448
+ },
+ "torpedo": {
+  "frames": 40,
+  "cols": 8,
+  "rows": 5,
+  "w": 448,
+  "h": 448
+ },
+ "salad": {
+  "frames": 40,
+  "cols": 8,
+  "rows": 5,
+  "w": 448,
+  "h": 448
+ },
+ "cup": {
+  "frames": 40,
+  "cols": 8,
+  "rows": 5,
   "w": 448,
   "h": 448
  },
