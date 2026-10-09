@@ -13,9 +13,12 @@
   /* ---------------------------------------------------------
      3D sprites — Blender turntables packed as WebP sprite sheets.
      Each .sprite[data-seq] shows a poster first, then swaps to its sheet
-     when near the viewport. Frames are driven by idle spin, hover and scroll.
+     when near the viewport. Frames are driven by idle spin, hover, scroll
+     and drag (with momentum). Phones and low-memory devices get the smaller
+     "-sm" sheets (256 px frames, about a third of the decoded memory).
      --------------------------------------------------------- */
   const SPRITE_DIR = "assets/3d/";
+  const smallSheets = matchMedia("(max-width: 860px)").matches || (navigator.deviceMemory || 8) <= 4;
   const Sprites = (() => {
     const list = [];
     let manifest = null;
@@ -34,12 +37,12 @@
         sp.last = -1;
         draw(sp);
       };
-      img.src = SPRITE_DIR + sp.seq + ".webp";
+      img.src = SPRITE_DIR + sp.seq + (smallSheets && meta.sm ? "-sm" : "") + ".webp";
     };
     const draw = (sp) => {
       if (!sp.meta) return;
       const n = sp.meta.frames;
-      const f = ((Math.floor(sp.t + sp.extra) % n) + n) % n;
+      const f = ((Math.floor(sp.t + sp.extra + sp.drag) % n) + n) % n;
       if (f === sp.last) return;
       sp.last = f;
       const c = f % sp.meta.cols, r = Math.floor(f / sp.meta.cols);
@@ -53,7 +56,7 @@
       });
     }, { rootMargin: "600px 0px" }) : null;
     $$(".sprite[data-seq]").forEach((el, k) => {
-      const sp = { el, seq: el.dataset.seq, t: (k * 7) % 40, extra: 0, speed: 6, boost: 1, visible: !io, last: -1 };
+      const sp = { el, seq: el.dataset.seq, t: (k * 7) % 40, extra: 0, drag: 0, vel: 0, speed: 6, boost: 1, visible: !io, last: -1 };
       el._sprite = sp;
       list.push(sp);
       const host = el.closest(".pcard, .gtile, .bars__cup");
@@ -71,10 +74,55 @@
         for (const sp of list) {
           if (!sp.visible || !sp.meta) continue;
           sp.t += dt * sp.speed * sp.boost;
+          if (sp.vel && !sp.grabbed) {
+            sp.drag += sp.vel * dt;
+            sp.vel *= Math.pow(0.05, dt); // momentum decays over ~1 s
+            if (Math.abs(sp.vel) < 0.5) sp.vel = 0;
+          }
           draw(sp);
         }
       },
       draw,
+      /* Drag horizontally on `host` to turn the 3D object. `pick` returns the sprite
+         to turn (the hero swaps products). Touch drags only where `touch` is set,
+         so swipe-scrolling a card row keeps working on phones. */
+      draggable(host, pick, { touch = false } = {}) {
+        let sp = null, lastX = 0, lastT = 0;
+        host.classList.add("is-draggable");
+        if (touch) host.style.touchAction = "pan-y";
+        host.addEventListener("pointerdown", (e) => {
+          if (e.pointerType === "touch" && !touch) return;
+          if (e.button > 0) return;
+          sp = pick();
+          if (!sp || !sp.meta) return;
+          sp.grabbed = true;
+          sp.vel = 0;
+          lastX = e.clientX;
+          lastT = performance.now();
+          host.setPointerCapture(e.pointerId);
+          host.classList.add("is-grabbing");
+          e.preventDefault();
+        });
+        host.addEventListener("pointermove", (e) => {
+          if (!sp || !sp.grabbed) return;
+          const now = performance.now();
+          const df = -(e.clientX - lastX) / 7; // ~7 px per frame, 40 frames per turn
+          sp.drag += df;
+          sp.vel = gsap.utils.clamp(-120, 120, (df / Math.max(8, now - lastT)) * 1000);
+          lastX = e.clientX;
+          lastT = now;
+          draw(sp);
+        });
+        const end = () => {
+          if (!sp) return;
+          sp.grabbed = false;
+          sp = null;
+          host.classList.remove("is-grabbing");
+        };
+        host.addEventListener("pointerup", end);
+        host.addEventListener("pointercancel", end);
+        host.addEventListener("lostpointercapture", end);
+      },
     };
   })();
 
@@ -179,10 +227,10 @@
     const yTo = gsap.quickTo(cursor, "y", { duration: 0.35, ease: "power3" });
     addEventListener("pointermove", (e) => { xTo(e.clientX); yTo(e.clientY); cursor.style.opacity = 1; }, { passive: true });
     document.addEventListener("pointerleave", () => (cursor.style.opacity = 0));
-    $$("[data-cursor], .pcard, .gtile, .store").forEach((el) => {
+    $$("[data-cursor], .pcard, .gtile, .store, .bars__cup").forEach((el) => {
       el.addEventListener("pointerenter", () => {
         cursor.classList.add("is-big");
-        label.textContent = el.dataset.cursor || (el.classList.contains("store") ? "Visit" : "Yum");
+        label.textContent = el.dataset.cursor || (el.classList.contains("store") ? "Visit" : "Drag");
       });
       el.addEventListener("pointerleave", () => cursor.classList.remove("is-big"));
     });
@@ -255,6 +303,7 @@
     };
     let lastIdx = 0;
     const heroSprites = products.map((p) => Sprites.get($(".sprite", p)));
+    Sprites.draggable($(".hero__plate"), () => heroSprites[lastIdx], { touch: true });
 
     const htl = gsap.timeline({
       defaults: { ease: "power2.inOut" },
@@ -299,7 +348,8 @@
 
     // idle floating for the 3D shapes + glass chips
     $$(".chip").forEach((c, k) => {
-      htl.to(c, { y: (k ? 1 : -1) * 120, duration: steps, ease: "none" }, 0);
+      // phones: both chips drift up so the lower one never slides over the headline
+      htl.to(c, { y: () => (innerWidth > 900 ? (k ? 1 : -1) * 120 : -40), duration: steps, ease: "none" }, 0);
       gsap.to(c, { yPercent: k ? 18 : -18, duration: 2.6 + k * 0.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
     });
     $$(".fl").forEach((fl, k) => {
@@ -310,7 +360,13 @@
     });
   }
 
-  if (!reduced) gsap.ticker.add((time, dt) => Sprites.tick(Math.min(dt, 64) / 1000));
+  if (!reduced) {
+    gsap.ticker.add((time, dt) => Sprites.tick(Math.min(dt, 64) / 1000));
+    $$(".pcard, .gtile, .bars__cup").forEach((host) => {
+      const sp = Sprites.get($(".sprite", host));
+      if (sp) Sprites.draggable(host, () => sp);
+    });
+  }
 
   /* ---------------------------------------------------------
      Marquee — infinite, speeds up & skews with scroll velocity

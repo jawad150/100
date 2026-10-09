@@ -37,7 +37,9 @@ The logo motif is a row of six lilac letter tiles (T R E A T S). Reuse it for th
 2. Test a single frame: `ONE=1 SAMPLES=8 python3.11 treats3d.py <job>`. Composite onto lilac to check exposure and framing.
 3. Render the full set, then run `python3 pack.py work ../assets/3d`.
 4. In HTML use `<div class="sprite" data-seq="<name>" style="background-image:url(assets/3d/<name>-poster.webp)">`. The engine lazy-loads the sheet near the viewport. Set `sp.extra` from a ScrollTrigger to tie rotation to scroll, and `sp.speed` for the idle spin.
-5. Keep sheets ≤ 448 px frames × 40 frames. Decoded size is width × height × 4 bytes, so watch memory on mobile.
+5. `Sprites.draggable(host, () => sprite, { touch })` adds drag-to-spin with momentum. Only pass `touch: true` where a horizontal swipe can't mean scroll.
+6. pack.py also writes `<name>-sm.webp` (256 px frames). The engine picks it on screens ≤ 860 px or devices with ≤ 4 GB of memory.
+7. Keep sheets ≤ 448 px frames × 40 frames. Decoded size is width × height × 4 bytes, so watch memory on mobile.
 
 ## Rules
 - Animate transform and opacity only. Use `will-change` sparingly.

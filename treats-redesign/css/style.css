@@ -83,8 +83,8 @@ em { font-style: normal; }
 .btn--ghost:hover { background: rgba(255,255,255,.12); }
 
 /* ---------- logo tiles (echoing the original letter-tile logo) ---------- */
-.logo, .loader__tiles, .footer__logo { display: flex; gap: 3px; text-decoration: none; }
-.logo span, .loader__tiles span, .footer__logo span {
+.logo, .loader__tiles { display: flex; gap: 3px; text-decoration: none; }
+.logo span, .loader__tiles span {
   display: grid; place-items: center;
   background: var(--lilac); color: #fff;
   font-family: var(--font-display); font-weight: 800;
@@ -580,3 +580,8 @@ em { font-style: normal; }
   .range__item { color: var(--ink); font-size: clamp(1.6rem, 7vw, 2.4rem); padding: 8px 0; }
   .range__thumb { display: block; }
 }
+
+/* drag-to-spin 3D */
+.is-draggable { cursor: grab; -webkit-user-select: none; user-select: none; }
+.is-draggable .sprite { -webkit-user-drag: none; }
+.is-grabbing, .is-grabbing * { cursor: grabbing !important; }

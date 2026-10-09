@@ -24,7 +24,9 @@ Every 3D element on the page is generated in code with Blender's Python API (`bp
 - **The full range**: 3D stills for the other 11 products (Baps, Ciabattas, Sandwich, Large K/bez, Pockets, Seekh Kebab, Wrap, Baguettes, Bloomer, Samosa, Mediterranean Roll).
 - **SaaS-style motion elements**: glossy torus, pill, sphere, metaball blob, rounded cube, ring and sesame seed, which float with parallax in the hero. Also a 3D TREATS letter-tile logo.
 
-Everything renders on a shadow catcher with a transparent background, so each object carries its own soft shadow onto any colour. [`3d/pack.py`](3d/pack.py) packs each sequence into a WebP sprite sheet (8 columns) plus a poster frame. `js/main.js` picks the frame per element: idle spin, faster on hover, and tied to scroll.
+Everything renders on a shadow catcher with a transparent background, so each object carries its own soft shadow onto any colour. [`3d/pack.py`](3d/pack.py) packs each sequence into a WebP sprite sheet (8 columns) plus a poster frame. `js/main.js` picks the frame per element: idle spin, faster on hover, tied to scroll, and **drag to spin** with momentum. You can grab the hero product, the cards, the cup or a gallery tile and turn it like a product viewer. On phones only the hero is draggable, so swiping the card row still scrolls.
+
+**Phones and low-memory devices** (`navigator.deviceMemory` ≤ 4) load `-sm` sheets with 256 px frames. They decode to about a third of the memory, roughly 10 MB each instead of 32 MB.
 
 ```bash
 pip install bpy                     # Blender as a Python module (Python 3.11 wheel)

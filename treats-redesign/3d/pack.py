@@ -11,6 +11,7 @@ from PIL import Image
 work, out = sys.argv[1], sys.argv[2]
 os.makedirs(out, exist_ok=True)
 COLS = 8
+SMALL = 0.57  # phone sheets: 448 px frames -> 256 px
 SEQS = {  # name: frame width (height follows the render aspect)
     "bagel": 448, "croissant": 448, "burger": 448, "finger": 448, "torpedo": 448, "salad": 448, "cup": 448,
     "explode": 400,
@@ -49,9 +50,13 @@ for name, fw in SEQS.items():
         sheet.paste(im, ((i % COLS) * fw, (i // COLS) * fh))
     path = os.path.join(out, f"{name}.webp")
     sheet.save(path, "WEBP", quality=82, method=6)
+    # phone variant: same grid at ~57% size, about a third of the decoded memory
+    sw, sh = round(fw * SMALL), round(fh * SMALL)
+    small = sheet.resize((COLS * sw, rows * sh), Image.LANCZOS)
+    small.save(os.path.join(out, f"{name}-sm.webp"), "WEBP", quality=80, method=4)
     # first frame as a light poster for no-JS / early paint
     soften_edges(Image.open(frames[0]).convert("RGBA")).resize((fw, fh), Image.LANCZOS).save(os.path.join(out, f"{name}-poster.webp"), "WEBP", quality=82, method=6)
-    manifest[name] = {"frames": len(frames), "cols": COLS, "rows": rows, "w": fw, "h": fh}
+    manifest[name] = {"frames": len(frames), "cols": COLS, "rows": rows, "w": fw, "h": fh, "sm": [sw, sh]}
     print(name, len(frames), "frames ->", path, os.path.getsize(path) // 1024, "KB")
 
 for f in sorted(glob.glob(os.path.join(work, "shapes", "*.png"))):
