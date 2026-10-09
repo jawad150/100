@@ -76,6 +76,10 @@ No expression swaps in this reel (two framings 13 s apart with other shots betwe
    the payoff lockup = y 841-1149 (not 841-1190): use `LF.jd_rect(t)`, not the brief's fixed (330, 1190, 1073, 1954).
 3. **Look strengths.** S3: low outline / counter-rim and no rim below the hips (a full glowing outline on a 560 px figure read as a
    sticker). S5: counter-rim 0.3 instead of 0.5 so the light plot holds (key + rim left, right cheek falls off).
+   *Build note (motion-timeline-builder, 2026-10-09, HANDOFF risk 9 checked on the real plate):* after the finish the outline +
+   counter-rim still saturated to an even stroke on both sides (rendered edge luma left 209-214, right 107-112), so `_s5_layers`
+   now multiplies the rim emission by a lateral falloff, 1.0 left of the face centre (cut-out x 450) to 0.25 at x 741: left rim
+   unchanged, right edge 60-75. The rim parameters above are otherwise unchanged.
 4. **"JD's chin lifts toward the warm light"** is not animated (a still cannot lift its chin without puppeting the face): sold by
    the clunk ignition on his face and rim plus the 3 % push-in.
 5. **No `FA.idle` drift on the full body** (drift would slide the feet on the floor).
