@@ -102,6 +102,7 @@ J_BACK = (540.0, 800.0)
 J_ANT = 1                                                               # recede starts this many frames early
 FLAP_LAND = (967, 967, 975, 982, 984, 989, 996, 996, 1004, 1011)       # row i lands upright on this frame (HANDOFF #9)
 SUB = "jise 'log' ka darr rokta hai"
+CARD_LEAD = 1.0 / 90.0                                                 # end-card exit lead (s), see draw()
 WORDS = {'A': RW + '/vo/lkk_vo_A.words.json', 'B': RW + '/vo/lkk_vo_B.words.json'}
 HIDE = {'A': ((1.28, 3.0), (31.2, 35.2)), 'B': ((0.0, 2.52), (31.2, 35.2))}
 BANK_WIDE = (972.8, 171.5)
@@ -628,7 +629,9 @@ def build(hook='A'):
         if NOTEXT:
             return cv
         blocks = draw_overlays(cv, t, hook)
-        assets()['card'].draw(cv, t, T_CARD)
+        # the card runs CARD_LEAD ahead from inside its static hold: EndCard reaches 0 exactly on f1055's centre, so the
+        # blur sample before it left a ghost on the last frame (up to 49 code values, 61k px > 6, measured)
+        assets()['card'].draw(cv, t + (CARD_LEAD if t >= 34.0 else 0.0), T_CARD)
         ch = captions(hook).draw(cv, t)
         if DEBUG:
             _log_blocks(t, hook, blocks, ch)
