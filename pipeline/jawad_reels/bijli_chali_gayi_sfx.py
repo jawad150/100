@@ -1199,6 +1199,9 @@ def rough(hook='A'):
         A._write_wav(path, y, 24)
         k = undb(g) * gl[:, None]
         vv, ss, mm = v * k, s * k, m * k
+        if full:                                       # delivery stems at this mix's gain x limiter (session 5)
+            for sk, sv in (('vo', vv), ('sfx', ss), ('music', mm)):
+                A._write_wav(os.path.join(AUD, '%s_stem_%s.wav' % (name, sk)), sv, 24)
         _, lvv = A.loudness_curve(vv)
         _, lss = A.loudness_curve(ss)
         _, lbb = A.loudness_curve(ss + mm)
