@@ -63,6 +63,7 @@ from jawad_kit import K, T, J                      # noqa: E402
 import jawad_grade as G                           # noqa: E402  registers 'inferno'
 import jawad_tx as X                               # noqa: E402
 import endcard as E                                # noqa: E402
+import profile_outro as PO                         # noqa: E402
 import snake_captions as SC                        # noqa: E402
 import pehle_wala_faces as PF                      # noqa: E402
 import pehle_wala_state as S                       # noqa: E402
@@ -201,8 +202,9 @@ def assets():
         hook=J.HouseTitle('BAS EK', 'chhota sa', caps_px=86, key_px=200),
         change=T.render('CHANGE', 'jw_caps', px=86),
         payoff=KeyFirstTitle('pehle wala', 'HI THEEK THA', key_px=210, caps_px=86, ul_len=918),
-        card=E.EndCard('US CLIENT KO', 'bhejo', monogram='JD', dur=4.2667),
-        cap=SC.Captions(VO_A, band='lower', y=1400, avoid=cap_avoid, hide=[(0.0, 2.6667)], clear=[(21.8667, 23.40)]))
+        card=PO.ProfileOutro("Tumhare client ka 'chhota sa change' kya tha?", key='Comment mein batao',
+                             dur=4.2667),                    # Jawad 10-09: Genjutsu-style profile outro
+        cap=SC.Captions(VO_A, band='lower', y=1400, avoid=cap_avoid, hide=[(0.0, 2.6667), (T_CARD + 1.2, DUR)], clear=[(21.8667, 23.40)]))
 
 
 def prewarm():

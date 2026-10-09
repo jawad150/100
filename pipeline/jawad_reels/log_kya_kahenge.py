@@ -68,6 +68,7 @@ from jawad_kit import K, T, J                      # noqa: E402
 import jawad_tx as X                               # noqa: E402
 import jawad_grade as G                            # noqa: E402
 import endcard as E                                # noqa: E402
+import profile_outro as PO                         # noqa: E402
 import snake_captions as SC                        # noqa: E402
 import log_kya_kahenge_faces as LF                 # noqa: E402
 import log_kya_kahenge_crowd as CR                 # noqa: E402
@@ -122,9 +123,8 @@ def styles():
 def assets():
     st = styles()
     lines = [T.render(txt, st[sty]) for txt, _, _, sty in J_LINES]
-    card = E.EndCard('US DOST KO', 'bhejo', sub=SUB, monogram='JD', dur=4.0)
-    card.sub = T.render(SUB, 'jw_body', px=50.0)              # local sub_px override (request R2)
-    card._settled = None
+    card = PO.ProfileOutro("Agar 'log' kuch na kehte, toh tum kya karte?", key='Ek lafz mein batao',
+                           dur=4.0)                          # Jawad 10-09: Genjutsu-style profile outro
     haze = _haze_sprite()
     warm = K.radial(1500, np.asarray(K.C['FLAME'], np.float32) * 0.30, power=1.6)
     dust = K.Particles(150, seed=21, box=((-2500, -5200, 1200), (4200, 300, 4600)), vel=(6, -9, 0), size=(1.5, 4.0),

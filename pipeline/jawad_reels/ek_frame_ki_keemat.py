@@ -66,6 +66,7 @@ from jawad_kit import K, T, J                       # noqa: E402
 import jawad_tx as X                                # noqa: E402
 import jawad_grade as G                             # noqa: E402
 import endcard as E                                 # noqa: E402
+import profile_outro as PO                          # noqa: E402
 import snake_captions as SC                         # noqa: E402
 import ek_frame_ki_keemat_faces as FF               # noqa: E402
 
@@ -1339,7 +1340,8 @@ LOOP_D = 0.45           # longer sits on top of the returning hook lockup; hold 
 
 @functools.lru_cache(maxsize=1)
 def card():
-    return E.EndCard(CTA, 'bhejo', sub='jo kehta hai "editing mein kya hai?"', handle=False, monogram='JD',
+    return PO.ProfileOutro('Is frame mein JD chhupa hai.', key='Mila? Comment karo',   # Jawad 10-09: profile outro
+                           handle=False, monogram='JD',
                      dur=CARD_DUR, y_mono=365.0, y_key=715.0, y_sub=922.0)
 
 

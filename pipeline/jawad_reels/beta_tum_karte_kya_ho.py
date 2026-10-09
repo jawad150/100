@@ -48,6 +48,7 @@ from jawad_kit import K, T, J                     # noqa: E402
 import jawad_tx as X                              # noqa: E402
 import jawad_grade as G                           # noqa: E402
 import endcard as E                               # noqa: E402
+import profile_outro as PO                        # noqa: E402
 import snake_captions as SC                       # noqa: E402
 import beta_tum_karte_kya_ho_faces as FF          # noqa: E402
 import beta_tum_karte_kya_ho_ui as U              # noqa: E402
@@ -91,7 +92,8 @@ def fidx(t):
 # ---------------------------------------------------------------------------------------------- assets
 @functools.lru_cache(maxsize=1)
 def card():
-    c = E.EndCard('GROUP MEIN', 'bhejo', monogram='JD', dur=4.2)
+    c = PO.ProfileOutro('Aap ki mummy aap ke kaam ko kya kehti hain?', key='Comment mein batao',
+                        dur=4.2)                              # Jawad 10-09: Genjutsu-style profile outro
     return c
 
 

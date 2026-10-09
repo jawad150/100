@@ -50,6 +50,7 @@ from jawad_kit import K, T, J                      # noqa: E402
 import jawad_grade as G                            # noqa: E402
 import jawad_tx as X                               # noqa: E402
 import endcard as E                                # noqa: E402
+import profile_outro as PO                         # noqa: E402
 import snake_captions as SC                        # noqa: E402
 import bijli_chali_gayi_faces as BF                # noqa: E402
 import bijli_chali_gayi_world as BW                # noqa: E402
@@ -133,8 +134,7 @@ def world(t):
 # ================================================================================================ type
 @functools.lru_cache(maxsize=1)
 def assets():
-    card = E.EndCard('COMMENT MEIN', 'batao', sub='Chhat ya candle?', monogram='JD', dur=4.0,
-                     y_mono=360.0, y_key=730.0, y_sub=965.0, y_sig=1575.0)
+    card = PO.ProfileOutro('Aap ke ghar light jaane pe kya hota tha?', key='Chhat ya candle?', dur=4.0)   # Jawad 10-09: Genjutsu-style profile outro
     return dict(
         h1=T.render('Bijli', 'jw_key', px=250),
         h2=T.render('CHALI GAYI.', 'jw_caps', px=96),
