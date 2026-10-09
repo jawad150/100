@@ -363,6 +363,33 @@ G = X.Grid(90); G.at(2, 1)             # frame-locked beat grid; X.SPRINGS SLAM/
 * L1 is calmer than the bible's numbers (Jawad disliked leak washes): strength 0.6 + a wide band that only blooms
   for the frames around the cut; `X.leak_coverage()` ~0.80 (> 0.06 linear). Use it sparingly.
 * Scene kwargs only where documented: C1 mode='3d' (yaw=/pitch=), C2 mode='3d' (cam=), M3 (move=).
+* Window edges (fix round 1): frames outside a window are the plain scenes, so every envelope ends ON the
+  first / last window frame. `Win.u` is 0 on the first and 1 on the last rendered frame, `ub` 1 on the last,
+  `ua1` 1 on the last pre frame (`ua` keeps 1 at the cut); overlays use `w.env_in(t, n)` / `w.env_out(t, n)`
+  (D3 pill, D4 graph panel, D9 keys, Y3 last word, M6 light, O4 shards). Finish overrides return to the look's
+  value on the edge frames (L2 grain, L5 anamorphic, L1/C2 bloom_scale). What the timeline must draw outside a
+  window: Y1 / Y2 the word on A, M6 `X.carrier()` at rest on path[0] / path[-1], M3 the object on
+  `X.motion_track(c)(t)`. QA: `X.edge_steps('O6', pre=10, post=5)` -> entry / exit step vs the plain-scene step
+  (`X.frame_step(a, b)` = mean |diff|, share of px > 25 levels); the self-test fails any edge over 1.5x.
+* Defaults changed by the fix: C2 hides its swap with the L1 recipe (LEAK_COLS leak 0.6 + wide_band, bloom
+  halved at the peak, push 0.3: <= 2 % near-white at the cut; `leak=0` = push-only). C3 irises its aperture
+  open over `iris=5` frames; `rim=False` when A draws its own ring. D1 pulls / pushes with `ease='inout_sine'`
+  (max 0.17 of the move per frame) + a zoom smear, 9 / 7 samples on those frames. O6 embers all cool to dark by
+  the last window frame (life shortened per ember). D9 keys fade in, press on frames 2 / 5, the rewind starts
+  from where A is. C3 sound: swell ends 2 frames before c, air_zoom -6 dB, impact_soft -1 dB (audible hit).
+* `plan.windows_of('L1', 'L4')` -> [(t0, t1)] (e.g. caption clear windows).
+* Fix round 2 (inside the windows): Y5's band fades in and widens from the stroke's own glow over `hand=0.4` of
+  the wipe (~6 frames) while the drawn stroke fades out before the capsule turns: ROI luma k=-15..-10 now
+  45.7 46.2 59.3 95.0 137.3 153.7 (was 45.7 142.2 172.3 179.8 188.8: a 3.1x one-frame pop). Y3 words land ON
+  their hit frame (slam starts HALF early with `fade=0`, no smear on the hit frame, then smear only since the
+  hit; ~1.1 s per call on the 1-2 frames after each hit). D1's chrome (playhead,
+  timecode) sits under the monitor; its sample policy reads `pull=` (policies may be `s(k, w, opts)`; with
+  `pull=` also pass `pre=pull + 20`). QA: `X.window_steps('Y5')` -> a step for EVERY window frame +
+  `'spikes'` (step > 3x plain and > 2x both neighbours, cut / `X.SNAPS` designed snaps skipped:
+  `X.designed_steps(tid, w, **o)`); `X.y5_handover()` = Y5 ROI luma at 5 samples. The self-test fails any
+  spike and writes `<WS>/out/selftest/jawad_tx_window_steps.log`.
+* type3d (project copy, upstream-worthy): `g.slam(..., fade=0.05)` (opacity ramp; 0 = on from t0) and the
+  documented `mspan=` draw kwarg now works (it was missing from `Glyphs.DRAW_KEYS` and raised TypeError).
 
 ### snake_captions.py - Jawad's caption signature
 ```python
@@ -376,6 +403,10 @@ White Poppins SemiBold words + one flame Instrument Serif Italic keyword per chu
 along a gentle snake path with a glowing guide line; 1-3 words per chunk (phrase cost model), words glide in on
 their VO times (pop/settle; the keyword settles without bounce), chunks never overlap, layout solved once per
 chunk inside the safe zones and off every avoid rect (falls back to the other band). No glass cards.
+`SC.keyword_frame(cap)` -> (t, chunk) with a settled keyword on screen (QA crops; the self-test asserts its
+caption pixels). `clear=[(t0, t1)]` or `clear=plan` (its bright windows L1 L2 L4 L5 L7 C2 Y2) keeps captions off screen while a
+leak washes the frame: an on-screen chunk exits by t0, one entering inside enters at t1 (or is skipped if it
+would live < 0.35 s); `cap.report()` marks them in 'cleared'. Default output unchanged (regression diff 0).
 
 ### endcard.py - @jawad_mp4 end card + loop
 ```python
@@ -393,4 +424,78 @@ nice -n 10 python3 -I vo_chain.py process <take.mp3> --dev dev.txt --rom rom.txt
 ```
 Trim to 40 ms, pauses capped at 0.45 s (dramatic beats after '...' / '-' tokens kept up to 0.9 s), rubberband
 stretch to ~160 wpm (1.00-1.10x), HPF 70 Hz, de-ess, 2.5:1 compression, two-pass loudnorm; faster-whisper (hi)
-word times aligned to the DEV tokens, mapped to the ROM tokens 1:1, snapped to voiced onsets.
+word times aligned to the DEV tokens, mapped to the ROM tokens 1:1, snapped to voiced onsets: a start on a
+< 0.1 s voiced tail before a pause moves past the pause (it belonged to the previous word), the first word after
+, . ? ! ... starts on its onset; with --realign, where the passes differ by > 0.1 s the start nearer a voiced
+onset wins (`reconcile`), and report.realign gives mean AND max, the words over 0.1 s and the ones taken over,
+plus `realign.independent` (final starts vs the re-transcription BEFORE snapping: the snapped pass shares the
+rules). Tail-fragment rule (`VO.tail_fragment`, fix round 2): only a start >= 0.03 s inside a run the previous
+word overlaps; a word starting on its own short first syllable ('Accha': 0.08 s run + closure) stays put.
+
+---------------------------------------------------------------------------------------------------------------
+## 13. Colour: jawad_grade.py (finish, five looks, LUTs, colour QA; details and numbers in GRADE.md)
+```python
+import jawad_grade as G                    # after jawad_kit; registers 'inferno', 'gold_hour', 'dusk' (J.register_look)
+LOOK = 'ember'                             # 'ember' | 'noir_ember' | 'inferno' | 'gold_hour' | 'dusk'
+def post(cv, t): return G.finish(cv, LOOK, t)                                    # plain reels
+def post(cv, t): return G.tx_finish(cv, t, LOOK, cuts=CUTS, **plan.post_kw(t))   # reels on jawad_tx (X.finish args)
+G.finish(cv, LOOK, t, exposure=1.4 * push, bloom=G.bloom(LOOK) * (1 + .9 * push), footage=1, grain=..., skin=0..1,
+         rays=..., rays_center=(x, y))     # K.post overrides pass through; rays = gold_hour god rays
+G.grade_rgb(lin, LOOK); G.display(lin)     # colour-only grade (= the .cube) / toolkit shoulder -> sRGB 0..1
+G.cutout(spr, LOOK)                        # optional F.GRADES match for a cut-out, skin-protected
+```
+* Finish = K.post (spatial half, then the kit's mono + crush = the toe) -> per-channel log2 characteristic curve
+  -> split tone by luminance -> blackbody roll-off of emissive light -> saturation by luminance + skin protection
+  (skin keeps 70 % of its ungraded value) -> grain (1.6-1.8 px). +115-210 ms over K.post on the shared box.
+* Draw everything ungraded; the finish grades each frame once. LUTs (`luts/<look>_33.cube`) are for ffmpeg
+  previews, the NLE and clips that never pass through G.finish.
+* CLI: `python3 jawad_grade.py --selftest | lut all | lutcheck all | chart all | sheet | clip all 3 |
+  verify <mp4> <look>` (outputs in `<WS>/looks/`); run `verify` on every master before delivery.
+
+---------------------------------------------------------------------------------------------------------------
+## 14. Jawad's SFX library: sfx_jawad.py (procedural, registered into audio.py; bible section 4)
+```python
+import audio as A, sfx_jawad as J
+def cues():                                       # in <module>_sfx.py
+    J.register()                                  # idempotent: adds the jd_* sounds (+ bible aliases tabla_dha, ghungroo ...)
+    c  = J.ember_slam(12.0, bpm=90, gap_beats=0.5)   # bible hit stacks -> cue lists: ember_slam / velvet_hit /
+    c += J.dha_hit(20.0, sa_hz=293.66, bpm=90)       # glass_truth / dha_hit  (J.stack(name, t0, **kw))
+    c += [dict(t=3.2, name='jd_whip', pan=-0.3), dict(t=8.0, name='jd_riser', params=dict(bars=2, bpm=90))]
+    return J.fit_under_vo(c, A.WS + '/vo/reel1_final.words.json', offset=0.3)   # duck/carve; hero on a word raises
+BED, BED_GAIN_DB = 'jd_room_night_home', -30      # or jd_room_stadium / jd_room_studio / jd_projector_loop
+```
+* 45 sounds, all `jd_*`: hits (jd_hit_hero +4, jd_hit_soft, jd_sub_drop dur, jd_heartbeat n/bpm, jd_floodlight_clunk),
+  whooshes (jd_whoosh_short, jd_whoosh_long dur, jd_whip), **jd_riser(bars=1|2|4|8, bpm=60-120)** = exactly
+  bars*240/bpm s with grid pulses 1/4 -> 1/8 -> 1/16 -> 1/32 on the beat, all four stages at every length (1 bar:
+  1/16 + 1/32 share the last beat), the noise sweep gated by the same grid so each stage stays audible (selftest:
+  pulse onsets >= 2.5 dB over the 15 ms before, measured 3.0-12 dB; modulation >= 10 dB where a stage has >= 8
+  pulses) (hit = end; 150 BPM -> bpm=75), jd_reverse_swell (mono-safe: lows mono below 250 Hz, side <= 0.45 x mid),
+  glass (jd_glass_slide hit = landing "tunk", the loudest moment, >= 6 dB over the 30 ms before; jd_glass_clink),
+  UI (jd_ui_click / tick / pop), foley (jd_keyboard style laptop|mech,
+  jd_mouse_click double, jd_timeline_scrub: align='start'), jd_projector (+ bed jd_projector_loop), jd_tape_stop
+  (+ `J.tape_stop_fx(x, t0, dur)` for real beds), jd_power_down / jd_power_up (hit = "on", end) / jd_crt_collapse /
+  jd_ups_beep / jd_fluoro_flicker, jd_crowd_whisper (hit = end, the whispers cut), jd_vn_blip / record / send,
+  jd_revolving_door, desi jd_tabla_na/tin/ge/dha/roll + jd_ghungroo, jd_sparkle (alias-free audio.sparkle),
+  rendered stacks jd_stack_*. Full table with hits / levels / params: the module docstring and `python3 sfx_jawad.py catalog`.
+* fit_under_vo: HERO cues (impact_big, flash_hit, logo_sting, jd_hit_hero, jd_floodlight_clunk, any cue with
+  hero=True, e.g. the dha in dha_hit) need 120 ms clear before / 300 ms after (150 ms non-impacts), net of the
+  speech itself (bible 4.1): a pause of >= 0.42 s of REAL silence holds a hero (>= 0.27 s a non-impact one).
+  Speech = the UNPADDED words + the VO audio's activity (10 ms RMS above median speech - 30 dB), read automatically
+  from the vo_chain `<take>_final.wav` next to a `.words.json` path (`vo_audio=None` = words only). Whisper word
+  ends run early on TTS (by 38-162 ms at 6 of the 7 pauses of the Vlad DEV take), so the audio matters: on that take
+  the words show 4 gaps >= 0.42 s, but only the dramatic pause after "hai..." (0.48 s of real silence) holds a hero;
+  its other pauses have 0.19-0.43 s of real silence. A hero inside the VO therefore needs a vo_chain dramatic
+  pause (0.5 s) at that point, or it goes before / after the VO. Else HeroOnWordError naming the nearest legal hit
+  (`hero='drop'|'warn'` to relax).
+  Cues whose hit is on a word (words padded 60 ms, for ducking only) get -6 dB, air sounds also hp 5500, dark sounds
+  also lp 1100; mid sounds (clicks, keys, glass, whip, tabla, vn_* ...) are NOT filtered, only ducked 2 dB more
+  (-8 dB); risers / swells / rolls / whisper over speech get -6 dB + lp 1100.
+  `J.hero_slots(words, offset, dur=DUR)` lists where hero hits may go (rounded inward to whole ms).
+* Guarantees (self-test + render QC): audio.qc clean, true peak <= -1.0 dBTP, no clipped runs, nothing above 20.5 kHz,
+  (L+R)/2 mono fold-down loses <= 1.5 dB Mmax (beds <= 2.5 dB; library worst: risers 1.2, reverse swells 1.15,
+  stadium bed 1.9), alias residual <= -60 dB vs a 32x reference that also oversamples the toolkit's 1x saturators
+  (audio._sat / _asat in _thump, bass_enhance and the stacks' toolkit layers; measured -109 to -158 dB), no tail cut
+  before a reverb or buffer edge (tail audit), seeds 0-3 vary the sound but not its level, beds loop seamlessly at
+  -20 LUFS. QC.md columns: alias "-" = no waveshaper / FM / varispeed stage at all; mono = fold-down loss (dB).
+* CLI: `python3 sfx_jawad.py --selftest` (~1 min) | `render` -> `<WS>/sfx_library/*.wav` + `QC.md` / `qc.csv` /
+  `qc.json` + `contact_sheet*.png` (~2 min, run with nice -n 10) | `catalog` | `play jd_riser '{"bars": 8, "bpm": 75}' out.wav`.

@@ -24,10 +24,17 @@ PROCESS (in this order; every step is measured into <out>.report.json)
        [{"word": "Bhai,", "start": 0.04, "end": 0.33, "keyword": false, "dev": "\u092d\u093e\u0908,", "heard": "...",
          "ok": true}, ...] - exactly what snake_captions.load_words reads ('*word' in the ROM list = keyword).
        Default: the raw-take timings are mapped through the edit (trim, pause cuts, stretch: exact), then
-       snapped to the final take's voiced onsets / offsets (whisper glues pauses to the next word);
-       --realign transcribes the final take again (the vo_config wording) and the report compares both.
+       snapped to the final take's voiced onsets / offsets (whisper glues pauses to the next word; a start on
+       a < 0.1 s voiced tail of the PREVIOUS word's run before a pause moves past the pause, while a word that
+       starts on its own short first syllable stays: tail_fragment(); the first word after , . ? ! ...
+       starts on its voiced onset: snap_to_voice); --realign transcribes the final take again (the vo_config
+       wording), keeps the start nearer a voiced onset where the two passes differ by > 0.1 s (reconcile) and
+       the report gives the mean AND max disagreement, the words over 0.1 s and which ones it took over, plus
+       realign.independent: the final starts against the re-transcription BEFORE snapping (the snapped pass
+       shares the snap rules, so only the raw one can expose a snap mistake).
 Python API: process(path, dev_tokens, rom_tokens, out=None, speed='auto', keep_after=(), realign=False) -> report;
-    align(path, dev_tokens, rom_tokens) -> words; tokens(text) -> list; load_texts(texts_py) -> TEXTS (ast, no exec).
+    align(path, dev_tokens, rom_tokens, snap=True) -> words; snap_to_voice(words, runs); tail_fragment(words, q, runs)
+    -> run index or -1; tokens(text) -> list; load_texts(texts_py) -> TEXTS (ast, no exec).
 """
 import ast
 import difflib
@@ -331,10 +338,53 @@ def words_json(dev, rom, res, keyword_marks=True):
     return words
 
 
-def snap_to_voice(words, runs, look=0.35):
-    """Whisper puts word edges inside pauses (often a pause is glued to the next word). Move a start that sits
-    in silence to the next voiced onset (if within `look` s and before the word's end), and an end that sits in
-    silence back to the previous voiced offset. In place; returns words."""
+CLAUSE_END = re.compile(r'([,.?!\u0964\u2026;:]|\.\.\.)$')
+
+
+def _onsets(runs):
+    return np.array([r[0] for r in runs]) if runs else np.zeros(0)
+
+
+def onset_dist(t, runs):
+    """Distance (s) from t to the nearest voiced-run onset."""
+    on = _onsets(runs)
+    return float(np.min(np.abs(on - t))) if len(on) else 9.0
+
+
+def tail_fragment(words, q, runs, frag=0.10, gap=0.06, inside=0.03):
+    """Index of the voiced run whose short tail word q starts on (rule 2 of snap_to_voice), or -1. The start must
+    sit INSIDE a run that began >= `inside` s before it and that the previous word overlaps (so it is that
+    word's tail), with < `frag` s of voice left, then a pause >= `gap` s, and the next onset before the word's
+    end. A word whose own first syllable is a short run (start on its onset) is NOT a tail fragment.
+    e.g. tail_fragment([{'start': 15.11, 'end': 15.618}, {'start': 15.618, 'end': 16.05}], 1,
+                       [(15.11, 15.69), (15.85, 16.48)]) -> 0"""
+    if q <= 0 or not runs:
+        return -1
+    on = [r[0] for r in runs]
+    s, e = words[q]['start'], words[q]['end']
+    prev = words[q - 1]
+    i = int(np.searchsorted(on, s, side='right')) - 1
+    if not 0 <= i < len(runs) - 1:
+        return -1
+    a, b = runs[i]
+    if s <= b and s - a >= inside and b - s < frag and runs[i + 1][0] - b >= gap and runs[i + 1][0] < e - 0.04 \
+            and prev['end'] > a + 0.02 and prev['start'] < b:
+        return i
+    return -1
+
+
+def snap_to_voice(words, runs, look=0.35, frag=0.10, gap=0.06, clause=0.30, inside=0.03):
+    """Whisper puts word edges inside pauses (often a pause is glued to the next word). In place; returns words.
+    1. a start that sits in silence moves to the next voiced onset (within `look` s, before the word's end), an
+       end in silence back to the previous voiced offset;
+    2. tail fragment (tail_fragment()): a start that sits >= `inside` s into a voiced run the previous word
+       overlaps, with < `frag` s of voice left and then a pause of >= `gap` s inside the word, belongs to the
+       previous word's tail ('Lekin sach': 'sach' started 0.23 s early inside the end of 'Lekin'): it moves to
+       the onset after the pause, and the previous word ends at the pause. A word that starts ON its own short
+       first syllable ('Accha' = 'A' + closure + 'ccha') is left alone (fix round 2: it used to be moved past
+       its own closure and the previous word stretched across the pause);
+    3. clause start: after a token ending in , . ? ! ... or the danda the speaker paused, so a start up to
+       `clause` s after a voiced onset moves back to that onset."""
     if not runs:
         return words
     on = np.array([r[0] for r in runs])
@@ -354,18 +404,51 @@ def snap_to_voice(words, runs, look=0.35):
             i = np.searchsorted(off, e) - 1
             if i >= 0 and e - off[i] <= look and off[i] > w['start'] + 0.05:
                 w['end'] = round(float(off[i]), 3)
+    for q, w in enumerate(words):
+        s, e = w['start'], w['end']
+        i = tail_fragment(words, q, runs, frag, gap, inside)          # the run whose tail the start sits on
+        if i >= 0:
+            w['start'] = round(float(on[i + 1]), 3)
+            w['snap'] = 'tail fragment'
+            if q > 0 and words[q - 1]['start'] < off[i] - 0.05:          # the fragment is the previous word's
+                words[q - 1]['end'] = round(float(off[i]), 3)
+            continue
+        prev = words[q - 1] if q > 0 else None
+        if prev is not None and (CLAUSE_END.search(str(prev.get('dev', ''))) or CLAUSE_END.search(str(prev.get('word', '')))):
+            j = np.searchsorted(on, s, side='right') - 1
+            if j >= 0 and 0 < s - on[j] <= clause and on[j] >= prev['end'] - 0.02:
+                w['start'] = round(float(on[j]), 3)
+                w['snap'] = 'clause start'
     for q in range(1, len(words)):
         words[q]['start'] = max(words[q]['start'], words[q - 1]['start'] + 0.04)
         words[q]['end'] = max(words[q]['end'], words[q]['start'] + 0.05)
+        words[q - 1]['end'] = min(words[q - 1]['end'], max(words[q]['start'], words[q - 1]['start'] + 0.05))
     return words
 
 
-def align(path_or_x, dev_tokens, rom_tokens, prompt=None):
-    """Word timings of an audio file (or 16 kHz array) for DEV / ROM token lists -> caption words."""
+def reconcile(words, realigned, runs, thr=0.10, margin=0.03):
+    """Where the mapped and the re-transcribed start differ by > thr s, keep the one nearer a voiced onset
+    (the re-transcribed one only when it is nearer by > margin s). In place; returns the changed indices."""
+    changed = []
+    for i, (a, b) in enumerate(zip(words, realigned)):
+        if abs(a['start'] - b['start']) > thr and onset_dist(b['start'], runs) + margin < onset_dist(a['start'], runs):
+            a['start'] = b['start']
+            a['snap'] = 'realigned'
+            changed.append(i)
+    for q in range(1, len(words)):
+        words[q]['start'] = max(words[q]['start'], words[q - 1]['start'] + 0.04)
+        words[q]['end'] = max(words[q]['end'], words[q]['start'] + 0.05)
+        words[q - 1]['end'] = min(words[q - 1]['end'], max(words[q]['start'], words[q - 1]['start'] + 0.05))
+    return changed
+
+
+def align(path_or_x, dev_tokens, rom_tokens, prompt=None, snap=True):
+    """Word timings of an audio file (or 16 kHz array) for DEV / ROM token lists -> caption words (snapped to the
+    voiced onsets with snap_to_voice when snap and a path is given; snap=False = whisper's own times)."""
     dev, rom = tokens(dev_tokens), tokens(rom_tokens)
     heard = _whisper_words(path_or_x, prompt=prompt or ' '.join(dev))
     words = words_json(dev, rom, align_tokens(dev, heard))
-    if isinstance(path_or_x, str):
+    if snap and isinstance(path_or_x, str):
         snap_to_voice(words, voiced_runs(decode(path_or_x)))
     return words, heard
 
@@ -421,10 +504,24 @@ def process(path, dev_tokens, rom_tokens, out=None, speed='auto', keep_after=(),
     snap_to_voice(words, final_runs)
     cmp_ = None
     if realign:
-        w2, heard2 = align(out, dev, rom)
+        w2raw, heard2 = align(out, dev, rom, snap=False)
+        w2 = [dict(d) for d in w2raw]
+        snap_to_voice(w2, final_runs)
+        # independent: the re-transcription BEFORE snap_to_voice (the snapped pass shares the snap rules, so it
+        # cannot catch a snap mistake by itself)
+        raw_d = [abs(a['start'] - b['start']) for a, b in zip(words, w2raw)]
         diffs = [abs(a['start'] - b['start']) for a, b in zip(words, w2)]
+        big = [(words[i]['word'], words[i]['start'], w2[i]['start']) for i, d_ in enumerate(diffs) if d_ > 0.1]
+        changed = reconcile(words, w2, final_runs)
+        diffs2 = [abs(a['start'] - b['start']) for a, b in zip(words, w2)]
         cmp_ = dict(mean_abs_start_diff=round(float(np.mean(diffs)), 3), max=round(float(np.max(diffs)), 3),
-                    matched_final=sum(w['ok'] for w in w2))
+                    over_0_1=big, took_realigned=[words[i]['word'] for i in changed],
+                    max_after=round(float(np.max(diffs2)), 3), matched_final=sum(w['ok'] for w in w2),
+                    independent=dict(mean=round(float(np.mean(raw_d)), 3), median=round(float(np.median(raw_d)), 3),
+                                     max=round(float(np.max(raw_d)), 3),
+                                     over_0_15=[(words[i]['word'], words[i]['start'], w2raw[i]['start'])
+                                                for i, d_ in enumerate(raw_d) if d_ > 0.15],
+                                     note='final starts vs the re-transcription before snap_to_voice'))
         json.dump(w2, open(stem + '.words_realigned.json', 'w'), ensure_ascii=False, indent=1)
     json.dump(words, open(stem + '.words.json', 'w'), ensure_ascii=False, indent=1)
     rep = dict(input=os.path.relpath(path, REPO), output=os.path.relpath(out, REPO), sr=SR, format='pcm_s24le mono',
@@ -433,6 +530,8 @@ def process(path, dev_tokens, rom_tokens, out=None, speed='auto', keep_after=(),
                tail_trim=round(max(0.0, raw_dur - runs[-1][1] - 0.04), 3) if runs else 0.0,
                starts_on_voice=round(float(np.mean([any(a - 0.02 <= w['start'] <= b for a, b in final_runs)
                                                      for w in words])), 3),
+               snaps={k: [w['word'] for w in words if w.get('snap') == k]
+                      for k in ('tail fragment', 'clause start', 'realigned')},
                pauses=pauses, max_pause_after=round(max([p['now'] for p in pauses] + [0.0]), 3),
                wpm_before=round(wpm_before, 1), wpm_after=round(len(dev) / (fin_dur / 60.0), 1), speed=speed,
                chain=info, loudness=loud, tokens=len(dev), matched=sum(w['ok'] for w in words),
@@ -456,8 +555,60 @@ def _read_text(arg):
     return open(arg, encoding='utf8').read() if arg and os.path.exists(arg) else (arg or '')
 
 
+def _timing_unit_checks():
+    """Synthetic checks of snap_to_voice / reconcile (no audio): the QA case 'Lekin sach' (voiced runs
+    15.11-15.69 and 15.85-16.48; whisper put 'sach' at 15.618 inside the tail of 'Lekin'), a clause start after
+    'hai,', the word-initial short syllable ('Accha': its own 0.08 s first run + closure is NOT a tail
+    fragment) and the realign tie-break. -> list of failures."""
+    fails = []
+    runs = [(14.40, 14.73), (15.11, 15.69), (15.85, 16.48)]
+    w = [dict(word='hue!', dev='\u0939\u0941\u090f!', start=14.40, end=14.73),
+         dict(word='Lekin', dev='\u0932\u0947\u0915\u093f\u0928', start=15.11, end=15.618),
+         dict(word='sach', dev='\u0938\u091a', start=15.618, end=16.055),
+         dict(word='bataun?', dev='?', start=16.055, end=16.364)]
+    snap_to_voice(w, runs)
+    if abs(w[2]['start'] - 15.85) > 1e-6 or abs(w[1]['end'] - 15.69) > 1e-6:
+        fails.append('tail fragment rule: sach %.3f (want 15.85), Lekin end %.3f (want 15.69)'
+                     % (w[2]['start'], w[1]['end']))
+    w2 = [dict(word='hai,', dev='\u0939\u0948,', start=11.936, end=12.064),
+          dict(word='aur', dev='\u0914\u0930', start=12.464, end=12.591)]
+    snap_to_voice(w2, [(10.13, 12.15), (12.44, 14.73)])
+    if abs(w2[1]['start'] - 12.44) > 1e-6:
+        fails.append('clause start rule: aur %.3f (want 12.44)' % w2[1]['start'])
+    # word-initial short syllable (fix round 2): 'Accha' = run 11.00-11.08 + closure + 11.20-11.50; whisper puts
+    # it at 11.00 ON its own onset: not a tail fragment, 'hai,' keeps its end (it used to be stretched to 11.08)
+    runs3 = [(9.9, 10.5), (11.00, 11.08), (11.20, 11.50)]
+    w3 = [dict(word='hai,', dev='\u0939\u0948,', start=9.9, end=10.5),
+          dict(word='Accha', dev='\u0905\u091a\u094d\u091b\u093e', start=11.00, end=11.5)]
+    snap_to_voice(w3, runs3)
+    if abs(w3[1]['start'] - 11.00) > 1e-6 or abs(w3[0]['end'] - 10.5) > 1e-6 or w3[1].get('snap') == 'tail fragment':
+        fails.append('word-initial syllable: Accha %.3f (want 11.00), hai, end %.3f (want 10.50)'
+                     % (w3[1]['start'], w3[0]['end']))
+    # whisper 20 ms late inside its own first syllable: still not a tail (< `inside` s into the run)
+    w4 = [dict(word='hai,', dev='\u0939\u0948,', start=9.9, end=10.5),
+          dict(word='Accha', dev='\u0905\u091a\u094d\u091b\u093e', start=11.02, end=11.5)]
+    snap_to_voice(w4, runs3)
+    if w4[1]['start'] > 11.08 or abs(w4[0]['end'] - 10.5) > 1e-6:
+        fails.append('word-initial syllable (late start): Accha %.3f, hai, end %.3f' % (w4[1]['start'], w4[0]['end']))
+    # a short run the previous word does NOT overlap is the word's own: rule 2 must not fire, the clause rule
+    # puts the start back on that run's onset
+    w5 = [dict(word='hai,', dev='\u0939\u0948,', start=9.9, end=10.5),
+          dict(word='Accha', dev='\u0905\u091a\u094d\u091b\u093e', start=11.00, end=11.5)]
+    snap_to_voice(w5, [(9.9, 10.5), (10.95, 11.08), (11.20, 11.50)])
+    if abs(w5[1]['start'] - 10.95) > 1e-6 or abs(w5[0]['end'] - 10.5) > 1e-6:
+        fails.append('own first syllable: Accha %.3f (want 10.95), hai, end %.3f' % (w5[1]['start'], w5[0]['end']))
+    mapped = [dict(word='Lekin', start=15.11, end=15.6), dict(word='sach', start=15.618, end=16.0)]
+    re_ = [dict(word='Lekin', start=14.64, end=15.7), dict(word='sach', start=15.88, end=16.08)]
+    ch = reconcile(mapped, re_, runs)
+    if ch != [1] or abs(mapped[0]['start'] - 15.11) > 1e-6 or abs(mapped[1]['start'] - 15.88) > 1e-6:
+        fails.append('reconcile: took %s, starts %s' % (ch, [m['start'] for m in mapped]))
+    return fails
+
+
 def selftest():
     """The Vlad v4 DEV take + texts.py DEV / ROM (keywords marked on 3 ROM tokens): checks every rule."""
+    unit = _timing_unit_checks()
+    print('timing unit checks (tail fragment, clause start, reconcile):', 'OK' if not unit else unit)
     take = os.path.join(REPO, 'workspace', 'brand_reels', 'tts', 'hf_dl', 'vlad', 'vlad_v4_r1_DEV.mp3')
     texts = load_texts(os.path.join(REPO, 'workspace', 'brand_reels', 'tts', 'scripts', 'texts.py'))
     dev = tokens(' '.join(texts['DEV']))
@@ -467,7 +618,7 @@ def selftest():
     out = os.path.join(ws(), 'vo', 'selftest', 'vlad_v4_r1_DEV_final.wav')
     rep = process(take, dev, rom, out=out, realign=True)
     words = json.load(open(os.path.splitext(out)[0] + '.words.json'))
-    fails = []
+    fails = list(unit)
     L = rep['loudness']
     if abs(L['lufs'] + 16.0) > 0.6:
         fails.append('loudness %.2f LUFS (want -16)' % L['lufs'])
@@ -494,10 +645,31 @@ def selftest():
         fails.append('last word ends after the take')
     if rep['realign'] and rep['realign']['mean_abs_start_diff'] > 0.08:
         fails.append('mapped vs re-transcribed timings differ by %.3f s' % rep['realign']['mean_abs_start_diff'])
+    # where the two passes disagree, the start we keep must sit on a voiced onset (<= 0.05 s): an independent
+    # check of the 'sach' case (it started 0.23 s early, inside the voiced tail of 'Lekin')
+    if rep['realign']:
+        off_onset = [(wd, round(onset_dist(next(x['start'] for x in words if x['word'] == wd), runs), 3))
+                     for wd, _, _ in rep['realign']['over_0_1']]
+        bad = [(wd, d_) for wd, d_ in off_onset if d_ > 0.05]
+        print('disagreements > 0.1 s (word, mapped, realigned):', rep['realign']['over_0_1'])
+        print('kept start -> nearest voiced onset (s):', off_onset)
+        if bad:
+            fails.append('kept starts off a voiced onset where the passes disagree: %s' % bad)
+    tails = [x['word'] for x in words if x.get('snap') == 'tail fragment']
+    for q, x in enumerate(words[1:], 1):                         # no start left on a short tail fragment
+        if tail_fragment(words, q, runs) >= 0:
+            fails.append('%r still starts on the tail of the previous word (%.3f s)' % (x['word'], x['start']))
+        if x.get('snap') == 'tail fragment':                     # a moved start: the run it left began before
+            st0 = x['start']                                     # it and the previous word now ends at a pause
+            if not any(abs(r[0] - st0) < 1e-3 for r in runs) or words[q - 1]['end'] > st0:
+                fails.append('%r tail-fragment move not onto an onset after the pause' % x['word'])
+    if rep['realign']:
+        print('independent (final vs re-transcription before snapping):', rep['realign']['independent'])
+    print('snapped:', rep['snaps'], ' tail fragments moved:', tails)
     if sum(w['keyword'] for w in words) != 3:
         fails.append('keyword flags lost')
     print(json.dumps({k: rep[k] for k in ('raw_dur', 'edited_dur', 'final_dur', 'lead_trim', 'tail_trim', 'pauses',
-                                          'starts_on_voice',
+                                          'starts_on_voice', 'snaps',
                                           'wpm_before', 'wpm_after', 'speed', 'loudness', 'matched', 'tokens',
                                           'unmatched', 'realign', 'seconds')}, ensure_ascii=False, indent=1))
     print('stretch:', rep['chain']['stretch'])

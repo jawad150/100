@@ -1,0 +1,2089 @@
+{
+ "reel": "pehle_wala",
+ "concept": "C26",
+ "title": "Pehle Wala Hi Theek Tha (v1 se v27 tak)",
+ "version": 2,
+ "date": "2026-10-08",
+ "author": "hinglish-scriptwriter",
+ "status": "r2: viral gate r1 fixes 2 and 4 applied (no Devanagari prompt changed); ready for the TTS run; timings are ESTIMATED (no Vlad take exists yet)",
+ "revision": {
+  "r2": {
+   "source": "brand_reels/design/reels/pehle_wala/GATE.md (viral-strategist, concept + script gate r1, verdict FIX)",
+   "applied": [
+    "fix 2: L2 \"Ho jayega.\" 2.933 -> 3.267 (f98), two frames after pin 3 \"Thora left.\" (3.200); pin 3 cue back to full pin_thock 0 dB; L1B hard end 2.78 -> 2.70 with the fallback chain in lines[L1B].fallback",
+    "fix 4: no caption keyword in L11 and L12 (Roman token track only; Devanagari unchanged); T3.rom.txt rewritten"
+   ],
+   "unchanged": "every Devanagari prompt, every word, every other line start; word budget, hook lengths and the SLATE section 4 number lock re-checked",
+   "not_owned": [
+    "fix 1 (client marker loop, creative-director)",
+    "fix 3 (hook B focus panel, creative-director)",
+    "fix 5 (BRIEF / packet sync, creative-director)"
+   ]
+  }
+ },
+ "sources": [
+  "brand_reels/design/reels/pehle_wala/BRIEF.md (sections 0, 5.3, 7, 9, 10, 11, 17, 18)",
+  "brand_reels/design/SLATE.md (0, 2, 3.1, 4, 5)",
+  "pipeline/jawad_reels/vo_config.json",
+  "workspace/brand_reels/prior/captions_roman_urdu.srt",
+  ".claude/skills/jawad-brand-reels/SKILL.md"
+ ],
+ "bpm": 112.5,
+ "fps": 30,
+ "dur_s": 34.1333,
+ "frames": 1024,
+ "beat_s": 0.5333,
+ "bar_s": 2.1333,
+ "grid_note": "16 f/beat, 64 f/bar; beat field = bar.beat(+frames)",
+ "voice": {
+  "provider": "Higgsfield (voice generation only)",
+  "model": "elevenlabs_v4",
+  "voice": "Vlad",
+  "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+  "voice_type": "preset",
+  "text": "Devanagari (prompt_dev of each take)",
+  "stability": "omit; if the echo words (T1 L4-L6, T2 L9) come out animated try 0.55, if L1/L11 come out flat try 0.35",
+  "no_tags": "no brackets, audio tags, emoji, URLs or Latin digits in any prompt (house rule)"
+ },
+ "narrator": "har editor / hum / aap; never \"main\"; no facts about Jawad in the VO; JD is not voiced in this reel (the tile label shows \"JD · editor\"; if ever voiced: जे-डी)",
+ "processing": {
+  "chain": "nice -n 10 python3 -I pipeline/jawad_reels/vo_chain.py process <take.mp3> --dev <Tn.dev.txt> --rom <Tn.rom.txt> --speed 1.08 --out <WS>/pehle_wala/vo/takes/<Tn>.wav",
+  "speed": "fixed 1.08 for every take (auto lands 1.00-1.10 per take and would change the voice tempo between lines)",
+  "alignment_check": "open <out>.report.json: \"unmatched\" must be empty. Leading tokens unmatched = whisper skipped speech it found in the DEV prompt (SHARED_REQUESTS #6): re-align with vo_chain.align(<out>.wav, dev, rom, prompt=\" \") and take each token from whichever pass has ok=true. A token unmatched in BOTH passes is a mispronunciation: re-take it.",
+  "placement": "cut each line (or phrase) at word boundaries from <out>.words.json with 40 ms pads; place its first word at start_target (L12: last word end at 34.050); internal pauses are PLACED: \",\" 0.15 s, \"?\" 0.25 s, sentence 0.35 s; L9 fragments on their placements",
+  "deliver": "<WS>/pehle_wala/vo/pehle_wala_vo_A.wav + .words.json (L1 + L2-L12) and pehle_wala_vo_B.wav + .words.json (L1B + L2-L12), reel seconds, -16 LUFS",
+  "dev_rom_files": "<WS>/pehle_wala/vo/takes/T{1,2,3,4}.dev.txt / .rom.txt (written with this script; 1:1 tokens verified with vo_chain.tokens)"
+ },
+ "timing_model": {
+  "expected": "mean of (a) phrase model fitted on the Vlad v4 audition voiced runs: raw s = 0.20 x syllables + 0.13 (rms 0.19 s over 10 phrases), one-syllable sentence >= 0.50 s raw, then / 1.08; and (b) a local Kokoro hm_psi scratch take of the same text, normalised to 1.08x and x1.076 (Vlad/Kokoro speech ratio on the audition text)",
+  "conservative": "max of (a) and (b)",
+  "pauses": "placed in the assembly",
+  "status": "ESTIMATED: replace with measured onsets after the Vlad run"
+ },
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "status": "LOCKED (SLATE 3.1) - public post",
+   "mechanism": "relatable pain + the client quote everyone has heard (open loop: how small is \"small\"?)",
+   "on_screen": "BAS EK / chhota sa / CHANGE (designed lockup, readable by f16)",
+   "roman": "Bas ek chhota sa change.",
+   "dev": "बस एक छोटा सा चेंज।",
+   "words": 5,
+   "first_word_s": 0.1,
+   "end_expected": 1.631,
+   "end_conservative": 1.93,
+   "loop": "frame 0 completes L12 \"...aur phir client ne bola\" -> \"Bas ek chhota sa change.\""
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "status": "LOCKED (SLATE 2.1, 3.1) - Trial Reel",
+   "mechanism": "result first (a number) + curiosity gap (\"client ne kaha...\" withholds the punchline until 25.6 s)",
+   "on_screen": "26 / REVISIONS BAAD (designed lockup over the v27 mess)",
+   "roman": "26 revision baad client ne kaha...",
+   "spoken_roman": "Chhabbees revision baad client ne kaha...",
+   "dev": "छब्बीस रिविज़न बाद क्लाइंट ने कहा...",
+   "words": 6,
+   "first_word_s": 0.1,
+   "end_expected": 2.564,
+   "end_conservative": 2.731,
+   "differs_only_in": "0-2.667 s (frames 0-79); identical from the splice frame f80",
+   "hard_end": 2.7,
+   "loop": "not seamless by design (BRIEF 7.2): its last frame is v1, its frame 0 the v27 mess"
+  },
+  {
+   "id": "C",
+   "rank": 3,
+   "status": "considered, not produced (fallback for B only if T4 cannot land by 2.70 s after the section 4 fallbacks)",
+   "mechanism": "number, shorter",
+   "roman": "26 revision. Ek client.",
+   "spoken_roman": "Chhabbees revision. Ek client.",
+   "dev": "छब्बीस रिविज़न। एक क्लाइंट।",
+   "words": 4,
+   "why_not": "loses the \"client ne kaha...\" open loop that the payoff pays off"
+  },
+  {
+   "id": "D",
+   "rank": 4,
+   "status": "considered, not produced",
+   "mechanism": "curiosity gap on the chip flip",
+   "roman": "Yeh ad approved tha. Phir...",
+   "dev": "यह ऐड अप्रूव्ड था। फिर...",
+   "words": 5,
+   "why_not": "the \"Approved -> Changes requested\" chip already says it in picture; no sentence loop with L12; \"approved\" is a pronunciation risk in the first second"
+  },
+  {
+   "id": "E",
+   "rank": 5,
+   "status": "considered, not produced",
+   "mechanism": "relatable callout",
+   "roman": "Har editor ne yeh suna hai.",
+   "dev": "हर एडिटर ने यह सुना है।",
+   "words": 6,
+   "why_not": "delays the quote to after 1.5 s and spends L11's \"har editor\" line in the first second"
+  }
+ ],
+ "lines": [
+  {
+   "id": "L1",
+   "hooks": [
+    "A"
+   ],
+   "part": "Hook A (public)",
+   "beat": "0.0+3f",
+   "frame": 3,
+   "start_target": 0.1,
+   "end_target": 1.631,
+   "hard_end": 2.6,
+   "roman": "Bas ek chhota sa change.",
+   "dev": "बस एक छोटा सा चेंज।",
+   "tokens": [
+    "Bas",
+    "ek",
+    "*chhota",
+    "sa",
+    "change."
+   ],
+   "dev_tokens": [
+    "बस",
+    "एक",
+    "छोटा",
+    "सा",
+    "चेंज।"
+   ],
+   "keyword": "chhota",
+   "keyword_token": 2,
+   "keyword_at_s": 0.61,
+   "words": 5,
+   "syllables": 6,
+   "syllables_per_token": [
+    1,
+    1,
+    2,
+    1,
+    1
+   ],
+   "est_dur_s": 1.53,
+   "words_per_s": 3.27,
+   "syl_per_s": 3.92,
+   "gap_after_s": {
+    "A": 1.636
+   },
+   "delivery": "matter-of-fact, mid pitch: the quote every editor knows; no smile, no build-up",
+   "on_screen": "f0 v1 ad, chip \"Approved\"; pin \"Logo thora bara?\" lands f8 (pin_thock_dark under \"ek\"); lockup BAS EK / chhota sa / CHANGE readable by f16",
+   "fallback": "none expected; the brief targets <= 1.90 s, the hook rule allows <= 2.70 s, the lockup exits by 2.60 s",
+   "caption_hidden": true,
+   "end_conservative": 1.93,
+   "start_conservative": 0.1,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "Bas ek *chhota sa change.",
+     "model": 1.23,
+     "kokoro": 1.7,
+     "kokoro_x_vlad": 1.83,
+     "plan": 1.53
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Bas",
+     "dev": "बस",
+     "t0": 0.1,
+     "t1": 0.355
+    },
+    {
+     "roman": "ek",
+     "dev": "एक",
+     "t0": 0.355,
+     "t1": 0.61
+    },
+    {
+     "roman": "*chhota",
+     "dev": "छोटा",
+     "t0": 0.61,
+     "t1": 1.121
+    },
+    {
+     "roman": "sa",
+     "dev": "सा",
+     "t0": 1.121,
+     "t1": 1.376
+    },
+    {
+     "roman": "change.",
+     "dev": "चेंज।",
+     "t0": 1.376,
+     "t1": 1.631
+    }
+   ]
+  },
+  {
+   "id": "L1B",
+   "hooks": [
+    "B"
+   ],
+   "part": "Hook B (Trial)",
+   "beat": "0.0+3f",
+   "frame": 3,
+   "start_target": 0.1,
+   "end_target": 2.564,
+   "hard_end": 2.7,
+   "roman": "26 revision baad client ne kaha...",
+   "dev": "छब्बीस रिविज़न बाद क्लाइंट ने कहा...",
+   "tokens": [
+    "*26",
+    "revision",
+    "baad",
+    "client",
+    "ne",
+    "kaha..."
+   ],
+   "dev_tokens": [
+    "छब्बीस",
+    "रिविज़न",
+    "बाद",
+    "क्लाइंट",
+    "ने",
+    "कहा..."
+   ],
+   "keyword": "26",
+   "keyword_token": 0,
+   "keyword_at_s": 0.1,
+   "words": 6,
+   "syllables": 11,
+   "syllables_per_token": [
+    2,
+    3,
+    1,
+    2,
+    1,
+    2
+   ],
+   "est_dur_s": 2.46,
+   "words_per_s": 2.44,
+   "syl_per_s": 4.47,
+   "gap_after_s": {
+    "B": 0.703
+   },
+   "delivery": "result first, flat, one breath (no comma), trailing off on \"kaha...\"",
+   "on_screen": "f0 v27 mess + lockup 26 / REVISIONS BAAD; D1 scrub f40-f79 back to v3",
+   "fallback": "hard end 2.70 s (gate r1), measured on the last word end. Over: (1) trim the \"kaha...\" release to 40 ms; (2) close silent inter-word gaps > 0.10 s to 0.06 s at measured word boundaries (silence only, never inside a word; the Kokoro scratch had two 0.15 s gaps; closing both saves about 0.20 s at Vlad scale); (3) re-take T4 with \"कहा।\" (no drawl, model about -0.14 s). Same words, same order, prompt text otherwise unchanged",
+   "spoken_roman": "Chhabbees revision baad client ne kaha...",
+   "caption_hidden": true,
+   "end_conservative": 2.731,
+   "start_conservative": 0.1,
+   "conservative_over_hard_end": true,
+   "estimate_phrases": [
+    {
+     "phrase": "*26 revision baad client ne kaha...",
+     "model": 2.3,
+     "kokoro": 2.44,
+     "kokoro_x_vlad": 2.63,
+     "plan": 2.46
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "*26",
+     "dev": "छब्बीस",
+     "t0": 0.1,
+     "t1": 0.548
+    },
+    {
+     "roman": "revision",
+     "dev": "रिविज़न",
+     "t0": 0.548,
+     "t1": 1.22
+    },
+    {
+     "roman": "baad",
+     "dev": "बाद",
+     "t0": 1.22,
+     "t1": 1.444
+    },
+    {
+     "roman": "client",
+     "dev": "क्लाइंट",
+     "t0": 1.444,
+     "t1": 1.892
+    },
+    {
+     "roman": "ne",
+     "dev": "ने",
+     "t0": 1.892,
+     "t1": 2.116
+    },
+    {
+     "roman": "kaha...",
+     "dev": "कहा...",
+     "t0": 2.116,
+     "t1": 2.564
+    }
+   ],
+   "fallback_estimates": {
+    "kokoro_inter_word_gaps_s": [
+     0.153,
+     0.0,
+     0.153,
+     0.0,
+     0.0
+    ],
+    "step2_close_gaps_saves_s": 0.2,
+    "step2_conservative_end_s": 2.531,
+    "step3_model_no_drawl_end_s": 2.257,
+    "note": "conservative end 2.731 > 2.70 by 0.031 s; step 1 (release trim) only shortens audio after the measured word end; step 2 or 3 moves the word end"
+   }
+  },
+  {
+   "id": "L2",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Turn",
+   "beat": "1.2+2f",
+   "frame": 98,
+   "start_target": 3.267,
+   "end_target": 4.055,
+   "hard_end": 4.25,
+   "roman": "Ho jayega.",
+   "dev": "हो जाएगा।",
+   "tokens": [
+    "Ho",
+    "*jayega."
+   ],
+   "dev_tokens": [
+    "हो",
+    "जाएगा।"
+   ],
+   "keyword": "jayega",
+   "keyword_token": 1,
+   "keyword_at_s": 3.464,
+   "words": 2,
+   "syllables": 4,
+   "syllables_per_token": [
+    1,
+    3
+   ],
+   "est_dur_s": 0.79,
+   "words_per_s": 2.54,
+   "syl_per_s": 5.07,
+   "gap_after_s": {
+    "A": 0.345,
+    "B": 0.345
+   },
+   "delivery": "resigned, the vendor reply to the note that just landed; it answers pin 3 in both hooks (in hook B it can no longer be heard as the client finishing \"client ne kaha...\")",
+   "on_screen": "pin 2 \"Aur bara.\" (v3, logo x3, 2.133); pin 3 \"Thora left.\" lands 3.200 (f96, full pin_thock) and the logo slides -72 px over 6 f; the voice enters 2 frames later (f98)",
+   "fallback": "over 4.25: onset 3.233 (f97, still after the pin); still over: L3 slides later by the overrun (at most +0.067 s, to 4.467) and L3's own fallback (the \"?\" beat at 0.15 s) absorbs it",
+   "end_conservative": 4.128,
+   "start_conservative": 3.267,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "Ho *jayega.",
+     "model": 0.86,
+     "kokoro": 0.67,
+     "kokoro_x_vlad": 0.72,
+     "plan": 0.79
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Ho",
+     "dev": "हो",
+     "t0": 3.267,
+     "t1": 3.464
+    },
+    {
+     "roman": "*jayega.",
+     "dev": "जाएगा।",
+     "t0": 3.464,
+     "t1": 4.055
+    }
+   ]
+  },
+  {
+   "id": "L3",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Turn",
+   "beat": "2.0+4f",
+   "frame": 132,
+   "start_target": 4.4,
+   "end_target": 6.547,
+   "hard_end": 6.583,
+   "roman": "Pop? Kisi ko nahi pata.",
+   "dev": "पॉप? किसी को नहीं पता।",
+   "tokens": [
+    "*Pop?",
+    "Kisi",
+    "ko",
+    "nahi",
+    "pata."
+   ],
+   "dev_tokens": [
+    "पॉप?",
+    "किसी",
+    "को",
+    "नहीं",
+    "पता।"
+   ],
+   "keyword": "Pop",
+   "keyword_token": 0,
+   "keyword_at_s": 4.4,
+   "words": 5,
+   "syllables": 8,
+   "syllables_per_token": [
+    1,
+    2,
+    1,
+    2,
+    2
+   ],
+   "est_dur_s": 2.15,
+   "words_per_s": 2.33,
+   "syl_per_s": 4.22,
+   "gap_after_s": {
+    "A": 0.186,
+    "B": 0.186
+   },
+   "delivery": "\"Pop?\" dry, one word echoing the pin (placed 0.25 s beat after it), then the flat verdict",
+   "on_screen": "pin 4 \"Thora aur pop karo\" 4.267 (pop SFX 4.333, then the voice says \"Pop?\"); saturation spike + NEW burst; the tail crosses pin 5 (6.400, cream fill)",
+   "fallback": "over 6.583: place the \"?\" beat at 0.15 s; still over: L4 moves later (rule in L4)",
+   "end_conservative": 6.564,
+   "start_conservative": 4.4,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "*Pop?",
+     "model": 0.46,
+     "kokoro": 0.43,
+     "kokoro_x_vlad": 0.47,
+     "plan": 0.46
+    },
+    {
+     "phrase": "Kisi ko nahi pata.",
+     "model": 1.42,
+     "kokoro": 1.34,
+     "kokoro_x_vlad": 1.45,
+     "plan": 1.43
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "*Pop?",
+     "dev": "पॉप?",
+     "t0": 4.4,
+     "t1": 4.865
+    },
+    {
+     "roman": "Kisi",
+     "dev": "किसी",
+     "t0": 5.115,
+     "t1": 5.524
+    },
+    {
+     "roman": "ko",
+     "dev": "को",
+     "t0": 5.524,
+     "t1": 5.729
+    },
+    {
+     "roman": "nahi",
+     "dev": "नहीं",
+     "t0": 5.729,
+     "t1": 6.138
+    },
+    {
+     "roman": "pata.",
+     "dev": "पता।",
+     "t0": 6.138,
+     "t1": 6.547
+    }
+   ]
+  },
+  {
+   "id": "L4",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Escalation",
+   "beat": "3.0+10f",
+   "frame": 202,
+   "start_target": 6.733,
+   "end_target": 7.304,
+   "hard_end": 7.45,
+   "roman": "Clean.",
+   "dev": "क्लीन।",
+   "tokens": [
+    "*Clean."
+   ],
+   "dev_tokens": [
+    "क्लीन।"
+   ],
+   "keyword": "Clean",
+   "keyword_token": 0,
+   "keyword_at_s": 6.733,
+   "words": 1,
+   "syllables": 1,
+   "syllables_per_token": [
+    1
+   ],
+   "est_dur_s": 0.57,
+   "words_per_s": 1.75,
+   "syl_per_s": 1.75,
+   "gap_after_s": {
+    "A": 1.296,
+    "B": 1.296
+   },
+   "delivery": "flat, falling; its vowel lands as the cream fill completes (f204)",
+   "on_screen": "v6 cream background (pin 5 \"Background white kar do, clean lagega\")",
+   "fallback": "onset = max(6.733, L3 end + 0.15); if it then ends after 7.45 the 7.467 thock becomes pin_thock_dark",
+   "end_conservative": 7.412,
+   "start_conservative": 6.733,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "*Clean.",
+     "model": 0.46,
+     "kokoro": 0.63,
+     "kokoro_x_vlad": 0.68,
+     "plan": 0.57
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "*Clean.",
+     "dev": "क्लीन।",
+     "t0": 6.733,
+     "t1": 7.304
+    }
+   ]
+  },
+  {
+   "id": "L5",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Escalation",
+   "beat": "4.0+2f",
+   "frame": 258,
+   "start_target": 8.6,
+   "end_target": 9.468,
+   "hard_end": 9.55,
+   "roman": "Energetic.",
+   "dev": "एनर्जेटिक।",
+   "tokens": [
+    "*Energetic."
+   ],
+   "dev_tokens": [
+    "एनर्जेटिक।"
+   ],
+   "keyword": "Energetic",
+   "keyword_token": 0,
+   "keyword_at_s": 8.6,
+   "words": 1,
+   "syllables": 4,
+   "syllables_per_token": [
+    4
+   ],
+   "est_dur_s": 0.87,
+   "words_per_s": 1.15,
+   "syl_per_s": 4.61,
+   "gap_after_s": {
+    "A": 1.332,
+    "B": 1.332
+   },
+   "delivery": "flat, on the drums arriving (2 frames after the downbeat)",
+   "on_screen": "v8 pin 7 \"Music thora energetic\" 8.533: the player starts shaking, drums in",
+   "fallback": "ends after 9.55: the 9.600 thock becomes pin_thock_dark",
+   "end_conservative": 9.476,
+   "start_conservative": 8.6,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "*Energetic.",
+     "model": 0.86,
+     "kokoro": 0.81,
+     "kokoro_x_vlad": 0.88,
+     "plan": 0.87
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "*Energetic.",
+     "dev": "एनर्जेटिक।",
+     "t0": 8.6,
+     "t1": 9.468
+    }
+   ]
+  },
+  {
+   "id": "L6",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Escalation",
+   "beat": "5.0+4f",
+   "frame": 324,
+   "start_target": 10.8,
+   "end_target": 11.33,
+   "hard_end": 11.7,
+   "roman": "Fun.",
+   "dev": "फ़न।",
+   "tokens": [
+    "*Fun."
+   ],
+   "dev_tokens": [
+    "फ़न।"
+   ],
+   "keyword": "Fun",
+   "keyword_token": 0,
+   "keyword_at_s": 10.8,
+   "words": 1,
+   "syllables": 1,
+   "syllables_per_token": [
+    1
+   ],
+   "est_dur_s": 0.53,
+   "words_per_s": 1.89,
+   "syl_per_s": 1.89,
+   "gap_after_s": {
+    "A": 1.537,
+    "B": 1.537
+   },
+   "delivery": "flatter still (third echo)",
+   "on_screen": "v10 pin 9 \"Font fun wala karo\" 10.667: parody garam wobbles",
+   "fallback": "none",
+   "end_conservative": 11.397,
+   "start_conservative": 10.8,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "*Fun.",
+     "model": 0.46,
+     "kokoro": 0.55,
+     "kokoro_x_vlad": 0.6,
+     "plan": 0.53
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "*Fun.",
+     "dev": "फ़न।",
+     "t0": 10.8,
+     "t1": 11.33
+    }
+   ]
+  },
+  {
+   "id": "L7",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Re-hook (37.7 %)",
+   "beat": "6.0+2f",
+   "frame": 386,
+   "start_target": 12.867,
+   "end_target": 14.785,
+   "hard_end": 14.9,
+   "roman": "Ab Mummy bhi review karengi.",
+   "dev": "अब मम्मी भी रिव्यू करेंगी।",
+   "tokens": [
+    "Ab",
+    "*Mummy",
+    "bhi",
+    "review",
+    "karengi."
+   ],
+   "dev_tokens": [
+    "अब",
+    "मम्मी",
+    "भी",
+    "रिव्यू",
+    "करेंगी।"
+   ],
+   "keyword": "Mummy",
+   "keyword_token": 1,
+   "keyword_at_s": 13.08,
+   "words": 5,
+   "syllables": 9,
+   "syllables_per_token": [
+    1,
+    2,
+    1,
+    2,
+    3
+   ],
+   "est_dur_s": 1.92,
+   "words_per_s": 2.61,
+   "syl_per_s": 4.69,
+   "gap_after_s": {
+    "A": 0.215,
+    "B": 0.215
+   },
+   "delivery": "a small sigh carried by the words (no audio tags); respectful plural \"karengi\"",
+   "on_screen": "D7 + Mummy's gold pin 12.800 (\"Mujhe pasand nahi aaya.\"); her thread 13.333 / 13.867 / 14.400",
+   "fallback": "over 14.90 (braam hit 14.933): use the sub-span \"Mummy bhi review karengi.\" placed at 13.000",
+   "end_conservative": 14.917,
+   "start_conservative": 12.867,
+   "conservative_over_hard_end": true,
+   "estimate_phrases": [
+    {
+     "phrase": "Ab *Mummy bhi review karengi.",
+     "model": 1.79,
+     "kokoro": 1.91,
+     "kokoro_x_vlad": 2.05,
+     "plan": 1.92
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Ab",
+     "dev": "अब",
+     "t0": 12.867,
+     "t1": 13.08
+    },
+    {
+     "roman": "*Mummy",
+     "dev": "मम्मी",
+     "t0": 13.08,
+     "t1": 13.506
+    },
+    {
+     "roman": "bhi",
+     "dev": "भी",
+     "t0": 13.506,
+     "t1": 13.72
+    },
+    {
+     "roman": "review",
+     "dev": "रिव्यू",
+     "t0": 13.72,
+     "t1": 14.146
+    },
+    {
+     "roman": "karengi.",
+     "dev": "करेंगी।",
+     "t0": 14.146,
+     "t1": 14.785
+    }
+   ]
+  },
+  {
+   "id": "L8",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Escalation",
+   "beat": "7.0+2f",
+   "frame": 450,
+   "start_target": 15.0,
+   "end_target": 16.367,
+   "hard_end": 16.5,
+   "roman": "Bilkul cinematic.",
+   "dev": "बिल्कुल सिनेमैटिक।",
+   "tokens": [
+    "Bilkul",
+    "*cinematic."
+   ],
+   "dev_tokens": [
+    "बिल्कुल",
+    "सिनेमैटिक।"
+   ],
+   "keyword": "cinematic",
+   "keyword_token": 1,
+   "keyword_at_s": 15.456,
+   "words": 2,
+   "syllables": 6,
+   "syllables_per_token": [
+    2,
+    4
+   ],
+   "est_dur_s": 1.37,
+   "words_per_s": 1.46,
+   "syl_per_s": 4.39,
+   "gap_after_s": {
+    "A": 2.866,
+    "B": 2.866
+   },
+   "delivery": "dry, one breath, the keyword last",
+   "on_screen": "v16 pin 15 \"Thora cinematic\" 14.933 (braam): letterbox, flares, JD in sunglasses",
+   "fallback": "over 16.50: the 16.533 thock becomes pin_thock_dark; worst case the sub-span \"Cinematic.\"",
+   "end_conservative": 16.502,
+   "start_conservative": 15.0,
+   "conservative_over_hard_end": true,
+   "estimate_phrases": [
+    {
+     "phrase": "Bilkul *cinematic.",
+     "model": 1.23,
+     "kokoro": 1.4,
+     "kokoro_x_vlad": 1.5,
+     "plan": 1.37
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Bilkul",
+     "dev": "बिल्कुल",
+     "t0": 15.0,
+     "t1": 15.456
+    },
+    {
+     "roman": "*cinematic.",
+     "dev": "सिनेमैटिक।",
+     "t0": 15.456,
+     "t1": 16.367
+    }
+   ]
+  },
+  {
+   "id": "L9",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Barrage",
+   "beat": "9.0+1f",
+   "frame": 577,
+   "start_target": 19.233,
+   "end_target": 20.88,
+   "hard_end": 21.1,
+   "roman": "Aur ek, aur ek, aur ek.",
+   "dev": "और एक, और एक, और एक।",
+   "tokens": [
+    "Aur",
+    "ek,",
+    "aur",
+    "ek,",
+    "aur",
+    "*ek."
+   ],
+   "dev_tokens": [
+    "और",
+    "एक,",
+    "और",
+    "एक,",
+    "और",
+    "एक।"
+   ],
+   "keyword": "ek",
+   "keyword_token": 5,
+   "keyword_at_s": 20.59,
+   "words": 6,
+   "syllables": 6,
+   "syllables_per_token": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "est_dur_s": 1.65,
+   "words_per_s": 3.64,
+   "syl_per_s": 3.72,
+   "gap_after_s": {
+    "A": 2.62,
+    "B": 2.62
+   },
+   "delivery": "a tired count, each fragment cut from the take and placed 1 frame after its pin",
+   "on_screen": "pins v21 \"Aur pop.\" 19.200, v22 \"Logo aur bara.\" 19.733, v23 \"Shadow kam karo\" 20.267 (one per beat)",
+   "fallback": "planned: the pins 19.733 / 20.267 / 20.800 land on the \"ek\" of the fragment before them, so they use pin_thock_dark (-6, lp 1100); the line must end before the D7 at 21.333. Fragments never overlap: each onset = max(its placement, previous fragment end + 0.03 s)",
+   "placements": [
+    {
+     "tokens": [
+      0,
+      1
+     ],
+     "start": 19.233
+    },
+    {
+     "tokens": [
+      2,
+      3
+     ],
+     "start": 19.767
+    },
+    {
+     "tokens": [
+      4,
+      5
+     ],
+     "start": 20.3
+    }
+   ],
+   "end_conservative": 20.969,
+   "start_conservative": 19.233,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "Aur ek,",
+     "model": 0.49,
+     "kokoro": 0.5,
+     "kokoro_x_vlad": 0.54,
+     "plan": 0.51
+    },
+    {
+     "phrase": "aur ek,",
+     "model": 0.49,
+     "kokoro": 0.51,
+     "kokoro_x_vlad": 0.55,
+     "plan": 0.52
+    },
+    {
+     "phrase": "aur *ek.",
+     "model": 0.49,
+     "kokoro": 0.62,
+     "kokoro_x_vlad": 0.67,
+     "plan": 0.58
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Aur",
+     "dev": "और",
+     "t0": 19.233,
+     "t1": 19.49
+    },
+    {
+     "roman": "ek,",
+     "dev": "एक,",
+     "t0": 19.49,
+     "t1": 19.747
+    },
+    {
+     "roman": "aur",
+     "dev": "और",
+     "t0": 19.767,
+     "t1": 20.027
+    },
+    {
+     "roman": "ek,",
+     "dev": "एक,",
+     "t0": 20.027,
+     "t1": 20.286
+    },
+    {
+     "roman": "aur",
+     "dev": "और",
+     "t0": 20.3,
+     "t1": 20.59
+    },
+    {
+     "roman": "*ek.",
+     "dev": "एक।",
+     "t0": 20.59,
+     "t1": 20.88
+    }
+   ]
+  },
+  {
+   "id": "L10",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Suspense",
+   "beat": "11.0+1f",
+   "frame": 705,
+   "start_target": 23.5,
+   "end_target": 24.777,
+   "hard_end": 24.95,
+   "roman": "Phir aakhri message...",
+   "dev": "फिर आख़री मैसेज...",
+   "tokens": [
+    "Phir",
+    "*aakhri",
+    "message..."
+   ],
+   "dev_tokens": [
+    "फिर",
+    "आख़री",
+    "मैसेज..."
+   ],
+   "keyword": "aakhri",
+   "keyword_token": 1,
+   "keyword_at_s": 23.755,
+   "words": 3,
+   "syllables": 5,
+   "syllables_per_token": [
+    1,
+    2,
+    2
+   ],
+   "est_dur_s": 1.28,
+   "words_per_s": 2.35,
+   "syl_per_s": 3.91,
+   "gap_after_s": {
+    "A": 3.356,
+    "B": 3.356
+   },
+   "delivery": "lower, trailing off; then nothing until 28.133 (drop-out, payoff read, rewind)",
+   "on_screen": "bar 11: the last pin hovers, undecided; true silence from 25.067; the payoff pin lands 25.600",
+   "fallback": "hard limit 24.95: trim the drawl",
+   "end_conservative": 24.87,
+   "start_conservative": 23.5,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "Phir *aakhri message...",
+     "model": 1.19,
+     "kokoro": 1.27,
+     "kokoro_x_vlad": 1.37,
+     "plan": 1.28
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Phir",
+     "dev": "फिर",
+     "t0": 23.5,
+     "t1": 23.755
+    },
+    {
+     "roman": "*aakhri",
+     "dev": "आख़री",
+     "t0": 23.755,
+     "t1": 24.266
+    },
+    {
+     "roman": "message...",
+     "dev": "मैसेज...",
+     "t0": 24.266,
+     "t1": 24.777
+    }
+   ]
+  },
+  {
+   "id": "L11",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Payoff (spoken moral)",
+   "beat": "13.0+12f",
+   "frame": 844,
+   "start_target": 28.133,
+   "end_target": 31.361,
+   "hard_end": 32.35,
+   "roman": "Har editor jaanta hai, v1 hi final hota hai.",
+   "dev": "हर एडिटर जानता है, वी-वन ही फ़ाइनल होता है।",
+   "tokens": [
+    "Har",
+    "editor",
+    "jaanta",
+    "hai,",
+    "v1",
+    "hi",
+    "final",
+    "hota",
+    "hai."
+   ],
+   "dev_tokens": [
+    "हर",
+    "एडिटर",
+    "जानता",
+    "है,",
+    "वी-वन",
+    "ही",
+    "फ़ाइनल",
+    "होता",
+    "है।"
+   ],
+   "keyword": null,
+   "keyword_token": null,
+   "keyword_at_s": null,
+   "words": 9,
+   "syllables": 15,
+   "syllables_per_token": [
+    1,
+    3,
+    2,
+    1,
+    2,
+    1,
+    2,
+    2,
+    1
+   ],
+   "est_dur_s": 3.23,
+   "words_per_s": 2.79,
+   "syl_per_s": 4.87,
+   "gap_after_s": {
+    "A": 1.278,
+    "B": 1.278
+   },
+   "delivery": "warm, knowing, unhurried; comma beat placed at 0.15 s",
+   "on_screen": "v1 restored 27.733, chip \"Approved\", pehle wala / HI THEEK THA, JD smirk tile; end card from 29.867",
+   "fallback": "over 32.35: place the comma beat at 0.08 s (the SLATE line keeps every word)",
+   "spoken_roman": "Har editor jaanta hai, vee-one hi final hota hai.",
+   "end_conservative": 31.421,
+   "start_conservative": 28.133,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "Har editor jaanta hai,",
+     "model": 1.42,
+     "kokoro": 1.39,
+     "kokoro_x_vlad": 1.49,
+     "plan": 1.46
+    },
+    {
+     "phrase": "v1 hi final hota hai.",
+     "model": 1.6,
+     "kokoro": 1.53,
+     "kokoro_x_vlad": 1.64,
+     "plan": 1.62
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "Har",
+     "dev": "हर",
+     "t0": 28.133,
+     "t1": 28.341
+    },
+    {
+     "roman": "editor",
+     "dev": "एडिटर",
+     "t0": 28.341,
+     "t1": 28.964
+    },
+    {
+     "roman": "jaanta",
+     "dev": "जानता",
+     "t0": 28.964,
+     "t1": 29.38
+    },
+    {
+     "roman": "hai,",
+     "dev": "है,",
+     "t0": 29.38,
+     "t1": 29.588
+    },
+    {
+     "roman": "v1",
+     "dev": "वी-वन",
+     "t0": 29.738,
+     "t1": 30.144
+    },
+    {
+     "roman": "hi",
+     "dev": "ही",
+     "t0": 30.144,
+     "t1": 30.347
+    },
+    {
+     "roman": "final",
+     "dev": "फ़ाइनल",
+     "t0": 30.347,
+     "t1": 30.752
+    },
+    {
+     "roman": "hota",
+     "dev": "होता",
+     "t0": 30.752,
+     "t1": 31.158
+    },
+    {
+     "roman": "hai.",
+     "dev": "है।",
+     "t0": 31.158,
+     "t1": 31.361
+    }
+   ]
+  },
+  {
+   "id": "L12",
+   "hooks": [
+    "A",
+    "B"
+   ],
+   "part": "Loop",
+   "beat": "15.1+3f",
+   "frame": 979,
+   "start_target": 32.639,
+   "end_target": 34.05,
+   "hard_end": 34.053,
+   "roman": "...aur phir client ne bola",
+   "dev": "और फिर क्लाइंट ने बोला",
+   "tokens": [
+    "...aur",
+    "phir",
+    "client",
+    "ne",
+    "bola"
+   ],
+   "dev_tokens": [
+    "और",
+    "फिर",
+    "क्लाइंट",
+    "ने",
+    "बोला"
+   ],
+   "keyword": null,
+   "keyword_token": null,
+   "keyword_at_s": null,
+   "words": 5,
+   "syllables": 7,
+   "syllables_per_token": [
+    1,
+    1,
+    2,
+    1,
+    2
+   ],
+   "est_dur_s": 1.41,
+   "words_per_s": 3.54,
+   "syl_per_s": 4.96,
+   "gap_after_s": {
+    "A": 0.183,
+    "B": 0.183
+   },
+   "delivery": "rising, unfinished: cut from take T3, which continues \", बस एक छोटा सा चेंज।\", so \"bola\" keeps a continuation contour",
+   "on_screen": "end card settled 31.717-33.773; frame 0 completes the sentence: \"Bas ek chhota sa change.\"",
+   "fallback": "end-anchored: onset = 34.050 - measured duration (word end + 40 ms <= 34.093)",
+   "end_anchor": 34.05,
+   "start_rule": "end-anchored: last word end = 34.050",
+   "end_conservative": 34.05,
+   "start_conservative": 32.633,
+   "conservative_over_hard_end": false,
+   "estimate_phrases": [
+    {
+     "phrase": "...aur phir client ne bola",
+     "model": 1.42,
+     "kokoro": 1.31,
+     "kokoro_x_vlad": 1.41,
+     "plan": 1.41
+    }
+   ],
+   "est_words": [
+    {
+     "roman": "...aur",
+     "dev": "और",
+     "t0": 32.639,
+     "t1": 32.841
+    },
+    {
+     "roman": "phir",
+     "dev": "फिर",
+     "t0": 32.841,
+     "t1": 33.042
+    },
+    {
+     "roman": "client",
+     "dev": "क्लाइंट",
+     "t0": 33.042,
+     "t1": 33.445
+    },
+    {
+     "roman": "ne",
+     "dev": "ने",
+     "t0": 33.445,
+     "t1": 33.647
+    },
+    {
+     "roman": "bola",
+     "dev": "बोला",
+     "t0": 33.647,
+     "t1": 34.05
+    }
+   ]
+  }
+ ],
+ "tracks": {
+  "A": [
+   "L1",
+   "L2",
+   "L3",
+   "L4",
+   "L5",
+   "L6",
+   "L7",
+   "L8",
+   "L9",
+   "L10",
+   "L11",
+   "L12"
+  ],
+  "B": [
+   "L1B",
+   "L2",
+   "L3",
+   "L4",
+   "L5",
+   "L6",
+   "L7",
+   "L8",
+   "L9",
+   "L10",
+   "L11",
+   "L12"
+  ]
+ },
+ "captions": {
+  "hide": [
+   [
+    0.0,
+    2.6667
+   ]
+  ],
+  "note": "hook lockups show L1/L1B; words starting inside the hide window are dropped. Display drops trailing , . and the danda; keeps ? ! ...",
+  "keywords": "one *keyword per line in L1-L10 (L1/L1B hidden under the lockups); L11 and L12 all-white (gate r1 fix 4)",
+  "solver_check": "snake_captions.Captions(band=lower, y=1400, avoid=BRIEF cap_avoid, hide) on the expected and conservative word timings: check() == [] and every chunk ok (hook A, hook B)"
+ },
+ "totals": {
+  "tokens_A": 45,
+  "tokens_B": 46,
+  "spoken_words_A": 46,
+  "spoken_words_B": 47,
+  "note": "v1 is one token (वी-वन) but two spoken words; brief target 49, hard cap 60",
+  "syllables_A": 72,
+  "syllables_B": 77,
+  "at_2p7_wps_raw_s": {
+   "A": 16.67,
+   "B": 17.04
+  },
+  "at_2p7_wps_after_1p06_s": {
+   "A": 15.72,
+   "B": 16.07
+  },
+  "at_2p7_wps_after_1p10_s": {
+   "A": 15.15,
+   "B": 15.49
+  },
+  "per_line_model_speech_s_at_1p08": {
+   "A_expected": 16.86,
+   "A_conservative": 17.99,
+   "B_expected": 17.79,
+   "B_conservative": 18.79
+  },
+  "vo_density_A_expected": 0.507,
+  "why_model_exceeds_wps": "one-word sentences (Clean. / Fun. / Pop?) take 0.5-0.7 s each, far slower than 2.7 words/s"
+ },
+ "token_table": [
+  {
+   "line": "L1",
+   "i": 0,
+   "roman": "Bas",
+   "dev": "बस",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 1,
+   "roman": "ek",
+   "dev": "एक",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 2,
+   "roman": "chhota",
+   "dev": "छोटा",
+   "keyword": true
+  },
+  {
+   "line": "L1",
+   "i": 3,
+   "roman": "sa",
+   "dev": "सा",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 4,
+   "roman": "change.",
+   "dev": "चेंज।",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 0,
+   "roman": "26",
+   "dev": "छब्बीस",
+   "keyword": true
+  },
+  {
+   "line": "L1B",
+   "i": 1,
+   "roman": "revision",
+   "dev": "रिविज़न",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 2,
+   "roman": "baad",
+   "dev": "बाद",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 3,
+   "roman": "client",
+   "dev": "क्लाइंट",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 4,
+   "roman": "ne",
+   "dev": "ने",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 5,
+   "roman": "kaha...",
+   "dev": "कहा...",
+   "keyword": false
+  },
+  {
+   "line": "L2",
+   "i": 0,
+   "roman": "Ho",
+   "dev": "हो",
+   "keyword": false
+  },
+  {
+   "line": "L2",
+   "i": 1,
+   "roman": "jayega.",
+   "dev": "जाएगा।",
+   "keyword": true
+  },
+  {
+   "line": "L3",
+   "i": 0,
+   "roman": "Pop?",
+   "dev": "पॉप?",
+   "keyword": true
+  },
+  {
+   "line": "L3",
+   "i": 1,
+   "roman": "Kisi",
+   "dev": "किसी",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 2,
+   "roman": "ko",
+   "dev": "को",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 3,
+   "roman": "nahi",
+   "dev": "नहीं",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 4,
+   "roman": "pata.",
+   "dev": "पता।",
+   "keyword": false
+  },
+  {
+   "line": "L4",
+   "i": 0,
+   "roman": "Clean.",
+   "dev": "क्लीन।",
+   "keyword": true
+  },
+  {
+   "line": "L5",
+   "i": 0,
+   "roman": "Energetic.",
+   "dev": "एनर्जेटिक।",
+   "keyword": true
+  },
+  {
+   "line": "L6",
+   "i": 0,
+   "roman": "Fun.",
+   "dev": "फ़न।",
+   "keyword": true
+  },
+  {
+   "line": "L7",
+   "i": 0,
+   "roman": "Ab",
+   "dev": "अब",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 1,
+   "roman": "Mummy",
+   "dev": "मम्मी",
+   "keyword": true
+  },
+  {
+   "line": "L7",
+   "i": 2,
+   "roman": "bhi",
+   "dev": "भी",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 3,
+   "roman": "review",
+   "dev": "रिव्यू",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 4,
+   "roman": "karengi.",
+   "dev": "करेंगी।",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 0,
+   "roman": "Bilkul",
+   "dev": "बिल्कुल",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 1,
+   "roman": "cinematic.",
+   "dev": "सिनेमैटिक।",
+   "keyword": true
+  },
+  {
+   "line": "L9",
+   "i": 0,
+   "roman": "Aur",
+   "dev": "और",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 1,
+   "roman": "ek,",
+   "dev": "एक,",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 2,
+   "roman": "aur",
+   "dev": "और",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 3,
+   "roman": "ek,",
+   "dev": "एक,",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 4,
+   "roman": "aur",
+   "dev": "और",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 5,
+   "roman": "ek.",
+   "dev": "एक।",
+   "keyword": true
+  },
+  {
+   "line": "L10",
+   "i": 0,
+   "roman": "Phir",
+   "dev": "फिर",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 1,
+   "roman": "aakhri",
+   "dev": "आख़री",
+   "keyword": true
+  },
+  {
+   "line": "L10",
+   "i": 2,
+   "roman": "message...",
+   "dev": "मैसेज...",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 0,
+   "roman": "Har",
+   "dev": "हर",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 1,
+   "roman": "editor",
+   "dev": "एडिटर",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 2,
+   "roman": "jaanta",
+   "dev": "जानता",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 3,
+   "roman": "hai,",
+   "dev": "है,",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 4,
+   "roman": "v1",
+   "dev": "वी-वन",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 5,
+   "roman": "hi",
+   "dev": "ही",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 6,
+   "roman": "final",
+   "dev": "फ़ाइनल",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 7,
+   "roman": "hota",
+   "dev": "होता",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 8,
+   "roman": "hai.",
+   "dev": "है।",
+   "keyword": false
+  },
+  {
+   "line": "L12",
+   "i": 0,
+   "roman": "...aur",
+   "dev": "और",
+   "keyword": false
+  },
+  {
+   "line": "L12",
+   "i": 1,
+   "roman": "phir",
+   "dev": "फिर",
+   "keyword": false
+  },
+  {
+   "line": "L12",
+   "i": 2,
+   "roman": "client",
+   "dev": "क्लाइंट",
+   "keyword": false
+  },
+  {
+   "line": "L12",
+   "i": 3,
+   "roman": "ne",
+   "dev": "ने",
+   "keyword": false
+  },
+  {
+   "line": "L12",
+   "i": 4,
+   "roman": "bola",
+   "dev": "बोला",
+   "keyword": false
+  }
+ ],
+ "takes": [
+  {
+   "id": "T1",
+   "order": 1,
+   "lines": [
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L5",
+    "L6"
+   ],
+   "note": "hook A + turn + the three echoes; carries the two riskiest words (पॉप, फ़न): listen first",
+   "prompt_dev": "बस एक छोटा सा चेंज। हो जाएगा। पॉप? किसी को नहीं पता। क्लीन। एनर्जेटिक। फ़न।",
+   "rom": "Bas ek *chhota sa change. Ho *jayega. *Pop? Kisi ko nahi pata. *Clean. *Energetic. *Fun.",
+   "dev_tokens": 15,
+   "rom_tokens": 15,
+   "chars": 75,
+   "token_spans": {
+    "L1": [
+     0,
+     4
+    ],
+    "L2": [
+     5,
+     6
+    ],
+    "L3": [
+     7,
+     11
+    ],
+    "L4": [
+     12,
+     12
+    ],
+    "L5": [
+     13,
+     13
+    ],
+    "L6": [
+     14,
+     14
+    ]
+   }
+  },
+  {
+   "id": "T4",
+   "order": 2,
+   "lines": [
+    "L1B"
+   ],
+   "note": "hook B (Trial); one breath, no comma",
+   "prompt_dev": "छब्बीस रिविज़न बाद क्लाइंट ने कहा...",
+   "rom": "*26 revision baad client ne kaha...",
+   "dev_tokens": 6,
+   "rom_tokens": 6,
+   "chars": 36,
+   "token_spans": {
+    "L1B": [
+     0,
+     5
+    ]
+   }
+  },
+  {
+   "id": "T2",
+   "order": 3,
+   "lines": [
+    "L7",
+    "L8",
+    "L9",
+    "L10"
+   ],
+   "note": "re-hook, cinematic echo, the count, suspense line",
+   "prompt_dev": "अब मम्मी भी रिव्यू करेंगी। बिल्कुल सिनेमैटिक। और एक, और एक, और एक। फिर आख़री मैसेज...",
+   "rom": "Ab *Mummy bhi review karengi. Bilkul *cinematic. Aur ek, aur ek, aur *ek. Phir *aakhri message...",
+   "dev_tokens": 16,
+   "rom_tokens": 16,
+   "chars": 85,
+   "token_spans": {
+    "L7": [
+     0,
+     4
+    ],
+    "L8": [
+     5,
+     6
+    ],
+    "L9": [
+     7,
+     12
+    ],
+    "L10": [
+     13,
+     15
+    ]
+   }
+  },
+  {
+   "id": "T3",
+   "order": 4,
+   "lines": [
+    "L11",
+    "L12",
+    "L1alt"
+   ],
+   "note": "moral + loop. L12 = tokens 9-13 cut at the end of \"बोला\" + 40 ms (the take continues, so \"bola\" keeps a rising, unfinished contour); tokens 14-18 = an alternate L1 recorded as the completion of L12 (A/B it against T1's L1 for the loop seam)",
+   "prompt_dev": "हर एडिटर जानता है, वी-वन ही फ़ाइनल होता है। और फिर क्लाइंट ने बोला, बस एक छोटा सा चेंज।",
+   "rom": "Har editor jaanta hai, v1 hi final hota hai. ...aur phir client ne bola, Bas ek *chhota sa change.",
+   "dev_tokens": 19,
+   "rom_tokens": 19,
+   "chars": 87,
+   "token_spans": {
+    "L11": [
+     0,
+     8
+    ],
+    "L12": [
+     9,
+     13
+    ],
+    "L1alt": [
+     14,
+     18
+    ]
+   }
+  }
+ ],
+ "pronunciation_risks": [
+  {
+   "rank": 1,
+   "dev": "पॉप?",
+   "roman": "Pop?",
+   "line": "L3",
+   "take": "T1",
+   "listen_for": "\"pop\" with a short open o and a small question rise; not \"paap\", \"poop\" or \"baap\"",
+   "evidence": "local Kokoro scratch take: whisper heard \"बआप्द\" / \"बाप्द\" (the only token that failed alignment in T1)",
+   "alt": "keep पॉप? in dev.txt for alignment but send Latin \"Pop?\" in the Higgsfield prompt; never पाप (= sin)"
+  },
+  {
+   "rank": 2,
+   "dev": "फ़न।",
+   "roman": "Fun.",
+   "line": "L6",
+   "take": "T1",
+   "listen_for": "/f/ (lips on teeth), one clean syllable \"fun\"; not \"phan\" (फन = a snake hood) and no extra consonant",
+   "evidence": "Kokoro scratch: heard \"फ़न्ध\" / \"फन्द\" (a stray consonant on a one-word sentence)",
+   "alt": "Latin \"Fun.\" in the prompt (dev.txt keeps फ़न।)"
+  },
+  {
+   "rank": 3,
+   "dev": "छब्बीस",
+   "roman": "26 (spoken chhabbees)",
+   "line": "L1B",
+   "take": "T4",
+   "listen_for": "crisp \"chhab-bees\" as the first word of hook B (doubled b, long ee)",
+   "evidence": "Kokoro scratch: heard correctly; first word of a take is where ElevenLabs is least predictable",
+   "alt": "re-take only (the hook B wording is locked by the SLATE)"
+  },
+  {
+   "rank": 4,
+   "dev": "रिविज़न",
+   "roman": "revision",
+   "line": "L1B",
+   "take": "T4",
+   "listen_for": "\"ri-vi-zan\" / \"ri-vi-zhan\" (nukta z), not \"ri-vi-jan\"",
+   "evidence": "Kokoro scratch: heard रिविज़न (OK)",
+   "alt": "रिवीज़न"
+  },
+  {
+   "rank": 5,
+   "dev": "सिनेमैटिक",
+   "roman": "cinematic",
+   "line": "L8",
+   "take": "T2",
+   "listen_for": "\"si-ne-MAI-tik\" (ae); stress on the third syllable",
+   "evidence": "Kokoro scratch: heard सिनेमाटेक / सिनेमाटिक (aa instead of ae)",
+   "alt": "सिनेमेटिक, or Latin \"cinematic\" in the prompt"
+  },
+  {
+   "rank": 6,
+   "dev": "एनर्जेटिक",
+   "roman": "Energetic",
+   "line": "L5",
+   "take": "T1",
+   "listen_for": "\"e-ner-JE-tik\" with the r audible",
+   "evidence": "Kokoro scratch: heard एनरजेटिक / एन्जेटिक (r weak)",
+   "alt": "एनर्जैटिक"
+  },
+  {
+   "rank": 7,
+   "dev": "वी-वन",
+   "roman": "v1",
+   "line": "L11",
+   "take": "T3",
+   "listen_for": "\"vee-one\" (van/wun) as one unit, no pause at the hyphen",
+   "evidence": "Kokoro scratch: aligned OK",
+   "alt": "वीवन (still one token)"
+  },
+  {
+   "rank": 8,
+   "dev": "फ़ाइनल",
+   "roman": "final",
+   "line": "L11",
+   "take": "T3",
+   "listen_for": "/f/ (nukta), \"fai-nal\"",
+   "evidence": "Kokoro scratch: OK",
+   "alt": "Latin \"final\" in the prompt"
+  },
+  {
+   "rank": 9,
+   "dev": "आख़री",
+   "roman": "aakhri",
+   "line": "L10",
+   "take": "T2",
+   "listen_for": "two syllables \"aakh-ri\"; /x/ (Urdu) or /kh/ both fine; not a dragged \"aa-khi-ree\"",
+   "evidence": "Kokoro scratch: heard आखरी (OK)",
+   "alt": "आख़िरी (standard Hindi spelling, +1 syllable, about +0.1 s)"
+  },
+  {
+   "rank": 10,
+   "dev": "रिव्यू",
+   "roman": "review",
+   "line": "L7",
+   "take": "T2",
+   "listen_for": "\"ri-vyoo\", the i audible",
+   "evidence": "Kokoro scratch: heard रव्यू (i reduced)",
+   "alt": "रिव्यु"
+  },
+  {
+   "rank": 11,
+   "dev": "क्लाइंट",
+   "roman": "client",
+   "line": "L1B, L12",
+   "take": "T4, T3",
+   "listen_for": "\"klaa-int\" with the n; not \"khlaait\"",
+   "evidence": "Vlad v4 audition (vo_config take): whisper heard ख्लाईट",
+   "alt": "क्लायंट"
+  },
+  {
+   "rank": 12,
+   "dev": "मम्मी",
+   "roman": "Mummy",
+   "line": "L7",
+   "take": "T2",
+   "listen_for": "\"mum-mee\"",
+   "evidence": "Kokoro scratch: OK",
+   "alt": "none"
+  }
+ ],
+ "sfx_notes": [
+  {
+   "t": 3.2,
+   "now": "pin_thock_dark -6 · slot_tick -12 · swish_small -10 lp 1100 (pin 3 \"Thora left.\")",
+   "change": "pin_thock 0 (full; gate r1 fix 2); slot_tick and swish_small unchanged",
+   "why": "L2 moved to 3.267 (f98): the note lands, then the editor answers. Measured on the BRIEF recipe (glass_tap -8 + impact_soft 0, lp 6000): the 1-4 kHz tail sits 21.6 dB under the hit at 67-200 ms and 29.6 dB under at 200-500 ms, the same grammar as pin 4 -> \"Pop?\" (133 ms)"
+  },
+  {
+   "t": 6.4,
+   "now": "pin_thock 0 (pin 5, cream fill)",
+   "change": "pin_thock_dark -6",
+   "why": "inside L3 \"...nahi pata\" (expected 6.14-6.55)"
+  },
+  {
+   "t": 19.733,
+   "now": "pin_thock 0 (pin 21)",
+   "change": "pin_thock_dark -6",
+   "why": "lands on the \"ek\" of the first \"Aur ek\" (expected end 19.75)"
+  },
+  {
+   "t": 20.267,
+   "now": "pin_thock 0 (pin 22)",
+   "change": "pin_thock_dark -6",
+   "why": "lands on the \"ek\" of the second fragment (expected end 20.29)"
+  },
+  {
+   "t": 20.8,
+   "now": "pin_thock 0 (pin 23)",
+   "change": "pin_thock_dark -6",
+   "why": "lands on the last \"ek\" (expected end 20.88)"
+  },
+  {
+   "t": 2.333,
+   "now": "hook B: ui_click 0",
+   "change": "-6 or hp 4000",
+   "why": "under \"kaha...\" of L1B (expected 0.10-2.56, hard end 2.70)"
+  },
+  {
+   "t": 1.667,
+   "now": "hook B: timeline_scrub -8 (0.667 s)",
+   "change": "lp 1100 or hp 5000 variant",
+   "why": "scrub chatter in 1-4 kHz under \"client ne kaha\""
+  },
+  {
+   "t": 30.617,
+   "now": "end card glass_tap -12",
+   "change": "hp 5000 or -16",
+   "why": "tonal tap under \"final hota\" (L11 28.13-31.36)"
+  },
+  {
+   "t": 32.633,
+   "now": "(new, gate r1 fix 1, creative-director) ui_hover -14 hp 5000: the client marker re-enters",
+   "change": "none from the script",
+   "why": "lands on \"...aur\" of L12 (onset 32.639 expected / 32.633 conservative); hp 5000 keeps it out of the word band"
+  },
+  {
+   "t": 33.333,
+   "now": "end card reverse_swell -8 (0.8 s to 34.133)",
+   "change": "lp <= 1000 or hp >= 5000",
+   "why": "under \"client ne bola\" (L12 32.64-34.05)"
+  },
+  {
+   "t": null,
+   "now": "pins at 13.333, 13.867, 14.400, 16.000 (dark variants)",
+   "change": "none",
+   "why": "already dark in the brief; confirmed inside L7 and L8"
+  },
+  {
+   "t": null,
+   "now": "hero hits 14.933 braam, 25.600 payoff, 27.733 restore",
+   "change": "none",
+   "why": "all in VO gaps (L7 ends 14.79 expected / 14.92 conservative -> fallback; L10 ends 24.78; L11 starts 28.133)"
+  }
+ ],
+ "changes_from_brief": [
+  "L1B: the comma after \"baad\" is dropped (one breath). 6 spoken words (SLATE counted 5). Hard end 2.70 s on the measured last word (gate r1 fix 2; was 2.78): expected 2.56, conservative 2.73 -> fallback chain in section 4.",
+  "L2: \"Theek hai. Ho jayega.\" (1.4-1.7 s measured/modelled) cannot fit between the splice and \"Pop?\" while keeping hook B clear; now \"Ho jayega.\" at 3.267 (f98, gate r1 fix 2; r1 had 2.933), two frames after pin 3 \"Thora left.\" lands, so it is the editor's reply to a visible note in both hooks and never the client's answer to \"client ne kaha...\". Expected end 4.06, conservative 4.13 (hard end 4.25); L3 stays at 4.40. Pin 3's 3.200 cue returns to full pin_thock 0 dB.",
+  "L3: \"Pop karo. Matlab? Kisi ko nahi pata.\" is about 3.2-3.7 s at Vlad's rate (window 1.9 s); now \"Pop? Kisi ko nahi pata.\" (4.400-6.55): the echo keeps the buzzword audible, the verdict keeps the joke. Its tail crosses pin 5 (6.400): dark thock there.",
+  "L4: 6.60 -> 6.733 (f202) so its vowel lands as the cream fill completes (f204) and it clears L3.",
+  "L5: 8.65 -> 8.600 (2 frames after the drums arrive).",
+  "L7: 12.90 -> 12.867 (one-word lines and this line ran slower than the brief assumed; must end before the braam hit at 14.933).",
+  "L8: \"Cinematic. Bilkul.\" (about 1.7-1.9 s with the sentence break; window 1.05 s) -> \"Bilkul cinematic.\" one breath at 15.000 (1.2-1.5 s).",
+  "L9: periods -> commas (a running count is faster and steadier than three sentences); fragments placed 1 frame after their pins (19.233, 19.767, 20.300).",
+  "L10: \"Phir aakhri message aaya.\" -> \"Phir aakhri message...\" (the pin has not landed yet, so \"aaya\" was premature, and the 25.067 true silence needs margin: expected end 24.78).",
+  "L11: colon -> comma (shorter beat); onset 28.05 -> 28.133 (f844) so its first caption chunk enters after the Ctrl+Z chip avoid window (27.95 + the solver's 0.1 s look-back). Expected end 31.36 (brief 31.00).",
+  "L12: end-anchored at 34.050 (onset about 32.64); generated inside T3 so \"bola\" keeps a continuation contour.",
+  "Keywords: one serif keyword per VO line in L1-L10 (brief section 10 marked one per chunk); L11 and L12 carry none (gate r1 fix 4), so after the payoff only *pehle wala* (27.7-29.5) and the CTA *bhejo* (29.9-34.1) glow. Chunks without a keyword render all-white, which snake_captions supports (keywords come only from explicit marks, load_words line 142-143)."
+ ],
+ "open_questions": [
+  "AI disclosure: the VO is a synthetic voice (Vlad). Default per BRIEF section 17: Instagram \"AI info\" label ON. Confirm with Jawad.",
+  "Spoken CTA: DECIDED at the gate (GATE r1 section 2): no spoken CTA; the end card carries `US CLIENT KO / *bhejo*` and the VO keeps \"...aur phir client ne bola\" on the seam.",
+  "Creative-director items that touch the script (not changed here): fix 1 adds the client marker under L12 from 32.633 (its ui_hover is in the SFX hand-off); fix 4 also needs the local end-card player dim to take the ad's *garam* to x0.35 under the card and on cover frame 855; fix 5 syncs BRIEF sections 7, 9, 10, 11 and packet.yaml lines 212 and 319-327 to this file (BRIEF section 11 row 3.200 -> full pin_thock).",
+  "Higgsfield billing: per take or per character? If per character, per-line takes cost far less than the 4-take plan and give cleaner re-takes; if per take (~2.5 credits), the 4-take plan is about 10 credits.",
+  "\"Mummy\" vs \"Ammi\" (SLATE section 7.2 default Mummy, cross-border neutral). The VO uses Mummy to match the pin \"Owner ki Mummy\".",
+  "House spelling: \"aakhri\" (Pakistani) is used; Indian readers also read it. \"jaanta\" (double a) over \"janta\" (which also reads as \"public\")."
+ ],
+ "verify_facts": "none: the VO states no fact about Jawad (fictional client, fictional brand, labelled POV skit)",
+ "number_lock": {
+  "slate": "SLATE section 4: C26 v1 -> v27, 26 requests, Ctrl+Z x26, \"chhabbees\"",
+  "spoken": [
+   "छब्बीस (L1B, hook B only; captions show 26)",
+   "वी-वन (L11, v1)"
+  ],
+  "other_spoken_numbers": "none (\"aur ek\" x3 in L9 is \"one more\", not a count)",
+  "result": "PASS"
+ }
+}

@@ -14,6 +14,7 @@
     def prewarm(): cap.prewarm()
     def draw(t): cv = scene(t); cap.draw(cv, t); return cv
     cap.report()  /  cap.check()  /  cap.save_srt(path)
+    t, ch = SC.keyword_frame(cap)        # QA: a time when a keyword chunk is on screen with its keyword settled
 
 WORD TIMING JSON (vo_chain.py writes it): a list (or {"words": [...]}) of
     {"word": "raat", "start": 1.20, "end": 1.46, "keyword": false}
@@ -22,6 +23,11 @@ WORD TIMING JSON (vo_chain.py writes it): a list (or {"words": [...]}) of
     are dropped, ? ! and ... stay. Times in seconds of the VO; pass offset= when the
     VO starts later in the reel. hide=[(t0, t1)] drops words that a designed headline already shows (the
     two-layer rule of hooks_retention_captions.md 4.1).
+CLEAR WINDOWS: clear=[(t0, t1)] (or a jawad_tx Plan: its bright light windows L1 L2 L4 L5 L7 C2 Y2) keeps the
+    captions OFF screen while a light leak / flare / bloom washes the frame (orange keyword on an orange leak
+    has no contrast): a chunk on screen when the window opens finishes its exit (0.25 s, in_cubic) by t0; a
+    chunk whose entry falls inside the window enters at t1 (when it still has >= 0.35 s to live), else it is
+    skipped. cap.report() marks the moved chunks ('cleared': 'early exit' | 'late entry' | 'skipped').
 
 CHUNKING (chunk_words): 1-3 words per chunk; a pause > 0.45 s or end punctuation (. , ? ! ...) is a hard break;
     each phrase is then split by a small cost model: 2-word chunks preferred, no lone word unless it is the
@@ -309,6 +315,7 @@ class Chunk:
         self.t_exit0 = self.t_exit1 = None
         self.ok, self.issues = True, []
         self.scrim = None
+        self.cleared = ''
 
 
 def _rects_over(avoid, t0, t1, step=0.1):
@@ -320,6 +327,16 @@ def _rects_over(avoid, t0, t1, step=0.1):
     for tt in np.arange(t0, t1 + 1e-6, step):
         out += [tuple(map(float, r)) for r in (avoid(float(tt)) or [])]
     return out
+
+
+BRIGHT_TX = ('L1', 'L2', 'L4', 'L5', 'L7', 'C2', 'Y2')
+
+
+def clear_windows(clear):
+    """[(t0, t1)] from a list of windows or a jawad_tx Plan (its bright light windows, BRIGHT_TX)."""
+    if hasattr(clear, 'windows_of'):
+        return sorted((float(a), float(b)) for a, b in clear.windows_of(*BRIGHT_TX))
+    return sorted((float(a), float(b)) for a, b in (clear or ()))
 
 
 def _hit(b, rects, m):
@@ -350,8 +367,9 @@ class Captions:
 
     def __init__(self, words, band='lower', avoid=None, white_px=64, key_px=128, max_words=3, max_gap=0.45,
                  path='snake', offset=0.0, hide=(), lead=0.05, hold=0.35, enter=0.55, travel=70.0, scrim=0.45,
-                 line=True, margin=28.0, y=None, x=None, keep_pairs=()):
+                 line=True, margin=28.0, y=None, x=None, keep_pairs=(), clear=()):
         self.words = load_words(words, offset, hide)
+        self.clear = clear_windows(clear)
         self.band, self.avoid, self.wpx, self.kpx = band, avoid, float(white_px), float(key_px)
         self.lead, self.hold, self.enter, self.travel = lead, hold, enter, travel
         self.scrim_k, self.line, self.margin, self.path_kind = scrim, line, margin, path
@@ -378,7 +396,28 @@ class Captions:
                 t1 = nxt
                 t0 = min(t0, t1 - 0.04)
             ch.t_exit0, ch.t_exit1 = t0, t1
+            self._clear(ch)
+        self.skipped = [ch for ch in self.chunks if ch.cleared == 'skipped']
+        self.chunks = [ch for ch in self.chunks if ch.cleared != 'skipped']
+        for ch in self.chunks:
             self._layout(ch)
+
+    def _clear(self, ch, exit_dur=0.25, min_life=0.35):
+        """Keep the chunk off screen inside every clear window (see CLEAR WINDOWS)."""
+        for a, b in self.clear:
+            if ch.t_exit1 <= a or ch.t_in >= b:
+                continue
+            if ch.t_in < a - 0.15:                        # on screen when the window opens: leave by a
+                ch.t_exit1 = a
+                ch.t_exit0 = max(ch.t_in + 0.1, min(ch.t_exit0, a - exit_dur))
+                ch.cleared = 'early exit'
+            elif ch.t_exit1 - b >= min_life:               # enters inside the window: enter when it is over
+                ch.t_in = b
+                ch.t_exit0 = max(ch.t_exit0, b + 0.1)
+                ch.cleared = 'late entry'
+            else:
+                ch.cleared = 'skipped'
+                return
 
     # ------------------------------------------------------------------------------------- layout
     def _place(self, ch, s, kind, xc, yb):
@@ -626,7 +665,7 @@ class Captions:
                      t_exit1=round(ch.t_exit1, 3), scale=ch.lay['scale'], y=ch.lay['yb'], x=ch.lay['xc'],
                      bbox=tuple(round(v, 1) for v in ch.lay['bbox']), keyword=[d['word'] for d in ch.words
                                                                               if d['keyword']],
-                     ok=ch.ok, issues=list(ch.issues)) for ch in self.chunks]
+                     ok=ch.ok, issues=list(ch.issues), cleared=ch.cleared) for ch in self.chunks]
 
     def check(self, step=0.1):
         """QA every `step` s: overlapping chunks, safe zones, avoid rects, chunk sizes. -> list of issues."""
@@ -635,6 +674,9 @@ class Captions:
             if b.t_in < a.t_exit1 - 1e-6:
                 out.append('chunks %d/%d overlap in time' % (a.idx, b.idx))
         for ch in self.chunks:
+            for a, b in self.clear:
+                if ch.t_in < b - 1e-6 and ch.t_exit1 > a + 1e-6:
+                    out.append('chunk %d on screen inside the clear window %.2f-%.2f' % (ch.idx, a, b))
             if not 1 <= len(ch.words) <= 3:
                 out.append('chunk %d has %d words' % (ch.idx, len(ch.words)))
             if sum(d['keyword'] for d in ch.words) > 1:
@@ -663,6 +705,26 @@ SAMPLE = [  # Roman Urdu demo line (timings synthetic); '*' = keyword
     ('Bhai,', 0.30, 0.52), ('client', 0.56, 0.88), ('ne', 0.90, 1.00), ('bola', 1.02, 1.30), ('bas', 1.36, 1.52),
     ('thoda', 1.55, 1.82), ('sa', 1.84, 1.95), ('*change...', 1.98, 2.55), ('aur', 3.10, 3.25), ('phir', 3.28, 3.50),
     ('raat', 3.55, 3.80), ('ke', 3.82, 3.92), ('*teen', 3.95, 4.30), ('baj', 4.34, 4.52), ('gaye.', 4.55, 4.95)]
+
+
+def keyword_frame(cap, enter=0.55):
+    """(t, chunk) of the best keyword frame for inspection: among chunks with a keyword, the one whose keyword
+    is settled (its start + `enter`) longest before the chunk starts to exit; t = settled + 1/4 of that hold
+    (or the middle of the keyword's visible time when it never settles).  t, ch = SC.keyword_frame(cap)"""
+    best = None
+    for ch in cap.chunks:
+        kws = [d for d in ch.words if d.get('keyword')]
+        if not kws or ch.t_exit0 is None:
+            continue
+        ts = kws[0]['start'] + enter
+        hold = ch.t_exit0 - ts
+        t = ts + 0.25 * hold if hold > 0 else 0.5 * (kws[0]['start'] + ch.t_exit0)
+        if best is None or hold > best[0]:
+            best = (hold, t, ch)
+    if best is None:
+        ch = max(cap.chunks, key=lambda c: c.t_exit0 - c.t_in)
+        return 0.5 * (ch.t_in + ch.t_exit0), ch
+    return best[1], best[2]
 
 
 def selftest():
@@ -722,21 +784,52 @@ def selftest():
         p = os.path.join(K.SELFTEST, 'snake_captions_%s.png' % name)
         cv2.imwrite(p, sheet[..., ::-1])
         sheets.append(p)
-        # full-res crop of the keyword frame for close inspection
-        cv = K.background('ember', 4.3, bokeh=0.5)
-        cap.draw(cv, 4.3)
-        K.post(cv, 'ember', 4.3)
-        u8 = K.to_srgb8(cv, 4.3)
-        b = [ch for ch in cap.chunks if ch.t_in <= 4.3 < ch.t_exit1][0].lay['bbox']
+        # full-res crop of a keyword frame for close inspection (fix round 2: the old fixed t=4.3 fell in the gap
+        # between two chunks): the keyword chunk with the longest settled hold, at its settled keyword
+        tk, chk = keyword_frame(cap)
+        bg = K.background('ember', tk, bokeh=0.5)
+        cv = bg.copy()
+        cap.draw(cv, tk)
+        ink = int((np.abs(cv - bg)[..., :3].max(-1) > 0.02).sum())
+        K.post(cv, 'ember', tk)
+        u8 = K.to_srgb8(cv, tk)
+        b = chk.lay['bbox']
         crop = u8[int(max(0, b[1] - 80)):int(min(H, b[3] + 80)), int(max(0, b[0] - 60)):int(min(W, b[2] + 60))]
         p = os.path.join(K.SELFTEST, 'snake_captions_%s_crop.png' % name)
         cv2.imwrite(p, crop[..., ::-1])
         sheets.append(p)
+        print('%s keyword crop: %r at %.2f s, %d caption px' % (name, chk.text, tk, ink))
+        if ink < 5000:
+            fails.append('%s: keyword crop at %.2f s has only %d caption px' % (name, tk, ink))
         if avoid:
             # the face chunk must have moved off the face
             for ch in cap.chunks:
                 if _hit(ch.lay['bbox'], [face], 0):
                     fails.append('chunk %d over the face' % ch.idx)
+    # clear windows: a light leak at 2.30-2.70 s (the '...change...' chunk is on screen) and one at 3.00-3.12 s
+    # (the next chunk would enter inside it): no caption pixels inside either window, defaults untouched
+    clr = [(2.30, 2.70), (3.0, 3.12)]
+    cap = Captions(words, band='lower', clear=clr)
+    rep = {r['text']: r['cleared'] for r in cap.report()}
+    issues = cap.check()
+    if issues:
+        fails += ['clear: %s' % i for i in issues]
+    if 'early exit' not in rep.values() or 'late entry' not in rep.values():
+        fails.append('clear: expected an early exit and a late entry, got %s' % rep)
+    sk = Captions(words, band='lower', clear=[(3.0, 3.5)])         # 'aur phir' would only live 0 s after it
+    if [c.text for c in sk.skipped] != ['aur phir'] or sk.check():
+        fails.append('clear: skip rule %s %s' % ([c.text for c in sk.skipped], sk.check()))
+    for tt in (2.30, 2.45, 2.69, 3.0, 3.06, 3.11):
+        bg = K.background('ember', tt, bokeh=0.5)
+        cv = bg.copy()
+        cap.draw(cv, tt)
+        if not np.array_equal(cv, bg):
+            fails.append('clear: caption pixels at %.2f s inside a clear window' % tt)
+    ref = Captions(words, band='lower')
+    if [(round(c.t_in, 4), round(c.t_exit1, 4)) for c in ref.chunks if c.t_exit1 <= 2.2] != \
+            [(round(c.t_in, 4), round(c.t_exit1, 4)) for c in cap.chunks if c.t_exit1 <= 2.2]:
+        fails.append('clear: chunks outside the windows moved')
+    print('clear windows', clr, '->', rep)
     # chunking rules on their own
     ch = chunk_words(load_words(words))
     if any(len(c) > 3 for c in ch):

@@ -80,8 +80,9 @@ KINETIC (per-glyph; glyph sprites are rendered in the block's frame so gradients
     g = Glyphs('A SAFE HOME.', 'deep_glow', px=130, scrim=0.8)
     g.rise(cv, t, x, y, t0=0, stagger=0.035, dur=0.7, dist=0.45, blur=10, scale0=0.9, order='ltr'|'rtl'|
            'center'|'random')                                  per-glyph rise + blur-in + scale
-    g.slam(cv, t, x, y, t0=0, s0=1.6, dur=0.45, freq=3.2, damping=0.45, stagger=0, smear=True)
+    g.slam(cv, t, x, y, t0=0, s0=1.6, dur=0.45, freq=3.2, damping=0.45, stagger=0, smear=True, fade=0.05)
                                                                1.6 -> 1 spring overshoot + exact motion smear
+                                                               (fade=0: fully on from t0; mspan= smear span s)
     g.typewriter(cv, t, x, y, t0=0, cps=16, caret=True)        pop-on chars + blinking caret
     g.wipe(cv, t, x, y, t0=0, dur=0.6, angle=0, soft=0.12, edge=1.0)   soft mask wipe + bright leading edge
     g.track(cv, t, x, y, t0=0, dur=0.9, amount=0.45, blur=8)   tracking expand: spread glyphs settle in
@@ -1329,7 +1330,7 @@ def _rotm(rx, ry, rz):
 
 class Glyphs:
     """Per-glyph sprites + layout positions + animators (see module docstring)."""
-    DRAW_KEYS = ('anchor', 'scale', 'rot', 'opacity', 'tilt', 'focal', 'sweep', 'sweep_kw', 'mblur', 'blur')
+    DRAW_KEYS = ('anchor', 'scale', 'rot', 'opacity', 'tilt', 'focal', 'sweep', 'sweep_kw', 'mblur', 'blur', 'mspan')
 
     def __init__(self, text, st='flat', **kw):
         self.style = style(st, **kw)
@@ -1404,7 +1405,9 @@ class Glyphs:
             out.append(GlyphState(dy=(1 - p) * dist * self.style.px, sx=s, sy=s, opacity=pf, blur=(1 - p) * blur))
         return out, {}
 
-    def _a_slam(self, t, t0=0.0, s0=1.6, dur=0.45, freq=3.2, damping=0.45, stagger=0.0, blur=6.0, order='ltr'):
+    def _a_slam(self, t, t0=0.0, s0=1.6, dur=0.45, freq=3.2, damping=0.45, stagger=0.0, blur=6.0, order='ltr',
+                fade=0.05):
+        # fade = opacity ramp (s) after t0; fade=0 -> fully on from t0 (a hit frame that must show the word)
         if stagger > 0:
             rk = self._rank(order)
             out = []
@@ -1412,7 +1415,7 @@ class Glyphs:
                 tt = t - (t0 + rk[i] * stagger)
                 sp = K.spring(max(tt, 0) / max(dur, 1e-3) * 0.45, freq, damping) if tt > 0 else 0.0
                 s = s0 + (1 - s0) * sp
-                op = K.clamp(tt / 0.05) if tt > 0 else 0.0
+                op = (K.clamp(tt / fade) if fade > 0 else 1.0) if tt > 0 else 0.0
                 out.append(GlyphState(sx=s, sy=s, opacity=op, blur=blur * max(0.0, 1 - sp) if tt > 0 else 0))
             return out, {}
         tt = t - t0
@@ -1420,7 +1423,7 @@ class Glyphs:
             return [GlyphState(opacity=0.0) for _ in range(self.n)], {'opacity': 0.0}
         sp = K.spring(tt / max(dur, 1e-3) * 0.45, freq, damping)
         s = s0 + (1 - s0) * sp
-        op = K.clamp(tt / 0.05)
+        op = K.clamp(tt / fade) if fade > 0 else 1.0
         return [GlyphState() for _ in range(self.n)], {'scale': s, 'opacity': op,
                                                        'blur': blur * max(0.0, 1 - sp) ** 2}
 
@@ -1529,7 +1532,8 @@ class Glyphs:
         return self._run('rise', cv, t, x, y, kw)
 
     def slam(self, cv, t, x, y, **kw):
-        """Block slam: scale s0 -> 1 with spring overshoot and a motion smear (t0, s0, dur, smear, stagger)."""
+        """Block slam: scale s0 -> 1 with spring overshoot and a motion smear (t0, s0, dur, smear, stagger;
+        fade=0.05 s opacity ramp, mspan=2.2 frames smear span). g.slam(cv, t, 540, 900, t0=1.0, fade=0, mspan=0.03)"""
         return self._run('slam', cv, t, x, y, kw)
 
     def typewriter(self, cv, t, x, y, **kw):

@@ -20,7 +20,8 @@ TRANSITIONS  (TX[id] -> Tx; every Tx is a pure function of t)
     cv = tx(t, c, A, B, **opts)             # A before the window, B after it, the transition inside it
     tx.pre, tx.post                         # default window in FRAMES at 30 fps before / after the cut c
     tx.window(c, **opts) -> (t0, t1)        # [t0, t1) in seconds; frames(c) -> list of frame times
-    tx.samples_at(t, c, default=3)          # motion-blur sub-samples for this frame (7 on whips / zooms ...)
+    tx.samples_at(t, c, default=3, **opts)  # motion-blur sub-samples for this frame (7 on whips / zooms ...);
+                                            # a policy callable is s(k, w) or s(k, w, opts) (D1 reads pull=)
     tx.cues(c, **opts) -> [cue dicts]       # paired SFX on audio.py catalog names (hit-aligned); each carries
                                             # 'tx' and, where the bible wants a custom jawad_sfx sound, 'alt'
     tx.post_kw(t, c, **opts) -> dict        # finish() overrides: push (exposure push), bloomout, rgb_split
@@ -28,6 +29,22 @@ TRANSITIONS  (TX[id] -> Tx; every Tx is a pure function of t)
     X.catalogue() -> rows for all 43 (spec-only rows have fn None; calling them raises NotImplementedError)
     Window options every Tx takes: pre=, post= (frames).  Per-transition options: see each _tx_* docstring
     (e.g. X.TX['C3'](t, c, A, B, center=(540, 700), r0=220)).
+    WINDOW EDGES: frames outside a window are the plain scenes, so every envelope reaches its end value ON the
+    first / last window frame (Win.u / ua1 / ub / env_in / env_out, see Win): nothing pops in or vanishes at a
+    window edge. What the TIMELINE draws outside a window: Y1 / Y2 the word on A, M6 the carrier at rest
+    (X.carrier() at path[0] / path[-1]), M3 the object on X.motion_track(c)(t).
+
+CONTINUITY QA
+    X.edge_steps('O6', c=1.0, pre=10, post=5) -> {'entry': (mean, frac), 'exit': ..., 'base_a', 'base_b'}: the step
+    from the plain neighbour into the first window frame and from the last window frame out, against the
+    plain-scene step (X.frame_step(a8, b8) = mean |diff| of two sRGB8 frames, share of px changing > 25 levels;
+    post_kw=True adds each frame's finish overrides). The self-test fails an edge over 1.5x the plain step.
+    X.window_steps('Y5') -> {'steps': {k: (mean, frac)} for EVERY frame of the window, 'entry', 'exit', 'base_a',
+    'base_b', 'spikes'}: X.window_spikes flags a step > 3x the plain step and > 2x BOTH neighbouring steps (mean, or
+    share of px > 25 with a 2 % floor), skipping the cut (k = -1, 0), EDGE_CUTS and X.designed_steps(tid, w, **o)
+    (SNAPS: C8 punch, Y3 slams, L8 re-open, D3 stepped track, D1 scrub). The self-test fails any spike and writes
+    the whole table to <WS>/out/selftest/jawad_tx_window_steps.log. X.y5_handover() = Y5's underline ROI luma
+    per frame at 5 samples (the hand-over check: no step > 1.5x both neighbours on k = -16 .. -10).
 
 PLAN (timeline glue: several transitions between consecutive scenes)
     plan = X.Plan([('C3', 2.0, dict(center=(540, 720), r0=200)), ('L1', 4.0), ('D9', 6.2)])
@@ -35,7 +52,8 @@ PLAN (timeline glue: several transitions between consecutive scenes)
     samples(t) = plan.samples(t)                    # 3 outside windows, the transition's policy inside
     post(cv,t) = X.finish(cv, t, LOOK, **plan.post_kw(t))      # exposure pushes etc. (the ONLY post call)
     cues()     = plan.cues()                        # paired SFX for every transition
-    Windows must not overlap (ValueError). plan.cuts, plan.windows(), plan.segment(t).
+    Windows must not overlap (ValueError). plan.cuts, plan.windows(), plan.segment(t),
+    plan.windows_of('L1', 'L4') -> [(t0, t1)] (caption clear windows: SC.Captions(..., clear=plan)).
 
 FOUNDATIONS
     FPS, HALF, q(t) quantise to a frame, fidx(t, c=0) frame index, side_b(t, c), f(n) frames -> s
@@ -62,8 +80,9 @@ transitions per reel (at most 2 premium), never two features within 2 bars; the 
 Y5 as a full wipe in ONE reel only. L1 sparingly (Jawad disliked light-leak washes on cuts).
 
 COST (measured by the self-test: shared 4-core box, warm caches, one sample, scenes excluded, median per frame):
-C1 21, C2 67, C3 33, C6 17, C8 44, M1 10, M2 72, M6 32, Y1 186, Y2 115, Y3 11, Y5 38, L1 104, L2 64, L5 31,
-L7 72, L8 72, D1 35, D2 60, D3 22, D4 134, O1 121, O2 107, O4 20 (+ shard build once), O6 68 ms; L3 L4 D7 D8
+C1 21, C2 110-140 (the L1 leak recipe since fix round 1), C3 33, C6 17, C8 44, M1 10, M2 72, M6 32, Y1 186, Y2 115,
+Y3 340 (hit frame ~40; ~1.1 s on the 1-2 frames after each hit: 24-sub-sample smear), Y5 38, L1 104, L2 64, L5 31,
+L7 72, L8 72, D1 35 (+ ~40 on pull / push frames: zoom smear), D2 60, D3 22, D4 134, O1 121, O2 107, O4 20 (+ shard build once), O6 68 ms; L3 L4 D7 D8
 M3 D9 cost nothing here (their work is in finish() or the scene clock). Inside a window both scenes render and
 samples rise to 5-7: budget 2-4x a normal frame there.
 Self-test: python3 jawad_tx.py selftest  (or --selftest) -> <WS>/out/selftest/jawad_tx_*.png, exits 1 on failure.
@@ -497,24 +516,50 @@ def cue(t, name, gain_db=0.0, align='hit', pan=0.0, alt=None, **params):
 
 
 class Win:
-    """Window geometry of one transition: c (cut, s), pre / post (frames), t0, t1, d (s)."""
+    """Window geometry of one transition: c (cut, s), pre / post (frames), t0 (first window frame), t1 (first
+    frame AFTER the window), last (= t1 - 1/FPS, the last rendered window frame), d (s).
+    Envelopes are frame-normalised so they reach their end values ON the first / last rendered frames (the
+    frames outside a window are the plain scenes, so anything still visible on the last window frame pops):
+        w.u(t)   0 on the first window frame -> 1 on the last one      (sin(pi u) is 0 on both edge frames)
+        w.ua(t)  0 on the first frame -> 1 AT the cut (A-side motion that continues through the cut)
+        w.ua1(t) 0 on the first frame -> 1 on the last pre frame (k = -1: A-side fades that must be gone)
+        w.ub(t)  0 at the cut -> 1 on the last window frame (B-side settles)
+        w.env_in(t, n=4)  0 on the first frame -> 1 after n frames (overlay fade-in, inout_sine)
+        w.env_out(t, n=4) 1 -> 0 over the last n frames, 0 ON the last window frame (overlay fade-out)
+    e.g. op = w.env_in(t) * w.env_out(t)."""
 
     def __init__(self, c, pre, post):
         self.c, self.pre, self.post = float(c), int(pre), int(post)
         self.t0, self.t1 = self.c - self.pre / FPS, self.c + self.post / FPS
+        self.last = self.t1 - 1.0 / FPS
         self.d = (self.pre + self.post) / FPS
 
     def u(self, t):
-        """0..1 across the whole window."""
-        return K.clamp((t - self.t0) / self.d) if self.d > 0 else 1.0
+        """0..1 across the whole window: 0 on the first rendered frame, 1 on the last one."""
+        n = self.pre + self.post - 1
+        return K.clamp((t - self.t0) / (n / FPS)) if n > 0 else 1.0
 
     def ua(self, t):
-        """0..1 across the pre part (1 at the cut)."""
+        """0..1 across the pre part (1 at the cut, i.e. one frame after the last A-side frame)."""
         return K.clamp((t - self.t0) / (self.pre / FPS)) if self.pre > 0 else 1.0
 
+    def ua1(self, t):
+        """0..1 across the pre part, 1 on the last pre frame (k = -1)."""
+        n = self.pre - 1
+        return K.clamp((t - self.t0) / (n / FPS)) if n > 0 else 1.0
+
     def ub(self, t):
-        """0..1 across the post part (0 at the cut)."""
-        return K.clamp((t - self.c) / (self.post / FPS)) if self.post > 0 else 1.0
+        """0..1 across the post part: 0 at the cut, 1 on the last window frame (k = post - 1)."""
+        n = self.post - 1
+        return K.clamp((t - self.c) / (n / FPS)) if n > 0 else 1.0
+
+    def env_in(self, t, n=4, ease='inout_sine'):
+        """Overlay fade-in: 0 on the first window frame, 1 from frame n on."""
+        return K.ramp(t, self.t0, self.t0 + n / FPS, ease)
+
+    def env_out(self, t, n=4, ease='inout_sine'):
+        """Overlay fade-out: 1 until n frames before the end, 0 on the last window frame."""
+        return 1.0 - K.ramp(t, self.last - n / FPS, self.last, ease)
 
     def k(self, t):
         return fidx(t, self.c)
@@ -533,6 +578,7 @@ class Tx:
         self.pre, self.post = int(pre), int(post)
         self.ease, self._samples, self._sfx = ease, samples, sfx
         self.fn, self.flag, self.frames_range, self._post_fn, self.note = fn, flag, frames_range, post_fn, note
+        self._samples_o = callable(samples) and _nargs(samples) >= 3      # policy s(k, w, o) gets the options
 
     @property
     def implemented(self):
@@ -565,11 +611,17 @@ class Tx:
         return self.fn(t, w, A, B, **o)
 
     def samples_at(self, t, c, default=3, **o):
+        """Motion-blur sub-samples for the frame at t: `default` outside the window, else the policy (an int,
+        s(k, w) or s(k, w, opts) where opts are the transition options, e.g. D1's pull=)."""
         w = self.win(c, **o)
         if not w.inside(t):
             return default
         s = self._samples
-        return int(s(w.k(t), w)) if callable(s) else int(s)
+        if not callable(s):
+            return int(s)
+        if self._samples_o:
+            return int(s(w.k(t), w, {k: v for k, v in o.items() if k not in ('pre', 'post')}))
+        return int(s(w.k(t), w))
 
     def cues(self, c, **o):
         w = self.win(c, **o)
@@ -592,6 +644,16 @@ class Tx:
 
 
 TX = {}
+
+
+def _nargs(fn):
+    """Number of positional parameters of a callable (sample policies: 2 = s(k, w), 3 = s(k, w, o))."""
+    import inspect
+    try:
+        ps = inspect.signature(fn).parameters.values()
+    except (TypeError, ValueError):
+        return 2
+    return sum(p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD) for p in ps)
 
 
 def _reg(id, name, family, pre, post, ease, samples, sfx, fn=None, flag='', frames_range='', post_fn=None, note=''):
@@ -629,7 +691,7 @@ def _tx_whip(t, w, A, B, deg=32.0, axis='x', sign=1, mode='2d', dist=1.4):
     c = w.c
 
     def off(tt):
-        uu = K.clamp((tt - w.t0) / w.d)
+        uu = w.u(tt)                     # frame-normalised: 0 on the first, 1 on the last window frame
         return sign * (K.EASE['inout_expo'](uu) - (1.0 if side_b(tt, c) else 0.0))
 
     o = off(t)
@@ -647,19 +709,33 @@ def _tx_whip(t, w, A, B, deg=32.0, axis='x', sign=1, mode='2d', dist=1.4):
     return cv
 
 
-def _tx_dolly(t, w, A, B, subject=None, center=(K.CX, 900.0), s1=1.55, leak=0.9, mode='2d', D0=1500.0,
-              D1=640.0, subj_z=0.0, seed=0):
+def _c2_sweep(t, w, leak_frames=8):
+    """C2 leak band position: 0 -> 0.5 over the last `leak_frames` A frames, 0.5 at c, -> 1 on the last window
+    frame (light_leak / wide_band envelopes are sin(pi sweep): 0 at both ends, peak on the cut)."""
+    if side_b(t, w.c):
+        return 0.5 + 0.5 * K.EASE['out_sine'](w.ub(t))      # eases out: the burn fades softly into plain B
+    a = max(w.t0, w.c - leak_frames / FPS)
+    return 0.5 * K.ramp(t, a, w.c, 'linear')
+
+
+def _tx_dolly(t, w, A, B, subject=None, center=(K.CX, 900.0), s1=1.55, leak=0.6, mode='2d', D0=1500.0,
+              D1=640.0, subj_z=0.0, seed=0, wide=0.25, leak_frames=8):
     """C2 dolly-zoom (Vertigo). The cut c sits at the END of the stretch (u = 1, peak stretch): A stretches
-    over the pre frames, B takes over at c under an exposure push (post_kw) + an ember leak peaking at c.
-    2d: the world (A) scales 1 -> s1 about `center` with a radial zoom smear while subject(cv, t) (the
-    constant-size cut-out, drawn by you) stays put; 3d: scenes take cam= (X.dolly_cam) and draw the subject."""
+    over the pre frames, B takes over at c under a small exposure push (post_kw push_gain=0.3) and the L1
+    ember recipe peaking at c: LEAK_COLS leak at `leak` strength + a wide_band (`wide`), with the look's bloom
+    halved at the peak (post_kw bloom_scale), so the swap hides in a warm burn that never goes white (<= 2 %
+    near-white px at the cut; the bible's EMBERS 0.9 leak burnt 13 % of the frame white). leak=0: an
+    L3-push-only cut. 2d: the world (A) scales 1 -> s1 about `center` with a radial zoom smear while
+    subject(cv, t) (the constant-size cut-out, drawn by you) stays put; 3d: scenes take cam= (X.dolly_cam) and
+    draw the subject."""
     if side_b(t, w.c):
         cv = B(t, cam=dolly_cam(w.c, w.t0, w.c, D0, D1, subj_z)) if mode == '3d' else B(t)
         if subject is not None:
             subject(cv, t)
         if leak > 0:
-            K.light_leak(cv, t, colors=EMBERS(), strength=leak, seed=seed,
-                         sweep=0.5 + 0.5 * K.ramp(t, w.c, w.c + 6 / FPS, 'linear'), angle=35)
+            sw = _c2_sweep(t, w, leak_frames)
+            wide_band(cv, sw, 35.0, wide)
+            K.light_leak(cv, t, colors=LEAK_COLS(), strength=leak, seed=seed, sweep=sw, angle=35)
         return cv
     u = w.ua(t)
     if mode == '3d':
@@ -672,10 +748,19 @@ def _tx_dolly(t, w, A, B, subject=None, center=(K.CX, 900.0), s1=1.55, leak=0.9,
     if subject is not None:
         subject(cv, t)
     if leak > 0:
-        uu = K.ramp(t, w.c - 8 / FPS, w.c, 'linear')
-        if uu > 0:
-            K.light_leak(cv, t, colors=EMBERS(), strength=leak, seed=seed, sweep=0.5 * uu, angle=35)
+        sw = _c2_sweep(t, w, leak_frames)
+        if sw > 0:
+            wide_band(cv, sw, 35.0, wide)
+            K.light_leak(cv, t, colors=LEAK_COLS(), strength=leak, seed=seed, sweep=sw, angle=35)
     return cv
+
+
+def _c2_post(t, w, o):
+    """C2 finish overrides: a small exposure push on c and the look's bloom halved while the leak peaks."""
+    d = {'push': o.get('push_gain', 0.3) * K.impulse(t, w.c - 0.02, 16.0)}
+    if o.get('leak', 0.6) > 0 and w.inside(t):
+        d['bloom_scale'] = 1.0 - 0.55 * math.sin(math.pi * _c2_sweep(t, w, o.get('leak_frames', 8)))
+    return d
 
 
 def _portal_scale(center, r0):
@@ -689,10 +774,13 @@ def _ring_spr(r, width, glow):
     return K.glow(spr, K.C['FLAME'], sigmas=(3, 9, 24), strength=1.2, weights=(1.0, 0.6, 0.35))
 
 
-def _tx_portal(t, w, A, B, center=(K.CX, 760.0), r0=220.0, rim=True, b_scale=1.08, blur=0.10):
-    """C3 push-in through an object (portal). A zooms exponentially (in_expo) into a circular aperture of
-    radius r0 at `center` (the lens / ring / screen of a prop in A) while the aperture glides to frame centre;
-    B is screen-locked inside it (at b_scale), fills the frame at c, then settles b_scale -> 1 (out_expo)."""
+def _tx_portal(t, w, A, B, center=(K.CX, 760.0), r0=220.0, rim=True, b_scale=1.08, blur=0.10, iris=5):
+    """C3 push-in through an object (portal). The aperture (radius r0 at `center`: the lens / ring / screen of
+    a prop in A) irises open over the first `iris` frames (radius 0 -> r0 and opacity 0 -> 1, inout_sine, so
+    the first window frame is plain A), then A zooms exponentially (in_expo) into it while the aperture glides
+    to frame centre; B is screen-locked inside it (at b_scale), fills the frame at c, then settles
+    b_scale -> 1 (out_expo, exactly 1 on the last window frame). rim=True draws the kit's glowing ring on the
+    aperture edge (it fades in with the iris); pass rim=False when A already draws its own prop ring there."""
     if side_b(t, w.c):
         return zoom_canvas(B(t), K.lerp(b_scale, 1.0, K.EASE['out_expo'](w.ub(t))), (K.CX, K.CY), 'night')
     u = w.ua(t)
@@ -703,14 +791,17 @@ def _tx_portal(t, w, A, B, center=(K.CX, 760.0), r0=220.0, rim=True, b_scale=1.0
     px, py = K.lerp(center[0], K.CX, em), K.lerp(center[1], K.CY, em)       # covers the frame (no mirrored edges)
     M = [[s, 0, px - s * center[0]], [0, s, py - s * center[1]]]
     cv = affine_canvas(A(t), M, 'night')
-    R = r0 * s
+    io = w.env_in(t, max(1, min(int(iris), w.pre - 1))) if iris else 1.0     # iris open: 0 on the first frame
+    if io <= 0:
+        return cv
+    R = r0 * s * io
     X, Y = grid4()
-    m = up(np.clip((R - np.hypot(X - px, Y - py)) / 3.0 + 0.5, 0, 1))
+    m = up(np.clip((R - np.hypot(X - px, Y - py)) / 3.0 + 0.5, 0, 1) * np.float32(io))
     mix_mask(cv, zoom_canvas(B(t), b_scale, (K.CX, K.CY), 'night'), m)
-    if rim and R < 1400:
+    if rim and 4.0 < R < 1400:
         rr = int(min(1200, max(8, round(R / 8) * 8)))           # quantised radius: a handful of cached rings
         spr = _ring_spr(rr, max(3.0, rr * 0.02), 0)
-        K.draw(cv, spr, px, py, scale=R / rr, opacity=1.0 - K.ramp(u, 0.75, 1.0, 'inout_sine'), mode='over')
+        K.draw(cv, spr, px, py, scale=R / rr, opacity=io * (1.0 - K.ramp(u, 0.75, 1.0, 'inout_sine')), mode='over')
     amt = blur * K.EASE['in_cubic'](u) * (1 - K.ramp(u, 0.9, 1.0, 'linear'))
     K.zoom_blur(cv, amt, center=(px, py))
     return cv
@@ -732,7 +823,7 @@ def _tx_crash(t, w, A, B, center=(K.CX, K.CY), s1=1.35, b0=1.2):
     settles b0 -> 1 over the post frames."""
     if side_b(t, w.c):
         cv = zoom_canvas(B(t), K.lerp(b0, 1.0, K.EASE['out_expo'](w.ub(t))), center, 'reflect')
-        K.zoom_blur(cv, 0.05 * K.impulse(t, w.c, 12), center=center)
+        K.zoom_blur(cv, 0.05 * K.impulse(t, w.c, 12) * (1.0 - w.ub(t)), center=center)
         return cv
     cv = zoom_canvas(A(t), K.lerp(1.0, s1, K.EASE['out_expo'](w.ua(t))), center, 'reflect')
     K.zoom_blur(cv, 0.05 * K.impulse(t, w.t0, 12), center=center)
@@ -774,11 +865,20 @@ def _tx_hue(t, w, A, B, gain=1.6):
     return cv
 
 
+def motion_track(c, pre=9, post=9, a=(140, 900), m=(540, 900), b=(940, 900)):
+    """M3's default shared K.Track: a -> m (in_cubic, at the cut c) -> b (out_cubic, on the last window frame);
+    it holds a before / b after the window, so scenes call S(t, move=X.motion_track(c)(t)) outside it too.
+    X.motion_track(4.0)(4.0) -> (540, 900)"""
+    w = Win(c, pre, post)
+    return K.Track([(w.t0, a, 'in_cubic'), (w.c, m, 'out_cubic'), (w.last, b)])
+
+
 def _tx_motion_match(t, w, A, B, move=None):
     """M3 motion match: hard cut at max velocity; both scenes get move=(x, y) from the shared K.Track
-    (default: 140 -> 540 -> 940 px at y 900, equal distances, continuous velocity). Scenes take move=."""
+    (default X.motion_track: 140 -> 540 -> 940 px at y 900, continuous velocity). Scenes take move= and must
+    draw the object at the same track outside the window too (move=X.motion_track(c)(t)), or it pops."""
     if move is None:
-        move = K.Track([(w.t0, (140, 900), 'in_cubic'), (w.c, (540, 900), 'out_cubic'), (w.t1, (940, 900))])
+        move = motion_track(w.c, w.pre, w.post)
     return (B if side_b(t, w.c) else A)(t, move=tuple(move(t)))
 
 
@@ -816,22 +916,36 @@ def _catmull(pts, n=64):
     return np.array(out)
 
 
+def carrier(r=10.0):
+    """M6's default carrier sprite (an ember spark, emissive): draw it at rest in A before the window and in B
+    after it, at the path ends:  K.draw(cv, X.carrier(), *path[0], mode='add')"""
+    return _spark(r)
+
+
 def _tx_carry(t, w, A, B, path=((120, 1300), (460, 980), (760, 760), (980, 520)), sprite=None, scale=1.0,
               light=True, trail=6):
     """M6 object carry-over: one ember spark (or any emissive sprite) travels a Catmull-Rom path in screen space
-    (inout_cubic, fastest point = c) over BOTH scenes; the background cuts under it at c; its light falls on
-    both worlds (radial FLAME light). Draw the same carrier in A before / B after the window yourself."""
+    (inout_cubic: at rest on path[0] on the first window frame, fastest at c, at rest on path[-1] on the last)
+    over BOTH scenes; the background cuts under it at c; its light falls on both worlds (radial FLAME light,
+    fading in / out over 4 frames) and a comet tail follows it in proportion to its speed. Draw the same
+    carrier at rest in A before (path[0]) / B after (path[-1]) the window yourself (X.carrier())."""
     cv = (B if side_b(t, w.c) else A)(t)
     curve = _catmull(path)
     p = K.EASE['inout_cubic'](w.u(t))
     x, y = _path_at(curve, p)
-    if light:
-        K.draw(cv, _spark_light(), x, y, mode='add')
+    if light:                                           # the carrier's light fades in / out with the window
+        K.draw(cv, _spark_light(), x, y, opacity=w.env_in(t, 4) * w.env_out(t, 4), mode='add')
     spr = _spark() if sprite is None else sprite
-    for i in range(trail, 0, -1):                       # a short comet tail along the path (reads in stills)
+    # a short comet tail along the path (reads in stills); it scales with the carrier's speed, so it is
+    # gone at both rest ends (inout_cubic) and the window edges match a carrier drawn at rest by the scenes
+    sp = K.clamp(abs(K.EASE['inout_cubic'](w.u(t + 0.5 / FPS)) - K.EASE['inout_cubic'](w.u(t - 0.5 / FPS)))
+                 * max(1, w.pre + w.post - 1) / 1.5)
+    for i in range(trail, 0, -1):
         pp = K.EASE['inout_cubic'](K.clamp(w.u(t - i * 0.25 / FPS)))
         xx, yy = _path_at(curve, pp)
-        K.draw(cv, spr, xx, yy, scale=scale * (1 - 0.06 * i), opacity=0.5 * (1 - i / (trail + 1)), mode='add')
+        if sp > 0.01:
+            K.draw(cv, spr, xx, yy, scale=scale * (1 - 0.06 * i), opacity=0.5 * sp * (1 - i / (trail + 1)),
+                   mode='add')
     K.draw(cv, spr, x, y, scale=scale, mode='add')
     return cv
 
@@ -875,8 +989,9 @@ def _tx_counter(t, w, A, B, word='sapna', x=K.CX, y=900.0, px=230, style='jw_key
     """Y1 zoom through a serif counter: the brand keyword sits on A; B lives inside the counter (bowl) of one
     of its letters (hole 0 = the biggest). The word zooms in_expo 1 -> s1 about that counter while it glides
     to frame centre; at c the counter covers the frame and B is full (screen-locked). s1=None picks the end
-    scale so the counter's inscribed circle covers the frame on the last pre frame. Draw the settled word on
-    A yourself before the window (ts = X.counter_word(word, px)[0])."""
+    scale so the counter's inscribed circle covers the frame on the last pre frame, where the word's rim and
+    the zoom smear have faded out (that frame is all B, like the cut). Draw the settled word on A yourself
+    before the window: X.counter_word(word, px)[0].draw(cv, x, y)."""
     if side_b(t, w.c):
         return B(t)
     ts, holes = _counter_word(word, px, style)
@@ -894,8 +1009,9 @@ def _tx_counter(t, w, A, B, word='sapna', x=K.CX, y=900.0, px=230, style='jw_key
     p0 = (x + (zp[0] - ax), y + (zp[1] - ay))
     px_, py_ = K.lerp(p0[0], K.CX, em), K.lerp(p0[1], K.CY, em)
     anchor = (zp[0] / ts.w, zp[1] / ts.h)
+    u1 = w.ua1(t)                        # 1 on the last pre frame: the word and the smear are gone there
     cv = A(t)
-    ts.draw(cv, px_, py_, anchor=anchor, scale=s, opacity=1.0 - K.ramp(u, 0.85, 1.0, 'inout_sine'))
+    ts.draw(cv, px_, py_, anchor=anchor, scale=s, opacity=1.0 - K.ramp(u1, 0.8, 1.0, 'inout_sine'))
     # counter mask: block coords -> canvas through the same similarity transform
     M = np.array([[s, 0, px_ - s * zp[0]], [0, s, py_ - s * zp[1]]], np.float64)
     bx0, by0, bx1, by1 = box
@@ -903,7 +1019,7 @@ def _tx_counter(t, w, A, B, word='sapna', x=K.CX, y=900.0, px=230, style='jw_key
     Ms = M @ np.array([[(bx1 - bx0) / ww, 0, bx0], [0, (by1 - by0) / hh, by0], [0, 0, 1]], np.float64)
     m = cv2.warpAffine(m4, np.float32(Ms), (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
     mix_mask(cv, B(t), m)
-    K.zoom_blur(cv, blur * K.EASE['in_cubic'](u) * (1 - K.ramp(u, 0.92, 1.0, 'linear')), center=(K.CX, K.CY))
+    K.zoom_blur(cv, blur * K.EASE['in_cubic'](u) * (1 - K.ramp(u1, 0.85, 1.0, 'inout_sine')), center=(K.CX, K.CY))
     return cv
 
 
@@ -916,7 +1032,11 @@ def _tx_slams(t, w, A, B, words=('HOOK.', 'STORY.', 'EDIT.'), beat=20, style='jw
               plates=None, seed=0):
     """Y3 kinetic slam cuts: one word per beat (beat frames), each slam (SLAM spring) hard-cuts the plate
     (A / B alternating, the last slam lands on B at c), with an exposure push per slam (post_kw). Set
-    pre = (len(words) - 1) * beat (Plan / tx do it from words= and beat=)."""
+    pre = (len(words) - 1) * beat (Plan / tx do it from words= and beat=).
+    The word lands ON its hit frame (fix round 2): the slam starts HALF before the hit with no opacity ramp, so
+    every sub-sample of the hit frame shows the word at ~s0 (no smear on that frame: render.py's samples blur
+    it), and from the next frame the smear only integrates time since the hit (it used to average sub-samples
+    from before t0, so the word read one frame after its cut and cue)."""
     n = len(words)
     slams = [w.c - (n - 1 - i) * beat / FPS for i in range(n)]
     i = max([j for j in range(n) if side_b(t, slams[j])], default=-1)
@@ -926,10 +1046,12 @@ def _tx_slams(t, w, A, B, words=('HOOK.', 'STORY.', 'EDIT.'), beat=20, style='jw
     S = B if i == n - 1 else pl[(n - 1 - i) % len(pl)]
     cv = S(t)
     g = _glyphs(words[i], style, px)
-    op = 1.0 - K.ramp(t, w.t1 - 4 / FPS, w.t1, 'in_cubic') if i == n - 1 else 1.0
+    op = w.env_out(t, 5) if i == n - 1 else 1.0          # the last word is gone ON the last window frame
     fr, dz = SPRINGS['SLAM']
-    g.slam(cv, t, K.CX, y, t0=slams[i], s0=1.6, dur=0.45, freq=fr, damping=dz, opacity=op,
-           smear=t - slams[i] < 0.45)
+    ts = slams[i] - HALF - 0.001                         # every t that side_b gives to this word has tt > 0
+    el = t - slams[i]                                    # < HALF on every sub-sample of the hit frame
+    g.slam(cv, t, K.CX, y, t0=ts, s0=1.6, dur=0.45, freq=fr, damping=dz, opacity=op, fade=0.0,
+           smear=HALF <= el < 0.45, mspan=min(2.2 / FPS, max(t - ts, 1e-4)))
     return cv
 
 
@@ -945,11 +1067,14 @@ def _seg_dist(X, Y, p0, p1):
     return np.hypot(X - (p0[0] + s * vx), Y - (p0[1] + s * vy))
 
 
-def _tx_underline(t, w, A, B, x0=170.0, y=1090.0, length=740, draw=10, rise=300.0, rot1=-30.0):
+def _tx_underline(t, w, A, B, x0=170.0, y=1090.0, length=740, draw=10, rise=300.0, rot1=-30.0, hand=0.4):
     """Y5 underline-stroke wipe (the house mark becomes the transition): J.underline draws on under the keyword
     (draw frames, out_cubic), then the stroke thickens (7 -> 2600 px, inout_expo), rotates -4 -> rot1 degrees
     and rises `rise` px; B is inside the capsule, its edge is an emissive amber/flame band. Full cover at c.
-    Window: pre = draw + wipe frames (default 10 + 14)."""
+    Hand-over (fix round 2): over the first `hand` of the wipe (0.4 = ~6 frames) the band fades in (inout_sine)
+    and widens from about the stroke's own glow (Gaussian 6 -> 14 px, glow 0.5x -> 1x) while the drawn stroke
+    fades out (over the first 60 % of it, before the capsule turns), so the thin stroke grows into the glowing bar instead of turning into it in one frame (it used
+    to jump 3.1x in ROI luma on k=-14). Window: pre = draw + wipe frames (default 10 + 14)."""
     if side_b(t, w.c):
         return B(t)
     cv = A(t)
@@ -973,19 +1098,25 @@ def _tx_underline(t, w, A, B, x0=170.0, y=1090.0, length=740, draw=10, rise=300.
     inside = np.clip((width / 2 - d) / 4.0 + 0.5, 0, 1)
     if u2 > 0.9:                                         # guarantee full cover by the cut
         inside = np.maximum(inside, K.ramp(u2, 0.9, 1.0, 'linear'))
-    band = np.exp(-((d - width / 2) / 14.0) ** 2) * (1.0 - 0.6 * e) * (1.0 - K.ramp(u2, 0.7, 0.95, 'inout_sine'))
+    ho = K.ramp(u2, 0.0, hand, 'inout_sine') if hand > 0 else 1.0     # 0 on the first wipe frame -> 1
+    sb, sg = K.lerp(6.0, 14.0, ho), K.lerp(0.5, 1.0, ho)                # the band starts near the stroke's glow
+    band = np.exp(-((d - width / 2) / sb) ** 2) * (1.0 - 0.6 * e) * (1.0 - K.ramp(u2, 0.7, 0.95, 'inout_sine'))
     mix_mask(cv, B(t), up(inside))
-    g = up(_gl(band.astype(np.float32), (2, 6, 15), (1.0, 0.6, 0.35)))
-    hot = np.float32(K.C['AMBER']) * 0.5 + np.float32(K.C['FLAME']) * 2.5
-    _add_rgb(cv, g, hot, 1.0)
-    if u2 < 0.25:                                        # the drawn stroke hands over to the growing band
-        ul.draw(cv, x0, y, u=1.0, opacity=1.0 - u2 / 0.25)
+    if ho > 0:
+        g = up(_gl((band * ho).astype(np.float32), (2 * sg, 6 * sg, 15 * sg), (1.0, 0.6, 0.35)))
+        hot = np.float32(K.C['AMBER']) * 0.5 + np.float32(K.C['FLAME']) * 2.5
+        _add_rgb(cv, g, hot, 1.0)
+    so = 1.0 - K.ramp(u2, 0.0, 0.6 * hand, 'inout_sine') if hand > 0 else 0.0
+    if so > 0:                                           # the drawn stroke hands over to the growing band (it stays
+        ul.draw(cv, x0, y, u=1.0, opacity=so)            # put, so it is gone before the capsule turns and rises)
     return cv
 
 
 def _tx_textwipe(t, w, A, B, word=None, x=K.CX, y=900.0, style='jw_caps', px=110, angle=-32.0, split=0.4):
     """Y2 light-sweep text-wipe: the sweep runs over the word for the first `split` of the window, then the
-    same band (K.light_leak sweep) crosses the frame and B is revealed behind it (sweep_mask)."""
+    same band (K.light_leak sweep) crosses the frame and B is revealed behind it (sweep_mask); the band is
+    gone and B complete on the last window frame. The word sits on A: draw it yourself before the window
+    (T.render(word, style, px=px).draw(cv, x, y))."""
     u = w.u(t)
     cv = A(t)
     if word:
@@ -993,7 +1124,7 @@ def _tx_textwipe(t, w, A, B, word=None, x=K.CX, y=900.0, style='jw_caps', px=110
         u1 = K.clamp(u / split)
         ts.draw(cv, x, y, sweep=u1 if 0 < u1 < 1 else None,
                 sweep_kw=dict(color='AMBER', width=0.09, angle=angle), opacity=1.0 - K.ramp(u, 0.7, 0.95, 'inout_sine'))
-    u2 = K.clamp((u - split * 0.5) / (1 - split * 0.5))
+    u2 = K.EASE['inout_sine'](K.clamp((u - split * 0.5) / (1 - split * 0.5)))      # the band lands softly
     if u2 > 0:
         mix_mask(cv, B(t), sweep_mask(u2, angle=angle, soft=0.08))
         K.light_leak(cv, t, colors=EMBERS(), strength=1.1, sweep=u2, angle=angle)
@@ -1060,11 +1191,12 @@ def _flare(w_=2600, h_=90):
 
 
 def _tx_flare(t, w, A, B, y=900.0, feather=120.0):
-    """L5 anamorphic flare wipe: a FLAME streak crosses x -300 -> 1380 (inout_cubic, intensity sin(pi u));
-    the scene swaps behind its saturated core (soft vertical mask following x(t))."""
+    """L5 anamorphic flare wipe: a FLAME streak crosses x -300 -> 1380 (inout_cubic, intensity
+    sin(pi inout_sine(u)): 0 with zero slope on both edge frames); the scene swaps behind its saturated core
+    (soft vertical mask following x(t))."""
     u = w.u(t)
     x = K.lerp(-300.0, 1380.0, K.EASE['inout_cubic'](u))
-    I = math.sin(math.pi * u)
+    I = math.sin(math.pi * K.EASE['inout_sine'](u))
     cv = A(t)
     X, Y = grid4()
     mix_mask(cv, B(t), up(np.clip((x - X) / feather + 0.5, 0, 1)))
@@ -1072,8 +1204,16 @@ def _tx_flare(t, w, A, B, y=900.0, feather=120.0):
     return cv
 
 
+def _look_val(o, key, default=0.0):
+    """A finish key of the look a transition's post_kw adds to (o['look'], default 'ember')."""
+    v = K.LOOKS.get(o.get('look', 'ember'), {}).get(key, default)
+    return float(default if v is None else v)
+
+
 def _l5_post(t, w, o):
-    return {'anamorphic': 0.9 * math.sin(math.pi * w.u(t))} if w.inside(t) else {}
+    """L5: the look's anamorphic streaks + 0.9 sin(pi u) (back to the look's own value on the edge frames)."""
+    return ({'anamorphic': _look_val(o, 'anamorphic') + 0.9 * math.sin(math.pi * K.EASE['inout_sine'](w.u(t)))}
+            if w.inside(t) else {})
 
 
 def _tx_beam(t, w, A, B, src=(K.CX, -900.0), a0=-40.0, a1=40.0, width=2.2, haze=0.45, rays=0.0):
@@ -1197,20 +1337,50 @@ def _timecode(sec):
     return '00:00:%02d:%02d' % ((fr // FPS) % 60, fr % FPS)
 
 
-def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
-    """D1 timeline playhead scrub (editor-native): pull back into a generic NLE (pull frames, out_expo), the
+def _d1_p(t, w, pull, ease):
+    """D1 pull-back amount p (0 = monitor full-frame, 1 = pulled back into the NLE): `ease` over the pull
+    frames (1 on the last pull frame), 1 while scrubbing, back to 0 over the post frames (0 on the last one)."""
+    t_pull = w.t0 + pull / FPS
+    if t < t_pull:
+        return K.EASE[ease](K.clamp((t - w.t0) / max(1e-6, (pull - 1) / FPS)))
+    if t < w.c:
+        return 1.0
+    return 1.0 - K.EASE[ease](w.ub(t))
+
+
+def _d1_samples(k, w, o=None):
+    """D1 sample policy: 9 on the fastest pull / push frames, 7 on the rest of them, 3 while scrubbing. Reads the
+    transition's pull= (default 10) from o (Tx.samples_at passes the options)."""
+    pull = int((o or {}).get('pull', 10))
+    if k >= 0:
+        j, n = k, w.post
+    elif k < -w.pre + pull:
+        j, n = k + w.pre, pull
+    else:
+        return 3
+    return 9 if abs(j - (n - 1) / 2.0) <= 1.5 else 7
+
+
+def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True, ease='inout_sine', smear=0.12):
+    """D1 timeline playhead scrub (editor-native): pull back into a generic NLE (pull frames, `ease`
+    inout_sine: starts from rest, at most 17 % of the move per frame; the bible's out_expo moved 54 % of the
+    scale in the first frame), the
     playhead scrubs across the V1 cut (inout_expo, monitor updates at 12 Hz like real scrubbing) and lands
-    on the B marker at c with the SNAP spring, then the monitor pushes back in (push frames, in_expo) so B is
-    full-frame on the last window frame. Monitor shows A at fast-forwarded source time, then B; the timecode
-    is the timeline time under the playhead. Default window pre = pull + 20 (scrub), post = push."""
+    on the B marker at c with the SNAP spring, then the monitor pushes back in (post frames, same ease) so B is
+    full-frame on the last window frame. The moving monitor gets a zoom smear (K.zoom_blur, `smear` x its
+    relative scale change per frame) on top of the 7-9 samples of the pull / push frames. Monitor shows A at
+    fast-forwarded source time, then B; the timecode is the timeline time under the playhead. The NLE chrome
+    (panels, lanes, playhead, timecode) sits UNDER the monitor, so the moving picture is never overdrawn; only
+    the monitor's own rim is on top. Default window pre = pull + 20 (scrub), post = 10 (the push runs over the
+    post frames: change it with post=; when you pass pull= also pass pre=pull + 20). The sample policy reads
+    pull= (9 / 7 samples on the pull frames it implies).  X.TX['D1'](t, c, A, B, pull=12, pre=32)"""
     t_pull = w.t0 + pull / FPS
     t_push0 = w.c
     mx, my, ms = _NLE_MON
+    p = _d1_p(t, w, pull, ease)
     if t < t_pull:
-        p = K.EASE['out_expo'](K.clamp((t - w.t0) / max(1e-6, (pull - 1) / FPS)))
         content = A(t)
     elif t < t_push0:
-        p = 1.0
         e = K.EASE['inout_expo'](K.clamp((t - t_pull) / max(1e-6, (t_push0 - t_pull))))
         if e < 0.5:
             src = t_pull + span_a * (e / 0.5)
@@ -1219,7 +1389,6 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
             src = w.c - span_b * (1 - (e - 0.5) / 0.5)
             content = B(math.floor(src * 12) / 12)
     else:
-        p = 1.0 - K.EASE['in_cubic'](K.clamp((t - w.c) / max(1e-6, (w.post - 1) / FPS)))
         content = B(t)
     s = K.lerp(1.0, ms, p)
     cyy = K.lerp(K.CY, my, p)
@@ -1231,19 +1400,16 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
     M = np.float32([[s, 0, cxx - s * K.CX], [0, s, cyy - s * K.CY]])
     mon = cv2.warpAffine(content, M, (W, H), flags=cv2.INTER_AREA if s < 0.7 else cv2.INTER_LINEAR,
                          borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+    if smear > 0 and (t < t_pull or t >= w.c):       # radial smear about the monitor's fixed point while it moves
+        ds = abs(K.lerp(1.0, ms, _d1_p(t + 0.5 / FPS, w, pull, ease)) - K.lerp(1.0, ms, _d1_p(t - 0.5 / FPS, w, pull, ease)))
+        fy = K.CY + (my - K.CY) / (1.0 - ms)          # content point that stays put as s and cyy move together
+        K.zoom_blur(mon, min(0.04, smear * ds / max(s, 1e-3)), center=(cxx, cyy + s * (fy - K.CY)))
     # the whole workspace fades in with the pull (the monitor itself is always opaque)
     a = np.float32(K.clamp(p * 1.4))
     cv *= a
     cv += tl * a
-    cv *= (1.0 - mon[..., 3:4])
-    cv += mon
-    # monitor rim (emissive FLAME hairline)
-    mw, mh = W * s, H * s
-    rim = np.zeros((H4, W4), np.float32)
-    cv2.rectangle(rim, (int((cxx - mw / 2) / 4), int((cyy - mh / 2) / 4)), (int((cxx + mw / 2) / 4), int((cyy + mh / 2) / 4)),
-                  1.0, 1, cv2.LINE_AA)
-    _emit(cv, _gl(rim, (0.8, 3.0), (0.9, 0.5)), K.C['FLAME'], 0.9 * float(a))
-    # playhead + timecode
+    # playhead + timecode: chrome, so it goes UNDER the monitor (fix round 2: while the monitor pulls back / pushes
+    # in it still covers the timeline area, and the playhead / timecode used to draw over its picture)
     x, y, w_, h_ = _NLE_TL
     xa, xb = x + 160.0, x + w_ - 140.0
     if t < t_pull:
@@ -1262,6 +1428,14 @@ def _tx_scrub(t, w, A, B, pull=10, push=10, span_a=1.0, span_b=1.0, label=True):
     K.draw(cv, _spark(5.0), ph, y + 6, opacity=float(a), mode='add')
     if label:
         T.render(_timecode(src_t), 'jw_mono', px=38).draw(cv, x + 26, y - 34, anchor=(0, 0.5), opacity=float(a))
+    cv *= (1.0 - mon[..., 3:4])
+    cv += mon
+    # monitor rim (emissive FLAME hairline) on top
+    mw, mh = W * s, H * s
+    rim = np.zeros((H4, W4), np.float32)
+    cv2.rectangle(rim, (int((cxx - mw / 2) / 4), int((cyy - mh / 2) / 4)), (int((cxx + mw / 2) / 4), int((cyy + mh / 2) / 4)),
+                  1.0, 1, cv2.LINE_AA)
+    _emit(cv, _gl(rim, (0.8, 3.0), (0.9, 0.5)), K.C['FLAME'], 0.9 * float(a))
     return cv
 
 
@@ -1355,16 +1529,17 @@ def _tx_render(t, w, A, B, raw=None, y_pill=1395.0, done_text='Render complete')
         before = A(t)
     after = B(t)
     X, Y = grid4()
-    edge_y = (1.0 - p) * H
+    edge_y = K.lerp(H + 24.0, -24.0, p)        # the soft edge starts / ends fully off-frame
+    fin = w.env_in(t, 4)                       # pill + edge line fade in from the first window frame ...
+    op = fin * w.env_out(t, 4)                 # ... and are gone ON the last one
     if p < 1.0:
         m = np.clip((Y - edge_y) / 24.0 + 0.5, 0, 1)
         cv = mix_mask(before, after, up(m))
         line = np.exp(-((Y - edge_y) / 2.0) ** 2).astype(np.float32)
-        _emit(cv, _gl(line, (0.6, 4.0), (1.0, 0.5)), K.C['FLAME'], 1.8)
+        _emit(cv, _gl(line, (0.6, 4.0), (1.0, 0.5)), K.C['FLAME'], 1.8 * fin)
     else:
         cv = after
     # progress pill
-    op = 1.0 - K.ramp(t, w.t1 - 4 / FPS, w.t1, 'in_cubic')
     if op > 0:
         body = _pill_body()
         pop = 1.0 + (0.05 * spring(t - w.c, 'POP') * (1 - K.ramp(t, w.c, w.t1, 'linear')) if t >= w.c else 0.0)
@@ -1420,11 +1595,11 @@ def _tx_graph(t, w, A, B, x=K.CX, y=760.0, pw=820, ph=560, draw=10, travel=18, l
         cv = _tx_whip(t, whip_w, A, B)
     else:
         cv = (B if side_b(t, c) else A)(t)
-    op = 1.0 - K.ramp(t, w.t1 - 4 / FPS, w.t1, 'in_cubic')
+    op = w.env_in(t, 4) * w.env_out(t, 5)            # the whole overlay: 0 on the first and last window frame
     if op <= 0:
         return cv
     panel = _graph_panel(pw, ph)
-    K.draw(cv, panel, x, y, opacity=op * K.ramp(t, w.t0, w.t0 + 4 / FPS, 'inout_sine'))
+    K.draw(cv, panel, x, y, opacity=op)
     gx0, gy0 = x - pw / 2 + 60, y + ph / 2 - 80          # graph origin (value 0 at the bottom)
     gw, gh = pw - 120, ph - 140
     v = np.linspace(0, 1, 120)
@@ -1463,27 +1638,28 @@ def _tx_graph(t, w, A, B, x=K.CX, y=760.0, pw=820, ph=560, draw=10, travel=18, l
 
 
 def _tx_undo(t, w, A, B, press=6, R=1.5, keys_y=1330.0):
-    """D9 undo / Ctrl+Z rewind: 'Ctrl' + 'Z' keycaps press (press frames), A rewinds R seconds accelerating
-    (tau = t_press - R * in_cubic(u)) desaturated 30 % with a slight zoom smear, hard stop at c with an L3
-    push (post_kw). B defaults to A resuming from the restore point (B=None)."""
-    t_press = w.t0
+    """D9 undo / Ctrl+Z rewind: 'Ctrl' + 'Z' keycaps fade in (3 frames), press on frames 2 and 5, then A rewinds
+    R seconds accelerating from where it is (tau = t_r - R * in_cubic(u), t_r = t0 + press frames) desaturated
+    30 % with a slight zoom smear, hard stop at c with an L3 push (post_kw). The keys fade out (inout_sine)
+    over frames press + 8 .. press + 14. B defaults to A resuming from the restore point t_r - R (B=None)."""
+    t_r = w.t0 + press / FPS
     if B is None:
-        restore = t_press - R
+        restore = t_r - R
         B = (lambda tt, _A=A, _o=w.c - restore: _A(tt - _o))
     if side_b(t, w.c):
         return B(t)
-    if t < t_press + press / FPS:
+    if t < t_r:
         cv = A(t)
     else:
-        u = K.clamp((t - t_press - press / FPS) / max(1e-6, w.c - t_press - press / FPS))
-        tau = t_press - R * K.EASE['in_cubic'](u)
+        u = K.clamp((t - t_r) / max(1e-6, w.c - t_r))
+        tau = t_r - R * K.EASE['in_cubic'](u)
         cv = A(tau)
         desat(cv, 0.3 * min(1.0, u * 4))
         K.zoom_blur(cv, 0.02 * min(1.0, u * 4))
-    op = 1.0 - K.ramp(t, w.t0 + (press + 8) / FPS, w.t0 + (press + 14) / FPS, 'in_cubic')
+    op = w.env_in(t, 3) * (1.0 - K.ramp(t, w.t0 + (press + 8) / FPS, w.t0 + (press + 14) / FPS, 'inout_sine'))
     if op > 0:
         for i, (lab, kx) in enumerate((('Ctrl', K.CX - 100), ('Z', K.CX + 95))):
-            tk = t_press + i * 3 / FPS
+            tk = w.t0 + (2 + i * 3) / FPS
             sel = K.ramp(t, tk, tk + 2 / FPS, 'out_cubic')
             sc = 1.0 - 0.08 * K.impulse(t, tk, 14)
             K.draw(cv, ui.chip(lab, sel=sel, look='ember', size=54, h=112, pad_x=40), kx, keys_y, scale=sc, opacity=op)
@@ -1612,7 +1788,7 @@ def _tx_shatter(t, w, A, B, impact=(540.0, 900.0), n=56, seed=3, gravity=900.0, 
     cv = B(t)
     tau = (t - w.c) * slowmo
     cam = K.Cam()
-    fade = 1.0 - K.ramp(t, w.t1 - 6 / FPS, w.t1, 'in_cubic')
+    fade = w.env_out(t, 6)                              # 0 on the last window frame
     for spr, ctr, sd in _shard_sprites(A, w.c, n, seed, impact):
         px = ctr[0] + sd['v'][0] * tau
         py = ctr[1] + sd['v'][1] * tau + 0.5 * gravity * tau * tau
@@ -1656,8 +1832,9 @@ def _tx_embers(t, w, A, B, direction='ltr', point=None, n=4000, seed=5, life=1.2
     """O6 ember disintegration (the most on-brand transition): an erosion front sweeps across A (inout_sine;
     'ltr' | 'rtl' | 'btt' | radial from point=(x, y)), its 20 px edge burns FLAME, and A's pixels lift off as
     ember particles (sampled from A's luminance) that rise at -46 px/s, wiggle and cool white-hot -> FLAME ->
-    RED -> EMBER -> dark over `life` s; B is revealed behind. c = erosion complete; the post frames let the
-    last embers rise over B."""
+    RED -> EMBER -> dark over `life` s (shortened per ember so that every ember is dark on the last window
+    frame: nothing vanishes at the window end); B is revealed behind. c = erosion complete; the post frames
+    let the last embers rise and cool over B."""
     X, Y = grid4()
     nz = fbm(seed + 40, 7.0)
 
@@ -1692,7 +1869,10 @@ def _tx_embers(t, w, A, B, direction='ltr', point=None, n=4000, seed=5, life=1.2
     pc = pc + noise * (nz[iy, ix] - 0.5) * 2
     ts_ = w.t0 + _inv_inout_sine((pc - dmin) / (dmax - dmin)) * (w.pre / FPS)
     tau = t - ts_
-    alive = (tau >= 0) & (tau <= life)
+    # every ember has cooled to dark ON the last window frame (w.last): the next frame is plain B, so an
+    # ember still glowing there would vanish in one frame. Late embers cool faster (life_i <= life).
+    life_i = np.minimum(life, w.last - ts_)
+    alive = (tau >= 0) & (tau < life_i)
     if alive.any():
         a = tau[alive]
         P = pts[alive]
@@ -1703,7 +1883,7 @@ def _tx_embers(t, w, A, B, direction='ltr', point=None, n=4000, seed=5, life=1.2
         drag = (1 - np.exp(-2.2 * a)) / 2.2
         x = P[:, 0] + vx * drag * 2.0 + 6 * np.sin(a * 7 + rnd[alive] * 40)
         y = P[:, 1] + vy * a - 30 * a * a
-        k = a / life
+        k = a / life_i[alive]
         col = _ember_ramp(k) * (0.25 + 1.1 * np.clip(lumv[alive] * 3, 0, 1))[:, None]
         buf = np.zeros((H2, W2, 3), np.float32)
         xi = (x / 2).astype(int)
@@ -1731,14 +1911,17 @@ def _s_c2(w, o):
 
 
 def _s_c3(w, o):
-    return [cue(w.c, 'reverse_swell', -3, duration=round(w.pre / FPS, 3)), cue(w.c, 'air_zoom', 0),
-            cue(w.c, 'impact_soft', -6)]
+    """C3 sound: the reverse swell sucks in over the push and ends 2 frames BEFORE the cut (a dip), the air
+    zoom passes through under it (-6 dB) and the soft impact lands on c at -1 dB, so the cut has an audible
+    transient (with the swell and the air zoom at full level on c the impact used to be masked)."""
+    return [cue(w.c - 2 / FPS, 'reverse_swell', -3, duration=round(max(0.1, (w.pre - 2) / FPS), 3)),
+            cue(w.c, 'air_zoom', -6), cue(w.c, 'impact_soft', -1)]
 
 
 _s = cue
 _reg('C1', 'whip pan (h/v)', 'camera', 4, 4, 'inout_expo', 7, _s_c1, _tx_whip, '', '8 (10-12 at 75 BPM)')
 _reg('C2', 'dolly-zoom (Vertigo)', 'camera', 40, 6, 'easy_ease', _samples_last(5, 12), _s_c2, _tx_dolly, 'premium',
-     '36-60', _push_post(0.7))
+     '36-60', _c2_post)
 _reg('C3', 'push-in through object (portal)', 'camera', 24, 8, 'in_expo -> out_expo', _samples_last(7, 10), _s_c3,
      _tx_portal, 'premium', '18-30 + 8 settle')
 _reg('C4', '3D fly-through (z-space tunnel)', 'camera', 24, 10, 'surge + exp brake', 7,
@@ -1758,8 +1941,8 @@ _reg('M1', 'shape match cut (circle)', 'match', 15, 15, 'in_cubic / out_expo', 5
      '0 (12-18 each side)', _push_post(0.5, 20.0))
 _reg('M2', 'colour match / hue bridge', 'match', 6, 6, 'sin^2 bridge', 3,
      lambda w, o: [cue(w.c, 'reverse_swell', -6, duration=0.3), cue(w.c, 'shimmer', -10)], _tx_hue, '', '8-16',
-     lambda t, w, o: {'exposure': (K.LOOKS.get(o.get('look', 'ember'), {}).get('exposure', 0.0) or 0.0)
-                      + 0.4 * math.sin(math.pi * w.u(t)) ** 2} if w.inside(t) else {})
+     lambda t, w, o: {'exposure': _look_val(o, 'exposure') + 0.4 * math.sin(math.pi * w.u(t)) ** 2}
+     if w.inside(t) else {})
 _reg('M3', 'motion match (momentum cut)', 'match', 9, 9, 'in_cubic -> out_cubic', _samples_last(7, 3),
      lambda w, o: [cue(w.c, 'whoosh_fast', -3), cue(w.t1, 'card_slide', -8)], _tx_motion_match, '', '0 (6-10 each side)')
 _reg('M4', 'frame-in-frame (rectangle) match', 'match', 21, 6, 'in_expo -> out_expo', _samples_last(7, 8),
@@ -1802,7 +1985,8 @@ _reg('L1', 'light-leak burn (ember)', 'light', 8, 8, 'built-in sin envelope', 3,
 _reg('L2', 'film burn', 'light', 14, 10, 'in_cubic -> in_expo', 3,
      lambda w, o: [cue(w.c, 'reverse_swell', -3, duration=round(w.pre / FPS, 3), alt='film_burn'),
                    cue(w.c, 'downlifter', -8)], _tx_burn, '', '18-30',
-     lambda t, w, o: {'grain': 0.035} if w.inside(t) else {})
+     lambda t, w, o: {'grain': K.lerp(_look_val(o, 'grain', 0.0), 0.035, min(w.env_in(t, 4), w.env_out(t, 4)))}
+     if w.inside(t) else {})
 _reg('L3', 'exposure-push flash frame', 'light', 0, 4, 'impulse decay 16', 3,
      lambda w, o: [cue(w.c, 'flash_hit', 0)], _tx_cut, 'glue', '2-4', _l3_post)
 _reg('L4', 'halation bloom-out wipe', 'light', 10, 10, 'sin^2', 3,
@@ -1819,7 +2003,7 @@ _reg('L7', 'light-beam (god-ray) sweep', 'light', 12, 12, 'inout_sine', 4,
 _reg('L8', 'aperture iris close/open', 'light', 9, 11, 'in_cubic / out_back', 3,
      lambda w, o: [cue(w.c - 1 / FPS, 'camera_shutter', 0), cue(w.c + 1 / FPS, 'ui_click', -8),
                    cue(w.t1, 'reverse_swell', -8, duration=0.3)], _tx_iris, '', '8 + 2 + 10')
-_reg('D1', 'timeline playhead scrub', 'editor', 30, 10, 'inout_expo + SNAP', lambda k, w: 3 if -20 <= k < 0 else 5,
+_reg('D1', 'timeline playhead scrub', 'editor', 30, 10, 'inout_sine pull + inout_expo scrub + SNAP', _d1_samples,
      lambda w, o: [cue(w.t0 + o.get('pull', 10) / FPS, 'slider_drag', -8, align='start',
                        duration=round(w.c - w.t0 - o.get('pull', 10) / FPS, 3), alt='scrub (granular mix re-read)'),
                    cue(w.t0 + (o.get('pull', 10) + 10) / FPS, 'ui_tick', -12), cue(w.c, 'ui_click', 0),
@@ -1846,7 +2030,7 @@ _reg('D8', 'speed-ramp (velocity) cut', 'editor', 7, 7, 'in_expo / out_expo time
      lambda w, o: [cue(w.c, 'whoosh_fast', -4), cue(w.c, 'riser', -8, duration=0.35), cue(w.c, 'impact_soft', 0)],
      _tx_velocity, '', '10-16')
 _reg('D9', 'undo / Ctrl+Z rewind', 'editor', 30, 2, 'in_cubic (reverse)', 5,
-     lambda w, o: [cue(w.t0, 'typing', -6, n=2, cps=8),
+     lambda w, o: [cue(w.t0 + 2 / FPS, 'typing', -6, n=2, cps=10),
                    cue(w.c, 'reverse_swell', -6, duration=round(w.pre / FPS - 0.2, 3), lp=3000, alt='tape_rewind'),
                    cue(w.c, 'impact_soft', 0)], _tx_undo, 'editor', '6 + 18-30 + 2', _push_post(0.6))
 _reg('O1', 'ink bleed (deep red ink)', 'organic', 36, 0, 'inout_sine radius', 3,
@@ -1911,6 +2095,11 @@ class Plan:
     def windows(self):
         return [(*x.window(c, **o), x.id) for x, c, o in self.steps]
 
+    def windows_of(self, *ids):
+        """[(t0, t1)] of the transitions with these ids (all when none are given), e.g. caption quiet zones:
+        SC.Captions(words, clear=plan.windows_of('L1', 'L4'))"""
+        return [(a, b) for a, b, i in self.windows() if not ids or i in ids]
+
     def segment(self, t):
         """Index of the scene that owns t outside the windows (HALF rule at each cut)."""
         return sum(1 for c in self.cuts if side_b(t, c))
@@ -1949,6 +2138,209 @@ class Plan:
         return sorted(out, key=lambda d: d['t'])
 
 
+# =============================================================================================== continuity QA
+def _u8(cv, t, look='ember', pk=None):
+    """Finished sRGB8 frame of a linear canvas (a copy is finished; pk = finish() overrides)."""
+    return K.to_srgb8(finish(np.array(cv, copy=True), t, look, **(pk or {})), t)
+
+
+def frame_step(a, b, thr=25):
+    """(mean |a - b| over all channels, fraction of px whose largest channel change > thr) of two sRGB8 frames."""
+    d = np.abs(a.astype(np.int16) - b.astype(np.int16))
+    return float(d.mean()), float((d.max(-1) > thr).mean())
+
+
+def edge_scenes(tid, A, B, c=1.0, **o):
+    """Wrap two test scenes so they draw what a transition expects the timeline to draw OUTSIDE its window
+    (Y1 / Y2: the word on A; M6: the carrier at rest on the path ends; M3: the object on the shared track)."""
+    x = TX[tid]
+    w = x.win(c, **o)
+    before = lambda t: fidx(t, c) < -w.pre
+    after = lambda t: fidx(t, c) >= w.post
+    if tid == 'Y1':
+        ts = counter_word(o.get('word', 'sapna'), o.get('px', 230), o.get('style', 'jw_key'))[0]
+
+        def A2(t, **kw):
+            cv = A(t, **kw)
+            if before(t):
+                ts.draw(cv, o.get('x', K.CX), o.get('y', 900.0))
+            return cv
+        return A2, B
+    if tid == 'Y2' and o.get('word'):
+        ts = T.render(o['word'], o.get('style', 'jw_caps'), px=o.get('px', 110))
+
+        def A2(t, **kw):
+            cv = A(t, **kw)
+            if before(t):
+                ts.draw(cv, o.get('x', K.CX), o.get('y', 900.0))
+            return cv
+        return A2, B
+    if tid == 'M6':
+        path = o.get('path', ((120, 1300), (460, 980), (760, 760), (980, 520)))
+        spr = o.get('sprite') or carrier()
+
+        def A2(t, **kw):
+            cv = A(t, **kw)
+            if before(t):
+                K.draw(cv, spr, path[0][0], path[0][1], scale=o.get('scale', 1.0), mode='add')
+            return cv
+
+        def B2(t, **kw):
+            cv = B(t, **kw)
+            if after(t):
+                K.draw(cv, spr, path[-1][0], path[-1][1], scale=o.get('scale', 1.0), mode='add')
+            return cv
+        return A2, B2
+    if tid == 'M3':
+        tr = o.get('move') or motion_track(c, w.pre, w.post)
+        return (lambda t, move=None, **kw: A(t, move=move if move is not None else tuple(tr(t)), **kw),
+                lambda t, move=None, **kw: B(t, move=move if move is not None else tuple(tr(t)), **kw))
+    return A, B
+
+
+# window edges that are designed cuts (not pops): the window opens ON a hit
+EDGE_CUTS = {'Y3': 'entry: the first slam hard-cuts the plate on the beat',
+             'O4': 'entry: the cracks flash in on the impact frame'}
+
+
+def edge_steps(tid, c=1.0, A=None, B=None, look='ember', post_kw=False, **o):
+    """Continuity at a transition's window edges, measured like the QA frame-step check (finished sRGB8
+    frames, one sample): entry = frame -pre-1 (plain A) -> -pre, exit = frame post-1 -> post (plain B), plus
+    the plain-scene steps of A and B at the same times as the baseline. Returns {'entry': (mean, frac>25),
+    'exit': ..., 'base_a': ..., 'base_b': ...}. post_kw=True applies each frame's own finish overrides
+    (exposure pushes ...); False isolates what the transition draws.  X.edge_steps('O6', pre=10, post=5)"""
+    x = TX[tid]
+    if A is None or B is None:
+        A, B = _demo_scenes()
+    A0, B0 = A, B
+    A, B = edge_scenes(tid, A, B, c, **o)
+    w = x.win(c, **o)
+
+    def fr(k, S=None):
+        t = c + k / FPS
+        if S is not None:                                   # plain scene (baseline): no transition overrides
+            return _u8(S(t), t, look)
+        pk = dict(x.post_kw(t, c, **o)) if post_kw else {}
+        return _u8(x(t, c, A, B, **o), t, look, pk)
+    xa = fr(w.post)
+    return {'entry': frame_step(fr(-w.pre - 1), fr(-w.pre)), 'exit': frame_step(fr(w.post - 1), xa),
+            'after': frame_step(xa, fr(w.post + 1)),          # the next step: pushes / splits keep decaying
+            'base_a': frame_step(fr(-w.pre - 1, A0), fr(-w.pre, A0)),
+            'base_b': frame_step(fr(w.post - 1, B0), fr(w.post, B0))}
+
+
+# designed snaps inside a window (not pops): the whole-window spike test skips these steps
+SNAPS = {'C8': 'the crash zoom punches in on the 2nd window frame (out_expo)',
+         'Y3': 'each slam hard-cuts the plate on its beat',
+         'L8': 'the iris re-opens on the first frame after the black frames',
+         'D3': 'the stepped render track leaving a hold',
+         'D1': 'the scrub monitor switching from A to B at the scrub midpoint'}
+
+
+def designed_steps(tid, w, **o):
+    """Steps k (frame k-1 -> k) of transition tid's window w that are designed snaps (see SNAPS).
+    X.designed_steps('Y3', X.TX['Y3'].win(1.0, beat=8), words=('A', 'B', 'C'), beat=8) -> {-16, -8, 0}"""
+    if tid == 'C8':
+        return {-w.pre + 1}
+    if tid == 'Y3':
+        n, b = len(o.get('words', ('HOOK.', 'STORY.', 'EDIT.'))), int(o.get('beat', 20))
+        return {-(n - 1 - i) * b for i in range(n)}
+    if tid == 'L8':
+        return {int(math.ceil(o.get('black', 2) / 2.0)) + 1}
+    if tid == 'D3':                                      # the track leaves a hold (0 s, 0.55 s, 1.15 s of 1.6 s)
+        span = _render_track(0.0).end
+        return {-w.pre + 1} | {int(math.floor(-w.pre + th / span * w.pre + d)) for th in (0.55, 1.15) for d in (0, 1)}
+    if tid == 'D1':                                      # the monitor's source switches A -> B mid-scrub
+        pull = int(o.get('pull', 10))
+        t_pull = w.t0 + pull / FPS
+        for k in range(-w.pre + pull, 0):
+            if K.EASE['inout_expo'](K.clamp((w.c + k / FPS - t_pull) / max(1e-6, w.c - t_pull))) >= 0.5:
+                return {k}
+    return set()
+
+
+def window_steps(tid, c=1.0, A=None, B=None, look='ember', **o):
+    """Every frame step across a window, measured like edge_steps (finished sRGB8 frames, one sample, no finish
+    overrides): {'steps': {k: (mean, frac>25)} for k = -pre-1 .. post+1 (step k = frame k-1 -> k), 'entry',
+    'exit', 'after', 'base_a', 'base_b' (as edge_steps), 'spikes': window_spikes(...)}.
+    X.window_steps('Y5')['spikes'] == []"""
+    x = TX[tid]
+    if A is None or B is None:
+        A, B = _demo_scenes()
+    A0, B0 = A, B
+    A, B = edge_scenes(tid, A, B, c, **o)
+    w = x.win(c, **o)
+    steps, prev = {}, None
+    for k in range(-w.pre - 2, w.post + 2):
+        t = c + k / FPS
+        cur = _u8(x(t, c, A, B, **o), t, look)
+        if prev is not None:
+            steps[k] = frame_step(prev, cur)
+        prev = cur
+
+    def plain(S, ka, kb):
+        return frame_step(_u8(S(c + ka / FPS), c + ka / FPS, look), _u8(S(c + kb / FPS), c + kb / FPS, look))
+    out = {'steps': steps, 'entry': steps[-w.pre], 'exit': steps[w.post], 'after': steps[w.post + 1],
+           'base_a': plain(A0, -w.pre - 1, -w.pre), 'base_b': plain(B0, w.post - 1, w.post)}
+    out['spikes'] = window_spikes(tid, out, w, **o)
+    return out
+
+
+def window_spikes(tid, ws, w, k_base=3.0, k_nb=2.0, frac_floor=0.02, **o):
+    """Pops INSIDE a window: steps k (frame k-1 -> k) more than k_base x the plain-scene step AND more than k_nb x
+    BOTH neighbouring steps, in mean or in share of px > 25 levels (share floor 2 %). Skips the cut (k = -1, 0),
+    EDGE_CUTS entries and designed_steps(). ws = window_steps(...) -> [(k, mean, frac)] (should be [])."""
+    st = ws['steps']
+    ks = sorted(st)
+    base = (max(ws['base_a'][0], ws['base_b'][0]), max(ws['base_a'][1], ws['base_b'][1]))
+    skip = {-1, 0} | designed_steps(tid, w, **o) | ({-w.pre} if tid in EDGE_CUTS else set())
+    out = []
+    for a, k, b in zip(ks, ks[1:], ks[2:]):
+        if k in skip:
+            continue
+        m, f = st[k]
+        if (m > k_base * base[0] and m > k_nb * st[a][0] and m > k_nb * st[b][0]) or \
+                (f > max(k_base * base[1], frac_floor) and f > k_nb * st[a][1] and f > k_nb * st[b][1]):
+            out.append((k, round(m, 2), round(f, 4)))
+    return out
+
+
+def y5_handover(c=1.0, A=None, B=None, look='ember', samples=5, ks=range(-17, -8), roi=(150, 1040, 930, 1140), **o):
+    """Y5 stroke -> band hand-over measured like render.py (K.render_frame, `samples`, finish, sRGB8): mean
+    Rec.709 luma of the underline ROI per frame k -> (ks, luma, steps). A one-frame pop shows as a step more
+    than 1.5x both of its neighbours (the QA criterion for k = -16 .. -10)."""
+    x = TX['Y5']
+    if A is None or B is None:
+        A, B = _demo_scenes()
+    x0, y0, x1, y1 = roi
+    lum = []
+    for k in ks:
+        t = c + k / FPS
+        cv = K.render_frame(lambda tt: x(tt, c, A, B, **o), t, samples=samples)
+        r = _u8(cv, t, look, x.post_kw(t, c, **o))[y0:y1, x0:x1].astype(np.float32)
+        lum.append(float((r[..., 0] * 0.2126 + r[..., 1] * 0.7152 + r[..., 2] * 0.0722).mean()))
+    return list(ks), lum, [b - a for a, b in zip(lum, lum[1:])]
+
+
+def _post_edge_jumps(tid, c=1.0, look='ember', **o):
+    """finish() overrides (other than the decaying push / rgb_split impulses) that differ between the last
+    window frame and the first frame after it (or the frame before the window and the first one)."""
+    x = TX[tid]
+    w = x.win(c, **o)
+    dflt = {'bloom_scale': 1.0, 'bloomout': 0.0}
+    out = []
+    for ka, kb in ((-w.pre - 1, -w.pre), (w.post - 1, w.post)):
+        pa, pb = x.post_kw(c + ka / FPS, c, **o), x.post_kw(c + kb / FPS, c, **o)
+        for key in set(pa) | set(pb):
+            if key in ('push', 'rgb_split'):
+                continue
+            va = pa.get(key, dflt.get(key, _look_val({'look': look}, key)))
+            vb = pb.get(key, dflt.get(key, _look_val({'look': look}, key)))
+            if abs(float(va) - float(vb)) > 0.02 * (1 + abs(float(vb))):
+                out.append('%s %s %.3f -> %.3f at k=%d' % (tid, key, va, vb, kb))
+    return out
+
+
 # =============================================================================================== selftest
 def _demo_scenes(clock=None):
     """Two cheap, clearly different scenes for tests: A = ember + 'A' plate, B = noir_ember + 'B' plate.
@@ -1970,9 +2362,18 @@ def _demo_scenes(clock=None):
     return mk('ember', 'A', 'FLAME'), mk('noir_ember', 'B', 'GOLD')
 
 
+def _edge_ok(st, base, k_mean=1.5, floor=0.003):
+    """A window-edge step is continuous when it is within 1.5x the plain-scene step (mean) and changes few
+    pixels by > 25 levels (<= max(3x the plain step's share, 0.3 %))."""
+    return st[0] <= k_mean * base[0] + 1e-6 and st[1] <= max(3.0 * base[1], floor)
+
+
 def selftest():
-    """Checks every implemented transition (window edges equal the plain scenes, the HALF rule, purity,
-    finite pixels, catalog SFX names, frame counts), measures cost and writes contact sheets."""
+    """Checks every implemented transition (frames outside the window are the plain scenes, CONTINUITY at
+    both window edges: the first / last window frame vs the plain neighbour within 1.5x the plain-scene step,
+    finish() overrides back to the look's values on the edge frames, the HALF rule, purity, finite pixels,
+    catalog SFX names, frame counts, C2's cut <= 2 % near-white, D1's pull <= 0.2 of its move per frame),
+    measures cost and writes contact sheets."""
     os.makedirs(K.SELFTEST, exist_ok=True)
     clock = []
     A, B = _demo_scenes(clock)
@@ -1981,6 +2382,8 @@ def selftest():
     th = (135, 240)
     rows = []
     timings = {}
+    edges = {}
+    wsteps = {}
     opts = {'Y1': dict(word='sapna'), 'Y2': dict(word='EDIT'), 'Y3': dict(words=('HOOK.', 'STORY.', 'EDIT.'), beat=8),
             'C2': dict(center=(540, 900)), 'M1': dict(a=(540, 1300, 200), b=(540, 1300, 200))}
     assert len(TX) == 43, len(TX)
@@ -1998,13 +2401,39 @@ def selftest():
         if tid == 'Y3':
             o = _fit_y3(o)
         w = x.win(c, **o)
-        # window edges: the frame before the window is plain A, the frame after it plain B (B: L3/D7 own post)
+        # outside the window: the frame before it is plain A, the frame after it plain B (B: L3/D7 own post)
         ta, tb = w.t0 - 1 / FPS, w.t1
         da = float(np.abs(x(ta, c, A, B, **o) - A(ta)).max())
         db = float(np.abs(x(tb, c, A, B, **o) - B(tb)).max())
         if da > 1e-5 or db > 1e-5:
-            fails.append('%s edge mismatch A %.3g B %.3g' % (tid, da, db))
-        ks = [-w.pre, -1, 0, w.post - 1] if w.pre > 0 else [0, 1, 2, w.post - 1]
+            fails.append('%s outside-window mismatch A %.3g B %.3g' % (tid, da, db))
+        # continuity: the first / last WINDOW frame against its plain neighbour (what the eye sees as a pop), and
+        # every step INSIDE the window (fix round 2: a pop one frame inside a window, e.g. Y5's band at k=-14,
+        # passed the edge check by construction)
+        es = window_steps(tid, c, A, B, **o)
+        ep = edge_steps(tid, c, A, B, post_kw=True, **o)
+        edges[tid] = (es, ep, w)
+        wsteps[tid] = (es, w)
+        if es['spikes']:
+            fails.append('%s pop inside the window (k, mean step, share px > 25): %s (plain %.2f / %.2f %%)'
+                         % (tid, es['spikes'], max(es['base_a'][0], es['base_b'][0]),
+                            100 * max(es['base_a'][1], es['base_b'][1])))
+        if w.pre > 0 and tid not in EDGE_CUTS and not _edge_ok(es['entry'], es['base_a']):
+            fails.append('%s entry pop: step %.2f / %.2f %% px > 25 (plain %.2f / %.2f %%)'
+                         % (tid, es['entry'][0], 100 * es['entry'][1], es['base_a'][0], 100 * es['base_a'][1]))
+        if not _edge_ok(es['exit'], es['base_b']):
+            fails.append('%s exit pop: step %.2f / %.2f %% px > 25 (plain %.2f / %.2f %%)'
+                         % (tid, es['exit'][0], 100 * es['exit'][1], es['base_b'][0], 100 * es['base_b'][1]))
+        # with the finish overrides: exposure pushes / the D7 split decay smoothly past the window, so the exit
+        # step is judged against the next (outside) step; the entry against the plain step
+        if ep['exit'][1] > max(2.0 * ep['after'][1], 0.005) or \
+                (w.pre > 0 and tid not in EDGE_CUTS and ep['entry'][1] > max(3.0 * es['base_a'][1], 0.005)):
+            fails.append('%s edge pop with finish overrides: entry %.2f %%, exit %.2f %% px > 25 (next step %.2f %%)'
+                         % (tid, 100 * ep['entry'][1], 100 * ep['exit'][1], 100 * ep['after'][1]))
+        fails += _post_edge_jumps(tid, c, **o)
+        # sheet columns: early in the window, the last A frame, the cut, mid-settle (the edge frames themselves
+        # equal the plain scenes now)
+        ks = [-w.pre + max(1, w.pre // 3), -1, 0, (w.post - 1) // 2] if w.pre > 0 else [0, 1, 2, w.post - 1]
         if tid in ('Y1', 'O1', 'O5'):
             ks = [-w.pre, -w.pre // 2, -2, -1]
         thumbs = []
@@ -2061,6 +2490,70 @@ def selftest():
     cov = leak_coverage()
     if cov < 0.70:
         fails.append('L1 leak coverage %.2f' % cov)
+    # the demo's short windows (C3 12+3, O6 10+5, L1 6+6) stay continuous too
+    for tid, o in (('C3', dict(pre=12, post=3, center=(540.0, 760.0), r0=200.0)), ('O6', dict(pre=10, post=5)),
+                   ('L1', dict(pre=6, post=6, seed=4)), ('O6', dict(pre=36, post=4))):
+        es = window_steps(tid, c, A, B, **o)
+        lab = '%s %d+%d' % (tid, o['pre'], o['post'])
+        edges[lab] = (es, edge_steps(tid, c, A, B, post_kw=True, **o), TX[tid].win(c, **o))
+        wsteps[lab] = (es, TX[tid].win(c, **o))
+        for side, base in (('entry', 'base_a'), ('exit', 'base_b')):
+            if not _edge_ok(es[side], es[base]):
+                fails.append('%s %s pop: step %.2f / %.2f %% px > 25' % (lab, side, es[side][0], 100 * es[side][1]))
+        if es['spikes']:
+            fails.append('%s pop inside the window: %s' % (lab, es['spikes']))
+    # Y5 hand-over (fix round 2), measured like render.py (5 samples): the stroke grows into the band with no
+    # one-frame step above 1.5x both of its neighbours on k = -16 .. -10 (it used to jump 3.1x in one frame)
+    y5k, y5l, y5s = y5_handover(c, A, B)
+    y5bad = [(y5k[i + 1], round(y5s[i], 1)) for i in range(1, len(y5s) - 1)
+             if -16 <= y5k[i + 1] <= -10 and abs(y5s[i]) > 2.0
+             and abs(y5s[i]) > 1.5 * max(abs(y5s[i - 1]), abs(y5s[i + 1]))]
+    if y5bad:
+        fails.append('Y5 hand-over pop (k, luma step): %s' % y5bad)
+    # Y3: every word is on screen ON its hit frame (3 samples), not one frame later
+    o3 = _fit_y3(dict(opts['Y3']))
+    w3 = TX['Y3'].win(c, **o3)
+    y3hit = []
+    for k in sorted(designed_steps('Y3', w3, **o3)):
+        tt = c + k / FPS
+        cvw = K.render_frame(lambda t_: TX['Y3'](t_, c, A, B, **o3), tt, samples=3)
+        plate = B if k == 0 else (B, A)[(-k // o3['beat']) % 2]
+        cvp = K.render_frame(plate, tt, samples=3)
+        y3hit.append(round(float(np.abs(cvw[700:1100, 140:940, :3] - cvp[700:1100, 140:940, :3]).mean()), 4))
+    if min(y3hit) < 0.05:
+        fails.append('Y3 word missing on its hit frame: mean |word - plate| %s' % y3hit)
+    # D1: the sample policy follows pull=, and the chrome (timecode) never draws over the moving monitor
+    o1 = dict(pull=16, pre=36)
+    w1b = TX['D1'].win(c, **o1)
+    s16 = [TX['D1'].samples_at(c + k / FPS, c, **o1) for k in range(-w1b.pre, -w1b.pre + 16)]
+    if min(s16) < 7 or TX['D1'].samples_at(c + (-w1b.pre + 16) / FPS, c, **o1) != 3:
+        fails.append('D1 pull=16 samples %s' % s16)
+    d1over = []
+    for k in (-27, -26, -25, 3, 4, 5):
+        tt = c + k / FPS
+        dl = np.abs(TX['D1'](tt, c, A, B) - TX['D1'](tt, c, A, B, label=False))[..., :3].max(-1)
+        p_ = _d1_p(tt, TX['D1'].win(c), 10, 'inout_sine')
+        s_, cy_ = K.lerp(1.0, _NLE_MON[2], p_), K.lerp(K.CY, _NLE_MON[1], p_)
+        cx_ = K.lerp(K.CX, _NLE_MON[0], p_)
+        y0_, y1_ = int(cy_ - H * s_ / 2) + 24, int(cy_ + H * s_ / 2) - 24
+        x0_, x1_ = max(0, int(cx_ - W * s_ / 2) + 24), min(W, int(cx_ + W * s_ / 2) - 24)
+        d1over.append(float(dl[max(0, y0_):min(H, y1_), x0_:x1_].max()))
+    if max(d1over) > 1e-4:
+        fails.append('D1 timecode drawn over the monitor: %s' % [round(v, 4) for v in d1over])
+    # C2: the swap hides in a warm burn, never a white wash (<= 2 % of px with every channel > 200 at the cut)
+    nw = []
+    for k in (0, 1):
+        tt = c + k / FPS
+        u8 = _u8(TX['C2'](tt, c, A, B, **opts['C2']), tt, 'ember', TX['C2'].post_kw(tt, c, **opts['C2']))
+        nw.append(float((u8.min(-1) > 200).mean()))
+    if max(nw) > 0.02:
+        fails.append('C2 cut near-white %.1f %%' % (100 * max(nw)))
+    # D1: the pull-back never moves more than 20 % of its travel in one frame (the bible's out_expo moved 54 %)
+    w1 = TX['D1'].win(c)
+    pv = [_d1_p(c + k / FPS, w1, 10, 'inout_sine') for k in range(-w1.pre, w1.post)]
+    dmax = max(abs(b_ - a_) for a_, b_ in zip(pv, pv[1:]))
+    if dmax > 0.2:
+        fails.append('D1 pull-back moves %.2f of its travel in one frame' % dmax)
     # contact sheets (two pages)
     import PIL.Image as Im
     import PIL.ImageDraw as Dr
@@ -2088,6 +2581,26 @@ def selftest():
     print('median ms per transition frame, scenes excluded:',
           {k: round(float(np.median(v)), 0) for k, v in timings.items()})
     print('L1 leak coverage at peak: %.2f;  cues rendered: %d distinct' % (cov, len(seen)))
+    print('C2 near-white px at the cut (k=0, 1): %.2f %%, %.2f %%;  D1 largest pull step per frame: %.3f of the move'
+          % (100 * nw[0], 100 * nw[1], dmax))
+    print('window-edge continuity (mean step / % px > 25; drawn | with finish overrides; plain-scene step in [ ]):')
+    for lab, (es, ep, w) in edges.items():
+        print('  %-9s %2d+%-2d entry %5.2f/%5.2f%% | %5.2f/%5.2f%% [%4.2f/%4.2f%%]   exit %5.2f/%5.2f%% | %5.2f/%5.2f%% '
+              '[%4.2f/%4.2f%%]%s' % (lab, w.pre, w.post, es['entry'][0], 100 * es['entry'][1], ep['entry'][0],
+                                    100 * ep['entry'][1], es['base_a'][0], 100 * es['base_a'][1], es['exit'][0],
+                                    100 * es['exit'][1], ep['exit'][0], 100 * ep['exit'][1], es['base_b'][0],
+                                    100 * es['base_b'][1], ('   (' + EDGE_CUTS[lab] + ')') if lab in EDGE_CUTS else ''))
+    print('Y5 hand-over, ROI mean luma at k=%d..%d (5 samples): %s' % (y5k[0], y5k[-1], [round(v, 1) for v in y5l]))
+    print('Y3 word on its hit frames (mean |word - plate| in the word box, 3 samples): %s' % y3hit)
+    print('D1 pull=16 samples on the pull frames: %s; timecode diff inside the moving monitor: %.1e'
+          % (s16, max(d1over)))
+    lp = os.path.join(K.SELFTEST, 'jawad_tx_window_steps.log')
+    with open(lp, 'w') as fh:
+        for lab, (es, w) in wsteps.items():
+            fh.write('%s %d+%d %s  spikes=%s\n' % (lab.replace(' ', '_'), w.pre, w.post, ' '.join(
+                '%d:%.1f/%.1f' % (k, m, 100 * f_) for k, (m, f_) in sorted(es['steps'].items())), es['spikes']))
+    print('whole-window steps (every frame of every window; spikes = steps > 3x plain and > 2x both neighbours, '
+          'cut / designed snaps skipped):', sum(len(es['spikes']) for es, _ in wsteps.values()), 'spikes ->', lp)
     for p in paths:
         print('->', p)
     if fails:

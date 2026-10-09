@@ -1,7 +1,8 @@
 """demo_foundation.py - 6 s demo of the shared motion foundations on Jawad's look 'ember' (not one of the five
-reels): three transitions from jawad_tx (C3 portal push-in, O6 ember disintegration, L1 ember leak burn into the
-card), a snake-caption line with a serif keyword (snake_captions), and the @jawad_mp4 end card with the
-seamless loop back to frame 0 (endcard). 120 BPM grid (a beat = 15 frames): cuts at 0.5, 1.0 and 1.5 s.
+reels): three transitions from jawad_tx (C3 portal push-in through the hook's own flame ring (rim=False), O6
+ember disintegration, L1 ember leak burn into the card), a snake-caption line with a serif keyword
+(snake_captions; clear=PLAN keeps it off screen while the L1 leak washes the frame), and the @jawad_mp4 end card
+with the seamless loop back to frame 0 (endcard). 120 BPM grid (a beat = 15 frames): cuts at 0.5, 1.0, 1.5 s.
 
     python3 demo_foundation.py --stills                 # full-quality stills -> <WS>/foundation/stills/
     python3 demo_foundation.py --sheet 12               # contact sheet -> <WS>/foundation/sheet.jpg
@@ -26,7 +27,7 @@ import endcard as E
 DUR, LOOK, BPM = 6.0, 'ember', 120
 G = X.Grid(BPM)
 C1, C2, C3 = G.at(0, 1), G.at(0, 2), G.at(0, 3)                  # 0.5, 1.0, 1.5 s (on whole frames)
-PLAN = X.Plan([('C3', C1, dict(pre=12, post=3, center=(540.0, 760.0), r0=200.0)),
+PLAN = X.Plan([('C3', C1, dict(pre=12, post=3, center=(540.0, 760.0), r0=192.0, rim=False)),   # A draws the ring
                ('O6', C2, dict(pre=10, post=5, direction='ltr', n=3000)),
                ('L1', C3, dict(pre=6, post=6, seed=4))])
 CARD_T0 = DUR - 4.5
@@ -48,7 +49,7 @@ def assets():
     clips = K.glow(s.img, K.C['FLAME'], sigmas=(6, 18), strength=0.6)
     return dict(ring=ring, clips=clips, sparks=J.embers(110, seed=11), sparks2=J.embers(90, seed=12),
                 rec=T.render('● REC   00:00:00:12', 'jw_mono', px=36),
-                cap=SC.Captions(WORDS, band='lower'),
+                cap=SC.Captions(WORDS, band='lower', clear=PLAN),      # off screen during the L1 leak
                 card=E.EndCard('COMMENT MEIN', 'batao', monogram='JD', dur=4.5))
 
 
@@ -172,6 +173,18 @@ def selftest():
     a, b = draw(1.234), draw(1.234)
     if not np.array_equal(a, b):
         fails.append('draw is not pure')
+    # window-edge continuity in the demo itself (1 sample): the first / last frame of each transition window
+    # against its plain neighbour, within 1.5x the step between the two plain frames before / after it
+    for (a, b, tid) in PLAN.windows():
+        k0, k1 = int(round(a * K.FPS)), int(round(b * K.FPS))
+        f = {k: _render(k / K.FPS, 1) for k in (k0 - 2, k0 - 1, k0, k1 - 1, k1, k1 + 1)}
+        ent, ext = X.frame_step(f[k0 - 1], f[k0]), X.frame_step(f[k1 - 1], f[k1])
+        b_in, b_out = X.frame_step(f[k0 - 2], f[k0 - 1]), X.frame_step(f[k1], f[k1 + 1])
+        print('%s window frames %d-%d: entry %.2f / %.2f %%  (plain %.2f / %.2f %%)   exit %.2f / %.2f %%  (plain %.2f / %.2f %%)'
+              % (tid, k0, k1 - 1, ent[0], 100 * ent[1], b_in[0], 100 * b_in[1], ext[0], 100 * ext[1], b_out[0],
+                 100 * b_out[1]))
+        if not X._edge_ok(ent, b_in, floor=0.005) or not X._edge_ok(ext, b_out, floor=0.005):
+            fails.append('%s window edge pop in the demo' % tid)
     sr = E.seam_report(lambda t: _render(t, 1), DUR)
     if not sr['ok']:
         fails.append('loop seam %s' % sr)

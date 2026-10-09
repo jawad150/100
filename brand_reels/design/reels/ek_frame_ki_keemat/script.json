@@ -1,0 +1,2723 @@
+{
+ "reel": "ek_frame_ki_keemat",
+ "concept": "C08 Ek Frame ki Keemat",
+ "slot": 3,
+ "look": "ember",
+ "version": "script v2 2026-10-08 (viral gate r1 fixes)",
+ "author": "hinglish-scriptwriter",
+ "status": "v2 after the viral gate r1 (verdict FIX): fix 4 applied (V5 *layer...*), the script half of fix 5 applied pending the lead (C7: V10 usko; T3 on HOLD); no TTS rendered yet (timings ESTIMATED: syllable model calibrated on the Vlad casting take)",
+ "sources": [
+  "brand_reels/design/SLATE.md 0, 2, 3.3, 4, 5",
+  "brand_reels/design/reels/ek_frame_ki_keemat/BRIEF.md 2, 5, 6, 8, 9, 15",
+  "brand_reels/design/panel_viral.md 4.5 (hook lab)",
+  ".claude/skills/jawad-brand-reels/SKILL.md",
+  "workspace/brand_reels/prior/captions_roman_urdu.srt (house spelling)",
+  "pipeline/jawad_reels/vo_config.json, vo_chain.py",
+  "workspace/brand_reels/tts/hf_dl/vlad/vlad_v4_r1_DEV.mp3 (rate calibration)"
+ ],
+ "bpm": 100,
+ "fps": 30,
+ "dur_s": 33.6,
+ "frames": 1008,
+ "grid": {
+  "f_per_beat": 18,
+  "f_per_bar": 72,
+  "f_per_8th": 9,
+  "beat_s": 0.6,
+  "bar_s": 2.4,
+  "bars": 14,
+  "splice_frame": 90,
+  "payoff_s": 26.4,
+  "end_card_s": 29.4,
+  "notation": "[bar.beat] from frame 0, + n f"
+ },
+ "voice": {
+  "provider": "Higgsfield (voice generation only)",
+  "model": "elevenlabs_v4",
+  "voice": "Vlad",
+  "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+  "voice_type": "preset",
+  "request": "prompt and dialogue[0].text = takes[].dev exactly (vo_config.json request_shape)",
+  "settings": "stability / similarity_boost omitted (provider default); stability 0.35 if a take is flat, 0.55 if it is unstable",
+  "text_rules": "Devanagari only: nuktas where Urdu-natural (फ़ ज़ क़), English loan words in Devanagari, numbers as words, \",\" short / \"...\" held / \"।\" end; no digits, Latin, brackets, audio tags or emoji (asserted by the builder)",
+  "unicode": "NFC (combining nukta U+093C, as in the casting texts.py that Vlad read cleanly; vo_chain.norm_dev strips it for alignment)",
+  "post": "vo_chain.py process per take, --speed 1.08 baseline (vo_config 1.06-1.10), --realign; then place lines / words at the anchors"
+ },
+ "narrator": "\"aap\" (the viewer, then the friend the reel is sent to) + third person (\"banane wala\"); never \"main / meri / mera\"; JD is not voiced in this reel: the \"Is frame mein JD chhupa hai. Mila?\" prompt is post copy (pinned first comment + IG caption line 2, gate r1 fix 3) and the 28.2 s glint of the hidden JD is picture only",
+ "rate_model": {
+  "source": "workspace/brand_reels/tts/hf_dl/vlad/vlad_v4_r1_DEV.mp3 (Vlad, elevenlabs_v4, texts.py DEV), measured for this script with vo_chain.voiced_runs + faster-whisper small int8 (language hi) word times",
+  "measured": {
+   "duration_s": 22.6,
+   "words": 53,
+   "syllables": 82,
+   "voiced_s": 18.64,
+   "voiced_runs": 11,
+   "articulation_wps": 2.84,
+   "articulation_sps": 4.4,
+   "whole_take_wps": 2.35,
+   "phrase_sps_range": [
+    3.17,
+    5.58
+   ],
+   "pauses_s": {
+    "comma": "0.20-0.52",
+    "sentence end": "0.54-0.71",
+    "...": "0.50"
+   }
+  },
+  "model": {
+   "sps_mid": 4.6,
+   "sps_sentence_final_word": 4.0,
+   "sps_before_comma": 4.3,
+   "one_word_sentence_min_s": 0.45,
+   "pauses_after_vo_chain_caps_s": {
+    ",": 0.35,
+    "।": 0.45,
+    "...": 0.55
+   },
+   "v9_pace": 1.06,
+   "speed_baseline": 1.08
+  },
+  "validation": "on the casting text the model gives 18.23 s of voiced speech vs 18.64 s measured (-2.2 %)",
+  "lead_model": "words / 2.7 w/s raw, then / 1.06-1.10 (reported per line as est_s.lead_model_*)",
+  "why_syllables": "both models agree on the whole reel (A: 22.50 s vs 22.96 s raw speech) but not per line: the brief's V9 \"Iski keemat... banane wala jaanta hai\" has 2.0 syllables per word (word model 2.06 s at 1.08, syllable model 3.17 s with its hold), V2 \"Lekin is ek frame mein\" has 1.2",
+  "uncertainty": "+-10 % per line until the takes exist; every tight line has a zero-credit fit ladder"
+ },
+ "hooks": [
+  {
+   "rank": 1,
+   "id": "A",
+   "status": "LOCKED (SLATE 3.3 hook A): public version",
+   "line": "V1A",
+   "mechanism": "specificity / number + curiosity gap: the frame's own title says how long you looked at it",
+   "on_screen": "AAP NE ISE / *0.03 sec* / DEKHA (settled on f0; chip 00:00:00:01)",
+   "spoken": "Aap ne ise palak jhapakte dekha.",
+   "dev": "आप ने इसे पलक झपकते देखा।",
+   "words": 6,
+   "first_word_s": 0.1,
+   "est_end_s": 2.37,
+   "hard_end_s": 2.7,
+   "muted": "reads alone: the lockup carries the number; the pause click (0.3 s) and the glowing seams (0.6 s) show the promise"
+  },
+  {
+   "rank": 2,
+   "id": "B",
+   "status": "LOCKED (SLATE 3.3 hook B): Trial Reel, frames 0-89 only",
+   "line": "V1B",
+   "mechanism": "result-first number spectacle",
+   "on_screen": "*360* / LAYERS · 1 SECOND (corridor mid-surge)",
+   "spoken": "Ek second. Teen sau saath layers.",
+   "dev": "एक सेकंड। तीन सौ साठ लेयर्स।",
+   "words": 6,
+   "first_word_s": 0.1,
+   "est_end_s": 2.25,
+   "hard_end_s": 2.7,
+   "muted": "reads alone: 360 + LAYERS · 1 SECOND",
+   "differs": "only before the splice f90 (3.0 s); V2 onward is shared"
+  }
+ ],
+ "hooks_considered": [
+  {
+   "rank": 3,
+   "mechanism": "curiosity gap (viral hook lab C)",
+   "spoken": "Ek frame ke andar kya hota hai?",
+   "on_screen": "EK FRAME KE *andar*",
+   "words": 7,
+   "why_not": "no number, weaker specificity (viral 6/8); needs a new lockup"
+  },
+  {
+   "rank": 4,
+   "mechanism": "contrarian (viral hook lab D)",
+   "spoken": "Sab kehte hain editing aasaan hai.",
+   "on_screen": "EDITING *aasaan* HAI?",
+   "words": 6,
+   "why_not": "reads as a complaint (viral 5/8); the payoff already answers it"
+  },
+  {
+   "rank": 5,
+   "mechanism": "relatable callout (new)",
+   "spoken": "\"Editing mein kya hai?\" Yeh dekho.",
+   "on_screen": "EDITING MEIN *kya* HAI?",
+   "words": 6,
+   "why_not": "spends the send line in the hook and has no number; keep for a later re-cut aimed at non-editors"
+  }
+ ],
+ "loop": {
+  "last_line": "V10 \"...usko bhejo.\" (est end 32.82 s)",
+  "first_line": "V1A \"Aap ne ise palak jhapakte dekha.\" (0.10 s)",
+  "logic": "the friend who receives the send is the \"aap\" of the hook: \"send it to him\" -> \"you saw this in the blink of an eye\"",
+  "seam": "VO-free 0.78 s before 33.6 while E.loop_world brings back the playing frame, the lockup and the chip; the card swell ends on 33.6 into the f0 impact_soft (gate r1 fix 1: no HERO hit under \"Aap\" at 0.10)"
+ },
+ "story": [
+  {
+   "part": "hook",
+   "t": "0-3.0",
+   "lines": [
+    "V1A",
+    "V1B"
+   ],
+   "job": "stop the thumb: you gave this frame 0.03 s"
+  },
+  {
+   "part": "turn",
+   "t": "3.0-8.4",
+   "lines": [
+    "V2",
+    "V3"
+   ],
+   "job": "the stakes in one image: one frame = 12 real layers, named as the camera flies through"
+  },
+  {
+   "part": "escalation",
+   "t": "9.9-24.0",
+   "lines": [
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8"
+   ],
+   "job": "every word, every glow; re-hook 12.0: the invisible layer that makes it alive; 30 frames a second; 360 layers; 3 tracks of sound"
+  },
+  {
+   "part": "payoff",
+   "t": "26.4-29.5",
+   "lines": [
+    "V9"
+   ],
+   "job": "on the drop (79 %): \"Keemat... banane wala jaanta hai.\" with the lockup EK FRAME KI keemat"
+  },
+  {
+   "part": "cta + loop",
+   "t": "29.4-33.6",
+   "lines": [
+    "V10"
+   ],
+   "job": "send it to the \"editing mein kya hai\" person; loops into the hook"
+  }
+ ],
+ "lines": [
+  {
+   "id": "V1A",
+   "versions": "A",
+   "part": "hook",
+   "take": "T4",
+   "beat": "[0.0] +3 f f3",
+   "start_target": 0.1,
+   "end_target": 2.37,
+   "hard_end": 2.7,
+   "est_start": 0.1,
+   "est_end": 2.37,
+   "est_fits": true,
+   "roman": "Aap ne ise palak jhapakte dekha.",
+   "roman_spoken": "Aap ne ise palak jhapakte dekha.",
+   "roman_marked": "Aap ne ise *palak jhapakte dekha.",
+   "dev": "आप ने इसे पलक झपकते देखा।",
+   "tts": "आप ने इसे पलक झपकते देखा।",
+   "tokens": [
+    "Aap",
+    "ne",
+    "ise",
+    "palak",
+    "jhapakte",
+    "dekha."
+   ],
+   "dev_tokens": [
+    "आप",
+    "ने",
+    "इसे",
+    "पलक",
+    "झपकते",
+    "देखा।"
+   ],
+   "keyword": "0.03 sec",
+   "caption_keyword": [
+    "palak"
+   ],
+   "keyword_event": "lockup `AAP NE ISE / 0.03 sec / DEKHA` settled on f0 (frame layers 08-11)",
+   "keyword_note": "the serif word on screen is the designed `0.03 sec` (H-A1b); the voice says it as \"palak jhapakte\"; *palak is flagged for the token table only (captions hidden 0-3.0)",
+   "words": 6,
+   "syllables": 11,
+   "est_s": {
+    "raw_take_s": 2.46,
+    "post_1p06": 2.32,
+    "post_1p08": 2.27,
+    "post_1p10": 2.23,
+    "lead_model_raw_at_2p7wps": 2.22,
+    "lead_model_post_1p06": 2.1,
+    "lead_model_post_1p10": 2.02,
+    "placed_span_post_1p08": 2.27
+   },
+   "wps": 2.64,
+   "sps": 4.84,
+   "anchors": [
+    {
+     "word": "Aap",
+     "i": 0,
+     "t": 0.1,
+     "grid": "[0.0] +3 f f3",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "VO onset <= 0.15 s (QA); ends <= 2.37 (hard 2.70)",
+     "est": 0.1,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "intimate, a small smile in the voice, as if pointing at the frame; level, falling end on \"dekha\"",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.7
+   },
+   "keyword_at_s": 0.0,
+   "keyword_tokens_at_s": [
+    [
+     "palak",
+     0.91
+    ]
+   ]
+  },
+  {
+   "id": "V1B",
+   "versions": "B",
+   "part": "hook",
+   "take": "T5",
+   "beat": "[0.0] +3 f f3",
+   "start_target": 0.1,
+   "end_target": 2.61,
+   "hard_end": 2.7,
+   "est_start": 0.1,
+   "est_end": 2.25,
+   "est_fits": true,
+   "roman": "Ek second. Teen sau saath layers.",
+   "roman_spoken": "Ek second. Teen sau saath layers.",
+   "roman_marked": "Ek second. Teen sau saath layers.",
+   "dev": "एक सेकंड। तीन सौ साठ लेयर्स।",
+   "tts": "एक सेकंड। तीन सौ साठ लेयर्स।",
+   "tokens": [
+    "Ek",
+    "second.",
+    "Teen",
+    "sau",
+    "saath",
+    "layers."
+   ],
+   "dev_tokens": [
+    "एक",
+    "सेकंड।",
+    "तीन",
+    "सौ",
+    "साठ",
+    "लेयर्स।"
+   ],
+   "keyword": "360",
+   "caption_keyword": [],
+   "keyword_event": "hook B text `360 / LAYERS · 1 SECOND` settled on f0",
+   "keyword_note": "the serif word is the designed `360` (jw_key 240, H-B1a); it spans 3 spoken tokens, so no caption token is flagged (captions hidden 0-3.0)",
+   "words": 6,
+   "syllables": 8,
+   "est_s": {
+    "raw_take_s": 2.32,
+    "post_1p06": 2.19,
+    "post_1p08": 2.15,
+    "post_1p10": 2.11,
+    "lead_model_raw_at_2p7wps": 2.22,
+    "lead_model_post_1p06": 2.1,
+    "lead_model_post_1p10": 2.02,
+    "placed_span_post_1p08": 2.15
+   },
+   "wps": 2.79,
+   "sps": 3.72,
+   "anchors": [
+    {
+     "word": "Ek",
+     "i": 0,
+     "t": 0.1,
+     "grid": "[0.0] +3 f f3",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "VO onset <= 0.15 s (QA); ends <= 2.61 (hard 2.70)",
+     "est": 0.1,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "matter-of-fact, the number almost under the breath; \"saath\" with a clear aspirated retroflex (60, never \"saat\" = 7)",
+   "issues": [],
+   "pause_after_s": {
+    "B": 0.82
+   },
+   "keyword_at_s": 0.0,
+   "keyword_tokens_at_s": []
+  },
+  {
+   "id": "V2",
+   "versions": "AB",
+   "part": "turn",
+   "take": "T2",
+   "beat": "[1.1] +2 f f92",
+   "start_target": 3.07,
+   "end_target": 5.91,
+   "hard_end": 5.95,
+   "est_start": 3.07,
+   "est_end": 5.84,
+   "est_fits": true,
+   "roman": "Lekin is ek frame mein... 12 layers hain.",
+   "roman_spoken": "Lekin is ek frame mein... baarah layers hain.",
+   "roman_marked": "Lekin is ek frame mein... *12 layers hain.",
+   "dev": "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं।",
+   "tts": "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं।",
+   "tokens": [
+    "Lekin",
+    "is",
+    "ek",
+    "frame",
+    "mein...",
+    "12",
+    "layers",
+    "hain."
+   ],
+   "dev_tokens": [
+    "लेकिन",
+    "इस",
+    "एक",
+    "फ़्रेम",
+    "में...",
+    "बारह",
+    "लेयर्स",
+    "हैं।"
+   ],
+   "keyword": "12",
+   "caption_keyword": [
+    "12"
+   ],
+   "keyword_event": "counter `12` (jw_key 230) settles as the side-on stack lands (L3 push 0.3)",
+   "keyword_note": "designed counter `12` (C-1a) lands with \"baarah\"; captions hidden 3.0-12.0",
+   "words": 8,
+   "syllables": 11,
+   "est_s": {
+    "raw_take_s": 3.01,
+    "post_1p06": 2.84,
+    "post_1p08": 2.78,
+    "post_1p10": 2.73,
+    "lead_model_raw_at_2p7wps": 2.96,
+    "lead_model_post_1p06": 2.8,
+    "lead_model_post_1p10": 2.69,
+    "placed_span_post_1p08": 2.77
+   },
+   "wps": 2.89,
+   "sps": 3.98,
+   "anchors": [
+    {
+     "word": "Lekin",
+     "i": 0,
+     "t": 3.07,
+     "grid": "[1.1] +2 f f92",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": ">= 3.03: the A/B splice is at 3.000, nothing of V2 may start before it",
+     "est": 3.07,
+     "ok": true
+    },
+    {
+     "word": "baarah",
+     "i": 5,
+     "t": 4.8,
+     "grid": "[2.0] f144",
+     "tol": 0.1,
+     "mode": "place",
+     "rule": "\"baarah\" on the side-on landing [2.0]; split at the \"...\" pause if the take pause misses it",
+     "est": 4.8,
+     "ok": true
+    }
+   ],
+   "placement": "by the anchor words (split at the \"...\" pause only if the take misses an anchor by more than its tolerance)",
+   "emotion": "the turn: quiet, stress on \"ek\", a held breath on \"mein...\", then plain and sure on \"baarah layers hain\"",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.16,
+    "B": 0.16
+   },
+   "keyword_at_s": 4.8,
+   "keyword_tokens_at_s": [
+    [
+     "12",
+     4.8
+    ]
+   ]
+  },
+  {
+   "id": "V3",
+   "versions": "AB",
+   "part": "turn",
+   "take": "T2",
+   "beat": "[2.2] f180",
+   "start_target": 6.0,
+   "end_target": 8.36,
+   "hard_end": 8.45,
+   "est_start": 6.0,
+   "est_end": 8.36,
+   "est_fits": true,
+   "roman": "Andhera. Dhuaan. Roshni. Chehra.",
+   "roman_spoken": "Andhera. Dhuaan. Roshni. Chehra.",
+   "roman_marked": "Andhera. Dhuaan. Roshni. *Chehra.",
+   "dev": "अंधेरा। धुआँ। रोशनी। चेहरा।",
+   "tts": "अंधेरा। धुआँ। रोशनी। चेहरा।",
+   "tokens": [
+    "Andhera.",
+    "Dhuaan.",
+    "Roshni.",
+    "Chehra."
+   ],
+   "dev_tokens": [
+    "अंधेरा।",
+    "धुआँ।",
+    "रोशनी।",
+    "चेहरा।"
+   ],
+   "keyword": "chehra",
+   "caption_keyword": [
+    "Chehra"
+   ],
+   "keyword_event": "tag `04 · chehra` (JD's flat face pane), jw_mono",
+   "keyword_note": "nominal: captions are hidden and the mono tags 01-04 carry the words; \"chehra\" = the face pane, the human inside the frame",
+   "words": 4,
+   "syllables": 9,
+   "est_s": {
+    "raw_take_s": 3.6,
+    "post_1p06": 3.4,
+    "post_1p08": 3.33,
+    "post_1p10": 3.27,
+    "lead_model_raw_at_2p7wps": 1.48,
+    "lead_model_post_1p06": 1.4,
+    "lead_model_post_1p10": 1.35,
+    "placed_span_post_1p08": 2.36
+   },
+   "wps": 1.69,
+   "sps": 3.81,
+   "anchors": [
+    {
+     "word": "Andhera.",
+     "i": 0,
+     "t": 6.0,
+     "grid": "[2.2] f180",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "tag 01 arrives 6.0 (on the beat)",
+     "est": 6.0,
+     "ok": true
+    },
+    {
+     "word": "Dhuaan.",
+     "i": 1,
+     "t": 6.75,
+     "grid": "[2.3] +4 f f202",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "tag 02 arrives 6.6",
+     "est": 6.75,
+     "ok": true
+    },
+    {
+     "word": "Roshni.",
+     "i": 2,
+     "t": 7.3,
+     "grid": "[3.0] +3 f f219",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "tag 03 arrives 7.2",
+     "est": 7.3,
+     "ok": true
+    },
+    {
+     "word": "Chehra.",
+     "i": 3,
+     "t": 7.9,
+     "grid": "[3.1] +3 f f237",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "tag 04 arrives 7.8",
+     "est": 7.9,
+     "ok": true
+    }
+   ],
+   "placement": "per word: cut each word at its full-stop silence and place it at its anchor",
+   "emotion": "hushed naming, one word per beat, each with a short falling end (no list rise)",
+   "issues": [],
+   "pause_after_s": {
+    "A": 1.67,
+    "B": 1.67
+   },
+   "keyword_at_s": 7.9,
+   "keyword_tokens_at_s": [
+    [
+     "Chehra",
+     7.9
+    ]
+   ]
+  },
+  {
+   "id": "V4",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T2",
+   "beat": "[4.0] +13 f f301",
+   "start_target": 10.03,
+   "end_target": 11.61,
+   "hard_end": 11.7,
+   "est_start": 10.03,
+   "est_end": 11.61,
+   "est_fits": true,
+   "roman": "Har lafz. Har chamak.",
+   "roman_spoken": "Har lafz. Har chamak.",
+   "roman_marked": "Har lafz. Har *chamak.",
+   "dev": "हर लफ़्ज़। हर चमक।",
+   "tts": "हर लफ़्ज़। हर चमक।",
+   "tokens": [
+    "Har",
+    "lafz.",
+    "Har",
+    "chamak."
+   ],
+   "dev_tokens": [
+    "हर",
+    "लफ़्ज़।",
+    "हर",
+    "चमक।"
+   ],
+   "keyword": "chamak",
+   "caption_keyword": [
+    "chamak"
+   ],
+   "keyword_event": "tag `09 · keyword / 10 · chamak` (jw_mono)",
+   "keyword_note": "nominal: captions hidden; tags 08 and 09/10 carry the words",
+   "words": 4,
+   "syllables": 6,
+   "est_s": {
+    "raw_take_s": 1.88,
+    "post_1p06": 1.78,
+    "post_1p08": 1.75,
+    "post_1p10": 1.71,
+    "lead_model_raw_at_2p7wps": 1.48,
+    "lead_model_post_1p06": 1.4,
+    "lead_model_post_1p10": 1.35,
+    "placed_span_post_1p08": 1.58
+   },
+   "wps": 2.52,
+   "sps": 3.79,
+   "anchors": [
+    {
+     "word": "Har",
+     "i": 0,
+     "t": 10.03,
+     "grid": "[4.0] +13 f f301",
+     "tol": 0.08,
+     "mode": "place",
+     "rule": "\"Har\" so that \"lafz\" lands ~10.23 with tag 08 (10.2)",
+     "est": 10.03,
+     "ok": true
+    },
+    {
+     "word": "Har",
+     "i": 2,
+     "t": 10.95,
+     "grid": "[4.2] +4 f f328",
+     "tol": 0.08,
+     "mode": "place",
+     "rule": "\"Har\" so that \"chamak\" lands ~11.15 with the 09/10 tag; line must end <= 11.70 (re-hook silence >= 0.3 s)",
+     "est": 10.95,
+     "ok": true
+    }
+   ],
+   "placement": "per phrase: \"Har lafz.\" and \"Har chamak.\" placed at their anchors",
+   "emotion": "hushed, a small lift on \"chamak\"",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.44,
+    "B": 0.44
+   },
+   "keyword_at_s": 11.2,
+   "keyword_tokens_at_s": [
+    [
+     "chamak",
+     11.15
+    ]
+   ]
+  },
+  {
+   "id": "V5",
+   "versions": "AB",
+   "part": "re-hook",
+   "take": "T1",
+   "beat": "[5.0] +2 f f362",
+   "start_target": 12.05,
+   "end_target": 15.79,
+   "hard_end": 15.85,
+   "est_start": 12.05,
+   "est_end": 15.7,
+   "est_fits": true,
+   "roman": "Aur ek layer... jiske bina frame zinda nahi lagta.",
+   "roman_spoken": "Aur ek layer... jiske bina frame zinda nahi lagta.",
+   "roman_marked": "Aur ek *layer... jiske bina frame *zinda nahi lagta.",
+   "dev": "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता।",
+   "tts": "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता।",
+   "tokens": [
+    "Aur",
+    "ek",
+    "layer...",
+    "jiske",
+    "bina",
+    "frame",
+    "zinda",
+    "nahi",
+    "lagta."
+   ],
+   "dev_tokens": [
+    "और",
+    "एक",
+    "लेयर...",
+    "जिसके",
+    "बिना",
+    "फ़्रेम",
+    "ज़िंदा",
+    "नहीं",
+    "लगता।"
+   ],
+   "keyword": "layer... / zinda",
+   "caption_keyword": [
+    "layer",
+    "zinda"
+   ],
+   "keyword_event": "caption C1 (upper band, two serif keywords, one per chunk): *layer...* on the re-hook stop at pane 12, *zinda* as the flick resolves ON (f432, 14.4)",
+   "keyword_note": "gate r1 fix 4: the re-hook chunk \"Aur ek *layer...*\" carries the flame word from 12.05 (BRIEF 15, previs F3); \"frame *zinda*\" keeps the second; C1 = 2 keywords, the per-scene maximum; flick OFF f414 (13.8) ~ \"bina\", flick ON f432 (14.4) ~ \"zinda\"",
+   "words": 9,
+   "syllables": 15,
+   "est_s": {
+    "raw_take_s": 3.94,
+    "post_1p06": 3.72,
+    "post_1p08": 3.65,
+    "post_1p10": 3.58,
+    "lead_model_raw_at_2p7wps": 3.33,
+    "lead_model_post_1p06": 3.14,
+    "lead_model_post_1p10": 3.03,
+    "placed_span_post_1p08": 3.65
+   },
+   "wps": 2.47,
+   "sps": 4.11,
+   "anchors": [
+    {
+     "word": "Aur",
+     "i": 0,
+     "t": 12.05,
+     "grid": "[5.0] +2 f f362",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "re-hook: >= 0.3 s VO silence before (V4 ends <= 11.70)",
+     "est": 12.05,
+     "ok": true
+    },
+    {
+     "word": "bina",
+     "i": 4,
+     "t": 13.8,
+     "grid": "[5.3] f414",
+     "tol": 0.15,
+     "mode": "check",
+     "rule": "\"bina\" ~ flick OFF f414 (13.8)",
+     "est": 13.83,
+     "ok": true
+    },
+    {
+     "word": "zinda",
+     "i": 6,
+     "t": 14.45,
+     "grid": "[6.0] +2 f f434",
+     "tol": 0.2,
+     "mode": "check",
+     "rule": "\"zinda\" ~ flick ON f432 (14.4)",
+     "est": 14.43,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "re-hook: a lift and a hang on \"layer...\", then lower and slower on \"zinda nahi lagta\"",
+   "issues": [],
+   "pause_after_s": {
+    "A": 1.25,
+    "B": 1.25
+   },
+   "keyword_at_s": 12.45,
+   "keyword_tokens_at_s": [
+    [
+     "layer",
+     12.45
+    ],
+    [
+     "zinda",
+     14.43
+    ]
+   ]
+  },
+  {
+   "id": "V6",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T1",
+   "beat": "[7.0] +4 f f508",
+   "start_target": 16.95,
+   "end_target": 18.84,
+   "hard_end": 18.85,
+   "est_start": 16.95,
+   "est_end": 18.19,
+   "est_fits": true,
+   "roman": "Ek second mein 30 frames.",
+   "roman_spoken": "Ek second mein tees frames.",
+   "roman_marked": "Ek second mein *30 frames.",
+   "dev": "एक सेकंड में तीस फ़्रेम्स।",
+   "tts": "एक सेकंड में तीस फ़्रेम्स।",
+   "tokens": [
+    "Ek",
+    "second",
+    "mein",
+    "30",
+    "frames."
+   ],
+   "dev_tokens": [
+    "एक",
+    "सेकंड",
+    "में",
+    "तीस",
+    "फ़्रेम्स।"
+   ],
+   "keyword": "30",
+   "caption_keyword": [
+    "30"
+   ],
+   "keyword_event": "caption C2 (lower band) serif \"30\"",
+   "keyword_note": "caption C2 serif word \"30\" (house SRT rule: digits on screen; BRIEF 15 wrote *tees*)",
+   "words": 5,
+   "syllables": 6,
+   "est_s": {
+    "raw_take_s": 1.34,
+    "post_1p06": 1.26,
+    "post_1p08": 1.24,
+    "post_1p10": 1.22,
+    "lead_model_raw_at_2p7wps": 1.85,
+    "lead_model_post_1p06": 1.75,
+    "lead_model_post_1p10": 1.68,
+    "placed_span_post_1p08": 1.24
+   },
+   "wps": 4.04,
+   "sps": 4.85,
+   "anchors": [
+    {
+     "word": "Ek",
+     "i": 0,
+     "t": 16.95,
+     "grid": "[7.0] +4 f f508",
+     "tol": 0.1,
+     "mode": "place",
+     "rule": ">= 0.15 s after the C3 cut (16.8)",
+     "est": 16.95,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "plain wonder, unhurried",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.71,
+    "B": 0.71
+   },
+   "keyword_at_s": 17.76,
+   "keyword_tokens_at_s": [
+    [
+     "30",
+     17.76
+    ]
+   ]
+  },
+  {
+   "id": "V7",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T1",
+   "beat": "[7.3½] f567",
+   "start_target": 18.9,
+   "end_target": 21.99,
+   "hard_end": 21.99,
+   "est_start": 18.9,
+   "est_end": 21.52,
+   "est_fits": true,
+   "roman": "Yaani har second... teen sau saath layers.",
+   "roman_spoken": "Yaani har second... teen sau saath layers.",
+   "roman_marked": "Yaani har second... teen sau saath layers.",
+   "dev": "यानी हर सेकंड... तीन सौ साठ लेयर्स।",
+   "tts": "यानी हर सेकंड... तीन सौ साठ लेयर्स।",
+   "tokens": [
+    "Yaani",
+    "har",
+    "second...",
+    "teen",
+    "sau",
+    "saath",
+    "layers."
+   ],
+   "dev_tokens": [
+    "यानी",
+    "हर",
+    "सेकंड...",
+    "तीन",
+    "सौ",
+    "साठ",
+    "लेयर्स।"
+   ],
+   "keyword": "360",
+   "caption_keyword": [],
+   "keyword_event": "counter `360` (jw_key 240) lands, L3 push 0.5",
+   "keyword_note": "designed counter `360` lands 20.4; \"teen sau saath layers\" is hidden 20.13-21.99, so no caption token is flagged; caption C2 shows \"Yaani har second...\" plain",
+   "words": 7,
+   "syllables": 10,
+   "est_s": {
+    "raw_take_s": 2.85,
+    "post_1p06": 2.69,
+    "post_1p08": 2.64,
+    "post_1p10": 2.59,
+    "lead_model_raw_at_2p7wps": 2.59,
+    "lead_model_post_1p06": 2.45,
+    "lead_model_post_1p10": 2.36,
+    "placed_span_post_1p08": 2.62
+   },
+   "wps": 2.67,
+   "sps": 3.82,
+   "anchors": [
+    {
+     "word": "Yaani",
+     "i": 0,
+     "t": 18.9,
+     "grid": "[7.3½] f567",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": "on the 8th f567, with the counter roll-in (18.9)",
+     "est": 18.9,
+     "ok": true
+    },
+    {
+     "word": "teen",
+     "i": 3,
+     "t": 20.45,
+     "grid": "[8.2] +2 f f614",
+     "tol": 0.1,
+     "mode": "place",
+     "rule": "\"teen\" onset with the counter landing (20.4); split at the \"...\" pause only if the take misses it",
+     "est": 20.45,
+     "ok": true
+    }
+   ],
+   "placement": "by the anchor words (split at the \"...\" pause only if the take misses an anchor by more than its tolerance)",
+   "emotion": "awe under the breath; the number slower and lower, the three words separate",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.63,
+    "B": 0.63
+   },
+   "keyword_at_s": 20.4,
+   "keyword_tokens_at_s": []
+  },
+  {
+   "id": "V8",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T1",
+   "beat": "[9.0] +16 f f664",
+   "start_target": 22.15,
+   "end_target": 24.04,
+   "hard_end": 24.15,
+   "est_start": 22.15,
+   "est_end": 23.39,
+   "est_fits": true,
+   "roman": "Aur awaaz ke 3 tracks.",
+   "roman_spoken": "Aur awaaz ke teen tracks.",
+   "roman_marked": "Aur *awaaz ke 3 tracks.",
+   "dev": "और आवाज़ के तीन ट्रैक्स।",
+   "tts": "और आवाज़ के तीन ट्रैक्स।",
+   "tokens": [
+    "Aur",
+    "awaaz",
+    "ke",
+    "3",
+    "tracks."
+   ],
+   "dev_tokens": [
+    "और",
+    "आवाज़",
+    "के",
+    "तीन",
+    "ट्रैक्स।"
+   ],
+   "keyword": "awaaz",
+   "caption_keyword": [
+    "awaaz"
+   ],
+   "keyword_event": "caption C3 (upper band) serif \"awaaz\"; the VO lane pulses with these words",
+   "keyword_note": "caption C3 serif word; lane legend `VO · AI voice / SFX / MUSIC` shows 21.9-24.2",
+   "words": 5,
+   "syllables": 6,
+   "est_s": {
+    "raw_take_s": 1.34,
+    "post_1p06": 1.26,
+    "post_1p08": 1.24,
+    "post_1p10": 1.22,
+    "lead_model_raw_at_2p7wps": 1.85,
+    "lead_model_post_1p06": 1.75,
+    "lead_model_post_1p10": 1.68,
+    "placed_span_post_1p08": 1.24
+   },
+   "wps": 4.04,
+   "sps": 4.85,
+   "anchors": [
+    {
+     "word": "Aur",
+     "i": 0,
+     "t": 22.15,
+     "grid": "[9.0] +16 f f664",
+     "tol": 0.1,
+     "mode": "place",
+     "rule": "after the 360 lockup exits (22.15); hard end 24.15 (riser 24.6)",
+     "est": 22.15,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "light, almost a smile",
+   "issues": [],
+   "pause_after_s": {
+    "A": 3.36,
+    "B": 3.36
+   },
+   "keyword_at_s": 22.35,
+   "keyword_tokens_at_s": [
+    [
+     "awaaz",
+     22.35
+    ]
+   ]
+  },
+  {
+   "id": "V9",
+   "versions": "AB",
+   "part": "payoff",
+   "take": "T3",
+   "beat": "[11.0] +10 f f802",
+   "start_target": 26.75,
+   "end_target": 29.5,
+   "hard_end": 29.85,
+   "est_start": 26.75,
+   "est_end": 29.44,
+   "est_fits": true,
+   "roman": "Keemat... banane wala jaanta hai.",
+   "roman_spoken": "Keemat... banane wala jaanta hai.",
+   "roman_marked": "*Keemat... banane wala jaanta hai.",
+   "dev": "क़ीमत... बनाने वाला जानता है।",
+   "tts": "क़ीमत... बनाने वाला जानता है।",
+   "tokens": [
+    "Keemat...",
+    "banane",
+    "wala",
+    "jaanta",
+    "hai."
+   ],
+   "dev_tokens": [
+    "क़ीमत...",
+    "बनाने",
+    "वाला",
+    "जानता",
+    "है।"
+   ],
+   "keyword": "keemat",
+   "caption_keyword": [
+    "Keemat"
+   ],
+   "keyword_event": "payoff lockup `EK FRAME KI / keemat`: keyword glyphs rise from 26.62; sub `banane wala jaanta hai` rises 27.7-28.1",
+   "keyword_note": "designed payoff keyword (P-1b): the voice says \"keemat\" while its glyphs rise, and \"banane wala jaanta hai\" while the sub line P-2 rises; captions hidden 26.4-33.6",
+   "words": 5,
+   "syllables": 10,
+   "est_s": {
+    "raw_take_s": 2.96,
+    "post_1p06": 2.79,
+    "post_1p08": 2.74,
+    "post_1p10": 2.69,
+    "lead_model_raw_at_2p7wps": 1.85,
+    "lead_model_post_1p06": 1.75,
+    "lead_model_post_1p10": 1.68,
+    "placed_span_post_1p08": 2.69
+   },
+   "wps": 1.86,
+   "sps": 3.72,
+   "anchors": [
+    {
+     "word": "Keemat...",
+     "i": 0,
+     "t": 26.75,
+     "grid": "[11.0] +10 f f802",
+     "tol": 0.05,
+     "mode": "place",
+     "rule": ">= 0.30 s after the 26.4 hit; V9 end + 0.15 + V10 <= 33.24, so V9 must end <= ~29.85 (hard)",
+     "est": 26.75,
+     "ok": true
+    },
+    {
+     "word": "banane",
+     "i": 1,
+     "t": 27.7,
+     "grid": "[11.2] +3 f f831",
+     "tol": 0.1,
+     "mode": "place",
+     "rule": "\"banane\" with the sub line P-2 rising (27.7); split at the \"...\" pause if needed",
+     "est": 27.7,
+     "ok": true
+    }
+   ],
+   "placement": "by the anchor words (split at the \"...\" pause only if the take misses an anchor by more than its tolerance)",
+   "emotion": "slow, proud, not boastful; \"Keemat...\" low and quiet, a full breath, then the answer plainly",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.16,
+    "B": 0.16
+   },
+   "keyword_at_s": 26.75,
+   "keyword_tokens_at_s": [
+    [
+     "Keemat",
+     26.75
+    ]
+   ]
+  },
+  {
+   "id": "V10",
+   "versions": "AB",
+   "part": "cta+loop",
+   "take": "T3",
+   "beat": "[12.1] +6 f f888",
+   "start_target": 29.6,
+   "end_target": 33.24,
+   "hard_end": 33.35,
+   "est_start": 29.6,
+   "est_end": 32.82,
+   "est_fits": true,
+   "roman": "Jo kehta hai \"editing mein kya hai\", usko bhejo.",
+   "roman_spoken": "Jo kehta hai \"editing mein kya hai\", usko bhejo.",
+   "roman_marked": "Jo kehta hai \"editing mein kya hai\", usko *bhejo.",
+   "dev": "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+   "tts": "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+   "tokens": [
+    "Jo",
+    "kehta",
+    "hai",
+    "\"editing",
+    "mein",
+    "kya",
+    "hai\",",
+    "usko",
+    "bhejo."
+   ],
+   "dev_tokens": [
+    "जो",
+    "कहता",
+    "है",
+    "\"एडिटिंग",
+    "में",
+    "क्या",
+    "है\",",
+    "उसको",
+    "भेजो।"
+   ],
+   "keyword": "bhejo",
+   "caption_keyword": [
+    "bhejo"
+   ],
+   "keyword_event": "end card `USKO YEH / bhejo` (C7, gate r1 fix 5, needs the lead's OK; locked SLATE card `USSE YEH / bhejo`) (title from 29.75, settled 31.25-33.24)",
+   "keyword_note": "designed end-card keyword (E-1); captions hidden; \"usko\" = उसको (to him / her), one spelling on both sides; if the lead keeps the card USSE: DEV stays उसे and the Roman token is \"usey\" (alternate V10-keep), never \"usse\" (= उससे, from / than him, in Roman Urdu)",
+   "words": 9,
+   "syllables": 14,
+   "est_s": {
+    "raw_take_s": 3.47,
+    "post_1p06": 3.28,
+    "post_1p08": 3.22,
+    "post_1p10": 3.16,
+    "lead_model_raw_at_2p7wps": 3.33,
+    "lead_model_post_1p06": 3.14,
+    "lead_model_post_1p10": 3.03,
+    "placed_span_post_1p08": 3.22
+   },
+   "wps": 2.8,
+   "sps": 4.35,
+   "anchors": [
+    {
+     "word": "Jo",
+     "i": 0,
+     "t": 29.6,
+     "grid": "[12.1] +6 f f888",
+     "tol": 0.15,
+     "mode": "place",
+     "rule": "start = max(29.60, V9 end + 0.15); end <= 33.24 (card exit starts), hard 33.35",
+     "est": 29.6,
+     "ok": true
+    }
+   ],
+   "placement": "whole line at start_target",
+   "emotion": "friendly and warm, not salesy; the quote in a light shrugging tone; \"usko bhejo\" with a smile",
+   "issues": [],
+   "pause_after_s": {
+    "A": 0.78,
+    "B": 0.78
+   },
+   "keyword_at_s": 29.75,
+   "keyword_tokens_at_s": [
+    [
+     "bhejo",
+     32.35
+    ]
+   ]
+  }
+ ],
+ "tokens": [
+  {
+   "line": "V1A",
+   "i": 0,
+   "roman": "Aap",
+   "spoken": "Aap",
+   "dev": "आप",
+   "tts": "आप",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 0.1,
+   "est_end": 0.3,
+   "caption_visible": false
+  },
+  {
+   "line": "V1A",
+   "i": 1,
+   "roman": "ne",
+   "spoken": "ne",
+   "dev": "ने",
+   "tts": "ने",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 0.3,
+   "est_end": 0.5,
+   "caption_visible": false
+  },
+  {
+   "line": "V1A",
+   "i": 2,
+   "roman": "ise",
+   "spoken": "ise",
+   "dev": "इसे",
+   "tts": "इसे",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 0.5,
+   "est_end": 0.91,
+   "caption_visible": false
+  },
+  {
+   "line": "V1A",
+   "i": 3,
+   "roman": "palak",
+   "spoken": "palak",
+   "dev": "पलक",
+   "tts": "पलक",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 0.91,
+   "est_end": 1.31,
+   "caption_visible": false
+  },
+  {
+   "line": "V1A",
+   "i": 4,
+   "roman": "jhapakte",
+   "spoken": "jhapakte",
+   "dev": "झपकते",
+   "tts": "झपकते",
+   "keyword": false,
+   "syl": 3,
+   "est_start": 1.31,
+   "est_end": 1.91,
+   "caption_visible": false
+  },
+  {
+   "line": "V1A",
+   "i": 5,
+   "roman": "dekha.",
+   "spoken": "dekha.",
+   "dev": "देखा।",
+   "tts": "देखा।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 1.91,
+   "est_end": 2.37,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 0,
+   "roman": "Ek",
+   "spoken": "Ek",
+   "dev": "एक",
+   "tts": "एक",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 0.1,
+   "est_end": 0.3,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 1,
+   "roman": "second.",
+   "spoken": "second.",
+   "dev": "सेकंड।",
+   "tts": "सेकंड।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 0.3,
+   "est_end": 0.76,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 2,
+   "roman": "Teen",
+   "spoken": "Teen",
+   "dev": "तीन",
+   "tts": "तीन",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 1.18,
+   "est_end": 1.38,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 3,
+   "roman": "sau",
+   "spoken": "sau",
+   "dev": "सौ",
+   "tts": "सौ",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 1.38,
+   "est_end": 1.58,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 4,
+   "roman": "saath",
+   "spoken": "saath",
+   "dev": "साठ",
+   "tts": "साठ",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 1.58,
+   "est_end": 1.78,
+   "caption_visible": false
+  },
+  {
+   "line": "V1B",
+   "i": 5,
+   "roman": "layers.",
+   "spoken": "layers.",
+   "dev": "लेयर्स।",
+   "tts": "लेयर्स।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 1.78,
+   "est_end": 2.25,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 0,
+   "roman": "Lekin",
+   "spoken": "Lekin",
+   "dev": "लेकिन",
+   "tts": "लेकिन",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 3.07,
+   "est_end": 3.47,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 1,
+   "roman": "is",
+   "spoken": "is",
+   "dev": "इस",
+   "tts": "इस",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 3.47,
+   "est_end": 3.67,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 2,
+   "roman": "ek",
+   "spoken": "ek",
+   "dev": "एक",
+   "tts": "एक",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 3.67,
+   "est_end": 3.88,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 3,
+   "roman": "frame",
+   "spoken": "frame",
+   "dev": "फ़्रेम",
+   "tts": "फ़्रेम",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 3.88,
+   "est_end": 4.08,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 4,
+   "roman": "mein...",
+   "spoken": "mein...",
+   "dev": "में...",
+   "tts": "में...",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 4.08,
+   "est_end": 4.31,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 5,
+   "roman": "12",
+   "spoken": "baarah",
+   "dev": "बारह",
+   "tts": "बारह",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 4.8,
+   "est_end": 5.2,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 6,
+   "roman": "layers",
+   "spoken": "layers",
+   "dev": "लेयर्स",
+   "tts": "लेयर्स",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 5.2,
+   "est_end": 5.61,
+   "caption_visible": false
+  },
+  {
+   "line": "V2",
+   "i": 7,
+   "roman": "hain.",
+   "spoken": "hain.",
+   "dev": "हैं।",
+   "tts": "हैं।",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 5.61,
+   "est_end": 5.84,
+   "caption_visible": false
+  },
+  {
+   "line": "V3",
+   "i": 0,
+   "roman": "Andhera.",
+   "spoken": "Andhera.",
+   "dev": "अंधेरा।",
+   "tts": "अंधेरा।",
+   "keyword": false,
+   "syl": 3,
+   "est_start": 6.0,
+   "est_end": 6.69,
+   "caption_visible": false
+  },
+  {
+   "line": "V3",
+   "i": 1,
+   "roman": "Dhuaan.",
+   "spoken": "Dhuaan.",
+   "dev": "धुआँ।",
+   "tts": "धुआँ।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 6.75,
+   "est_end": 7.21,
+   "caption_visible": false
+  },
+  {
+   "line": "V3",
+   "i": 2,
+   "roman": "Roshni.",
+   "spoken": "Roshni.",
+   "dev": "रोशनी।",
+   "tts": "रोशनी।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 7.3,
+   "est_end": 7.76,
+   "caption_visible": false
+  },
+  {
+   "line": "V3",
+   "i": 3,
+   "roman": "Chehra.",
+   "spoken": "Chehra.",
+   "dev": "चेहरा।",
+   "tts": "चेहरा।",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 7.9,
+   "est_end": 8.36,
+   "caption_visible": false
+  },
+  {
+   "line": "V4",
+   "i": 0,
+   "roman": "Har",
+   "spoken": "Har",
+   "dev": "हर",
+   "tts": "हर",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 10.03,
+   "est_end": 10.23,
+   "caption_visible": false
+  },
+  {
+   "line": "V4",
+   "i": 1,
+   "roman": "lafz.",
+   "spoken": "lafz.",
+   "dev": "लफ़्ज़।",
+   "tts": "लफ़्ज़।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 10.23,
+   "est_end": 10.69,
+   "caption_visible": false
+  },
+  {
+   "line": "V4",
+   "i": 2,
+   "roman": "Har",
+   "spoken": "Har",
+   "dev": "हर",
+   "tts": "हर",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 10.95,
+   "est_end": 11.15,
+   "caption_visible": false
+  },
+  {
+   "line": "V4",
+   "i": 3,
+   "roman": "chamak.",
+   "spoken": "chamak.",
+   "dev": "चमक।",
+   "tts": "चमक।",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 11.15,
+   "est_end": 11.61,
+   "caption_visible": false
+  },
+  {
+   "line": "V5",
+   "i": 0,
+   "roman": "Aur",
+   "spoken": "Aur",
+   "dev": "और",
+   "tts": "और",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 12.05,
+   "est_end": 12.25,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 1,
+   "roman": "ek",
+   "spoken": "ek",
+   "dev": "एक",
+   "tts": "एक",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 12.25,
+   "est_end": 12.45,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 2,
+   "roman": "layer...",
+   "spoken": "layer...",
+   "dev": "लेयर...",
+   "tts": "लेयर...",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 12.45,
+   "est_end": 12.92,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 3,
+   "roman": "jiske",
+   "spoken": "jiske",
+   "dev": "जिसके",
+   "tts": "जिसके",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 13.42,
+   "est_end": 13.83,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 4,
+   "roman": "bina",
+   "spoken": "bina",
+   "dev": "बिना",
+   "tts": "बिना",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 13.83,
+   "est_end": 14.23,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 5,
+   "roman": "frame",
+   "spoken": "frame",
+   "dev": "फ़्रेम",
+   "tts": "फ़्रेम",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 14.23,
+   "est_end": 14.43,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 6,
+   "roman": "zinda",
+   "spoken": "zinda",
+   "dev": "ज़िंदा",
+   "tts": "ज़िंदा",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 14.43,
+   "est_end": 14.83,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 7,
+   "roman": "nahi",
+   "spoken": "nahi",
+   "dev": "नहीं",
+   "tts": "नहीं",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 14.83,
+   "est_end": 15.24,
+   "caption_visible": true
+  },
+  {
+   "line": "V5",
+   "i": 8,
+   "roman": "lagta.",
+   "spoken": "lagta.",
+   "dev": "लगता।",
+   "tts": "लगता।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 15.24,
+   "est_end": 15.7,
+   "caption_visible": true
+  },
+  {
+   "line": "V6",
+   "i": 0,
+   "roman": "Ek",
+   "spoken": "Ek",
+   "dev": "एक",
+   "tts": "एक",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 16.95,
+   "est_end": 17.15,
+   "caption_visible": true
+  },
+  {
+   "line": "V6",
+   "i": 1,
+   "roman": "second",
+   "spoken": "second",
+   "dev": "सेकंड",
+   "tts": "सेकंड",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 17.15,
+   "est_end": 17.55,
+   "caption_visible": true
+  },
+  {
+   "line": "V6",
+   "i": 2,
+   "roman": "mein",
+   "spoken": "mein",
+   "dev": "में",
+   "tts": "में",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 17.55,
+   "est_end": 17.76,
+   "caption_visible": true
+  },
+  {
+   "line": "V6",
+   "i": 3,
+   "roman": "30",
+   "spoken": "tees",
+   "dev": "तीस",
+   "tts": "तीस",
+   "keyword": true,
+   "syl": 1,
+   "est_start": 17.76,
+   "est_end": 17.96,
+   "caption_visible": true
+  },
+  {
+   "line": "V6",
+   "i": 4,
+   "roman": "frames.",
+   "spoken": "frames.",
+   "dev": "फ़्रेम्स।",
+   "tts": "फ़्रेम्स।",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 17.96,
+   "est_end": 18.19,
+   "caption_visible": true
+  },
+  {
+   "line": "V7",
+   "i": 0,
+   "roman": "Yaani",
+   "spoken": "Yaani",
+   "dev": "यानी",
+   "tts": "यानी",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 18.9,
+   "est_end": 19.3,
+   "caption_visible": true
+  },
+  {
+   "line": "V7",
+   "i": 1,
+   "roman": "har",
+   "spoken": "har",
+   "dev": "हर",
+   "tts": "हर",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 19.3,
+   "est_end": 19.5,
+   "caption_visible": true
+  },
+  {
+   "line": "V7",
+   "i": 2,
+   "roman": "second...",
+   "spoken": "second...",
+   "dev": "सेकंड...",
+   "tts": "सेकंड...",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 19.5,
+   "est_end": 19.97,
+   "caption_visible": true
+  },
+  {
+   "line": "V7",
+   "i": 3,
+   "roman": "teen",
+   "spoken": "teen",
+   "dev": "तीन",
+   "tts": "तीन",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 20.45,
+   "est_end": 20.65,
+   "caption_visible": false
+  },
+  {
+   "line": "V7",
+   "i": 4,
+   "roman": "sau",
+   "spoken": "sau",
+   "dev": "सौ",
+   "tts": "सौ",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 20.65,
+   "est_end": 20.85,
+   "caption_visible": false
+  },
+  {
+   "line": "V7",
+   "i": 5,
+   "roman": "saath",
+   "spoken": "saath",
+   "dev": "साठ",
+   "tts": "साठ",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 20.85,
+   "est_end": 21.05,
+   "caption_visible": false
+  },
+  {
+   "line": "V7",
+   "i": 6,
+   "roman": "layers.",
+   "spoken": "layers.",
+   "dev": "लेयर्स।",
+   "tts": "लेयर्स।",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 21.05,
+   "est_end": 21.52,
+   "caption_visible": false
+  },
+  {
+   "line": "V8",
+   "i": 0,
+   "roman": "Aur",
+   "spoken": "Aur",
+   "dev": "और",
+   "tts": "और",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 22.15,
+   "est_end": 22.35,
+   "caption_visible": true
+  },
+  {
+   "line": "V8",
+   "i": 1,
+   "roman": "awaaz",
+   "spoken": "awaaz",
+   "dev": "आवाज़",
+   "tts": "आवाज़",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 22.35,
+   "est_end": 22.75,
+   "caption_visible": true
+  },
+  {
+   "line": "V8",
+   "i": 2,
+   "roman": "ke",
+   "spoken": "ke",
+   "dev": "के",
+   "tts": "के",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 22.75,
+   "est_end": 22.96,
+   "caption_visible": true
+  },
+  {
+   "line": "V8",
+   "i": 3,
+   "roman": "3",
+   "spoken": "teen",
+   "dev": "तीन",
+   "tts": "तीन",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 22.96,
+   "est_end": 23.16,
+   "caption_visible": true
+  },
+  {
+   "line": "V8",
+   "i": 4,
+   "roman": "tracks.",
+   "spoken": "tracks.",
+   "dev": "ट्रैक्स।",
+   "tts": "ट्रैक्स।",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 23.16,
+   "est_end": 23.39,
+   "caption_visible": true
+  },
+  {
+   "line": "V9",
+   "i": 0,
+   "roman": "Keemat...",
+   "spoken": "Keemat...",
+   "dev": "क़ीमत...",
+   "tts": "क़ीमत...",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 26.75,
+   "est_end": 27.24,
+   "caption_visible": false
+  },
+  {
+   "line": "V9",
+   "i": 1,
+   "roman": "banane",
+   "spoken": "banane",
+   "dev": "बनाने",
+   "tts": "बनाने",
+   "keyword": false,
+   "syl": 3,
+   "est_start": 27.7,
+   "est_end": 28.34,
+   "caption_visible": false
+  },
+  {
+   "line": "V9",
+   "i": 2,
+   "roman": "wala",
+   "spoken": "wala",
+   "dev": "वाला",
+   "tts": "वाला",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 28.34,
+   "est_end": 28.77,
+   "caption_visible": false
+  },
+  {
+   "line": "V9",
+   "i": 3,
+   "roman": "jaanta",
+   "spoken": "jaanta",
+   "dev": "जानता",
+   "tts": "जानता",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 28.77,
+   "est_end": 29.19,
+   "caption_visible": false
+  },
+  {
+   "line": "V9",
+   "i": 4,
+   "roman": "hai.",
+   "spoken": "hai.",
+   "dev": "है।",
+   "tts": "है।",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 29.19,
+   "est_end": 29.44,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 0,
+   "roman": "Jo",
+   "spoken": "Jo",
+   "dev": "जो",
+   "tts": "जो",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 29.6,
+   "est_end": 29.8,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 1,
+   "roman": "kehta",
+   "spoken": "kehta",
+   "dev": "कहता",
+   "tts": "कहता",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 29.8,
+   "est_end": 30.2,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 2,
+   "roman": "hai",
+   "spoken": "hai",
+   "dev": "है",
+   "tts": "है",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 30.2,
+   "est_end": 30.41,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 3,
+   "roman": "\"editing",
+   "spoken": "\"editing",
+   "dev": "\"एडिटिंग",
+   "tts": "\"एडिटिंग",
+   "keyword": false,
+   "syl": 3,
+   "est_start": 30.41,
+   "est_end": 31.01,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 4,
+   "roman": "mein",
+   "spoken": "mein",
+   "dev": "में",
+   "tts": "में",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 31.01,
+   "est_end": 31.21,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 5,
+   "roman": "kya",
+   "spoken": "kya",
+   "dev": "क्या",
+   "tts": "क्या",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 31.21,
+   "est_end": 31.41,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 6,
+   "roman": "hai\",",
+   "spoken": "hai\",",
+   "dev": "है\",",
+   "tts": "है\",",
+   "keyword": false,
+   "syl": 1,
+   "est_start": 31.41,
+   "est_end": 31.63,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 7,
+   "roman": "usko",
+   "spoken": "usko",
+   "dev": "उसको",
+   "tts": "उसको",
+   "keyword": false,
+   "syl": 2,
+   "est_start": 31.95,
+   "est_end": 32.35,
+   "caption_visible": false
+  },
+  {
+   "line": "V10",
+   "i": 8,
+   "roman": "bhejo.",
+   "spoken": "bhejo.",
+   "dev": "भेजो।",
+   "tts": "भेजो।",
+   "keyword": true,
+   "syl": 2,
+   "est_start": 32.35,
+   "est_end": 32.82,
+   "caption_visible": false
+  }
+ ],
+ "takes": [
+  {
+   "id": "T1",
+   "order": 1,
+   "lines": [
+    "V5",
+    "V6",
+    "V7",
+    "V8"
+   ],
+   "dev": "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता। एक सेकंड में तीस फ़्रेम्स। यानी हर सेकंड... तीन सौ साठ लेयर्स। और आवाज़ के तीन ट्रैक्स।",
+   "rom": "Aur ek *layer... jiske bina frame *zinda nahi lagta. Ek second mein *30 frames. Yaani har second... teen sau saath layers. Aur *awaaz ke 3 tracks.",
+   "tokens": 26,
+   "token_ranges": {
+    "V5": [
+     0,
+     8
+    ],
+    "V6": [
+     9,
+     13
+    ],
+    "V7": [
+     14,
+     20
+    ],
+    "V8": [
+     21,
+     25
+    ]
+   },
+   "chars": 137,
+   "speed": 1.08,
+   "tests": "pronunciation test AND production: साठ, फ़्रेम / फ़्रेम्स, लेयर / लेयर्स, ज़िंदा, सेकंड, आवाज़, ट्रैक्स; the two \"...\" holds",
+   "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T1.mp3 --dev <RW>/vo/takes/T1.dev.txt --rom <RW>/vo/takes/T1.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T1.wav",
+   "status": "GO (gate r1 8): pronunciation test AND production; ROM carries the 2 V5 keywords (fix 4)"
+  },
+  {
+   "id": "T2",
+   "order": 2,
+   "lines": [
+    "V2",
+    "V3",
+    "V4"
+   ],
+   "dev": "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं। अंधेरा। धुआँ। रोशनी। चेहरा। हर लफ़्ज़। हर चमक।",
+   "rom": "Lekin is ek frame mein... *12 layers hain. Andhera. Dhuaan. Roshni. *Chehra. Har lafz. Har *chamak.",
+   "tokens": 16,
+   "token_ranges": {
+    "V2": [
+     0,
+     7
+    ],
+    "V3": [
+     8,
+     11
+    ],
+    "V4": [
+     12,
+     15
+    ]
+   },
+   "chars": 89,
+   "speed": 1.08,
+   "tests": "फ़्रेम again, बारह, the four one-word sentences, लफ़्ज़",
+   "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T2.mp3 --dev <RW>/vo/takes/T2.dev.txt --rom <RW>/vo/takes/T2.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T2.wav",
+   "status": "GO (gate r1 8)"
+  },
+  {
+   "id": "T3",
+   "order": 3,
+   "lines": [
+    "V9",
+    "V10"
+   ],
+   "dev": "क़ीमत... बनाने वाला जानता है। जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+   "rom": "*Keemat... banane wala jaanta hai. Jo kehta hai \"editing mein kya hai\", usko *bhejo.",
+   "tokens": 14,
+   "token_ranges": {
+    "V9": [
+     0,
+     4
+    ],
+    "V10": [
+     5,
+     13
+    ]
+   },
+   "chars": 74,
+   "speed": 1.08,
+   "tests": "क़ीमत, the payoff hold \"...\", एडिटिंग, the quote, उसको",
+   "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T3.mp3 --dev <RW>/vo/takes/T3.dev.txt --rom <RW>/vo/takes/T3.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T3.wav",
+   "status": "HOLD until the lead decides gate r1 fix 5 (C7): approved -> record dev as written (उसको); card kept USSE -> record alt.dev (उसे) with alt.rom (usey)",
+   "alt": {
+    "id": "T3-keep",
+    "when": "only if the lead keeps the locked card `USSE YEH / bhejo`",
+    "dev": "क़ीमत... बनाने वाला जानता है। जो कहता है \"एडिटिंग में क्या है\", उसे भेजो।",
+    "rom": "*Keemat... banane wala jaanta hai. Jo kehta hai \"editing mein kya hai\", usey *bhejo.",
+    "chars": 73,
+    "tokens": 14,
+    "est_end_v10_1p08": 32.82,
+    "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T3-keep.mp3 --dev <RW>/vo/takes/T3-keep.dev.txt --rom <RW>/vo/takes/T3-keep.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T3-keep.wav"
+   }
+  },
+  {
+   "id": "T4",
+   "order": 4,
+   "lines": [
+    "V1A"
+   ],
+   "dev": "आप ने इसे पलक झपकते देखा।",
+   "rom": "Aap ne ise *palak jhapakte dekha.",
+   "tokens": 6,
+   "token_ranges": {
+    "V1A": [
+     0,
+     5
+    ]
+   },
+   "chars": 25,
+   "speed": 1.08,
+   "tests": "झपकते; hook A alone so it gets a fresh first-line read",
+   "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T4.mp3 --dev <RW>/vo/takes/T4.dev.txt --rom <RW>/vo/takes/T4.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T4.wav",
+   "status": "GO (gate r1 8)"
+  },
+  {
+   "id": "T5",
+   "order": 5,
+   "lines": [
+    "V1B"
+   ],
+   "dev": "एक सेकंड। तीन सौ साठ लेयर्स।",
+   "rom": "Ek second. Teen sau saath layers.",
+   "tokens": 6,
+   "token_ranges": {
+    "V1B": [
+     0,
+     5
+    ]
+   },
+   "chars": 28,
+   "speed": 1.08,
+   "tests": "साठ in the first 3 s of the Trial Reel",
+   "vo_chain": "tools/heavy.sh python3 -I vo_chain.py process <RW>/vo/takes/T5.mp3 --dev <RW>/vo/takes/T5.dev.txt --rom <RW>/vo/takes/T5.rom.txt --speed 1.08 --realign --out <RW>/vo/takes/T5.wav",
+   "status": "GO (gate r1 8)"
+  }
+ ],
+ "credits": {
+  "takes": 5,
+  "est_per_take": "<= 2.5 (vo_config: ~2.5 per ~520-char take; these are 25-137 chars)",
+  "est_total": "<= 12.5",
+  "cap_incl_retakes": 20,
+  "order": "T1 first: it is the pronunciation test AND production; fix spellings before T2-T5"
+ },
+ "totals": {
+  "A": {
+   "lines": [
+    "V1A",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8",
+    "V9",
+    "V10"
+   ],
+   "words": 62,
+   "syllables": 98,
+   "lead_model_raw_at_2p7wps_s": 22.96,
+   "lead_model_post_1p06_s": 21.66,
+   "lead_model_post_1p10_s": 20.88,
+   "syllable_model_raw_s": 26.85,
+   "syllable_model_post_1p06_s": 25.33,
+   "syllable_model_post_1p08_s": 24.86,
+   "syllable_model_post_1p10_s": 24.41,
+   "placed_speech_spans_s": 23.64,
+   "first_word_s": 0.1,
+   "last_word_end_s": 32.82,
+   "speech_free_tail_s": 0.78,
+   "syllable_model_speech_only": {
+    "raw_s": 22.5,
+    "post_1p06_s": 21.23,
+    "post_1p08_s": 20.83,
+    "post_1p10_s": 20.45
+   }
+  },
+  "B": {
+   "lines": [
+    "V1B",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8",
+    "V9",
+    "V10"
+   ],
+   "words": 62,
+   "syllables": 95,
+   "lead_model_raw_at_2p7wps_s": 22.96,
+   "lead_model_post_1p06_s": 21.66,
+   "lead_model_post_1p10_s": 20.88,
+   "syllable_model_raw_s": 26.71,
+   "syllable_model_post_1p06_s": 25.2,
+   "syllable_model_post_1p08_s": 24.73,
+   "syllable_model_post_1p10_s": 24.28,
+   "placed_speech_spans_s": 23.52,
+   "first_word_s": 0.1,
+   "last_word_end_s": 32.82,
+   "speech_free_tail_s": 0.78,
+   "syllable_model_speech_only": {
+    "raw_s": 21.91,
+    "post_1p06_s": 20.67,
+    "post_1p08_s": 20.29,
+    "post_1p10_s": 19.92
+   }
+  }
+ },
+ "alternates": [
+  {
+   "id": "V9-brief",
+   "roman": "Iski keemat... banane wala jaanta hai.",
+   "dev": "इसकी क़ीमत... बनाने वाला जानता है।",
+   "words": 6,
+   "syllables": 12,
+   "start": 26.75,
+   "est_end_1p08": 29.92,
+   "est_end_1p10": 29.86,
+   "dur_1p08": 3.17,
+   "dur_1p10": 3.11,
+   "note": ""
+  },
+  {
+   "id": "V9-P2",
+   "roman": "Banane wala jaanta hai.",
+   "dev": "बनाने वाला जानता है।",
+   "words": 4,
+   "syllables": 8,
+   "start": 26.75,
+   "est_end_1p08": 28.49,
+   "est_end_1p10": 28.46,
+   "dur_1p08": 1.74,
+   "dur_1p10": 1.71,
+   "note": ""
+  },
+  {
+   "id": "V10-ellipsis",
+   "roman": "Jo kehta hai \"editing mein kya hai\"... usko bhejo.",
+   "dev": "जो कहता है \"एडिटिंग में क्या है\"... उसको भेजो।",
+   "words": 9,
+   "syllables": 14,
+   "start": 29.6,
+   "est_end_1p08": 33.02,
+   "est_end_1p10": 32.96,
+   "dur_1p08": 3.42,
+   "dur_1p10": 3.36,
+   "note": "the brief's held \"...\" with the v2 words"
+  },
+  {
+   "id": "V10-keep",
+   "roman": "Jo kehta hai \"editing mein kya hai\", usey bhejo.",
+   "dev": "जो कहता है \"एडिटिंग में क्या है\", उसे भेजो।",
+   "words": 9,
+   "syllables": 14,
+   "start": 29.6,
+   "est_end_1p08": 32.82,
+   "est_end_1p10": 32.76,
+   "dur_1p08": 3.22,
+   "dur_1p10": 3.16,
+   "note": "only if the lead keeps the USSE card"
+  },
+  {
+   "id": "V10-usko-worst",
+   "roman": "Jo kehta hai \"editing mein kya hai\", usko bhejo.",
+   "dev": "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+   "words": 9,
+   "syllables": 15,
+   "start": 29.6,
+   "est_end_1p08": 33.02,
+   "est_end_1p10": 32.96,
+   "dur_1p08": 3.42,
+   "dur_1p10": 3.36,
+   "note": "\"usko\" counted as 3 syllables (worst case)"
+  },
+  {
+   "id": "V2-brief",
+   "roman": "Is frame mein... 12 layers hain.",
+   "dev": "इस फ़्रेम में... बारह लेयर्स हैं।",
+   "words": 6,
+   "syllables": 8,
+   "start": 3.07,
+   "est_end_1p08": 5.25,
+   "est_end_1p10": 5.21,
+   "dur_1p08": 2.18,
+   "dur_1p10": 2.14,
+   "note": ""
+  },
+  {
+   "id": "V2-brief-anchored",
+   "roman": "Is frame mein... 12 layers hain.",
+   "dev": "इस फ़्रेम में... बारह लेयर्स हैं।",
+   "words": 6,
+   "syllables": 8,
+   "start": 3.66,
+   "est_end_1p08": 5.84,
+   "est_end_1p10": 5.82,
+   "dur_1p08": 2.18,
+   "dur_1p10": 2.16,
+   "note": ""
+  }
+ ],
+ "fit_ladder": {
+  "V1A (processed > 2.60 s)": [
+   "--speed 1.10 on T4 (est 2.24 s)",
+   "retake T4 once (stability 0.55 if it drags); hard end 2.70"
+  ],
+  "V2 (\"baarah\" not within 4.70-4.90)": [
+   "split at the \"...\" hold and place \"baarah\" at 4.80 (hold >= 0.25 s)",
+   "if \"Lekin is ek frame mein...\" alone exceeds 1.45 s: retake T2 with the brief text \"Is frame mein...\" placed at 3.66 (alternate V2-brief)"
+  ],
+  "V3 (a word overlaps the next)": [
+   "--speed 1.10 on T2",
+   "drop \"Dhuaan.\" (tag 02 carries it); zero credits"
+  ],
+  "V4 (ends > 11.70)": [
+   "move \"Har chamak.\" to 10.90",
+   "--speed 1.10 on T2"
+  ],
+  "V5 (ends > 15.85, or C1 not gone by 16.25)": [
+   "--speed 1.10 on T1 (est end 15.63)",
+   "cap the \"layer...\" hold at 0.45 s: process T1 with \",\" in place of that \"...\" in --dev/--rom (the audio is unchanged; only vo_chain's dramatic-pause cap changes)",
+   "start at 12.00 (still >= 0.3 s after V4)",
+   "caption C1 hold 0.0"
+  ],
+  "V9 + V10 (V9 end + 0.15 + V10 > 33.24)": [
+   "--speed 1.10 on T3",
+   "V10 start up to 29.85 (needs V9 end <= 29.70)",
+   "cap the V9 hold at 0.45 s (same \",\" trick)",
+   "P2, zero credits: cut \"Keemat...\" at its hold and start \"banane wala jaanta hai.\" at 26.75 (V9 26.75-28.49, V10 back to 29.50)"
+  ]
+ },
+ "pronunciation_risks": [
+  {
+   "rank": 1,
+   "dev": "साठ (तीन सौ साठ)",
+   "roman": "saath",
+   "lines": [
+    "V7",
+    "V1B"
+   ],
+   "takes": [
+    "T1",
+    "T5"
+   ],
+   "risk": "heard as \"saat\" (सात = 7): \"teen sau saat\" = 307, a wrong spoken number (truth lock)",
+   "accept_if": "whisper (hi) returns साठ (or 360) AND by ear an aspirated retroflex \"th\" at the end",
+   "fallback": [
+    "the number exists in T1 and T5: splice the good \"teen sau saath\" into the other (same voice, zero credits)",
+    "retake the failing take with stability 0.55"
+   ]
+  },
+  {
+   "rank": 2,
+   "dev": "फ़्रेम / फ़्रेम्स",
+   "roman": "frame / frames",
+   "lines": [
+    "V2",
+    "V5",
+    "V6"
+   ],
+   "takes": [
+    "T1",
+    "T2"
+   ],
+   "risk": "f -> p (\"prem\"; the casting ASR heard लाइफ़ as \"लाइप\") or an inserted vowel (\"farem\"); it is the concept word",
+   "accept_if": "a real /f/ and one syllable \"frem\"; ASR फ्रेम / फ़्रेम / फ्रेम्स",
+   "fallback": [
+    "retake with फ्रेम (no nukta)",
+    "तस्वीर (tasveer, feminine): V2 \"Lekin is ek tasveer mein...\", V5 \"...jiske bina tasveer zinda nahi lagti\", V6 \"Ek second mein tees tasveerein\"; captions follow; never in the hook (it has no frame word by design)"
+   ]
+  },
+  {
+   "rank": 3,
+   "dev": "झपकते",
+   "roman": "jhapakte",
+   "lines": [
+    "V1A"
+   ],
+   "takes": [
+    "T4"
+   ],
+   "risk": "blurred to \"japakte\" / \"jhapkate\" inside the first 3 s",
+   "accept_if": "aspirated jh; \"jha-pak-te\" or \"jhap-kte\"",
+   "fallback": [
+    "retake T4",
+    "lead OK: \"Aap ne ise ek pal mein dekha.\" (6 words, same timing)"
+   ]
+  },
+  {
+   "rank": 4,
+   "dev": "ज़िंदा",
+   "roman": "zinda",
+   "lines": [
+    "V5"
+   ],
+   "takes": [
+    "T1"
+   ],
+   "risk": "\"jinda\": fine for many Indian ears, wrong for Pakistani ears on an Urdu word; it is the re-hook keyword",
+   "accept_if": "a clear /z/",
+   "fallback": [
+    "retake T1 lines V5 only",
+    "spelling ज़िन्दा"
+   ]
+  },
+  {
+   "rank": 5,
+   "dev": "क़ीमत",
+   "roman": "keemat",
+   "lines": [
+    "V9"
+   ],
+   "takes": [
+    "T3"
+   ],
+   "risk": "an over-hard uvular q or a glottal catch on the payoff word; \"kheemat\"",
+   "accept_if": "\"qeemat\" or \"keemat\", one smooth word",
+   "fallback": [
+    "कीमत (no nukta)"
+   ]
+  },
+  {
+   "rank": 6,
+   "dev": "लेयर / लेयर्स",
+   "roman": "layer / layers",
+   "lines": [
+    "V1B",
+    "V2",
+    "V5",
+    "V7"
+   ],
+   "takes": [
+    "T1",
+    "T2",
+    "T5"
+   ],
+   "risk": "\"le-yar-se\" (an extra vowel) or \"lair\"",
+   "accept_if": "\"leyar\" / \"leyars\", two syllables",
+   "fallback": [
+    "singular लेयर after the numerals (\"baarah layer hain\", grammatical in both); captions follow, designed type stays LAYERS"
+   ]
+  },
+  {
+   "rank": 7,
+   "dev": "लफ़्ज़",
+   "roman": "lafz",
+   "lines": [
+    "V4"
+   ],
+   "takes": [
+    "T2"
+   ],
+   "risk": "\"lafj\" or \"laphz\"",
+   "accept_if": "\"lafz\" or \"lafaz\"",
+   "fallback": [
+    "लफ़ज़ (lafaz)"
+   ]
+  },
+  {
+   "rank": 8,
+   "dev": "ट्रैक्स",
+   "roman": "tracks",
+   "lines": [
+    "V8"
+   ],
+   "takes": [
+    "T1"
+   ],
+   "risk": "\"ta-ra-kes\"",
+   "accept_if": "\"traiks\" / \"tracks\", one syllable",
+   "fallback": [
+    "ट्रैक (singular after a numeral; caption \"3 track\")"
+   ]
+  },
+  {
+   "rank": 9,
+   "dev": "एडिटिंग",
+   "roman": "editing",
+   "lines": [
+    "V10"
+   ],
+   "takes": [
+    "T3"
+   ],
+   "risk": "\"edeeting\" (low: the casting take read एडिटर cleanly)",
+   "accept_if": "any desi \"editing\"",
+   "fallback": [
+    "none needed"
+   ]
+  },
+  {
+   "rank": 10,
+   "dev": "धुआँ",
+   "roman": "dhuaan",
+   "lines": [
+    "V3"
+   ],
+   "takes": [
+    "T2"
+   ],
+   "risk": "\"dhua\" without the nasal (harmless)",
+   "accept_if": "\"dhuaan\" or \"dhuan\"",
+   "fallback": [
+    "drop \"Dhuaan.\" (V3 fit ladder)"
+   ]
+  }
+ ],
+ "changes_from_brief": [
+  {
+   "id": "C1",
+   "line": "V2",
+   "brief": "Is frame mein... baarah layers hain.",
+   "script": "Lekin is ek frame mein... baarah layers hain.",
+   "lead_ok": "yes (SLATE 3.3 wording, differs from BRIEF 9)",
+   "why": "the brief trimmed it with a 2.65 w/s word model that overrates short words: with the brief text started at 3.07, \"baarah\" lands ~4.2 s (not 4.80), or the start must wait to 3.66 (a 1.3 s VO hole after the hook). SLATE's line fills 3.07-4.29 plus a natural ~0.5 s hold and puts \"baarah\" on 4.80 with no split; \"Lekin\" is the turn word and \"ek\" echoes EK FRAME"
+  },
+  {
+   "id": "C2",
+   "line": "V8",
+   "brief": "Aur awaaz ki teen tracks.",
+   "script": "Aur awaaz ke teen tracks.",
+   "lead_ok": "yes (one letter of SLATE copy)",
+   "why": "ट्रैक is masculine in Hindi and Urdu usage (\"naya track\", \"yeh track acha hai\"): \"awaaz ke teen tracks\"; \"ki\" reads as a gender slip on both sides"
+  },
+  {
+   "id": "C3",
+   "line": "V9",
+   "brief": "Iski keemat... banane wala jaanta hai.",
+   "script": "Keemat... banane wala jaanta hai.",
+   "lead_ok": "yes",
+   "why": "the brief text runs to ~29.92 s (syllable model) and then V10 cannot end by 33.24 at 1.08; \"Keemat...\" is said while the keyword glyphs rise (26.62+), \"banane\" lands with the sub line (27.7) and the line ends ~29.44 with the lockup exit; the meaning is unchanged"
+  },
+  {
+   "id": "C4",
+   "line": "V10",
+   "brief": "Jo kehta hai \"editing mein kya hai\"... usse bhejo.",
+   "script": "Jo kehta hai \"editing mein kya hai\", usko bhejo.",
+   "lead_ok": "no (punctuation only; the word \"usko\" is C7)",
+   "why": "a comma instead of the held \"...\" after the quote: V10 3.22 s instead of 3.42 s; the VO ends ~32.82, leaving 0.78 s VO-free for the loop seam"
+  },
+  {
+   "id": "C5",
+   "line": "placement",
+   "brief": "V3 6.10, V4 9.85, V7 19.00, V10 29.50",
+   "script": "V3 per word 6.00 / 6.75 / 7.30 / 7.90; V4 per phrase 10.03 / 10.95; V7 18.90; V9 \"banane\" 27.70; V10 29.60",
+   "lead_ok": "no (within the brief's +-0.25 s rule)",
+   "why": "V7 on the 8th f567 with the counter roll-in lands \"teen\" on 20.45 without a split; V10 must start >= V9 end + 0.15; V3 words last 0.46-0.69 s, so they start on their tag arrivals"
+  },
+  {
+   "id": "C6",
+   "line": "captions",
+   "brief": "BRIEF 15 chunks: Aur ek *layer*... / jiske *bina* / frame *zinda*; Ek *second* mein / *tees* frames; Aur *awaaz* ki / *teen* tracks",
+   "script": "one serif keyword per caption chunk, <= 2 per instance (v2, gate r1 fix 4): C1 \"Aur ek *layer...* / jiske bina / frame *zinda* / nahi lagta\"; C2 \"Ek second mein / *30* frames / Yaani har second...\"; C3 \"Aur *awaaz* ke / 3 tracks\"; digits on screen (\"30 frames\", \"3 tracks\")",
+   "lead_ok": "no (house rules; viral gate r1 approved C6 with fix 4)",
+   "why": "the re-hook chunk at 12.05 now carries its flame word (*layer...*, as in BRIEF 15 and previs F3) and *zinda* stays on the flick; \"jiske bina\" stays white so no chunk has two keywords and C1 stays at the 2-per-scene maximum; the prior SRT writes numbers as digits (\"3 bari wajahain\")"
+  },
+  {
+   "id": "C7",
+   "line": "V10 + end card",
+   "brief": "Jo kehta hai \"editing mein kya hai\"... usse bhejo. + card USSE YEH / bhejo",
+   "script": "Jo kehta hai \"editing mein kya hai\", usko bhejo. + card USKO YEH / bhejo",
+   "lead_ok": "YES, needed (SLATE 5.1 locks the CTA; gate r1 fix 5); T3 is on HOLD until the call",
+   "why": "\"usse\" is how Roman Urdu writes उससे (\"from / than him\"; the project playbook uses it that way, hooks_retention_captions.md line 186), so the send line can read \"send this from him\" to Pakistani viewers while the VO says उसे (\"to him\"); \"usko\" (उसको) is spelled and read the same on both sides and matches the series' CTA grammar (C26 `US CLIENT KO / bhejo`, C15 `US DOST KO / bhejo`); same syllable count (us-ko / u-se), est end 32.82 s (33.02 s if Vlad gives it a third syllable) vs the card exit at 33.24; the gate measured `USKO YEH` at 455.5 px (jw_caps 86) vs 429.1 px, so it fits. If the lead keeps USSE: VO उसे, Roman / SRT token \"usey\" (takes[T3].alt)"
+  }
+ ],
+ "caption_notes": [
+  "Visible caption words (est): C1 = V5 (12.05-15.70), C2 = V6 + \"Yaani har second...\" (16.95-19.97), C3 = V8 (22.15-23.39); every other token is hidden (designed type says it) - see tokens[].caption_visible.",
+  "C1: with V5 ending ~15.70 and hold 0.15, the last chunk is gone ~16.15 (< 16.25).",
+  "Keyword flags in takes[].rom (*word): one per line, except V5 with two (*layer... and *zinda, one per chunk; gate r1 fix 4) and V1B / V7 with none (their serif word is the designed 360, 3 spoken tokens). vo_chain.words_json accepts any number of * per line; snake_captions allows one per chunk (check()).",
+  "Chunk preview (snake_captions.chunk_words, max_words 3, band widths of BRIEF 15, on the estimated times; * = serif keyword): C1 \"Aur ek *layer...* / jiske bina / frame *zinda* / nahi lagta\" (keywords per chunk [1, 0, 1, 0]); C2 \"Ek second mein / *30* frames / Yaani har second...\" ([0, 1, 0]); C3 \"Aur *awaaz* ke / 3 tracks\" ([1, 0]): one serif word per chunk at most, <= 2 per instance, none doubled with designed type.",
+  "End-card spelling (C7, gate r1 fix 5, needs the lead): the VO says उसको with the Roman token \"usko\", and the card should read `USKO YEH / bhejo`. \"usse\" reads as उससे (\"from / than him\") in Roman Urdu. If the lead keeps the card USSE: record T3 with उसे (takes[T3].alt) and write the Roman / SRT token as \"usey\". The IG caption line \"Usse bhejo jo kehta hai ...\" (BRIEF 16, creative-director) should follow the same call (\"Usko bhejo ...\" or \"Usey bhejo ...\").",
+  "\"banane wala\" can echo \"the Creator\" in old film songs; here the lockup pins it to the maker of the frame. No religious reading intended or needed.",
+  "Gate r1 fix 3 (creative-director): the 2-frame glint of the hidden JD at f846-f847 (28.20-28.23 s) falls inside \"banane\" (est 27.70-28.34), just before \"wala\" (est 28.34): the maker in the frame glints while the voice says \"banane wala\". No VO or caption change is needed (captions are hidden 26.4-33.6); once the real T3 word times exist the builder may move the glint to the \"wala\" onset (within 1 beat of 28.2) if the lead wants that sync."
+ ],
+ "verify": [
+  "PRE-RECORD (SLATE 4 spoken-number lock): the module self-test must show len(FRAME) == 12, 30 fps and the three stems (VO, SFX, MUSIC) before T1 is generated; the VO says baarah (12), tees (30), teen sau saath (360), teen (3) and nothing else.",
+  "No facts about Jawad are claimed (no clients, income, hours, tools, history); nothing needs [VERIFY]."
+ ],
+ "open_questions": [
+  "Gate r1 fix 5 / C7: approve the card `USKO YEH / bhejo` with the VO उसको (\"usko\")? T3 (V9 + V10) is on HOLD until this call; T1, T2, T4 and T5 can be recorded now (gate 8). If no: record T3 with उसे (takes[T3].alt) and the Roman token \"usey\", never \"usse\".",
+  "Approve C1 (V2 back to the SLATE wording), C2 (V8 \"ke\") and C3 (V9 \"Keemat...\")? The viral gate r1 approved C1-C5 from its side. Fallbacks: V2-brief (retake, placed at 3.66), V8 \"ki\" (retake of T1), V9-brief (fits only with T3 at 1.10 and V10 from ~30.0).",
+  "AI disclosure stays on the defaults (AI info ON, lane label \"VO · AI voice\" while V8 is spoken, IG caption \"Voice: AI (TTS)\").",
+  "If फ़्रेम fails the T1 test twice: approve \"tasveer\" (feminine forms in V2, V5, V6)?"
+ ],
+ "self_check": {
+  "hook by 0.3 s and readable muted": "yes: \"Aap\" / \"Ek\" at 0.10 s; the lockups read alone",
+  "every line traces to SLATE 3.3 / BRIEF 9": "yes; no hypotheticals needed; numbers are true by construction",
+  "both sides of the border": "checked word by word: palak jhapakte, lekin, andhera, dhuaan, roshni, chehra, lafz, chamak, zinda, yaani, awaaz, keemat, banane wala, kehta, usko, bhejo are daily words in Pakistan and India; tech words stay English; \"usse\" (reads as उससे in Roman Urdu) is gone from the Roman track",
+  "token table": "68 tokens (A 62 + V1B 6); DEV and ROM token counts equal per line and per take (vo_chain.tokens); <= 1 serif keyword per caption chunk and <= 2 per caption instance (snake_captions.chunk_words on the estimated times; V5 carries 2: layer, zinda)",
+  "number lock": "the DEV strings contain only these number words: एक (V1B V2 V5 V6), तीन (V1B V7 V8), सौ (V1B V7), साठ (V1B V7), बारह (V2), तीस (V6) (\"एक\" = one frame / one second / one more layer); spoken: baarah (12), tees (30), teen sau saath (360), teen (3); nothing else (scanned)",
+  "hook": "V1A 6 words / 11 syllables, first word 0.10, est end 2.37 (hard 2.70); V1B 6 words, est end 2.25",
+  "TTS hygiene": "no digits, Latin, brackets, tags or emoji in any DEV string (asserted); NFC",
+  "fit": "every line ends inside its window by the syllable model at 1.08; tight lines: V1A (0.33 s to hard), V5 (0.15 s), V9+V10 (0.42 s to the card exit; 0.22 s if \"usko\" takes a third syllable)",
+  "loop": "yes: \"usko bhejo\" -> \"Aap ne ise...\"",
+  "narrator": "aap / third person only; no main / meri; JD not voiced"
+ },
+ "gate_r1": {
+  "file": "brand_reels/design/reels/ek_frame_ki_keemat/GATE.md",
+  "verdict": "FIX",
+  "scores": {
+   "hook": 8,
+   "share": 7,
+   "truth": "pass",
+   "brand": 9
+  },
+  "fixes": [
+   {
+    "rank": 1,
+    "owner": "creative-director",
+    "what": "f0 trailer_hit -> impact_soft -8 dB (cue-level dur=0.25)",
+    "here": "no script text change; the loop note now says impact_soft"
+   },
+   {
+    "rank": 2,
+    "owner": "creative-director",
+    "what": "14.6-16.0 push toward pane 03 + 15.0-15.8 rack focus",
+    "here": "no script change; V5 still ends est 15.70, caption C1 last exit est 16.15 (< 16.25); the C1 bbox check against the pushed frame top edge is the creative-director's"
+   },
+   {
+    "rank": 3,
+    "owner": "creative-director",
+    "what": "28.2 s JD glint in layer 03 + pinned comment / caption line 2",
+    "here": "no VO change; narrator and caption notes updated (the glint lands on \"banane\")"
+   },
+   {
+    "rank": 4,
+    "owner": "hinglish-scriptwriter",
+    "what": "V5 keywords *layer...* + *zinda*",
+    "here": "APPLIED: lines[V5].roman_marked / caption_keyword, tokens V5 i=2 keyword, takes[T1].rom, C6; chunks C1 `Aur ek *layer...* / jiske bina / frame *zinda* / nahi lagta`"
+   },
+   {
+    "rank": 5,
+    "owner": "creative-director + hinglish-scriptwriter (needs the lead)",
+    "what": "card USKO YEH / bhejo; V10 उसको / usko",
+    "here": "APPLIED pending the lead (C7): lines[V10], tokens V10 i=7, takes[T3] (HOLD) with takes[T3].alt = उसे / usey"
+   }
+  ],
+  "brief_sync": "the creative-director copies V2 (C1), V8 \"ke\" (C2), V9 \"Keemat...\" (C3), V10 with a comma (C4) and \"usko\" (C7, if approved) plus the C1-C3 chunks of C6 into BRIEF 2, 5, 8 (E-1), 9, 15 and 16"
+ }
+}

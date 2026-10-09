@@ -31,6 +31,8 @@ FINISH  G.finish(cv, look, t=0, grain=None, grain_size=None, skin=None, rays=Non
     ov: any K.post override (exposure=1.4 * push, bloom=..., footage=1, vignette=...); grain= / grain_size=;
     skin=0..1 (0 = off); rays= god-ray strength (gold_hour default 0.26) and rays_center=(x, y) px.
     Exposure pushes on cut frames: G.finish(cv, LOOK, t, exposure=1.4 * push, bloom=G.bloom(LOOK) * (1 + .9 * push)).
+    Reels built on jawad_tx: G.tx_finish(cv, t, LOOK, cuts=CUTS, **plan.post_kw(t)) = jawad_tx.finish's push /
+    bloom-out / rgb-split, then this finish (same argument order as X.finish).
 
 COLOUR ONLY (no spatial ops; this is what the LUTs contain)
     G.grade_rgb(lin, look) -> graded linear float32 (h, w, 3): exposure, mono, crush, steps 2-5 (no bloom,
@@ -95,35 +97,41 @@ def _col(spec):
 # slope: log-log slope of the characteristic curve at 0.18; width: half-width (stops) of the mid-contrast bump
 # (the curve returns to slope ~1 in the deep toe, where the kit's crush is the toe); shoulder: (start stops,
 # depth stops). shadow / highlight: (colour, strength) of the luminance split tone. sat: (deep shadows, mids,
-# highlights) saturation. bb: blackbody roll-off (hot colour, white-hot colour, strengths, thresholds in linear
-# luminance BEFORE the curve). skin: share of the ungraded value skin keeps; skin_chroma: extra pull of skin's
-# chromaticity back to ungraded. grain / grain_size: film grain.
+# highlights) saturation. bb: blackbody roll-off (hot colour and white-hot colour (linear RGB), strengths,
+# thresholds l0..l1 (towards hot) and w0..w1 (towards white) in linear luminance BEFORE the curve). skin: share of
+# the ungraded value skin keeps; skin_chroma: extra pull of skin's chromaticity back to ungraded. grain /
+# grain_size: film grain amount / size in px.
 FIN = {
     'ember': dict(
         slope=1.16, width=1.6, shoulder=(2.5, 1.5), shadow=('EMBER', 0.05), highlight=('GOLD', 0.04),
         sat=(0.82, 1.06, 1.0),
-        bb=dict(hot='GOLD', white=(1.0, 0.90, 0.74), k_hot=0.70, k_white=0.80, l0=1.0, l1=5.0, w0=3.0, w1=12.0),
+        bb=dict(hot=(1.0, 0.45, 0.12), white=(1.0, 0.88, 0.70), k_hot=0.75, k_white=0.85, l0=0.8, l1=2.5, w0=1.6,
+                w1=5.0),
         skin=0.70, skin_chroma=0.5, grain=0.016, grain_size=1.8, rays=0.0),
     'noir_ember': dict(
         slope=1.26, width=1.5, shoulder=(2.5, 1.5), shadow=('SMOKE', 0.04), highlight=('AMBER', 0.03),
         sat=(0.60, 0.92, 1.0),
-        bb=dict(hot='AMBER', white=(1.0, 0.92, 0.80), k_hot=0.65, k_white=0.85, l0=1.0, l1=5.0, w0=3.0, w1=10.0),
+        bb=dict(hot=(1.0, 0.50, 0.18), white=(1.0, 0.90, 0.78), k_hot=0.70, k_white=0.85, l0=0.8, l1=2.5, w0=1.6,
+                w1=5.0),
         skin=0.70, skin_chroma=0.5, grain=0.022, grain_size=1.7, rays=0.0),
     'inferno': dict(
         slope=1.30, width=1.7, shoulder=(2.5, 1.3), shadow=('EMBER', 0.08), highlight=('FLAME', 0.04),
         sat=(0.86, 1.05, 1.0),
-        bb=dict(hot='FLAME', white=(1.0, 0.82, 0.62), k_hot=0.80, k_white=0.35, l0=1.0, l1=6.0, w0=5.0, w1=16.0),
+        bb=dict(hot=(1.0, 0.30, 0.06), white=(1.0, 0.75, 0.50), k_hot=0.80, k_white=0.40, l0=0.8, l1=3.0, w0=3.0,
+                w1=8.0),
         skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.7, rays=0.0),
     'gold_hour': dict(
         slope=1.10, width=1.8, shoulder=(2.5, 1.7), shadow=('#2B1407', 0.10), highlight=('GOLD', 0.07),
         sat=(0.86, 1.05, 1.0),
-        bb=dict(hot='AMBER', white=(1.0, 0.93, 0.80), k_hot=0.70, k_white=0.85, l0=0.9, l1=4.0, w0=2.5, w1=9.0),
+        bb=dict(hot=(1.0, 0.55, 0.20), white=(1.0, 0.92, 0.78), k_hot=0.75, k_white=0.90, l0=0.7, l1=2.2, w0=1.4,
+                w1=4.0),
         skin=0.70, skin_chroma=0.5, grain=0.018, grain_size=1.6, rays=0.26, rays_center=(0.52, 0.78),
         rays_threshold=0.30, rays_length=0.42),
     'dusk': dict(
         slope=1.20, width=1.6, shoulder=(2.5, 1.5), shadow=('#171431', 0.20), highlight=('FLAME', 0.04),
         sat=(0.80, 1.06, 1.0),
-        bb=dict(hot='GOLD', white=(1.0, 0.90, 0.76), k_hot=0.70, k_white=0.75, l0=1.0, l1=5.0, w0=3.0, w1=12.0),
+        bb=dict(hot=(1.0, 0.45, 0.12), white=(1.0, 0.88, 0.72), k_hot=0.75, k_white=0.80, l0=0.8, l1=2.5, w0=1.8,
+                w1=5.5),
         skin=0.70, skin_chroma=0.5, grain=0.020, grain_size=1.7, rays=0.0),
 }
 
@@ -291,12 +299,12 @@ def _params(look):
     tabA[:, 0, :3] = gs * k[:, None]
     tabA[:, 0, 3] = 1.0
     tabB[:, 0, :3] = gs * (1.0 - k)[:, None]
-    # 4: blackbody thresholds mapped through the curve (luminance after step 2)
+    # 4: blackbody: thresholds on the luminance BEFORE the curve (a saturated glow's own channel shoulder would
+    #    hide its intensity after it); hot / white colours are blackbody-like (B rises with G: gold, then warm white,
+    #    never lemon yellow)
     bb = dict(P['bb'])
-    f = lambda v: float(tone_curve(v, look))                                           # noqa: E731
-    bbp = dict(l0=f(bb['l0']), l1=f(bb['l1']), w0=f(bb['w0']), w1=f(bb['w1']), k_hot=bb['k_hot'],
-               k_white=bb['k_white'], n_hot=_norm_dir(bb['hot']).astype(np.float32),
-               n_white=_norm_dir(bb['white']).astype(np.float32))
+    bbp = dict(l0=bb['l0'], l1=bb['l1'], w0=bb['w0'], w1=bb['w1'], k_hot=bb['k_hot'], k_white=bb['k_white'],
+               n_hot=_norm_dir(bb['hot']).astype(np.float32), n_white=_norm_dir(bb['white']).astype(np.float32))
     return dict(gain=gain, tabA=tabA, tabB=tabB, bb=bbp, k=k, gs=gs)
 
 
@@ -306,20 +314,18 @@ def _ss32(a, b, x):
     return t * t * (np.float32(3.0) - np.float32(2.0) * t)
 
 
-def _blackbody(cv, L, Q):
-    """Step 4: saturated pixels brighter than l0 move FLAME -> hot colour -> warm white with luminance."""
+def _blackbody(cv, L, idx, Lin, Q):
+    """Step 4: saturated pixels idx (pre-curve luminance Lin above l0) move from their own hue towards the hot
+    colour, then towards warm white, as Lin rises (L = luminance after the curve, kept)."""
     bb = Q['bb']
-    idx = np.flatnonzero(L.ravel() > np.float32(bb['l0']))
-    if idx.size == 0:
-        return
     flat = cv.reshape(-1, cv.shape[-1])
     c = flat[idx, :3]
     lm = L.ravel()[idx]
     mx = c.max(1)
     sat = (mx - c.min(1)) / np.maximum(mx, np.float32(1e-6))
     wf = _ss32(0.35, 0.75, sat)
-    t1 = _ss32(bb['l0'], bb['l1'], lm) * np.float32(bb['k_hot']) * wf
-    t2 = _ss32(bb['w0'], bb['w1'], lm) * np.float32(bb['k_white']) * wf
+    t1 = _ss32(bb['l0'], bb['l1'], Lin) * np.float32(bb['k_hot']) * wf
+    t2 = _ss32(bb['w0'], bb['w1'], Lin) * np.float32(bb['k_white']) * wf
     n = c / np.maximum(lm, np.float32(1e-6))[:, None]
     n += (bb['n_hot'][None, :] - n) * t1[:, None]
     n += (bb['n_white'][None, :] - n) * t2[:, None]
@@ -329,6 +335,9 @@ def _blackbody(cv, L, Q):
 def _color(cv, look):
     """Steps 2-4 + saturation, in place on an (h, w, 4) float32 canvas (alpha comes back as 1)."""
     Q = _params(look)
+    Lin = cv2.transform(cv, LUMA4).ravel()                                            # pre-curve luminance
+    hot = np.flatnonzero(Lin > np.float32(Q['bb']['l0']))
+    Lhot = Lin[hot]
     cv2.multiply(cv, Q["gain"][cv.view(np.uint16)[..., 1::2]], dst=cv)               # tone (bf16-indexed gain)
     cv[..., 3] = 1.0
     L = cv2.transform(cv, LUMA4)
@@ -338,7 +347,8 @@ def _color(cv, look):
     cv2.multiply(cv, A, dst=cv)
     cv2.multiply(B, cv2.cvtColor(L, cv2.COLOR_GRAY2RGBA), dst=B)
     cv2.add(cv, B, dst=cv)
-    _blackbody(cv, L, Q)
+    if hot.size:
+        _blackbody(cv, L, hot, Lhot, Q)
     return cv
 
 
@@ -434,6 +444,28 @@ def finish(cv, look, t=0.0, grain=None, grain_size=None, skin=None, rays=None, r
         K.grain(cv, t, g, P['grain_size'] if grain_size is None else float(grain_size))
     cv[..., 3] = 1.0
     return cv
+
+
+def tx_finish(cv, t, look, cuts=(), **kw):
+    """Drop-in for jawad_tx.finish (same argument order and keywords: cuts, push, bloomout, rgb_split,
+    push_decay, bloom_scale, any K.post key) that ends in G.finish: jawad_tx computes the exposure push / L4
+    bloom-out / D7 split exactly as it does today, then this finish grades the frame.
+        def post(cv, t): return G.tx_finish(cv, t, LOOK, cuts=CUTS, **plan.post_kw(t))
+    (jawad_tx's K.post call is captured for the duration of the call: render workers are single-threaded.)"""
+    import jawad_tx as X
+    got = {}
+
+    def _capture(canvas, lk, tt=0.0, **ov):
+        got.update(ov)
+        return canvas
+    orig = K.post
+    K.post = _capture
+    try:
+        X.finish(cv, t, look, cuts=cuts, **kw)
+    finally:
+        K.post = orig
+    extra = {k: got.pop(k) for k in ('grain', 'grain_size', 'skin', 'rays', 'rays_center') if k in got}
+    return finish(cv, look, t, **extra, **got)
 
 
 def grade_rgb(lin, look, skin=True):
@@ -799,7 +831,7 @@ def _scene_assets(look):
                 sparks=J.embers(90, seed=4))
 
 
-SCENE_ROWS = (('Tone curve', 0.6), ('Skin protect', 0.9), ('Grain 1.6 px', 1.2))
+SCENE_ROWS = (('Tone curve', 0.6), ('Skin protect', 0.9), ('Film grain', 1.2))
 
 
 def scene(look, t, subject=True):
@@ -1169,6 +1201,20 @@ def selftest():
                   r['identity_max_code_rgb24'], r['identity_max_code_16bit']))
         check(r['mean_dE'] < 1.0 and r['max_dE'] < 2.5,
               '%s: LUT vs in-process mean dE %.3f (< 1), max %.3f (< 2.5)' % (lk, r['mean_dE'], r['max_dE']))
+    # tx_finish == finish with jawad_tx's push kwargs; K.post restored
+    try:
+        import jawad_tx as X
+        cv0 = scene('dusk', 0.5)
+        a = tx_finish(cv0.copy(), 0.5, 'dusk', cuts=(0.5,), grain=0.0)
+        p = X.push_at(0.5, (0.5,))
+        b = finish(cv0.copy(), 'dusk', 0.5, grain=0.0, exposure=K.LOOKS['dusk'].get('exposure', 0.0) + 1.4 * p,
+                   bloom=K.LOOKS['dusk']['bloom'] * (1 + 0.9 * p))
+        check(float(np.abs(a - b).max()) < 1e-5 and K.post is not None and
+              getattr(K.post, '_jawad_orig', None) is not None,
+              'tx_finish == finish with the jawad_tx push (max diff %.2e), K.post restored'
+              % float(np.abs(a - b).max()))
+    except ImportError:
+        print('       jawad_tx not present: tx_finish not tested')
     # finish timing on a real frame
     for lk in ALL_LOOKS:
         cv0 = scene(lk, 1.0)
