@@ -613,7 +613,7 @@ def sc_bedroom(t):
     scrim(c, top=0.66, top_h=0.5, bottom=0.25)
     # flash in from previous white
     c += max(0.0, 1 - lt / 0.25) * 0.9
-    seq_draw(c, 'sun', t, 905, 395 + 10 * math.sin(t * 2), 170, op=min(1, prog(t, 3.2, 3.6)))
+    seq_draw(c, 'sun', t, 950, 335 + 10 * math.sin(t * 2), 140, op=min(1, prog(t, 3.2, 3.6)))
     kinetic_line(c, 'Sometimes,', W / 2, 470, 104, t, 3.0, color=WHITE_, glow=MAGENTA, glow_str=0.35,
                  out_t=4.75, out_dur=0.25)
     kinetic_line(c, "it's not the", W / 2, 600, 104, t, 3.45, color=WHITE_, glow=MAGENTA, glow_str=0.35,
@@ -663,7 +663,7 @@ def sc_kitchen(t):
                  out_t=10.78, out_dur=0.3)
     kh = prog(t, 9.6, 10.0)
     if kh > 0:
-        seq_draw(c, 'heart', t, 880, 760 + 10 * math.sin(t * 3), 150 * e_out_back(kh, 2.6),
+        seq_draw(c, 'heart', t, 905, 790 + 10 * math.sin(t * 3), 120 * e_out_back(kh, 2.6),
                  op=min(1, kh * 3) * (1 - prog(t, 10.7, 10.95)))
     tag(c, t, 8.9, W / 2, 1360, 'Breakfast')
     return c
@@ -714,13 +714,15 @@ def sc_message(t):
     # 3D extraordinary
     kx = prog(t, 15.05, 15.5)
     if kx > 0:
-        f = seq('text_extra').frame(t)
+        fi_ = int(t * 24) % 24
+        f = seq('text_extra').frame(fi_ / 24.0)
         ex_s = 0.85 + 0.15 * e_out_back(kx, 1.8)
         if f.shape[0] > 16:
             sc = 960 / f.shape[1] * ex_s
-            glow_add(c, f, W / 2, 545, MAGENTA, sigma=30, strength=1.0 * kx, scale=sc)
+            glow_add(c, f, W / 2, 545, MAGENTA, sigma=34, strength=0.42 * kx, scale=sc)
+            f = colorized('text_extra', fi_, hexc('#4A1040'), hexc('#FFC9DF'), 1.6)
             p = (t - 15.55) / 0.8 * 1.6 - 0.3
-            ff = sweep(f, p, width=0.08, strength=1.2) if -0.3 < p < 1.3 else f
+            ff = sweep(f, p, width=0.07, strength=0.5) if -0.3 < p < 1.3 else f
             draw(c, blur_sprite(ff, (1 - kx) * 10), W / 2, 545 + 40 * (1 - e_out_expo(kx)), scale=sc, opacity=min(1, kx * 2))
         else:
             kinetic_line(c, 'extraordinary', W / 2, 545, 130, t, 15.05, color=WHITE_, fname=F_X)
