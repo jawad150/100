@@ -69,6 +69,16 @@ API
   _overview(mix, vo, music, sfx, path, title) -> PNG (spectrogram + stem level curves + VO margin strip);
   cpad(x, p) / SPEC (every number above; SPEC['vo_lufs'], SPEC['sfx_duck_vo_db'] ... are read by the reels).
 
+SELF-TEST (2026-10-09, `selftest`: pehle_wala_vo_A.wav mono 34.133 s, 19 audio.py cues via sfx_jawad.fit_under_vo +
+  room_tone -30, synthetic _test_bed; 32/32 checks pass, 207 s on 2 threads; outputs in
+  workspace/brand_reels/wf/kitcheck/mixtest/, mixtest_mix.png viewed)
+  A -14.01 LUFS / -2.30 dBTP / LRA 2.2 (ffmpeg -14.0 / -2.3), limiter max GR 2.29 dB (> 3 dB: 0 s), glue GR 3.4 dB
+  B -14.00 LUFS / -2.30 dBTP / LRA 4.3;  AAC after mux: A -14.0 LUFS / -2.2 dBTP, B -14.0 / -2.2 (linear loudnorm)
+  VO over music 10.6 LU, over SFX 27.2, over bed 10.5 (medians, speech frames); stems-sum residual -138.5 dBFS
+  per word (LEAD_DECISIONS 1): 2 of 45 words under 8 LU over the bed on the plain chain (min 6.1); word_floor_lu=8.0
+  brings all 45 to >= 7.3 (one-syllable floor 7) at unchanged A / B loudness. mono VO == dual-mono stereo VO (same
+  bytes); identical sha256 on a re-run; loop=True continuity <= -100 dBFS at the seam.
+
 CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh)
   python3 epic_mix.py selftest [--out DIR] [--slug pehle_wala]   the mixtest (real VO, audio.py cues, synthetic bed)
   python3 epic_mix.py mix NAME DUR [--vo W] [--sfx W] [--music W] [--out-dir D] [--vo-offset S] [--loop] [--words J]
