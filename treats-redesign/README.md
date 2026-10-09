@@ -4,6 +4,8 @@ This is a pitch redesign of [treatsfoods.co.uk](https://www.treatsfoods.co.uk/).
 
 ![Hero scroll sequence](preview/hero-scroll-sequence.jpg)
 
+**Scroll-through demo video:** [`preview/scroll-demo.mp4`](preview/scroll-demo.mp4) (43 s, 1280×800)
+
 ## Run it
 
 ```bash
