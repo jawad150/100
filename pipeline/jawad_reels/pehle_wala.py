@@ -202,9 +202,9 @@ def assets():
         hook=J.HouseTitle('BAS EK', 'chhota sa', caps_px=86, key_px=200),
         change=T.render('CHANGE', 'jw_caps', px=86),
         payoff=KeyFirstTitle('pehle wala', 'HI THEEK THA', key_px=210, caps_px=86, ul_len=918),
-        card=PO.ProfileOutro("Tumhare client ka 'chhota sa change' kya tha?", key='Comment mein batao',
+        card=PO.ProfileOutro("Client ka 'chhota sa change' kya tha?", key='Comment mein batao',
                              dur=4.2667),                    # Jawad 10-09: Genjutsu-style profile outro
-        cap=SC.Captions(VO_A, band='lower', y=1400, avoid=cap_avoid, hide=[(0.0, 2.6667), (T_CARD + 1.2, DUR)], clear=[(21.8667, 23.40)]))
+        cap=SC.Captions(VO_A, band='lower', y=1400, avoid=cap_avoid, hide=[(0.0, 2.6667), (T_CARD + 1.2, DUR)], clear=[(21.8667, 23.40), (T_CARD + 1.2, DUR)]))
 
 
 def prewarm():

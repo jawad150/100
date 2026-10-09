@@ -121,6 +121,18 @@ def _wrap(text, px, max_w, style='jw_body'):
             cur = nxt
     if cur:
         lines.append(cur)
+    n = len(lines)
+    if 1 < n <= 3 and len(words) <= 16:                    # balance: no orphan last word
+        import itertools
+        best = None
+        for cut in itertools.combinations(range(1, len(words)), n - 1):
+            idx = (0,) + cut + (len(words),)
+            ls = [' '.join(words[idx[i]:idx[i + 1]]) for i in range(n)]
+            mw = max(T.measure(x, style, px=px)[0] for x in ls)
+            if mw <= max_w and (best is None or mw < best[0]):
+                best = (mw, ls)
+        if best:
+            lines = best[1]
     return lines
 
 
