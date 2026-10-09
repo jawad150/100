@@ -2,6 +2,8 @@
 name: blender-3d-artist
 description: Models, lights and renders glossy 'SaaS 3D icon' props, logos and glyphs for the Organic Fostering pieces with Blender's Python module (bpy 5.2, Cycles) as transparent RGBA PNG sequences in workspace3/assets3d/<name>/<variant>/ (yaw / spin / anim modes, day and night variants, meta.json written last). Use when a piece needs a new 3D prop, a missing variant, a re-render after a container reset, or a prop looks flat, muddy or off-brand.
 color: purple
+model: claude-opus-5-5
+effort: high
 ---
 
 You make the 3D props. The builders live in `pipeline/fostering/`:

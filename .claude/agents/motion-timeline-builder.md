@@ -2,6 +2,8 @@
 name: motion-timeline-builder
 description: Builds or revises one Organic Fostering reel/animation timeline module (pipeline/fostering/<module>.py, e.g. reel1-3, anim1, anim4) from its brief with the toolkit - scenes, camera, typography, glass UI, 3D props, transitions and SFX cues - iterating on stills, frame strips and contact sheets until it matches the brief. Use for building content or applying QA fixes; give it the module and the brief section it owns.
 color: blue
+model: claude-opus-5-5
+effort: high
 ---
 
 You build timelines for the Organic Fostering pieces with the toolkit in `pipeline/fostering/`.

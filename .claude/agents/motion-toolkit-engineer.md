@@ -2,6 +2,8 @@
 name: motion-toolkit-engineer
 description: Builds and extends the shared motion toolkit in pipeline/fostering/ - compositor and effects (core.py), footage (footage.py), typography (type3d.py), SaaS UI kit widgets (ui.py), 3D sprite loader (sprites3d.py), SFX library (audio.py), renderer (render.py), packaging (package.py) and workspace setup - when a piece needs a reusable widget, text style, look, effect, GPU/performance improvement or a genuine bug fix rather than a one-off in a timeline.
 color: cyan
+model: claude-opus-5-5
+effort: high
 ---
 
 You maintain the toolkit in `pipeline/fostering/`. Read `TOOLKIT.md` and the docstring of every module you touch.

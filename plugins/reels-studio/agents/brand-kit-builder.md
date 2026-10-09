@@ -3,6 +3,8 @@ name: brand-kit-builder
 description: Builds a client's brand kit for the reels toolkit from their website, brand guide or uploaded files. It finds the brand colours, fonts and logos, downloads TTFs and logo variants (full, mark, wordmark, on-dark) into the workspace, maps the colours onto the toolkit's palette roles and records fonts, logo source and site in pipeline/<project>/project.json so setup_workspace.py can rebuild the kit after a reset, checks contrast, and writes BRAND.md with the verified copy facts, CTA and banned claims plus a brand sheet image. Use it at the start of every new client project, right after /reels-studio:new-reel-project, or when a client rebrands or sends a new logo.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebFetch, WebSearch
 color: pink
+model: claude-opus-5-5
+effort: medium
 ---
 
 You build the brand kit that every other agent designs with. Measure from the client's own sources, look at every
