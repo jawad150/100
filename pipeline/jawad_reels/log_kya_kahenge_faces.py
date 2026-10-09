@@ -337,6 +337,13 @@ def _s5_layers():
     rim = FA.rim_light(p, dep, light=(-0.9, -0.3), back=0.3, outline=0.12, base=zero)  # look A, emission only
     dx, dy = FA.offset(p, rim)
     H, W = rim.shape[:2]
+    # HANDOFF risk 9 (checked on the real plate, motion-timeline-builder 2026-10-09): the all-round outline + counter-rim
+    # saturated to an even stroke on BOTH sides after the finish (rendered edge luma: left 209-214, right 107-112), a
+    # sticker edge against the brief's light plot. The rim emission now falls off from the face centre to the right
+    # (1.0 at x <= 450 -> 0.25 at x 741, cut-out px): left rim unchanged (209-214), right edge 60-75.
+    xs_r = np.arange(W, dtype=np.float32) - dx
+    rim = rim.copy()
+    rim[..., :3] *= (1.0 - 0.75 * _smooth((xs_r - 450.0) / (741.0 - 450.0)))[None, :, None]
 
     def padto(s):
         o = np.zeros((H, W, 4), np.float32)

@@ -40,6 +40,13 @@ R7); O6 embers spawn from the card layer with the luminance capped (O6_LCAP: the
 red columns); the caption avoid rect around the scroller is his head + phone (CR.scroller_rect), so the V4 / V5 chunks stay
 in the lower band (y 1350-1390) instead of jumping to y 700; the last card stands in S6-01 until it tips (it was culled with
 its flat row) and is lifted by its own warm rake light (CR.LAST_LIGHT), else the gag is invisible at phone size.
+Session 3, build pass 2 (each measured / viewed): (1) a judgement line is pushed back on impact: `out_cubic` from 1 f before
+the next line (brief: `inout_cubic` from its start, which left the arriving line on top of it for 4 f per change, 2,000-8,600 px
+of glyph overlap; now 1 contact frame); (2) the S4-02 focus pull also opens CAM_ROWS' aperture 60 -> 180 (`aperture_at`): at 60
+the pull changed the CoC by 1.5 px (invisible at phone size); now the card lines go 0 -> 4.4 px, the far rows soften, the
+scroller's row stays sharp and the far phones bloom into small discs; the single image f576-f599 is untouched; (3) the S5
+look-A rim falls off to the right of the face centre (log_kya_kahenge_faces._s5_layers; HANDOFF risk 9): the all-round outline
+read as a sticker edge on the real plate.
 
 Contract: DUR / LOOK / BPM, assets(), prewarm(), pure draw(t), post(cv, t) -> G.tx_finish, samples(t), cues() = [].
 Env: LKK_NOTEXT=1 skips every text overlay (hook lockups, J lines, payoff, end card, captions); LKK_DEBUG=1 appends the
