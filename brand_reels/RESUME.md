@@ -18,6 +18,16 @@ re-buildable scratch only, except what is saved under `brand_reels/assets/`.
   script headers / SLATE), shared context `pipeline/jawad_reels/workflows/ctx.txt`.
 
 
+## Session 4 (2026-10-09, fresh container) - read this first
+- Restore: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`, then
+  `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`, then
+  `cat pipeline/jawad_reels/workflows/ctx.txt pipeline/jawad_reels/workflows/ctx_s4_notes.txt > workspace/brand_reels/wf/ctx.txt`.
+- No Higgsfield connector in session 4: the saved Vlad takes are final (LEAD_DECISIONS 3); 0 credits spent.
+- Pre-production for reels 2-4 was finished in session 3 (HANDOFF.md for bijli_chali_gayi, ek_frame_ki_keemat,
+  beta_tum_karte_kya_ho; ek_frame_ki_keemat faces module + FACES.md).
+- No Workflow runner in session 4: the lead runs the `reel_s3.js` / `soundkit_s3.js` stages by hand with the Reels Studio
+  agents (same prompts, same order). Status: git log (`<slug>: ...` commits) and `reel/jawad_reels/<slug>/README.md`.
+
 ## Session 3 (2026-10-09, fresh container, Higgsfield connected again) - read this first
 - Restore: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
   (deps above + `fonttools`). The crops are rebuilt from the cut-outs (`tools/rebuild_crops.py`); the character sheets,

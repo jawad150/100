@@ -24,7 +24,7 @@ if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
 git commit -q -m "$msg
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01HV1qCcH7hJLLNW1jg4FE9k" || exit 1
+Claude-Session: https://claude.ai/code/session_01N8UkVXghpsVSJ8xNkDkkj9" || exit 1
 for d in 0 2 4 8 16; do
   sleep $d
   if git push -u origin "$BRANCH" >/dev/null 2>&1; then git log --oneline -1; exit 0; fi
