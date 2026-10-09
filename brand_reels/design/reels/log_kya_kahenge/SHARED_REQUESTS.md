@@ -83,3 +83,18 @@ Filed 2026-10-09 by the sound-designer (SFX run 2, real Vlad VO). Measured on C1
 
 Two entries above are headed R5. `HANDOFF.md` §12 keeps R5 for the god-ray hold-out (face-compositor) and calls the
 `epic_mix` entry (sound-designer; `SOUND.md` R5a/b/c) **R6** (a/b/c). No new request from the handoff.
+
+## R6 status (music-supervisor, 2026-10-09): all three worked around in `log_kya_kahenge_mix.py`, plus one new finding
+
+- **(a) mono VO:** `load_exact()` reads each input and copies a mono file to L = R (it also refuses any input that is not
+  exactly 1,689,600 samples at 48 kHz, instead of padding it silently).
+- **(b) glue on hero hits:** the glue's gain reduction is capped at 1.5 dB inside 15.97-16.40 s, and the score is ducked a
+  further 10 dB under the SFX reveal (15.99-16.33). Measured: the reveal is 3.2 LU over the next loudest moment in mix A
+  (r1: 0.7-1.0), and the limiter stays ≤ 3.35 dB (> 3 dB for 0.02 s, on two VO plosives). With no glue at all on the reveal the
+  limiter did 6.1 dB there for 0.32 s, which is why the cap is 1.5 dB and not 0.
+- **(c) loop seam:** every input is padded circularly by 4 s, processed, then cropped. The processed audio after 35.2 s
+  equals the cropped start to < -240 dBFS. Seam step 1.29-1.36x the local median.
+- **(d) new: `mix_reel`'s stems do not sum to mix A.** It writes `stem_* = x · gain · limiter` but mix A also went through
+  `glue()`, so the stems are missing the glue's gain curve (up to 3.6 dB on C15). **Ask:** apply the same glue curve to the
+  stems. **Local workaround:** `log_kya_kahenge_mix.py` multiplies each stem by the whole bus curve (glue · gain · limiter).
+  Measured residual of the sum against A: -138.5 dBFS (24-bit rounding).

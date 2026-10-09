@@ -363,7 +363,7 @@ def S_E(t):
     bank = 1.0 - lt
     ppl = people_s6(t)
     st = CR.State(head=0.0, lean=1.0, flap=flap_angles(t), last_tip=last_tip(t), people=ppl, phones=ppl,
-                  light=lt, empty=True, t=t)
+                  light=lt, empty=True, t=t, lines=False)
     return _wide_world(cam, t, st, bank=bank, light=lt, warm_key=lt, dust=bank)
 
 

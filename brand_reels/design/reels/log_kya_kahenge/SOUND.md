@@ -219,7 +219,9 @@ B-section pulse and pad, not from the SFX (§6).
 
 ## 6. Open items
 
-**For the music-supervisor (final mix):**
+**For the music-supervisor (final mix):** items 1-4 and 6 were resolved on 2026-10-09 by `log_kya_kahenge_mix.py` and the
+re-built score (final mixes in `<RW>/audio/final/`; numbers in `MUSIC_log_kya_kahenge.md` run 2). Item 5 is still open for the lead:
+LRA of the final version A is 3.4 LU, version B 5.7 LU.
 1. **Mono VO crash (SHARED_REQUESTS R5a).** `mix` passes the mono `lkk_vo_A.wav` to `epic_mix.mix_reel`, which raises a
    ValueError at its `np.concatenate`. Feed a stereo copy (`np.repeat(x, 2, axis=1)`), as `rough()` does.
 2. **Seam click (R5c).** The plain epic_mix leaves a step at the loop seam: at 0.0 s the music is unducked, at 35.2 s it is

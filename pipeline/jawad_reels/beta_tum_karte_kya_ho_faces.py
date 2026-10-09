@@ -933,7 +933,6 @@ def export():
         cv2.imwrite(os.path.join(d, 'depth.png'), cv2.imread(os.path.join(CUT, pose + '_depth.png'),
                                                              cv2.IMREAD_UNCHANGED))
         L = look(pose, 'A')
-        em = L['em_head'], L['em_torso']
         emf = np.zeros(L['shape'] + (3,), np.float32)
         emf += L['em_torso'][..., :3]
         hox, hoy = L['head_off']
@@ -946,7 +945,9 @@ def export():
             im = np.dstack([st[..., ::-1] * 65535.0, al * 65535.0])
             cv2.imwrite(os.path.join(d, 'layers', nm + '.png'), np.round(im).astype(np.uint16))
         m = dict(meta(pose))
-        m.update(tex_k=TEX_K[pose], cheek_ratio=round(cheek_ratio(pose), 3), hero_offset=L['off'],
+        m.update(eye_mid_hand=EYE_MID[pose], eye_corners_hand=EYE_CORNERS[pose],
+                 note_eyes='eye_mid_hand (canthi midpoint, marked by hand) is the eye lock; eye_mid is YuNet',
+                 tex_k=TEX_K[pose], cheek_ratio=round(cheek_ratio(pose), 3), hero_offset=L['off'],
                  head_layer_offset=L['head_off'], head_pivot_hero=L['pivot'], seam_y_hero=L['seam_y'],
                  layer_z=dict(head=0.0, torso=Z_TORSO, plate=Z_PLATE), focal_px=F85, s0=S0,
                  eye_screen=EYES, sources=dict(cutout=os.path.join(CUT, pose + '.png'),

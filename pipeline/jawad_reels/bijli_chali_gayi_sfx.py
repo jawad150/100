@@ -8,7 +8,7 @@ MUSIC_bijli_chali_gayi.md: D major (backup_beep = D7 2349.32 Hz, end-card glass_
 stems and word timings in <RW>/vo/ (VO_TIMING.md). Cue sheet + measurements: SOUND.md in the same design folder.
 
 What this module owns
-    register()        adds the 12 local sounds to audio.SOUNDS (idempotent), after epic_sfx and sfx_jawad
+    register()        adds the 13 local sounds to audio.SOUNDS (idempotent), after epic_sfx and sfx_jawad
     raw_cues(hook)    the brief's cue list for hook 'A' (public, blackout) or 'B' (Trial, torch-lit), frame-exact, before
                       the VO fit. The harmonium (music=True) is listed for the instant count but is NOT rendered into the
                       SFX stem: it lives in the music-supervisor's music_full.wav (one harmonium source only)
@@ -40,6 +40,8 @@ Local sounds (each audio.qc() == [] at its default and used params; spectrograms
                             out_cubic over `duration`, then `hold`, then `release`; 100 Hz motor hum only while powered
     keycap_thock(pitch)     mechanical keycap: modal "thock" + 160 Hz body + contact click, release click 4 frames later
                             (the 2D press holds 2 f after a 2 f press); pitch = resample (Ctrl 0.94, S 1.0)
+    pankhi_swing            hand-fan swing: air swish (500 -> 1300 -> 700 Hz) + palm-leaf crackle on one swell, hit =
+                            the loudest pass (0.22 s); replaces leaf_rustle, whose loudest window landed 63-93 ms late
     mohalla_cheer(dur, cut) the neighbourhood cheering, WORDLESS: granular resynthesis of the CC0 "Crowd shouting/speaking
                             ambience" (starninjas, OpenGameArt; crowd_cheer_real's source) - reversed 60-100 ms grains
                             from random positions, +-1.5 st, 80 grains/s, band 180-6500 Hz, outdoor reverb. The raw
@@ -84,7 +86,7 @@ for _p in (SFXDIR, HERE):                      # HERE ends up first: `audio` is 
 
 import audio as A  # noqa: E402
 from audio import (SR, TWO_PI, _t, _n, _rng, _st, _ar, _fade, _taper, _thump, _click,  # noqa: E402
-                   _crackle, _loop_mask_noise, _periodic_lfo, _unit, noise_band, modal, osc, lp, hp, bp, pan, undb,
+                   _crackle, _loop_mask_noise, _unit, noise_band, modal, osc, lp, bp, pan, undb,
                    db, reverb, reverb_circular)
 import epic_sfx as ES  # noqa: E402  (shared, read-only)
 import sfx_jawad as SJ  # noqa: E402  (shared, read-only: fit_under_vo, vo_activity)

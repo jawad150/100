@@ -82,15 +82,18 @@ def cam_wide():
     return K.Cam(pos=(0.0, -1500.0, 2000.0), pitch=10.0, focal=1280.0, aperture=6.0, focus_dist=9000.0)
 
 
+ROWS_PITCH = float(os.environ.get('LKK_ROWS_PITCH', '7.0'))   # BRIEF 3; tuned within its <= 8 deg allowance (7.4)
+
+
 def cam_rows(psi=0.0, focus=16000.0):
     """CAM_ROWS (S1-01B, S3-02, S4): 135 mm orbit about the row-3 pivot; psi 0 -> 70 deg turns the pivot cards edge-on."""
-    return K.Cam.orbit(PIVOT, 16000.0, yaw=psi, pitch=3.0, focal=7200.0, aperture=60.0, focus_dist=focus)
+    return K.Cam.orbit(PIVOT, 16000.0, yaw=psi, pitch=ROWS_PITCH, focal=7200.0, aperture=60.0, focus_dist=focus)
 
 
 def cam_jd():
     """CAM_JD (S5-01 plate): 85 mm, the emptied stands as bokeh above JD's bust."""
-    return K.Cam(pos=(1100.0, -1500.0, -500.0), yaw=-6.0, pitch=12.0, focal=4533.0, aperture=70.0,
-                 focus_dist=2500.0)
+    return K.Cam(pos=(1100.0, -1500.0, -500.0), yaw=-6.0, pitch=12.0, focal=4533.0, aperture=50.0,
+                 focus_dist=2500.0)                       # aperture 70 in the brief: a wall of 50 px discs; 50 -> ~35 px
 
 
 # ============================================================================================== textures
@@ -310,7 +313,7 @@ def line_sprite():
     spr = np.zeros((h, w, 4), np.float32)
     spr[..., :3] = m[..., None] * C('ASH', 1.4)
     spr[..., 3] = np.clip(core[None, :] * vert[:, None], 0, 1)
-    spr[..., :3] *= 1.3
+    spr[..., :3] *= 2.0
     return _ro(spr)
 
 
@@ -358,45 +361,64 @@ def _person(kind, k):
             _ell(m, (hc[0], hc[1] + 18), (hr[0] * 1.05, hr[1] * 0.9))
     else:
         up = kind == 'lookup'
-        hc = (sx - 36 * s, seat - (282 if up else 236) * s)
-        hr = (rng.uniform(40, 46) * s, rng.uniform(46, 52) * s)
-        _ell(m, hc, hr, ang=(-10 if up else 32))
-        _poly(m, [(sx + 46 * s, seat + 4), (sx + 52 * s, seat - 120 * s), (sx + 20 * s, seat - 210 * s),
-                  (sx - 18 * s, seat - 220 * s), (sx - 40 * s, seat - 190 * s), (sx - 30 * s, seat - 60 * s),
-                  (sx - 30 * s, seat + 4)])
-        _line(m, (sx + 30 * s, seat - 18), (sx - 112 * s, seat - 8), 64 * s)           # thigh
-        _line(m, (sx - 108 * s, seat - 4), (sx - 100 * s, seat + 168), 46 * s)          # shin
-        _line(m, (sx - 120 * s, seat + 170), (sx - 72 * s, seat + 172), 22 * s)         # foot
-        _line(m, (sx - 4 * s, seat - 186 * s), (sx - 18 * s, seat - 108 * s), 30 * s)   # upper arm
-        _line(m, (sx - 18 * s, seat - 108 * s), (sx - 82 * s, seat - 138 * s), 26 * s)  # forearm
-        phone = (sx - 88 * s, seat - 142 * s)
+        lean = math.radians(rng.uniform(8, 26))                       # torso forward lean
+        tor = rng.uniform(205, 235) * s                               # pelvis -> shoulder (px)
+        pel = (sx + 34 * s, seat - 14 * s)
+        sho = (pel[0] - math.sin(lean) * tor, pel[1] - math.cos(lean) * tor)
+        bow = math.radians(rng.uniform(30, 55)) if not up else math.radians(-8)
+        nk = 52 * s
+        hc = (sho[0] - math.sin(lean + bow) * nk, sho[1] - math.cos(lean + bow) * nk)
+        hr = (rng.uniform(38, 44) * s, rng.uniform(44, 50) * s)
+        _ell(m, hc, hr, ang=math.degrees(lean + bow) * 0.6)
+        hair = rng.choice(['short', 'bun', 'long', 'short'])
+        back = (hc[0] + math.cos(lean + bow) * hr[0] * 0.8, hc[1] - math.sin(lean + bow) * hr[0] * 0.8)
+        if hair == 'bun':
+            _ell(m, (back[0] + 6, back[1] - 10), (17 * s, 17 * s))
+        elif hair == 'long':
+            _line(m, back, (back[0] + 10 * s, back[1] + 70 * s), 26 * s)
+        bulk = rng.uniform(46, 60) * s
+        _line(m, pel, sho, bulk * 1.6)                                # torso (rounded by the line caps)
+        _ell(m, (pel[0] + 4, pel[1] - 30 * s), (bulk * 0.9, 50 * s))
+        knee = (pel[0] - rng.uniform(120, 140) * s, seat - rng.uniform(4, 22) * s)
+        _line(m, pel, knee, 60 * s)                                   # thigh
+        foot = (knee[0] + rng.uniform(-6, 18) * s, seat + 168)
+        _line(m, knee, foot, 44 * s)                                  # shin
+        _line(m, (foot[0] - 22 * s, foot[1]), (foot[0] + 28 * s, foot[1] + 2), 22 * s)
+        hand_h = rng.uniform(90, 150) * s
+        hand = (sho[0] - rng.uniform(70, 95) * s, seat - hand_h)
+        elb = (sho[0] - 6 * s, (sho[1] + hand[1]) / 2 + 40 * s)
+        _line(m, sho, elb, 30 * s)
+        _line(m, elb, hand, 26 * s)
+        phone = (hand[0] - 8 * s, hand[1] - 6 * s)
     a = _down(np.clip(m, 0, 1), PW, PH)
     a = cv2.GaussianBlur(a, (0, 0), 0.5)
     X, Y = np.meshgrid(np.arange(PW, dtype=np.float32), np.arange(PH, dtype=np.float32))
     base = np.asarray(K.mix(K.C['NIGHT_1'], K.C['SMOKE'], 0.6), np.float32) * 0.9
     d2 = ((X - phone[0]) ** 2 + ((Y - phone[1]) * 1.15) ** 2)
-    under = np.exp(-d2 / (2 * 46.0 ** 2)) + 0.35 * np.exp(-d2 / (2 * 110.0 ** 2))
+    under = np.exp(-d2 / (2 * 30.0 ** 2)) + 0.10 * np.exp(-d2 / (2 * 80.0 ** 2))
     if kind != 'front':
         under *= np.clip(1.0 - (X - phone[0]) / 140.0, 0.15, 1.0)    # the face side toward the screen
         fc = (hc[0] - 0.55 * hr[0], hc[1] + 0.35 * hr[1])            # the bowed face, lit from the screen below
-        under = under + 0.9 * np.exp(-((X - fc[0]) ** 2 + (Y - fc[1]) ** 2) / (2 * 22.0 ** 2))
+        under = under + 0.75 * np.exp(-((X - fc[0]) ** 2 + (Y - fc[1]) ** 2) / (2 * 16.0 ** 2))
     else:
-        under = under + 0.5 * np.exp(-((X - hc[0]) ** 2 + ((Y - (hc[1] + 0.7 * hr[1])) * 1.6) ** 2) / (2 * 24.0 ** 2))
-    rgb = base[None, None, :] + under[..., None] * C('AMBER', 0.34)
+        under = under + 0.35 * np.exp(-((X - hc[0]) ** 2 + ((Y - (hc[1] + 0.7 * hr[1])) * 1.6) ** 2) / (2 * 18.0 ** 2))
+    rgb = np.broadcast_to(base[None, None, :], (PH, PW, 3)).copy()
     # the floodlight from above: a thin rim on the crown and shoulders (silhouettes separate from the dark)
     inner = cv2.erode(a, np.ones((5, 5), np.uint8))
     top = np.clip(a - np.roll(a, 4, axis=0), 0, 1) * (1.0 - inner * 0.5)
     rgb = rgb + top[..., None] * C('ASH', 0.20) * np.clip(1.2 - Y / 300.0, 0, 1)[..., None]
-    return _ro(_rgba(rgb, a)), (phone[0] / PW, phone[1] / PH)
+    glow = np.zeros((PH, PW, 4), np.float32)                       # the phone's light on face / hands: EMISSIVE
+    glow[..., :3] = (under * a)[..., None] * C('AMBER', 0.26)
+    return _ro(_rgba(rgb, a)), (phone[0] / PW, phone[1] / PH), _ro(glow)
 
 
 @functools.lru_cache(maxsize=1)
 def people_textures():
     """{'front': [(spr, phone_uv)] x4, 'profile': [...] x4 (facing left), 'profile_r': mirrored, 'lookup': [...]}."""
-    out = {'front': [_person('front', k) for k in range(4)], 'profile': [_person('profile', k) for k in range(4)],
+    out = {'front': [_person('front', k) for k in range(6)], 'profile': [_person('profile', k) for k in range(6)],
            'lookup': [_person('lookup', 0)]}
-    out['profile_r'] = [(_ro(s[:, ::-1]), (1.0 - uv[0], uv[1])) for s, uv in out['profile']]
-    out['lookup_r'] = [(_ro(s[:, ::-1]), (1.0 - uv[0], uv[1])) for s, uv in out['lookup']]
+    out['profile_r'] = [(_ro(s[:, ::-1]), (1.0 - uv[0], uv[1]), _ro(g[:, ::-1])) for s, uv, g in out['profile']]
+    out['lookup_r'] = [(_ro(s[:, ::-1]), (1.0 - uv[0], uv[1]), _ro(g[:, ::-1])) for s, uv, g in out['lookup']]
     return out
 
 
@@ -541,11 +563,13 @@ def seats():
         b = F['B'][k]
         r = math.atan2(b[0], b[2])
         out_ = np.array([math.sin(r), 0.0, math.cos(r)])
-        seat = b + out_ * PEOPLE_BACK + np.array([0.0, 30.0, 0.0])          # seat ~120 mm below the card's h
+        tang = np.array([math.cos(r), 0.0, -math.sin(r)])
+        seat = b + out_ * (PEOPLE_BACK + rng.uniform(-40, 40)) + tang * rng.uniform(-70, 70) + \
+            np.array([0.0, 30.0 + rng.uniform(-30, 30), 0.0])               # seat ~120 mm below the card's h
         P['row'].append(i)
         P['B'].append(seat)
         P['inward'].append(-out_)
-        P['var'].append(int(rng.integers(0, 4)))
+        P['var'].append(int(rng.integers(0, 6)))
         P['occ'].append(rng.random() < 0.70)
         P['fig'].append(k)
     Pp = {k: np.asarray(v) for k, v in P.items()}
@@ -574,9 +598,9 @@ def specials():
     sc = int(np.argmin(cost))
     row = P['row'][sc]
     same = np.flatnonzero((P['row'] == row) & occ)
-    xs = xy[same, 0]
-    left = same[(xs < xy[sc, 0] - 20)]
-    lk = int(left[np.argsort(xy[left, 0])[::-1][1]]) if len(left) > 1 else int(same[0])
+    th = np.degrees(np.arctan2(P['B'][:, 0], P['B'][:, 2]))
+    left = same[th[same] < th[sc] - 1.0]                              # further along the row (screen-left of him)
+    lk = int(left[np.argsort(th[left])[::-1][1]]) if len(left) > 1 else int(same[0])
     # an empty seat in row 1 and a seat in row 2 with only a phone glow (S6 wide): near frame centre in CAM_WIDE
     cw = cam_wide()
     xw, _ = cam_wide().project(P['B'])
@@ -681,9 +705,10 @@ def _light_map_lo(kind):
         m = g[..., None] * np.float32([1.0, 0.97, 0.93])
     else:
         # warm: one low FLAME light at the field's edge, screen left; the right side falls off, a little ambient
-        fl = np.asarray(K.C['FLAME'], np.float32) * 0.55 + np.asarray(K.C['AMBER'], np.float32) * 0.45
-        g = np.exp(-(X / 0.62) ** 1.6) * (0.85 + 0.25 * np.clip(Y - 0.25, 0, 1))
-        m = 0.10 * np.float32([1.0, 0.85, 0.75])[None, None, :] + (2.4 * g)[..., None] * fl[None, None, :]
+        fl = np.asarray(K.C['FLAME'], np.float32) * 0.40 + np.asarray(K.C['AMBER'], np.float32) * 0.35 + \
+            np.asarray(K.C['IVORY'], np.float32) * 0.25
+        g = 1.7 * np.exp(-(X / 0.30) ** 1.3) * (0.80 + 0.30 * np.clip(Y - 0.25, 0, 1))
+        m = 0.05 * np.float32([1.0, 0.85, 0.75])[None, None, :] + g[..., None] * fl[None, None, :]
     return m.astype(np.float32)
 
 
@@ -806,7 +831,7 @@ def render(cam, t, st, light_kind='flood'):
         elif it[0] == 'fig':
             _draw_fig(cv, cam, t, st, F, T, it[1], it[2], sp)
         elif it[0] == 'person':
-            _draw_person(cv, cam, t, st, P, it[1], sp)
+            _draw_person(cv, cam, t, st, P, it[1], sp, light_kind)
         elif it[0] == 'phone':
             _draw_phone(cv, cam, t, st, P, it[1], sp, light_kind)
     if mask is None:
@@ -1047,24 +1072,26 @@ def _person_tex(cam, P, k, st, sp):
     return T['front'][v], T[kind_p][v % len(T[kind_p])], wf
 
 
-def _draw_person(cv, cam, t, st, P, k, sp):
+def _draw_person(cv, cam, t, st, P, k, sp, light_kind='flood'):
     seat = P['B'][k]
     z = cam.depth(seat)
     op = st.people * _near_fade(st, z)
     if op <= 0:
         return
-    (fs, _), (ps, _), wf = _person_tex(cam, P, k, st, sp)
+    (fs, _, fg), (ps, _, pg), wf = _person_tex(cam, P, k, st, sp)
     width = PW / PPX
     hgt = PH / PPX
-    # billboard anchored at the seat point
-    up = np.array([0.0, -(P_ANCHOR[1] - 0.5) * hgt, 0.0])
-    pos = seat + _cam_up(cam) * 0.0 + up
-    blur = 0.0
-    if wf > 0:
-        K.draw_billboard(cv, fs, cam, tuple(pos), width, opacity=op * (1.0 if wf >= 1 else 1.0))
-    if wf < 1:
-        K.draw_billboard(cv, ps, cam, tuple(pos), width, opacity=op * (1.0 - wf) if wf > 0 else op)
-    del blur
+    pos = seat + np.array([0.0, -(P_ANCHOR[1] - 0.5) * hgt, 0.0])      # billboard centre (anchor = the seat)
+    # the dominant view at full opacity, the other one over it (no coverage dip in the cross-fade)
+    order = [(fs, fg, 1.0), (ps, pg, 1.0 - wf)] if wf >= 0.5 else [(ps, pg, 1.0), (fs, fg, wf)]
+    xy, _ = cam.project(seat[None])
+    lm = light_at(st.light, light_kind, xy)[0] * np.float32(st.light_gain) if np.isfinite(xy).all() else \
+        np.ones(3, np.float32)
+    comp = float(1.0 / max(float(np.mean(lm)), 0.08))
+    for spr, glow, o in order:
+        if o > 0.004:
+            K.draw_billboard(cv, spr, cam, tuple(pos), width, opacity=op * o)
+            K.draw_billboard(cv, glow, cam, tuple(pos), width, opacity=op * o * comp * st.phones, mode='add')
 
 
 def _cam_up(cam):
@@ -1097,7 +1124,7 @@ def _draw_phone(cv, cam, t, st, P, k, sp, light_kind):
         # bokeh: a disc of radius coc with the core's energy (floored so a far phone still reads as a dot)
         core_px = 70.0 * cam.focal / z
         e = (core_px * core_px * 2.0) / (math.pi * coc * coc)
-        a = gain * max(e * 0.9, 0.035)
+        a = gain * max(e * 0.55, 0.02)
         _add_tinted(cv, bokeh_disc(int(round(coc))), xy[0], a * comp)
     else:
         spr = phone_sprite()

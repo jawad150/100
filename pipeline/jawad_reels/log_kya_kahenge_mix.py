@@ -96,7 +96,7 @@ LINE_EXTRA_MAX = 9.0                            # dB cap on the per-line top-up 
 LINE_PRE, LINE_POST = 0.10, 0.15                # top-up duck fully down 100 ms before the line, held 150 ms after it
 LINE_ATTACK, LINE_RELEASE = 0.08, 0.35          # raised-cosine ramps into / out of the top-up duck
 GLUE_RATIO, GLUE_BELOW_P98 = 2.0, 3.0
-PROTECT = ((15.97, 16.40),)                     # reveal (impact_big 16.000 + braam 16.010; V3 at 16.357): no glue
+PROTECT = ((15.97, 16.40),)                     # reveal (impact_big 16.000 + braam 16.010; V3 at 16.357): glue capped
 PROTECT_RAMP = 0.03
 PROTECT_GR_CAP = 1.5                            # dB of glue still allowed inside PROTECT: keeps the limiter <= ~3 dB
                                                 # on the reveal (series check: GR > 3 dB only on hero hits, < 0.1 s)
@@ -514,6 +514,40 @@ def verify(hook='A', out=FINAL):
         residual_ms_max=round(float(np.abs((kicks + off)[ok] - (slope * beats[ok] + icpt)).max() * 1000), 2),
         detector_bias_ms='+4.5..+4.8 (music_full.verify.json)')
     ver['png'] = _pngs(name, yA, yB, st, rep)
+    e, a_, sm = ver['ebur128'], ver['aac320k_render_py_path'], rep['seam']
+    lines = rep['vo_over_bed_A']['lines'].values()
+    ver['checks'] = {
+        'format 48k/24-bit/stereo/1689600 (all 5 files)': ver['format_ok'],
+        'A -14 +-0.5 LUFS (ffmpeg)': abs(e['mix']['I'] + 14) <= 0.5,
+        'B -14 +-0.5 LUFS (ffmpeg)': abs(e['vo_sfx']['I'] + 14) <= 0.5,
+        'A TP <= -2.0 dBTP wav (ffmpeg, numpy)': e['mix']['TP'] <= TP_SPEC and rep['A_full']['tp_dbtp'] <= TP_SPEC,
+        'B TP <= -2.0 dBTP wav (ffmpeg, numpy)': e['vo_sfx']['TP'] <= TP_SPEC and rep['B_vo_sfx']['tp_dbtp'] <= TP_SPEC,
+        'A TP <= -1.5 dBTP after AAC 320k': a_['mix']['TP'] <= AAC_TP_SPEC,
+        'B TP <= -1.5 dBTP after AAC 320k': a_['vo_sfx']['TP'] <= AAC_TP_SPEC,
+        'VO >= 8 LU over music + SFX (overall, A)': rep['vo_over_bed_A']['overall']['vo_over_bed'] >= 8.0,
+        'VO >= 8 LU over music + SFX (every line, A)': all(o['vo_over_bed'] >= 8.0 for o in lines),
+        'VO >= 8 LU over music alone (every line, A)': all(o['vo_over_music'] >= 8.0 for o in lines),
+        'VO >= 8 LU over SFX (every line, B)': all(o['vo_over_bed'] >= 8.0 for o in rep['vo_over_bed_B']['lines'].values()),
+        'max momentary = the reveal (A)': rep['reveal']['A']['global_max_is_reveal'],
+        'max momentary = the reveal (B)': rep['reveal']['B']['global_max_is_reveal'],
+        'clunk >= 2 LU below the reveal': rep['clunk']['below_reveal_lu'] >= 2.0,
+        'drop-out: music stem <= -60 dBFS': rep['dropout']['music_stem_max_dbfs'] <= -60.0,
+        'drop-out: <= 8 frames of digital silence': rep['dropout']['mix_digital_silence_frames'] <= 8,
+        'seam step <= 2x local median (A, B, files)': all(ver['files_seam'][k]['step_over_median'] <= 2.0 for k in 'AB'),
+        'seam: processed continuation == cropped start (A, B)': all(sm[k]['continuity_error_dbfs'] <= -120 for k in 'AB'),
+        'stems sum to A (files, <= -120 dBFS)': ver['files_stems_sum_residual_dbfs'] <= -120,
+        'hero onsets within 1 frame (A, B)': all(o['ok'] for o in ons),
+        'limiter > 3 dB under 0.1 s (A, B)': rep['A_full']['limiter_gr_over_3db_s'] < 0.1
+                                              and rep['B_vo_sfx']['limiter_gr_over_3db_s'] < 0.1,
+        'LRA 5-9 LU (A, SLATE 5.1; lead decision)': 5.0 <= e['mix']['LRA'] <= 9.0,
+        'LRA 5-9 LU (B)': 5.0 <= e['vo_sfx']['LRA'] <= 9.0,
+        'last vs first 50 ms within 6 dB (A; f0 impact_soft by design)': abs(sm['A']['first_minus_last_50ms_db']) <= 6.0,
+        'last vs first 50 ms within 6 dB (B; f0 impact_soft by design)': abs(sm['B']['first_minus_last_50ms_db']) <= 6.0,
+        'score: last vs first 50 ms within 6 dB (BRIEF 18)': abs(sm['stem_music']['first_minus_last_50ms_db']) <= 6.0,
+        'mix grid: tempo +-0.2 BPM, phase +-15 ms (B section)': abs(ver['grid']['mix A, B section 16.0-25.6, 20-250 Hz'][
+            'tempo'] - BPM) <= 0.2 and abs(ver['grid']['mix A, B section 16.0-25.6, 20-250 Hz']['phase_ms']) <= 15,
+    }
+    ver['checks'] = {k: bool(v) for k, v in ver['checks'].items()}
     rep['verify'] = ver
     json.dump(rep, open(jp, 'w'), indent=1, default=float)
     print(json.dumps(ver, indent=1, default=float))

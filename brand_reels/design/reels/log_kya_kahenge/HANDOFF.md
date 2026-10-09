@@ -22,13 +22,13 @@ Conventions: `f = floor(30 t)` (the frame during which an event starts); `<RW>` 
 |---|---|---|
 | VO stems A/B + word timings | **READY** | measured, 61/60 words aligned, every CER ≤ 0.125, all no-VO windows clean |
 | faces module (`log_kya_kahenge_faces.py`) | **READY** | S3-01 + S5-01, `jd_rect`, `s3_rays`, `key_gain`; stills viewed |
-| music bed (`music_full.wav` + 5 stems) | **READY** (bed) | EP duck windows still r1 values: rebuild item for the music-supervisor (§11 risk 4), does not block the picture |
+| music bed (`music_full.wav` + 5 stems) | **READY** | rebuilt 2026-10-09 with the EP ducks on the measured VO windows (§11 risk 4 resolved) |
 | SFX stems A/B + cue lists | **READY** | refitted to the measured VO |
 | 3D props | **none needed** | BRIEF §13: the crowd is procedural numpy (`log_kya_kahenge_crowd.py`, yours) |
 | captions plan | **READY** | dry-run on the real words: 20 chunks (A), `cap.check() == []` (§6) |
 | crowd module, reel module, hook-B module | **TO BUILD (you)** | none exists yet; §7.4 still gate first |
-| final audio mix (`log_kya_kahenge_mix.wav`, `_hookb_mix.wav`) | **BLOCKED** (music-supervisor) | `log_kya_kahenge_music.py mix` crashes on the mono VO (R6a) and is not loop-safe (R6c). Use the rough loop mixes for previews (§4) |
-| master render, splice, QA, delivery | **BLOCKED** on the module + the final mix | |
+| final audio mix (`log_kya_kahenge_mix.wav`, `_hookb_mix.wav`) | **READY** 2026-10-09 | `log_kya_kahenge_mix.py` → `<RW>/audio/final/` (links at the §4 paths); -14.0 LUFS, -2.3 dBTP, loop-safe. Open: LRA of version A (§11 risk 5, lead) |
+| master render, splice, QA, delivery | **BLOCKED** on the module | |
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ Measured no-VO windows (envelope): 2.85-8.80 none · 14.10-16.30 none · 15.85-1
 | SFX stem A / B | `<RW>/audio/log_kya_kahenge_sfx_stem.wav`, `<RW>/audio/log_kya_kahenge_hookb_sfx_stem.wav` | stereo 48 kHz, -18 LUFS, ≤ -2.0 dBTP, loop-exact |
 | SFX cue lists | `<RW>/audio/log_kya_kahenge_cues.json`, `<RW>/audio/log_kya_kahenge_hookb_cues.json` | for `qa_measure.py cues` on the master |
 | preview audio (until the final mix) | `<RW>/audio/log_kya_kahenge_roughloop_mix.wav`, `<RW>/audio/log_kya_kahenge_hookb_roughloop_mix.wav` | real VO + SFX + score through epic_mix, loop-padded: -14.00 LUFS, -2.21 dBTP, seam clean. **Previews only** |
-| final mixes (to come) | `<RW>/audio/log_kya_kahenge_mix.wav`, `<RW>/audio/log_kya_kahenge_vo_sfx.wav`, `<RW>/audio/log_kya_kahenge_hookb_mix.wav`, `<RW>/audio/log_kya_kahenge_hookb_vo_sfx.wav` | **not yet written** (music-supervisor, §11 risk 3) |
+| final mixes | `<RW>/audio/final/log_kya_kahenge{,_hookb}_{mix,vo_sfx,stem_vo,stem_sfx,stem_music}.wav` (+ `_mix.json`, `_mix.png`, `_zooms.png`); links `<RW>/audio/log_kya_kahenge_mix.wav`, `_vo_sfx.wav`, `_hookb_mix.wav`, `_hookb_vo_sfx.wav` → `final/` | written 2026-10-09; 48 kHz 24-bit stereo, 1,689,600 samples; rebuild: `tools/heavy.sh python3 log_kya_kahenge_mix.py all --hook AB` |
 | faces module | `<P>/log_kya_kahenge_faces.py` (`import jawad_kit` first, then `import log_kya_kahenge_faces as LF`) | API in FACES.md §2 |
 | face cut-outs (read by LF) | `/home/user/100/workspace/brand_reels/charsheet/cutouts/street_threequarter_turn.png` (+ `_depth.png`, `.json`), `.../cutouts/street_chinup_gaze.png` (+ `_depth.png`, `.json`) | never load them directly; LF does |
 | SFX module | `<P>/log_kya_kahenge_sfx.py` | the reel module adopts nothing: `cues()` returns `[]` |
@@ -293,16 +293,17 @@ one CRF 14 re-encode, muxed with `log_kya_kahenge_hookb_mix.wav`), then `qa_meas
    as cardboard at 19.6 s, clean orbit) runs before any animation. Two failed iterations → the lead swaps in reserve 2 (SLATE §3.5).
 2. **S3 is a smaller move than the slate's "rise"** (you + viral-strategist): `cam_s3` rises 320 mm and tilts 6°; the stands slide
    ~160-180 px and the bank enters at ~10.8 s. Check on the 15 fps preview that it still reads as a rise.
-3. **No final mix yet** (music-supervisor): `mix` crashes on the mono VO (R6a: feed `np.repeat(x, 2, axis=1)`) and plain
-   `epic_mix.mix_reel` clicks at the seam (R6c: use the loop-padded recipe `_loop_mix` in `log_kya_kahenge_sfx.py`).
-4. **Music duck windows are stale** (music-supervisor): `VO_WINDOWS = ((26.0, 28.667), (32.0, 35.133))` in `log_kya_kahenge_music.py`;
-   measured V6 25.97-28.96, V7 31.44-35.07. The EP C4 at 31.2 (rings to ~31.95) plays undipped under "Us dost". Rebuild with the
-   measured windows (duck the C4 from ~31.38) and re-run `verify`.
-5. **LRA fails the series spec** (lead): rough mixes A 2.7-2.9 LU, B 4.6-4.9 LU vs 5-9 (SLATE §5.1). Structural (VO covers 62 % of the
-   runtime); needs a waiver or a creative change (SOUND §6.5).
-6. **Thin reveal margin** (music-supervisor / QA): the reveal beats V1's VO by only 0.69-0.92 LU (hook A). Re-run `rough`/the final mix
-   check after any chain change; the real fix is R6b.
-7. **VO over the bed under V3 (5.9 LU) and V4 (7.6 LU)** < 8 LU per line (overall 9.7 passes): the B-section pulse and pad; music-supervisor.
+3. ~~No final mix yet~~ **RESOLVED 2026-10-09** (music-supervisor): `log_kya_kahenge_mix.py` (deterministic; mono VO loaded L = R;
+   4 s circular pad, so the crop is the steady-state loop) writes `<RW>/audio/final/` (versions A + B, stems) for both hooks.
+   Numbers: `MUSIC_log_kya_kahenge.md` run 2 and `<RW>/audio/final/<name>_mix.json`.
+4. ~~Music duck windows are stale~~ **RESOLVED 2026-10-09**: the score reads the windows from the VO stems at build time (V6
+   25.970-28.990, V7 31.430-35.080); the C4 at 31.2 dips from 31.31 to -6 dB at 31.37 (measured -6.00 dB). `verify` re-run.
+5. **LRA** (lead decision): final version A 3.4 LU (hook B 3.2), version B 5.7 (5.4) vs 5-9 (SLATE §5.1; `sound_design.md` §6 says
+   2-8). Reaching 5 in A needs the music -12 dB in every no-VO gap (measured 5.3), muting the build's climax and the gag: not applied.
+6. ~~Thin reveal margin~~ **RESOLVED 2026-10-09**: glue capped at 1.5 dB on 15.97-16.40 (R6b locally) + score -10 dB under the SFX
+   reveal: the reveal (window 16.0-16.4) is 3.2 LU over the next loudest in mix A (4.1-4.9 in the others); limiter ≤ 3.35 dB.
+7. ~~VO over the bed under V3 / V4~~ **RESOLVED 2026-10-09**: per-line top-up duck of the music (V3 +4.3, V4 +1.2, V5 +0.7 dB):
+   every line ≥ 8.5 LU over music + SFX (lowest V3 8.51; overall 10.0).
 8. **Listen before posting** (lead / Jawad): z/f in ज़िंदगी, बिज़ी, नज़र, फ़ोन, फ़्लैट (spectrograms say yes; ASR cannot tell); V1 may rise on
    "kahenge?" (BRIEF wants no rise); V7 ends on a full stop; V7 runs at 1.10x (outside the gate's 1.00-1.06x band). No listener exists in
    the pipeline.
@@ -376,7 +377,9 @@ No new shared request from this handoff (the render-folder clash was local and i
 - [ ] Drop-out 15.2-16.0: music and wall ≤ -60 dBFS; ≤ 8 frames of digital silence.
 - [ ] Hero onsets within ±1 frame (`qa_measure.py cues <master> <RW>/audio/log_kya_kahenge_cues.json`); EP notes inside V6/V7 dipped
       (measured windows, risk 4).
-- [ ] Loop: no click at the seam (step ≤ 2× the local median); last vs first 50 ms RMS within 6 dB.
+- [ ] Loop: no click at the seam (step ≤ 2× the local median); last vs first 50 ms RMS within 6 dB. (Music-supervisor, 2026-10-09: final
+      mixes 1.29-1.36× the median; last vs first 50 ms +10.4 to +13.3 dB because the frame-0 `impact_soft` (SOUND cue 1) lands there;
+      the score alone -1.1 dB. Open question for the lead in `MUSIC_log_kya_kahenge.md`.)
 
 **Loop and end card**
 - [ ] `E.seam_report(...)['ok']`; frame 1055 vs frame 0: crowd up, heads away, floodlight on, no text.
@@ -392,7 +395,7 @@ No new shared request from this handoff (the render-folder clash was local and i
 
 1. **motion-timeline-builder**: `log_kya_kahenge_crowd.py` (+ `head_mask`, `eye_mask`, `scroller_rect`), `log_kya_kahenge.py`,
    `log_kya_kahenge_hookb.py`; gate stills + 360 px snap check + orbit range first; then sheet, preview (rough-loop audio).
-2. **music-supervisor** (in parallel): risks 3, 4, 7 → `log_kya_kahenge_mix.wav` / `_hookb_mix.wav` (loop-padded), `verify`.
+2. ~~**music-supervisor** (in parallel): risks 3, 4, 7 → `log_kya_kahenge_mix.wav` / `_hookb_mix.wav` (loop-padded), `verify`.~~ Done 2026-10-09 (risks 3, 4, 6, 7).
 3. **viral-strategist**: red-team the 15 fps preview (frame 0, change events, 360 px snap tiles, the S3 move).
 4. **colorist**: noir_ember on the real frames (snap after the finish, the warm turn, rays, S5 skin and rim outline: risk 9).
 5. **caption-designer**: re-run §6 with the real `scroller_rect`, SRTs.

@@ -737,6 +737,8 @@ def rough(out_dir=ROUGH):
         os.rmdir(tmp)
     rep['inputs'] = dict(vo=VO_A, vo_b=VO_B, sfx=STEM_A, sfx_b=STEM_B, music=MUSIC, note='VO fed as dual-mono stereo')
     rep['measure'] = measure(out_dir)
+    rep['rough_note'] = ('rough mix by the sound-designer with the music-supervisor chain; the final mix and its names '
+                         '(<RW>/audio/ek_frame_ki_keemat_mix.wav) belong to the music-supervisor')
     json.dump(_jsonable(rep), open(os.path.join(out_dir, MODULE + '_rough_report.json'), 'w'), indent=1)
     return rep
 
@@ -778,6 +780,25 @@ def measure(out_dir=ROUGH):
                                  pct_below_6=round(100.0 * float(np.mean(dvs < 6.0)), 1))
     out['vo_over_music_lu'] = dict(median=round(float(np.median(dvm)), 1), p10=round(float(np.percentile(dvm, 10)), 1),
                                    min=round(float(dvm.min()), 1))
+    out['vo_over_sfx_lu']['note'] = ('400 ms momentary windows centred on voiced frames: a window centred on a word that '
+                                     'starts 0.35 s after the reveal hit still contains the hit (26.75 s)')
+    # word level: K-weighted energy of the VO stem vs each other stem over each word's own span (no window smear)
+    kv, ks, km = A.kweight(v), A.kweight(s), A.kweight(m)
+    en = lambda x, a, b: 10 * np.log10(np.mean(np.square(x[_n(a):_n(b)]).sum(1)) + 1e-20)
+    ws = [(w['word'], w['line'], en(kv, w['start'], w['end']) - en(ks, w['start'], w['end']),
+           en(kv, w['start'], w['end']) - en(km, w['start'], w['end']),
+           en(kv, w['start'], w['end']) - 10 * np.log10(10 ** (en(ks, w['start'], w['end']) / 10) +
+                                                       10 ** (en(km, w['start'], w['end']) / 10)))
+          for w in words]
+    out['word_level'] = dict(
+        n_words=len(ws),
+        vo_over_sfx_db=dict(min=round(min(x[2] for x in ws), 1), median=round(float(np.median([x[2] for x in ws])), 1),
+                            below_6=[(x[0], x[1], round(x[2], 1)) for x in ws if x[2] < 6.0],
+                            lowest5=[(x[0], x[1], round(x[2], 1)) for x in sorted(ws, key=lambda x: x[2])[:5]]),
+        vo_over_music_db=dict(min=round(min(x[3] for x in ws), 1), median=round(float(np.median([x[3] for x in ws])), 1),
+                              below_8=[(x[0], x[1], round(x[3], 1)) for x in ws if x[3] < 8.0]),
+        vo_over_bed_db=dict(min=round(min(x[4] for x in ws), 1), median=round(float(np.median([x[4] for x in ws])), 1),
+                            below_8=[(x[0], x[1], round(x[4], 1)) for x in ws if x[4] < 8.0]))
     # drop-out and the held breath
     out['dropout'] = dict(
         mix_f774_f781_rms_dbfs=round(_rms_db(mixA, F(774), F(782)), 1),
@@ -852,8 +873,9 @@ def verify():
     (2) the stems: format, loudness, TP, drop-out silence, loop seam, hook-B body identity, hero onsets."""
     rep = {}
     ca = cues('A')
-    ref = A.mix(ca, DUR, None, None, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEILING, tail_fade=0.0, verbose=False)
-    mine = mix_loop(ca, drop=None, wrap=False, verbose=False)
+    plain = [{k: v for k, v in c.items() if k not in ('sat', 'carve', 'carve_db')} for c in ca]   # audio.mix has neither
+    ref = A.mix(plain, DUR, None, None, target_lufs=TARGET_LUFS, tp_ceiling=TP_CEILING, tail_fade=0.0, verbose=False)
+    mine = mix_loop(plain, drop=None, wrap=False, verbose=False)
     r64, m64 = ref['audio'].astype(np.float64), mine['audio'].astype(np.float64)
     d = np.abs(r64 - m64)
     kk = float(np.sum(r64 * m64) / np.sum(r64 * r64))
@@ -885,8 +907,13 @@ def verify():
                     body_max_abs_diff_from_3p5=float(np.max(np.abs(xa[_n(3.5):] - xb[_n(3.5):]))),
                     at_splice_max_abs_diff_2p9_3p1=float(np.max(np.abs(xa[_n(2.9):_n(3.1)] - xb[_n(2.9):_n(3.1)]))))
     placed = mix_loop(ca, verbose=False)['placed']
-    heroes = ('impact_soft', 'jd_mouse_click', 'glass_tap', 'impact_big', 'whip', 'jd_ui_click', 'toggle_on', 'air_zoom')
-    rep['onsets'] = onsets(xa, placed, heroes)
+    heroes = ('impact_soft', 'jd_mouse_click', 'glass_tap', 'impact_big', 'jd_ui_click', 'toggle_on', 'air_zoom')
+    rep['onsets'] = [o for o in onsets(xa, placed, heroes) if o['hit'] > 0.05]
+    y = xa.mean(1)[:_n(0.1)]
+    k = _n(0.002)
+    env = np.sqrt(np.convolve(y * y, np.ones(k) / k, 'same'))
+    rep['f0_transient'] = dict(env_peak_s=round(float(np.argmax(env)) / SR, 4), frame=int(np.argmax(env) / SR * FPS),
+                               peak_over_first_2ms_db=round(float(20 * np.log10(env.max() / (env[:k].mean() + 1e-12))), 1))
     return rep
 
 
