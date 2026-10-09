@@ -4,18 +4,18 @@ python3 qa_sheets.py [step]  -> $WS/qa/sheet_XX.jpg (every `step`-th frame), $WS
 """
 import os, sys
 import numpy as np, cv2
-from common import WS, FPS, NFRAMES, CUTS
+from common import WS, FPS, NOUT as NFRAMES, CUTS
 import render as R
 
 step = int(sys.argv[1]) if len(sys.argv) > 1 else 2
-out = f'{WS}/qa'
+out = os.environ.get('QA_DIR', f'{WS}/qa')
 os.makedirs(out, exist_ok=True)
 fis = list(range(0, NFRAMES, step))
 per = 24  # frames per sheet (6 x 4)
 for si in range(0, len(fis), per):
     tiles = []
     for fi in fis[si:si + per]:
-        im = cv2.imread(f'{WS}/out/frames/{fi:04d}.png')
+        im = cv2.imread(os.environ.get('FRAMES_DIR', f'{WS}/out/frames') + f'/{fi:04d}.png')
         im = cv2.resize(im, (270, 480), interpolation=cv2.INTER_AREA)
         lab = f'{fi} {fi / FPS:.2f}s' + (' CUT' if fi in CUTS else '')
         cv2.rectangle(im, (0, 0), (270, 26), (0, 0, 0), -1)

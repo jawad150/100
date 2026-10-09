@@ -6,7 +6,8 @@ WS = os.environ.get('MEDSPA_WORKDIR', os.path.abspath(os.path.join(HERE, '..', '
 os.environ.setdefault('REEL_WORKDIR', WS)  # engine.py loads fonts from $REEL_WORKDIR/fonts
 
 FPS = 24000 / 1001
-NFRAMES = 971
+NFRAMES = 971                # frames in the source edit
+NOUT = 985                   # output frames: last frame held ~0.6 s for the end fade
 FW, FH = 1440, 2560          # extracted frame size
 W, H = 1080, 1920            # output size
 

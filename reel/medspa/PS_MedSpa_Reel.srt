@@ -1,6 +1,6 @@
 1
 00:00:00,000 --> 00:00:02,380
-Hi, I'm Martika and I am
+Hi, I’m Martika and I am
 
 2
 00:00:02,380 --> 00:00:03,940
@@ -12,7 +12,7 @@ Surgery P.S. Med Spa.
 
 4
 00:00:05,560 --> 00:00:08,240
-I have been a cosmetic and
+I have been a cosmetic &
 
 5
 00:00:08,240 --> 00:00:10,880
@@ -36,7 +36,7 @@ I do is really just seeing
 
 10
 00:00:17,980 --> 00:00:20,310
-my patients' first initial reaction,
+my patients’ first initial reaction,
 
 11
 00:00:20,840 --> 00:00:22,280
@@ -56,11 +56,11 @@ my heart.
 
 15
 00:00:26,440 --> 00:00:28,160
-If you've been thinking about it
+If you’ve been thinking about it
 
 16
 00:00:28,160 --> 00:00:30,720
-and you're spending too much time
+and you’re spending too much time
 
 17
 00:00:30,720 --> 00:00:32,160
@@ -76,7 +76,7 @@ just come see me.
 
 20
 00:00:33,960 --> 00:00:35,620
-I am here and I'd be
+I am here and I’d be
 
 21
 00:00:35,620 --> 00:00:37,300

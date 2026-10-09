@@ -33,9 +33,9 @@ BALANCE = {
     7: (0.00, (1.005, 0.985, 0.965)),
     8: (0.00, (1.000, 0.985, 0.985)),
     9: (0.02, (1.000, 1.000, 0.975)),
-    10: (-0.05, (1.010, 0.990, 0.950)),
-    11: (0.00, (0.995, 0.990, 1.000)),
-    12: (-0.05, (1.000, 0.985, 0.985)),
+    10: (-0.05, (1.020, 0.990, 0.950)),
+    11: (0.00, (1.020, 0.995, 0.965)),
+    12: (-0.05, (1.020, 0.990, 0.960)),
     13: (0.02, (1.000, 1.000, 0.972)),
 }
 
@@ -154,10 +154,22 @@ def apply_lut(img, lut=None):
     c1 = c10 * (1 - fg) + c11 * fg
     return c0 * (1 - fr) + c1 * fr
 
+# per-shot black pull + saturation (display domain): the macro / pigment shots
+# came in with lifted, milky blacks next to their neighbours
+LIFT = {8: (0.045, 1.16), 10: (0.015, 1.06), 11: (0.06, 1.0), 12: (0.055, 1.08)}
+
 def balance(img, shot):
     ev, gains = BALANCE.get(shot, (0.0, (1, 1, 1)))
     k = np.array(gains, np.float32) * np.float32(2 ** ev)
-    return to_disp(to_lin(img) * k).astype(np.float32)
+    v = to_disp(to_lin(img) * k).astype(np.float32)
+    if shot in LIFT:
+        blk, sat = LIFT[shot]
+        # remove the pedestal with a soft quadratic toe below 2*blk (C1-continuous)
+        v = np.where(v >= 2 * blk, (v - blk) / (1 - blk), v * v / (4 * blk) / (1 - blk)).astype(np.float32)
+        if sat != 1.0:
+            Y = (v @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None]
+            v = np.clip(Y + (v - Y) * np.float32(sat), 0, 1)
+    return v
 
 _lut8 = None
 

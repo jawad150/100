@@ -1,3 +1,14 @@
+# P.S. Med Spa reel: captions, transitions, grade
+
+A 41-second vertical reel (1080×1920, 23.976 fps). It adds the following to the supplied P.S. Med Spa edit:
+
+- two-line motion-graphic captions in brand red and grey, with some words masked behind her
+- before/after photo cards with shadows
+- transitions at every cut
+- a color grade
+
+**Video:** [`reel/medspa/PS_MedSpa_Reel_1080x1920.mp4`](reel/medspa/PS_MedSpa_Reel_1080x1920.mp4) · **Resolve LUT:** [`reel/medspa/PS_MedSpa_Look_Rec709.cube`](reel/medspa/PS_MedSpa_Look_Rec709.cube) · **Subtitles:** [`reel/medspa/PS_MedSpa_Reel.srt`](reel/medspa/PS_MedSpa_Reel.srt) · **How it's built:** [`pipeline/medspa/README.md`](pipeline/medspa/README.md)
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.

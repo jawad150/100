@@ -1,6 +1,6 @@
 # P.S. Med Spa reel: captions, motion graphics, transitions, grade
 
-A 40.5 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-Med-Spa.mov` (2160×3840, 14 shots). The cut, voice and music are kept as delivered. On top of them the pipeline adds a color grade, motion-graphic captions, the before/after photo cards, and transitions at every cut, styled after the reference reel.
+A 41.1 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-Med-Spa.mov` (2160×3840, 14 shots, 40.5 s). The cut, voice and music are kept as delivered. The last frame is held about 0.6 s so the closing words land before the fade to black. On top of them the pipeline adds a color grade, motion-graphic captions, the before/after photo cards, and transitions at every cut, styled after the reference reel.
 
 **Output:** [`reel/medspa/PS_MedSpa_Reel_1080x1920.mp4`](../../reel/medspa/PS_MedSpa_Reel_1080x1920.mp4) · Resolve LUT: [`reel/medspa/PS_MedSpa_Look_Rec709.cube`](../../reel/medspa/PS_MedSpa_Look_Rec709.cube)
 
@@ -17,7 +17,7 @@ A 40.5 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-
   - Freight Display Pro → **Fraunces** (opsz 144, SOFT 0, WONK 0)
 
   To use the real fonts, drop `.ttf` or `.otf` files into `workspace/medspa/fonts/` under the names in `prep.py:FONTS` and re-render.
-- **Masking.** [Robust Video Matting](https://github.com/PeterL1n/RobustVideoMatting) (MobileNetV3, ONNX) produces a per-frame person matte, with its recurrent state reset at each cut. This lets words and cards sit behind her, her hair, her arms and her gloved hands. A background motion track (phase correlation with the person masked out) pins these graphics to the wall while the camera drifts.
+- **Masking.** [Robust Video Matting](https://github.com/PeterL1n/RobustVideoMatting) (MobileNetV3, ONNX) produces a per-frame person matte, with its recurrent state reset at each cut. This lets words and cards sit behind her, her hair, her arms and her gloved hands. A background motion track (phase correlation with the person masked out) pins these graphics to the wall while the camera drifts. In the doorway shot, the out-of-focus door jamb is tracked too, so "8.5" sits behind both her and the jamb. In the sitting shots, the big words start at the edge of her hair, so the first letter tucks behind her and the word stays readable.
 - **Photo cards** appear while she talks about her work (15–20.8 s). The four before/after photos are rounded glass cards with soft drop shadows, tilted in 3D. Two sit behind her and two in front, joined by a glowing brand-red line, and they fly into the camera on the cut.
 - **Transitions:**
   - zoom-blur push
@@ -56,4 +56,4 @@ python3 sfx.py             # SFX + original audio -> mix.wav
 python3 encode.py          # -> reel/medspa/PS_MedSpa_Reel_1080x1920.mp4
 ```
 
-To preview stills, run `python3 render.py still 0.9,17.2,31.7` (seconds or frame numbers). The caption timeline lives in `render.py` (`hero(...)`, `cap(...)`). It's built from the word timings in `words.json`.
+To preview stills, run `python3 render.py still 0.9,17.2,31.7` (seconds or frame numbers). `qa_sheets.py` builds labeled contact sheets plus a caption/timing table for review. Two rounds of multi-agent QA (section reviewers plus adversarial verifiers) went over legibility, masking, caption timing, Reels safe zones and the transitions. The caption timeline lives in `render.py` (`hero(...)`, `cap(...)`). It's built from the word timings in `words.json`.

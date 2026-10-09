@@ -16,7 +16,7 @@ import json, math, os, sys, time
 import numpy as np, cv2
 from multiprocessing import Pool
 
-from common import (WS, HERE, FPS, NFRAMES, FW, FH, W, H, CUTS, SHOTS, shot_of, frame_path, matte_path)
+from common import (WS, HERE, FPS, NFRAMES, NOUT, FW, FH, W, H, CUTS, SHOTS, shot_of, frame_path, matte_path)
 import gfx as G
 import grade
 
@@ -24,13 +24,14 @@ E = G.E
 cv2.setNumThreads(1)
 
 WORDS = json.load(open(os.path.join(HERE, 'words.json')))
-DISPLAY = {13: 'P.S.', 54: "patients'", 72: 'pours'}
+DISPLAY = {13: 'P.S.', 21: '&', 54: "patients'", 72: 'pours'}
 TRACK = np.array(json.load(open(f'{WS}/track.json')))
+JAMB = json.load(open(f'{WS}/jamb.json'))
 PICS = [f'{WS}/src/pic{i}.jpg' for i in range(1, 5)]
 
 
 def wd(i):
-    return DISPLAY.get(i, WORDS[i]['w'])
+    return DISPLAY.get(i, WORDS[i]['w']).replace("'", '\u2019')
 
 
 def ws(i):
@@ -79,20 +80,23 @@ SCENE = {k: [] for k in range(len(SHOTS))}
 
 
 CHAR = ('solid', tuple(E.hexc('#333740')[:3]))
+FAST = dict(dur=0.22, stagger_total=0.10)
 
 
 def hero(shot, l2, t2, end, cx, base, size=None, color='grey', l1=None, l3=None, l3_y=None, pin=1.0,
-         l1_size=72, l3_size=100, max_w=900, glow=False, behind=True, l1_fill=('solid', (1.0, 1.0, 1.0))):
+         l1_size=72, l3_size=100, max_w=900, glow=False, behind=True, l1_fill=('solid', (1.0, 1.0, 1.0)),
+         l1_x=None, fast=False, out=0.22):
     if size is None:
         size = G.fit(l2, G.SERIF, 260, max_w)
     width = G.text_width(l2, G.SERIF, size)
-    top = base - size * 0.70
+    top = base - size * 0.80   # ascender line (k, l, b, d rise above cap height)
     SCENE[shot].append(dict(kind='l2', text=l2, t0=t2, end=end, x=cx, y=base, size=size, color=color,
-                            pin=pin, glow=glow, behind=behind))
+                            pin=pin, glow=glow, behind=behind, fast=fast, out=out))
     if l1:
         w_, t_ = l1
-        OVERLAY.append(dict(kind='l1', words=w_, times=t_, end=end, x=cx - width / 2 + size * 0.06,
-                            y=top - size * 0.10, size=l1_size, fill=l1_fill))
+        OVERLAY.append(dict(kind='l1', words=w_, times=t_, end=end,
+                            x=l1_x if l1_x is not None else cx - width / 2 + size * 0.06,
+                            y=top - size * 0.06, size=l1_size, fill=l1_fill))
     if l3:
         w_, t_ = l3
         OVERLAY.append(dict(kind='l3', words=w_, times=t_, end=end, x=cx,
@@ -102,63 +106,88 @@ def hero(shot, l2, t2, end, cx, base, size=None, color='grey', l1=None, l3=None,
 C = [c / FPS for c in CUTS]  # cut times
 
 # shot 0 -- sitting wide: "Hi, I'm / Martika / and I am here"
-hero(0, 'Martika', ws(2), 2.64, 540, 410, size=220, l1=words(0, 1), l3=words(3, 6), l3_y=760)
-OVERLAY.append(cap(7, 9, y=770))
+hero(0, 'Martika', ws(2), 2.64, 761, 432, size=150, l1=words(0, 1), l3=words(3, 6), l3_y=760)
+OVERLAY.append(dict(cap(7, 9, end=3.40, y=770), times=[2.80, 2.92, 3.04]))
 
 # shot 1 -- storefront
-OVERLAY.append(cap(10, 12, end=4.44, y=770))
-hero(1, 'P.S. Med Spa', ws(13), C[2] - 0.12, 540, 1395, color='red', max_w=880, pin=0.0, glow=True, behind=False)
+OVERLAY.append(cap(10, 12, end=4.44, y=1345))
+hero(1, 'P.S. Med Spa', ws(13), C[2] - 0.12, 540, 1395, color='red', max_w=820, pin=0.0, glow=True, behind=False)
 # shot 2 -- hallway, walking toward camera: "I have been a / cosmetic"
 w_, t_ = words(16, 19)
-hero(2, 'cosmetic', ws(20), C[3] - 0.22, 540, 1010, l1=(w_, times_from(t_, C[2] + 0.02)), max_w=880)
+hero(2, 'cosmetic', ws(20), C[3] - 0.22, 540, 890, color='dark', l1=(w_, times_from(t_, C[2] + 0.02)), max_w=880)
 # shot 3 -- walks past then away down the hall: "and paramedical / tattoo artist"
 w_, t_ = words(21, 22)
-hero(3, 'tattoo artist', ws(23), C[4] - 0.05, 540, 800, l1=(w_, times_from(t_, C[3] + 0.02)), max_w=900)
-OVERLAY.append(cap(25, 27, end=10.84, y=1220))
+hero(3, 'tattoo', ws(23), C[4] - 0.20, 770, 650, size=175, l1=(w_, times_from(t_, C[3] + 0.02)), l1_size=60,
+     color='dark')
+SCENE[3].append(dict(SCENE[3][-1], text='artist', t0=ws(24), y=650 + 160))
+OVERLAY.append(dict(cap(25, 27, end=10.84, y=1470), times=[10.30, 10.32, 10.50]))
 # shot 4 -- prep room through the doorway: big "8.5" behind her, "years now."
-hero(4, '8.5', ws(28), C[5] - 0.10, 470, 900, size=430, color='red', glow=True,
-     l3=words(32, 33), l3_y=1035, l3_size=92)
+hero(4, '8.5', ws(28), C[5] - 0.22, 440, 900, size=430, color='red', glow=True,
+     l3=words(32, 33), l3_y=975, l3_size=92)
 # shot 5 -- sitting: "I help women / wake up / made up."
 w_, t_ = words(34, 36)
-hero(5, 'wake up', ws(37), 14.84, 540, 410, size=220, l1=(w_, times_from(t_, C[5] + 0.02)), l3=words(39, 40), l3_y=770)
+hero(5, 'wake up', ws(37), 15.05, 756, 432, size=150, l1=(w_, times_from(t_, C[5] + 0.02)), l3=words(39, 40), l3_y=770)
 # shot 6 -- sitting closer + her work (photo cards)
 for a, b, e in [(41, 44, None), (45, 49, None), (50, 51, None), (52, 54, None), (55, 56, None), (57, 57, 20.42)]:
-    OVERLAY.append(cap(a, b, end=e, y=770))
+    OVERLAY.append(cap(a, b, end=e, y=840, x=480))
+OVERLAY[-6]['times'] = times_from(OVERLAY[-6]['times'], C[6] - 0.01)
 SCENE[6].append(dict(kind='cards'))
 # shot 7 -- gloves: "seeing that / glow / in their eyes"
 hero(7, 'glow', ws(60), 22.24, 430, 640, size=300, color='red', glow=True,
      l1=words(58, 59), l3=words(61, 63), l3_y=1150, pin=0.6, l1_fill=CHAR)
-OVERLAY.append(cap(64, 66, end=23.30, y=1380))
+OVERLAY.append(cap(64, 66, end=23.62, y=1380))
 # shot 8 -- pigments: pills "Brows" / "Lips", "into my / heart."
-OVERLAY.append(dict(kind='pill', text='Brows', t0=ws(67), end=24.46, x=300, y=1180))
-OVERLAY.append(cap(68, 69, end=24.45, y=1325))
-OVERLAY.append(dict(kind='pill', text='Lips', t0=ws(70), end=24.46, x=790, y=1180))
-OVERLAY.append(cap(71, 74, end=25.54, y=1325))
-hero(8, 'heart.', ws(77), C[9] - 0.05, 560, 800, size=250, color='red', glow=True, l1=words(75, 76), pin=0.6)
+OVERLAY.append(dict(kind='pill', text='Brows', t0=ws(67), end=24.98, x=300, y=1180))
+OVERLAY.append(dict(cap(68, 69, end=24.95, y=1196, x=545), times=times_from(words(68, 69)[1], C[8] + 0.05)))
+OVERLAY.append(dict(kind='pill', text='Lips', t0=24.10, end=24.98, x=790, y=1180))
+OVERLAY.append(cap(71, 74, end=25.70, y=1490))
+hero(8, 'heart.', 25.86, C[9] - 0.18, 540, 470, size=230, color='red', glow=True, l1=words(75, 76), pin=0.6,
+     behind=False, fast=True, out=0.14, l1_fill=CHAR)
 # shot 9 -- sitting
-OVERLAY.append(cap(78, 79, y=770))
-OVERLAY.append(cap(80, 83, y=770))
-OVERLAY.append(cap(84, 86, y=770))
-hero(9, 'time', ws(89), 31.28, 560, 410, size=250, l1=words(87, 88))
+OVERLAY.append(dict(cap(78, 79, y=1110, x=560), times=times_from(words(78, 79)[1], C[9] + 0.04)))
+OVERLAY.append(cap(80, 83, y=1110, x=560))
+OVERLAY.append(cap(84, 86, y=1110, x=560))
+hero(9, 'time', ws(89), 31.14, 575, 432, size=190, l1=words(87, 88), l1_fill=CHAR)
+_tw = G.text_width('time', G.SERIF, 190)
+SCENE[9].append(dict(kind='strike', x0=575 - _tw / 2 - 16, x1=575 + _tw / 2 + 16, y=432 - 190 * 0.30,
+                     t0=30.70, end=31.14, pin=1.0))
 # (l1 of 'time' ends with the word: shorten it)
 OVERLAY[-1]['end'] = 30.70
-OVERLAY.append(cap(90, 93, end=31.50, y=770))
-hero(9, 'eyebrows', ws(94), C[10] - 0.04, 560, 405, size=200, max_w=900)
+OVERLAY.append(cap(90, 93, end=31.66, y=1110, x=560))
+hero(9, 'eyebrows', 31.40, C[10] - 0.04, 720, 432, size=140, max_w=900, fast=True)
 # "even in the morning," with a red strike (no more drawing brows every morning)
 w_, t_ = words(95, 98)
-OVERLAY.append(dict(kind='strike_cap', words=w_, times=t_, end=32.92, x=500, y=760, size=96, strike_t=32.60))
+OVERLAY.append(dict(kind='strike_cap', words=w_, times=times_from(t_, C[10] + 0.01), end=32.95, x=480, y=600,
+                    size=88, strike_t=32.50, under=True))
 # shot 10 -- tray: "just come / see me."
-hero(10, 'see me.', ws(101), 33.94, 520, 900, size=240, color='red', l1=words(99, 100), pin=0.5)
-OVERLAY.append(cap(103, 105, end=34.90, y=700, x=470))
+hero(10, 'see me.', ws(101), 34.45, 385, 878, size=215, color='red', l1=words(99, 100), pin=0.5)
+OVERLAY[-1]['end'] = 33.92   # 'just come' clears before 'I am here'
+OVERLAY.append(dict(cap(103, 105, end=35.02, y=620, x=470), fill=CHAR))
 # shot 11 -- pigment cup
 OVERLAY.append(cap(106, 109, y=760))
 OVERLAY.append(cap(110, 112, end=36.48, y=760))
 # shot 12 -- bottle: "start a / treatment plan"
 w_, t_ = words(113, 114)
-hero(12, 'treatment plan', ws(115), 37.86, 540, 760, l1=(w_, t_), max_w=920, pin=0.5)
-OVERLAY.append(cap(117, 119, end=C[13] + 0.02, y=905))
+hero(12, 'treatment plan', ws(115), 38.30, 540, 670, l1=(w_, times_from(t_, C[12] + 0.04)), max_w=920, pin=0.5, l1_fill=CHAR, color='dark')
+OVERLAY[-1]['end'] = 37.86
+OVERLAY.append(cap(117, 119, end=C[13] - 0.10, y=905))
 # shot 13 -- sitting: "tattoo / glow up."
-hero(13, 'glow up.', ws(121), 99.0, 560, 405, size=210, color='red', glow=True, l1=words(120, 120), max_w=860)
+hero(13, 'glow up.', ws(121), 99.0, 684, 432, size=160, color='red', glow=True, l1=words(120, 120), max_w=860,
+     l1_fill=CHAR)
+
+def _min_hold(hold=0.38):
+    """Delay a caption that replaces another at the same spot so the previous group's last word holds >= `hold` s."""
+    caps = sorted([e for e in OVERLAY if e['kind'] == 'cap'], key=lambda e: e['times'][0])
+    for prev, nxt in zip(caps, caps[1:]):
+        if (prev['x'], prev['y']) != (nxt['x'], nxt['y']):
+            continue
+        need = prev['times'][-1] + hold
+        if nxt['times'][0] < need:
+            nxt['times'] = [max(t, need + 0.02 * i) for i, t in enumerate(nxt['times'])]
+            prev['end'] = need - 0.09
+
+
+_min_hold()
 
 # transitions at cuts: (type, frames before, frames after)
 TRANS = {78: 'zoom', 137: 'flash', 196: 'whip', 246: 'zoom', 310: 'flash', 362: 'punch', 498: 'zoom',
@@ -169,7 +198,7 @@ SPAN = {'zoom': (4, 4), 'flash': (3, 4), 'whip': (3, 3), 'whipv': (3, 3), 'punch
 # ------------------------------------------------------------------ photo cards (shot 6)
 
 CARDS = [  # pic, w, h, final center, ry, rz, t_in, from side, behind
-    (0, 330, 308, (175, 600), 26, -5, 15.35, -1, True),
+    (0, 300, 280, (140, 600), 26, -5, 15.35, -1, True),
     (1, 250, 420, (895, 560), -26, 5, 15.78, 1, True),
     (2, 330, 309, (285, 1340), 18, 5, 16.30, -1, False),
     (3, 320, 300, (800, 1250), -18, -5, 16.78, 1, False),
@@ -243,6 +272,11 @@ def read_src(fi):
     img = cv2.imread(frame_path(fi))[..., ::-1].astype(np.float32) / 255
     img = cv2.GaussianBlur(img, (0, 0), 0.45)
     m = cv2.imread(matte_path(fi), 0).astype(np.float32) / 255
+    if shot_of(fi) == 12:   # only her hands occlude here; the cabinet's red light up top is not foreground
+        m[:int(690 * FH / H)] = 0
+    if str(fi) in JAMB:   # foreground door jamb in shot 4 also occludes the scene text
+        xs = (np.arange(FW, dtype=np.float32) - (JAMB[str(fi)] - 30) * FW / W) / (60.0 * FW / W)
+        m = np.maximum(m, np.clip(xs + 0.5, 0, 1)[None, :])
     if len(_frame_cache) > 6:
         _frame_cache.pop(next(iter(_frame_cache)))
     _frame_cache[fi] = (img, m)
@@ -262,7 +296,7 @@ def scene_graphics(k, t, src_fi):
     lb, lf = None, None
     for el in els:
         if el['kind'] == 'l2':
-            if t < el['t0'] or t > el['end'] + 0.25:
+            if t < el['t0'] or t > el['end'] + el['out'] + 0.02:
                 continue
             a_fi = min(max(F(el['t0']), SHOTS[k][0]), SHOTS[k][1] - 1)
             off = (TRACK[src_fi] - TRACK[a_fi]) * el['pin']
@@ -270,7 +304,7 @@ def scene_graphics(k, t, src_fi):
             if el['glow']:
                 g = G.new_layer()
                 G.hero_l2(g, t, el['text'], el['t0'], el['end'], el['x'] + off[0], el['y'] + off[1], el['size'],
-                          el['color'], drift=0.0)
+                          el['color'], drift=0.0, out_dur=el['out'], **(FAST if el['fast'] else {}))
                 aura = cv2.resize(cv2.GaussianBlur(cv2.resize(g, (W // 4, H // 4), interpolation=cv2.INTER_AREA),
                                                    (0, 0), 7), (W, H), interpolation=cv2.INTER_LINEAR)
                 col = np.array([1.0, 0.25, 0.27], np.float32)
@@ -279,11 +313,18 @@ def scene_graphics(k, t, src_fi):
                 G.over(tgt, g)
             else:
                 G.hero_l2(tgt, t, el['text'], el['t0'], el['end'], el['x'] + off[0], el['y'] + off[1], el['size'],
-                          el['color'], drift=0.0)
+                          el['color'], drift=0.0, out_dur=el['out'], **(FAST if el['fast'] else {}))
             if el['behind']:
                 lb = tgt if lb is None else G.over(lb, tgt)
             else:
                 lf = tgt if lf is None else G.over(lf, tgt)
+        elif el['kind'] == 'strike':
+            if t < el['t0'] or t > el['end'] + 0.2:
+                continue
+            a_fi = min(max(F(el['t0']), SHOTS[k][0]), SHOTS[k][1] - 1)
+            off = (TRACK[src_fi] - TRACK[a_fi]) * el['pin']
+            lb = G.new_layer() if lb is None else lb
+            G.strike(lb, t, el['x0'] + off[0], el['x1'] + off[0], el['y'] + off[1], el['t0'], el['end'], thick=12)
         elif el['kind'] == 'cards':
             if t < CARDS[0][6] or t > CARDS_OUT[1] + 0.05:
                 continue
@@ -293,7 +334,7 @@ def scene_graphics(k, t, src_fi):
             off = (TRACK[src_fi] - TRACK[a_fi]) * 0.5
             M = np.float32([[1, 0, off[0]], [0, 1, off[1]]])
             cb, cf = G.new_layer(), G.new_layer()
-            draw_cards(cb, cf, t, sub=4 if card_moving(t) else 1)
+            draw_cards(cb, cf, t, sub=(12 if t >= CARDS_OUT[0] else 6) if card_moving(t) else 1)
             # glowing line between her and the front cards
             pl = E.prog(t, *LINE_T)
             if pl > 0:
@@ -309,6 +350,7 @@ def scene_graphics(k, t, src_fi):
 
 def plate(k, src_fi, t, zx=1.0, dx=0.0, dy=0.0):
     """Graded plate of shot k at source frame src_fi with scene graphics, in output coords."""
+    src_fi = min(src_fi, NFRAMES - 1)   # the end hold repeats the last frame
     z0, c = push(k, src_fi)
     z = z0 * zx
     img, m = read_src(src_fi)
@@ -323,7 +365,8 @@ def plate(k, src_fi, t, zx=1.0, dx=0.0, dy=0.0):
         if lb is not None:
             lb = cv2.warpAffine(lb, ML, (W, H), flags=cv2.INTER_LINEAR)
             out = out * (1 - lb[..., 3:4]) + lb[..., :3]
-            mm = np.clip(mat, 0, 1)[..., None]
+            mm = np.clip((mat - 0.08) / 0.77, 0, 1)
+            mm = (mm * mm * (3 - 2 * mm))[..., None]
             out = out * (1 - mm) + rgb * mm
         if lf is not None:
             lf = cv2.warpAffine(lf, ML, (W, H), flags=cv2.INTER_LINEAR)
@@ -350,6 +393,10 @@ def trans_at(fi):
         if c - b <= fi < c + a:
             return c, typ
     return None, None
+
+
+_whip_blur = {}
+_ov_blur = {}
 
 
 def compose_plate(fi, t):
@@ -393,18 +440,19 @@ def compose_plate(fi, t):
             p_out = plate(k_out, min(fi, c - 1), t, dy=u * L)
             p_in = plate(k_in, max(fi, c), t, dy=-(1 - u) * L)
         # stitch: the outgoing plate covers its moved rectangle, the incoming the rest
-        cov = np.zeros((H, W), np.float32)
         if typ == 'whip':
-            edge = int(round(W - u * L))
-            cov[:, :max(0, min(W, edge))] = 1
+            edge = W - u * L
+            ramp = np.clip((edge - np.arange(W, dtype=np.float32)) / 160 + 0.5, 0, 1)[None, :]
         else:
-            edge = int(round(u * L))
-            cov[max(0, min(H, edge)):, :] = 1
+            edge = u * L
+            ramp = np.clip((np.arange(H, dtype=np.float32) - edge) / 160 + 0.5, 0, 1)[:, None]
+        cov = np.broadcast_to(ramp, (H, W))
         img = p_out * cov[..., None] + p_in * (1 - cov[..., None])
         vel = abs(u2 - u) * L
-        k_len = int(min(220, vel * 0.9)) | 1
+        k_len = int(min(220, max(vel * 0.9, 61))) | 1
         if k_len > 2:
             img = cv2.blur(img, (k_len, 1) if typ == 'whip' else (1, k_len))
+        _whip_blur[fi] = (k_len, 1) if typ == 'whip' else (1, k_len)
         return img, 0.06 * math.exp(-abs(fi - c + 0.5) / 1.0), None
     if typ == 'punch':
         if fi < c:
@@ -424,6 +472,7 @@ def compose_plate(fi, t):
         img = p_out * (1 - mix) + p_in * mix
         if s > 0.6:
             img = cv2.GaussianBlur(img, (0, 0), s)
+            _ov_blur[fi] = s * 0.5
         return img, 0.0, None
     if typ == 'leak':
         p = (fi - (c - b) + 0.5) / (b + a)
@@ -464,7 +513,8 @@ def draw_overlay(t, base):
     for el in OVERLAY:
         k = el['kind']
         if k == 'cap':
-            G.caption(lay, t, el['words'], el['times'], el['end'], el['x'], el['y'])
+            G.caption(lay, t, el['words'], el['times'], el['end'], el['x'], el['y'],
+                      fill=el.get('fill', ('solid', (1.0, 1.0, 1.0))))
         elif k == 'l1':
             G.hero_l1(lay, t, el['words'], el['times'], el['end'], el['x'], el['y'], size=el['size'], fill=el['fill'])
         elif k == 'l3':
@@ -475,8 +525,9 @@ def draw_overlay(t, base):
             G.hero_l3(lay, t, el['words'], el['times'], el['end'], el['x'], el['y'], size=el['size'])
             text = ' '.join(el['words'])
             wdt = G.text_width(text, G.SERIF_I, el['size'])
-            G.strike(lay, t, el['x'] - wdt / 2 - 14, el['x'] + wdt / 2 + 14, el['y'] - el['size'] * 0.30,
-                     el['strike_t'], el['end'])
+            y_line = el['y'] + el['size'] * 0.16 if el.get('under') else el['y'] - el['size'] * 0.30
+            G.strike(lay, t, el['x'] - wdt / 2 - 14, el['x'] + wdt / 2 + 14, y_line,
+                     el['strike_t'], el['end'], thick=7 if el.get('under') else 9)
     return lay
 
 
@@ -505,9 +556,9 @@ def post(img, fi, flash):
     out = out + g[..., None] * 0.012 * (1.2 - lum)
     # end fade
     t = fi / FPS
-    f = E.prog(t, 40.20, 40.50)
+    f = E.smooth(E.prog(t, 40.58, 41.06))
     if f > 0:
-        out = out * (1 - 0.92 * f)
+        out = out * (1 - f)
     return np.clip(out, 0, 1)
 
 
@@ -518,6 +569,12 @@ def render_frame(fi):
     if leak is not None:
         base = light_leak(base, leak)
     lay = draw_overlay(t, base)
+    sb = _ov_blur.pop(fi, None)
+    if sb:
+        lay = cv2.GaussianBlur(lay, (0, 0), sb)
+    kb = _whip_blur.pop(fi, None)
+    if kb is not None and max(kb) > 2:
+        lay = cv2.blur(lay, (max(1, kb[0] // 2) | 1, max(1, kb[1] // 2) | 1))
     out = base * (1 - lay[..., 3:4]) + lay[..., :3]
     return post(out, fi, flash)
 
@@ -550,8 +607,8 @@ if __name__ == '__main__':
     elif cmd == 'frames':
         nw = int(sys.argv[2]) if len(sys.argv) > 2 else 4
         lo = int(sys.argv[3]) if len(sys.argv) > 3 else 0
-        hi = int(sys.argv[4]) if len(sys.argv) > 4 else NFRAMES
-        outdir = f'{WS}/out/frames'
+        hi = int(sys.argv[4]) if len(sys.argv) > 4 else NOUT
+        outdir = os.environ.get('FRAMES_DIR', f'{WS}/out/frames')
         os.makedirs(outdir, exist_ok=True)
         fis = list(range(lo, hi))
         # contiguous chunks keep the per-process frame cache useful

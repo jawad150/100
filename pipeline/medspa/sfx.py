@@ -6,7 +6,7 @@ Writes $WS/out/mix.wav (48 kHz stereo).
 import subprocess, wave
 import numpy as np
 from scipy import signal
-from common import WS, FPS, CUTS
+from common import WS, FPS, CUTS, NOUT
 import render as R
 
 SR = 48000
@@ -73,6 +73,11 @@ def add(buf, t0, x, gain):
 
 def main():
     orig = load_orig()
+    # the reel holds its last frame a little longer: fade the source tail, pad with silence
+    n_out = int(round(NOUT / FPS * SR))
+    tail = int(0.35 * SR)
+    orig[-tail:] *= np.linspace(1, 0, tail)[:, None] ** 2
+    orig = np.vstack([orig, np.zeros((max(0, n_out - len(orig)), 2))])
     sfx = np.zeros_like(orig)
     db = lambda d: 10 ** (d / 20)
     for c, typ in R.TRANS.items():

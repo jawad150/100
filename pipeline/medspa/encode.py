@@ -10,7 +10,7 @@ crf = sys.argv[2] if len(sys.argv) > 2 else '15'
 os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
 subprocess.run([
     'ffmpeg', '-v', 'error', '-y',
-    '-framerate', '24000/1001', '-i', f'{WS}/out/frames/%04d.png',
+    '-framerate', '24000/1001', '-i', os.environ.get('FRAMES_DIR', f'{WS}/out/frames') + '/%04d.png',
     '-i', f'{WS}/out/mix.wav',
     '-map', '0:v', '-map', '1:a',
     # RGB -> BT.709 limited range with accurate rounding (unbiased round trip)

@@ -30,6 +30,6 @@ lines = []
 for n, p in enumerate(phr, 1):
     a = ws[p[0]]['s']
     b = min(ws[p[-1]]['e'] + 0.25, ws[p[-1] + 1]['s'] if p[-1] + 1 < len(ws) else 99)
-    lines += [str(n), f'{ts(a)} --> {ts(b)}', ' '.join(R.wd(i) for i in p), '']
+    lines += [str(n), f'{ts(a)} --> {ts(b)}', ' '.join(R.wd(i) for i in p).replace(' & ', ' and '), '']
 open(out, 'w').write('\n'.join(lines))
 print('wrote', out, len(phr), 'cues')

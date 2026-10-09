@@ -40,7 +40,9 @@ SERIF_I = 'Fraunces-SemiBoldItalic'
 WHITE = (1.0, 1.0, 1.0)
 RED = E.hexc(common.RED)[:3]
 # "grey instead of blue": silver-grey into the brand charcoal
-GREY_STOPS = [(-0.80, (0.66, 0.68, 0.72)), (-0.35, (0.50, 0.52, 0.57)), (0.05, (0.27, 0.285, 0.32))]
+# neutral grey (the brand charcoal leans blue, and the brief asks for grey, not blue)
+GREY_STOPS = [(-0.80, (0.75, 0.745, 0.74)), (-0.35, (0.53, 0.525, 0.52)), (0.05, (0.25, 0.248, 0.245))]
+DARK_STOPS = [(-0.80, (0.50, 0.495, 0.49)), (-0.35, (0.33, 0.328, 0.325)), (0.05, (0.15, 0.149, 0.148))]
 RED_STOPS = [(-0.80, (1.00, 0.36, 0.38)), (-0.35, E.hexc(common.RED)[:3]), (0.05, (0.66, 0.05, 0.09))]
 
 
@@ -156,6 +158,10 @@ def draw_run(layer, text, fname, size, x0, base_y, fill=('solid', WHITE), shadow
 def word_reveal(words, ws, times):
     """Join display words; return (text, [(char_index, t_start)])."""
     text, rev = '', []
+    times = list(times)
+    for i in range(len(words) - 1):   # a lone light-italic 'I' reads as a slash: reveal it with the next word
+        if words[i] == 'I' and times[i + 1] - times[i] < 0.5:
+            times[i] = times[i + 1]
     for w, t in zip(words, times):
         if text:
             text += ' '
@@ -167,33 +173,36 @@ def word_reveal(words, ws, times):
 # ------------------------------------------------------------------ captions
 
 CAP_SIZE = 70
-CAP_SHADOW = ((0.70, 10.0, 3), (0.45, 2.5, 1))
+CAP_SHADOW = ((0.85, 12.0, 3), (0.55, 3.0, 1))
 
 
 def caption(layer, t, words, times, t_end, cx, base_y, size=CAP_SIZE, font=LIGHT_I, fill=('solid', WHITE),
-            shadow=CAP_SHADOW, out_dur=0.04):
+            shadow=CAP_SHADOW, out_dur=0.08):
     """Small white word-by-word caption (centered phrase, words appear as spoken)."""
     if t < times[0] - 0.01 or t > t_end + out_dur:
         return
     text, rev = word_reveal(words, None, times)
     wdt = text_width(text, font, size)
     op = 1.0 - E.prog(t, t_end, t_end + out_dur)
+    if fill[0] == 'solid' and sum(fill[1]) < 1.5:   # dark (charcoal) text: only a whisper of shadow
+        shadow = ((0.22, 8.0, 2),)
     draw_run(layer, text, font, size, cx - wdt / 2, base_y, fill=fill, shadow=shadow, reveal=rev, t=t,
-             opacity=op, dur=0.22, max_blur=5.0, rise=0.8)
+             opacity=op, dur=0.16, max_blur=4.0, rise=0.8)
 
 
-def hero_l2(layer, t, text, t0, t_end, cx, base_y, size, color='grey', out_dur=0.22, opacity=0.94, drift=0.035):
+def hero_l2(layer, t, text, t0, t_end, cx, base_y, size, color='grey', out_dur=0.22, opacity=0.94, drift=0.035,
+            dur=0.32, stagger_total=0.20):
     """Big Fraunces word (goes BEHIND the subject: draw on the behind layer)."""
     if t < t0 or t > t_end + out_dur:
         return
-    stops = GREY_STOPS if color == 'grey' else RED_STOPS
+    stops = {'grey': GREY_STOPS, 'dark': DARK_STOPS}.get(color, RED_STOPS)
     wdt = text_width(text, SERIF, size)
     # slow drift (scale about center) for life
     life = E.prog(t, t0, t_end + out_dur)
     op = opacity * (1.0 - E.e_in_cubic(E.prog(t, t_end, t_end + out_dur)))
     tmp = new_layer() if drift else layer
     draw_run(tmp, text, SERIF, size, cx - wdt / 2, base_y, fill=('grad', tuple(stops)), shadow=None,
-             t=t, opacity=op, stagger=min(0.035, 0.26 / max(1, len(text))), dur=0.40, max_blur=9.0, rise=0.9,
+             t=t, opacity=op, stagger=min(0.035, stagger_total / max(1, len(text))), dur=dur, max_blur=9.0, rise=0.9,
              reveal=[(0, t0)])
     if drift:
         s = 1.0 + drift * life
@@ -207,18 +216,20 @@ def hero_l1(layer, t, words, times, t_end, x_left, base_y, size=70, out_dur=0.18
         return
     text, rev = word_reveal(words, None, times)
     op = 1.0 - E.prog(t, t_end, t_end + out_dur)
-    draw_run(layer, text, LIGHT_I, size, x_left, base_y, fill=fill, shadow=((0.65, 9.0, 3), (0.4, 2.5, 1)), reveal=rev, t=t,
+    dark = fill[0] == 'solid' and sum(fill[1]) < 1.5
+    sh = ((0.22, 8.0, 2),) if dark else ((0.80, 11.0, 3), (0.5, 3.0, 1))
+    draw_run(layer, text, LIGHT_I, size, x_left, base_y, fill=fill, shadow=sh, reveal=rev, t=t,
              opacity=op, dur=0.25, max_blur=5.0, rise=0.8)
 
 
-def hero_l3(layer, t, words, times, t_end, cx, base_y, size=104, out_dur=0.18, fill=('solid', WHITE), font=SERIF_I):
+def hero_l3(layer, t, words, times, t_end, cx, base_y, size=104, out_dur=0.12, fill=('solid', WHITE), font=SERIF_I):
     if t < times[0] - 0.01 or t > t_end + out_dur:
         return
     text, rev = word_reveal(words, None, times)
     wdt = text_width(text, font, size)
     op = 1.0 - E.prog(t, t_end, t_end + out_dur)
     draw_run(layer, text, font, size, cx - wdt / 2, base_y, fill=fill, shadow=((0.6, 10.0, 4), (0.35, 2.5, 1)), reveal=rev, t=t,
-             opacity=op, dur=0.28, max_blur=6.0, rise=0.8)
+             opacity=op, dur=0.20, max_blur=6.0, rise=0.8)
 
 
 # ------------------------------------------------------------------ red strike line
