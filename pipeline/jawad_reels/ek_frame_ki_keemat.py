@@ -1554,7 +1554,24 @@ def selftest():
     return ok
 
 
+def save_srt(path=os.path.join(RW, 'captions', 'ek_frame_ki_keemat.srt')):
+    """Upload SRT: the union of the three caption instances (only the caption windows, house spelling)."""
+    def ts(x):
+        ms = int(round(max(0.0, x) * 1000))
+        return '%02d:%02d:%02d,%03d' % (ms // 3600000, ms // 60000 % 60, ms // 1000 % 60, ms % 1000)
+    chunks = sorted((ch for cap in captions() for ch in cap.chunks if getattr(ch, 'cleared', None) != 'skipped'),
+                    key=lambda ch: ch.t_in)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf8') as f:
+        for i, ch in enumerate(chunks, 1):
+            f.write('%d\n%s --> %s\n%s\n\n' % (i, ts(ch.t_in), ts(ch.t_exit1), ch.text))
+    return path
+
+
 if __name__ == '__main__':
     if '--selftest' in sys.argv or 'selftest' in sys.argv:
         sys.exit(0 if selftest() else 1)
+    if '--srt' in sys.argv:
+        print(save_srt())
+        sys.exit(0)
     print(__doc__)

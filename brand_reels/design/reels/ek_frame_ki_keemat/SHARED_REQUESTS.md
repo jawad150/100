@@ -61,3 +61,12 @@ nothing blocks the build. Owners decide; please do not change behaviour that oth
 - **Workaround (local, no shared edit):** `ek_frame_ki_keemat_sfx.rough()` writes dual-mono stereo copies of the VO stems
   (identical L/R samples) to a temporary folder, passes those, and deletes them. The music-supervisor can pass the same kind of
   copy with `--vo` / `--vo-b` until the loader is fixed.
+
+## R8 · `endcard.EndCard`: no way to end the card's type before the loop crossfade without `dur < 4.0` (motion-timeline-builder, 2026-10-09)
+- **Found (gate stills 33.2 / 33.4):** with `dur=4.2` (t0 29.4) the card type exits 33.24-33.6 while `E.loop_world(..., d=0.6)`
+  fades the hook lockup back in from 33.0, so `USKO YEH / bhejo` sits on top of `AAP NE ISE / 0.03 sec` for ~10 frames on every
+  loop. `EndCard.__init__` refuses `dur < 4.0`, so the exit cannot simply be moved earlier.
+- **Ask:** an `exit_t0=` (or `exit_at=`) option that starts the type's exit before the card's last frame, keeping the dim
+  release on the same ramp.
+- **Workaround (local):** `ek_frame_ki_keemat.py` builds the card with `dur=4.0` and fades its type through `EndCard.draw(...,
+  opacity=)` over 32.94-33.27 (`CARD_OUT`), the loop crossfade runs 33.15-33.6 (`LOOP_D = 0.45`); hold 31.25-32.94 = 1.69 s.
