@@ -1,8 +1,8 @@
 export const meta = {
   name: 'jr-reel-s3',
-  description: 'Session 3: finish pre-production where needed (faces, handoff), then build, audio on the rebuilt kit, preview review, master, two-lens QA with adversarial verify, and deliver one @jawad_mp4 reel to reel/jawad_reels/<slug>/ (committed and pushed)',
+  description: 'Session 3: finish pre-production where needed (faces, handoff), then build, audio on the rebuilt kit, master, one QA pass (+ fix and a second pass if needed), and deliver one @jawad_mp4 reel to reel/jawad_reels/<slug>/ (committed and pushed)',
   phases: [
-    { title: 'Pre-production' }, { title: 'Handoff' }, { title: 'Build' }, { title: 'Preview review' }, { title: 'Fix' }, { title: 'Master' }, { title: 'QA' }, { title: 'Deliver' },
+    { title: 'Pre-production' }, { title: 'Handoff' }, { title: 'Build' }, { title: 'Master' }, { title: 'QA' }, { title: 'Deliver' },
   ],
 }
 const A = args
@@ -60,66 +60,37 @@ TASK (audio on the rebuilt kit + final mix; you also play sound-designer, /home/
 if (!build) return stop('build', { mix: String(mix).slice(0, 1500) })
 if (!mix) return stop('mix', { build: String(build).slice(0, 2000) })
 
-phase('Preview review')
-const [viral, color] = await parallel([
-  () => role('viral-strategist', `${HEAD}
-TASK (do not edit code): red-team the PREVIEW of this reel before the master render: ${W}/preview/${S}_preview.mp4 and its contact sheet (paths in the builder report: ${String(build).slice(0, 2500)}). Measure frame-0 luma, VO onset, visual-change gaps, text size at phone scale, hook readability by 2.7 s, re-hooks, loop, CTA, swipe risks; look at stills you extract. Return SHIP or FIX with ranked findings (owner motion-timeline-builder unless audio).`, { label: `viral:${S}`, phase: 'Preview review', schema: FSCHEMA, effort: 'medium' }),
-  () => role('colorist', `${HEAD}
-TASK (do not edit code): colour / finish check of the PREVIEW (${W}/preview/${S}_preview.mp4 and stills; builder report: ${String(build).slice(0, 1500)}) against the look '${A.look}' in ${P}/GRADE.md: signalstats per scene (Y p0.5 >= 16 on the encode per LEAD_DECISIONS 2, YAVG, SATAVG, HUEMED), red-orange share of saturated pixels, skin hue on Jawad's face shots, banding after a simulated CRF 23 encode, halation off type. Look at the frames. Return SHIP or FIX with findings (owner motion-timeline-builder; a grade change must be made in the reel module, not jawad_grade.py).`, { label: `color:${S}`, phase: 'Preview review', schema: FSCHEMA, effort: 'medium' }),
-])
-if (!viral || !color) return stop('preview review', { build: String(build).slice(0, 2000) })
-
-phase('Fix')
-const preFind = [...(viral.findings || []), ...(color.findings || [])].filter(f => f.severity !== 'minor' || /cheap|easy|trivial/i.test(f.fix || ''))
-if (preFind.length) {
-  const fixed = await role('motion-timeline-builder', `${HEAD}
-TASK: apply these pre-master findings to ${P}/${S}*.py (all blockers and majors; minors only if cheap), re-render the affected stills and the preview, look at them, commit your files, and return an updated report.
-FINDINGS: ${JSON.stringify(preFind).slice(0, 10000)}`, { label: `fix-pre:${S}`, phase: 'Fix', effort: 'max' })
-  if (!fixed) return stop('pre-master fix')
-}
-
+// ---- trimmed post-build chain (Jawad: skip non-essential checks to ship ASAP): master -> one QA agent -> (fix + re-master) -> QA r2 -> deliver
 phase('Master')
-const master = (round) => role('motion-timeline-builder', `${HEAD}
-TASK: render the full-quality MASTER of this reel (round ${round}): render.py at the module's final sample settings through heavy.sh with --workers 1 (use --no-sfx-build since the final mix below is used), then mux with version A audio from ${P}/${S}_mix.py (regenerate it first if timings changed) into ${W}/master/${S}_master_A.mp4 (CRF 14, yuv420p, 30 fps, AAC 320k) and the same picture with version B audio into ${W}/master/${S}_master_B.mp4. If a previous round's master exists and the fixes since then are local, re-render only the affected time ranges and splice them losslessly into the previous intermediate (prove the splice is frame-exact). If an interrupted render left partial chunks, reuse the finished ones. Verify with ffprobe (duration = ${A.dur} s +- 1 frame, 1080x1920, 30 fps), ebur128 (-14 LUFS +-0.5, TP <= -1.5 dBTP after AAC), a 12-frame contact sheet you look at, and the first and last frames for the loop. Commit any ${S}*.py you changed. Return paths and measurements.`, { label: `master:${S}:r${round}`, phase: 'Master', effort: 'medium' })
-let m = await master(1)
-if (!m) return stop('master r1')
+const m1 = await role('motion-timeline-builder', `${HEAD}
+TASK: render the full-quality MASTER of this reel: render.py at the module's final sample settings through heavy.sh with --workers 1 (use --no-sfx-build since the final mix below is used); if an interrupted render left finished chunks, reuse them. Mux with version A audio from ${P}/${S}_mix.py (regenerate it first if timings changed) into ${W}/master/${S}_master_A.mp4 (CRF 14, yuv420p, 30 fps, AAC 320k) and the same picture with version B audio into ${W}/master/${S}_master_B.mp4. Verify with ffprobe (duration = ${A.dur} s +- 1 frame, 1080x1920, 30 fps), ebur128 (-14 LUFS +-0.5, TP <= -1.5 dBTP after AAC), a 12-frame contact sheet you look at, and the first and last frames for the loop. Commit any ${S}*.py you changed. Return paths and measurements. Builder report for context: ${String(build).slice(0, 1500)}`, { label: `master:${S}:r1`, phase: 'Master', effort: 'medium' })
+if (!m1) return stop('master r1')
 
 phase('QA')
-const VSCH = { type: 'object', properties: { real: { type: 'boolean' }, evidence: { type: 'string' } }, required: ['real', 'evidence'] }
-let qaRound = 0, shipped = false, lastQA = null, openFindings = []
-while (qaRound < 3 && !shipped) {
-  qaRound++
-  const lenses = await parallel([
-    () => role('motion-qa-reviewer', `${HEAD}\nTASK (do not edit code): QA lens A - copy, layout, legibility, safe zones, spelling of every Roman Urdu word against SCRIPT.md, captions vs VO, end card, cover frame - on ${W}/master/${S}_master_A.mp4 (master report: ${String(m).slice(0, 1500)}). Measure; give time ranges and evidence image paths under ${W}/qa/r${qaRound}/. Return SHIP or FIX.`, { label: `qaA:${S}:r${qaRound}`, phase: 'QA', schema: FSCHEMA, effort: 'high' }),
-    () => role('motion-qa-reviewer', `${HEAD}\nTASK (do not edit code): QA lens B - motion, transitions, finish, grade, duplicate / frozen frames, motion blur across cuts, faces not uncanny, audio sync of hits to picture, VO intelligibility, loudness, loop seam picture + audio - on ${W}/master/${S}_master_A.mp4 and _B.mp4 (master report: ${String(m).slice(0, 1500)}). Measure; evidence paths under ${W}/qa/r${qaRound}/. Return SHIP or FIX.`, { label: `qaB:${S}:r${qaRound}`, phase: 'QA', schema: FSCHEMA, effort: 'high' }),
-  ])
-  if (!lenses[0] || !lenses[1]) return stop(`qa r${qaRound}`, { master: String(m).slice(0, 1500) })
-  const all = lenses.flatMap(l => l.findings || [])
-  const serious = all.filter(f => f.severity === 'blocker' || f.severity === 'major')
-  const checks = await parallel(serious.slice(0, 6).map((f, i) => () => role('motion-qa-reviewer', `${HEAD}\nTASK (VERIFY MODE, skeptic; do not edit code): a QA lens reported this finding on ${W}/master/${S}_master_A.mp4: ${JSON.stringify(f)}. Re-measure it yourself from the master. Try to refute it; answer real=true only if you can reproduce it with evidence (and it matters at phone size per LEAD_DECISIONS 7).`, { label: `verify:${S}:r${qaRound}:${i}`, phase: 'QA', schema: VSCH, effort: 'medium' })))
-  const verified = serious.slice(0, 6).map((f, i) => ({ ...f, verify: checks[i] })).filter(x => !x.verify || x.verify.real)
-  if (serious.length > 6) log(`${S}: ${serious.length - 6} serious findings not individually verified; passed to the fixer as reported`)
-  const toFix = [...verified, ...serious.slice(6)]
-  const minors = all.filter(f => f.severity === 'minor')
-  lastQA = { round: qaRound, serious: serious.length, verified: toFix.length, minors: minors.length, verdicts: lenses.map(l => l.verdict) }
-  if (!toFix.length) {
-    shipped = true
-    if (minors.length) await role('motion-timeline-builder', `${HEAD}\nTASK: QA passed with only minor findings. Apply the cheap, clearly-correct minors in ${P}/${S}*.py ONLY if they need no re-render of more than a few seconds (then re-render just that range, splice it into ${W}/master/${S}_master_A.mp4 and _B.mp4 frame-exactly and re-verify duration / loudness); otherwise leave them and list them. Commit your files. Findings: ${JSON.stringify(minors).slice(0, 6000)}`, { label: `minors:${S}`, phase: 'QA', effort: 'medium' })
-    break
-  }
-  openFindings = toFix
-  const qf = await role('motion-timeline-builder', `${HEAD}\nTASK: fix every verified QA finding below in ${P}/${S}*.py (and ${S}_mix.py for audio), re-render the affected stills, look at them, commit your files, and return a report. Findings: ${JSON.stringify(toFix).slice(0, 10000)}`, { label: `qafix:${S}:r${qaRound}`, phase: 'QA', effort: 'max' })
-  if (!qf) return stop(`qa fix r${qaRound}`, { open: toFix })
-  m = await master(qaRound + 1)
-  if (!m) return stop(`master r${qaRound + 1}`, { open: toFix })
+const qa = (round, mrep) => role('motion-qa-reviewer', `${HEAD}
+TASK (do not edit code): the ONE final QA pass (round ${round}) on ${W}/master/${S}_master_A.mp4 and _B.mp4 (master report: ${String(mrep).slice(0, 1500)}). Cover both lenses in one pass, prioritised by what a viewer sees at phone size: (A) copy, spelling of every Roman Urdu word against SCRIPT.md, captions vs VO, legibility, safe zones, end card, cover frame; (B) motion, transitions, duplicate / frozen frames, motion blur across cuts, faces not uncanny, grade (Y p0.5 >= 16 per LEAD_DECISIONS 2; nothing off-brand), audio sync of hits, VO intelligibility, loudness (-14 LUFS, TP), loop seam picture + audio; plus frame 0 and the hook by 2.7 s. Measure; put evidence under ${W}/qa/r${round}/. Report only what you reproduced. Severity: blocker = wrong / broken / unreadable / out of spec; major = clearly visible at phone size; everything else minor (LEAD_DECISIONS 7). Return SHIP (no blockers or majors) or FIX.`, { label: `qa:${S}:r${round}`, phase: 'QA', schema: FSCHEMA, effort: 'high' })
+let m = m1, shipped = false, lastQA = null, openFindings = [], round = 0
+while (round < 2 && !shipped) {
+  round++
+  const r = await qa(round, m)
+  if (!r) return stop(`qa r${round}`, { master: String(m).slice(0, 1500) })
+  const serious = (r.findings || []).filter(f => f.severity === 'blocker' || f.severity === 'major')
+  lastQA = { round, verdict: r.verdict, serious: serious.length, minors: (r.findings || []).length - serious.length, minorList: (r.findings || []).filter(f => f.severity === 'minor').map(f => f.what).slice(0, 12) }
+  if (!serious.length) { shipped = true; break }
+  openFindings = serious
+  if (round >= 2) break
+  m = await role('motion-timeline-builder', `${HEAD}
+TASK: QA round ${round} found the issues below in ${W}/master/${S}_master_A.mp4. For each: re-check it yourself first (skip it if you cannot reproduce it or a viewer would not see it at phone size, and say so), then fix it in ${P}/${S}*.py (${S}_mix.py for audio), look at the fixed stills, commit your files, and produce the new master: re-render only the affected time ranges and splice them losslessly into the previous intermediate when the fixes are local (prove the splice is frame-exact), else a full re-render through heavy.sh --workers 1; re-mux A and B to ${W}/master/${S}_master_A.mp4 / _B.mp4 and re-verify duration, loudness, loop. Return what you fixed / skipped and the new master's measurements.
+FINDINGS: ${JSON.stringify(serious).slice(0, 10000)}`, { label: `fix:${S}:r${round}`, phase: 'QA', effort: 'max' })
+  if (!m) return stop(`fix r${round}`, { open: serious })
 }
-log(`${S}: QA ${shipped ? 'passed' : 'did NOT pass'} after ${qaRound} round(s)`)
+log(`${S}: QA ${shipped ? 'passed' : 'did NOT pass'} after ${round} round(s)`)
 
 phase('Deliver')
 let deliver = null
 if (shipped) {
   deliver = await role('delivery-packager', `${HEAD}
-TASK: from ${W}/master/${S}_master_A.mp4 and _B.mp4 produce into ${OUT}/: jawad_${S}_ig.mp4 (Instagram Reels: H.264 High, 2-pass at the highest bitrate that keeps the file <= 90 MB (about 18-20 Mbps video), +faststart, AAC 320k 48 kHz, 1080x1920, 30 fps), jawad_${S}_ig_songready.mp4 (same picture, version B audio: VO + SFX only, for adding a trending song in-app; same size rule), jawad_${S}_master.mp4 (CRF 14 master; if it is >= 94 MB re-encode it at CRF 14 with -maxrate 20M -bufsize 40M so it stays under 94 MB, and say so), stems/ (vo, sfx, music wav 48 kHz 24-bit from ${W}/audio/final/), jawad_${S}_cover.jpg (the brief's cover frame, captions off if the brief says so, 1080x1920) plus jawad_${S}_cover_grid_3x4.jpg (the 3:4 grid crop), jawad_${S}_caption.txt (the IG caption from the brief: first line, body, comment prompt, 3-5 hashtags incl. #jawadmp4, and the note "Turn on AI info: synthetic voice"), and jawad_${S}.srt from the Roman Urdu captions (word timings in ${W}/vo/). NO preview mp4 (Jawad asked for no previews). No Git LFS (the repo does not use it): every file must be < 95 MB. Verify every file with ffprobe / ebur128 (IG files: -14 LUFS +-0.5, TP <= -1.5 dBTP; duration ${A.dur} s +- 1 frame). Write ${OUT}/README.md (one table: file, size, what it is, measurements; QA: passed in round ${qaRound}). Then UPLOAD: ${COMMIT} "${S}: deliver final reel (QA passed)" ${OUT} - this is the hand-off to Jawad, so confirm the push succeeded (the script prints the commit line). Return the file list with sizes, measurements and the commit line.`, { label: `deliver:${S}`, phase: 'Deliver', effort: 'medium' })
+TASK: from ${W}/master/${S}_master_A.mp4 and _B.mp4 produce into ${OUT}/: jawad_${S}_ig.mp4 (Instagram Reels: H.264 High, 2-pass at the highest bitrate that keeps the file <= 90 MB (about 18-20 Mbps video), +faststart, AAC 320k 48 kHz, 1080x1920, 30 fps), jawad_${S}_ig_songready.mp4 (same picture, version B audio: VO + SFX only, for adding a trending song in-app; same size rule), jawad_${S}_master.mp4 (CRF 14 master; if it is >= 94 MB re-encode it at CRF 14 with -maxrate 20M -bufsize 40M so it stays under 94 MB, and say so), stems/ (vo, sfx, music wav 48 kHz 24-bit from ${W}/audio/final/), jawad_${S}_cover.jpg (the brief's cover frame, captions off if the brief says so, 1080x1920) plus jawad_${S}_cover_grid_3x4.jpg (the 3:4 grid crop), jawad_${S}_caption.txt (the IG caption from the brief: first line, body, comment prompt, 3-5 hashtags incl. #jawadmp4, and the note "Turn on AI info: synthetic voice"), and jawad_${S}.srt from the Roman Urdu captions (word timings in ${W}/vo/). NO preview mp4 (Jawad asked for no previews). No Git LFS: every file must be < 95 MB. Verify every file with ffprobe / ebur128 (IG files: -14 LUFS +-0.5, TP <= -1.5 dBTP; duration ${A.dur} s +- 1 frame). Write ${OUT}/README.md (one table: file, size, what it is, measurements; QA passed in round ${round}; known minor items: ${JSON.stringify((lastQA && lastQA.minorList) || []).slice(0, 1500)}). Then UPLOAD: ${COMMIT} "${S}: deliver final reel (QA passed)" ${OUT} - this is the hand-off to Jawad, so confirm the push succeeded (the script prints the commit line). Return the file list with sizes, measurements and the commit line.`, { label: `deliver:${S}`, phase: 'Deliver', effort: 'medium' })
   if (!deliver) return stop('deliver', { shipped_qa: true, qa: lastQA })
 } else {
   log(`${S}: not delivered - open findings returned to the lead`)
