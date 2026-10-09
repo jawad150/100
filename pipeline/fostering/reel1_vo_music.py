@@ -10,7 +10,9 @@ gaps). While a line is spoken the bus above the bass gets a zero-phase 0.8-5 kHz
 4 dB 250-900 Hz low-mid dip (LOWMID_DIP_DB: pad / piano / arp body, which masked soft speech) and each
 event is choked per layer (SPEECH_DB; deeper in the payoff, SPEECH_DB_PAYOFF, so its C-major peak blooms in the
 gaps and stays under "Open your home." / "Change a child's life."); the choke of a struck event is monotonic, so a
-ringing tail never swells back up when the line ends.
+ringing tail never swells back up when the line ends. The bed is also carved under the voice itself
+(carve_under_voice: a voice-keyed dynamic EQ on the ungated speech mask, so quiet word starts and tails are covered:
+300 Hz-1 kHz and 1-4 kHz each kept >= 10 dB under the voice in that band, at most 12 dB, nothing in the gaps).
 
 KEY A minor -> C major (payoff, end card) | 120 BPM | beat n = n * 0.5 s from 0.000 (beat 1 at 0.000 s) | bar =
 2.0 s | 99 beats = 24 bars + 3 beats = 49.5 s exactly. Section boundaries are computed in OUTPUT time from the VO
@@ -103,18 +105,21 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
  F end card   | 21-24.75 (b84-99) | 42.00-49.50 | wordmark 42.52; VO "Organic    | Resolves to the tonic: C(add9) (42.0,
               |                   |             | Fostering, rated Good by       | no kick: the sting's impact_big has
               |                   |             | Ofsted." 42.52-45.91; CTA pop  | it; the sub swells in), Fmaj9 (44)
-              |                   |             | 43.52; cursor click 46.258     | Gsus4 (45) G (45.5) C(add9) (46.0, in
-              |                   |             | (hero); VO "Start your enquiry | the VO gap) held to the end. Kick on
-              |                   |             | today." 46.34-47.93; the card  | 44 / 46 only, arpeggio thins (8ths)
-              |                   |             | holds to 49.5                  | and stops at 46.0, piano G5 ON the CTA
+              |                   |             | 43.52; cursor click 46.258     | Gsus4 (45, soft piano) G (45.5) C
+              |                   |             | (hero); VO "Start your enquiry | (46.0, in the VO gap: a plain triad,
+              |                   |             | today." 46.34-47.93; the card  | no 9th) held to the end. Kick on 44 /
+              |                   |             | holds to 49.5                  | 46 only, arpeggio thins (8ths) and
+              |                   |             |                                | stops at 46.0, piano G5 ON the CTA
               |                   |             |                                | click (46.258). Motif M3, the answer,
-              |                   |             |                                | after the last line: E5 D5 C5 (48.00-
-              |                   |             |                                | 48.50) over a low C. Fade 48.45-49.45,
-              |                   |             |                                | zeros after 49.45
+              |                   |             |                                | after the last line, soft: D5 C5
+              |                   |             |                                | (48.00 / 48.25) over a low C; the bus
+              |                   |             |                                | dip holds at 70 % so the end does not
+              |                   |             |                                | bloom. Fade 48.45-49.45, zeros after
  Chords (beat: chord): 0 Am(add9) 3.5 Fmaj7 6 C(add9) 7 Dm(add9) | 10 E7sus4 | 17 Am(add9) 20 Fmaj9 24 C(add9)
  28 G6 32 Am7 36 Fmaj7 40 Dm9 43 C/E 44 Dm7 46 E7sus4 47 E7 | 48 Fmaj9 52 C/E 56 Dm9 60 Am7 64 Fmaj7 68 Dm9 70 C/E
- 72 Gsus4 74 G | 75 C(add9) 78 G/B 80 Am7 82 Fmaj7 83 Gsus4 | 84 C(add9) 88 Fmaj9 90 Gsus4 91 G 92 C(add9).
- Voicings are hand voice-led (CHORDS); sub bass A1 F1 C2 D2 E2 G1 B1 (44-82 Hz).
+ 72 Gsus4 74 G | 75 C(add9) 78 G/B 80 Am7 82 Fmaj7 83 Gsus4 | 84 C(add9) 88 Fmaj9 90 Gsus4 91 G 92 C.
+ Voicings are hand voice-led (CHORDS); sub bass A1 F1 C2 D2 E2 G1 B1 (44-82 Hz; the G/B B1 is a clean sine, no
+ F#3 harmonic). Low strings: the bass plus the nearest chord tone a 5th / 6th up (G/B: B2 + G3, never F#3).
 
 INSTRUMENTS (all from MS): felt_piano (chords on the slams, tick accents, toast, motifs M1-M3, gap figures,
 pickups, payoff and end-card chords), pad (wave 'warm', 5 voices, 13-cent detune, chorus, slow filter swell /
@@ -127,7 +132,8 @@ early reflections, slow build: HALL_KW) and plate (arp, perc), high-passed at 22
 (3 dB) on the pad, arp, pulse and sub; side channel high-passed at 150 Hz (mono low end); bus 25 Hz high-pass,
 bus_comp (-18 dB, 1.6:1), +1 dB tilt, then -16 LUFS with <= -1.2 dBTP via MS.normalise_lufs. Under speech
 (speech_dip): 0.8-5 kHz -10 dB and 250-900 Hz -4 dB (its envelope leads lines by 150 ms so it is static before a
-slam chord), -1.5 dB overall. The with-music master uses the VO stem high-passed at 20 Hz (removes the stem's
+slam chord), -1.5 dB overall; after the last line it holds at 70 % (END_DIP_HOLD: no rise before the fade).
+The with-music master uses the VO stem high-passed at 20 Hz (removes the stem's
 -3.7e-4 DC; the stem file is untouched).
 
 SFX RULE: no music transient 12-60 ms from an SFX hero hit. Every transient event goes through place(): it may
@@ -137,7 +143,10 @@ exists the event is skipped and logged. Verified on the event log (log_check) an
 
 DELIVERY (MS.render_bed / MS.master_withmusic, the chain shared by all five reels)
     <AUDIO>/reel1_vo_music.wav            clean, -16 LUFS, <= -1 dBTP, 48 kHz 24-bit, 2 376 000 samples
-    <AUDIO>/reel1_vo_music_bed.wav        ducked (12 dB under the VO, 3 dB under the SFX) and levelled bed
+    <AUDIO>/reel1_vo_music_bed.wav        the bed: sidechain-ducked under the VO stem (proportional, up to 12 dB:
+                                          ~10 dB median under speech) and up to 3 dB under the SFX stem, carved
+                                          under the voice (carve_under_voice), levelled so the VO gaps sit 7 LU
+                                          under the delivered mix (short-term)
     <AUDIO>/reel1_vo_withmusic_mix.wav    VO + SFX + bed mastered to -14 LUFS, <= -2.0 dBTP
     reel/organic_fostering/organic_fostering_reel1_vo_could_you_music.mp3 (bed) and ..._music_clean.mp3
     <scratchpad>/reel1_vo_music_preview.mp4   picture copied from reel1_vo_preview.mp4, plus the with-music mix
@@ -273,7 +282,7 @@ CHORDS = [
     (88, 'Fmaj9', 29, (53, 57, 60, 64, 67)),
     (90, 'Gsus4', 31, (50, 55, 60, 62, 67)),
     (91, 'G', 31, (50, 55, 59, 62, 67)),
-    (92, 'C(add9)', 36, (48, 55, 60, 62, 64, 67)),
+    (92, 'C', 36, (48, 55, 60, 64, 67)),
 ]
 
 
@@ -456,7 +465,7 @@ def build():
     air((76, 81, 84), B(82), B(83) - B(82), att=0.2, rel=0.6, gdb=-20.0, seed=36, tag='air F')
     air((74, 79, 84), B(83), B(84) - B(83), att=0.2, rel=0.6, gdb=-20.0, seed=37, tag='air Gsus4')
     air((76, 79, 86), B(84), B(88) - B(84), att=0.3, rel=1.0, gdb=-21.0, seed=38, tag='air end C')
-    air((76, 79, 86), B(92), FADE_T1 - B(92), att=0.8, rel=0.4, gdb=-21.0, seed=39, tag='air end C2')
+    air((76, 79, 84), B(92), FADE_T1 - B(92), att=0.8, rel=0.4, gdb=-21.0, seed=39, tag='air end C2')
 
     # ---------------------------------------------------------------- LOW strings pad (payoff + end card)
     for k, (b0, name, sub, voic) in enumerate(CHORDS):
@@ -466,7 +475,9 @@ def build():
         root = sub + 12
         while root < 45:
             root += 12
-        notes = [root, root + 7]
+        pcs = {v % 12 for v in voic}                    # the fifth above the bass only if it is a chord tone
+        up = next(i for i in (7, 8, 9, 5, 12) if (root + i) % 12 in pcs)     # (G/B: B2 + G3, never F#3)
+        notes = [root, root + up]
         last = k == len(CHORDS) - 1
         d = (FADE_T1 - B(s0)) if last else B(s1 - s0) + 0.1
         p = MS.pad(notes, dur=d + (0.25 if b0 == 75 else 0.0), vel=0.62, wave='saw', voices=4, detune=8,
@@ -476,15 +487,15 @@ def build():
         R.put('low', p, B(s0) - (0.25 if b0 == 75 else 0.0), gain_db=-16.0, transient=False, tag='low ' + name)
 
     # ---------------------------------------------------------------- SUB BASS
-    def sub(note, t, dur, vel=0.7, gdb=-6.0, glide_from=None, attack=0.012, tag='sub'):
+    def sub(note, t, dur, vel=0.7, gdb=-6.0, glide_from=None, attack=0.012, drive=1.5, harm=0.14, tag='sub'):
         if attack >= 0.1:                               # a slow swell: a clean sine, no harmonics to 'click' in
             x = MS.sub_bass(note, dur=dur, vel=vel, drive=1.0, harm=0.0, attack=attack, release=0.2)
             R.put('sub', x, t, gain_db=gdb, transient=False, tag=tag)
             return
-        x = MS.sub_bass(note, dur=dur, vel=vel, glide_from=glide_from, glide=0.09, drive=1.5, harm=0.14,
+        x = MS.sub_bass(note, dur=dur, vel=vel, glide_from=glide_from, glide=0.09, drive=drive, harm=harm,
                         attack=attack, release=0.1)
         if attack < 0.03 and place(t) is None:          # never a low thump 12-60 ms from a hero: soften instead
-            x = MS.sub_bass(note, dur=dur, vel=vel, glide_from=glide_from, glide=0.09, drive=1.5, harm=0.14,
+            x = MS.sub_bass(note, dur=dur, vel=vel, glide_from=glide_from, glide=0.09, drive=drive, harm=harm,
                             attack=0.06, release=0.1)
             R.put('sub', x, t, gain_db=gdb, transient=False, tag=tag + ' soft')
             return
@@ -517,9 +528,9 @@ def build():
                     sub(sn, B(bb + 2.5), B(min(1.3, s1 - bb - 2.5)) - 0.06, vel=0.6, tag='sub push ' + name)
         elif sec == 'D3 build':
             sub(sn, B(s0), B(s1 - s0) - 0.06, vel=0.66, tag='sub ' + name)
-        elif sec == 'E payoff':
+        elif sec == 'E payoff':                         # G/B: a clean sine B1 (its 3rd harmonic would be F#3)
             sub(sn, B(s0), B(s1 - s0) - 0.02, vel=0.74, glide_from=prev if b0 != 75 else None,
-                tag='sub ' + name)
+                drive=1.0 if b0 == 78 else 1.5, harm=0.0 if b0 == 78 else 0.14, tag='sub ' + name)
         else:                                               # end card (swells in under the logo's sub_drop)
             last = k == len(CHORDS) - 1
             dur = (FADE_T1 - B(s0) - 0.3) if last else B(s1 - s0) - 0.04
@@ -564,7 +575,7 @@ def build():
     kick_beats += [(72, 0.72)]                                                  # build: the kick stops
     # payoff: the hit, then room for the SFX heartbeat reprise (lub/dub 37.75 / 38.04 / 38.69 / 38.97), then
     # half-time into the end card
-    kick_beats += [(75, 0.7), (80, 0.62), (82, 0.7), (83, 0.64)]            # 40.0 is under "...life": softer
+    kick_beats += [(75, 0.7), (80, 0.5), (82, 0.7), (83, 0.64)]             # 40.0 is under "...life": softer
     kick_beats += [(88, 0.58), (92, 0.58)]           # end card (42.0 is left to the logo sting's impact_big)
     for b, v in kick_beats:
         R.put('kick', MS.soft_kick(vel=v, punch=0.3, tone=48.0, decay=0.32, click=0.12, drive=1.3,
@@ -679,7 +690,7 @@ def build():
         piano((nt,), B(bt), vel=v, dur=0.35, rel=0.3, gdb=-9.0, pan=0.1, felt=0.9, tag='payoff pickup')
     piano((48, 55, 64, 72, 76), B(75), vel=0.47, dur=1.4, rel=0.6, gdb=-9.5, tag='payoff C(add9)')
     piano((47, 55, 62, 67), B(78), vel=0.4, dur=0.95, rel=0.4, gdb=-9.5, tag='payoff G/B')
-    piano((45, 52, 60, 64), B(80), vel=0.4, dur=0.95, rel=0.4, gdb=-9.5, tag='payoff Am7')
+    piano((45, 52, 60, 64), B(80), vel=0.4, dur=0.95, rel=0.4, gdb=-12.5, tag='payoff Am7')
     # motif M2 (= M1 in C) in the VO gap 40.63-41.77, before the logo sting
     for bt, nt, v in ((81.5, 76, 0.44), (82.0, 74, 0.42), (82.5, 76, 0.44), (83.0, 79, 0.48)):
         piano((nt,), B(bt), vel=v, dur=0.3 if bt < 83 else 0.6, rel=0.3, gdb=-9.0, pan=0.12, felt=0.9,
@@ -688,14 +699,15 @@ def build():
     # end card
     piano((48, 55, 64, 67, 72), B(84), vel=0.44, dur=1.8, rel=0.6, gdb=-9.5, roll=0.002, tag='end C(add9)')
     piano((41, 48, 57, 64, 67), B(88), vel=0.36, dur=0.95, rel=0.4, gdb=-10.0, tag='end Fmaj9')
-    piano((43, 50, 60, 62, 67), B(90), vel=0.34, dur=0.95, rel=0.4, gdb=-10.0, tag='end Gsus4')
-    piano((48, 55, 62, 64, 67), B(92), vel=0.44, dur=2.5, rel=0.8, gdb=-9.0, roll=0.002, tag='end C(add9) resolve')
+    piano((43, 50, 60, 62, 67), B(90), vel=0.34, dur=0.95, rel=0.4, gdb=-14.0, tag='end Gsus4')
+    piano((48, 55, 60, 64, 67), B(92), vel=0.44, dur=2.5, rel=0.8, gdb=-9.0, roll=0.002, tag='end C resolve')
     piano((79,), B(92.5), vel=0.38, dur=0.4, rel=0.3, gdb=-10.0, pan=0.15, felt=0.9, tag='CTA click G5')
-    # motif M3, the answer, after the last line (47.93-): E5 D5 C5 over the held C
-    for bt, nt, v, d in ((96.0, 76, 0.44, 0.3), (96.5, 74, 0.4, 0.3), (97.0, 72, 0.46, 1.2)):
-        piano((nt,), B(bt), vel=v, dur=d, pedal=bt == 97.0, tail=1.5, rel=0.3, gdb=-9.0, pan=0.12, felt=0.9,
+    # motif M3, the answer, after the last line (47.93-): D5 -> C5 over the held C (soft: the end must not rise;
+    # the C5 lands at 48.25, before the fade)
+    for bt, nt, v, d in ((96.0, 74, 0.36, 0.3), (96.5, 72, 0.40, 1.4)):
+        piano((nt,), B(bt), vel=v, dur=d, pedal=bt == 96.5, tail=1.5, rel=0.3, gdb=-11.0, pan=0.12, felt=0.9,
               tag='M3')
-    piano((36, 48), B(97), vel=0.36, dur=1.2, pedal=True, tail=1.5, rel=0.3, gdb=-10.0, tag='M3 bass C')
+    piano((36, 48), B(96.5), vel=0.34, dur=1.2, pedal=True, tail=1.5, rel=0.3, gdb=-12.0, tag='M3 bass C')
 
     # ---------------------------------------------------------------- FX: reverse swells
     sw = MS.reverse_swell(1.0, vel=0.45, notes=[53, 57, 60, 64, 67], bright=0.7, seed=5)
@@ -714,8 +726,55 @@ def mono_low(x, fc=150.0):
     return np.stack([m + s, m - s], 1)
 
 
+END_DIP_HOLD = 0.7                      # the bus speech dip stays at 70 % after the last line: no bloom before the fade
+
+
+def end_hold(e):
+    """Speech envelope e with the dip held at END_DIP_HOLD from the end of the last VO line to the end (the
+    envelope is 1 there, so the hold joins it without a step): the end card does not rise after the last line."""
+    i = int(round(max(c['end'] for c in VO) * SR))
+    out = e.copy()
+    out[i:] = np.maximum(out[i:], END_DIP_HOLD)
+    return out
+
+
 def zpf_hp(x, fc, order=2):
     return signal.sosfiltfilt(signal.butter(order, fc, 'highpass', fs=SR, output='sos'), x, axis=0)
+
+
+# voice-keyed carve of the bed (a dynamic EQ under the VO stem): ungated speech mask (quiet word starts and tails
+# included), 300 Hz-1 kHz and 1-4 kHz each held >= CARVE_MARGIN dB under the voice in that band, at most
+# CARVE_MAX dB, nothing outside the (dilated) mask
+CARVE_BANDS = ((300.0, 1000.0), (1000.0, 4000.0))
+CARVE_MARGIN, CARVE_MAX = 10.0, 12.0
+CARVE_LEAD, CARVE_TAIL = 0.10, 0.10
+
+
+def carve_under_voice(x, vo, margin=CARVE_MARGIN, max_db=CARVE_MAX):
+    """Bed x (as laid at 0 dB under the VO stem) -> x with each CARVE_BANDS band lowered where its 50 ms level is
+    less than `margin` dB under the voice's level in the same band, while the voice speaks (MS.speech_mask, not
+    level-gated, dilated CARVE_LEAD / CARVE_TAIL s, 60 ms raised-cosine edges). The gain curve is a 60 ms running
+    minimum smoothed by a 40 ms Hann window (zero phase: it is down before a word starts, no zipper or click), and
+    the band is removed with zero-phase filters (x - (1 - g) * band), so nothing outside the band moves."""
+    from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    x = A._st(x)
+    v = A._st(vo).mean(1)
+    m = MS._dilate(MS.speech_mask(vo), CARVE_LEAD, CARVE_TAIL).astype(np.float64)
+    hw = np.hanning(int(0.06 * SR))
+    e = np.convolve(m, hw / hw.sum(), 'same')
+    hg = np.hanning(int(0.04 * SR))
+    w = int(0.05 * SR)
+    y = x.copy()
+    for lo, hi in CARVE_BANDS:
+        sos = signal.butter(2, [lo, hi], 'bandpass', fs=SR, output='sos')
+        bv = signal.sosfiltfilt(sos, v)
+        bx = signal.sosfiltfilt(sos, x, axis=0)
+        lv = 10 * np.log10(np.maximum(uniform_filter1d(bv * bv, w), 1e-20))
+        lm = 10 * np.log10(np.maximum(uniform_filter1d((bx * bx).mean(1), w), 1e-20))
+        g = minimum_filter1d(np.clip(lv - margin - lm, -max_db, 0.0), int(0.06 * SR))
+        g = np.convolve(g, hg / hg.sum(), 'same') * e
+        y = y - (1.0 - 10.0 ** (g / 20.0))[:, None] * bx
+    return y
 
 
 # bus trims (dB) on top of the per-event gains
@@ -736,7 +795,7 @@ def mixdown(R):
     sends = (MS.reverb_send(T['pad'] + T['air'] + T['low'] + T['keys'], 'hall', wet_db=-14.0, hp_hz=220.0, **HALL_KW)
              + MS.reverb_send(T['arp'] + T['perc'], 'plate', wet_db=-17.0, hp_hz=260.0))
     upper = tonal + T['keys'] + T['air'] + T['perc'] + T['fx'] + sends
-    upper = speech_dip(upper, e, e2=speech_env(lead=LOWMID_LEAD))
+    upper = speech_dip(upper, end_hold(e), e2=end_hold(speech_env(lead=LOWMID_LEAD)))
     mix = upper + sub_d + kick
     mix = A.hp(mix, 25.0, 2)
     mix = mono_low(mix, 150.0)
@@ -925,6 +984,12 @@ def main():
     assert st['n'] == N, (st['n'], N)
     bed, m = MS.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0, vo_duck_db=12.0,
                            vo_attack=0.04, vo_release=0.4, sfx_duck_db=3.0, sfx_attack=0.01, sfx_release=0.25)
+    bed = carve_under_voice(bed, st['vo'])          # quiet word starts / tails: the band stays 10 dB under the voice
+    _, lv_vo = A.loudness_curve(st['vo'])
+    gap_after = ~MS._dilate(MS.speech_mask(st['vo']), 0.05, 0.4)
+    g_st, vm_after = MS._bed_measure(bed, lv_vo, gap_after)
+    m['after_carve'] = dict(gap_st_lufs=round(g_st, 2), gap_minus_ref_lu=round(g_st - m['ref_lufs'], 2),
+                            vo_minus_music_lu=round(vm_after, 2), music_lufs=round(A.loudness(bed), 2))
     A._write_wav(OUT_BED, bed, 24)
     mix, rep = MS.master_withmusic(A.hp(st['vo'], 20.0, 2), st['sfx'], bed, target=-14.0, tol=0.2, ceiling=-2.3, tp_max=-2.0)
     A._write_wav(OUT_MIX, mix, 24)

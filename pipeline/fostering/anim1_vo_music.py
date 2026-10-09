@@ -7,7 +7,10 @@ playful, hopeful. Background music under a voice-over: no lead melody while the 
 figures sit in the VO gaps). While a line is spoken, the bus above the bass gets two zero-phase dips: 0.8-5 kHz
 by 12 dB (+2 dB level) and 280-800 Hz (the low-mid body of the voice) by 6 dB; and each event is choked per
 layer (SPEECH_DB: glock -14, fx -10, piano -8, mallets / snaps / guitars -6, uke -5, pad -4, sub -3 dB). The
-choke is monotonic, so a ringing tail never swells back up when the line ends.
+choke is monotonic, so a ringing tail never swells back up when the line ends. The bed (not the clean file) is
+pre-ducked under the voice before MS.render_bed (pre_duck): a 2.5 dB VO-keyed duck with a low threshold (-45 dB
+re the VO peak, so quiet word starts and tails count) and an 8 dB zero-phase 300 Hz-1 kHz carve held for the
+whole phrase under MS.speech_mask (dilated 60 / 120 ms, 50 ms ramps); the gaps are untouched.
 
 KEY F major | 100 BPM | beat n = n * 0.6 s from 0.000 (beat 1 at 0.000 s) | bar = 2.4 s | 13 bars = 52 beats =
 31.2 s exactly. Section boundaries are computed in OUTPUT time from the VO module (V = anim1_vo, V.SRC = anim1):
@@ -41,12 +44,12 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
              |         |        |             |                              | 10.05-10.35
  C1 warm     | 4.5-5   | b18-24 | 10.80-14.40 | blocks land 11.10 / 11.70 /  | Bbmaj7 / F/A. Settles warmer, more
              |         |        |             | 12.30 (STABILITY) with       | sustained: snaps, strums, pluck bass out;
-             |         |        |             | swishes + poofs; VO          | the pad swells in (1.2 s) and opens;
+             |         |        |             | swishes + poofs; VO          | the pad swells in (0.7 s) and opens;
              |         |        |             | 11.20-13.87                  | sustained sub; the busy tower SFX are
              |         |        |             |                              | left alone until a soft felt-piano F/A
              |         |        |             |                              | chord ON the STABILITY landing (12.30,
-             |         |        |             |                              | rolled 3.5 ms/note, all 4 notes within
-             |         |        |             |                              | 12 ms of the hit); nylon
+             |         |        |             |                              | rolled 2.7 ms/note, all 4 notes within
+             |         |        |             |                              | 8 ms of the hit); nylon
              |         |        |             |                              | picked arpeggio, brushes
  C2 warm     | 6-7     | b24-32 | 14.40-19.20 | checklist rows 14.37 / 16.17 | Dm7 / Bbmaj7 C7sus4. Felt-piano Dm7
              |         |        |             | / 18.27 (pop + tick); VO     | anticipation 14.10 and C7sus4 + C5 at
@@ -86,7 +89,11 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
 INSTRUMENTS (all from MS): karplus_strong 'uke' (staccato picked figure) and 'nylon' (picked arpeggio), strum
 'nylon', marimba, glockenspiel, felt_piano (pedal), pad (wave 'warm', 5 voices, chorus), sub_bass (with
 glides), bass_pluck, soft_kick, clap (a 2-burst finger snap in the list, a 4-burst clap in the lift), shaker,
-brush, reverse_swell.
+brush, reverse_swell. The kick's body is tuned to F1 (43.65 Hz, KICK_TONE). A rolled piano chord spreads over at
+most 8 ms in total (PIANO_ROLL_MAX). Pad chords release in 1.0 s inside a section and in 0.5 s into a new section
+(the Am7 tail no longer smears into the C1 Bbmaj7, whose swell is now 0.7 s). Under the CTA line the end-card
+Csus4 / C piano chords (beats 46 / 47) sit 4 dB under the other end-card chords, and the bar-11 uke bookend
+picks are at -18.5 dB (3.5 dB under their previous level).
 MIX: per-layer bus trims (TRIM); sends to hall (pad + piano), plate (mallets, guitars, uke) and room
 (percussion), all high-passed at 220-300 Hz. Every layer except kick and bass is high-passed at 120-200 Hz
 (zero phase). Gentle kick pump (3 dB) on the pad, guitars and bass. The side channel is high-passed at 150 Hz,
@@ -101,20 +108,22 @@ twice: on the event log (log_check) and on the audio (music_onsets / transient_c
 onset detector calibrated against the log).
 
 MEASURED (last render; main() prints the full report)
-    clean -16.01 LUFS, -1.50 dBTP (ffmpeg -16.0 / -1.5), 1 497 600 samples, last 20 ms digital silence, DC 2e-6,
-    no clicks, sub-40 Hz -39.9 dB; beat grid 100.0 BPM, phase +3.7 ms. Bed: duck 8.06 dB median under speech,
-    music in the VO gaps at ref - 7.0 LU (median 3 s short-term), voice over music 17.5 LU (median momentary,
-    speech frames; lowest line 12.9 LU), 1-4 kHz 100 ms windows median 28.5 dB. Masking (100 ms windows,
-    300 Hz-4 kHz, music within 6 dB of the voice): 0 of 303 windows with the voice within 20 dB of its p95,
-    5 of 340 (1.5%) within 25 dB. With-music mix -14.02 LUFS, -2.30 dBTP, DC 6e-6 (the delivered VO / SFX stems
-    are high-passed at 10 Hz here, removing the -4e-4 DC they carry). SFX rule: 0 log violations; every
-    rolled piano note on a hit lies within 11 ms of it. The audio onset check flags the pad's 6.5 dB chorus swell
-    37 ms after bus_pass and 6.0-6.1 dB periodic beating (26-34 ms spacing) at 11.70 / 11.75 with no event
-    logged at 11.4-11.9 s: sustained-chord ripple, not transients.
+    clean -16.02 LUFS, -1.50 dBTP (ffmpeg -16.0 / -1.5), 1 497 600 samples, last 20 ms digital silence, DC 1e-5,
+    no clicks, sub-40 Hz -37.6 dB; beat grid 100.0 BPM, phase +3.7 ms. Bed: music in the VO gaps at ref - 7.0 LU
+    (median 3 s short-term); bed vs clean under speech median 10.6 dB (gaps 2.9 dB), VO-keyed broadband duck
+    (pre-duck x render_bed) median 9.45 dB; voice over music 19.7 LU (median momentary, speech frames).
+    VOICE CLARITY (clarity(): bed at 0 dB vs the VO stem, 100 ms / 50 ms hop, 300 Hz-4 kHz, ungated speech mask):
+    music within 6 dB of the voice in 9 of 373 windows (2.4 %) with >= 50 % speech and 5 of 349 (1.4 %) with
+    >= 99 % speech (limit 5 %), median margin 30.4 / 31.0 dB (was 27 / 373 = 7.2 % and 19 / 349 = 5.4 %).
+    With-music mix -14.02 LUFS, -2.30 dBTP (the delivered VO / SFX stems are high-passed at 10 Hz here, removing
+    the -4e-4 DC they carry). SFX rule: 0 log violations; every rolled piano chord spans <= 8.0 ms. The audio
+    onset check flags only the pad's 6.6 dB chorus ripple 38 ms after bus_pass (6.858 s; no pad event between
+    the Dm7 at 6.00 and the Bbadd9 at 7.20): sustained-chord ripple, not a transient.
 
 DELIVERY (MS.render_bed / MS.master_withmusic, the chain shared by all five reels)
     <AUDIO>/anim1_vo_music.wav             clean, -16 LUFS, <= -1 dBTP, 48 kHz 24-bit, 1 497 600 samples
-    <AUDIO>/anim1_vo_music_bed.wav         ducked (9 dB under the VO, 3 dB under the SFX) and levelled bed
+    <AUDIO>/anim1_vo_music_bed.wav         pre_duck (2.5 dB VO-keyed + 300 Hz-1 kHz carve under speech), then
+                                           ducked (9 dB under the VO, 3 dB under the SFX) and levelled
     <AUDIO>/anim1_vo_withmusic_mix.wav     VO + SFX + bed mastered to -14 LUFS, <= -2.0 dBTP
     reel/organic_fostering/organic_fostering_anim1_vo_day_in_the_life_music.mp3 (bed) and ..._music_clean.mp3
     <scratchpad>/anim1_vo_music_preview.mp4   picture copied from anim1_vo_preview.mp4, plus the with-music mix
@@ -152,6 +161,8 @@ PREVIEW_IN = os.path.join(SCRATCH, 'anim1_vo_preview.mp4')
 PREVIEW_OUT = os.path.join(SCRATCH, 'anim1_vo_music_preview.mp4')
 
 FADE_T0, FADE_T1 = 29.70, 31.17         # final fade (1.47 s); zeros after FADE_T1
+KICK_TONE = 43.65                       # F1: the kick's body pitch sits on the tonic (52 Hz read as G#1)
+PIANO_ROLL_MAX = 0.008                  # a rolled piano chord spreads over at most 8 ms in total
 
 
 def B(n):
@@ -281,18 +292,19 @@ def build():
         elif sec == 'B list':
             vel, cut, att, gdb = 0.52, 1000.0, 0.35, -15.0
         elif sec.startswith('C'):
-            vel, cut, att, gdb = 0.60, 1250.0 + 40.0 * (b0 - 18), (1.2 if b0 == 18 else 0.6), -13.0
+            vel, cut, att, gdb = 0.60, 1250.0 + 40.0 * (b0 - 18), (0.7 if b0 == 18 else 0.6), -13.0
         elif sec == 'D lift':
             vel, cut, att, gdb = 0.64, 1500.0, 0.4, -13.5
         else:
             vel, cut, att, gdb = 0.58, 1500.0, 0.35, -13.0
         last = k == len(CHORDS) - 1
-        dur = (DUR - t0 - 0.2) if last else d + 0.15
+        rel = 2.2 if last else (0.5 if section_of(s1) != sec else 1.0)   # short release into a new section
+        dur = (DUR - t0 - 0.2) if last else d + 0.08
         open_to = 2400.0 if name == 'C' and sec == 'D lift' else None
         notes = list(keys) + ([keys[0] - 12] if sec in ('C1 warm tower', 'C2 warm checklist', 'C3 pre-lift',
                                                          'D lift') else [])
         p = MS.pad(notes, dur=dur, vel=vel, wave='warm', voices=5, detune=12, attack=att,
-                   release=(2.2 if last else 1.0), cutoff=cut, q=0.7, sweep=0.25, sweep_rate=0.09,
+                   release=rel, cutoff=cut, q=0.7, sweep=0.25, sweep_rate=0.09,
                    open_to=open_to, chorus_mix=0.35, width=0.85, seed=SEED + k)
         R.put('pad', p, t0, gain_db=gdb, check=False, tag=name)
 
@@ -334,7 +346,7 @@ def build():
             dur = (FADE_T1 - B(s0) - 0.4) if last else B(s1 - s0) - 0.08
             sub(bass, B(s0), dur, vel=0.70 if not last else 0.66)
 
-    # ---------------------------------------------------------------- KICK (soft, round)
+    # ---------------------------------------------------------------- KICK (soft, round; tuned to F1, the tonic)
     kick_beats = []
     kick_beats += [(0, 0.6), (1, 0.55), (4, 0.58), (6, 0.52)]                                  # hook: under stamps
     kick_beats += LIST_GROOVE                                                                 # list: bouncy, stamps
@@ -344,7 +356,7 @@ def build():
     kick_beats += [(37.5, 0.56), (38, 0.76), (39.5, 0.56), (40, 0.7), (41, 0.64), (41.5, 0.56)]  # lift
     kick_beats += [(42, 0.8), (44, 0.68), (46, 0.68), (48, 0.74)]                              # end card
     for b, v in kick_beats:
-        R.put('kick', MS.soft_kick(vel=v, punch=0.35, tone=52.0, decay=0.28, click=0.18, seed=int(b * 2)), B(b),
+        R.put('kick', MS.soft_kick(vel=v, punch=0.35, tone=KICK_TONE, decay=0.28, click=0.18, seed=int(b * 2)), B(b),
               gain_db=-4.0, tag='kick')
 
     # ---------------------------------------------------------------- PERC: snaps / claps / shaker / brushes
@@ -386,7 +398,7 @@ def build():
             v = 0.58 if e % 2 == 0 else 0.46
             x = MS.karplus_strong(nt, dur=0.2, vel=v, kind='uke', pluck=0.28, damping=0.55, release=0.08,
                                   seed=int(bt * 4))
-            R.put('uke', x, B(bt), gain_db=-12.5 if b0 < 8 else -15.0, pan=0.3 * (1 if e % 2 else -1),
+            R.put('uke', x, B(bt), gain_db=-12.5 if b0 < 8 else -18.5, pan=0.3 * (1 if e % 2 else -1),
                   tag='uke')
 
     # ---------------------------------------------------------------- GUITAR: strums (list, pre-lift, lift, end)
@@ -469,6 +481,7 @@ def build():
     def piano_chord(notes, t, vel=0.45, gdb=-9.0, tail=3.0, dur=None, roll=0.012, check=True):
         # every rolled note is checked: on a hit, every note must stay within 12 ms of it (one gesture);
         # otherwise every note must be clear (no hit 12-60 ms away)
+        roll = min(roll, PIANO_ROLL_MAX / max(1, len(notes) - 1))     # total roll <= 8 ms
         sup = [h for h, _, al in HEROES if abs(t - h) <= 0.012 and al == 'hit']
         ok = all((clear(t + roll * i, ignore=sup) and all(abs(t + roll * i - h) <= 0.012 for h in sup))
                  if i else clear(t) for i in range(len(notes)))
@@ -492,8 +505,8 @@ def build():
     piano_chord(CHORDS[14][3], B(34), 0.4)                    # Am7 (20.40)
     piano_chord(CHORDS[19][3], B(42), 0.46, roll=0.0035)       # Fadd9 end card (25.20, light switch)
     piano_chord(CHORDS[20][3], B(44), 0.38)                   # Bbmaj7
-    piano_chord(CHORDS[21][3], B(46), 0.36, dur=B(1))         # Csus4
-    piano_chord(CHORDS[22][3], B(47), 0.36, dur=B(1))         # C
+    piano_chord(CHORDS[21][3], B(46), 0.36, gdb=-13.0, dur=B(1))   # Csus4 (under the CTA line: 4 dB down)
+    piano_chord(CHORDS[22][3], B(47), 0.36, gdb=-13.0, dur=B(1))   # C
     piano_chord((53, 60, 65, 67, 69), B(48), 0.36, tail=5.0, dur=B(3.5))   # final F(add9)
 
     # ---------------------------------------------------------------- FX: reverse swells into the lift / end card
@@ -615,6 +628,52 @@ def mixdown(R):
     return y, info, T
 
 
+# ============================================================================================ pre-duck (bed only)
+PRE_SC_DB, PRE_SC_THR = 2.5, -45.0      # VO-keyed pre-duck: low threshold, so quiet word starts / tails duck too
+CARVE_DB, CARVE_LO, CARVE_HI = 8.0, 300.0, 1000.0   # 300 Hz-1 kHz carve under the (dilated) speech mask
+CARVE_PRE, CARVE_POST, CARVE_RAMP = 0.06, 0.12, 0.05
+
+
+def pre_duck(clean, vo):
+    """What render_bed receives (the clean file itself stays un-ducked): (1) A.sidechain keyed on the VO stem,
+    depth PRE_SC_DB, threshold PRE_SC_THR below the VO peak, attack 20 ms / release 0.3 s, so quiet word starts
+    and tails pull the music down as well; (2) a zero-phase 300 Hz-1 kHz cut of CARVE_DB under MS.speech_mask
+    (the same ungated mask the clarity rule uses), dilated 60 ms before / 120 ms after, raised-cosine 50 ms
+    ramps: the voice's body band is cleared for the whole phrase (filled pauses included) without lowering
+    the bed in the gaps."""
+    vo = A._st(vo)
+    y = A.sidechain(MS.fit(clean, len(vo)), vo, depth_db=PRE_SC_DB, attack=0.02, release=0.3,
+                    thresh_rel_db=PRE_SC_THR)
+    m = MS._dilate(MS.speech_mask(vo), CARVE_PRE, CARVE_POST).astype(np.float64)
+    nr = int(CARVE_RAMP * SR)
+    k = np.hanning(2 * nr + 1)
+    e = np.clip(np.convolve(m, k / k.sum(), 'same'), 0.0, 1.0)
+    band = signal.sosfiltfilt(signal.butter(2, [CARVE_LO, CARVE_HI], 'bandpass', fs=SR, output='sos'), y, axis=0)
+    return y - (e * (1.0 - A.undb(-CARVE_DB)))[:, None] * band
+
+
+def clarity(vo, bed):
+    """The voice-clarity rule: bed at 0 dB vs the VO stem, 100 ms windows / 50 ms hop, 300 Hz-4 kHz (4th-order
+    zero-phase band-pass), windows with >= 50 % (and >= 99 %) of their samples in MS.speech_mask (ungated);
+    count of windows where the music is within 6 dB of the voice (<= 5 % allowed) and the median margin."""
+    sp = MS.speech_mask(vo)
+    st_, v = band_db(vo, 300.0, 4000.0)
+    _, mu = band_db(bed, 300.0, 4000.0)
+    nw = int(0.1 * SR)
+    fr = np.array([sp[i:i + nw].mean() for i in st_])
+    d = v - mu
+    out = {}
+    for th in (0.5, 0.99):
+        sel = fr >= th
+        out['frac>=%.2f' % th] = dict(windows=int(sel.sum()), within6=int((d[sel] < 6).sum()),
+                                      pct=round(float(100 * (d[sel] < 6).mean()), 1),
+                                      median_db=round(float(np.median(d[sel])), 1),
+                                      p5_db=round(float(np.percentile(d[sel], 5)), 1))
+    out['within6_at'] = [round(st_[i] / SR + 0.05, 2) for i in np.flatnonzero((fr >= 0.5) & (d < 6))]
+    out['ok'] = bool(all(out[k]['pct'] <= 5.0 for k in ('frac>=0.50', 'frac>=0.99')))
+    return out
+
+
 # ============================================================================================ measurements
 def band_db(x, lo=1000.0, hi=4000.0, win=0.1, hop=0.05):
     sos = signal.butter(4, [lo, hi], 'bandpass', fs=SR, output='sos')
@@ -704,7 +763,7 @@ def main():
     assert len(clean) == N
     A._write_wav(OUT_CLEAN, clean, 24)
     st = MS.load_reel_stems('anim1')
-    bed, m = MS.render_bed(clean, st['vo'], st['sfx'], st['mix'])
+    bed, m = MS.render_bed(pre_duck(clean, st['vo']), st['vo'], st['sfx'], st['mix'])
     A._write_wav(OUT_BED, bed, 24)
     # 10 Hz high-pass on the delivered VO / SFX stems: removes their inherited DC (-4e-4) from the with-music mix
     mix, rep = MS.master_withmusic(A.hp(st['vo'], 10.0, 2), A.hp(st['sfx'], 10.0, 2), bed)
@@ -712,10 +771,10 @@ def main():
     os.makedirs(REEL_DIR, exist_ok=True)
     mp3b = MS.write_mp3(OUT_BED, MP3_BED, TITLE + ' (ducked bed)')
     mp3c = MS.write_mp3(OUT_CLEAN, MP3_CLEAN, TITLE + ' (clean, full level)')
-    prev = None
-    if os.path.exists(PREVIEW_IN):
-        MS.make_preview(PREVIEW_IN, OUT_MIX, PREVIEW_OUT)
-        prev = PREVIEW_OUT
+    if not os.path.exists(PREVIEW_IN):
+        raise FileNotFoundError('preview picture missing: %s (render the anim1_vo preview first)' % PREVIEW_IN)
+    MS.make_preview(PREVIEW_IN, OUT_MIX, PREVIEW_OUT)
+    prev = PREVIEW_OUT
 
     # ---- measurements
     rd = lambda p: A.read_wav(p)[0]                                          # noqa: E731
@@ -740,6 +799,16 @@ def main():
     for r_ in (20, 25):
         a_ = sel & (vo_w > p95w - r_)
         masking['voice_p95-%d' % r_] = '%d/%d (%.1f%%)' % ((dw[a_] < 6).sum(), a_.sum(), 100 * (dw[a_] < 6).mean())
+    clar = clarity(st['vo'], bw)
+    okc = np.abs(cw).max(1) > 1e-3
+    r_ = A.db(np.abs(bw).max(1) + 1e-12) - A.db(np.abs(cw).max(1) + 1e-12)
+    dk = np.percentile(r_[okc], 99.5) - r_
+    one = np.ones((N, 2))                        # the two VO-keyed broadband gain curves (pre-duck x render_bed)
+    g_vo = (A.sidechain(one, st['vo'], depth_db=PRE_SC_DB, attack=0.02, release=0.3, thresh_rel_db=PRE_SC_THR)
+            * A.sidechain(one, st['vo'], depth_db=9.0, attack=0.04, release=0.4))[:, 0]
+    duck = dict(bed_vs_clean_under_speech_median_db=round(float(np.median(dk[okc & sp])), 2),
+                bed_vs_clean_gaps_median_db=round(float(np.median(dk[okc & ~sp])), 2),
+                vo_keyed_broadband_median_db=round(float(np.median(-A.db(g_vo[sp]))), 2))
     tc = transient_check(cw, R.log)
     lay_on = {k: music_onsets(v) for k, v in T.items() if np.any(v)}
     for v in tc['violations']:
@@ -777,7 +846,7 @@ def main():
                                active_frames=int(act.sum()), active_median_db=round(float(np.median(dact)), 1),
                                active_p10_db=round(float(np.percentile(dact, 10)), 1),
                                active_min_db=round(float(dact.min()), 1)),
-        masking_300_4k=masking, sections_lufs=secl, mp3_probe=probes,
+        masking_300_4k=masking, clarity=clar, duck=duck, sections_lufs=secl, mp3_probe=probes,
         hero_rule=dict(log_violations=log_check(R.log), audio=tc),
         mp3=[mp3b, mp3c], preview=dict(path=prev, mb=round(os.path.getsize(prev) / 1e6, 2),
                                        streams=prev_streams) if prev else None,

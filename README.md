@@ -94,6 +94,23 @@ Each one comes with:
 
 **Adding music:** wherever a hold is long enough, its slow-down is rounded to whole half-beats. Most cuts therefore stay on the tempo grid above, counted from 0.00 s. Only a few very short holds take their stretch off-grid. A track at that tempo lines up with the cuts, and you can mix it under the voice stem.
 
+### Background music for the voiceover versions
+Each voiceover version has an original instrumental track, composed in code for that piece. It is fitted to the piece's tempo grid from 0.00 s, changes with its sections, and resolves on the end card:
+
+| Piece | Key / tempo | Instruments |
+|---|---|---|
+| #1 · Day in the Life | F major · 100 BPM | nylon guitar / ukulele, marimba, felt piano, soft kick, shaker |
+| #4 · £447.60 | D major · 120 BPM | FM bells, electric piano, soft four-on-the-floor, claps, sub bass |
+| Reel 1 · Could You? | A minor → C major · 120 BPM | felt piano, warm pad, soft cinematic kick, plucked arpeggio |
+| Reel 2 · Financial Support | E♭ major · 128 BPM | synth pluck arpeggio, electric piano, kick and claps, glassy pad |
+| Reel 3 · Nurture · Develop · Grow | G major · 92 BPM | felt piano, acoustic guitar, string pad, marimba, shaker |
+
+Two MP3s per piece (320 kbps, 48 kHz):
+- **`…_music.mp3`**: the ready-to-use bed. Lay it at 100 % under the finished video. It is already levelled and dips under every voice line, so the voice stays clear. Music is within 6 dB of the voice in under 5 % of speech moments.
+- **`…_music_clean.mp3`**: the same track at full level (−16 LUFS) with no dips, for your own mix.
+
+The tracks are built by `pipeline/fostering/<piece>_vo_music.py` with the shared instrument library `music_synth.py` (no samples or AI tools), so they can be re-made or changed.
+
 ## How it's built ([`pipeline/fostering/`](pipeline/fostering/))
 - [`BRIEF.md`](pipeline/fostering/BRIEF.md) holds the creative brief, the storyboards and the engineering contract.
 - [`TOOLKIT.md`](pipeline/fostering/TOOLKIT.md) is the API cheat-sheet for the toolkit modules below.

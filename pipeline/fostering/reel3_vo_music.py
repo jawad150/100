@@ -94,8 +94,10 @@ except a support cluster). Pad / piano / guitar / marimba / hooks / shaker pass 
 low-pass 1.0 kHz while a line plays, 15 kHz in the gaps, + peak dips of -12 dB at 2 kHz (Q 0.5) and -8 dB at
 650 Hz (Q 0.6, the voice's 300 Hz-1.5 kHz body); 60 ms close / 300 ms open); pad / piano -2 dB, guitar and
 marimba -3 dB, shaker -4 dB under speech; the bass piano low-passes 1.2 kHz -> 250 Hz under speech. QA gate
-(qa: speech_band_overlap, asserted): in 100 ms windows of 300 Hz-4 kHz under speech (speech mask > 80 %), with the
-voice within 15 dB of its median, the voice is >= 6 dB above the bed in >= 95 % of windows. Hero hits: no piano /
+(qa: clarity_spec, asserted): in 100 ms windows (50 ms hop) of 300 Hz-4 kHz whose centre is under speech
+(M.speech_mask, ungated: quiet word starts, tails, breaths and mask-filled pauses included), the voice is >= 6 dB
+above the bed in >= 95 % of windows and the median margin is >= 10 dB (speech_band_overlap is logged only).
+Hero hits: no piano /
 guitar / marimba / shaker / kick / hook onset within +-60 ms of an SFX hero hit, except music events deliberately
 ON a hit (SUPPORT, each <= 15 ms from its hit and nudged <= 7.9 ms toward it: the plip b1, the iris close b3, the
 grow peak b7, the gust b9, the O zoom b35, the kinds pop b37, pill 1 b48.5, the logo sting b61). Not support (no
@@ -110,10 +112,11 @@ attack, chorus) + air pad (pad 'tri' octave up, GROW / KINDS / end card; E4+B4 s
 reversed Gadd9 swell into GROW (reverse_swell). Sends: hall (pad, piano, guitar), plate (marimba, hooks, shaker), air (hooks, end tail). High-pass
 120-400 Hz on everything except the bass piano, sub and pulse (sends 200-400 Hz); low end mono in the centre; width
 from detune, chorus, pan, Haas (guitar) and reverb. Bus: hp 30 Hz, bus_comp -20 / 1.5, tilt +0.6, section gain
-(SEC_GAIN: seed +1, NURTURE +0.8, DEVELOP +2, GROW +2.6, KINDS +0.3, TRUST -0.2, end card +0.4 -> +5.8 into the
-tonic), fade 1.8 s, normalise_lufs -16 LUFS / -1.2 dBTP.
+(SEC_GAIN: seed +2.5 (beats 0-4) -> +1.2, NURTURE +0.8, DEVELOP +2, GROW +2.6, KINDS +0.3, TRUST -0.2, end card
++0.4 -> +5.8 into the tonic), fade 1.8 s, normalise_lufs -16 LUFS / -1.2 dBTP.
 
-DELIVERY  M.render_bed (A.sidechain VO duck depth 13 dB = ~10 dB median under speech, 40 / 400 ms; SFX duck
+DELIVERY  pre-duck floor (DUCK_FLOOR_DB 14: total VO duck >= 14 dB wherever the speech mask is on, 60 ms look-ahead,
+100 ms hang, 20 / 150 ms) -> M.render_bed (A.sidechain VO duck depth 13 dB, 40 / 400 ms; SFX duck
 3 dB; gaps 7 LU under the delivered mix, each >= 1 s gap 6-9 LU; voice >= 10 LU over the music) ->
 M.master_withmusic (-14 LUFS, limiter at -2.3, <= -2.0 dBTP) -> MP3s (M.write_mp3) and the preview
 (M.make_preview: the video comes from $MUSIC_SCRATCH/reel3_vo_preview.mp4, default the session scratchpad; if it
@@ -360,7 +363,8 @@ TRIM = dict(pad=1.0, air=5.0, comp=0.0, bass=-1.0, guitar=5.0, marimba=4.0, hook
             kick=-7.0, sub=-10.0, fx=4.0)
 # section dynamics (dB, applied after the bus compressor): the seed breathes in, DEVELOP builds, GROW lifts, the
 # trust pulse steps back a little, the end card swells on the sting and settles
-SEC_GAIN = [(0.0, 1.0), (9 * BEAT - 0.05, 1.3), (9 * BEAT, 0.8), (16 * BEAT - 0.05, 0.8), (16 * BEAT, 2.0),
+SEC_GAIN = [(0.0, 2.5), (4 * BEAT, 2.5), (5 * BEAT, 1.15), (9 * BEAT - 0.05, 1.3), (9 * BEAT, 0.8),
+            (16 * BEAT - 0.05, 0.8), (16 * BEAT, 2.0),
             (28 * BEAT, 2.0), (29 * BEAT, 2.6), (34 * BEAT, 2.6), (35 * BEAT, 0.5), (37 * BEAT, 0.3), (47 * BEAT, 0.3),
             (48 * BEAT, -0.2), (60 * BEAT, -0.2), (61 * BEAT, 0.4), (68 * BEAT, 5.8)]
 FADE_S = 1.8                         # final fade (s), ending 20 ms before the last sample: 46.38-48.18
@@ -769,6 +773,8 @@ def speech_env(n, pre=0.06, post=0.12, close=0.06, open_=0.30):
 
 VO_DUCK_DB = 13.0                  # A.sidechain depth under the VO (full depth only near the voice's peak level;
 #                                    measured median under speech in qa: bed.duck_median_under_speech_db)
+DUCK_FLOOR_DB = 14.0               # minimum total duck while the speech mask is on (60 ms look-ahead, 100 ms hang,
+#                                    20 / 150 ms ballistics): quiet word starts, tails and breaths get the full duck
 SPEECH_LP = (1000.0, 15000.0)      # low-pass cutoff under speech / in the gaps
 SPEECH_DIP = (2000.0, 0.5, -12.0)   # + a peaking dip under speech (Hz, Q, dB)
 SPEECH_DIP_LO = (650.0, 0.6, -8.0)  # + a broad low-mid dip under speech: the voice's 300 Hz-1.5 kHz body, where the
@@ -996,7 +1002,23 @@ def qa(clean, bed, bedm, mix, rep, stems, vo_stem):
         r['lt6_at_s'] = [round(i * 0.1 + 0.05, 2) for i in np.where(sel & (dd < 6))[0]]
         ov['order%d' % o] = r
     out['speech_band_overlap'] = ov
-    assert ov['order2']['voiced15_share'] <= OVERLAP_MAX, ov
+    # the spec's voice-clarity rule (asserted): vo_stem vs the bed, 300 Hz-4 kHz (2-pole), 100 ms windows, 50 ms
+    # hop, speech = M.speech_mask at the window centre (ungated: quiet word starts, tails, breaths included); the
+    # share of windows with the voice < 6 dB above the bed <= OVERLAP_MAX, median >= 10 dB
+    Wn, Hn = int(0.1 * SR), int(0.05 * SR)
+    s0 = np.arange(0, len(vs) - Wn + 1, Hn)
+
+    def _wdb(y):
+        c = np.concatenate([[0.0], np.cumsum(y * y)])
+        return 10 * np.log10((c[s0 + Wn] - c[s0]) / Wn + 1e-20)
+    dd = _wdb(A.bp(vs.mean(1), 300.0, 4000.0, 2)) - _wdb(A.bp(A._st(bed).mean(1), 300.0, 4000.0, 2))
+    ins = spf[s0 + Wn // 2]
+    out['clarity_spec'] = dict(lt6='%d/%d' % ((dd[ins] < 6).sum(), ins.sum()),
+                               share=round(float((dd[ins] < 6).mean()), 4),
+                               median_db=round(float(np.median(dd[ins])), 1),
+                               lt6_at_s=[round(float(s0[i] / SR + 0.05), 2) for i in np.where(ins & (dd < 6))[0]])
+    assert out['clarity_spec']['share'] <= OVERLAP_MAX and out['clarity_spec']['median_db'] >= 10.0, \
+        out['clarity_spec']
     # ending: 200 ms RMS windows of the clean music from the end of the last line; each <= the one before
     t_last = VO_LINES[-1][2]
     wv = int(0.2 * SR)
@@ -1020,7 +1042,8 @@ def qa(clean, bed, bedm, mix, rep, stems, vo_stem):
     return out
 
 
-OVERLAP_MAX = 0.05                 # QA gate: share of voiced speech windows (300 Hz-4 kHz, 100 ms), voice - bed < 6 dB
+OVERLAP_MAX = 0.05                 # QA gate: share of speech windows (300 Hz-4 kHz, 100 ms / 50 ms hop, ungated),
+#                                    voice - bed < 6 dB
 
 
 # ============================================================================================ main
@@ -1033,7 +1056,13 @@ def main():
     A._write_wav(OUT_CLEAN, clean, 24)
     st = M.load_reel_stems('reel3')
     assert st['n'] == N, st['n']
-    bed, bedm = M.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0,
+    # duck floor keyed on the speech mask: the level-proportional A.sidechain only reaches full depth near the
+    # voice's peak, so quiet word starts / tails / breaths got ~5 dB; pre-duck so the total is >= DUCK_FLOOR_DB
+    sp = M.speech_mask(st['vo'])
+    g_sc = A.db(A.sidechain(np.ones((N, 2)), st['vo'], depth_db=VO_DUCK_DB, attack=0.04, release=0.4)[:, 0])
+    g_fl = A._ballistics(-DUCK_FLOOR_DB * M._dilate(sp, 0.06, 0.10), 0.02, 0.15)
+    pre = clean * A.undb(np.minimum(0.0, g_fl - g_sc))[:, None]
+    bed, bedm = M.render_bed(pre, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0,
                              vo_duck_db=VO_DUCK_DB, vo_attack=0.04, vo_release=0.4, sfx_duck_db=3.0, sfx_attack=0.01,
                              sfx_release=0.25)
     bed[-int(0.02 * SR):] = 0.0
