@@ -109,3 +109,13 @@ Two entries above are headed R5. `HANDOFF.md` §12 keeps R5 for the god-ray hold
 - **Ask:** `def _tx_cut(t, w, A, B, **_o)` (the cut ignores its options; `post_kw` keeps reading them). Default behaviour unchanged.
 - **Local workaround now:** `log_kya_kahenge.plan_draw()` draws every window whose `fn is X._tx_cut` itself as the plain
   HALF-rule cut (`X.side_b(t, c)`); windows, samples and `plan.post_kw` (the push) are untouched.
+
+## R8 · `jawad_tx` O2 (`_tx_smoke`): the smoke scrolls by `np.roll` over a non-tileable fbm (motion-timeline-builder, 2026-10-09, session 3)
+
+- **Why:** `_tx_smoke` advects the smoke with `np.roll(n, -sh, axis=0)` / `np.roll(n2, -2 * sh, axis=0)` (jawad_tx.py ~l.1707),
+  but `fbm()` is not periodic, so the rolled rows meet the first rows in a hard horizontal line that travels up through the smoke
+  as `sh` grows (seen in this reel's O2 at 9.6 s and in hook B's at 2.4 s).
+- **Ask:** generate the fbm `extra` rows taller than H4 (rise / 4 + margin) and slice `[sh:sh + H4]` instead of rolling (or make
+  `fbm` tileable in y). Default look unchanged.
+- **Local workaround now:** `log_kya_kahenge._fbm_tall()` + `o2_smoke()` (a copy of `_tx_smoke` reading the slice), called from
+  `plan_draw()` for every O2 window; window, samples and post unchanged.

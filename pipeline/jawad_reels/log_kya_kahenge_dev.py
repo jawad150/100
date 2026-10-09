@@ -180,12 +180,26 @@ def camera():
 
 
 # ============================================================================================== text safe zones
-def _ink(cv, thr=0.25):
-    a = cv[..., 3] > thr
+def _ink(cv, thr=0.25, lum=0.08):
+    """Glyph ink box: alpha > thr AND linear luminance > lum (the judgement lines' dark scrim is not ink)."""
+    a = (cv[..., 3] > thr) & (K.lum(cv[..., :3]) > lum)
     if not a.any():
         return None
     ys, xs = np.nonzero(a)
     return (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+
+
+def _visible(cv, lum=0.02):
+    """A text block counts as on screen when any pixel is brighter than lum (opacity above ~2 %)."""
+    return bool((K.lum(cv[..., :3]) > lum).any())
+
+
+def _overlap(b, r):
+    if b is None or r is None:
+        return 0
+    w = min(b[2], r[2]) - max(b[0], r[0])
+    h = min(b[3], r[3]) - max(b[1], r[1])
+    return int(max(0, w) * max(0, h))
 
 
 def _violations(b, key=True, cta=False):
@@ -201,28 +215,51 @@ def _violations(b, key=True, cta=False):
     return v
 
 
-def text(hook='A', step=1.0 / 15):
-    """Ink boxes (alpha > 0.25) of each text element every 1/15 s, drawn alone on an empty canvas."""
+def text(hook='A', f0=0, f1=None):
+    """Every frame: glyph-ink boxes of each text element drawn alone on an empty canvas vs the safe zones; the number of
+    visible text blocks (each judgement line, the hook / payoff lockup, the caption chunk, the end card); caption and
+    lockup ink vs JD's body rect (LF.jd_rect with margin 0)."""
     A = M.assets()
     cap = M.captions(hook)
-    res = {}
-    worst = {}
-    t = 0.0
-    while t < M.DUR:
-        els = {}
+    res, worst = {}, {}
+    nmax, nhist, over = 0, {}, []
+    n = int(round(M.DUR * K.FPS)) if f1 is None else int(f1)
+    for f in range(int(f0), n):
+        t = f / K.FPS
+        els, nb = {}, 0
         cv = np.zeros((K.H, K.W, 4), np.float32)
         M.draw_overlays(cv, t, hook)
         els['lockups'] = _ink(cv)
-        cv = np.zeros((K.H, K.W, 4), np.float32)
-        if t >= 3.0 and t < 9.6 + 1.2:
-            M.draw_judgements(cv, t)
-        els['judgement'] = _ink(cv)
+        nb += _visible(cv)
+        jb = None
+        if 3.0 <= t < 9.6 + 1.2:
+            for i in range(len(M.J_LINES)):
+                st = M._jline_state(i, t)
+                if st is None:
+                    continue
+                x, y, sc, op, b = st
+                cj = np.zeros((K.H, K.W, 4), np.float32)
+                A['lines'][i].draw(cj, x, y, scale=sc, opacity=op, blur=b)
+                nb += _visible(cj)
+                bi = _ink(cj)
+                if bi is not None:
+                    jb = bi if jb is None else (min(jb[0], bi[0]), min(jb[1], bi[1]), max(jb[2], bi[2]), max(jb[3], bi[3]))
+        els['judgement'] = jb
         cv = np.zeros((K.H, K.W, 4), np.float32)
         A['card'].draw(cv, t, M.T_CARD)
         els['endcard'] = _ink(cv)
+        nb += _visible(cv)
         cv = np.zeros((K.H, K.W, 4), np.float32)
         cap.draw(cv, t)
         els['caption'] = _ink(cv)
+        nb += _visible(cv)
+        nmax = max(nmax, nb)
+        nhist[nb] = nhist.get(nb, 0) + 1
+        jr = LF.jd_rect(t, margin=0)
+        for k in ('caption', 'lockups'):
+            o = _overlap(els[k], jr)
+            if o:
+                over.append((f, k, els[k], jr, o))
         for k, b in els.items():
             if b is None:
                 continue
@@ -232,14 +269,16 @@ def text(hook='A', step=1.0 / 15):
             r['union'] = [min(r['union'][0], b[0]), min(r['union'][1], b[1]), max(r['union'][2], b[2]),
                           max(r['union'][3], b[3])]
             if v:
-                r['violations'].append((round(t, 3), b, v))
+                r['violations'].append((f, b, v))
             m = min(b[0] - 70, 1010 - b[2], b[1] - 230, (1600 if k == 'endcard' else 1480) - b[3])
             if k not in worst or m < worst[k][0]:
-                worst[k] = (m, round(t, 3), b)
-        t += step
+                worst[k] = (m, f, b)
     for k in res:
+        res[k]['n_violations'] = len(res[k]['violations'])
         res[k]['violations'] = res[k]['violations'][:12]
         res[k]['worst_margin_px'] = worst[k]
+    res['blocks'] = dict(max=nmax, frames_per_count={str(k): v for k, v in sorted(nhist.items())})
+    res['over_jd'] = dict(n=len(over), first=over[:8])
     return _save('text_%s' % hook, res)
 
 
@@ -272,7 +311,7 @@ if __name__ == '__main__':
     elif cmd == 'camera':
         camera()
     elif cmd == 'text':
-        text(arg or 'A')
+        text(arg or 'A', *[int(x) for x in sys.argv[3:5]])
     elif cmd == 'o6':
         o6()
     elif cmd == 'captions':
