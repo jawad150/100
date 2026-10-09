@@ -178,7 +178,7 @@ def draw_overlays(cv, t):
     A = assets()
     if HOOK == 'A' and t < F(80):
         o = h1_opacity(t)
-        ex = ease('in_cubic', (t - F(72)) / F(7))
+        ex = ease('in_cubic', (t - F(72)) / F(8))             # 8 frames f72-f79 (f79 keeps a lit element)
         if o > 0 and ex < 1.0:
             A['h1'].draw(cv, 540.0, 520.0 - 8.0 * ex, opacity=o * (1.0 - ex), blur=6.0 * ex)
         if t >= F(18) - HALF:
@@ -194,7 +194,7 @@ def draw_overlays(cv, t):
     if F(240) - HALF <= t < F(306):
         f = BW.fi(t)
         if t < 8.6:
-            A['r1g'].slam(cv, t, 540.0, 620.0, t0=8.0 - HALF, fade=0)
+            A['r1g'].slam(cv, t, 540.0, 620.0, t0=8.0 - HALF, fade=0, s0=1.18, dur=0.25, smear=False)
         else:
             op = {300: 0.35, 301: 0.80, 302: 0.15, 303: 0.45, 304: 0.05}.get(f, 1.0 if f < 300 else 0.0)
             if op > 0:
@@ -232,7 +232,7 @@ def captions(hook='A'):
     words = RWS + '/vo/bijli_chali_gayi_vo_%s.words.json' % hook
     return SC.Captions(words, band='auto', avoid=avoid_at, white_px=64, key_px=128,
                        hide=[(0.0, 80 / 30), (800 / 30, 880 / 30), (920 / 30, DUR)],
-                       clear=[(8.0, 8.6), (26.333, 26.667)])
+                       clear=[(7.94, 8.6), (26.27, 26.667)])          # gone 2 f before the slam f240 / drop-out f790
 
 
 # ================================================================================================ contract

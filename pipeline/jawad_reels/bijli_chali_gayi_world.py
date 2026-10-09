@@ -588,6 +588,16 @@ def room_render(st, t):
     if st['crt'] is not None:
         sx, sy = S['scr_xy']
         cv[sy:sy + 240, sx:sx + 340, :3] += st['crt'] * S['scr'][..., None]
+    if I is not None:                                  # the torch's specular glint on the convex CRT glass
+        hx_, hy_ = st['torch'][0], st['torch'][1]
+        sx, sy = S['scr_xy']
+        d = math.hypot((hx_ - 470.0) / 260.0, (hy_ - 1170.0) / 200.0)
+        if d < 1.6:
+            gx = float(np.clip(hx_, 300.0, 640.0)) - sx + 26.0
+            gy = float(np.clip(hy_, 1050.0, 1290.0)) - sy - 34.0
+            g = gauss2(240, 340, gx, gy, 52.0, 26.0) + 0.5 * gauss2(240, 340, gx, gy, 16.0, 9.0)
+            k = st['torch'][2] * max(0.0, 1.0 - d / 1.6) ** 1.5
+            cv[sy:sy + 240, sx:sx + 340, :3] += (g * S['scr'])[..., None] * (TORCH * np.float32(0.9 * k))
     lev, ck = st['led']
     bx = S['props']['box_room']
     x0, y0 = bx['xy']
@@ -1387,14 +1397,14 @@ def draw_chips(cv, t):
             continue
         ex0 = min(F(s) + 0.9, F(706))
         if i + 3 < n:
-            ex0 = min(ex0, F(CHIPS[i + 3]))
+            ex0 = min(ex0, F(CHIPS[i + 3] - 6))       # gone when a 4th arrives: never more than 3 on screen
         ex = ease('in_cubic', (t - ex0) / F(6))
         if ex >= 1.0:
             continue
         newer = 0.0
-        for j in range(i + 1, n):
-            newer += ease('out_cubic', (t - F(CHIPS[j])) / F(5))
-        y = CHIP_XY[1] - 92.0 * newer
+        for j in range(i + 1, n):                  # the stack makes room from the press (2 f before the spawn)
+            newer += ease('out_cubic', (t - F(CHIPS[j] - 2)) / F(4))
+        y = CHIP_XY[1] - 92.0 * newer + 24.0 * (1.0 - ease('out_cubic', (age + HALF) / F(4)))
         sc = 0.85 + 0.15 * K.spring(max(0.0, age), 2.6, 0.5)
         op = ease('linear', (age + HALF) / F(2)) * (1.0 - ex)
         sel_new = 1.0 - min(1.0, newer)
