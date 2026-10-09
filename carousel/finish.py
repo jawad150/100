@@ -277,6 +277,154 @@ class Canvas:
         self._paste(face, plane)
         return box
 
+    # -- small glossy sphere (bullets, footer, dividers) ---------------
+    def sphere(self, cx, cy, r, col, plane="front"):
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        dark = tuple(int(c * 0.45) for c in col)
+        steps = 12
+        for k in range(steps):
+            t = k / (steps - 1)
+            rr = r * (1 - 0.82 * t)
+            ox = oy = -r * 0.38 * t
+            if t < 0.5:
+                cc = tuple(int(dk + (c - dk) * t * 2) for dk, c in zip(dark, col))
+            else:
+                cc = tuple(int(c + (255 - c) * (t - 0.5) * 0.7) for c in col)
+            d.ellipse([cx + ox - rr, cy + oy - rr, cx + ox + rr, cy + oy + rr], fill=cc)
+        hr = r * 0.17
+        d.ellipse([cx - r * 0.42 - hr, cy - r * 0.42 - hr, cx - r * 0.42 + hr, cy - r * 0.42 + hr],
+                  fill=(255, 255, 255, 235))
+        self._paste(lay, plane)
+
+    # -- rich text --------------------------------------------------
+    STYLES = {
+        "n": (CREAM, 520),
+        "b": (GOLD, 800),
+        "g": ((96, 222, 128), 800),
+        "r": ((255, 104, 92), 800),
+    }
+
+    def _tokens(self, markup):
+        """**gold**  ++green++  ~~red~~ ; '\\n' = paragraph break.
+        Returns paragraphs of units; a unit is a list of (text, style) segments
+        that must stay together (e.g. a highlighted word and the full stop after it)."""
+        import re
+        out = []
+        for para in markup.split("\n"):
+            units, glue = [], False
+            for part in re.split(r"(\*\*.+?\*\*|\+\+.+?\+\+|~~.+?~~)", para):
+                if not part:
+                    continue
+                st = "n"
+                if part.startswith("**"):
+                    st, part = "b", part[2:-2]
+                elif part.startswith("++"):
+                    st, part = "g", part[2:-2]
+                elif part.startswith("~~"):
+                    st, part = "r", part[2:-2]
+                words = part.split(" ")
+                for i, w in enumerate(words):
+                    if not w:
+                        continue
+                    if i == 0 and glue and units:
+                        units[-1].append((w, st))
+                    else:
+                        units.append([(w, st)])
+                glue = not part.endswith(" ")
+            out.append(units)
+        return out
+
+    def _fonts(self, size):
+        return {k: self.font(MONT, size, w) for k, (_, w) in self.STYLES.items()}
+
+    def _wrap(self, markup, size, max_w):
+        fonts = self._fonts(size)
+        space = fonts["n"].getlength(" ")
+        paras = []
+        for units in self._tokens(markup):
+            lines, cur, cur_w = [], [], 0.0
+            for u in units:
+                segs = [(t, st, fonts[st].getlength(t)) for t, st in u]
+                uw = sum(x[2] for x in segs)
+                add = uw + (space if cur else 0)
+                if cur and cur_w + add > max_w:
+                    lines.append((cur, cur_w))
+                    cur, cur_w, add = [], 0.0, uw
+                cur.append(segs)
+                cur_w += add
+            if cur:
+                lines.append((cur, cur_w))
+            paras.append(lines)
+        return paras, fonts, space
+
+    def paragraph_height(self, markup, size, max_w, lh=1.38, pgap=0.55):
+        paras, _, _ = self._wrap(markup, size, max_w * self.s)
+        n = sum(len(p) for p in paras)
+        L = size * self.s * lh
+        return n * L + (len(paras) - 1) * L * pgap - (L - size * self.s * 1.02)
+
+    def paragraph(self, top, markup, size, max_w, lh=1.38, pgap=0.55, label="body",
+                  align="center", x0=None, plane="front"):
+        s = self.s
+        paras, fonts, space = self._wrap(markup, size, max_w * s)
+        L = size * s * lh
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        asc = fonts["n"].getmetrics()[0]
+        cap_off = asc - size * s * 0.74  # put the cap-height top at `top`
+        y = top - cap_off
+        for pi, lines in enumerate(paras):
+            for units, w in lines:
+                x = (self.W - w) / 2 if align == "center" else x0
+                for segs in units:
+                    for wd, st, ww in segs:
+                        d.text((x, y), wd, font=fonts[st], fill=self.STYLES[st][0])
+                        x += ww
+                    x += space
+                y += L
+            y += L * pgap
+        box = lay.getbbox()
+        self._claim(box, label)
+        a = lay.getchannel("A")
+        sh = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        sh.putalpha(self._shift(a, 2 * s, 3 * s).filter(ImageFilter.GaussianBlur(5 * s))
+                    .point(lambda v: int(v * 0.9)))
+        self._paste(sh, plane)
+        self._paste(lay, plane)
+        return box
+
+    def card(self, box, plane="front"):
+        s = self.s
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        ImageDraw.Draw(lay).rounded_rectangle(box, radius=28 * s, fill=(10, 7, 5, 150),
+                                              outline=(255, 198, 55, 110), width=max(2, int(2 * s)))
+        self._paste(lay.filter(ImageFilter.GaussianBlur(0.6 * s)), plane)
+
+    # -- footer -----------------------------------------------------
+    def footer(self, page, total, arrow=True):
+        s = self.s
+        f = self.font(MONT, 19, 700)
+        y = self.H - 46 * s - self.ink_height("MARGIN", f)
+        lay = Image.new("RGBA", self.bg.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        left = "MARGIN  TRADING  101"
+        right = f"{page:02d} / {total:02d}" + ("   \u2192" if arrow else "")
+        m, _, b = self._glyph_mask(left, f, 2 * s)
+        lm = self._shift(m, 72 * s - b[0], y - b[1])
+        m2, _, b2 = self._glyph_mask(right, f, 2 * s)
+        rm = self._shift(m2, self.W - 72 * s - b2[2], y - b2[1])
+        both = ImageChops.lighter(lm, rm)
+        box = both.getbbox()
+        self._claim((0, box[1], self.W, box[3]), "footer")
+        face = Image.new("RGBA", self.bg.size, CREAM + (0,))
+        face.putalpha(both.point(lambda v: int(v * 0.85)))
+        self._paste(face, "front")
+        cy = (box[1] + box[3]) / 2
+        for i, col in enumerate(DOTS):
+            self.sphere(self.W / 2 + (i - 1) * 26 * s, cy, 7 * s, col)
+        return box
+
     def render(self):
         out = Image.alpha_composite(self.bg, self.behind)
         if self.subject is not None:
@@ -356,5 +504,220 @@ def cover(raw, out):
     print("saved", out, c.bg.size, "| subject top", subject_top, "| kicker top", round(kicker_top))
 
 
+TOTAL = 10
+TOP_MARGIN_G = 56
+DEPTH_G = 16
+GAP_G = 26
+FACES = [((255, 255, 255), (226, 222, 214), (120, 110, 100)),   # white
+         ((255, 222, 92), (240, 160, 30), (150, 80, 10))]      # gold
+
+
+def _subject_top(sub_np, x0, x1, H):
+    cols = sub_np[:, max(0, int(x0)):int(x1)]
+    rows = np.where(cols[int(H * 0.12):].any(1))[0]
+    return rows[0] + int(H * 0.12) if len(rows) else H
+
+
+def headline(c, kicker, lines, subject):
+    """Kicker pill + stacked 3D headline. Last line is masked by the subject
+    when that reads cleanly; otherwise the headline sits in front."""
+    s, W, H = c.s, c.W, c.H
+    f_kick = c.font(MONT, 24, 800)
+    kicker_h = c.ink_height(kicker, f_kick) + 2 * 14 * s
+    dep, gap, top_m = DEPTH_G * s, GAP_G * s, TOP_MARGIN_G * s
+    sub_np = np.asarray(subject) > 128
+
+    def line_masks(f, cap, first_top):
+        out = []
+        for i, ln in enumerate(lines):
+            m, _, b = c._glyph_mask(ln, f, 2 * s)
+            m = c._shift(m, (W - (b[2] - b[0] + dep)) / 2 - b[0],
+                         first_top + i * (cap + dep + gap) - b[1])
+            out.append(np.asarray(m) > 128)
+        return out
+
+    def reads_cleanly(masks, cap):
+        """Every glyph-sized column band of every line must stay mostly visible."""
+        band = max(4, int(cap * 0.45))
+        for i, ink in enumerate(masks):
+            limit = 0.16 if i == len(masks) - 1 else 0.0
+            cols = np.where(ink.any(0))[0]
+            for x in range(cols[0], cols[-1] + 1, band // 2):
+                sl = ink[:, x:x + band]
+                tot = sl.sum()
+                if tot and (sl & sub_np[:, x:x + band]).sum() / tot > limit + 0.005:
+                    return False
+        return True
+
+    plan = None
+    for overlap in (0.26, 0.18, 0.10):
+        for size in range(150, 70, -2):
+            f = c.font(ANTON, size)
+            cap = c.ink_height("H", f)
+            widths = [c._glyph_mask(ln, f, 2 * s)[2] for ln in lines]
+            widths = [b[2] - b[0] + dep for b in widths]
+            if max(widths) > W - 2 * 72 * s:
+                continue
+            lw = widths[-1]
+            st = _subject_top(sub_np, (W - lw) / 2, (W + lw) / 2, H)
+            first_top = st - cap * (1 - overlap) - (len(lines) - 1) * (cap + dep + gap)
+            kicker_top = first_top - gap - kicker_h
+            if kicker_top < top_m:
+                continue
+            if reads_cleanly(line_masks(f, cap, first_top), cap):
+                plan = (f, cap, kicker_top, first_top, "behind")
+            break
+        if plan:
+            break
+    if plan is None:  # subject too high: stack from the top margin, text in front
+        for size in range(130, 70, -2):
+            f = c.font(ANTON, size)
+            if all(c._glyph_mask(ln, f, 2 * s)[2][2] - c._glyph_mask(ln, f, 2 * s)[2][0] + dep
+                   <= W - 2 * 72 * s for ln in lines):
+                break
+        cap = c.ink_height("H", f)
+        kicker_top = top_m
+        plan = (f, cap, kicker_top, kicker_top + kicker_h + gap, "front")
+    f, cap, kicker_top, first_top, plane = plan
+
+    c.pill(kicker_top, kicker, f_kick, fg=CREAM, bg=(0, 0, 0, 150), border=YELLOW + (255,),
+           tracking=4 * s, label="kicker")
+    bottom = 0
+    for i, ln in enumerate(lines):
+        ft, fb, sd = FACES[i % 2] if len(lines) > 1 else FACES[1]
+        box = c.title3d(first_top + i * (cap + dep + gap), ln, f, ft, fb, sd, tracking=2 * s,
+                        dots=False, depth=DEPTH_G, label=f"h{i}", plane=plane)
+        bottom = box[3]
+    print(f"  headline size {f.size / s:.0f}, plane {plane}")
+    return bottom
+
+
+def content_slide(spec, raw, out):
+    subject = subject_mask(raw)
+    c = Canvas(grade(Image.open(raw)), subject)
+    s, W, H = c.s, c.W, c.H
+    head_bottom = headline(c, spec["kicker"], spec["lines"], subject)
+
+    # ---- bottom block, built upward from the footer
+    fbox = c.footer(spec["page"], TOTAL, arrow=spec["page"] < TOTAL)
+    y = fbox[1] - 40 * s
+    if spec.get("disclaimer"):
+        fd = c.font(MONT, 17, 500)
+        h = c.ink_height(spec["disclaimer"], fd)
+        c.text(y - h, spec["disclaimer"], fd, (200, 190, 175), label="disclaimer", shadow=0.6)
+        y -= h + 26 * s
+    if spec.get("cta"):
+        fc = c.font(MONT, 22, 800)
+        h = c.ink_height(spec["cta"], fc) + 2 * 14 * s
+        c.pill(y - h, spec["cta"], fc, fg=(20, 14, 8), bg=YELLOW + (255,), border=YELLOW + (255,),
+               tracking=3 * s, label="cta")
+        y -= h + 34 * s
+
+    if "body" in spec:
+        size = spec.get("size", 33)
+        bh = c.paragraph_height(spec["body"], size, 900)
+        top = y - bh
+        c.paragraph(top, spec["body"], size, 900)
+        block_top = top
+    elif "rows" in spec:
+        fl, fr = c.font(MONT, 30, 800), c.font(MONT, 30, 520)
+        row_h = 62 * s
+        n = len(spec["rows"])
+        top = y - 34 * s - n * row_h + (row_h - c.ink_height("H", fl))
+        card_top = top - 40 * s
+        lw = max(fl.getlength(a) for a, _ in spec["rows"])
+        rw = max(fr.getlength(b) for _, b in spec["rows"])
+        mid = W / 2 + (lw - rw) / 2 * 0  # centre column at page centre
+        c.card((int(mid - lw - 70 * s), int(card_top), int(mid + rw + 70 * s), int(y)))
+        for i, (a, b) in enumerate(spec["rows"]):
+            ty = top + i * row_h
+            for txt, fnt, col, right in ((a, fl, GOLD, True), (b, fr, CREAM, False)):
+                m, _, bb = c._glyph_mask(txt, fnt, 0)
+                capt = c._glyph_mask("H", fnt, 0)[2][1]
+                dx = (mid - 30 * s - bb[2]) if right else (mid + 30 * s - bb[0])
+                m = c._shift(m, dx, ty - capt)
+                c._claim(m.getbbox(), f"row{i}{'L' if right else 'R'}")
+                face = Image.new("RGBA", c.bg.size, col + (0,))
+                face.putalpha(m)
+                c._paste(face, "front")
+            c.sphere(mid, ty + c.ink_height("H", fl) / 2, 7 * s, DOTS[i % 3])
+        block_top = card_top
+    elif "bullets" in spec:
+        size = 32
+        maxw = 760
+        items = spec["bullets"]
+        widths, heights = [], []
+        for col, mk in items:
+            paras, _, _ = c._wrap(mk, size, maxw * s)
+            widths.append(max(w for p in paras for _, w in p))
+            heights.append(c.paragraph_height(mk, size, maxw))
+        indent = 46 * s
+        block_w = indent + max(widths)
+        x0 = (W - block_w) / 2
+        gapb = 30 * s
+        total_h = sum(heights) + gapb * (len(items) - 1)
+        top = y - 40 * s - total_h
+        card_top = top - 44 * s
+        c.card((int(x0 - 50 * s), int(card_top), int(x0 + block_w + 50 * s), int(y)))
+        ty = top
+        for i, ((col, mk), h) in enumerate(zip(items, heights)):
+            c.sphere(x0 + 12 * s, ty + size * s * 0.37, 11 * s, col)
+            c.paragraph(ty, mk, size, maxw, label=f"b{i}", align="left", x0=x0 + indent)
+            ty += h + gapb
+        block_top = card_top
+
+    if block_top < head_bottom + 30 * s:
+        raise RuntimeError(f"body block collides with headline on slide {spec['page']}")
+    bot_frac = min(0.70, (H - block_top + 190 * s) / H)
+    c.bg = scrims(c.bg, top_frac=0.44, top_alpha=235, bot_frac=bot_frac, bot_alpha=252).convert("RGBA")
+    c.save(out)
+    print("saved", out)
+
+
+SLIDES = {
+    2: dict(kicker="THE  SETUP", lines=["A PS5 COSTS", "RS. 200,000"],
+            body="That's the price **today**.\nBut Chandler thinks **GTA 6** is coming soon, "
+                 "so PS5 prices will ++rise++."),
+    3: dict(kicker="THE  DEAL", lines=["THE TOKEN", "MONEY"],
+            body="Chandler pays a token amount of **Rs. 10,000** as **margin** "
+                 "to lock the PS5 at **Rs. 200,000**.\n"
+                 "**30 days from now**, he buys the PS5 for **Rs. 200,000**."),
+    4: dict(kicker="SCENARIO  1", lines=["GTA 6", "RELEASES!"],
+            body="30 days later, the PS5 goes up to ++Rs. 220,000++.\n"
+                 "Chandler gets it at **Rs. 200,000** and sells it at ++Rs. 220,000++. "
+                 "He only paid **Rs. 10,000** as margin upfront."),
+    5: dict(kicker="SCENARIO  2", lines=["GTA 6 GETS", "DELAYED"],
+            body="30 days later, the PS5 drops to ~~Rs. 180,000~~.\n"
+                 "Chandler bought at **Rs. 200,000** and now sells at ~~Rs. 180,000~~, "
+                 "so he bears a ~~loss of Rs. 20,000~~."),
+    6: dict(kicker="THE  BIG  IDEA", lines=["WHAT DID CHANDLER", "ACTUALLY CREATE?"],
+            body="A **margin contract / trade**: a financial agreement to buy or sell an asset "
+                 "at a **fixed price** on a **future date**, by paying a **small upfront amount**."),
+    7: dict(kicker="PLOT  TWIST", lines=["NOW REPLACE THE PS5", "WITH A COMMODITY"],
+            body="People make similar agreements on the "
+                 "**Pakistan Mercantile Exchange (PMEX)**.\nThis is called **Margin Trading**."),
+    8: dict(kicker="THE  LINGO", lines=["TERMS USED IN", "MARGIN TRADING"],
+            rows=[("PS5", "Underlying Asset"), ("Rs. 200,000", "Futures Price"),
+                  ("Rs. 10,000", "Margin"), ("30 Days Later", "Expiry Date"),
+                  ("Chandler's Deal", "Margin Trade")]),
+    9: dict(kicker="THE  WHY", lines=["WHY DO PEOPLE", "TRADE ON MARGIN?"],
+            bullets=[((60, 200, 100), "They think prices will ++rise++."),
+                     ((235, 70, 60), "They think prices will ~~fall~~."),
+                     (GOLD, "They want to **lock in today's price** and **reduce risk**.")]),
+    10: dict(kicker="THE  TAKEAWAY", lines=["THAT'S HOW MARGIN", "TRADING WORKS"],
+             body="Margin trading lets you trade **futures contracts** by paying a small "
+                  "upfront amount known as **Margin** or **Token Money**.",
+             cta="SAVE  THIS  \u2022  SEND  IT  TO  YOUR  JOEY",
+             disclaimer="For education only. Margin trading carries a risk of loss."),
+}
+
+
+def slide(n, raw, out):
+    n = int(n)
+    spec = dict(SLIDES[n], page=n)
+    print(f"slide {n}")
+    content_slide(spec, raw, out)
+
+
 if __name__ == "__main__":
-    {"cover": cover}[sys.argv[1]](*sys.argv[2:])
+    {"cover": cover, "slide": slide}[sys.argv[1]](*sys.argv[2:])
