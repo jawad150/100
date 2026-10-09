@@ -28,7 +28,8 @@ HOOK      | 1.1-3.1      | 0.000-3.750   | coin flip 0.030; tunnel flash     | b
 NUMBER    | 3.1-7.3      | 3.750-12.188  | T_NUM 4.011 (air_zoom, b8.56 ->   | steady pulse: soft four-on-the-floor
           | (b8-26)      |               | bar line b8); counter rolls 4.06, | kick, offbeat hats, sub (1 + and-of-2),
           |              |               | LANDS 5.417 (kaching); pop 5.886; | EP stabs, 16th saw-pluck arp; claps on
-          |              |               | VO from_amount 5.20-11.35         | 2 & 4 + shaker 16ths from b16. Abmaj9
+          |              |               | VO from_amount 5.20-11.35         | 2 & 4 + shaker 16ths from b16 (+2 dB
+          |              |               |                                   | over the 3.76-5.20 gap). Abmaj9
           |              |               |                                   | Ebmaj7/G Cm9 Fm9 Bb9sus4 Ebadd9. Gap
           |              |               |                                   | motifs b9-10.5 (under the roll) and
           |              |               |                                   | b24.5-25.5 (before the whip)
@@ -73,18 +74,22 @@ CHORDS (beat: chord)  0 Ab/Bb | 3 Ebmaj9 | 6 Cm9 | 8 Abmaj9 | 12 Ebmaj7/G | 16 C
 24 Ebadd9 | 26 Abmaj9 | 28 Bb/Ab | 30 Cm9 | 32 Fm9 | 34 Bb9 | 35 Ebmaj9 | 40 Cm9 | 44 Abmaj9 | 48 Bb9sus4 |
 50 Bb | 52 Ebmaj7/G | 56 Abmaj9 | 58 Fm9 | 60 Bb9sus4 | 62 Abmaj9 | 66 Gm7 | 68 Cm9 | 72 Fm9 | 74 Bb9sus4 |
 76 Abmaj9 | 78 Bb/Ab | 80 Cm9 | 82 Fm9 | 83 Bb9sus4 | 84 Eb6/9 | 88 Ab/Eb | 90 Bb/Eb | 92 Eb.
+CHART spells Bb9sus4 as 'Bb7sus4' and Eb6/9 as 'Eb6' (the M.chord names; the voicings add the 9th).
 Hand voice-led 4-voice upper structures (VOICING), the bass plays the root / slash note (folded to Ab1-G2); the EP
 plays the same structure an octave down (no seconds); arps and motifs use chord tones.
 
 SPEECH RULES  No melody while the voice speaks: every motif note sits in a VO gap (asserted: onset >= 100 ms after
 a line ends, gate end >= 80 ms before the next line, release clipped to the gap, no SFX cue >= -12 dB within +-60 ms).
 Pads / EP / arps / motifs pass a speech-aware filter (2-pole low-pass 1.7 kHz while a line plays, 15 kHz in the gaps,
-+ a -6 dB peak dip at 2.6 kHz; 60 ms close / 300 ms open); arps -3 dB, claps -4 dB, hats / shaker -2 dB under speech;
++ a -6 dB peak dip at 2.6 kHz and a broad -6 dB dip at 750 Hz (Q 0.6) for the voice's 300 Hz-1.5 kHz body; 60 ms
+close / 300 ms open); pad / glass / EP -3 dB, arps -3 dB, claps -4 dB, hats / shaker -2 dB under speech;
 claps / hats / FX get the dip only; octave-up arps and the counter-arp play only in the gaps (an octave lower under
 speech). Hero hits: no kick / clap / snare / arp / motif / EP / shaker / hat onset within +-60 ms of an SFX hero hit,
 except music downbeats deliberately ON a slam (SUPPORT: the title slam b3 and "Support" b3.5, the calculator whip b26,
 the 52-week total b35: kick, sub, EP, pad); sub notes near a hero hit swell in (50 ms attack); chord changes there are
-pad swells (hero_audit() logs and measures).
+pad swells (hero_audit() logs and measures). The b3 title-slam kick has no click (only the thump lands with
+impact_big, 37 ms after the slot reels' landing tick). QA gate: in 100 ms windows of 300 Hz-4 kHz under speech the
+voice is >= 6 dB above the bed in >= 95 % of windows (qa() speech_band_overlap).
 
 INSTRUMENTS (music_synth)  glassy pad (pad 'warm' 5 voices + 'tri' glass top an octave up from b52, chorus,
 filter per section), warm electric piano (fm_epiano), plucky saw arp (pluck_synth 'saw', filter envelope) +
@@ -97,7 +102,8 @@ except kick and bass (sends 250-500 Hz); sub / kick mono in the centre; width fr
 reverb. Bus: hp 30 Hz, bus_comp -18 / 1.6, tilt +0.8, section gain (SEC_GAIN), fade, normalise_lufs -16 LUFS /
 -1.2 dBTP.
 
-DELIVERY  M.render_bed (A.sidechain VO duck 10 dB, 40 / 400 ms; SFX duck 3 dB; gaps 7 LU under the delivered mix;
+DELIVERY  M.render_bed (A.sidechain VO duck 12 dB set = ~10 dB measured median, 40 / 400 ms; SFX duck 3 dB with
+150 ms release; gaps 7 LU under the delivered mix;
 voice >= 10 LU over the music) -> M.master_withmusic (-14 LUFS, limiter at -2.3, <= -2.0 dBTP) -> MP3s
 (M.write_mp3) and the preview (M.make_preview). Outputs: OUT_* / MP3_* / PREVIEW below.
 """
@@ -219,7 +225,9 @@ def speaking(t, pre=0.08, post=0.08):
 
 
 # ============================================================================================ harmony
-# (beat, symbol, upper-structure voicing MIDI); the bass plays the root / slash note
+# (beat, symbol, upper-structure voicing MIDI); the bass plays the root / slash note.
+# Symbols are the ones M.chord parses; the voicings add the 9th: 'Bb7sus4' voiced with C = Bb9sus4 and 'Eb6'
+# voiced with F = Eb6/9 (the names used in the docstring map).
 CHART = [
     (0, 'Ab/Bb', [63, 68, 70, 72]), (3, 'Ebmaj9', [65, 67, 70, 74]), (6, 'Cm9', [63, 67, 70, 74]),
     (8, 'Abmaj9', [63, 67, 70, 72]), (12, 'Ebmaj7/G', [62, 67, 70, 75]), (16, 'Cm9', [63, 67, 70, 74]),
@@ -322,7 +330,10 @@ TRIM = dict(pad=7.0, ep=4.0, arps=7.0, motif=3.0, sub=-4.5, bass_pluck=5.0, kick
             fx=4.0)
 # section dynamics (dB, applied after the bus compressor): the hook swells into the slam, the tag ring breathes,
 # the lift lifts, the end card settles
-SEC_GAIN = [(0.0, -3.0), (3 * BEAT - 0.05, 0.0), (62 * BEAT, 0.0), (62 * BEAT + 0.3, -1.5),
+# + 2 dB over the first VO gap (the counter roll, 3.76-5.20 s): the sparser number intro measured ~2.5 LU under
+# the other gaps (clean -16.5 vs -13.8..-14.2 LUFS), back to 0 dB by the counter landing (5.417)
+SEC_GAIN = [(0.0, -3.0), (3 * BEAT - 0.05, 0.0), (8 * BEAT, 0.0), (8 * BEAT + 0.25, 2.0), (5.15, 2.0), (5.40, 0.0),
+            (62 * BEAT, 0.0), (62 * BEAT + 0.3, -1.5),
             (68 * BEAT - 0.5, -1.5), (68 * BEAT, -0.6), (76 * BEAT, -0.6), (76 * BEAT + 0.5, 1.0),
             (84 * BEAT - 0.3, 1.0), (84 * BEAT + 0.5, -0.5)]
 
@@ -576,7 +587,9 @@ def layer_drums():
             vel = 0.9 if b != 3.5 else 0.78
         if sec == 'lift':
             vel += 0.04
-        x = M.soft_kick(vel=vel, punch=0.6, tone=50.0, decay=0.27, click=0.3, drive=1.4)
+        # the title-slam downbeat (b3) has no click: only the low thump lands with impact_big, 37 ms after the
+        # slot reels' landing tick
+        x = M.soft_kick(vel=vel, punch=0.6, tone=50.0, decay=0.27, click=0.0 if b == 3 else 0.3, drive=1.4)
         kick.add(x, t, gain_db=-5.0)
         kick_times.append(t)
         log(t, 'kick_sup' if sup else 'kick', -5.0)
@@ -678,10 +691,11 @@ def speech_env(n, pre=0.06, post=0.12, close=0.06, open_=0.30):
     return np.interp(np.arange(n), (np.arange(m) + 0.5) * blk, y)
 
 
-VO_DUCK_DB = 10.0                  # A.sidechain depth under the VO (measures ~8.5 dB median: full depth only near the
-#                                    voice's peak level)
+VO_DUCK_DB = 12.0                  # A.sidechain depth under the VO (10 dB measured ~8.4 dB median: full depth only near
+#                                    the voice's peak level; 12 dB lands the measured median near 10 dB)
 SPEECH_LP = (1700.0, 15000.0)      # low-pass cutoff under speech / in the gaps
 SPEECH_DIP = (2600.0, 0.8, -6.0)   # + a peaking dip under speech (Hz, Q, dB)
+SPEECH_DIP_LO = (750.0, 0.6, -6.0)  # + a broad low-mid dip under speech (Hz, Q, dB): the voice's 300 Hz-1.5 kHz body
 
 
 def speech_dip(x, s):
@@ -689,12 +703,17 @@ def speech_dip(x, s):
     return x + s[:, None] * (A.eq(x, 'peak', f, q, g) - x)
 
 
+def speech_dip_lo(x, s):
+    f, q, g = SPEECH_DIP_LO
+    return x + s[:, None] * (A.eq(x, 'peak', f, q, g) - x)
+
+
 def speech_carve(x, s):
     """2-pole low-pass sliding between SPEECH_LP[1] (gaps) and SPEECH_LP[0] (speech) in the log domain, plus the
-    SPEECH_DIP peaking cut cross-faded in by the speech envelope s."""
+    SPEECH_DIP (2.6 kHz) and SPEECH_DIP_LO (750 Hz) peaking cuts cross-faded in by the speech envelope s."""
     lo, hi = SPEECH_LP
     fc = np.exp(np.log(hi) + s * (np.log(lo) - np.log(hi)))
-    return speech_dip(M.tv_lowpass(x, fc, q=0.707), s)
+    return speech_dip_lo(speech_dip(M.tv_lowpass(x, fc, q=0.707), s), s)
 
 
 # ============================================================================================ render
@@ -716,6 +735,8 @@ def render(verbose=True):
     fx = layer_fx() * u('fx')
     sp = speech_env(N)
     harm = speech_carve(M.pump(pad + glass + ep, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp)
+    harm *= A.undb(-3.0 * sp)[:, None]                  # pad / glass / EP 3 dB lower under speech (300 Hz-1.5 kHz
+    #                                                      overlap with the voice: QA gate speech_band_overlap)
     ar_f = speech_carve(M.pump(arp + cnt, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp)
     ar_f *= A.undb(-3.0 * sp)[:, None]                   # the arps also sit 3 dB lower under speech
     mot_f = speech_carve(motif + glock, sp)
@@ -746,9 +767,9 @@ def render(verbose=True):
 
 
 # ============================================================================================ QA
-def band_db(x, lo=1000.0, hi=4000.0, win=0.1):
-    """Per-window energy (dB) of the 1-4 kHz band of a stereo signal (mono sum), 100 ms windows."""
-    y = A.bp(A._st(x).mean(1), lo, hi, 2)
+def band_db(x, lo=1000.0, hi=4000.0, win=0.1, order=2):
+    """Per-window energy (dB) of the lo-hi band (default 1-4 kHz) of a stereo signal (mono sum), 100 ms windows."""
+    y = A.bp(A._st(x).mean(1), lo, hi, order)
     w = int(win * SR)
     m = len(y) // w
     e = (y[:m * w] ** 2).reshape(m, w).mean(1)
@@ -800,7 +821,7 @@ def ffprobe(path):
     return json.loads(r.stdout or '{}')
 
 
-def qa(clean, bed, bedm, mix, rep, stems):
+def qa(clean, bed, bedm, mix, rep, stems, vo_stem_full):
     out = {}
     q = M.qa(clean)
     tail = float(A.db(np.max(np.abs(clean[-int(0.02 * SR):])) + 1e-12))
@@ -844,6 +865,27 @@ def qa(clean, bed, bedm, mix, rep, stems):
     db_ = (bv - bm)[spw]
     voiced = spw & (bv > np.median(bv[spw]) - 15.0)
     dv = (bv - bm)[voiced]
+    # speech-band overlap gate: 300 Hz-4 kHz (order 4), 100 ms windows, speech windows = speech mask mean > 0.8;
+    # share of windows where the voice is less than 6 dB above the bed (vo_stem vs bed, both as delivered)
+    vo_s = M.fit(A._st(vo_stem_full), len(bed))
+    spf = M.speech_mask(vo_s)
+    nwf = len(spf) // w
+    spwf = spf[:nwf * w].reshape(nwf, w).mean(1) > 0.8
+    ov = {}
+    for lo_, hi_ in ((300.0, 4000.0), (300.0, 700.0), (700.0, 1500.0), (1500.0, 4000.0)):
+        dd = (band_db(vo_s, lo_, hi_, order=4)[:nwf] - band_db(bed, lo_, hi_, order=4)[:nwf])[spwf]
+        ov['%d-%d' % (lo_, hi_)] = dict(median_db=round(float(np.median(dd)), 1), n_lt6=int((dd < 6).sum()),
+                                        n_lt3=int((dd < 3).sum()), n_lt0=int((dd < 0).sum()),
+                                        share_lt6=round(float((dd < 6).mean()), 4))
+    bvf = band_db(vo_s, 300.0, 4000.0, order=4)[:nwf]
+    dd = (bvf - band_db(bed, 300.0, 4000.0, order=4)[:nwf])
+    vsel = spwf & (bvf > np.median(bvf[spwf]) - 10.0)
+    ov['n_windows'] = int(spwf.sum())
+    ov['voiced10_lt6'] = '%d/%d' % (int((dd[vsel] < 6).sum()), int(vsel.sum()))
+    ix = np.where(spwf)[0]
+    ov['worst'] = [(round(ix[i] * 0.1 + 0.05, 2), round(float(dd[ix][i]), 1)) for i in np.argsort(dd[ix])[:6]]
+    out['speech_band_overlap'] = ov
+    assert ov['300-4000']['share_lt6'] <= OVERLAP_MAX, ov
     out['voice_vs_music'] = dict(momentary_median_lu=round(float(np.median(d)), 2),
                                  momentary_p10_lu=round(float(np.percentile(d, 10)), 2),
                                  band1_4k_100ms_median_db=round(float(np.median(db_)), 2),
@@ -868,6 +910,10 @@ def qa(clean, bed, bedm, mix, rep, stems):
     return out
 
 
+SFX_RELEASE = 0.15                 # SFX-duck release (s): short, so the bed recovers fast after the counter-roll hits
+OVERLAP_MAX = 0.05                 # QA gate: share of speech windows (300 Hz-4 kHz, 100 ms) with voice - bed < 6 dB
+
+
 # ============================================================================================ main
 def main():
     t0 = time.time()
@@ -880,7 +926,7 @@ def main():
     assert st['n'] == N, st['n']
     bed, bedm = M.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0,
                              vo_duck_db=VO_DUCK_DB, vo_attack=0.04, vo_release=0.4, sfx_duck_db=3.0, sfx_attack=0.01,
-                             sfx_release=0.25)
+                             sfx_release=SFX_RELEASE)
     bed[-int(0.02 * SR):] = 0.0
     A._write_wav(OUT_BED, bed, 24)
     mix, rep = M.master_withmusic(st['vo'], st['sfx'], bed, target=-14.0, tol=0.2, ceiling=-2.3, tp_max=-2.0)
@@ -891,7 +937,7 @@ def main():
     prev = None
     if os.path.exists(VIDEO_IN):
         prev = M.make_preview(VIDEO_IN, OUT_MIX, PREVIEW, audio_bitrate='192k')
-    rpt = qa(clean, bed, bedm, mix, rep, stems)
+    rpt = qa(clean, bed, bedm, mix, rep, stems, st['vo'])
     rpt['mp3'] = []
     for p in (MP3_BED, MP3_CLEAN):
         pr = ffprobe(p)

@@ -9,8 +9,8 @@ chapters NURTURE / DEVELOP / GROW, the kinds-of-care dial, the trust pills, the 
 KEY      G major (I-vi-IV-V colour with maj7 / add9 / sus4 extensions; plagal IV -> I close over a G pedal).
 TEMPO    92 BPM, 4/4. Beat n = n * 0.652174 s from 0.000 s (beat 1 of bar 1 = 0.000 s); bar = 4 beats = 2.608696 s.
          48.2 s = 73.907 beats = 18.48 bars: bars 1-19 (bar 19 is cut at beat 2.91 = 48.200 s). Every rhythmic event
-         sits on the 16th grid (piano / guitar humanise <= 3 ms, shaker <= 2 ms: all within +-8 ms), except the
-         third trust-pill accent, which sits on the 32nd b54.125 (the pill is at b54.088). Length: exactly
+         sits on the 16th grid (piano / guitar humanise <= 3 ms, shaker <= 2 ms; an onset deliberately ON a hero hit
+         slides toward it by at most 7.9 ms: all within +-8 ms, grid_audit()). Length: exactly
          round(48.2 * 48000) = 2313600 samples (= the VO mix and stems).
 EDIT     Section edges are computed in OUTPUT time from reel3_vo (V.out_time on the reel3.py constants T_NUR, T_DEV,
          T_GRO, T_KIND, T_TRUST, T_END, E_LAND, TRUST_T; V.vo_cues(); V.cues() hero hits = gain_db >= -6 at their
@@ -23,26 +23,32 @@ section   | bar range    | t0-t1 s       | edit events (reel3_vo, output s)  | m
 SEED +    | 1.1-3.2      | 0.000-5.870   | VO small_beginning 0.10-1.32; SEED| sparse: low-passed pad Gadd9 breathing
 GROWTH    | (b0-9)       |               | PLIP 0.652 (b1); iris montage     | in from 0, piano G2 + D3 on b0 (the
           |              |               | swishes 0.87-1.74 (triplets); iris| seed); b1 = soft piano dyad ON the plip;
-          |              |               | close 1.957 (b3); grow_swell peak | b3 Em7 ON the iris close, b5 Cmaj9, b7
-          |              |               | 4.557 (b6.99); VO change_direction| D7sus4 ON the grow peak (pad filter opens
-          |              |               | 2.61-4.87; leaf gust 5.884 (b9.02)| across the growth); gap HOOK A b8-8.5
-          |              |               |                                   | (A4 D5, D7) into the gust
+          |              |               | close 1.957 (b3); grow_swell peak | gap HOOK S D5 (b2.5, between swishes) ->
+          |              |               | 4.557 (b6.99); VO change_direction| E5 + Em7 ON the iris close b3; b5 Cmaj9,
+          |              |               | 2.61-4.87; leaf gust 5.884 (b9.02)| b7 D7sus4 ON the grow peak (pad filter
+          |              |               |                                   | opens across the growth); gap HOOK A
+          |              |               |                                   | b8-8.5 (A4 D5, D7) into the gust
 NURTURE   | 3.2-5.1      | 5.870-10.435  | T_NUR 5.884 (mid-bar -> b9); VO   | piano + pad: G Em7 Cmaj7, felt-piano
           | (b9-16)      |               | nurture 5.98-6.73, safe_home      | broken 8ths (D3-B4), bass on the changes;
           |              |               | 6.98-9.24; zoom through the U     | b9 downbeat ON the gust; gap HOOK B (the
           |              |               | 9.474 (b14.53)                    | motif B4 D5 E5) b15-16
 DEVELOP   | 5.1-8.2      | 10.435-18.913 | whip T_DEV 10.778 (b16.53 -> bar  | + nylon guitar (Karplus-Strong) 8th
-          | (b16-29)     |               | line b16); VO develop 10.83-11.56,| fingerpicking; piano thins to chords on
-          |              |               | matching 12.26-18.60; chip pops   | the changes; climbing bass Am7 Dadd9 G/B
-          |              |               | 12.72 / 13.81 / 14.35; puzzle     | Cmaj7 Am7 Bm7 Cmaj7 D7sus4 (A B C D ->
-          |              |               | click 17.070 (b26.17)             | G); no onset within 60 ms of the pops
+          | (b16-29)     |               | line b16); VO develop 10.83-11.56,| fingerpicking ADDED (-13.5 dB); the piano
+          |              |               | matching 12.26-18.60; chip pops   | stays: chords on the changes + a broken
+          |              |               | 12.72 / 13.81 / 14.35; puzzle     | note on beat 2 of each 2-beat chord;
+          |              |               | click 17.070 (b26.17)             | climbing bass Am7 Dadd9 G/B Cmaj7 Am7 Bm7
+          |              |               |                                   | Cmaj7 D7sus4 (A B C D -> G); +1.2 dB
+          |              |               |                                   | section step on b16; no onset within
+          |              |               |                                   | 60 ms of the pops
 GROW      | 8.2-10.2     | 18.913-24.130 | air_zoom T_GRO 18.939 (b29.04:    | THE LIFT: reversed Gadd9 swell ENDING on
-(lift)    | (b29-37)     |               | mid-bar -> b29); VO grow 18.99-   | b29, pad opens + air pad (octave up),
-          |              |               | 19.52, steady_care 19.77-22.60;   | marimba off-beat 8ths, shaker 16ths,
-          |              |               | zoom through the O 22.829 (b35.0) | piano quarter-chord pulse, guitar 8ths;
-          |              |               |                                   | Gadd9 D/F# Em7 Cmaj9 D7sus4; soft pulse
-          |              |               |                                   | ON b29 / b35; gap HOOK C b35.5-37 (B4 D5
-          |              |               |                                   | E5 -> G5 on the kinds pop)
+(lift)    | (b29-37)     |               | mid-bar -> b29); VO grow 18.99-   | b29 + the pad change (no transient on
+          |              |               | 19.52, steady_care 19.77-22.60;   | b29: air_zoom 26 ms later; piano pulse
+          |              |               | zoom through the O 22.829 (b35.0) | + bass enter on b29.5), pad opens + air
+          |              |               |                                   | pad (octave up), marimba off-beat 8ths,
+          |              |               |                                   | shaker 16ths, piano quarter pulse, guitar
+          |              |               |                                   | 8ths; Gadd9 D/F# Em7 Cmaj9 D7sus4; soft
+          |              |               |                                   | pulse ON the O zoom b35; gap HOOK C
+          |              |               |                                   | b35.5-37 (B4 D5 E5 -> G5 on kinds pop)
 KINDS OF  | 10.2-13.1    | 24.130-31.304 | T_KIND 24.133 (b37.00): heart pop;| FULL BUT SOFT: G Em7 Cmaj7 G/B Am7
 CARE      | (b37-48)     |               | VO kinds_of_care 24.61-27.22; tag | D7sus4; broken 8ths, guitar 8ths + 16th
           |              |               | pops 24.79-26.42; dial turns      | pickups, marimba, shaker, soft low pulse
@@ -50,22 +56,30 @@ CARE      | (b37-48)     |               | VO kinds_of_care 24.61-27.22; tag | D
           |              |               |                                   | the 4.4 s VO gap b42-47 (B4 D5 E5 | D5
           |              |               |                                   | B4 A4 | C5 E5 D5, piano + marimba, glock
           |              |               |                                   | E6 on b43), notes clear of the dial cues
-TRUST     | 13.1-16.1    | 31.304-39.130 | T_TRUST 31.317 (b48.02 -> bar     | GENTLE PULSE: soft kick every beat, sub,
-          | (b48-60)     |               | line b48; whoosh 31.267 / tap /   | guitar 8ths, shaker 8ths; Cmaj7 Em7 Am7
-          |              |               | impact); pills 31.643 / 33.450 /  | Cmaj7 G/B Am7 D7sus4 D7 (every pill
-          |              |               | 35.275 (check_ding E6+B6); VO     | chord holds E and B); ACCENT per pill:
-          |              |               | independent 31.64-33.70, cultural | marimba E4+B4 + piano on b48.5 / b51.25
-          |              |               | 33.85-35.85, ofsted 36.00-37.78;  | / b54.125 (13 / 27 / 24 ms from the
-          |              |               | stack lifts out 38.284            | dings); no pulse on b54 (58 ms before a
-          |              |               |                                   | ding); gap HOOK E b58.5-60 (A4 D5 E5)
+TRUST     | 13.1-16.1    | 31.304-39.130 | T_TRUST 31.317 (b48.02 -> bar     | GENTLE PULSE: soft kick every beat from
+          | (b48-60)     |               | line b48; whoosh 31.267 / tap /   | b49, sub, guitar 8ths, shaker 8ths; Cmaj7
+          |              |               | impact 31.337: a 70 ms cluster);  | Em7 Am7 Cmaj7 G/B Am7 D7sus4 D7 (every
+          |              |               | pills 31.643 / 33.450 / 35.275    | pill chord holds E and B). b48: only the
+          |              |               | (check_ding E6+B6); VO independent| pad changes (no kick / guitar / piano in
+          |              |               | 31.64-33.70, cultural 33.85-35.85,| the slam cluster); ACCENT per pill: pill1
+          |              |               | ofsted 36.00-37.78; stack lifts   | = marimba E4+B4 + the Cmaj7 chord + bass
+          |              |               | out 38.284                        | ON the ding (b48.5, 5 ms); pills 2 / 3 =
+          |              |               |                                   | E4+B4 air swells from b51 / b53.75 whose
+          |              |               |                                   | attack peaks ON the ding (3-7 ms); no
+          |              |               |                                   | pulse on b54 (58 ms before a ding); gap
+          |              |               |                                   | HOOK E b58.5-60 (A4 D5 E5)
 END CARD  | 16.1-19.2.91 | 39.130-48.200 | T_END 38.807 (-> bar line b60);   | RESOLVE: Em7 b60; Cmaj9 ON the logo sting
           | (b60-73.91)  |               | leaves fly 39.133; LOGO STING     | b61 (its bell is a C: piano, strum, pad,
           |              |               | 39.785 (b61.00, C bell); CTA pop  | pulse); G/B Am7 D7sus4 -> Gadd9 b68 (the
-          |              |               | 40.112, click 40.438; VO tagline  | tonic, bar 18) -> Cadd9/G b70 (plagal) ->
-          |              |               | 40.59-43.37, start_enquiry        | G b72; final HOOK F b71.5-72 (B4 D5 ->
-          |              |               | 43.72-46.39                       | G5 + glock G6, the motif resolved);
-          |              |               |                                   | fade 46.98-48.18 (1.2 s), digital
-          |              |               |                                   | silence in the last 20 ms
+          |              |               | 40.112, click 40.438; VO tagline  | tonic, bar 18; crescendo b61-68) ->
+          |              |               | 40.59-43.37, start_enquiry        | Cadd9/G b70 (plagal; piano, bass, sub
+          |              |               | 43.72-46.39                       | held to the end) -> G b72 = a pad change
+          |              |               |                                   | only (nothing re-struck); final HOOK F
+          |              |               |                                   | b71.5-72 (B4 D5 -> G5 + glock G6, the
+          |              |               |                                   | motif resolved); after the last line the
+          |              |               |                                   | bass tail eases 4 dB; fade 46.38-48.18
+          |              |               |                                   | (1.8 s, every 200 ms window <= the one
+          |              |               |                                   | before); silence in the last 20 ms
 
 CHORDS (beat: chord)  0 Gadd9 | 3 Em7 | 5 Cmaj9 | 7 D7sus4 | 8 D7 | 9 G | 12 Em7 | 14 Cmaj7 | 16 Am7 | 18 Dadd9 |
 20 G/B | 22 Cmaj7 | 24 Am7 | 26 Bm7 | 27 Cmaj7 | 28 D7sus4 | 29 Gadd9 | 32 D/F# | 34 Em7 | 35 Cmaj9 | 36 D7sus4 |
@@ -76,26 +90,34 @@ plays the structure an octave down (broken chords), the guitar adds the bass an 
 
 SPEECH RULES  No melody while the voice speaks: every hook note sits in a VO gap (asserted: onset >= 100 ms after a
 line ends, gate end >= 80 ms before the next line, release clipped to the gap, no SFX cue >= -12 dB within +-60 ms
-except a support cluster). Pad / piano / guitar / marimba / hooks pass a speech-aware filter (2-pole low-pass
-1.3 kHz while a line plays, 15 kHz in the gaps, + a -8 dB peak dip at 2.5 kHz; 60 ms close / 300 ms open);
-guitar and marimba -3 dB, shaker -2 dB under speech. Hero hits: no piano / guitar / marimba / shaker / kick / hook
-onset within +-60 ms of an SFX hero hit, except music events deliberately ON a hit (SUPPORT: the plip b1, the iris
-close b3, the grow peak b7, the gust b9, the GROW zoom b29, the O zoom b35, the kinds pop b37, the trust slam b48,
-the three pill accents, the logo sting b61); hero_audit() logs and measures.
+except a support cluster). Pad / piano / guitar / marimba / hooks / shaker pass a speech-aware filter (2-pole
+low-pass 1.0 kHz while a line plays, 15 kHz in the gaps, + peak dips of -12 dB at 2 kHz (Q 0.5) and -8 dB at
+650 Hz (Q 0.6, the voice's 300 Hz-1.5 kHz body); 60 ms close / 300 ms open); pad / piano -2 dB, guitar and
+marimba -3 dB, shaker -4 dB under speech; the bass piano low-passes 1.2 kHz -> 250 Hz under speech. QA gate
+(qa: speech_band_overlap, asserted): in 100 ms windows of 300 Hz-4 kHz under speech (speech mask > 80 %), with the
+voice within 15 dB of its median, the voice is >= 6 dB above the bed in >= 95 % of windows. Hero hits: no piano /
+guitar / marimba / shaker / kick / hook onset within +-60 ms of an SFX hero hit, except music events deliberately
+ON a hit (SUPPORT, each <= 15 ms from its hit and nudged <= 7.9 ms toward it: the plip b1, the iris close b3, the
+grow peak b7, the gust b9, the O zoom b35, the kinds pop b37, pill 1 b48.5, the logo sting b61). Not support (no
+transient): the GROW downbeat b29 (air_zoom +26 ms), the trust slam b48 (whoosh -37 / tap +13 / impact +33 ms),
+pills 2 / 3 (nearest 16ths 24-26 ms off: soft swells peak on them instead); hero_audit() logs and measures.
 
 INSTRUMENTS (music_synth)  felt piano (felt_piano: broken chords, chord pulses, bass, hooks), nylon guitar
 (karplus_strong fingerpicking + strum), soft string-like pad (pad 'saw' 5 detuned voices, low-passed, slow
-attack, chorus) + air pad (pad 'tri' octave up, GROW / KINDS / end card), marimba (off-beat 8ths, pill accents, hook
-doubles), glockenspiel (hook sparkle E6 / G6), shaker (shaker strokes, 16ths / 8ths), very soft low pulse
-(soft_kick, punch 0.15, no click), sub warmth (sub_bass, KINDS onward), reversed Gadd9 swell into GROW
-(reverse_swell). Sends: hall (pad, piano, guitar), plate (marimba, hooks, shaker), air (hooks, end tail). High-pass
+attack, chorus) + air pad (pad 'tri' octave up, GROW / KINDS / end card; E4+B4 swells on pills 2 / 3), marimba
+(off-beat 8ths, the pill-1 accent, hook doubles), glockenspiel (hook sparkle E6 / G6), shaker (shaker strokes,
+16ths / 8ths), very soft low pulse (soft_kick, punch 0.15, no click), sub warmth (sub_bass, KINDS onward),
+reversed Gadd9 swell into GROW (reverse_swell). Sends: hall (pad, piano, guitar), plate (marimba, hooks, shaker), air (hooks, end tail). High-pass
 120-400 Hz on everything except the bass piano, sub and pulse (sends 200-400 Hz); low end mono in the centre; width
 from detune, chorus, pan, Haas (guitar) and reverb. Bus: hp 30 Hz, bus_comp -20 / 1.5, tilt +0.6, section gain
-(SEC_GAIN), fade, normalise_lufs -16 LUFS / -1.2 dBTP.
+(SEC_GAIN: seed +1, NURTURE +0.8, DEVELOP +2, GROW +2.6, KINDS +0.3, TRUST -0.2, end card +0.4 -> +5.8 into the
+tonic), fade 1.8 s, normalise_lufs -16 LUFS / -1.2 dBTP.
 
-DELIVERY  M.render_bed (A.sidechain VO duck depth 11 dB = ~8.5 dB median under speech, 40 / 400 ms; SFX duck
-3 dB; gaps 7 LU under the delivered mix; voice >= 10 LU over the music) -> M.master_withmusic (-14 LUFS, limiter
-at -2.3, <= -2.0 dBTP) -> MP3s (M.write_mp3) and the preview (M.make_preview). Outputs: OUT_* / MP3_* / PREVIEW.
+DELIVERY  M.render_bed (A.sidechain VO duck depth 13 dB = ~10 dB median under speech, 40 / 400 ms; SFX duck
+3 dB; gaps 7 LU under the delivered mix, each >= 1 s gap 6-9 LU; voice >= 10 LU over the music) ->
+M.master_withmusic (-14 LUFS, limiter at -2.3, <= -2.0 dBTP) -> MP3s (M.write_mp3) and the preview
+(M.make_preview: the video comes from $MUSIC_SCRATCH/reel3_vo_preview.mp4, default the session scratchpad; if it
+is missing the script says PREVIEW NOT WRITTEN and exits 2). Outputs: OUT_* / MP3_* / PREVIEW.
 """
 import json
 import os
@@ -133,7 +155,8 @@ REEL = os.path.abspath(os.path.join(HERE, '..', '..', 'reel', 'organic_fostering
 MP3_BED = os.path.join(REEL, 'organic_fostering_reel3_vo_nurture_develop_grow_music.mp3')
 MP3_CLEAN = os.path.join(REEL, 'organic_fostering_reel3_vo_nurture_develop_grow_music_clean.mp3')
 TITLE = 'Organic Fostering - reel3_vo_nurture_develop_grow - background music'
-SCRATCH = '/tmp/claude-0/-home-user-100/bb73d22e-ad11-5aa0-a0b2-8033920f7c07/scratchpad'
+SCRATCH = os.environ.get('MUSIC_SCRATCH',
+                         '/tmp/claude-0/-home-user-100/bb73d22e-ad11-5aa0-a0b2-8033920f7c07/scratchpad')
 VIDEO_IN = os.path.join(SCRATCH, 'reel3_vo_preview.mp4')
 PREVIEW = os.path.join(SCRATCH, 'reel3_vo_music_preview.mp4')
 
@@ -187,16 +210,23 @@ def section(beat):
     return name
 
 
-# music events deliberately ON a hero hit (same instant): beat -> the hero hit it supports (asserted <= 30 ms).
-# Each one's cluster = the hero hits within 40 ms of it (the trust slam: whoosh -37 ms, tap +13, impact +33).
-SUPPORT_HITS = {1.0: EDIT['plip'], 3.0: EDIT['iris'], 7.0: 4.5566, 9.0: EDIT['nurture'], 29.0: EDIT['grow'],
-                35.0: EDIT['zoom_o'], 37.0: EDIT['kinds'], 48.0: EDIT['trust'], 48.5: EDIT['pill1'],
-                51.25: EDIT['pill2'], 54.125: EDIT['pill3'], 61.0: EDIT['logo']}
+# music events deliberately ON a hero hit (the same instant: asserted <= 15 ms): beat -> the hero hit it supports.
+# Each one's cluster = the hero hits within 40 ms of it. The GROW downbeat b29 (air_zoom 26 ms later) and the trust
+# slam b48 (whoosh -37 ms, tap +13, impact +33) are NOT support instants: no transient there (the pad changes
+# softly on the bar line, the piano / bass move to the next 8th b29.5 / b48.5, no kick / guitar on b29 / b48).
+SUPPORT_HITS = {1.0: EDIT['plip'], 3.0: EDIT['iris'], 7.0: 4.5566, 9.0: EDIT['nurture'], 35.0: EDIT['zoom_o'],
+                37.0: EDIT['kinds'], 48.5: EDIT['pill1'], 61.0: EDIT['logo']}
 SUPPORT = tuple(b * BEAT for b in sorted(SUPPORT_HITS))
-PILL_BEATS = (48.5, 51.25, 54.125)
+PILL_ACCENT = 48.5                  # pill 1: marimba E4 + B4 and the piano chord ON the ding (12.8 ms)
+# pills 2 / 3: the grid puts the nearest 16th 24-26 ms off the ding, so no transient there: a soft air-pad swell of
+# E4 + B4 starts on a 16th (b51 / b53.75) and its raised-cosine attack is sized so the peak lands ON the ding
+PILL_SWELLS = ((51.0, 'pill2'), (53.75, 'pill3'))
+PILL_BEATS = (PILL_ACCENT,) + tuple(EDIT[k] / BEAT for _, k in PILL_SWELLS)
 for _b, _h in SUPPORT_HITS.items():
-    assert abs(_b * BEAT - _h) <= 0.030, (_b, _b * BEAT, _h)
+    assert abs(_b * BEAT - _h) <= 0.015, (_b, _b * BEAT, _h)
     assert min(abs(h - _h) for h in HERO) < 0.004, (_b, _h)
+for _b, _k in PILL_SWELLS:
+    assert 0.15 <= EDIT[_k] - _b * BEAT <= 0.30, (_b, _k)
 
 
 def near_hero(t, win=0.06, support_ok=False):
@@ -213,6 +243,15 @@ def near_hero(t, win=0.06, support_ok=False):
 
 def is_support(b):
     return any(abs(b - s) < 1e-6 for s in SUPPORT_HITS)
+
+
+def nudge(b):
+    """Support events: the onset slides toward its hero hit within the +-8 ms humanise allowance (7.9 ms max), so a
+    beat 8.6-14.8 ms off its hit (b7, b9, b48.5) lands within 7 ms of it. 0 for other beats."""
+    for sb, h in SUPPORT_HITS.items():
+        if abs(b - sb) < 1e-6:
+            return float(np.clip(h - sb * BEAT, -0.0079, 0.0079))
+    return 0.0
 
 
 def speaking(t, pre=0.08, post=0.08):
@@ -287,6 +326,8 @@ def guitar_set(i):
 # (beat, MIDI, vel, gate_beats, phrase). Every note sits in a VO gap: onset >= 100 ms after a line ends, gate end
 # >= 80 ms before the next line starts, release clipped to the rest of the gap (asserted in layer_hooks).
 HOOKS = [
+    # S: the first VO gap (between the iris swishes, which are triplets): D5 -> E5 ON the iris close (b3)
+    (2.5, 74, 0.38, 0.45, 'S'), (3.0, 76, 0.44, 0.7, 'S'),
     # A: seed gap, over D7: into the leaf gust
     (8.0, 69, 0.40, 0.45, 'A'), (8.5, 74, 0.44, 0.5, 'A'),
     # B: NURTURE gap (Cmaj7 -> Am7): the motif B4 D5 E5, landing on the DEVELOP bar line
@@ -300,7 +341,8 @@ HOOKS = [
     # E: after "Rated Good by Ofsted" (D7sus4 | D7 | Em7): A4 D5 E5 -> the logo sting's C bell completes it
     (58.5, 69, 0.42, 0.5, 'E'), (59.25, 74, 0.44, 0.5, 'E'), (60.0, 76, 0.48, 0.9, 'E'),
     # F: after the CTA line: the motif resolved to the tonic (B4 D5 -> G5)
-    (71.5, 71, 0.40, 0.25, 'F'), (71.75, 74, 0.42, 0.25, 'F'), (72.0, 79, 0.48, 1.55, 'F'),
+    (71.5, 71, 0.40, 0.25, 'F'), (71.75, 74, 0.36, 0.25, 'F'), (72.0, 79, 0.45, 1.55, 'F'),   # balanced so every
+    #                                                     200 ms window from the end of the last line steps down
 ]
 GLOCK = [(43.0, 88, 0.34), (60.0, 88, 0.30), (72.0, 91, 0.34)]
 
@@ -318,9 +360,12 @@ TRIM = dict(pad=1.0, air=5.0, comp=0.0, bass=-1.0, guitar=5.0, marimba=4.0, hook
             kick=-7.0, sub=-10.0, fx=4.0)
 # section dynamics (dB, applied after the bus compressor): the seed breathes in, DEVELOP builds, GROW lifts, the
 # trust pulse steps back a little, the end card swells on the sting and settles
-SEC_GAIN = [(0.0, -1.5), (9 * BEAT - 0.05, -1.0), (9 * BEAT, -0.2), (16 * BEAT, -0.2), (28 * BEAT, 0.0),
-            (29 * BEAT, 0.6), (37 * BEAT, 0.3), (47 * BEAT, 0.3), (48 * BEAT, -0.2), (60 * BEAT, -0.2),
-            (61 * BEAT, 0.4), (68 * BEAT, 0.0)]
+SEC_GAIN = [(0.0, 1.0), (9 * BEAT - 0.05, 1.3), (9 * BEAT, 0.8), (16 * BEAT - 0.05, 0.8), (16 * BEAT, 2.0),
+            (28 * BEAT, 2.0), (29 * BEAT, 2.6), (34 * BEAT, 2.6), (35 * BEAT, 0.5), (37 * BEAT, 0.3), (47 * BEAT, 0.3),
+            (48 * BEAT, -0.2), (60 * BEAT, -0.2), (61 * BEAT, 0.4), (68 * BEAT, 5.8)]
+FADE_S = 1.8                         # final fade (s), ending 20 ms before the last sample: 46.38-48.18
+SWELL_DB = -22.0                     # pill 2 / 3 air-pad swells (into the pad / air bus)
+HOOK_DB = dict(S=-8.0, A=-7.0, B=-7.0)       # hook level per phrase (default -9 dB): the seed / NURTURE gaps carry more
 
 
 def log(t, kind, gain_db):
@@ -412,10 +457,14 @@ def comp_events():
 
     broken(9.0, 16.0)
     broken(37.0, 42.0, 0.34, 0.27)
-    # DEVELOP: one chord per change (lower 4 notes)
+    # DEVELOP: one chord per change (lower 4 notes) + one soft broken note on the 2nd beat of each 2-beat chord
+    # (the piano stays under the new guitar, so DEVELOP adds a layer instead of swapping one)
     for i, (b0, _, _, _) in enumerate(CHART):
         if 16 <= b0 < 29:
             ev.append((float(b0), pool(i)[:4], 0.30, next_change(b0) - b0, False))
+            if next_change(b0) - b0 >= 2:
+                p = pool(i)
+                ev.append((b0 + 1.0, [p[min(4, len(p) - 1)]], 0.22, 0.9, False))
     # GROW: quarter-chord pulse (upper 3 of the pool, short), accent on the changes
     for b in range(29, 37):
         i = chord_index(b)
@@ -425,20 +474,19 @@ def comp_events():
     for i, (b0, _, _, _) in enumerate(CHART):
         if 42 <= b0 < 48:
             ev.append((float(b0), pool(i)[:3], 0.26, next_change(b0) - b0, False))
-    # TRUST: chords on the changes (b48 ON the slam) + a softer re-strike on beat 3 of the 4-beat holds
+    # TRUST: chords on the changes; the first (Cmaj7 E3 G3 B3 C4) moves off the slam cluster to b48.5, ON pill 1
     for i, (b0, _, _, _) in enumerate(CHART):
         if 48 <= b0 < 60:
-            ev.append((float(b0), pool(i)[:4], 0.32 if b0 == 48 else 0.28, next_change(b0) - b0, b0 == 48))
-    # pill accents: a piano dyad (E3 + B3) under the marimba
-    for b in PILL_BEATS:
-        ev.append((b, [52, 59], 0.32, 0.9, True))
+            b = PILL_ACCENT if b0 == 48 else float(b0)
+            ev.append((b, pool(i)[:4], 0.32 if b0 == 48 else 0.28, next_change(b0) - b, b0 == 48))
     # END: Em7, Cmaj9 ON the sting (long), then the resolution
     ev.append((60.0, pool(chord_index(60))[:4], 0.28, 1.0, False))
     ev.append((61.0, [48, 52, 55, 59, 62], 0.40, 2.9, True))
     for b0 in (64, 66, 67, 68, 70):
         i = chord_index(b0)
-        ev.append((float(b0), pool(i)[:4], 0.30 if b0 != 68 else 0.34, next_change(b0) - b0, False))
-    ev.append((72.0, [50, 55, 59, 62], 0.32, END_BEAT - 72.0, False))
+        gate = (next_change(b0) - b0) if b0 != 70 else (END_BEAT - b0)
+        ev.append((float(b0), pool(i)[:4], 0.30 if b0 != 68 else 0.34, gate, False))
+    # (no piano chord on b72: the b68 / b70 chords and the pedal tail carry the resolution, so the tail decays)
     return sorted(ev, key=lambda e: e[0])
 
 
@@ -450,30 +498,35 @@ def layer_piano():
         t = b * BEAT
         if not onset_ok(b, sup):
             b2 = b + 0.5                       # move off the hero hit by an 8th if the chord still holds
-            if b2 < next_change(b) and onset_ok(b2) and len(notes) > 1:
-                b, t, gate = b2, b2 * BEAT, gate - 0.5
+            if b2 < next_change(b) and onset_ok(b2, is_support(b2)) and len(notes) > 1:
+                b, t, gate, sup = b2, b2 * BEAT, gate - 0.5, is_support(b2)
             else:
                 continue
-        last = b >= 72
+        last = b >= 70
         g = -9.0
         for k, n in enumerate(sorted(notes)):
             x = M.felt_piano(n, dur=max(0.15, gate * BEAT - 0.03), vel=vel + 0.02 * (k == len(notes) - 1),
                              pedal=last, release=0.35, felt=0.85, tail=1.4 if last else 6.0, seed=SEED + j * 7 + k)
-            off = (0.0 if sup or b % 1 == 0 and len(notes) > 1 else hum(rng)) + 0.0015 * (k - (len(notes) - 1) / 2)
+            off = (nudge(b) if sup else 0.0 if b % 1 == 0 and len(notes) > 1 else hum(rng)) \
+                + 0.0015 * (k - (len(notes) - 1) / 2)
             comp.add(A.hp(x, 120.0, 2), t + off, gain_db=g, pan=-0.18 + 0.06 * k)
-        log(t, 'comp_sup' if sup else 'comp', g)
+        log(t + (nudge(b) if sup else 0.0), 'comp_sup' if sup else 'comp', g)
     for i, (b0, _, _, bn) in enumerate(CHART):
+        if b0 >= 72:                           # G2 is already sounding from b70 (Cadd9/G): held, not re-struck
+            continue
         b = float(b0)
         sup = is_support(b)
         if not onset_ok(b, sup):
-            b = b + 0.5
-            if not (b < next_change(b0) and onset_ok(b)):
+            b = b + 0.5                        # GROW b29 -> b29.5, trust slam b48 -> b48.5 (ON pill 1)
+            sup = is_support(b)
+            if not (b < next_change(b0) and onset_ok(b, sup)):
                 continue
         t = b * BEAT
-        last = b0 >= 72
+        last = b0 >= 70
         dl = (next_change(b0) - b) if not last else (END_BEAT - b)
         x = M.felt_piano(bn, dur=max(0.2, dl * BEAT - 0.06), vel=0.46 if not sup else 0.5, pedal=last,
                          release=0.3, felt=0.9, tail=1.2, seed=SEED + 500 + i)
+        t += nudge(b) if sup else 0.0
         bass.add(A.hp(x, 35.0, 2), t, gain_db=-8.0)
         log(t, 'bass_sup' if sup else 'bass', -8.0)
     return comp.buf, bass.buf
@@ -487,12 +540,12 @@ def guitar_vel(sec, b):
     return base + (0.06 if b % 1 == 0 else 0.0)
 
 
-GT_DB = dict(develop=-15.0, grow=-14.5, kinds=-14.0, trust=-15.5, end=-15.5)
+GT_DB = dict(develop=-13.5, grow=-14.5, kinds=-14.0, trust=-15.5, end=-15.5)
 
 
 def layer_guitar():
     """Nylon guitar (Karplus-Strong): 8th fingerpicking from DEVELOP (b16) to b60.5, 16th pickups in KINDS, a
-    strum ON the logo sting (b61), slow quarter arpeggio on the end card, rolled strums on b68 and b72."""
+    strum ON the logo sting (b61), slow quarter arpeggio on the end card, a rolled strum on the tonic b68."""
     gt = M.Track(T, 'guitar')
     rng = np.random.default_rng(SEED + 2)
     k8 = 0
@@ -513,15 +566,15 @@ def layer_guitar():
         n = gs[min(GT_SEQ[k8 % 8], len(gs) - 1)]
         k8 += 1
         t = b * BEAT
-        sup = is_support(b) and b in (29.0, 35.0, 37.0, 48.0)
+        sup = is_support(b) and b in (35.0, 37.0)
         if not onset_ok(b, sup):
             continue
         ring = min(1.5, next_change(b) - b) * BEAT
         x = M.karplus_strong(n, dur=max(0.2, ring - 0.02), vel=guitar_vel(sec, b), kind='nylon', release=0.15,
                              seed=SEED + 1000 + k)
         g = GT_DB[sec]
-        gt.add(A.hp(x, 120.0, 2), t + (0.0 if sup else hum(rng)), gain_db=g, pan=0.32)
-        log(t, 'guitar_sup' if sup else 'guitar', g)
+        gt.add(A.hp(x, 120.0, 2), t + (nudge(b) if sup else hum(rng)), gain_db=g, pan=0.32)
+        log(t + (nudge(b) if sup else 0.0), 'guitar_sup' if sup else 'guitar', g)
         # KINDS: 16th pickup (the 'a' of beats 2 and 4, upper string) outside the hook
         if sec == 'kinds' and b < 42 and b % 2 == 1.5:
             b16 = b + 0.25
@@ -532,8 +585,8 @@ def layer_guitar():
     # END: strum ON the logo sting, slow quarter arpeggio, rolled strums on b68 and b72
     st = M.strum([48, 52, 55, 59, 64], dur=3.0 * BEAT, vel=0.52, direction='down', spread=0.018, kind='nylon',
                  width=0.5, seed=SEED + 61)
-    gt.add(A.hp(st, 120.0, 2), 61 * BEAT, gain_db=-14.0, pan=0.25)
-    log(61 * BEAT, 'guitar_sup', -14.0)
+    gt.add(A.hp(st, 120.0, 2), 61 * BEAT + nudge(61.0), gain_db=-14.0, pan=0.25)
+    log(61 * BEAT + nudge(61.0), 'guitar_sup', -14.0)
     for b in (63.0, 64.0, 65.0, 66.0, 67.0):
         i = chord_index(b)
         gs = guitar_set(i)
@@ -543,9 +596,8 @@ def layer_guitar():
         x = M.karplus_strong(n, dur=0.95 * BEAT, vel=0.42, kind='nylon', release=0.15, seed=SEED + 1700 + int(b))
         gt.add(A.hp(x, 120.0, 2), b * BEAT + hum(rng), gain_db=-16.0, pan=0.32)
         log(b * BEAT, 'guitar', -16.0)
-    for b, notes, vel, sp in ((68.0, [43, 50, 55, 59, 62, 69], 0.46, 0.022), (72.0, [43, 50, 55, 59, 62, 67],
-                                                                               0.40, 0.03)):
-        d = (END_BEAT - b) * BEAT - 0.3 if b == 72 else 3.9 * BEAT
+    for b, notes, vel, sp in ((68.0, [43, 50, 55, 59, 62, 69], 0.46, 0.022),):     # (no re-strike on b72: the
+        d = 3.9 * BEAT                                                                # tail decays from here)
         st = M.strum(notes, dur=d, vel=vel, direction='down', spread=sp, kind='nylon', width=0.6, seed=SEED + int(b))
         gt.add(A.hp(st, 120.0, 2), b * BEAT, gain_db=-15.0, pan=0.25)
         log(b * BEAT, 'guitar', -15.0)
@@ -554,7 +606,7 @@ def layer_guitar():
 
 def layer_marimba():
     """Marimba: off-beat 8ths in GROW and KINDS (top two voicing notes, D4-D5), resting under hook C and the main
-    hook; the pill accents (E4 + B4) in TRUST."""
+    hook; the pill-1 accent (E4 + B4) ON the first ding in TRUST."""
     mr = M.Track(T, 'marimba')
     rng = np.random.default_rng(SEED + 3)
     for k in range(int(END_BEAT * 2)):
@@ -572,14 +624,30 @@ def layer_marimba():
         x = M.marimba(n, vel=0.42 + 0.04 * ((k // 2) % 2 == 0), hardness=0.3, decay=0.9, seed=SEED + 2000 + k)
         mr.add(A.hp(x, 200.0, 2), b * BEAT + hum(rng, 2.0), gain_db=g, pan=-0.3 if (k // 2) % 2 else -0.1)
         log(b * BEAT, 'marimba', g)
-    for j, b in enumerate(PILL_BEATS):                      # an octave under the dings (E6 + B6): out of the way
-        t = b * BEAT                                        # of the voice's 1-4 kHz band
+    for j, b in enumerate((PILL_ACCENT,)):                  # an octave under the dings (E6 + B6): out of the way
+        t = b * BEAT + nudge(b)                             # of the voice's 1-4 kHz band
         assert onset_ok(b, True)
         for n, pn in ((64, -0.2), (71, 0.2)):
             x = M.marimba(n, vel=0.55, hardness=0.3, decay=1.0, seed=SEED + 2500 + j * 2 + (n == 71))
             mr.add(A.hp(x, 200.0, 2), t, gain_db=-14.0, pan=pn)
         log(t, 'accent_sup', -14.0)
     return mr.buf
+
+
+def layer_pill_swells():
+    """Pills 2 and 3: a soft air-pad swell of E4 + B4 (tri, one voice, no chorus: the peak is not smeared) on a 16th
+    (b51 / b53.75) with a raised-cosine attack that ends exactly ON the ding (EDIT pill2 / pill3), then releasing:
+    an accent per pill with no transient 24-26 ms off the ding."""
+    sw = M.Track(T, 'swell')
+    for j, (b, k) in enumerate(PILL_SWELLS):
+        t0 = b * BEAT
+        att = EDIT[k] - t0
+        y = M.pad([64, 71], dur=att, vel=0.5, wave='tri', voices=1, attack=att, release=0.45, cutoff=3000.0,
+                  chorus_mix=0.0, drift=0.0, seed=SEED + 300 + j)       # one voice per note, centred: no detune
+        #                                                                  beating / Haas delay to move the peak
+        sw.add(A.hp(y, 250.0, 2), t0, gain_db=SWELL_DB)
+        log(t0, 'swell_sup', SWELL_DB)
+    return sw.buf
 
 
 def layer_hooks():
@@ -596,14 +664,15 @@ def layer_hooks():
         last = nxt >= T - 1e-6
         rel = 0.5 if last else float(np.clip(nxt - (t + dl * BEAT) - 0.08, 0.1, 0.6))
         x = M.felt_piano(m, dur=dl * BEAT, vel=vel, pedal=False, release=rel, felt=0.7, seed=SEED + 7000 + j)
-        hk.add(A.hp(x, 180.0, 2), t, gain_db=-9.0, pan=0.08)
+        t += nudge(b) if sup else 0.0
+        hk.add(A.hp(x, 180.0, 2), t, gain_db=HOOK_DB.get(ph, -9.0), pan=0.08)
         if ph in 'CDEF':
             y = M.marimba(m, vel=vel * 0.9, hardness=0.4, decay=0.9 if not last else 1.3, seed=SEED + 7100 + j)
             if not last:                                          # the wood ring dies in the gap
                 y = y[:int((nxt - t - 0.08) * SR)]
                 y = M.fade_out(y[:, None], 0.06)[:, 0] if len(y) > int(0.07 * SR) else y
             hk.add(A.hp(y, 200.0, 2), t, gain_db=-16.0, pan=-0.12)
-        log(t, 'hook_sup' if sup else 'hook', -9.0)
+        log(t, 'hook_sup' if sup else 'hook', HOOK_DB.get(ph, -9.0))
     for j, (b, m, vel) in enumerate(GLOCK):
         t = b * BEAT
         prev, nxt = gap_after(t)
@@ -619,7 +688,7 @@ def layer_hooks():
 
 def layer_perc():
     """Shaker (16ths in GROW and KINDS, 8ths in TRUST; stroke peak on the step) and the very soft low pulse
-    (soft_kick: support hits on b29 / b35 / b37 / b48 / b61, half notes in KINDS, every beat in TRUST)."""
+    (soft_kick: support hits on b35 / b37 / b61, half notes in KINDS, every beat in TRUST from b49)."""
     sh, kick = M.Track(T, 'shaker'), M.Track(T, 'kick')
     rng = np.random.default_rng(SEED + 4)
     acc = (1.0, 0.45, 0.75, 0.5)
@@ -638,14 +707,14 @@ def layer_perc():
             continue
         x = M.shaker(vel=sv * acc[k % 4], length=0.065, tone=7000.0, attack=0.012, seed=k % 16)
         sh.add(A.hp(x, 300.0, 2), t - 0.012 + rng.uniform(-0.002, 0.002), gain_db=sg, pan=0.38 if k % 2 else 0.18)
-    beats = [29.0, 35.0, 37.0, 38.0, 40.0, 42.0, 44.0, 46.0] + [float(b) for b in range(48, 60)] + [61.0]
+    beats = [35.0, 37.0, 38.0, 40.0, 42.0, 44.0, 46.0] + [float(b) for b in range(49, 60)] + [61.0]
     kick_times = []
     for b in beats:
-        sup = b in (29.0, 35.0, 37.0, 48.0, 61.0)
+        sup = b in (35.0, 37.0, 61.0)
         if not onset_ok(b, sup):
             continue
-        t = b * BEAT
-        vel = 0.78 if sup else (0.70 if b % 2 == 0 else 0.58)
+        t = b * BEAT + (nudge(b) if sup else 0.0)
+        vel = 0.62 if sup else (0.70 if b % 2 == 0 else 0.58)     # support pulses soft: they sum with the hit
         x = M.soft_kick(vel=vel, punch=0.15, tone=50.0, decay=0.32, click=0.03, drive=1.15)
         kick.add(A.lp(x, 900.0, 2), t, gain_db=-6.0)
         kick_times.append(t)
@@ -657,9 +726,9 @@ def layer_sub():
     """Sub warmth under KINDS, TRUST and the end card: a soft sine-like sub on the bass note, swelling in."""
     sub = M.Track(T, 'sub')
     for i, (b0, _, _, bn) in enumerate(CHART):
-        if b0 < 37:
+        if b0 < 37 or b0 >= 72:              # the b70 G2 sub holds to the end (no re-attack on b72)
             continue
-        last = b0 >= 72
+        last = b0 >= 70
         dl = (next_change(b0) - b0) if not last else (END_BEAT - b0)
         x = M.sub_bass(bn, dur=dl * BEAT - (0.08 if not last else 0.9), vel=0.6, drive=1.1, harm=0.05, attack=0.04,
                        release=0.12 if not last else 0.8)
@@ -698,15 +767,21 @@ def speech_env(n, pre=0.06, post=0.12, close=0.06, open_=0.30):
     return np.interp(np.arange(n), (np.arange(m) + 0.5) * blk, y)
 
 
-VO_DUCK_DB = 11.0                  # A.sidechain depth under the VO (measures ~8.5 dB median under speech: full depth
-#                                    only near the voice's peak level)
-SPEECH_LP = (1300.0, 15000.0)      # low-pass cutoff under speech / in the gaps
-SPEECH_DIP = (2500.0, 0.7, -8.0)   # + a peaking dip under speech (Hz, Q, dB)
+VO_DUCK_DB = 13.0                  # A.sidechain depth under the VO (full depth only near the voice's peak level;
+#                                    measured median under speech in qa: bed.duck_median_under_speech_db)
+SPEECH_LP = (1000.0, 15000.0)      # low-pass cutoff under speech / in the gaps
+SPEECH_DIP = (2000.0, 0.5, -12.0)   # + a peaking dip under speech (Hz, Q, dB)
+SPEECH_DIP_LO = (650.0, 0.6, -8.0)  # + a broad low-mid dip under speech: the voice's 300 Hz-1.5 kHz body, where the
+#                                     pad / piano / bass piano masked it (1.5-4 kHz measured >= 13 dB clear)
+SPEECH_HARM_DB = -2.0              # pad / air / piano level under speech
+BASS_LP = (250.0, 1200.0)          # bass-piano low-pass under speech / in the gaps (upper partials sit on the voice)
 
 
 def speech_dip(x, s):
-    f, q, g = SPEECH_DIP
-    return x + s[:, None] * (A.eq(x, 'peak', f, q, g) - x)
+    y = x
+    for f, q, g in (SPEECH_DIP, SPEECH_DIP_LO):
+        y = A.eq(y, 'peak', f, q, g)
+    return x + s[:, None] * (y - x)
 
 
 def speech_carve(x, s):
@@ -726,6 +801,7 @@ def render(verbose=True):
     EVENTS.clear()
     u = lambda k: A.undb(TRIM[k])                     # noqa: E731
     pad, air = (y * u(k) for y, k in zip(layer_pad(), ('pad', 'air')))
+    air = air + layer_pill_swells()
     comp, bass = layer_piano()
     comp, bass = comp * u('comp'), bass * u('bass')
     gtr = layer_guitar() * u('guitar')
@@ -738,23 +814,30 @@ def render(verbose=True):
     fx = layer_fx() * u('fx')
     sp = speech_env(N)
     trust_k = [t for t in kick_times if 48 * BEAT - 0.01 <= t < 60 * BEAT]
-    harm = speech_carve(M.pump(pad + air + comp, trust_k, depth_db=1.5, attack=0.004, release=0.25), sp)
+    hl = sp.copy()                                    # pad / piano level dip: held after the last line (the outro
+    hl[int(VO_LINES[-1][2] * SR):] = 1.0              # does not swell back up under hook F; the filters still open)
+    harm = speech_carve(M.pump(pad + air + comp, trust_k, depth_db=1.5, attack=0.004, release=0.25), sp) \
+        * A.undb(SPEECH_HARM_DB * hl)[:, None]
     gtr_f = speech_carve(gtr, sp) * A.undb(-3.0 * sp)[:, None]
     mar_f = speech_carve(mar, sp) * A.undb(-3.0 * sp)[:, None]
     hk_f = speech_carve(hooks + glock, sp)
-    sh_f = speech_dip(shaker, sp) * A.undb(-2.0 * sp)[:, None]
+    sh_f = speech_carve(shaker, sp) * A.undb(-4.0 * sp)[:, None]
     fx_f = speech_carve(fx, sp)
     sends = (M.reverb_send(harm + gtr_f, 'hall', wet_db=-15.0, hp_hz=250.0)
              + M.reverb_send(mar_f + hk_f + sh_f, 'plate', wet_db=-16.0, hp_hz=300.0)
              + M.reverb_send(hk_f, 'air', wet_db=-17.0, hp_hz=400.0)
              + M.reverb_send(harm, 'air', wet_db=-24.0, hp_hz=400.0))
-    low = A.lp(bass, 1200.0, 2) + M.pump(A.lp(sub, 300.0, 2), trust_k, depth_db=2.0, attack=0.004, release=0.2)
+    blp = np.exp(np.log(BASS_LP[1]) + sp * (np.log(BASS_LP[0]) - np.log(BASS_LP[1])))
+    low = M.tv_lowpass(bass, blp, q=0.707) + M.pump(A.lp(sub, 300.0, 2), trust_k, depth_db=2.0, attack=0.004,
+                                                    release=0.2)
+    # outro: once the last line ends the bass piano + sub tail eases down 4 dB over 0.6 s, under hook F
+    low = low * A.undb(np.interp(np.arange(N) / SR, [VO_LINES[-1][2], VO_LINES[-1][2] + 0.6], [0.0, -4.0]))[:, None]
     mix = harm + gtr_f + mar_f + hk_f + sh_f + fx_f + low + kick + sends
     mix = A.hp(mix, 30.0, 2)
     mix = M.bus_comp(mix, thresh_db=-20.0, ratio=1.5, attack=0.015, release=0.25)
     mix = M.tilt_eq(mix, 0.6)
     mix = M.gain_ramp(mix, SEC_GAIN)
-    mix = M.fade_out(mix, 1.2, end=T - 0.02)             # fade 46.98-48.18, silence in the last 20 ms
+    mix = M.fade_out(mix, FADE_S, end=T - 0.02)          # fade 46.38-48.18, silence in the last 20 ms
     mix, info = M.normalise_lufs(mix, target=-16.0, tp_ceiling=-1.2)
     mix[int(round((T - 0.02) * SR)):] = 0.0
     stems = dict(pad=pad, air=air, comp=comp, bass=bass, guitar=gtr, marimba=mar, hooks=hooks, glock=glock,
@@ -768,9 +851,9 @@ def render(verbose=True):
 
 
 # ============================================================================================ QA
-def band_db(x, lo=1000.0, hi=4000.0, win=0.1):
-    """Per-window energy (dB) of the 1-4 kHz band of a stereo signal (mono sum), 100 ms windows."""
-    y = A.bp(A._st(x).mean(1), lo, hi, 2)
+def band_db(x, lo=1000.0, hi=4000.0, win=0.1, order=2):
+    """Per-window energy (dB) of the lo-hi band (default 1-4 kHz) of a stereo signal (mono sum), 100 ms windows."""
+    y = A.bp(A._st(x).mean(1), lo, hi, order)
     w = int(win * SR)
     m = len(y) // w
     e = (y[:m * w] ** 2).reshape(m, w).mean(1)
@@ -778,11 +861,10 @@ def band_db(x, lo=1000.0, hi=4000.0, win=0.1):
 
 
 def grid_audit():
-    """Every logged event onset vs the 16th grid (the pill accent b54.125 vs the 32nd grid)."""
+    """Every logged event onset vs the 16th grid."""
     worst = (0.0, None)
     for t, kind, _ in EVENTS:
-        q = STEP / 2 if abs(t - 54.125 * BEAT) < 0.005 else STEP
-        dev = abs(t - round(t / q) * q)
+        dev = abs(t - round(t / STEP) * STEP)
         if dev > worst[0]:
             worst = (dev, (t, kind))
     return dict(n_events=len(EVENTS), max_dev_ms=round(worst[0] * 1000, 2), worst=worst[1],
@@ -835,7 +917,7 @@ def ffprobe(path):
     return json.loads(r.stdout or '{}')
 
 
-def qa(clean, bed, bedm, mix, rep, stems):
+def qa(clean, bed, bedm, mix, rep, stems, vo_stem):
     out = {}
     q = M.qa(clean)
     tail = float(A.db(np.max(np.abs(clean[-int(0.02 * SR):])) + 1e-12))
@@ -892,6 +974,36 @@ def qa(clean, bed, bedm, mix, rep, stems):
                                  voiced_band1_4k_100ms_median_db=round(float(np.median(dv)), 2),
                                  voiced_band1_4k_100ms_p10_db=round(float(np.percentile(dv, 10)), 2),
                                  voiced_band1_4k_100ms_min_db=round(float(np.min(dv)), 2), n_voiced=int(voiced.sum()))
+    # speech-band overlap gate: vo_stem vs the bed as delivered, 300 Hz-4 kHz, 100 ms windows, speech windows =
+    # speech mask mean > 0.8; share of windows with the voice < 6 dB above the bed (all / voice within 15, 10 dB
+    # of its median); the gate is the 15 dB set <= OVERLAP_MAX
+    vs = A._st(vo_stem)
+    spf = M.speech_mask(vs)
+    nwf = len(spf) // w
+    spwf = spf[:nwf * w].reshape(nwf, w).mean(1) > 0.8
+    ov = {}
+    for o in (2, 4):
+        bvf = band_db(vs, 300.0, 4000.0, order=o)[:nwf]
+        dd = bvf - band_db(bed, 300.0, 4000.0, order=o)[:nwf]
+        mv = np.median(bvf[spwf])
+        r = dict(all_lt6='%d/%d' % ((dd[spwf] < 6).sum(), spwf.sum()),
+                 median_margin_db=round(float(np.median(dd[spwf])), 1))
+        for gwin in (15.0, 10.0):
+            sel = spwf & (bvf > mv - gwin)
+            r['voiced%d_lt6' % gwin] = '%d/%d' % ((dd[sel] < 6).sum(), sel.sum())
+            r['voiced%d_share' % gwin] = round(float((dd[sel] < 6).mean()), 4)
+        sel = spwf & (bvf > mv - 15.0)
+        r['lt6_at_s'] = [round(i * 0.1 + 0.05, 2) for i in np.where(sel & (dd < 6))[0]]
+        ov['order%d' % o] = r
+    out['speech_band_overlap'] = ov
+    assert ov['order2']['voiced15_share'] <= OVERLAP_MAX, ov
+    # ending: 200 ms RMS windows of the clean music from the end of the last line; each <= the one before
+    t_last = VO_LINES[-1][2]
+    wv = int(0.2 * SR)
+    ends = [(round(t, 2), round(float(10 * np.log10((clean[int(t * SR):int(t * SR) + wv] ** 2).mean() + 1e-20)), 2))
+            for t in np.arange(t_last, T - 0.2, 0.2)]
+    out['end_decay'] = dict(windows=ends, monotonic=bool(all(ends[i + 1][1] <= ends[i][1] for i in
+                                                               range(len(ends) - 1))))
     # each VO gap (from 0.4 s after a line, past the duck release, to 50 ms before the next): bed loudness vs the
     # delivered mix's integrated loudness (the bed is laid at 0 dB under reel3_vo_mix.wav)
     ref = bedm['ref_lufs']
@@ -906,6 +1018,9 @@ def qa(clean, bed, bedm, mix, rep, stems):
     out['gaps_bed_lufs_minus_ref'] = rows
     out['hero'] = hero_audit(clean)
     return out
+
+
+OVERLAP_MAX = 0.05                 # QA gate: share of voiced speech windows (300 Hz-4 kHz, 100 ms), voice - bed < 6 dB
 
 
 # ============================================================================================ main
@@ -931,7 +1046,10 @@ def main():
     prev = None
     if os.path.exists(VIDEO_IN):
         prev = M.make_preview(VIDEO_IN, OUT_MIX, PREVIEW, audio_bitrate='192k')
-    rpt = qa(clean, bed, bedm, mix, rep, stems)
+    else:
+        print('PREVIEW NOT WRITTEN: %s is missing (set MUSIC_SCRATCH to the folder holding reel3_vo_preview.mp4)'
+              % VIDEO_IN, file=sys.stderr)
+    rpt = qa(clean, bed, bedm, mix, rep, stems, st['vo'])
     rpt['mp3'] = []
     for p in (MP3_BED, MP3_CLEAN):
         pr = ffprobe(p)
@@ -948,6 +1066,9 @@ def main():
                                        for s in pr['streams']])
     rpt['render_s'] = round(time.time() - t0, 1)
     print(json.dumps(rpt, indent=1, default=str))
+    if not prev:
+        print('PREVIEW NOT WRITTEN: %s' % PREVIEW, file=sys.stderr)
+        sys.exit(2)
     return rpt
 
 

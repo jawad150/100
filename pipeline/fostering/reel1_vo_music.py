@@ -6,7 +6,8 @@ Synthesised with music_synth.py (MS) + audio.py (A): numpy / scipy only, no samp
 hopeful: tender A minor in the hook and the question, a light pulse under the eligibility checklist, warmer and
 moving in the support dock, the emotional peak in C major on the slow-motion payoff, a resolving end card.
 Background music under a voice-over: no lead melody while the voice speaks (the felt-piano motifs sit in the VO
-gaps). While a line is spoken the bus above the bass gets a zero-phase 0.8-5 kHz dip (SPEECH_DIP_DB) and each
+gaps). While a line is spoken the bus above the bass gets a zero-phase 0.8-5 kHz dip (SPEECH_DIP_DB) plus a gentle
+4 dB 250-900 Hz low-mid dip (LOWMID_DIP_DB: pad / piano / arp body, which masked soft speech) and each
 event is choked per layer (SPEECH_DB; deeper in the payoff, SPEECH_DB_PAYOFF, so its C-major peak blooms in the
 gaps and stays under "Open your home." / "Change a child's life."); the choke of a struck event is monotonic, so a
 ringing tail never swells back up when the line ends.
@@ -124,7 +125,10 @@ MIX: per-layer bus trims (TRIM); zero-phase high-pass on every layer except kick
 150, low strings 120, arp 180, air 300, perc 200, fx 180 Hz); sends to hall (pad, air, low strings, keys; soft
 early reflections, slow build: HALL_KW) and plate (arp, perc), high-passed at 220 / 260 Hz; gentle kick pump
 (3 dB) on the pad, arp, pulse and sub; side channel high-passed at 150 Hz (mono low end); bus 25 Hz high-pass,
-bus_comp (-18 dB, 1.6:1), +1 dB tilt, then -16 LUFS with <= -1.2 dBTP via MS.normalise_lufs.
+bus_comp (-18 dB, 1.6:1), +1 dB tilt, then -16 LUFS with <= -1.2 dBTP via MS.normalise_lufs. Under speech
+(speech_dip): 0.8-5 kHz -10 dB and 250-900 Hz -4 dB (its envelope leads lines by 150 ms so it is static before a
+slam chord), -1.5 dB overall. The with-music master uses the VO stem high-passed at 20 Hz (removes the stem's
+-3.7e-4 DC; the stem file is untouched).
 
 SFX RULE: no music transient 12-60 ms from an SFX hero hit. Every transient event goes through place(): it may
 move up to 8 ms off the grid (the humanise budget) so that every hero hit within 60 ms is within 12 ms (support on
@@ -344,14 +348,24 @@ def choke(x, t, layer):
 
 
 _BAND_SOS = signal.butter(2, [800.0, 5000.0], 'bandpass', fs=SR, output='sos')
+_LOWMID_SOS = signal.butter(2, [250.0, 900.0], 'bandpass', fs=SR, output='sos')
+LOWMID_DIP_DB = 4.0                     # extra low-mid (250-900 Hz) cut under speech: pad / piano / arp body
+LOWMID_LEAD = 0.15                      # its envelope starts 150 ms before a line (ramp 210-150 ms before)
 
 
-def speech_dip(x, e, depth_db=SPEECH_DIP_DB, level_db=SPEECH_DIP_LEVEL):
-    """Zero-phase 0.8-5 kHz band cut of depth_db (and level_db overall) while e = 1."""
+def speech_dip(x, e, depth_db=SPEECH_DIP_DB, level_db=SPEECH_DIP_LEVEL, lowmid_db=LOWMID_DIP_DB, e2=None):
+    """Zero-phase 0.8-5 kHz band cut of depth_db (and level_db overall) while e = 1, plus a gentle 250-900 Hz
+    cut of lowmid_db while e2 = 1 (default e). e2 has a longer lead (LOWMID_LEAD) so its ramp is finished
+    before a slam chord struck just ahead of a line (1.756 before 'Everyday care.' at 1.85): the dip never
+    reshapes a chord's attack."""
+    if e2 is None:
+        e2 = e
     band = signal.sosfiltfilt(_BAND_SOS, x, axis=0)
+    lm = signal.sosfiltfilt(_LOWMID_SOS, x, axis=0)
     k = 1.0 - 10.0 ** (-depth_db / 20.0)
+    k2 = 1.0 - 10.0 ** (-lowmid_db / 20.0)
     g = 10.0 ** (-level_db * e / 20.0)
-    return (x - (e * k)[:, None] * band) * g[:, None]
+    return (x - (e * k)[:, None] * band - (e2 * k2)[:, None] * lm) * g[:, None]
 
 
 # ============================================================================================ placement
@@ -722,7 +736,7 @@ def mixdown(R):
     sends = (MS.reverb_send(T['pad'] + T['air'] + T['low'] + T['keys'], 'hall', wet_db=-14.0, hp_hz=220.0, **HALL_KW)
              + MS.reverb_send(T['arp'] + T['perc'], 'plate', wet_db=-17.0, hp_hz=260.0))
     upper = tonal + T['keys'] + T['air'] + T['perc'] + T['fx'] + sends
-    upper = speech_dip(upper, e)
+    upper = speech_dip(upper, e, e2=speech_env(lead=LOWMID_LEAD))
     mix = upper + sub_d + kick
     mix = A.hp(mix, 25.0, 2)
     mix = mono_low(mix, 150.0)
