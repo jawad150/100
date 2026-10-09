@@ -1,3 +1,24 @@
+# Organic Fostering — "Day in the life" reel
+
+19-second vertical reel (1080×1920, 30 fps, -14 LUFS sound), cinematic AI footage + SaaS-style motion graphics in the Organic Fostering brand (plum / magenta / orange / green, Nunito).
+
+**Final:** [`reel/organic_fostering/organic_fostering_day_in_the_life.mp4`](reel/organic_fostering/organic_fostering_day_in_the_life.mp4) (master, ~30 Mbps) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_day_in_the_life_share.mp4) (12 Mbps) · [`cover.jpg`](reel/organic_fostering/cover.jpg)
+
+| Time | Scene | What happens |
+|---|---|---|
+| 0.0–0.8 s | Hook | Flash montage of the whole day with a "A day in the life" pill |
+| 0.8–2.7 s | The allowance | 3D £ coin + 3D "£447.60", "Weekly fostering allowance", typed "Where does it go?", coin bursts into four glowing orbs |
+| 2.7–5.1 s | Child's bedroom | "Sometimes, / it's not the / big things." (blur-in words, glow, light sweep); live clock chip starts at 7:00 am |
+| 5.1–8.4 s | Morning light → shoes → school bag | Each orb flies in and lands as a glass tag: "School shoes ✓", "Books & packed lunch ✓" |
+| 8.4–11.0 s | Warm kitchen | "It's breakfast / at the table." + "Breakfast ✓" tag, 3D heart |
+| 11.0–14.1 s | Bedroom at night | Clock rolls to 7:30 pm, "A goodnight / at bedtime.", "Someone asking," + chat bubble "How was your day?" |
+| 14.1–16.8 s | The message | Plum stage: "Sometimes, ordinary moments / help create / **extraordinary** (3D) / change." over the hands-and-seedling clip |
+| 16.8–19.0 s | End card | Logo, three-colour bar, organicfostering.co.uk, small print on the allowance |
+
+Pipeline (`pipeline_of/`): Higgsfield keyframes (`gpt_image_2_5`) animated with `seedance_2_5` at 1080p; `blender_of.py` renders the 3D brand elements; `reel_of.py` is the compositor timeline (reuses `pipeline/engine.py`); `audio_of.py` synthesises the score and SFX; `render_all.py` renders in parallel and muxes. Rebuild: put clips into `workspace_of/gen/clip1..7.mp4`, extract frames to `workspace_of/frames/cN/`, add fonts (Nunito static instances) and `src/logo_full.png`, run the Blender assets, then `python3 pipeline_of/render_all.py`.
+
+---
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.

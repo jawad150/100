@@ -169,7 +169,8 @@ def colorized(name, idx, dark, light, gamma=1.0):
     if key not in _col_cache:
         if len(_col_cache) > 200:
             _col_cache.clear()
-        _col_cache[key] = colorize(seq(name).frame(idx / 24.0), dark, light, gamma, light_top=hexc('#E83C9C'))
+        lt_ = hexc('#E83C9C') if name == 'text_money' else (1.0, 1.0, 1.0, 1.0)
+        _col_cache[key] = colorize(seq(name).frame(idx / 24.0), dark, light, gamma, light_top=lt_)
     return _col_cache[key]
 
 
@@ -719,8 +720,8 @@ def sc_message(t):
         ex_s = 0.85 + 0.15 * e_out_back(kx, 1.8)
         if f.shape[0] > 16:
             sc = 960 / f.shape[1] * ex_s
-            glow_add(c, f, W / 2, 545, MAGENTA, sigma=34, strength=0.42 * kx, scale=sc)
-            f = colorized('text_extra', fi_, hexc('#4A1040'), hexc('#FFC9DF'), 1.6)
+            glow_add(c, f, W / 2, 545, MAGENTA, sigma=40, strength=0.28 * kx, scale=sc)
+            f = colorized('text_extra', fi_, hexc('#3A0C33'), hexc('#FFE6F0'), 2.2)
             p = (t - 15.55) / 0.8 * 1.6 - 0.3
             ff = sweep(f, p, width=0.07, strength=0.5) if -0.3 < p < 1.3 else f
             draw(c, blur_sprite(ff, (1 - kx) * 10), W / 2, 545 + 40 * (1 - e_out_expo(kx)), scale=sc, opacity=min(1, kx * 2))
