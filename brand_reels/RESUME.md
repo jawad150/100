@@ -1,0 +1,113 @@
+# How to resume this project in a new session (any account with access to jawad150/100)
+
+Branch: `claude/beautiful-planck-mtdn0c`. Everything that matters is committed; the git-ignored `workspace/` holds
+re-buildable scratch only, except what is saved under `brand_reels/assets/`.
+
+## State (2026-10-09)
+- Research: `brand_reels/research/`. Slate + series bible: `brand_reels/design/SLATE.md`.
+- Per reel design docs: `brand_reels/design/reels/<slug>/` (BRIEF, packet.yaml, SCRIPT, script.json, GATE, VO_TIMING,
+  FACES, SOUND, HANDOFF). Slugs: pehle_wala, bijli_chali_gayi, ek_frame_ki_keemat, beta_tum_karte_kya_ho, log_kya_kahenge.
+- Toolkit + per-reel code: `pipeline/jawad_reels/` (jawad_kit, jawad_grade looks, jawad_tx transitions, snake_captions,
+  endcard, vo_chain, `<slug>*.py` modules, `assets3d_<slug>.py` prop builders, `<slug>_music.py` deterministic beds).
+- Voice: Higgsfield preset "Vlad" on elevenlabs_v4 (`pipeline/jawad_reels/vo_config.json`). The paid VO takes are saved in
+  `brand_reels/assets/<slug>/vo_raw/` with word timings (`*.json`) - do NOT regenerate them (credits). Credit budget: 250
+  for the whole project; about 64 were used for casting plus about 12 per reel for VO.
+- Face cut-outs (+ depth + metadata) and `faces.py`: `brand_reels/assets/charsheet/`. 3D prop renders: `brand_reels/assets/<slug>/props|assets3d`.
+- Previews: `brand_reels/previews/`.
+- Pipeline used: `pipeline/jawad_reels/workflows/preprod.js` then `build.js` (Workflow scripts; args per reel are in the
+  script headers / SLATE), shared context `pipeline/jawad_reels/workflows/ctx.txt`.
+
+
+## Session 5 (2026-10-09, fresh container) - read this first
+- Branch is now `claude/brand-reels-continue-40m817` (fast-forwarded from `claude/beautiful-planck-mtdn0c`; that branch
+  is no longer pushed to). `tools/commit_step.sh` pushes to whatever branch is checked out (override: `JR_BRANCH=`).
+- Restore: same as session 4, plus `mkdir -p workspace/brand_reels/wf` before writing ctx.txt, and
+  `python3 -I pipeline/jawad_reels/tools/fetch_sfx_library.py --wm-budget 300` (sample library, 24 MB, and the
+  `workspace/brand_reels/sfx/epic_*.py` links the music modules hash). Then write `workspace/brand_reels/wf/KIT_READY`
+  (the kit is released: see below).
+- **Sound kit complete**: `pipeline/jawad_reels/epic_music.py` written (Song, instruments, CAL, STEM_DB, STYLES,
+  beatgrid, level_rider, render + CLI; `python3 epic_music.py selftest` passes all four styles). With it every reel's
+  `<slug>_music.py` build + verify passes, except two 1 ms matched-filter analysis checks in beta_tum_karte_kya_ho
+  (inaudible; listed per LEAD_DECISIONS 7). ek_frame_ki_keemat_music CHAAL 2& / 3 trimmed 1-1.5 dB so the drop stays the
+  loudest moment. epic_sfx contract 89/89 ok; all five `<slug>_sfx.register()` work.
+- Pre-production for all five reels is done. Next: the builds (step 3 below / `reel_s3.js` stages), in this order of
+  readiness: log_kya_kahenge (preview done), pehle_wala (preview done), bijli_chali_gayi (preview done),
+  ek_frame_ki_keemat and beta_tum_karte_kya_ho (reel modules WIP).
+- Restore: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`, then
+  `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`, then
+  `cat pipeline/jawad_reels/workflows/ctx.txt pipeline/jawad_reels/workflows/ctx_s4_notes.txt > workspace/brand_reels/wf/ctx.txt`.
+- No Higgsfield connector in session 4: the saved Vlad takes are final (LEAD_DECISIONS 3); 0 credits spent.
+- Pre-production for reels 2-4 was finished in session 3 (HANDOFF.md for bijli_chali_gayi, ek_frame_ki_keemat,
+  beta_tum_karte_kya_ho; ek_frame_ki_keemat faces module + FACES.md).
+- No Workflow runner in session 4: the lead runs the `reel_s3.js` / `soundkit_s3.js` stages by hand with the Reels Studio
+  agents (same prompts, same order). Status: git log (`<slug>: ...` commits) and `reel/jawad_reels/<slug>/README.md`.
+
+## Session 3 (2026-10-09, fresh container, Higgsfield connected again) - read this first
+- Restore: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
+  (deps above + `fonttools`). The crops are rebuilt from the cut-outs (`tools/rebuild_crops.py`); the character sheets,
+  `prior/` and `refs/` are lost for good. Agent context: `workspace/brand_reels/wf/ctx.txt` (regenerated from
+  `pipeline/jawad_reels/workflows/ctx.txt` + the session-3 notes appended in that file).
+- Sound kit: rebuilt as committed code by `pipeline/jawad_reels/workflows/soundkit_s3.js` -> `pipeline/jawad_reels/epic_sfx.py`,
+  `epic_music.py`, `epic_mix.py`, `tools/fetch_sfx_library.py` (CC0/PD samples -> `workspace/brand_reels/sfx/library/`,
+  licences in `pipeline/jawad_reels/sfx_library_LICENSES.md`). Marker when verified: `workspace/brand_reels/wf/KIT_READY`.
+- Per reel: `pipeline/jawad_reels/workflows/reel_s3.js` with args
+  `{"id","title","slug","look","dur","slot","handoff"(reels 2-4),"faces"(reel 3)}`: pre-production finish (faces, audio
+  on the rebuilt kit, HANDOFF.md) -> build -> preview review -> fix -> master -> two-lens QA + adversarial verify (max 3
+  rounds) -> delivery into `reel/jawad_reels/<slug>/` (no preview mp4; every file < 95 MB; committed + pushed).
+- Agents commit + push every finished step with `pipeline/jawad_reels/tools/commit_step.sh` (locked, size-checked).
+- Higgsfield: balance 6924.51 at session start; voice re-takes only, max 5 credits per reel, logged per reel in
+  `workspace/jawad_reels/<slug>/vo/credits_s3.json`.
+- Status: see the git log (`<slug>: ...` commits) and `reel/jawad_reels/<slug>/README.md` once delivered.
+
+## Session 2 (2026-10-09, resumed in a fresh container) - read this first
+- Workspace restore is now one command: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
+  (deps: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`; session 3 found
+  fonttools missing: type3d needs it). restore_workspace.py also rebuilds `workspace/brand_reels/charsheet/crops/` from the
+  cut-outs (`tools/rebuild_crops.py`; the character sheets themselves are lost).
+- **The shared sound kit was lost**: `epic_sfx.py` / `epic_music.py` / `epic_mix.py` and the CC0/PD sample library lived only in the
+  git-ignored `workspace/brand_reels/sfx/`. It is being rebuilt to the spec in `brand_reels/research/sound_design.md` as committed code
+  in `pipeline/jawad_reels/` (samples re-fetched by `pipeline/jawad_reels/tools/fetch_sfx_library.py`). Music beds / SFX stems are
+  regenerated from the per-reel modules.
+- No Higgsfield connector in session 2: the saved Vlad takes are final (LEAD_DECISIONS 3); no credits spent in session 2.
+- Agent shared context for this session: `workspace/brand_reels/wf/ctx.txt` (generated from `pipeline/jawad_reels/workflows/ctx.txt`).
+
+## Exact status when session 1 stopped (2026-10-09, ~14:30 PKT)
+All agents were stopped on purpose so the project can continue on another account. Nothing is rendered or delivered yet
+(`reel/jawad_reels/` is empty).
+
+| # | reel (slug) | look | pre-production | build |
+|---|---|---|---|---|
+| 1 | Pehle Wala Hi Theek Tha (`pehle_wala`) | inferno | **done** (HANDOFF.md ready) | not started (no `pehle_wala.py` yet) |
+| 2 | Bijli Chali Gayi (`bijli_chali_gayi`) | dusk | VO, faces, SFX done; **HANDOFF.md missing** | not started |
+| 3 | Ek Frame ki Keemat (`ek_frame_ki_keemat`) | ember | VO, SFX done; **faces module + FACES.md + HANDOFF.md missing** | not started |
+| 4 | Beta, tum karte kya ho? (`beta_tum_karte_kya_ho`) | gold_hour | VO, faces, SFX done; **HANDOFF.md missing** | not started |
+| 5 | Log Kya Kahenge (`log_kya_kahenge`) | noir_ember | **done** (HANDOFF.md ready) | **in progress**: `log_kya_kahenge.py`, `_crowd.py`, `_hookb.py`, `_mix.py` exist; finish the build, preview, master, QA, delivery |
+
+Binding decisions for the build: `brand_reels/design/LEAD_DECISIONS.md`.
+
+### Next steps, in order
+1. Restore the workspace (section below).
+2. Finish pre-production for reels 2-4: ek_frame_ki_keemat needs its faces module (`<slug>_faces.py` + FACES.md, face plan in its
+   BRIEF.md) and all three need HANDOFF.md (the "Handoff" stage of `pipeline/jawad_reels/workflows/preprod.js`).
+3. For each reel: build (`pipeline/jawad_reels/workflows/build.js`): reel module -> stills/contact sheet -> preview -> viral
+   + colour review -> fixes -> master render -> two-lens QA with verification -> fixes -> delivery into
+   `reel/jawad_reels/<slug>/` (IG mp4, song-ready mp4 with VO + SFX only, CRF 14 master, stems, cover, caption txt with
+   "Turn on AI info", SRT). Run `build.js` with args like
+   `{"id":"C15","title":"Log Kya Kahenge","slug":"log_kya_kahenge","look":"noir_ember","dur":35.2}` (other reels:
+   C26 pehle_wala inferno 34.133; C11 bijli_chali_gayi dusk 34.667; C08 ek_frame_ki_keemat ember 33.6; C02
+   beta_tum_karte_kya_ho gold_hour 36.4).
+4. Send Jawad each final reel as soon as it passes QA; do not send previews.
+
+### Voice assets (do not regenerate)
+`brand_reels/assets/<slug>/vo_raw/` = every paid Vlad take (mp3); `brand_reels/assets/<slug>/vo_final/` = the processed,
+timed stems as FLAC (`vo_stem*.flac`, `*_vo_A/B.flac`) plus word timings (`*.json`). Restore them to
+`workspace/jawad_reels/<slug>/vo/` as WAV (`ffmpeg -i x.flac -c:a pcm_s24le x.wav`). Higgsfield is allowed for voice only;
+about 107 of the 250-credit budget is used (casting about 64 + VO about 9-12 per reel); re-takes max 5 credits per reel.
+
+## Restore a fresh container
+1. `git fetch origin claude/beautiful-planck-mtdn0c && git checkout claude/beautiful-planck-mtdn0c`
+2. `python3 pipeline/jawad_reels/setup_workspace.py` (fonts, logos) and `pip install numpy opencv-python pillow scipy faster-whisper`; Blender 5.x bpy for props.
+3. Copy assets back: `brand_reels/assets/<slug>/vo_raw` -> `workspace/jawad_reels/<slug>/vo/raw`, `vo_final/*` -> `workspace/jawad_reels/<slug>/vo/` (FLAC -> WAV), `*.json` -> `workspace/jawad_reels/<slug>/vo/`,
+   props -> `workspace/jawad_reels/<slug>/`, `brand_reels/assets/charsheet/cutouts` -> `workspace/brand_reels/charsheet/cutouts`,
+   `faces.py` -> `workspace/brand_reels/charsheet/tools/`. Re-run `pipeline/jawad_reels/vo_chain.py` on the raw takes and `<slug>_music.py` for the beds.
+4. Continue with `build.js` for every reel whose `reel/jawad_reels/<slug>/` folder is missing.

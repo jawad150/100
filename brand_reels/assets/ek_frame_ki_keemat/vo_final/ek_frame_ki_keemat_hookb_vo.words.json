@@ -1,0 +1,74 @@
+[
+ {
+  "word": "Ek",
+  "start": 0.1,
+  "end": 0.306,
+  "keyword": false,
+  "line": "V1B",
+  "i": 0,
+  "dev": "एक",
+  "heard": "एक",
+  "ok": true,
+  "hide": true
+ },
+ {
+  "word": "second.",
+  "start": 0.306,
+  "end": 0.93,
+  "keyword": false,
+  "line": "V1B",
+  "i": 1,
+  "dev": "सेकंड।",
+  "heard": "सेकंड।",
+  "ok": true,
+  "hide": true
+ },
+ {
+  "word": "Teen",
+  "start": 1.23,
+  "end": 1.434,
+  "keyword": false,
+  "line": "V1B",
+  "i": 2,
+  "dev": "तीन",
+  "heard": "तीन",
+  "ok": true,
+  "hide": true
+ },
+ {
+  "word": "sau",
+  "start": 1.434,
+  "end": 1.634,
+  "keyword": false,
+  "line": "V1B",
+  "i": 3,
+  "dev": "सौ",
+  "heard": "सौ",
+  "ok": true,
+  "hide": true
+ },
+ {
+  "word": "saath",
+  "start": 1.634,
+  "end": 2.052,
+  "keyword": false,
+  "line": "V1B",
+  "i": 4,
+  "dev": "साठ",
+  "heard": "साठ",
+  "ok": true,
+  "hide": true
+ },
+ {
+  "word": "layers.",
+  "start": 2.052,
+  "end": 2.63,
+  "keyword": false,
+  "line": "V1B",
+  "i": 5,
+  "dev": "लेयर्स।",
+  "heard": "लेयर्स।",
+  "ok": true,
+  "hide": true
+ }
+]

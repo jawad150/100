@@ -1,0 +1,467 @@
+# Production Packet (cinematic-director format) for C08 · Ek Frame ki Keemat. Twin of BRIEF.md (same folder): the brief
+# wins on any conflict. No generative model renders this reel: every shot is built locally with the Reels Studio toolkit
+# (jawad_kit / jawad_tx / jawad_grade / endcard / snake_captions), so `directed_prompt` is the film-layer description of the
+# shot for the builders and the screening pass, not a model prompt. Times in seconds, frames at 30 fps (f = round(t * 30)).
+# r2 (2026-10-08): viral gate r1 fixes 1-5 applied (f0 impact_soft; P8 push + rack and the new C3 centre / r0; the 28.2 hidden-JD
+# glint and the pinned comment; the script-gated VO lines; card USKO YEH pending the lead). See BRIEF.md CHANGELOG.
+project: "@jawad_mp4 (JD) personal-brand reels · slot 3 · C08 Ek Frame ki Keemat"
+version: 2
+deliverable:
+  type: reel
+  platform: [reels]
+  aspect: "9:16"
+  duration_s: 33.6
+  frames: 1008
+  count: 1
+  fps: 30
+  resolution_target: "1080x1920 (native; no upscale)"
+  bpm: 100
+  bars: 14
+  look: ember
+  extra_cuts:
+    - "B: Trial Reel, hook B frames 0-89 spliced onto A frames 90-1007"
+    - "VO + SFX only versions of A and B (in-app music test)"
+emotional_core: "awe that turns into respect"
+human_truth: "Jo cheez aasaan dikhti hai, us ke peeche kisi ka kaam hota hai: everyone has heard 'bas 5 minute ka kaam hai' about their work."
+single_image: "Side-on, one paused frame pulled apart into a loaf of glowing glass slices in a black void; one slice holds JD's face, the slice beside it holds only his rim light, a hand's width of darkness between them; above it '12 / LAYERS'. (shot S2-02, frame 153, the cover)"
+world_bible:
+  palette:
+    - {name: NIGHT_0, hex: "#070404"}
+    - {name: FLAME, hex: "#FF6A1A"}
+    - {name: AMBER, hex: "#FFB547"}
+    - {name: IVORY, hex: "#FFF3E6"}
+    - {name: ASH, hex: "#A8978C"}
+    - {name: RED, hex: "#F2312B"}
+  palette_line: "near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B"
+  light_logic: "the void is lit only by the frame's own layers; the frame lights the room it sits in"
+  lens_set: ["35 mm corridor (f_px 1867)", "85 mm side-on stack and fly-through (f_px 4533)", "100 mm frontal re-hook (f_px 5333)"]
+  camera_law: "the camera moves only while the frame is paused; when it plays, the camera locks"
+  texture_line: "ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash"
+  sound_motif: "the pause click (a mouse micro-switch, then glass on glass)"
+  symbol: "the pause / timecode chip 00:00:00:01"
+  forbidden:
+    - "hours, minutes, rates, prices, clients, view counts or any invented fact about Jawad"
+    - "a 13th layer, or any light, particle or text inside the frame that is not one of its 12 layers"
+    - "particles in the void outside the frame's layers"
+    - "real NLE names, logos or UI clones"
+    - "a large centred play/pause ring (his OpenArt cover device)"
+    - "ERROR / unsaved / delete dialogs; keycaps; Ctrl+Z (C11 and C26 devices)"
+    - "white flashes, fades to black or to silence (K.flash, K.fade, post(flash=))"
+    - "anything from Organic Fostering or Floret; hearts; the old prop library"
+    - "mirroring, warping or lip-syncing the cut-out"
+cast:
+  - tag: JD
+    identity_source: locked
+    identity_ref: "workspace/brand_reels/charsheet/cutouts/suit_threequarter.png (from sheet_suit.webp; depth + json alongside)"
+    block: "JD: the suit_threequarter cut-out (locked identity, face language stripped: human-realism Mode B): black suit, white shirt, black tie; head turned screen-right, eyes right, a skeptical side-eye toward the timecode chip; skin texture kept, no smoothing, no relight. Rim look A (FA.rim_light, light (0.8, -0.5)) split into frame layers 04 base, 05 rim, 06 halo + shadow."
+    wardrobe_by_scene: {S1: "black suit, white shirt, black tie", S2: "same (flat pane 04)", S3: "same (inside the corridor sprites)", S4: "same"}
+    gesture: "none: one still pose; breathing idle (FA.idle, seed 4) only while the frame plays (t < 0.3 and t >= 26.4)"
+    placement: "K.draw at (330, 1926), scale 0.90 of the 2x master, anchor bust bottom-centre; face box x 242-564, y 1120-1564; eye mid (465, 1282); hair top y 987"
+locations:
+  - tag: THE_VOID
+    block: "an endless warm near-black space (canvas NIGHT_0 x 0.6 linear) with nothing in it but the frame; a soft FLAME spill glow (x0.06) under the frame is the only light outside it"
+    anchors: ["the frame (or its stack) centred, slightly low (centre y ~1110-1150)", "the counter / title above it (y 294-550)", "the spill glow below it"]
+    light_plot: "all light comes from the 12 layers: the background plate's top-right flame key, the god rays, bokeh, the rim, embers and the keyword; nothing lights the void except the frame's spill"
+  - tag: THE_CORRIDOR
+    block: "the same void filled with 29 frame-stacks standing on alternate sides of a straight path (x ±600, z 900-10140) and the 30th, live stack at its end (z 10470); depth fog fades the far ones into the void"
+    anchors: ["live stack at the vanishing point", "stacks alternating left / right", "three audio lanes on the floor (21.9-24.3)"]
+    light_plot: "each stack glows from its own layers; a light wave runs near to far 16.9-18.6; nothing else"
+props:
+  - tag: THE_FRAME
+    block: "one 1080x1920 frame of a finished house-style reel built from exactly 12 layers (back to front): 01 background void (andhera), 02 haze + god rays (dhuaan), 03 bokeh with the hidden JD (glints f846-f847, r2) and the portal disc (roshni), 04 JD cut-out (chehra), 05 rim light, 06 contact glow / shadow (saaya), 07 embers (chingaariyan), 08 caps words (lafz), 09 keyword core (keyword), 10 keyword halo (chamak), 11 underline (lakeer), 12 finish (grain, halation, vignette). Layer i sits at z = (6.5 - i) * gap(t)."
+    state_by_shot:
+      S1-01: "assembled, playing to 0.3 s, then paused (layer clock frozen at 0.3)"
+      S2-01: "separating, gap 0 -> 120"
+      S2-02: "exploded, gap 120; panes light one by one 3.0-4.8"
+      S2-03: "exploded, gap 300; one pane in focus per beat"
+      S2-04: "folding to gap 30; pane 12 flicks off/on 13.2-14.4"
+      S3-04: "the live stack: gap 120 -> 60 -> 0 (slam at 26.4)"
+      S4-01: "assembled, playing again (layer clock t - 33.6); payoff lockup EK FRAME KI keemat in layers 08-11; the hidden JD in layer 03 glints at f846-f847 (x0.35 -> 1.20 -> 0.70 -> 0.35)"
+      S4-02: "assembled, playing, no title layers; the hook lockup fades back in over 33.0-33.6"
+  - tag: THE_CHIP
+    block: "HUD timecode chip, 330x72 px dark-glass pill, FLAME stroke, icon (play triangle / pause bars), '00:00:00:01' in jw_mono 38 px (text x 649-907); centre (760, 1282), pill x 595-925. Annotation, never a frame layer."
+    state_by_shot: {S1-01: "play icon f0-f8, pause bars from f9; fades out f24-f32", S4-02: "back for the loop (t < 0 world)"}
+  - tag: COUNTER
+    block: "T.Counter in jw_key: '00' -> '12' (230 px) with 'LAYERS' (jw_caps 86) at (540, 380 / 518); '012' -> '360' (240 px) with 'LAYERS · 1 SECOND' at (540, 380 / 520)"
+    state_by_shot: {S2-02: "rolls 3.0-4.8 (out_cubic), exits 5.4-5.65", S3-02: "rolls 18.9-20.4 (inout_sine), exits 21.9-22.15"}
+  - tag: TAGS
+    block: "12 jw_mono 44 px labels (NN · name) on SMOKE scrim pills, pinned to their panes by a FLAME reticle and a 1.5 px leader line; layers 09 and 10 share one 2-line block"
+    state_by_shot: {S2-03: "one per beat 5.9-12.9, <= 2 visible", S2-04: "tag 12 with ON / OFF state to 15.9"}
+  - tag: AUDIO_LANES
+    block: "three floor planes (VO · AI voice FLAME, SFX AMBER, MUSIC RED) carrying the real stem envelopes as waveforms, near end = now; legend at x 90, y 1330 / 1385 / 1440"
+    state_by_shot: {S3-03: "rise 21.9-22.2, pulse, sink 24.0-24.3"}
+  - tag: END_CARD
+    block: "endcard.EndCard('USKO YEH', 'bhejo', sub='jo kehta hai \"editing mein kya hai?\"', handle=False, monogram='JD', dur=4.2, y_mono=365, y_key=715, y_sub=922) + J.signature at (760, 1575). USKO YEH needs the lead's OK (BRIEF §20 Q6); fallback USSE YEH"
+    state_by_shot: {S4-02: "29.4-33.6, settled 31.25-33.24, exits in the last 0.36 s"}
+scenes:
+  - id: S1
+    location: THE_VOID
+    time_of_day: "timeless"
+    axis: "JD faces screen-right, toward the chip"
+    light_plot: "inside the frame: flame key top-right, rim top-right on JD, embers and bokeh warm"
+    shots:
+      - id: S1-01
+        purpose: reveal
+        anchor: false
+        start_from: S4-02
+        size: "medium, the whole frame at 1:1"
+        lens: "screen-locked (85 mm equivalent; all layers coplanar)"
+        move: "locked"
+        action: "the frame plays for 0.3 s (embers rising, JD breathing), then pauses: embers stop mid-air, the chip turns from play to pause; at 0.6 a glint runs along the layer edges"
+        cast: [JD]
+        props: [THE_FRAME, THE_CHIP]
+        light: "frame-internal flame key from the top-right; rim on JD's right side; shadows fall to the lower-left"
+        atmosphere: "haze with god rays from the top-right, bokeh"
+        uncomposed_element: "one bokeh disc of layer 03 cut by the frame's top edge"
+        duration_s: 0.9
+        sound: "impact_soft (cut at 0.25, before the pause), pause click, glass on glass"
+        transition_out: match
+        directed_prompt: "Medium, screen-locked. JD in the frame looks off to screen-right with a skeptical side-eye while sparks rise past him, then everything stops mid-air on a click. Warm black void inside a finished title frame, flame key top-right, shadows to the lower-left. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Camera locked. Haze and slow bokeh in the frame. One bokeh disc cut by the frame's top edge. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: arrested."
+  - id: S2
+    location: THE_VOID
+    time_of_day: "timeless"
+    axis: "camera orbits to the frame's right side (yaw +52) and stays on that side through the fly-through"
+    light_plot: "each pane emits its own light; the void receives only the spill"
+    shots:
+      - id: S2-01
+        purpose: change
+        anchor: false
+        start_from: S1-01
+        size: "wide: the frame becomes an object in the void"
+        lens: "85 mm"
+        move: "pull back D 4533 -> 8300, target y 0 -> -347.9, easy_ease 0.9-2.4 s"
+        action: "the 12 layers drift apart in depth (gap 0 -> 120, inout_cubic) as the camera steps back"
+        cast: [JD]
+        props: [THE_FRAME]
+        light: "the frame's own light; a faint spill below it"
+        atmosphere: "dark void"
+        uncomposed_element: "layer 06's shadow trails the face pane by one frame of the ease"
+        duration_s: 1.5
+        sound: "card slide, slow whoosh"
+        transition_out: match
+        directed_prompt: "Wide, 85 mm. The paused frame separates into its layers as the camera steps back. Black void lit only by the frame. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Slow pull back, easy ease. No particles outside the frame. The shadow pane lags a frame behind the face pane. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: curious."
+      - id: S2-02
+        purpose: reveal
+        anchor: true
+        start_from: S2-01
+        size: "wide side-on"
+        lens: "85 mm"
+        move: "orbit yaw 0 -> 52, pitch 0 -> 8, D 8300 -> 9400, easy_ease 2.4-4.8 s; then 1 %/s push"
+        action: "the panes light one by one while the counter rolls 00 -> 12; it lands on 12 as the side-on view settles"
+        cast: [JD]
+        props: [THE_FRAME, COUNTER]
+        light: "each pane glows with its content; seams ASH with a flame edge"
+        atmosphere: "void"
+        uncomposed_element: "the rim-light pane sits a hand's width away from the face pane, slightly off his silhouette"
+        duration_s: 3.0
+        sound: "slot ticks, glass truth hit on 4.8"
+        transition_out: match
+        directed_prompt: "Wide side-on, 85 mm. Twelve glowing glass slices of one frame hang in a black void; one holds JD's face, the next only his rim light. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Orbit to the right side, easy ease, settling on the downbeat. Spill glow under the stack. The rim slice a hand's width from the face slice. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: awe."
+      - id: S2-03
+        purpose: inform
+        anchor: false
+        start_from: S2-02
+        size: "medium on each pane in turn"
+        lens: "85 mm"
+        move: "swoop 5.4-6.0 to FLY(01); then beat-stepped track back to front (inout_sine per beat), D 4920, yaw 32, pitch 3; rack focus to each pane over the 9 frames before its beat (aperture 420)"
+        action: "each pane comes into focus and receives its tag: andhera, dhuaan, roshni, chehra, rim light, saaya, chingaariyan, lafz, keyword + chamak, lakeer"
+        cast: [JD]
+        props: [THE_FRAME, TAGS]
+        light: "the pane in focus sharp and bright; neighbours soft"
+        atmosphere: "void; out-of-focus slabs cross the left edge"
+        uncomposed_element: "pane 07's embers frozen mid-flight, one of them half outside its pane"
+        duration_s: 6.6
+        sound: "one ui tick per beat"
+        transition_out: match
+        directed_prompt: "Medium, 85 mm. The camera steps along the exploded frame from back to front, one slice per beat, focus landing on each as its label appears. Black void. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Beat-stepped track with sine easing, rack focus on every beat. Huge soft slabs pass the left edge. An ember frozen half outside its slice. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: discovery."
+      - id: S2-04
+        purpose: change
+        anchor: false
+        start_from: S2-03
+        size: "medium: the frame at 0.63 -> 0.68, frontal"
+        lens: "85 -> 100 mm"
+        move: "swing to frontal 12.0-13.2 (easy_ease) while the stack folds to gap 30; then 1 %/s push; from 14.6 the push ramps to 4.5 %/s toward the portal disc (D = 8600 (1 - p(t)), ~6 % closer by 16.0); rack focus to pane 03 15.0-15.8 (aperture 0 -> 900, inout_cubic); camera static from 16.0 (C3 scene A)"
+        action: "the near-invisible finish layer is switched off and on twice: the frame turns flat and dead, then alive; then the camera pushes in and the title melts out of focus while the portal disc stays crisp (the frame stays paused)"
+        cast: [JD]
+        props: [THE_FRAME, TAGS]
+        light: "with the finish: vignette, halation, grain; without it: flat"
+        atmosphere: "void"
+        uncomposed_element: "the tag's leader line touches the frame's edge"
+        duration_s: 4.0
+        sound: "clicks and toggles on the flicks"
+        transition_out: object_wipe
+        directed_prompt: "Medium, 100 mm, frontal. The folded frame faces the lens; its last layer blinks off and on and the image loses and regains its life; then the lens creeps toward a glowing disc in the bokeh and the focus pulls back to it, the title going soft. Black void. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. A 1 % per second push after the swing, rising to 4.5 % per second from 14.6, rack focus 15.0-15.8. Only the frame's light. The label's leader line grazes the frame edge. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: realisation."
+  - id: S3
+    location: THE_CORRIDOR
+    time_of_day: "timeless"
+    axis: "camera travels down the corridor's axis toward the live stack"
+    light_plot: "every stack glows; the void between them dark; a light wave near to far"
+    shots:
+      - id: S3-01
+        purpose: atmosphere
+        anchor: false
+        start_from: null
+        size: "wide corridor"
+        lens: "35 mm"
+        move: "glide z -700 -> 300, easy_ease 16.8-18.6 s"
+        action: "30 frames light up one after another, near to far"
+        cast: [JD]
+        props: [THE_FRAME]
+        light: "each stack lights in turn"
+        atmosphere: "depth fog to the void"
+        uncomposed_element: "one stack lights a frame late"
+        duration_s: 1.8
+        sound: "air zoom on the portal, sparkle"
+        transition_out: match
+        directed_prompt: "Wide, 35 mm. A corridor of thirty glowing frame-stacks recedes into black; they light one after another toward the far end. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Slow glide forward, easy ease. Depth fog. One stack lights a beat late. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: scale."
+      - id: S3-02
+        purpose: inform
+        anchor: false
+        start_from: S3-01
+        size: "wide corridor"
+        lens: "35 mm"
+        move: "surge z 300 -> 7070 (inout_sine) 18.6-20.4, brake on the downbeat; 7 samples"
+        action: "the counter rolls 12 -> 360 as the stacks stream past and lands on 20.4"
+        cast: [JD]
+        props: [THE_FRAME, COUNTER]
+        light: "flame streaks from passing stacks"
+        atmosphere: "motion blur"
+        uncomposed_element: "one stack passes so close it fills an edge of the frame"
+        duration_s: 3.3
+        sound: "whoosh-bys, slot ticks, glass truth on 20.4"
+        transition_out: match
+        directed_prompt: "Wide, 35 mm. The camera surges down the corridor of frames and brakes in front of the last one as the number lands. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Fast surge with a sine ease, hard brake on the downbeat. Streaks of flame light. A stack grazes the frame edge. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: momentum."
+      - id: S3-03
+        purpose: inform
+        anchor: false
+        start_from: S3-02
+        size: "wide, low"
+        lens: "35 mm"
+        move: "hold, 1 %/s push"
+        action: "three audio lanes rise on the floor and pulse with the reel's real voice, effects and music"
+        cast: []
+        props: [AUDIO_LANES, THE_FRAME]
+        light: "lane fills glow flame, amber, red"
+        atmosphere: "void"
+        uncomposed_element: "the music lane rises one frame behind the others"
+        duration_s: 2.1
+        sound: "bar grow"
+        transition_out: match
+        directed_prompt: "Wide, 35 mm, low. Three glowing audio tracks rise along the corridor floor and pulse with the sound. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Held, a slow push. The last lane is a frame late. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: depth."
+      - id: S3-04
+        purpose: change
+        anchor: false
+        start_from: S3-03
+        size: "medium: the live stack at 0.97"
+        lens: "35 mm"
+        move: "push in (in_cubic) 24.0-25.8, near-freeze 25.8-26.4"
+        action: "the frames rush back into one; silence; a click; the layers slam together"
+        cast: [JD]
+        props: [THE_FRAME]
+        light: "the stack's own light"
+        atmosphere: "void"
+        uncomposed_element: "the last billboard fades a frame after it reaches the stack"
+        duration_s: 2.4
+        sound: "whoosh-bys, riser that stops dead, 8 frames of silence, the play click, whip"
+        transition_out: cut
+        directed_prompt: "Medium, 35 mm. Thirty frames rush back into one, the sound stops, a click, and the layers slam flat. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Push in, then almost still. Nothing outside the stack. One late arrival. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: held breath."
+  - id: S4
+    location: THE_VOID
+    time_of_day: "timeless"
+    axis: "as S1"
+    light_plot: "as S1; the end card dims the world x0.58 (multiplicative)"
+    shots:
+      - id: S4-01
+        purpose: reveal
+        anchor: false
+        start_from: S3-04
+        size: "medium, the whole frame"
+        lens: "screen-locked"
+        move: "locked (C8 settle 1.1 -> 1.0 over 6 frames)"
+        action: "the frame plays again; EK FRAME KI keemat rises with its underline; 'banane wala jaanta hai' follows; at 28.2 the hidden JD in the bokeh glints for two frames"
+        cast: [JD]
+        props: [THE_FRAME]
+        light: "as S1"
+        atmosphere: "as S1"
+        uncomposed_element: "as S1"
+        duration_s: 3.0
+        sound: "flash hit, impact, sub, dhol drop"
+        transition_out: cut
+        directed_prompt: "Medium, screen-locked. The frame plays again, sparks rising past JD, and the title builds over him. Warm black void inside the frame, flame key top-right. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Locked. Haze and bokeh. One bokeh disc cut by the top edge. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: respect."
+      - id: S4-02
+        purpose: inform
+        anchor: false
+        start_from: S4-01
+        size: "medium, the whole frame, dimmed"
+        lens: "screen-locked"
+        move: "locked"
+        action: "the end card builds and holds over the playing frame; in the last 0.6 s the hook title and chip return"
+        cast: [JD]
+        props: [THE_FRAME, END_CARD, THE_CHIP]
+        light: "as S1, dimmed x0.58 behind the card"
+        atmosphere: "as S1"
+        uncomposed_element: "as S1"
+        duration_s: 4.2
+        sound: "card shimmer and glass tap, reverse swell ending on frame 0"
+        transition_out: loop_seam
+        directed_prompt: "Medium, screen-locked. The end card's flame ring and title settle over the playing frame, then lift as the opening title returns. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Locked. Sparks keep rising. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: resolved."
+  - id: S0B
+    location: THE_CORRIDOR
+    time_of_day: "timeless"
+    axis: "as S3"
+    light_plot: "as S3"
+    shots:
+      - id: S0B-01
+        purpose: reveal
+        anchor: false
+        start_from: null
+        size: "wide corridor (hook B, Trial Reel only, frames 0-89)"
+        lens: "35 mm -> 85 mm"
+        move: "mid-surge on frame 0; 1.8-2.9 the pose blends into hook A's orbit pose (+ z 10470)"
+        action: "frames stream past under '360 / LAYERS · 1 SECOND'; then they rush back into one stack, which is hook A's stack at 3.0"
+        cast: [JD]
+        props: [THE_FRAME, COUNTER]
+        light: "as S3"
+        atmosphere: "motion blur"
+        uncomposed_element: "as S3-02"
+        duration_s: 3.0
+        sound: "impact soft, whoosh-bys, reverse swell ending on 3.0"
+        transition_out: match
+        directed_prompt: "Wide, 35 mm. Mid-surge down a corridor of glowing frames under a big '360'; the frames rush back into one. Palette: near-black NIGHT_0 #070404, flame FLAME #FF6A1A, hot cores AMBER #FFB547, labels IVORY #FFF3E6 and ASH #A8978C, accent RED #F2312B. Surge, then a pull back that hands over to the orbit. ember finish: crushed warm blacks, halation on highlights, fine grain 0.016 at 1.8 px, no full-frame flash. Mood: spectacle."
+audio:
+  voice:
+    present: true
+    engine: "Higgsfield preset Vlad (voice_id e5666b9c-99a2-4fac-8b4e-abee078b186d), elevenlabs_v4, Devanagari text; vo_chain.py processing; VO stem -16 LUFS"
+    casting_brief: "warm, measured, quietly proud; contradiction: says huge numbers almost under the breath"
+    words_total_hook_a: 62
+    lines:
+      - {id: V1A, shot_id: S1-01, start: 0.10, end_est: 2.37, hard_end: 2.70, text: "Aap ne ise palak jhapakte dekha.", caption_rom: "Aap ne ise *palak jhapakte dekha.", dev: "आप ने इसे पलक झपकते देखा।", words: 6, delivery: "intimate, a small smile in the voice"}
+      - {id: V1B, shot_id: S0B-01, start: 0.10, end_est: 2.25, hard_end: 2.70, text: "Ek second. Teen sau saath layers.", caption_rom: "Ek second. Teen sau saath layers.", dev: "एक सेकंड। तीन सौ साठ लेयर्स।", words: 6, delivery: "matter-of-fact, the number almost whispered"}
+      - {id: V2, shot_id: S2-02, start: 3.07, end_est: 5.84, hard_end: 5.95, text: "Lekin is ek frame mein... baarah layers hain.", caption_rom: "Lekin is ek frame mein... *12 layers hain.", dev: "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं।", words: 8, delivery: "the turn: stress on 'ek', a held breath on 'mein...'; 'baarah' onset 4.80 ±0.10"}
+      - {id: V3, shot_id: S2-03, start: 6.00, end_est: 8.36, hard_end: 8.45, text: "Andhera. Dhuaan. Roshni. Chehra.", caption_rom: "Andhera. Dhuaan. Roshni. *Chehra.", dev: "अंधेरा। धुआँ। रोशनी। चेहरा।", words: 4, delivery: "one word per tag arrival (6.00 / 6.75 / 7.30 / 7.90), short stops, no list intonation"}
+      - {id: V4, shot_id: S2-03, start: 10.03, end_est: 11.61, hard_end: 11.70, text: "Har lafz. Har chamak.", caption_rom: "Har lafz. Har *chamak.", dev: "हर लफ़्ज़। हर चमक।", words: 4, delivery: "per phrase 10.03 / 10.95; 'lafz' ~10.23, 'chamak' ~11.15"}
+      - {id: V5, shot_id: S2-04, start: 12.05, end_est: 15.70, hard_end: 15.85, text: "Aur ek layer... jiske bina frame zinda nahi lagta.", caption_rom: "Aur ek *layer... jiske bina frame *zinda nahi lagta.", dev: "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता।", words: 9, delivery: "lift and hang on 'layer...', lower on 'zinda nahi lagta'; caption keywords *layer* + *zinda* (gate fix 4)"}
+      - {id: V6, shot_id: S3-01, start: 16.95, end_est: 18.19, hard_end: 18.85, text: "Ek second mein tees frames.", caption_rom: "Ek second mein *30 frames.", dev: "एक सेकंड में तीस फ़्रेम्स।", words: 5, delivery: "plain wonder"}
+      - {id: V7, shot_id: S3-02, start: 18.90, end_est: 21.52, hard_end: 21.99, text: "Yaani har second... teen sau saath layers.", caption_rom: "Yaani har second... teen sau saath layers.", dev: "यानी हर सेकंड... तीन सौ साठ लेयर्स।", words: 7, delivery: "'teen' onset 20.45 ±0.10, landing with the counter"}
+      - {id: V8, shot_id: S3-03, start: 22.15, end_est: 23.39, hard_end: 24.15, text: "Aur awaaz ke teen tracks.", caption_rom: "Aur *awaaz ke 3 tracks.", dev: "और आवाज़ के तीन ट्रैक्स।", words: 5, delivery: "light, almost a smile"}
+      - {id: V9, shot_id: S4-01, start: 26.75, end_est: 29.44, hard_end: 29.85, text: "Keemat... banane wala jaanta hai.", caption_rom: "*Keemat... banane wala jaanta hai.", dev: "क़ीमत... बनाने वाला जानता है।", words: 5, delivery: "slow, proud, not boastful; 'banane' 27.70 ±0.10"}
+      - {id: V10, shot_id: S4-02, start: 29.60, end_est: 32.82, hard_end: 33.35, text: "Jo kehta hai \"editing mein kya hai\", usko bhejo.", caption_rom: "Jo kehta hai \"editing mein kya hai\", usko *bhejo.", dev: "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।", words: 9, delivery: "friendly, not salesy; starts at max(29.60, V9 end + 0.15); 'usko' needs the lead's OK (fallback उसे / usey); T3 on HOLD until then"}
+    pronunciation_test: ["फ़्रेम", "ज़िंदा", "तीन सौ साठ", "लफ़्ज़", "क़ीमत", "एडिटिंग"]
+    fallback: "frame -> tasveer (तस्वीर), never in the hook"
+    credits: "5 takes ~12.5 credits; cap 20 for this reel incl. retakes"
+  music_brief: "Original score from epic_music desi_epic as a local variant 'c08_epic': D, Phrygian-dominant colour, 100 BPM, 14 bars. Bar 0 cold (harmonium drone only), strings 8ths from 2.4 (LP 900), thin at the re-hook bar 5, opening LP 1200 -> 1500 through the corridor bars 7-10 with a taiko pulse on beats 1 and 3 of bars 8-10, shepard (2.2 s) and reverse cymbal (1.2 s) into 26.4; drop-out gate 25.8-26.4; DROP on bar 11 (26.4) with dhol_hit + dhol chaal + 808 (the one desi voice: dhol); resolve bar 12 (dhol -8); loop bar 13 cold, reverse cymbal ending on 33.6 into frame 0. No sitar, no dholak, no braam at the drop, no tape-stop. Rendered at 36 s and cropped to 33.6 so no fade lies inside the reel."
+  sfx:
+    - {shot_id: S1-01, sound: "impact_soft -8 at 0.0 (cue-level dur 0.25, align start; r2: replaces the HERO trailer_hit, which landed under 'Aap')", perspective: "the frame's own sound, ended before the pause"}
+    - {shot_id: S1-01, sound: "jd_mouse_click +4 at 0.3; jd_glass_slide -2 (dur 0.3) ending 0.6", perspective: "close, centred: the motif"}
+    - {shot_id: S2-02, sound: "slot_tick n 12 dur 1.8 at 3.0; glass_truth stack at 4.8", perspective: "UI, close"}
+    - {shot_id: S2-03, sound: "jd_ui_tick -14 on every pane arrival 6.0-11.4", perspective: "tiny, air band"}
+    - {shot_id: S2-04, sound: "impact_soft -8 + glass_tap -10 at 12.0; clicks / toggles on 13.2, 13.5, 13.8, 14.4", perspective: "close"}
+    - {shot_id: S2-04, sound: "C3 plan cues: reverse_swell -3 (0.733 s, ends 16.733), air_zoom -6, impact_soft -1 at 16.8; no SFX for the push and rack", perspective: "through the lens"}
+    - {shot_id: S3-02, sound: "whoosh_by 19.2 / 19.8; slot_tick n 29 at 18.9; glass_truth at 20.4", perspective: "wide, panned"}
+    - {shot_id: S3-04, sound: "whoosh_by 24.3 / 24.75 / 25.2; ember_slam(26.4, bpm 100, riser_beats 2, gap_beats 1); jd_mouse_click +4 at 26.067; whip -6 at 26.367", perspective: "the reel's loudest moment at 26.4"}
+    - {shot_id: S4-02, sound: "card cues; reverse_swell 0.8 s ending 33.6 -8", perspective: "air"}
+  mix_notes: "VO-first: final -14 LUFS ±0.5, TP <= -2.0 dBTP wav (<= -1.5 AAC), LRA 5-9; VO -16 LUFS; music ducked 9 dB under VO and 3 dB under SFX (epic_mix); SFX stem built with tail_fade 0 and gated 25.800-26.067; true silence f774-f781; loudest momentary within ±0.2 s of 26.4; loop: nothing fades, swells end on 33.6."
+finish:
+  grain: "ember G.finish preset: 0.016 at 1.8 px (no extra grain layers; frame layer 12 is content)"
+  grade: "look ember (jawad_kit), post = G.tx_finish(cv, t, 'ember', cuts=[(0.0, 0.6), (4.8, 0.3), (12.0, 0.35), (20.4, 0.5), (26.4, 0.6)], **merge(PLAN.post_kw(t), CARD.post_kw(t, 29.4, 33.6)))"
+  upscale_target: "none"
+  deliverables:
+    - {name: jawad_03_ek_frame_ki_keemat_A, aspect: "9:16", duration_s: 33.6, format: "mp4 h264 high, 2-pass ~22 Mbps, AAC 320k, +faststart"}
+    - {name: jawad_03_ek_frame_ki_keemat_B_trial, aspect: "9:16", duration_s: 33.6, format: "same, hook B spliced at f90"}
+    - {name: "master CRF 14 (A and B)", aspect: "9:16", duration_s: 33.6, format: "mp4 h264 crf 14"}
+    - {name: "vo_sfx versions (A and B)", aspect: "9:16", duration_s: 33.6, format: "mp4 + wav, VO + SFX only"}
+    - {name: "stems", aspect: "-", duration_s: 33.6, format: "wav 48 kHz 24-bit: VO, SFX, music"}
+    - {name: cover, aspect: "9:16", duration_s: 0, format: "jpg, frame 153"}
+    - {name: captions, aspect: "-", duration_s: 33.6, format: "srt"}
+  end_card: "EndCard('USKO YEH' (lead OK; fallback 'USSE YEH'), 'bhejo', sub='jo kehta hai \"editing mein kya hai?\"', handle=False, monogram='JD', dur=4.2, y_mono=365, y_key=715, y_sub=922) at t0 29.4 + J.signature(760, 1575); settled 31.25-33.24"
+post:
+  caption_l1: "Ek frame mein kitni layers? Video editing ka sach"
+  caption_l1_chars: 49
+  hashtags: ["#videoediting", "#motiongraphics", "#videoeditor", "#jawadmp4"]
+  caption_l2: "Is frame mein JD chhupa hai. Mila? 👇"
+  comment_prompt: "Is frame mein JD chhupa hai. Mila? 👇"
+  comment_prompt_pinned: "first comment, pinned right after publishing (r2, gate fix 3)"
+  pinned_answer_after_24h: "Layer 03, top right, roshni ke beech. Aur 'keemat' ke baad ek pal ke liye chamakta bhi hai."
+  pinned_answer_how: "reply to the pinned prompt and pin the reply; if a reply cannot be pinned, post it as a new comment and pin that"
+  send_line: "Usko bhejo jo kehta hai \"editing mein kya hai\". (fallback with the USSE card: Usey bhejo ...)"
+  ai_label: "AI info ON (synthetic voice; character-sheet imagery may be AI-generated); caption line 'Voice: AI (TTS)'"
+  audio_name: "Original audio · Aap ne ise 0.03 sec dekha · @jawad_mp4"
+  cover_frame: 153
+# Beat-sheet YAML twin (bible §6.3): timeline constants for the module, the SFX module and the music module.
+beat_sheet:
+  reel: ek_frame_ki_keemat
+  bpm: 100
+  bars: 14
+  fpb: 18
+  key: {sa: "D4 293.66 Hz", mode: phrygian_dominant}
+  look: ember
+  family: camera
+  signature: C3
+  desi: dhol
+  vo_words: "workspace/jawad_reels/ek_frame_ki_keemat/vo/ek_frame_ki_keemat_vo.words.json"
+  splice_frame: 90
+  layer_clock: "tl = t (t < 0.3); 0.3 (0.3 <= t < 26.4); t - 33.6 (t >= 26.4)"
+  gap: "0 (t<0.9); 120*inout_cubic((t-0.9)/1.5) (0.9-2.4); 120 (2.4-5.4); 120->300 inout_cubic (5.4-6.0); 300 (6.0-12.0); 300->30 easy_ease (12.0-13.2); 30 (13.2-16.8)"
+  p8_push: "D = 8600 (1 - p(min(t, 16.0))), p = 0.01 (t - 13.2) + 0.035 S(t - 14.6); S(x) = 0 (x <= 0), x/2 - (0.15/pi) sin(pi x / 0.3) (0 < x < 0.3), x - 0.15 (x >= 0.3); target (0, -306.4, 0), F100; static from 16.0"
+  p8_rack: "aperture = 900 * inout_cubic((t - 15.0) / 0.8), focus_dist = camera depth of pane 03 (z +105); panes 06-12 dof, 01-05 sharp"
+  glint: "layer 03 hidden-JD gain = {-162: 1.20, -161: 0.70}.get(round(tl * 30), 0.35) (f846, f847)"
+  cuts_push: [[0.0, 0.6], [4.8, 0.3], [12.0, 0.35], [20.4, 0.5], [26.4, 0.6]]
+  plan:
+    - {id: C3, cut: 16.8, frame: 504, pre: 24, post: 8, opts: {center: [719.4, 1267.5], r0: 41.0, rim: false}}
+    - {id: C8, cut: 26.4, frame: 792, pre: 4, post: 6, opts: {center: [465.0, 1282.0], s1: 1.25, b0: 1.1}}
+  rows:
+    - {n: 1, at: "0.0", t: 0.000, f: 0, picture: "S1 frame plays, chip play icon", sfx: [{name: impact_soft, gain_db: -8, dur: 0.25, align: start}], music: [{section: cold}], vo: {id: V1A, start: 0.10}}
+    - {n: 2, at: "0.0.5", t: 0.300, f: 9, picture: "PAUSE (tl frozen), chip pause icon", sfx: [{name: jd_mouse_click, gain_db: 4}]}
+    - {n: 3, at: "0.1", t: 0.600, f: 18, picture: "seam glint", sfx: [{name: jd_glass_slide, gain_db: -2, params: {dur: 0.3}}]}
+    - {n: 4, at: "0.1.5", t: 0.900, f: 27, picture: "separate + pull back (P2)", sfx: [{name: card_slide, gain_db: -8, lp: 1100}]}
+    - {n: 5, at: "1.0", t: 2.400, f: 72, picture: "orbit (P3)", sfx: [{name: whoosh_slow, gain_db: -8, params: {direction: -1}, pan: 0.3}], music: [{enter: strings, lp: 900}]}
+    - {n: 6, at: "1.1", t: 3.000, f: 90, picture: "SPLICE; counter 00->12", sfx: [{name: slot_tick, gain_db: -12, align: start, params: {n: 12, dur: 1.8}}], vo: {id: V2, start: 3.07}}
+    - {n: 7, at: "2.0", t: 4.800, f: 144, picture: "side-on lands, 12", tx: {id: L3, push: 0.3}, sfx: [{stack: glass_truth, pitch_to_hz: 587.33}]}
+    - {n: 8, at: "2.0.5", t: 5.100, f: 153, picture: "COVER"}
+    - {n: 9, at: "2.1", t: 5.400, f: 162, picture: "counter exits, swoop (P5)", sfx: [{name: whoosh_slow, t: 5.7, gain_db: -6}]}
+    - {n: 10, at: "2.2", t: 6.000, f: 180, picture: "tag 01 (P6)", sfx: [{name: jd_ui_tick, gain_db: -14}], vo: {id: V3, start: 6.00, per_word: [6.00, 6.75, 7.30, 7.90]}}
+    - {n: 11, at: "2.3", t: 6.600, f: 198, picture: "tag 02", sfx: [{name: jd_ui_tick, gain_db: -14, params: {pitch: 1.12}}]}
+    - {n: 12, at: "3.0", t: 7.200, f: 216, picture: "tag 03", sfx: [{name: jd_ui_tick, gain_db: -14}]}
+    - {n: 13, at: "3.1", t: 7.800, f: 234, picture: "tag 04", sfx: [{name: jd_ui_tick, gain_db: -14, params: {pitch: 1.12}}]}
+    - {n: 14, at: "3.2", t: 8.400, f: 252, picture: "tag 05", sfx: [{name: jd_ui_tick, gain_db: -14}]}
+    - {n: 15, at: "3.3", t: 9.000, f: 270, picture: "tag 06", sfx: [{name: jd_ui_tick, gain_db: -14, params: {pitch: 1.12}}]}
+    - {n: 16, at: "4.0", t: 9.600, f: 288, picture: "tag 07", sfx: [{name: jd_ui_tick, gain_db: -14}]}
+    - {n: 17, at: "4.1", t: 10.200, f: 306, picture: "tag 08", sfx: [{name: jd_ui_tick, gain_db: -14, params: {pitch: 1.12}}], vo: {id: V4, start: 10.03, per_phrase: [10.03, 10.95]}}
+    - {n: 18, at: "4.2", t: 10.800, f: 324, picture: "tag 09/10", sfx: [{name: jd_ui_tick, gain_db: -14}]}
+    - {n: 19, at: "4.3", t: 11.400, f: 342, picture: "tag 11", sfx: [{name: jd_ui_tick, gain_db: -14, params: {pitch: 1.12}}]}
+    - {n: 20, at: "5.0", t: 12.000, f: 360, picture: "RE-HOOK: stop on pane 12; swing frontal (P7)", tx: {id: L3, push: 0.35}, sfx: [{name: impact_soft, gain_db: -8}, {name: glass_tap, gain_db: -10, pitch_to_hz: 293.66}, {name: whoosh_slow, t: 12.6, gain_db: -10, params: {direction: -1}}], vo: {id: V5, start: 12.05}}
+    - {n: 21, at: "5.2", t: 13.200, f: 396, picture: "flick OFF", sfx: [{name: jd_ui_click, gain_db: -6}]}
+    - {n: 22, at: "5.2.5", t: 13.500, f: 405, picture: "flick ON", sfx: [{name: toggle_on, gain_db: -8}]}
+    - {n: 23, at: "5.3", t: 13.800, f: 414, picture: "flick OFF", sfx: [{name: jd_ui_click, gain_db: -6}]}
+    - {n: 24, at: "6.0", t: 14.400, f: 432, picture: "flick ON (resolved)", sfx: [{name: toggle_on, gain_db: -6}, {name: jd_sparkle, t: 14.43, gain_db: -12}]}
+    - {n: 24a, at: "6.0+6f", t: 14.600, f: 438, picture: "r2: push toward the portal starts (rate 1 -> 4.5 %/s over 14.6-14.9)"}
+    - {n: 24b, at: "6.1", t: 15.000, f: 450, picture: "r2: rack focus to pane 03 (aperture 0 -> 900, inout_cubic, to 15.8)"}
+    - {n: 25, at: "6.2+12f", t: 16.000, f: 480, picture: "C3 approach (scene A = the 16.0 camera, static)"}
+    - {n: 26, at: "7.0", t: 16.800, f: 504, picture: "corridor (S3-01)", tx: {id: C3}, sfx: [{name: jd_sparkle, t: 16.9, gain_db: -12}], vo: {id: V6, start: 16.95}}
+    - {n: 27, at: "7.3", t: 18.600, f: 558, picture: "surge (C-B)", sfx: [{name: whoosh_by, t: 19.2, gain_db: -6, params: {dur: 1.4, direction: 1}, pan: -0.4}, {name: whoosh_by, t: 19.8, gain_db: -6, params: {dur: 1.4, direction: -1}, pan: 0.4}]}
+    - {n: 28, at: "7.3.5", t: 18.900, f: 567, picture: "counter 12->360", sfx: [{name: slot_tick, gain_db: -10, align: start, params: {n: 29, dur: 1.5}}], vo: {id: V7, start: 18.90}}
+    - {n: 29, at: "8.2", t: 20.400, f: 612, picture: "360 lands", tx: {id: L3, push: 0.5}, sfx: [{stack: glass_truth, pitch_to_hz: 440.0}]}
+    - {n: 30, at: "9.0.5", t: 21.900, f: 657, picture: "lanes rise (S3-03)", sfx: [{name: bar_grow, gain_db: -10, align: start, params: {duration: 0.3}}], vo: {id: V8, start: 22.15}}
+    - {n: 31, at: "10.0", t: 24.000, f: 720, picture: "rush (S3-04)", sfx: [{name: whoosh_by, t: 24.3, gain_db: -6, params: {dur: 1.0, direction: 1}, pan: -0.5}, {name: whoosh_by, t: 24.75, gain_db: -6, params: {dur: 1.0, direction: -1}, pan: 0.5}, {name: whoosh_by, t: 25.2, gain_db: -8, params: {dur: 1.0, direction: 1}, pan: -0.5}]}
+    - {n: 32, at: "10.1", t: 24.600, f: 738, picture: "riser starts", sfx: [{stack: ember_slam, t0: 26.4, bpm: 100, riser_beats: 2, gap_beats: 1}]}
+    - {n: 33, at: "10.3", t: 25.800, f: 774, picture: "DROP-OUT", music: [{gate: [25.8, 26.4]}], sfx_gate: [25.8, 26.067]}
+    - {n: 34, at: "10.3+8f", t: 26.067, f: 782, picture: "play click; layers slam", sfx: [{name: jd_mouse_click, gain_db: 4}]}
+    - {n: 35, at: "10.3+14f", t: 26.267, f: 788, picture: "C8 punch", sfx: [{name: whip, t: 26.367, gain_db: -6, params: {direction: 1}}]}
+    - {n: 36, at: "11.0", t: 26.400, f: 792, picture: "PAYOFF: frame plays; EK FRAME KI keemat", tx: {id: C8, push_extra: 0.6}, music: [{section: drop, dhol_hit: 0}], remove_plan_cue: "impact_soft@26.4"}
+    - {n: 37, at: "11.0+11f", t: 26.767, f: 803, vo: {id: V9, start: 26.75}, sfx: [{name: shimmer, t: 26.62, gain_db: -10, hp: 5500}]}
+    - {n: 37a, at: "11.3", t: 28.200, f: 846, picture: "r2 bonus beat: the hidden JD glints in layer 03 (f846 x1.20, f847 x0.70), no SFX"}
+    - {n: 38, at: "12.1", t: 29.400, f: 882, picture: "END CARD", sfx: [{card_cues: "CARD.cues(29.4, 33.6)"}], vo: {id: V10, start: 29.60}}
+    - {n: 39, at: "13.3", t: 33.000, f: 990, picture: "loop_world crossfade"}
+    - {n: 40, at: "14.0", t: 33.600, f: 1008, picture: "= frame 0"}
+notes:
+  forbidden_reminders:
+    - "12 layers exactly: HUD is annotation (assert in the self-test)"
+    - "no hours / rates / clients; only 12, 3, 30, 360, 0.03 sec, 00:00:00:01"
+    - "the hidden JD must exist in layer 03 (visible in f0 and f153)"
+    - "no full-frame flash; pushes only"
+    - "captions never over JD's face; hidden in the hook, counters/tags, payoff and end card"
+  client_mandatories:
+    - "@jawad_mp4 signature on the end card (here at x 760 so it never sits on his face)"
+    - "JD monogram (derived mark, not stretched or recoloured)"
+    - "AI info label ON"
+    - "Roman Urdu house spelling (prior SRT): hai / nahi / mein / bohat / bari"

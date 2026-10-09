@@ -1,0 +1,30 @@
+[assets3d] Cycles device: CPU
+00:00.430  cycles           | WARNING CUEW initialization failed: Error opening the library
+[pw_chai_glass/inferno] scene built in 1.4s, 64 spp, 960x1280, glass 303122 v, chai 78122 v, foam 20160 v, device CPU, threads 2
+02:10.329  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0000.exr'
+  pw_chai_glass/inferno_yaw frame 0 yaw -6.0 (1/13) 130.0s/frame  alpha_raise 0.804
+04:10.742  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0001.exr'
+  pw_chai_glass/inferno_yaw frame 1 yaw -5.0 (2/13) 125.3s/frame  alpha_raise 0.770
+06:03.579  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0002.exr'
+  pw_chai_glass/inferno_yaw frame 2 yaw -4.0 (3/13) 121.1s/frame  alpha_raise 0.757
+08:08.728  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0003.exr'
+  pw_chai_glass/inferno_yaw frame 3 yaw -3.0 (4/13) 122.1s/frame  alpha_raise 0.819
+10:20.066  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0004.exr'
+  pw_chai_glass/inferno_yaw frame 4 yaw -2.0 (5/13) 123.9s/frame  alpha_raise 0.804
+12:38.669  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0005.exr'
+  pw_chai_glass/inferno_yaw frame 5 yaw -1.0 (6/13) 126.4s/frame  alpha_raise 0.804
+14:30.029  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0006.exr'
+  pw_chai_glass/inferno_yaw frame 6 yaw +0.0 (7/13) 124.2s/frame  alpha_raise 0.818
+16:24.984  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0007.exr'
+  pw_chai_glass/inferno_yaw frame 7 yaw +1.0 (8/13) 123.1s/frame  alpha_raise 0.774
+19:01.097  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0008.exr'
+  pw_chai_glass/inferno_yaw frame 8 yaw +2.0 (9/13) 126.7s/frame  alpha_raise 0.759
+21:39.369  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0009.exr'
+  pw_chai_glass/inferno_yaw frame 9 yaw +3.0 (10/13) 129.9s/frame  alpha_raise 0.744
+24:39.557  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0010.exr'
+  pw_chai_glass/inferno_yaw frame 10 yaw +4.0 (11/13) 134.5s/frame  alpha_raise 0.819
+27:01.472  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0011.exr'
+  pw_chai_glass/inferno_yaw frame 11 yaw +5.0 (12/13) 135.1s/frame  alpha_raise 0.849
+30:15.989  render           | Saved: '/home/user/100/workspace/jawad_reels/pehle_wala/props/_tmp/pw_chai_glass_inferno_yaw_0012.exr'
+  pw_chai_glass/inferno_yaw frame 12 yaw +6.0 (13/13) 139.6s/frame  alpha_raise 0.849
+  -> /home/user/100/workspace/jawad_reels/pehle_wala/props/pw_chai_glass/inferno_yaw (13 frames, 1816s) meta written

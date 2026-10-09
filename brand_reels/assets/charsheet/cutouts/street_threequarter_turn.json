@@ -1,0 +1,87 @@
+{
+ "name": "street_threequarter_turn",
+ "sheet": "sheet_streetwear.webp",
+ "sheet_box": [
+  630,
+  30,
+  1040,
+  1054
+ ],
+ "native_wh": [
+  410,
+  1024
+ ],
+ "cutout_wh": [
+  820,
+  2048
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  226,
+  57,
+  731,
+  2028
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": false,
+  "left": false,
+  "right": false
+ },
+ "halo_cv": -1.91,
+ "halo_cv_p95": 0.0,
+ "halo_cv_raw": 7.75,
+ "face_box": [
+  320.5,
+  127.1,
+  500.8,
+  360.7
+ ],
+ "eyes": [
+  [
+   340.1,
+   207.0
+  ],
+  [
+   406.2,
+   214.6
+  ]
+ ],
+ "nose": [
+  342.6,
+  254.0
+ ],
+ "mouth": [
+  [
+   342.6,
+   300.6
+  ],
+  [
+   392.7,
+   305.7
+  ]
+ ],
+ "face_score": 0.928,
+ "head_box": [
+  280.9,
+  0.0,
+  540.4,
+  379.3
+ ],
+ "face_h_native": 116.8,
+ "eye_mid": [
+  373.2,
+  210.8
+ ],
+ "tex_ratio": 7.02,
+ "cheek_patch": [
+  314,
+  237,
+  346,
+  269
+ ],
+ "tex_ratio_native": 1.6,
+ "max_display_w": 505,
+ "max_display_h": 1971
+}

@@ -1,0 +1,295 @@
+{
+ "reel": "ek_frame_ki_keemat",
+ "voice": "Vlad (preset) on elevenlabs_v4",
+ "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+ "rules": [
+  "balance first and before each batch; STOP if the balance is below 7015",
+  "preflight every request with get_cost: true; keep the running sum in vo/credits.json; reel budget 25",
+  "leave use_unlim unset (answer an unlim_choice with false); omit folder_id; no stability override on the first takes (0.55 only on a retake that drags or wobbles)",
+  "poll job ids with jobs_wait; never resubmit blindly",
+  "download result_url with curl into vo/raw/ as efk_<id>_t<n>.mp3 (n = 1 for the first take)"
+ ],
+ "spelling_fixes": {},
+ "batch_1_pronunciation": [
+  {
+   "id": "P1",
+   "save_as": "efk_P1_t1.mp3",
+   "why": "risks 1 (saath, never saat), 2 (frame / frames), 6 (layers)",
+   "optional": false,
+   "chars": 43,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "तीन सौ साठ लेयर्स। एक फ़्रेम, तीस फ़्रेम्स।",
+    "dialogue": [
+     {
+      "text": "तीन सौ साठ लेयर्स। एक फ़्रेम, तीस फ़्रेम्स।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P2",
+   "save_as": "efk_P2_t1.mp3",
+   "why": "risks 3 (jhapakte), 4 (zinda), 7 (lafz), 10 (dhuaan)",
+   "optional": false,
+   "chars": 45,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "पलक झपकते। फ़्रेम ज़िंदा है। हर लफ़्ज़। धुआँ।",
+    "dialogue": [
+     {
+      "text": "पलक झपकते। फ़्रेम ज़िंदा है। हर लफ़्ज़। धुआँ।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P3",
+   "save_as": "efk_P3_t1.mp3",
+   "why": "risks 5 (keemat), 8 (tracks), 9 (editing), awaaz, C7 usko",
+   "optional": false,
+   "chars": 65,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "इसकी क़ीमत। आवाज़ के तीन ट्रैक्स। एडिटिंग में क्या है? उसको भेजो।",
+    "dialogue": [
+     {
+      "text": "इसकी क़ीमत। आवाज़ के तीन ट्रैक्स। एडिटिंग में क्या है? उसको भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P4",
+   "save_as": "efk_P4_t1.mp3",
+   "why": "the SCRIPT section 8 fallback spellings (frame no nukta, zinda, keemat no nukta, lafaz, track); drop if the preflight says > 1 credit",
+   "optional": true,
+   "chars": 54,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "एक फ्रेम। फ्रेम ज़िन्दा है। कीमत। हर लफ़ज़। तीन ट्रैक।",
+    "dialogue": [
+     {
+      "text": "एक फ्रेम। फ्रेम ज़िन्दा है। कीमत। हर लफ़ज़। तीन ट्रैक।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ],
+ "batch_2_lines": [
+  {
+   "id": "V1A",
+   "save_as": "efk_V1A_t1.mp3",
+   "chars": 25,
+   "window": "0.10-2.37 (hard 2.70)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "आप ने इसे पलक झपकते देखा।",
+    "dialogue": [
+     {
+      "text": "आप ने इसे पलक झपकते देखा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V1B",
+   "save_as": "efk_V1B_t1.mp3",
+   "chars": 28,
+   "window": "0.10-2.61 (hard 2.70)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "एक सेकंड। तीन सौ साठ लेयर्स।",
+    "dialogue": [
+     {
+      "text": "एक सेकंड। तीन सौ साठ लेयर्स।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V2",
+   "save_as": "efk_V2_t1.mp3",
+   "chars": 42,
+   "window": "3.07-5.91 (hard 5.95)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं।",
+    "dialogue": [
+     {
+      "text": "लेकिन इस एक फ़्रेम में... बारह लेयर्स हैं।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V3",
+   "save_as": "efk_V3_t1.mp3",
+   "chars": 27,
+   "window": "6.00-8.36 (hard 8.45)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "अंधेरा। धुआँ। रोशनी। चेहरा।",
+    "dialogue": [
+     {
+      "text": "अंधेरा। धुआँ। रोशनी। चेहरा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V4",
+   "save_as": "efk_V4_t1.mp3",
+   "chars": 18,
+   "window": "10.03-11.61 (hard 11.70)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर लफ़्ज़। हर चमक।",
+    "dialogue": [
+     {
+      "text": "हर लफ़्ज़। हर चमक।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V5",
+   "save_as": "efk_V5_t1.mp3",
+   "chars": 49,
+   "window": "12.05-15.79 (hard 15.85)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता।",
+    "dialogue": [
+     {
+      "text": "और एक लेयर... जिसके बिना फ़्रेम ज़िंदा नहीं लगता।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V6",
+   "save_as": "efk_V6_t1.mp3",
+   "chars": 26,
+   "window": "16.95-18.84 (hard 18.85)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "एक सेकंड में तीस फ़्रेम्स।",
+    "dialogue": [
+     {
+      "text": "एक सेकंड में तीस फ़्रेम्स।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V7",
+   "save_as": "efk_V7_t1.mp3",
+   "chars": 35,
+   "window": "18.90-21.99 (hard 21.99)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "यानी हर सेकंड... तीन सौ साठ लेयर्स।",
+    "dialogue": [
+     {
+      "text": "यानी हर सेकंड... तीन सौ साठ लेयर्स।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V8",
+   "save_as": "efk_V8_t1.mp3",
+   "chars": 24,
+   "window": "22.15-24.04 (hard 24.15)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और आवाज़ के तीन ट्रैक्स।",
+    "dialogue": [
+     {
+      "text": "और आवाज़ के तीन ट्रैक्स।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V9",
+   "save_as": "efk_V9_t1.mp3",
+   "chars": 29,
+   "window": "26.75-29.50 (hard 29.85)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "क़ीमत... बनाने वाला जानता है।",
+    "dialogue": [
+     {
+      "text": "क़ीमत... बनाने वाला जानता है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V10",
+   "save_as": "efk_V10_t1.mp3",
+   "chars": 44,
+   "window": "29.60-33.24 (hard 33.35)",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+    "dialogue": [
+     {
+      "text": "जो कहता है \"एडिटिंग में क्या है\", उसको भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ],
+ "batch_alt_only_if_lead_keeps_USSE": [
+  {
+   "id": "V10K",
+   "save_as": "efk_V10K_t1.mp3",
+   "chars": 43,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जो कहता है \"एडिटिंग में क्या है\", उसे भेजो।",
+    "dialogue": [
+     {
+      "text": "जो कहता है \"एडिटिंग में क्या है\", उसे भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   },
+   "when": "C7 refused: card USSE YEH; then assemble with --v10 usey"
+  }
+ ]
+}

@@ -1,0 +1,993 @@
+{
+ "reel": "bijli_chali_gayi",
+ "voice": "Vlad (preset) on elevenlabs_v4",
+ "note": "every submitted request: the file it was saved as under vo/raw/, its job id, preflight cost and the exact DEV text sent",
+ "submitted": [
+  {
+   "save_as": "pron/P0.mp3",
+   "job_id": "291e9881-430a-4a16-bd24-82bb6d172784",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:56Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है सब्र। सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है सब्र। सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P1.mp3",
+   "job_id": "c7a2769a-7a7c-4548-993a-25cca44ca985",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:56Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है सबर। सबर सिखाया।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है सबर। सबर सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P2.mp3",
+   "job_id": "6412d6bc-cade-4918-afce-7316094eaffb",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:57Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है कंट्रोल-एस। ख़ुद कंट्रोल-एस दबाती है।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है कंट्रोल-एस। ख़ुद कंट्रोल-एस दबाती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P3.mp3",
+   "job_id": "9fa4c38e-aab2-49ac-b337-50af8ed55c5d",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:58Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है कंट्रोल एस। खुद कंट्रोल एस दबाती है।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है कंट्रोल एस। खुद कंट्रोल एस दबाती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P4.mp3",
+   "job_id": "596969d5-4b25-454f-a079-cd53dc7b78da",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:59Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है आवाज़। ये आवाज़ याद है?",
+    "dialogue": [
+     {
+      "text": "ये शब्द है आवाज़। ये आवाज़ याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P5.mp3",
+   "job_id": "4d763276-fb61-44dd-bc84-868155b80ded",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:59Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है एडिटिंग। हमें एडिटिंग नहीं सिखाई।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है एडिटिंग। हमें एडिटिंग नहीं सिखाई।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P6.mp3",
+   "job_id": "f0174ed8-8895-4e9f-b641-640ac4aaf0f8",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:59Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है मोहल्ला। पूरा मोहल्ला छत पे था।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है मोहल्ला। पूरा मोहल्ला छत पे था।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P7.mp3",
+   "job_id": "0fcc4f52-731a-43f3-a0d3-f8a1440cade8",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:59Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है सेकंड। हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है सेकंड। हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "pron/P8.mp3",
+   "job_id": "409ef051-ec37-4e6e-bb81-8c8c5dbb671c",
+   "cost": 0.23,
+   "at": "2026-10-09T06:05:59Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये शब्द है दुश्मन। सब से बड़ी दुश्मन।",
+    "dialogue": [
+     {
+      "text": "ये शब्द है दुश्मन। सब से बड़ी दुश्मन।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1_r1.mp3",
+   "job_id": "880ccc20-3489-4112-806e-f243534d08f5",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई।",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V2_r1.mp3",
+   "job_id": "db932d40-44cd-4fdb-8b15-6f2fed4e4711",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "याद है?",
+    "dialogue": [
+     {
+      "text": "याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1B_r1.mp3",
+   "job_id": "2d1d4c2b-6965-4e83-aaa1-43081534e241",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये आवाज़... याद है?",
+    "dialogue": [
+     {
+      "text": "ये आवाज़... याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V3a_r1.mp3",
+   "job_id": "00383b03-d615-4736-8e98-ef6d2763f510",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी,",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V3b_r1.mp3",
+   "job_id": "ecaf8730-80c6-435e-857c-1f9710c0485f",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "तो पूरा मोहल्ला छत पे होता था।",
+    "dialogue": [
+     {
+      "text": "तो पूरा मोहल्ला छत पे होता था।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V4_r1.mp3",
+   "job_id": "542cfb8b-f567-42a0-87c9-31eea6c0343a",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जब वापस आती थी...",
+    "dialogue": [
+     {
+      "text": "जब वापस आती थी...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V5_r1.mp3",
+   "job_id": "c98736ec-88e1-4a76-8c74-4c0c63efeba0",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर वो बच्चे बड़े हुए।",
+    "dialogue": [
+     {
+      "text": "फिर वो बच्चे बड़े हुए।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V6_r1.mp3",
+   "job_id": "84429e71-da3c-448a-b58f-ec44488892df",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "कुछ एडिटर बन गए।",
+    "dialogue": [
+     {
+      "text": "कुछ एडिटर बन गए।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V7_r1.mp3",
+   "job_id": "7b3d9be0-fb8c-4936-8a3a-45f776d468b0",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V8_r1.mp3",
+   "job_id": "317bcf2a-9921-4e5e-8e93-09201f492f15",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+    "dialogue": [
+     {
+      "text": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V9_r1.mp3",
+   "job_id": "06f50f09-ca85-4f89-a13a-94ec2da845fc",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V10_r1.mp3",
+   "job_id": "0c8ac72a-f828-472c-8cfd-c64cb321ae16",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:27Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+    "dialogue": [
+     {
+      "text": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V11_r1.mp3",
+   "job_id": "c28c9a01-218d-4015-bdb3-aa4029822d25",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:41Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V12_r1.mp3",
+   "job_id": "ec403534-cfc7-4a80-9ba3-af8441b851c3",
+   "cost": 0.23,
+   "at": "2026-10-09T06:13:41Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "आप के घर लाइट जाने पे क्या होता था?",
+    "dialogue": [
+     {
+      "text": "आप के घर लाइट जाने पे क्या होता था?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "TA_r1.mp3",
+   "job_id": "856f4613-3a6c-40d6-8897-d0134e08434d",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई। याद है?",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई। याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T2_r1.mp3",
+   "job_id": "be863b4e-c4c6-492b-8555-cdf4419ee492",
+   "cost": 0.46,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी, तो पूरा मोहल्ला छत पे होता था। जब वापस आती थी...",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी, तो पूरा मोहल्ला छत पे होता था। जब वापस आती थी...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T3_r1.mp3",
+   "job_id": "a9f928df-9a65-4df7-bb68-ab913c579f2b",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर वो बच्चे बड़े हुए। कुछ एडिटर बन गए।",
+    "dialogue": [
+     {
+      "text": "फिर वो बच्चे बड़े हुए। कुछ एडिटर बन गए।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T4_r1.mp3",
+   "job_id": "14da38ad-b13f-4590-b589-6fc309c2a83e",
+   "cost": 0.46,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T5_r1.mp3",
+   "job_id": "6233052e-d984-4fff-8d80-1adebbac23e1",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने हमें एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "बिजली ने हमें एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1B_r2.mp3",
+   "job_id": "666f7a19-9dc7-4dcb-99a8-0339c0f16517",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये आवाज़... याद है?",
+    "dialogue": [
+     {
+      "text": "ये आवाज़... याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V12_r2.mp3",
+   "job_id": "5618edad-949c-4c05-a54d-f86fac59fb8a",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "आप के घर लाइट जाने पे क्या होता था?",
+    "dialogue": [
+     {
+      "text": "आप के घर लाइट जाने पे क्या होता था?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V2_r2.mp3",
+   "job_id": "a703ee8a-77ae-4a43-8a2d-b5cc650ffee7",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "याद है?",
+    "dialogue": [
+     {
+      "text": "याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V3b_r2.mp3",
+   "job_id": "262f2773-5b10-4906-8602-4fc740508f95",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "तो पूरा मोहल्ला छत पे होता था।",
+    "dialogue": [
+     {
+      "text": "तो पूरा मोहल्ला छत पे होता था।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1_r2.mp3",
+   "job_id": "4877d990-a4cb-4330-aa5e-b150a668ce4d",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई।",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V3a_r2.mp3",
+   "job_id": "b4ffb49c-2248-4813-a3b6-0649aac33d51",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी,",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V9_r2.mp3",
+   "job_id": "41f438b7-13b6-4aa7-9c2b-84a70927c9f7",
+   "cost": 0.23,
+   "at": "2026-10-09T06:18:22Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1Bc_r1.mp3",
+   "job_id": "edd6b385-13c9-4499-b601-857e36784d3a",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये आवाज़, याद है?",
+    "dialogue": [
+     {
+      "text": "ये आवाज़, याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V1Bc_r2.mp3",
+   "job_id": "77d0ef2b-be57-4372-af21-e12c69b4598f",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये आवाज़, याद है?",
+    "dialogue": [
+     {
+      "text": "ये आवाज़, याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V3bm_r1.mp3",
+   "job_id": "99d1c892-4546-485c-8668-e0bc75a852c7",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "तो पूरा मुहल्ला छत पे होता था।",
+    "dialogue": [
+     {
+      "text": "तो पूरा मुहल्ला छत पे होता था।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T2m_r1.mp3",
+   "job_id": "063310f3-1717-436f-80b8-3c35750efc7e",
+   "cost": 0.46,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V8_r2.mp3",
+   "job_id": "3500f654-19dc-4207-83e7-0ab4a0924b42",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+    "dialogue": [
+     {
+      "text": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T4_r2.mp3",
+   "job_id": "a3787d25-9971-47b3-b5a3-3bf0b6dc5d0c",
+   "cost": 0.46,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T4_r3.mp3",
+   "job_id": "0f59303f-95c7-4d37-8878-0d252682d6b4",
+   "cost": 0.46,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "TA_r2.mp3",
+   "job_id": "320343d0-4d7e-4244-aef5-1b1529daebf4",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई। याद है?",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई। याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T5_r2.mp3",
+   "job_id": "789c8298-a706-437b-979b-a3fc32115f7e",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने हमें एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "बिजली ने हमें एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V7_r2.mp3",
+   "job_id": "914511e5-228e-482d-8a1a-3323df40fa62",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V9_r3.mp3",
+   "job_id": "a06da01a-b067-48f1-a2a1-72cb5ed3a998",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V2_r3.mp3",
+   "job_id": "34f16af8-67df-49aa-a6f2-111c0a990b7b",
+   "cost": 0.23,
+   "at": "2026-10-09T06:23:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "याद है?",
+    "dialogue": [
+     {
+      "text": "याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T4p_r1.mp3",
+   "job_id": "bd1f266d-1c42-41a7-9ce1-9257d912d7fe",
+   "cost": 0.46,
+   "at": "2026-10-09T06:25:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है, हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है, हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T4p_r2.mp3",
+   "job_id": "e115b37a-610e-4d63-b74b-0e7497ff7f47",
+   "cost": 0.46,
+   "at": "2026-10-09T06:25:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है, हर तीस सेकंड।",
+    "dialogue": [
+     {
+      "text": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है, हर तीस सेकंड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V10c_r1.mp3",
+   "job_id": "9a57bdf1-de51-4951-9426-3df65054d562",
+   "cost": 0.23,
+   "at": "2026-10-09T06:25:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+    "dialogue": [
+     {
+      "text": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "V10c_r2.mp3",
+   "job_id": "875419b3-852f-43cc-ac3a-8e4d41e41bd5",
+   "cost": 0.23,
+   "at": "2026-10-09T06:25:46Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+    "dialogue": [
+     {
+      "text": "बिजली ने हमें एडिटिंग नहीं सिखाई,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T5f3_r1.mp3",
+   "job_id": "eea0affa-8ceb-4c39-b2d5-f818064457dc",
+   "cost": 0.23,
+   "at": "2026-10-09T06:32:08Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "बिजली ने एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T5f3_r2.mp3",
+   "job_id": "ecb814ca-49d8-4d95-bed2-ee6998e3901f",
+   "cost": 0.23,
+   "at": "2026-10-09T06:32:08Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली ने एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+    "dialogue": [
+     {
+      "text": "बिजली ने एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T2m_r2.mp3",
+   "job_id": "7c3c6ec7-3d6b-4cb7-93a7-53025fad1b20",
+   "cost": 0.46,
+   "at": "2026-10-09T06:48:25Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "T2m_r3.mp3",
+   "job_id": "c85edb85-f67d-4194-8685-c807c84a47f6",
+   "cost": 0.46,
+   "at": "2026-10-09T06:48:25Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+    "dialogue": [
+     {
+      "text": "लाइट जाती थी, तो पूरा मुहल्ला छत पे होता था। जब वापस आती थी...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "TA_r3.mp3",
+   "job_id": "6246757f-2976-43a8-bb50-cb6dd625bc99",
+   "cost": 0.23,
+   "at": "2026-10-09T07:03:06Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई। याद है?",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई। याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "TA_r4.mp3",
+   "job_id": "d7f73153-5164-41db-a8df-3c6aedf71a0e",
+   "cost": 0.23,
+   "at": "2026-10-09T07:03:06Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई। याद है?",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई। याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "save_as": "TA_r5.mp3",
+   "job_id": "f4760699-a76f-4825-98c6-9d1bc6f5c1de",
+   "cost": 0.23,
+   "at": "2026-10-09T07:03:06Z",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "बिजली चली गई। याद है?",
+    "dialogue": [
+     {
+      "text": "बिजली चली गई। याद है?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ]
+}

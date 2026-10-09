@@ -1,0 +1,2221 @@
+{
+ "reel": "bijli_chali_gayi",
+ "concept": "C11 Bijli Chali Gayi",
+ "slot": 2,
+ "look": "dusk",
+ "version": "script v2 2026-10-08 (viral gate r1 fixes 1, 4, 5, 6)",
+ "author": "hinglish-scriptwriter",
+ "status": "v2: GATE.md r1 (verdict FIX) scriptwriter fixes applied; copy changes await the lead's OK and the creative-director's BRIEF mirror; no TTS rendered yet (timings estimated)",
+ "sources": [
+  "brand_reels/design/SLATE.md 0, 2, 3.2, 4, 5",
+  "brand_reels/design/reels/bijli_chali_gayi/BRIEF.md 2, 6.3-6.7, 6.14, 8",
+  "brand_reels/design/reels/bijli_chali_gayi/GATE.md 7 (fixes 1, 4, 5, 6)",
+  "brand_reels/design/reels/bijli_chali_gayi/packet.yaml audio.voice",
+  "brand_reels/design/panel_viral.md 4.3",
+  "workspace/brand_reels/prior/captions_roman_urdu.srt (house spelling)",
+  "pipeline/jawad_reels/vo_config.json",
+  "pipeline/jawad_reels/vo_chain.py (token rules)",
+  "pipeline/jawad_reels/snake_captions.py (keyword / hide rules)"
+ ],
+ "grid": {
+  "bpm": 90,
+  "fps": 30,
+  "frames_per_beat": 20,
+  "frames_per_bar": 80,
+  "dur_frames": 1040,
+  "dur_s": 34.667,
+  "splice_frame": 80
+ },
+ "voice": {
+  "provider": "Higgsfield (voice generation only)",
+  "model": "elevenlabs_v4",
+  "voice": "Vlad",
+  "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+  "voice_type": "preset",
+  "text": "dev (Devanagari) exactly as in takes[].dev",
+  "settings": "stability / similarity_boost omitted (provider default); stability 0.35 if a take is flat, 0.55 if unstable",
+  "no_tags": "no audio tags, brackets, emoji, digits or Latin in the TTS text",
+  "narrator": "hum / har desi editor / aap; never main / meri",
+  "post": "vo_chain.py process per take with --dev/--rom = takes[].dev / takes[].rom, explicit --speed (auto clamps to 1.00 on brisk takes)"
+ },
+ "rate_model": {
+  "task_wps": 2.7,
+  "artic_wps": 2.804,
+  "artic_sps": 4.497,
+  "neutral_sps": 5.179,
+  "emph_sps": 3.985,
+  "source": "vlad_v4_r1_DEV.mp3: 53 words, 85 syllables, 18.90 s of voiced phrases (vo_chain.voiced_runs)",
+  "note": "The brief windows equal syllables x 0.1755 s = Vlad's fastest (neutral) phrases x 1.10; the whole-take average is 15 % slower."
+ },
+ "hooks": [
+  {
+   "rank": 1,
+   "id": "A",
+   "status": "LOCKED (SLATE 3.2 hook A): public version",
+   "mechanism": "pattern interrupt: the reel itself loses power",
+   "on_screen": "*Bijli* / CHALI GAYI.",
+   "spoken": "Bijli chali gayi. ... Yaad hai?",
+   "dev": "बिजली चली गई। ... याद है?",
+   "words": 5,
+   "first_word_s": 0.1,
+   "lines": [
+    "V1",
+    "V2"
+   ],
+   "muted": "reads alone: the room dies, the keyword glows",
+   "spoken_end_s": 2.6,
+   "spoken_end_s_alt": 2.0,
+   "note": "\"Yaad hai?\" moves to 1.550 (ends by 2.0 s) only if the processed take is > 0.43 s (gate fix 5, lead OK)"
+  },
+  {
+   "rank": 2,
+   "id": "B",
+   "status": "LOCKED (SLATE 3.2 hook B): Trial Reel, differs only in f0-f79",
+   "mechanism": "sound memory / curiosity (the beep on f0)",
+   "on_screen": "YEH / *awaaz* / YAAD HAI?",
+   "spoken": "Yeh awaaz... yaad hai?",
+   "dev": "ये आवाज़... याद है?",
+   "words": 4,
+   "first_word_s": 0.3,
+   "lines": [
+    "V1B"
+   ],
+   "muted": "reads alone: torch on a blinking LED + the question"
+  },
+  {
+   "rank": 3,
+   "id": "R1",
+   "status": "reserve only (panel_viral 4.3 hook C, 7/8): not built",
+   "mechanism": "editor pain",
+   "on_screen": "LIGHT GAYI · *Ctrl+S?*",
+   "spoken": "Light chali gayi. Ctrl+S dabaya tha?",
+   "dev": "लाइट चली गई। कंट्रोल-एस दबाया था?",
+   "words": 6,
+   "first_word_s": null,
+   "lines": [],
+   "muted": "editor-only breadth; needs a desk on f0"
+  },
+  {
+   "rank": 4,
+   "id": "R2",
+   "status": "reserve only (panel_viral 4.3 hook D, 6/8): not built",
+   "mechanism": "relatable callout",
+   "on_screen": "CHHAT PE *raatein*?",
+   "spoken": "Agar bachpan chhat pe guzra hai...",
+   "dev": "अगर बचपन छत पे गुज़रा है...",
+   "words": 6,
+   "first_word_s": null,
+   "lines": [],
+   "muted": "weaker gap; slower stop"
+  }
+ ],
+ "lines": [
+  {
+   "id": "V1",
+   "versions": "A",
+   "part": "hook",
+   "take": "TA",
+   "beat": 0.15,
+   "bar_beat": "bar 0, beat 1.15",
+   "start_frame": 3,
+   "start_target": 0.1,
+   "end_target": 1.15,
+   "bold": "start",
+   "window_s": 1.05,
+   "anchor": {
+    "word": "Bijli",
+    "t": 0.1,
+    "frame": 3,
+    "beat": 0.15,
+    "rule": "VO onset <= 0.13 s (QA); must end before the backup beep at 1.333 s (f40)"
+   },
+   "roman": "Bijli chali gayi.",
+   "dev": "बिजली चली गई।",
+   "tokens": [
+    "*Bijli",
+    "chali",
+    "gayi."
+   ],
+   "dev_tokens": [
+    "बिजली",
+    "चली",
+    "गई।"
+   ],
+   "syllables": [
+    2,
+    2,
+    2
+   ],
+   "keyword": "Bijli",
+   "words": 3,
+   "syl": 6,
+   "est_s": {
+    "raw_at_2p7wps": 1.11,
+    "post_1p06": 1.05,
+    "post_1p08": 1.03,
+    "post_1p10": 1.01,
+    "syl_model_post_1p10_fast": 1.05,
+    "syl_model_post_1p10_avg": 1.21,
+    "syl_model_post_1p08_avg": 1.24,
+    "syl_model_post_1p10_style": 1.37
+   },
+   "window_needs": {
+    "wps": 2.86,
+    "syl_per_s": 5.71
+   },
+   "delivery": "matter-of-fact, not dramatic: the room browns out under it; short and level, falling end",
+   "delivery_class": "emph",
+   "caption": "hidden (hook window 0-2.667; H1/H2 show it)",
+   "pause_after_s": 1.05
+  },
+  {
+   "id": "V2",
+   "versions": "A",
+   "part": "hook",
+   "take": "TA",
+   "beat": 3.3,
+   "bar_beat": "bar 0, beat 4.3",
+   "start_frame": 66,
+   "start_target": 2.2,
+   "end_target": 2.6,
+   "bold": "end",
+   "window_s": 0.4,
+   "anchor": {
+    "word": "Yaad",
+    "t": 2.2,
+    "frame": 66,
+    "beat": 3.3,
+    "rule": "f66, as beep pulse 2 (f64, 2.133-2.203) ends; hard stop f79 (2.633): the splice; fallback 1.550 between the beep pairs if V2 > 0.43 s (alt_placement, lead OK)"
+   },
+   "roman": "Yaad hai?",
+   "dev": "याद है?",
+   "tokens": [
+    "*Yaad",
+    "hai?"
+   ],
+   "dev_tokens": [
+    "याद",
+    "है?"
+   ],
+   "syllables": [
+    1,
+    1
+   ],
+   "keyword": "Yaad",
+   "words": 2,
+   "syl": 2,
+   "est_s": {
+    "raw_at_2p7wps": 0.74,
+    "post_1p06": 0.7,
+    "post_1p08": 0.69,
+    "post_1p10": 0.67,
+    "syl_model_post_1p10_fast": 0.35,
+    "syl_model_post_1p10_avg": 0.4,
+    "syl_model_post_1p08_avg": 0.41,
+    "syl_model_post_1p10_style": 0.46
+   },
+   "window_needs": {
+    "wps": 5.0,
+    "syl_per_s": 5.0
+   },
+   "delivery": "softer, a half smile, quick rising question; no breath before it",
+   "delivery_class": "emph",
+   "caption": "hidden (hook window)",
+   "pause_after_s": 0.4,
+   "alt_placement": {
+    "when": "TA processed: V2 measured from the onset of याद to the end of है? + 20 ms tail > 0.43 s (2.633 - 2.203)",
+    "start": 1.55,
+    "frame": 46.5,
+    "beat": 2.325,
+    "ends_by": 2.0,
+    "window_s": 0.45,
+    "why": "beep pair 1 ends 1.537 (f40 + f44, 70 ms pulses), beep pair 2 starts 2.000 (f60): the beep answers the question, the spoken hook ends by 2.0 s instead of 2.6 s, clear of the f79 splice; the rising \"hai?\" is never trimmed",
+    "if_longer_than_0p45": "process TA at 1.10 and re-measure; if still > 0.45 s, the lead chooses between one TA re-take (about 2.5 credits) and letting the decaying tail sit under the f60 pulse",
+    "needs": "lead OK (departs from SLATE 3.2 \"after the second beep\"); keep 2.200 if the take fits",
+    "source": "GATE.md 7, fix 5"
+   }
+  },
+  {
+   "id": "V1B",
+   "versions": "B",
+   "part": "hook",
+   "take": "TB",
+   "beat": 0.45,
+   "bar_beat": "bar 0, beat 1.45",
+   "start_frame": 9,
+   "start_target": 0.3,
+   "end_target": 1.95,
+   "bold": "start",
+   "window_s": 1.65,
+   "anchor": {
+    "word": "yaad",
+    "t": 1.667,
+    "frame": 50,
+    "beat": 2.5,
+    "rule": "\"Yeh awaaz...\" 0.30-~0.95; the \"...\" pause holds the beep pair f40/f44 (1.333-1.537); \"yaad\" on the 8th f50"
+   },
+   "roman": "Yeh awaaz... yaad hai?",
+   "dev": "ये आवाज़... याद है?",
+   "tokens": [
+    "Yeh",
+    "*awaaz...",
+    "yaad",
+    "hai?"
+   ],
+   "dev_tokens": [
+    "ये",
+    "आवाज़...",
+    "याद",
+    "है?"
+   ],
+   "syllables": [
+    1,
+    2,
+    1,
+    1
+   ],
+   "keyword": "awaaz",
+   "words": 4,
+   "syl": 5,
+   "est_s": {
+    "raw_at_2p7wps": 1.48,
+    "post_1p06": 1.4,
+    "post_1p08": 1.37,
+    "post_1p10": 1.35,
+    "syl_model_post_1p10_fast": 0.88,
+    "syl_model_post_1p10_avg": 1.01,
+    "syl_model_post_1p08_avg": 1.03,
+    "syl_model_post_1p10_style": 1.14
+   },
+   "window_needs": {
+    "wps": 2.42,
+    "syl_per_s": 3.03
+   },
+   "delivery": "intimate, curious; real pause on the ellipsis (the beep answers it); rising \"hai?\"",
+   "delivery_class": "emph",
+   "caption": "hidden (hook window; HB lockup shows it)",
+   "pause_after_s": 1.05
+  },
+  {
+   "id": "V3a",
+   "versions": "AB",
+   "part": "turn",
+   "take": "T2",
+   "beat": 4.5,
+   "bar_beat": "bar 1, beat 1.5",
+   "start_frame": 90,
+   "start_target": 3.0,
+   "end_target": 3.75,
+   "bold": null,
+   "window_s": 0.75,
+   "anchor": {
+    "word": "Light",
+    "t": 3.0,
+    "frame": 90,
+    "beat": 4.5,
+    "rule": "on the 8th f90 (beat 4.5), after the match strike at f80"
+   },
+   "roman": "Light jaati thi,",
+   "dev": "लाइट जाती थी,",
+   "tokens": [
+    "*Light",
+    "jaati",
+    "thi,"
+   ],
+   "dev_tokens": [
+    "लाइट",
+    "जाती",
+    "थी,"
+   ],
+   "syllables": [
+    2,
+    2,
+    1
+   ],
+   "keyword": "Light",
+   "words": 3,
+   "syl": 5,
+   "est_s": {
+    "raw_at_2p7wps": 1.11,
+    "post_1p06": 1.05,
+    "post_1p08": 1.03,
+    "post_1p10": 1.01,
+    "syl_model_post_1p10_fast": 0.88,
+    "syl_model_post_1p10_avg": 1.01,
+    "syl_model_post_1p08_avg": 1.03,
+    "syl_model_post_1p10_style": 0.88
+   },
+   "window_needs": {
+    "wps": 4.0,
+    "syl_per_s": 6.67
+   },
+   "delivery": "remembering, warm; a light comma lift",
+   "delivery_class": "neutral",
+   "caption": "shown (upper band; S2 avoid rects)",
+   "pause_after_s": 0.7
+  },
+  {
+   "id": "V3b",
+   "versions": "AB",
+   "part": "turn",
+   "take": "T2",
+   "beat": 6.7,
+   "bar_beat": "bar 1, beat 3.7",
+   "start_frame": 134,
+   "start_target": 4.45,
+   "end_target": 6.45,
+   "bold": null,
+   "window_s": 2.0,
+   "anchor": {
+    "word": "chhat",
+    "t": 5.4,
+    "frame": 162,
+    "beat": 8.1,
+    "rule": "\"chhat\" lands just after the rooftop cut f160 (5.333): target f162, never before f160"
+   },
+   "roman": "toh poora mohalla chhat pe hota tha.",
+   "dev": "तो पूरा मोहल्ला छत पे होता था।",
+   "tokens": [
+    "toh",
+    "poora",
+    "mohalla",
+    "*chhat",
+    "pe",
+    "hota",
+    "tha."
+   ],
+   "dev_tokens": [
+    "तो",
+    "पूरा",
+    "मोहल्ला",
+    "छत",
+    "पे",
+    "होता",
+    "था।"
+   ],
+   "syllables": [
+    1,
+    2,
+    3,
+    1,
+    1,
+    2,
+    1
+   ],
+   "keyword": "chhat",
+   "words": 7,
+   "syl": 11,
+   "est_s": {
+    "raw_at_2p7wps": 2.59,
+    "post_1p06": 2.45,
+    "post_1p08": 2.4,
+    "post_1p10": 2.36,
+    "syl_model_post_1p10_fast": 1.93,
+    "syl_model_post_1p10_avg": 2.22,
+    "syl_model_post_1p08_avg": 2.26,
+    "syl_model_post_1p10_style": 1.93
+   },
+   "window_needs": {
+    "wps": 3.5,
+    "syl_per_s": 5.5
+   },
+   "delivery": "remembering, a smile on \"chhat\"",
+   "delivery_class": "neutral",
+   "caption": "shown",
+   "pause_after_s": 0.15
+  },
+  {
+   "id": "V4",
+   "versions": "AB",
+   "part": "turn",
+   "take": "T2",
+   "beat": 9.9,
+   "bar_beat": "bar 2, beat 2.9",
+   "start_frame": 198,
+   "start_target": 6.6,
+   "end_target": 7.85,
+   "bold": "end",
+   "window_s": 1.25,
+   "anchor": {
+    "word": "wapas",
+    "t": null,
+    "frame": null,
+    "beat": null,
+    "rule": "last word ends <= 7.85 s (>= 0.15 s before the f240 slam AA GAYI!); at the average pace \"aati\" falls at about 7.1-7.2 s, next to the f220 (7.333) false-start tease of gate fix 3"
+   },
+   "roman": "Jab wapas aati thi...",
+   "dev": "जब वापस आती थी...",
+   "tokens": [
+    "Jab",
+    "*wapas",
+    "aati",
+    "thi..."
+   ],
+   "dev_tokens": [
+    "जब",
+    "वापस",
+    "आती",
+    "थी..."
+   ],
+   "syllables": [
+    1,
+    2,
+    2,
+    1
+   ],
+   "keyword": "wapas",
+   "words": 4,
+   "syl": 6,
+   "est_s": {
+    "raw_at_2p7wps": 1.48,
+    "post_1p06": 1.4,
+    "post_1p08": 1.37,
+    "post_1p10": 1.35,
+    "syl_model_post_1p10_fast": 1.05,
+    "syl_model_post_1p10_avg": 1.21,
+    "syl_model_post_1p08_avg": 1.24,
+    "syl_model_post_1p10_style": 1.05
+   },
+   "window_needs": {
+    "wps": 3.2,
+    "syl_per_s": 4.8
+   },
+   "delivery": "anticipation, rising, left hanging (the slam answers it); starts on \"Jab\", no \"Aur\"",
+   "delivery_class": "neutral",
+   "caption": "shown",
+   "pause_after_s": 3.15
+  },
+  {
+   "id": "V5",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T3",
+   "beat": 16.5,
+   "bar_beat": "bar 4, beat 1.5",
+   "start_frame": 330,
+   "start_target": 11.0,
+   "end_target": 12.5,
+   "bold": null,
+   "window_s": 1.5,
+   "anchor": {
+    "word": "bachche",
+    "t": 11.333,
+    "frame": 340,
+    "beat": 17.0,
+    "rule": "\"bachche\" on beat 17 (f340); after the L7 beam at f320; ends before the beep at 12.667"
+   },
+   "roman": "Phir woh bachche bare hue.",
+   "dev": "फिर वो बच्चे बड़े हुए।",
+   "tokens": [
+    "Phir",
+    "woh",
+    "*bachche",
+    "bare",
+    "hue."
+   ],
+   "dev_tokens": [
+    "फिर",
+    "वो",
+    "बच्चे",
+    "बड़े",
+    "हुए।"
+   ],
+   "syllables": [
+    1,
+    1,
+    2,
+    2,
+    2
+   ],
+   "keyword": "bachche",
+   "words": 5,
+   "syl": 8,
+   "est_s": {
+    "raw_at_2p7wps": 1.85,
+    "post_1p06": 1.75,
+    "post_1p08": 1.71,
+    "post_1p10": 1.68,
+    "syl_model_post_1p10_fast": 1.4,
+    "syl_model_post_1p10_avg": 1.62,
+    "syl_model_post_1p08_avg": 1.65,
+    "syl_model_post_1p10_style": 1.83
+   },
+   "window_needs": {
+    "wps": 3.33,
+    "syl_per_s": 5.33
+   },
+   "delivery": "the turn, slower, a little proud",
+   "delivery_class": "emph",
+   "caption": "shown",
+   "pause_after_s": 0.45
+  },
+  {
+   "id": "V6",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T3",
+   "beat": 19.45,
+   "bar_beat": "bar 4, beat 4.45",
+   "start_frame": 389,
+   "start_target": 12.95,
+   "end_target": 14.25,
+   "bold": "anchor",
+   "window_s": 1.3,
+   "anchor": {
+    "word": "editor",
+    "t": 13.367,
+    "frame": 401,
+    "beat": 20.05,
+    "rule": "BOLD: \"editor\" onset f401 (13.33-13.40 QA) = the on-word cut f400; so \"Kuch\" starts ~13.15-13.18"
+   },
+   "roman": "Kuch editor ban gaye.",
+   "dev": "कुछ एडिटर बन गए।",
+   "tokens": [
+    "Kuch",
+    "*editor",
+    "ban",
+    "gaye."
+   ],
+   "dev_tokens": [
+    "कुछ",
+    "एडिटर",
+    "बन",
+    "गए।"
+   ],
+   "syllables": [
+    1,
+    3,
+    1,
+    2
+   ],
+   "keyword": "editor",
+   "words": 4,
+   "syl": 7,
+   "est_s": {
+    "raw_at_2p7wps": 1.48,
+    "post_1p06": 1.4,
+    "post_1p08": 1.37,
+    "post_1p10": 1.35,
+    "syl_model_post_1p10_fast": 1.23,
+    "syl_model_post_1p10_avg": 1.41,
+    "syl_model_post_1p08_avg": 1.44,
+    "syl_model_post_1p10_style": 1.23
+   },
+   "window_needs": {
+    "wps": 3.08,
+    "syl_per_s": 5.38
+   },
+   "delivery": "plain statement, \"editor\" clean and clear",
+   "delivery_class": "neutral",
+   "caption": "shown",
+   "pause_after_s": 2.15
+  },
+  {
+   "id": "V7",
+   "versions": "AB",
+   "part": "re-hook",
+   "take": "T4",
+   "beat": 24.6,
+   "bar_beat": "bar 6, beat 1.6",
+   "start_frame": 492,
+   "start_target": 16.4,
+   "end_target": 19.21,
+   "bold": "start",
+   "window_s": 2.81,
+   "anchor": {
+    "word": "Aur",
+    "t": 16.4,
+    "frame": 492,
+    "beat": 24.6,
+    "rule": "BOLD start: after 0.4 s of designed silence (power dies f480)"
+   },
+   "roman": "Aur bijli ban gayi sab se bari dushman.",
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "tokens": [
+    "Aur",
+    "bijli",
+    "ban",
+    "gayi",
+    "sab",
+    "se",
+    "bari",
+    "*dushman."
+   ],
+   "dev_tokens": [
+    "और",
+    "बिजली",
+    "बन",
+    "गई",
+    "सब",
+    "से",
+    "बड़ी",
+    "दुश्मन।"
+   ],
+   "syllables": [
+    1,
+    2,
+    1,
+    2,
+    1,
+    1,
+    2,
+    2
+   ],
+   "keyword": "dushman",
+   "words": 8,
+   "syl": 12,
+   "est_s": {
+    "raw_at_2p7wps": 2.96,
+    "post_1p06": 2.8,
+    "post_1p08": 2.74,
+    "post_1p10": 2.69,
+    "syl_model_post_1p10_fast": 2.11,
+    "syl_model_post_1p10_avg": 2.43,
+    "syl_model_post_1p08_avg": 2.47,
+    "syl_model_post_1p10_style": 2.11
+   },
+   "window_needs": {
+    "wps": 2.85,
+    "syl_per_s": 4.27
+   },
+   "delivery": "dry, wry, brisk, no commas; \"dushman\" lands about 18.2-18.5 s, as the L8 iris starts closing (f551)",
+   "delivery_class": "neutral",
+   "caption": "shown",
+   "pause_after_s": 0.12
+  },
+  {
+   "id": "V8",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T4",
+   "beat": 29.0,
+   "bar_beat": "bar 7, beat 2",
+   "start_frame": 580,
+   "start_target": 19.33,
+   "end_target": 22.84,
+   "bold": null,
+   "window_s": 3.51,
+   "anchor": {
+    "word": "Ctrl+S",
+    "t": 21.333,
+    "frame": 640,
+    "beat": 32.0,
+    "rule": "\"Ctrl+S\" near f640 (beat 32, the keycaps switch to 8ths); \"Har\" on the first press f580 (beat 29) when the block allows, else up to 0.25 s earlier (see blocks.dense_per_line)"
+   },
+   "roman": "Har desi editor ki ungli khud Ctrl+S dabati hai.",
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "tokens": [
+    "Har",
+    "desi",
+    "editor",
+    "ki",
+    "ungli",
+    "*khud",
+    "Ctrl+S",
+    "dabati",
+    "hai."
+   ],
+   "dev_tokens": [
+    "हर",
+    "देसी",
+    "एडिटर",
+    "की",
+    "उंगली",
+    "ख़ुद",
+    "कंट्रोल-एस",
+    "दबाती",
+    "है।"
+   ],
+   "syllables": [
+    1,
+    2,
+    3,
+    1,
+    2,
+    1,
+    3,
+    3,
+    1
+   ],
+   "keyword": "khud",
+   "words": 9,
+   "syl": 17,
+   "est_s": {
+    "raw_at_2p7wps": 3.33,
+    "post_1p06": 3.14,
+    "post_1p08": 3.09,
+    "post_1p10": 3.03,
+    "syl_model_post_1p10_fast": 2.98,
+    "syl_model_post_1p10_avg": 3.44,
+    "syl_model_post_1p08_avg": 3.5,
+    "syl_model_post_1p10_style": 2.98
+   },
+   "window_needs": {
+    "wps": 2.56,
+    "syl_per_s": 4.84
+   },
+   "delivery": "amused, brisk; the stress and the wink on \"khud\" (the caption keyword); \"Har\" on the first press f580",
+   "delivery_class": "neutral",
+   "caption": "shown; keyword *khud* (gate fix 6: the spoken stress; Ctrl+S is already on the 3D keycaps)",
+   "pause_after_s": 0.13
+  },
+  {
+   "id": "V9",
+   "versions": "AB",
+   "part": "escalation",
+   "take": "T4",
+   "beat": 34.45,
+   "bar_beat": "bar 8, beat 3.45",
+   "start_frame": 689,
+   "start_target": 22.97,
+   "end_target": 23.67,
+   "bold": null,
+   "window_s": 0.7,
+   "anchor": {
+    "word": "tees",
+    "t": 23.333,
+    "frame": 700,
+    "beat": 35.0,
+    "rule": "\"tees\" on an 8th press: f700 (23.333) preferred, f690 (23.000) if the block runs long; a joke about a habit, never a statistic"
+   },
+   "roman": "Har tees second.",
+   "dev": "हर तीस सेकंड।",
+   "tokens": [
+    "Har",
+    "*tees",
+    "second."
+   ],
+   "dev_tokens": [
+    "हर",
+    "तीस",
+    "सेकंड।"
+   ],
+   "syllables": [
+    1,
+    1,
+    2
+   ],
+   "keyword": "tees",
+   "words": 3,
+   "syl": 4,
+   "est_s": {
+    "raw_at_2p7wps": 1.11,
+    "post_1p06": 1.05,
+    "post_1p08": 1.03,
+    "post_1p10": 1.01,
+    "syl_model_post_1p10_fast": 0.7,
+    "syl_model_post_1p10_avg": 0.81,
+    "syl_model_post_1p08_avg": 0.82,
+    "syl_model_post_1p10_style": 0.7
+   },
+   "window_needs": {
+    "wps": 4.29,
+    "syl_per_s": 5.71
+   },
+   "delivery": "deadpan tag, tight after V8",
+   "delivery_class": "neutral",
+   "caption": "shown",
+   "pause_after_s": 0.35
+  },
+  {
+   "id": "V10",
+   "versions": "AB",
+   "part": "payoff",
+   "take": "T5",
+   "beat": 36.05,
+   "bar_beat": "bar 9, beat 1.05",
+   "start_frame": 721,
+   "start_target": 24.02,
+   "end_target": 26.3,
+   "bold": "end",
+   "window_s": 2.28,
+   "anchor": {
+    "word": "Bijli",
+    "t": 24.0,
+    "frame": 720,
+    "beat": 36.0,
+    "rule": "cut to the candle f720 (beat 36); BOLD end 26.30 before the drop-out f790"
+   },
+   "roman": "Bijli ne humein editing nahi sikhai...",
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+   "tokens": [
+    "Bijli",
+    "ne",
+    "humein",
+    "*editing",
+    "nahi",
+    "sikhai..."
+   ],
+   "dev_tokens": [
+    "बिजली",
+    "ने",
+    "हमें",
+    "एडिटिंग",
+    "नहीं",
+    "सिखाई..."
+   ],
+   "syllables": [
+    2,
+    1,
+    2,
+    3,
+    2,
+    3
+   ],
+   "keyword": "editing",
+   "words": 6,
+   "syl": 13,
+   "est_s": {
+    "raw_at_2p7wps": 2.22,
+    "post_1p06": 2.1,
+    "post_1p08": 2.06,
+    "post_1p10": 2.02,
+    "syl_model_post_1p10_fast": 2.28,
+    "syl_model_post_1p10_avg": 2.63,
+    "syl_model_post_1p08_avg": 2.68,
+    "syl_model_post_1p10_style": 2.97
+   },
+   "window_needs": {
+    "wps": 2.63,
+    "syl_per_s": 5.7
+   },
+   "delivery": "quiet, sincere; the ellipsis is a held breath, not a stop",
+   "delivery_class": "emph",
+   "caption": "shown (last caption before the payoff hide window); ROM \"sikhai...\" per gate fix 4",
+   "pause_after_s": 1.0
+  },
+  {
+   "id": "V11",
+   "versions": "AB",
+   "part": "payoff",
+   "take": "T5",
+   "beat": 40.95,
+   "bar_beat": "bar 10, beat 1.95",
+   "start_frame": 819,
+   "start_target": 27.3,
+   "end_target": 28.05,
+   "bold": "anchor",
+   "window_s": 0.75,
+   "anchor": {
+    "word": "sabr",
+    "t": 27.333,
+    "frame": 820,
+    "beat": 41.0,
+    "rule": "BOLD: \"sabr\" onset f820 (27.30-27.37 QA) = beat 41, the harmonium peak"
+   },
+   "roman": "sabr sikhaya.",
+   "dev": "सब्र सिखाया।",
+   "tokens": [
+    "*sabr",
+    "sikhaya."
+   ],
+   "dev_tokens": [
+    "सब्र",
+    "सिखाया।"
+   ],
+   "syllables": [
+    1,
+    3
+   ],
+   "keyword": "sabr",
+   "words": 2,
+   "syl": 4,
+   "est_s": {
+    "raw_at_2p7wps": 0.74,
+    "post_1p06": 0.7,
+    "post_1p08": 0.69,
+    "post_1p10": 0.67,
+    "syl_model_post_1p10_fast": 0.7,
+    "syl_model_post_1p10_avg": 0.81,
+    "syl_model_post_1p08_avg": 0.82,
+    "syl_model_post_1p10_style": 0.91
+   },
+   "window_needs": {
+    "wps": 2.67,
+    "syl_per_s": 5.33
+   },
+   "delivery": "warm, final, one clean syllable \"sabr\"; falling end",
+   "delivery_class": "emph",
+   "caption": "hidden (payoff lockup BIJLI NE SIKHAYA / sabr after gate fix 4; P1 is the creative-director's)",
+   "pause_after_s": 3.75
+  },
+  {
+   "id": "V12",
+   "versions": "AB",
+   "part": "cta+loop",
+   "take": "T6",
+   "beat": 47.7,
+   "bar_beat": "bar 11, beat 4.7",
+   "start_frame": 954,
+   "start_target": 31.8,
+   "end_target": 34.1,
+   "bold": "end",
+   "window_s": 2.3,
+   "anchor": {
+    "word": "Aap",
+    "t": 31.667,
+    "frame": 950,
+    "beat": 47.5,
+    "rule": "start on the 8th f950 (beat 47.5) or later; BOLD end <= 34.10 (QA <= 34.17); V1 answers it on the loop"
+   },
+   "roman": "Aap ke ghar light jaane pe kya hota tha?",
+   "dev": "आप के घर लाइट जाने पे क्या होता था?",
+   "tokens": [
+    "Aap",
+    "ke",
+    "*ghar",
+    "light",
+    "jaane",
+    "pe",
+    "kya",
+    "hota",
+    "tha?"
+   ],
+   "dev_tokens": [
+    "आप",
+    "के",
+    "घर",
+    "लाइट",
+    "जाने",
+    "पे",
+    "क्या",
+    "होता",
+    "था?"
+   ],
+   "syllables": [
+    1,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    2,
+    1
+   ],
+   "keyword": "ghar",
+   "words": 9,
+   "syl": 12,
+   "est_s": {
+    "raw_at_2p7wps": 3.33,
+    "post_1p06": 3.14,
+    "post_1p08": 3.09,
+    "post_1p10": 3.03,
+    "syl_model_post_1p10_fast": 2.11,
+    "syl_model_post_1p10_avg": 2.43,
+    "syl_model_post_1p08_avg": 2.47,
+    "syl_model_post_1p10_style": 2.74
+   },
+   "window_needs": {
+    "wps": 3.91,
+    "syl_per_s": 5.22
+   },
+   "delivery": "inviting question, rising \"tha?\", no breath at the end; tail trimmed to word end + 40 ms",
+   "delivery_class": "emph",
+   "caption": "hidden (end card COMMENT MEIN / batao)",
+   "pause_after_s": 0.567
+  }
+ ],
+ "tokens": [
+  {
+   "line": "V1",
+   "i": 0,
+   "roman": "Bijli",
+   "dev": "बिजली",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V1",
+   "i": 1,
+   "roman": "chali",
+   "dev": "चली",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V1",
+   "i": 2,
+   "roman": "gayi.",
+   "dev": "गई।",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V2",
+   "i": 0,
+   "roman": "Yaad",
+   "dev": "याद",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V2",
+   "i": 1,
+   "roman": "hai?",
+   "dev": "है?",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V1B",
+   "i": 0,
+   "roman": "Yeh",
+   "dev": "ये",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V1B",
+   "i": 1,
+   "roman": "awaaz...",
+   "dev": "आवाज़...",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V1B",
+   "i": 2,
+   "roman": "yaad",
+   "dev": "याद",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V1B",
+   "i": 3,
+   "roman": "hai?",
+   "dev": "है?",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V3a",
+   "i": 0,
+   "roman": "Light",
+   "dev": "लाइट",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V3a",
+   "i": 1,
+   "roman": "jaati",
+   "dev": "जाती",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V3a",
+   "i": 2,
+   "roman": "thi,",
+   "dev": "थी,",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V3b",
+   "i": 0,
+   "roman": "toh",
+   "dev": "तो",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V3b",
+   "i": 1,
+   "roman": "poora",
+   "dev": "पूरा",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V3b",
+   "i": 2,
+   "roman": "mohalla",
+   "dev": "मोहल्ला",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V3b",
+   "i": 3,
+   "roman": "chhat",
+   "dev": "छत",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V3b",
+   "i": 4,
+   "roman": "pe",
+   "dev": "पे",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V3b",
+   "i": 5,
+   "roman": "hota",
+   "dev": "होता",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V3b",
+   "i": 6,
+   "roman": "tha.",
+   "dev": "था।",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V4",
+   "i": 0,
+   "roman": "Jab",
+   "dev": "जब",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V4",
+   "i": 1,
+   "roman": "wapas",
+   "dev": "वापस",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V4",
+   "i": 2,
+   "roman": "aati",
+   "dev": "आती",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V4",
+   "i": 3,
+   "roman": "thi...",
+   "dev": "थी...",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V5",
+   "i": 0,
+   "roman": "Phir",
+   "dev": "फिर",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V5",
+   "i": 1,
+   "roman": "woh",
+   "dev": "वो",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V5",
+   "i": 2,
+   "roman": "bachche",
+   "dev": "बच्चे",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V5",
+   "i": 3,
+   "roman": "bare",
+   "dev": "बड़े",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V5",
+   "i": 4,
+   "roman": "hue.",
+   "dev": "हुए।",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V6",
+   "i": 0,
+   "roman": "Kuch",
+   "dev": "कुछ",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V6",
+   "i": 1,
+   "roman": "editor",
+   "dev": "एडिटर",
+   "keyword": true,
+   "syl": 3
+  },
+  {
+   "line": "V6",
+   "i": 2,
+   "roman": "ban",
+   "dev": "बन",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V6",
+   "i": 3,
+   "roman": "gaye.",
+   "dev": "गए।",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V7",
+   "i": 0,
+   "roman": "Aur",
+   "dev": "और",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V7",
+   "i": 1,
+   "roman": "bijli",
+   "dev": "बिजली",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V7",
+   "i": 2,
+   "roman": "ban",
+   "dev": "बन",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V7",
+   "i": 3,
+   "roman": "gayi",
+   "dev": "गई",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V7",
+   "i": 4,
+   "roman": "sab",
+   "dev": "सब",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V7",
+   "i": 5,
+   "roman": "se",
+   "dev": "से",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V7",
+   "i": 6,
+   "roman": "bari",
+   "dev": "बड़ी",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V7",
+   "i": 7,
+   "roman": "dushman.",
+   "dev": "दुश्मन।",
+   "keyword": true,
+   "syl": 2
+  },
+  {
+   "line": "V8",
+   "i": 0,
+   "roman": "Har",
+   "dev": "हर",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V8",
+   "i": 1,
+   "roman": "desi",
+   "dev": "देसी",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V8",
+   "i": 2,
+   "roman": "editor",
+   "dev": "एडिटर",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V8",
+   "i": 3,
+   "roman": "ki",
+   "dev": "की",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V8",
+   "i": 4,
+   "roman": "ungli",
+   "dev": "उंगली",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V8",
+   "i": 5,
+   "roman": "khud",
+   "dev": "ख़ुद",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V8",
+   "i": 6,
+   "roman": "Ctrl+S",
+   "dev": "कंट्रोल-एस",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V8",
+   "i": 7,
+   "roman": "dabati",
+   "dev": "दबाती",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V8",
+   "i": 8,
+   "roman": "hai.",
+   "dev": "है।",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V9",
+   "i": 0,
+   "roman": "Har",
+   "dev": "हर",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V9",
+   "i": 1,
+   "roman": "tees",
+   "dev": "तीस",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V9",
+   "i": 2,
+   "roman": "second.",
+   "dev": "सेकंड।",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V10",
+   "i": 0,
+   "roman": "Bijli",
+   "dev": "बिजली",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V10",
+   "i": 1,
+   "roman": "ne",
+   "dev": "ने",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V10",
+   "i": 2,
+   "roman": "humein",
+   "dev": "हमें",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V10",
+   "i": 3,
+   "roman": "editing",
+   "dev": "एडिटिंग",
+   "keyword": true,
+   "syl": 3
+  },
+  {
+   "line": "V10",
+   "i": 4,
+   "roman": "nahi",
+   "dev": "नहीं",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V10",
+   "i": 5,
+   "roman": "sikhai...",
+   "dev": "सिखाई...",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V11",
+   "i": 0,
+   "roman": "sabr",
+   "dev": "सब्र",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V11",
+   "i": 1,
+   "roman": "sikhaya.",
+   "dev": "सिखाया।",
+   "keyword": false,
+   "syl": 3
+  },
+  {
+   "line": "V12",
+   "i": 0,
+   "roman": "Aap",
+   "dev": "आप",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V12",
+   "i": 1,
+   "roman": "ke",
+   "dev": "के",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V12",
+   "i": 2,
+   "roman": "ghar",
+   "dev": "घर",
+   "keyword": true,
+   "syl": 1
+  },
+  {
+   "line": "V12",
+   "i": 3,
+   "roman": "light",
+   "dev": "लाइट",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V12",
+   "i": 4,
+   "roman": "jaane",
+   "dev": "जाने",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V12",
+   "i": 5,
+   "roman": "pe",
+   "dev": "पे",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V12",
+   "i": 6,
+   "roman": "kya",
+   "dev": "क्या",
+   "keyword": false,
+   "syl": 1
+  },
+  {
+   "line": "V12",
+   "i": 7,
+   "roman": "hota",
+   "dev": "होता",
+   "keyword": false,
+   "syl": 2
+  },
+  {
+   "line": "V12",
+   "i": 8,
+   "roman": "tha?",
+   "dev": "था?",
+   "keyword": false,
+   "syl": 1
+  }
+ ],
+ "takes": [
+  {
+   "id": "T5",
+   "order": 1,
+   "lines": [
+    "V10",
+    "V11"
+   ],
+   "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई... सब्र सिखाया।",
+   "rom": "Bijli ne humein *editing nahi sikhai... *sabr sikhaya.",
+   "token_ranges": {
+    "V10": [
+     0,
+     5
+    ],
+    "V11": [
+     6,
+     7
+    ]
+   },
+   "chars": 48,
+   "speed": "1.10 on V10 (brief F1; the dense block's binding line, see blocks.dense_per_line); V11 may be cut from the raw take and processed alone at 1.06 (warmer)",
+   "tests": "सब्र, एडिटिंग, हमें, the \"...\" held pause"
+  },
+  {
+   "id": "T4",
+   "order": 2,
+   "lines": [
+    "V7",
+    "V8",
+    "V9"
+   ],
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन। हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है। हर तीस सेकंड।",
+   "rom": "Aur bijli ban gayi sab se bari *dushman. Har desi editor ki ungli *khud Ctrl+S dabati hai. Har *tees second.",
+   "token_ranges": {
+    "V7": [
+     0,
+     7
+    ],
+    "V8": [
+     8,
+     16
+    ],
+    "V9": [
+     17,
+     19
+    ]
+   },
+   "chars": 96,
+   "speed": "1.08 (gate fix 1: V7-V9 fit at the average pace; 1.10 only if the measured lines run longer than the model). Generate only with this v2 text (lead OK on fix 1)",
+   "tests": "कंट्रोल-एस, ख़ुद (the new stress word), एडिटर, सेकंड, देसी, दुश्मन, बड़ी"
+  },
+  {
+   "id": "TB",
+   "order": 3,
+   "lines": [
+    "V1B"
+   ],
+   "dev": "ये आवाज़... याद है?",
+   "rom": "Yeh *awaaz... yaad hai?",
+   "token_ranges": {
+    "V1B": [
+     0,
+     3
+    ]
+   },
+   "chars": 19,
+   "speed": "1.06-1.08",
+   "tests": "आवाज़ (nukta z), \"...\" pause length, rising \"है?\""
+  },
+  {
+   "id": "TA",
+   "order": 4,
+   "lines": [
+    "V1",
+    "V2"
+   ],
+   "dev": "बिजली चली गई। याद है?",
+   "rom": "*Bijli chali gayi. *Yaad hai?",
+   "token_ranges": {
+    "V1": [
+     0,
+     2
+    ],
+    "V2": [
+     3,
+     4
+    ]
+   },
+   "chars": 21,
+   "speed": "1.08-1.10 (V1 must end <= 1.30 s, before the f40 beep)",
+   "tests": "V1 <= 1.20 s after processing; V2 <= 0.43 s keeps the 2.200 placement, 0.43-0.45 s moves it to 1.550 (alt_placement, lead OK)"
+  },
+  {
+   "id": "T2",
+   "order": 5,
+   "lines": [
+    "V3a",
+    "V3b",
+    "V4"
+   ],
+   "dev": "लाइट जाती थी, तो पूरा मोहल्ला छत पे होता था। जब वापस आती थी...",
+   "rom": "*Light jaati thi, toh poora mohalla *chhat pe hota tha. Jab *wapas aati thi...",
+   "token_ranges": {
+    "V3a": [
+     0,
+     2
+    ],
+    "V3b": [
+     3,
+     9
+    ],
+    "V4": [
+     10,
+     13
+    ]
+   },
+   "chars": 62,
+   "speed": "1.10 holds \"Light\" on f90, \"chhat\" on f162 with a >= 0.18 s comma pause and V4 ending <= 7.85 at the average pace; 1.08 fits only with V3a from about 2.90 s or a 0.14 s comma pause. Generate only with this v2 text (lead OK on fix 1)",
+   "tests": "मोहल्ला, छत, the V4 onset \"जब\" without \"और\""
+  },
+  {
+   "id": "T3",
+   "order": 6,
+   "lines": [
+    "V5",
+    "V6"
+   ],
+   "dev": "फिर वो बच्चे बड़े हुए। कुछ एडिटर बन गए।",
+   "rom": "Phir woh *bachche bare hue. Kuch *editor ban gaye.",
+   "token_ranges": {
+    "V5": [
+     0,
+     4
+    ],
+    "V6": [
+     5,
+     8
+    ]
+   },
+   "chars": 39,
+   "speed": "1.06-1.08",
+   "tests": "बड़े, \"editor\" onset placement"
+  },
+  {
+   "id": "T6",
+   "order": 7,
+   "lines": [
+    "V12"
+   ],
+   "dev": "आप के घर लाइट जाने पे क्या होता था?",
+   "rom": "Aap ke *ghar light jaane pe kya hota tha?",
+   "token_ranges": {
+    "V12": [
+     0,
+     8
+    ]
+   },
+   "chars": 35,
+   "speed": "1.06-1.10 to land the end <= 34.10",
+   "tests": "rising final \"था?\""
+  }
+ ],
+ "totals": {
+  "A": {
+   "words": 65,
+   "syllables": 107,
+   "est_raw_s_at_2p7wps": 24.07,
+   "est_post_1p06_s": 22.71,
+   "est_post_1p10_s": 21.89,
+   "syl_model_post_1p10_avg_s": 21.63,
+   "syl_model_post_1p08_avg_s": 22.03,
+   "syl_model_post_1p10_fast_s": 18.78,
+   "vo_windows_sum_s": 20.6
+  },
+  "B": {
+   "words": 64,
+   "syllables": 104,
+   "est_raw_s_at_2p7wps": 23.7,
+   "est_post_1p06_s": 22.36,
+   "est_post_1p10_s": 21.55,
+   "syl_model_post_1p10_avg_s": 21.02,
+   "syl_model_post_1p08_avg_s": 21.41,
+   "syl_model_post_1p10_fast_s": 18.26,
+   "vo_windows_sum_s": 20.8
+  },
+  "v1_for_reference": {
+   "A": {
+    "words": 69,
+    "syllables": 115
+   },
+   "B": {
+    "words": 68,
+    "syllables": 112
+   }
+  }
+ },
+ "blocks": {
+  "dense_16p4_26p3": {
+   "lines": [
+    "V7",
+    "V8",
+    "V9",
+    "V10"
+   ],
+   "t0": 16.4,
+   "t1": 26.3,
+   "min_gaps_s": 0.36,
+   "speech_budget_s": 9.54,
+   "syl": 46,
+   "needs_syl_per_s": 4.82,
+   "fast_post_1p10_s": 8.07,
+   "avg_post_1p10_s": 9.3,
+   "avg_post_1p08_s": 9.47,
+   "avg_T4_1p08_T5_1p10_s": 9.42,
+   "emph_post_1p10_s": 10.49,
+   "verdict": "fits as a block at the average pace (1.08 or 1.10); see dense_per_line for the one line that still binds"
+  },
+  "dense_per_line": {
+   "note": "Block-level fit is not enough: V10 (13 syl, unchanged by fix 1) needs 2.63 s at the average pace and 1.10, but its window runs from 24.02 (-0.25 rule: 23.77) to the BOLD 26.30, i.e. 2.53 s at most. Holding 26.30 at the average pace means V10 starts about 23.62-23.67, a J-cut 0.33-0.40 s before the 24.0 candle cut (on the last keycap press f710), with V8 and V9 moved up 0.14-0.29 s and 0.12 s gaps.",
+   "scenarios": [
+    {
+     "pace": "fast (neutral) T4 1.10, T5 1.10",
+     "V7": [
+      16.4,
+      18.506
+     ],
+     "V8": [
+      19.333,
+      22.317
+     ],
+     "ctrl_s": 21.088,
+     "V9": [
+      23.157,
+      23.86
+     ],
+     "tees": 23.333,
+     "V10": [
+      24.018,
+      26.3
+     ],
+     "rule_ok": true,
+     "note": "every briefed anchor holds (Har on f580, tees on f700, V10 from the cut)"
+    },
+    {
+     "pace": "average T4 1.08, T5 1.10",
+     "V7": [
+      16.4,
+      18.871
+     ],
+     "V8": [
+      19.109,
+      22.609
+     ],
+     "ctrl_s": 21.167,
+     "V9": [
+      22.729,
+      23.552
+     ],
+     "tees": 22.935,
+     "V10": [
+      23.672,
+      26.3
+     ],
+     "rule_ok": false,
+     "note": "V8 -0.22 and V9 -0.24 are inside the +-0.25 rule; V10 -0.35 is not (J-10, lead OK); 0.12 s air after \"Har tees second.\""
+    },
+    {
+     "pace": "average T4 1.10, T5 1.10",
+     "V7": [
+      16.4,
+      18.826
+     ],
+     "V8": [
+      19.187,
+      22.624
+     ],
+     "ctrl_s": 21.209,
+     "V9": [
+      22.744,
+      23.552
+     ],
+     "tees": 22.946,
+     "V10": [
+      23.672,
+      26.3
+     ],
+     "rule_ok": false,
+     "note": "as above; V10 is in T5, so T4 at 1.10 does not help it"
+    },
+    {
+     "pace": "average T4 1.08, T5 1.08",
+     "V7": [
+      16.4,
+      18.871
+     ],
+     "V8": [
+      19.06,
+      22.56
+     ],
+     "ctrl_s": 21.119,
+     "V9": [
+      22.68,
+      23.504
+     ],
+     "tees": 22.886,
+     "V10": [
+      23.624,
+      26.3
+     ],
+     "rule_ok": false,
+     "note": "V8 -0.27 and V9 -0.29 also break the rule: keep T5 at 1.10"
+    }
+   ],
+   "v10_rule": "d10 = processed V10 from the onset of बिजली to the end of सिखाई (the \"...\" pause is not speech). d10 <= 2.28: start 24.02 · 2.28-2.53: start 26.30 - d10 (inside the rule) · 2.53-2.64: J-10, start 26.30 - d10 (23.66-23.77, about the last keycap press f710; lead OK), V8/V9 up to -0.25 s (V9 not before 22.72) with 0.12 s gaps · longer: brief F3 (re-take T5 without humein)",
+   "j10_limit": {
+    "v8_start_min": 19.08,
+    "v9_start_min": 22.72,
+    "d10_max_T4_1p08": 2.64,
+    "d10_max_T4_1p10": 2.65,
+    "note": "V9 at its -0.25 s limit (22.72) binds, so the T4 speed barely changes the limit"
+   }
+  },
+  "chhat_to_slam": {
+   "note": "\"chhat pe hota tha\" (5 syl) + gap 0.15 + V4 (6 syl, \"Jab wapas aati thi...\") between the chhat onset and 7.85",
+   "budget_s": 2.35,
+   "budget_s_chhat_f162": 2.3,
+   "syl": 11,
+   "fast_post_1p10_s": 1.93,
+   "avg_post_1p10_s": 2.22,
+   "avg_post_1p08_s": 2.26,
+   "plan_avg_1p10_chhat_f162": {
+    "V3a": [
+     3.0,
+     4.011
+    ],
+    "V3b": [
+     4.187,
+     6.411
+    ],
+    "V4": [
+     6.561,
+     7.774
+    ],
+    "wapas": 6.763,
+    "aati": 7.167,
+    "spare_s": 0.076
+   },
+   "plan_avg_1p08_chhat_f162": {
+    "V3a": [
+     3.0,
+     4.029
+    ],
+    "V3b": [
+     4.165,
+     6.429
+    ],
+    "V4": [
+     6.579,
+     7.815
+    ],
+    "wapas": 6.785,
+    "aati": 7.197,
+    "spare_s": 0.035,
+    "comma_pause_s": 0.136
+   }
+  },
+  "v1_reference": {
+   "dense_syl": 53,
+   "dense_avg_post_1p10_s": 10.71,
+   "dense_over_s": 1.17,
+   "chhat_to_slam_syl": 12,
+   "chhat_avg_post_1p10_s": 2.43
+  }
+ },
+ "trims": [
+  {
+   "id": "T-a",
+   "line": "V4",
+   "status": "APPLIED in v2 (gate fix 1, approved)",
+   "rom": "Jab *wapas aati thi...",
+   "dev": "जब वापस आती थी...",
+   "syl": [
+    1,
+    2,
+    2,
+    1
+   ],
+   "cost": "0 credits (in the T2 text before generation)",
+   "saves_syl": 1
+  },
+  {
+   "id": "T-b",
+   "line": "V8",
+   "status": "APPLIED in v2 (gate fix 1, approved); keyword ungli -> khud (gate fix 6)",
+   "rom": "Har desi editor ki ungli *khud Ctrl+S dabati hai.",
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+   "syl": [
+    1,
+    2,
+    3,
+    1,
+    2,
+    1,
+    3,
+    3,
+    1
+   ],
+   "cost": "0 credits (in the T4 text before generation)",
+   "saves_syl": 3
+  },
+  {
+   "id": "G-V7",
+   "line": "V7",
+   "status": "APPLIED in v2 (gate fix 1; replaces the v1 proposal T-c, which cut \"Aur\")",
+   "rom": "Aur bijli ban gayi sab se bari *dushman.",
+   "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+   "syl": [
+    1,
+    2,
+    1,
+    2,
+    1,
+    1,
+    2,
+    2
+   ],
+   "cost": "0 credits (in the T4 text before generation)",
+   "saves_syl": 4,
+   "why": "V6 has just said \"editor\" and the picture is an editor's render dying; \"editor\" would be spoken 3 times in 6 s"
+  },
+  {
+   "id": "J-10",
+   "line": "V10",
+   "status": "proposed, needs lead OK (beyond the +-0.25 s rule)",
+   "action": "start V10 up to 0.36 s early (>= 23.66, about the last keycap press f710 = 23.667) so the VO leads the 24.0 candle cut; V8 and V9 move up to -0.25 s (V9 not before 22.72) with 0.12 s gaps; fits if d10 <= 2.64 s",
+   "cost": "0 credits",
+   "saves_syl": 0,
+   "tradeoff": "only ~0.12 s of air after the \"Har tees second.\" tag"
+  },
+  {
+   "id": "F3",
+   "line": "V10",
+   "status": "brief ladder F3 (last resort before F4; costs \"humein\")",
+   "rom": "Bijli ne *editing nahi sikhai...",
+   "dev": "बिजली ने एडिटिंग नहीं सिखाई...",
+   "syl": [
+    2,
+    1,
+    3,
+    2,
+    3
+   ],
+   "cost": "a re-take of T5 (a mid-line cut of हमें is not clean)",
+   "saves_syl": 2
+  },
+  {
+   "id": "F4",
+   "line": "V9",
+   "status": "brief ladder F4",
+   "action": "drop V9 from the VO; chip U3F \"Saved · har 30 sec\" f712-f719",
+   "rom": "",
+   "dev": "",
+   "syl": [],
+   "cost": "0 credits (edit)",
+   "saves_syl": 4
+  }
+ ],
+ "pronunciation_fallbacks": [
+  {
+   "line": "V8",
+   "id": "P-ctrl",
+   "when": "कंट्रोल-एस comes out with a gap, a \"dash\" or a wrong stress",
+   "rom": "Har desi editor ki ungli *khud Ctrl S dabati hai.",
+   "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल एस दबाती है।",
+   "syl": [
+    1,
+    2,
+    3,
+    1,
+    2,
+    1,
+    2,
+    1,
+    3,
+    1
+   ],
+   "note": "10 tokens (Ctrl / S split 1:1); the keycaps on screen also show Ctrl and S apart"
+  }
+ ],
+ "fit_ladder": [
+  "v2 copy (gate fix 1) is already in the T4 text: 46 syllables in the dense block",
+  "brief F1: speed 1.08 on T4 (1.10 if V7-V9 measure longer than the model), 1.10 on V10 (T5)",
+  "brief F2: inter-line gaps down to 0.12 s; V8 and V9 may start up to 0.25 s early (\"Ctrl+S\" stays within 0.25 s of f640, \"tees\" on the f690 or f700 press)",
+  "proposed J-10 (lead OK): V10 starts up to 0.36 s before 24.02 (d10 <= 2.64 s) so it still ends by the BOLD 26.30",
+  "brief F3: V10 without \"humein\" (re-take of T5)",
+  "brief F4: drop V9, chip U3F"
+ ],
+ "rooftop_ladder": [
+  "v2 copy (gate fix 1: V4 = \"Jab wapas aati thi...\") is already in the T2 text: 11 syllables from \"chhat\" to the end of V4",
+  "speed 1.10 on T2 (1.08 if the measured take is at or under the model and V3a may start about 2.90)",
+  "V3a may start at 2.75-3.00 and end by 4.00 (+-0.25 rule); \"chhat\" on f162, never before f160",
+  "if V4 still cannot end <= 7.85: let \"chhat\" land on f161 (5.367) and close the V3b -> V4 gap to 0.12 s"
+ ],
+ "pronunciation_risks": [
+  {
+   "rank": 1,
+   "dev": "सब्र",
+   "roman": "sabr",
+   "line": "V11",
+   "take": "T5",
+   "risk": "the payoff word on f820: may come out \"sa-bar\" (two beats, late peak) or swallowed after the long pause",
+   "fallback": "सबर (DEV only; caption stays \"sabr\")",
+   "accept_if": "ASR hears सब्र/सबर and the word is one stressed beat <= 0.35 s"
+  },
+  {
+   "rank": 2,
+   "dev": "कंट्रोल-एस",
+   "roman": "Ctrl+S",
+   "line": "V8",
+   "take": "T4",
+   "risk": "hyphen read as a pause or \"dash\"; \"kan-trol\" stress; \"एस\" clipped",
+   "fallback": "कंट्रोल एस (2 tokens, ROM \"Ctrl S\", see P-ctrl)",
+   "accept_if": "heard as कंट्रोल एस / कंट्रोलएस, no gap > 0.12 s inside"
+  },
+  {
+   "rank": 3,
+   "dev": "आवाज़",
+   "roman": "awaaz",
+   "line": "V1B",
+   "take": "TB",
+   "risk": "nukta z lost (\"awaaj\"): the casting take lost the f in लाइफ़ (ASR heard लाइप)",
+   "fallback": "none needed; if \"awaaj\", re-take once with stability 0.55, else accept",
+   "accept_if": "z audible (ASR आवाज़ or आवाज)"
+  },
+  {
+   "rank": 4,
+   "dev": "ख़ुद",
+   "roman": "khud",
+   "line": "V8",
+   "take": "T4",
+   "risk": "nukta kh may come out aspirated \"khud\" (standard Hindi) instead of the fricative; it is now the V8 stress word and caption keyword, so it must not be swallowed between उंगली and कंट्रोल-एस",
+   "fallback": "खुद (both are natural on both sides)",
+   "accept_if": "either kh is fine; reject a clipped \"kud\" or a \"khud\" with no stress"
+  },
+  {
+   "rank": 5,
+   "dev": "एडिटिंग",
+   "roman": "editing",
+   "line": "V10",
+   "take": "T5",
+   "risk": "untested on Vlad (एडिटर passed in the casting take); risk \"edi-tang\" / dental t",
+   "fallback": "एडिटिंग stays; second try एडीटिंग",
+   "accept_if": "ASR hears एडिटिंग"
+  },
+  {
+   "rank": 6,
+   "dev": "याद है?",
+   "roman": "Yaad hai?",
+   "line": "V2",
+   "take": "TA",
+   "risk": "timing more than sound: must be <= 0.42 s with a rise; a drawn-out \"hai?\" overruns the splice f79",
+   "fallback": "if > 0.43 s: place at 1.550 between the beep pairs (gate fix 5, lead OK) instead of trimming the rise; if > 0.45 s: 1.10 and re-measure",
+   "accept_if": "<= 0.43 s (placed 2.200, ends <= 2.633) or <= 0.45 s (placed 1.550, ends <= 2.000)"
+  },
+  {
+   "rank": 7,
+   "dev": "बिजली चली गई।",
+   "roman": "Bijli chali gayi.",
+   "line": "V1",
+   "take": "TA",
+   "risk": "a dramatic read runs > 1.2 s into the beep at 1.333 s",
+   "fallback": "speed 1.10; keep the full stop (no ellipsis)",
+   "accept_if": "ends <= 1.30 s when placed at 0.10 s"
+  },
+  {
+   "rank": 8,
+   "dev": "मोहल्ला",
+   "roman": "mohalla",
+   "line": "V3b",
+   "take": "T2",
+   "risk": "single l \"mohala\" or \"muhalla\"",
+   "fallback": "मुहल्ला if it sounds clipped",
+   "accept_if": "ASR मोहल्ला / मोहल्ले"
+  },
+  {
+   "rank": 9,
+   "dev": "सेकंड",
+   "roman": "second",
+   "line": "V9",
+   "take": "T4",
+   "risk": "\"sekand\" fine; risk the final d swallowed before the stop",
+   "fallback": "सेकेंड",
+   "accept_if": "ASR सेकंड / सेकेंड"
+  },
+  {
+   "rank": 10,
+   "dev": "बड़ी / बड़े",
+   "roman": "bari / bare",
+   "line": "V7, V5",
+   "take": "T4, T3",
+   "risk": "retroflex flap ड़ flattened to \"badi\" (fine) or \"bari\" (fine): low risk",
+   "fallback": "none",
+   "accept_if": "any natural flap"
+  }
+ ],
+ "keyword_note": "one *keyword per line (the serif-italic caption word). V8 is *khud* since v2 (gate fix 6: the spoken stress; Ctrl+S is already on the keycaps). BRIEF 6.14 listed extra chunk keywords (mohalla, V7 bijli, desi, Ctrl+S): dropped to keep <= 1 per line and <= ~2 per scene",
+ "verify": [],
+ "open_questions": [
+  "Lead OK on the fix-1 copy (V4, V7, V8) before T2 and T4 are generated, so the trims cost no retake.",
+  "Lead OK on the fix-5 fallback (V2 at 1.550 between the beep pairs) for the case TA measures > 0.43 s.",
+  "J-10: if T5's V10 measures 2.53-2.64 s at 1.10, may it start up to 0.36 s before the 24.0 candle cut (beyond the +-0.25 s rule)? The alternative is the brief's F3 (re-take, loses \"humein\").",
+  "Does Higgsfield elevenlabs_v4 accept a speed parameter? Generating at 1.05-1.10 is cleaner than rubberband.",
+  "AI label on both versions (SLATE 7.1 default: on). No VO line claims anything about Jawad; JD is not voiced in this reel.",
+  "Truth flag from the gate (minor 8, creative-director): Jawad's profile sits under \"Bijli ne humein...\"; the lead confirms he is comfortable with the collective \"we\"."
+ ],
+ "gate_fixes": {
+  "source": "brand_reels/design/reels/bijli_chali_gayi/GATE.md (viral-strategist, concept + script gate r1, verdict FIX)",
+  "applied_here": [
+   {
+    "fix": 1,
+    "what": "V4 \"Aur jab wapas aati thi...\" -> \"Jab *wapas aati thi...\" (जब वापस आती थी...); V7 \"Aur bijli ban gayi editor ki sab se bari *dushman.\" -> \"Aur bijli ban gayi sab se bari *dushman.\" (और बिजली बन गई सब से बड़ी दुश्मन।); V8 \"Isliye har desi editor ki *ungli khud Ctrl+S dabati hai.\" -> \"Har desi editor ki ungli *khud Ctrl+S dabati hai.\" (हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।); T2 and T4 DEV/ROM rebuilt"
+   },
+   {
+    "fix": 4,
+    "what": "ROM only: V10 \"...sikhaayi...\" -> \"...sikhai...\", V11 \"*sabr sikhaaya.\" -> \"*sabr sikhaya.\"; DEV and takes unchanged (T5 ROM updated)"
+   },
+   {
+    "fix": 5,
+    "what": "V2 alt_placement 1.550 between the beep pairs if the processed \"Yaad hai?\" > 0.43 s (lead OK)"
+   },
+   {
+    "fix": 6,
+    "what": "V8 caption keyword ungli -> khud"
+   }
+  ],
+  "mirror_needed_by_creative_director": [
+   "BRIEF §2 P1 BIJLI NE SIKHAAYA -> BIJLI NE SIKHAYA (and §6.2 S7c, §6.6 P1 row, §6.15 body line)",
+   "BRIEF §6.7 rows V4, V7, V8, V10, V11, the total (65 / 64 words), the F3 text, and the Devanagari draft",
+   "packet.yaml audio lines S3-01, S5-01, S6-01, S7-02 and the S7 action text; MUSIC_bijli_chali_gayi.md payoff row",
+   "BRIEF §6.10: the L8 cues 18.633-19.033 no longer sit inside V7 (V7 now ends about 18.5-18.9)"
+  ],
+  "lead_ok_needed": [
+   "fix 1 copy (before T2 and T4 are generated)",
+   "fix 5 placement (SLATE 3.2 deviation, only if used)",
+   "J-10 (V10 J-cut beyond the +-0.25 s rule, only if T5 measures 2.53-2.64 s)"
+  ]
+ }
+}

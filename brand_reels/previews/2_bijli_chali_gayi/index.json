@@ -1,0 +1,19 @@
+{
+ "title": "Bijli Chali Gayi",
+ "tiles_left_to_right": [
+  "frame 0",
+  "power cut 0.5s",
+  "hook/cover 2.0s",
+  "rooftops 8.5s",
+  "editor desk 14s",
+  "keycaps 22s",
+  "payoff 28s",
+  "power returns 30s",
+  "end card 33s",
+  "hook B (trial)",
+  "3D props"
+ ],
+ "audio_sources": [
+  "bijli_chali_gayi/audio/bijli_chali_gayi_rough_A_full.wav"
+ ]
+}

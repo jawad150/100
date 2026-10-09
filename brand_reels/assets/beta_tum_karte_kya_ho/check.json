@@ -1,0 +1,436 @@
+{
+ "placed_A": [
+  {
+   "line": "L1",
+   "take": "btk_L1-F_t1",
+   "step": "1.08",
+   "file_on": 0.07,
+   "file_off": 2.4311,
+   "voice_on": 0.1,
+   "voice_off": 2.43,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1-F_t1_1.08.wav"
+  },
+  {
+   "line": "L2",
+   "take": "btk_L2_t3",
+   "step": "1.10",
+   "file_on": 2.92,
+   "file_off": 4.3564,
+   "voice_on": 2.95,
+   "voice_off": 4.37,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L2_t3_1.10.wav"
+  },
+  {
+   "line": "L3",
+   "take": "btk_L3-J_t1",
+   "step": "1.08",
+   "file_on": 5.07,
+   "file_off": 7.107,
+   "voice_on": 5.1,
+   "voice_off": 7.09,
+   "cut": false,
+   "lufs_in": -16.8,
+   "line_gain_db": 0.8,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L3-J_t1_1.08.wav"
+  },
+  {
+   "line": "L4",
+   "take": "btk_L4_t2",
+   "step": "1.10",
+   "file_on": 10.92,
+   "file_off": 12.0291,
+   "voice_on": 10.95,
+   "voice_off": 12.0,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L4_t2_1.10.wav"
+  },
+  {
+   "line": "L5",
+   "take": "btk_L5-C_t1",
+   "step": "1.08",
+   "file_on": 14.12,
+   "file_off": 16.1478,
+   "voice_on": 14.15,
+   "voice_off": 16.13,
+   "cut": false,
+   "lufs_in": -17.6,
+   "line_gain_db": 1.6,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L5-C_t1_1.08.wav"
+  },
+  {
+   "line": "L6",
+   "take": "btk_L6-F_t1",
+   "step": "1.10",
+   "file_on": 16.92,
+   "file_off": 18.1018,
+   "voice_on": 16.95,
+   "voice_off": 18.11,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L6-F_t1_1.10.wav"
+  },
+  {
+   "line": "L7",
+   "take": "btk_L7-O_t1",
+   "step": "1.10",
+   "file_on": 19.74,
+   "file_off": 23.9127,
+   "voice_on": 19.75,
+   "voice_off": 23.93,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L7-O_t1_1.10.wav"
+  },
+  {
+   "line": "L8",
+   "take": "btk_L8_t1",
+   "step": "1.08",
+   "file_on": 24.42,
+   "file_off": 27.2626,
+   "voice_on": 24.45,
+   "voice_off": 27.27,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L8_t1_1.08.wav"
+  },
+  {
+   "line": "L9",
+   "take": "btk_L9_t1",
+   "step": "1.08",
+   "file_on": 28.22,
+   "file_off": 32.1089,
+   "voice_on": 28.25,
+   "voice_off": 32.09,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L9_t1_1.08.wav"
+  },
+  {
+   "line": "L10",
+   "take": "btk_L10_t2",
+   "step": "1.08",
+   "file_on": 32.53,
+   "file_off": 34.3356,
+   "voice_on": 32.55,
+   "voice_off": 34.35,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L10_t2_1.08.wav"
+  },
+  {
+   "line": "L11",
+   "take": "btk_L11_t2",
+   "step": "1.10",
+   "file_on": 34.71,
+   "file_off": 36.3736,
+   "voice_on": 34.73,
+   "voice_off": 36.35,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L11_t2_1.10.wav"
+  }
+ ],
+ "placed_B": [
+  {
+   "line": "L1B",
+   "take": "btk_L1B-R_t1",
+   "step": "1.08",
+   "file_on": 0.07,
+   "file_off": 2.0608,
+   "voice_on": 0.1,
+   "voice_off": 2.05,
+   "cut": false,
+   "lufs_in": -18.9,
+   "line_gain_db": 2.9,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1B-R_t1_1.08.wav"
+  },
+  {
+   "line": "L2",
+   "take": "btk_L2_t3",
+   "step": "1.10",
+   "file_on": 2.92,
+   "file_off": 4.3564,
+   "voice_on": 2.95,
+   "voice_off": 4.37,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L2_t3_1.10.wav"
+  },
+  {
+   "line": "L3",
+   "take": "btk_L3-J_t1",
+   "step": "1.08",
+   "file_on": 5.07,
+   "file_off": 7.107,
+   "voice_on": 5.1,
+   "voice_off": 7.09,
+   "cut": false,
+   "lufs_in": -16.8,
+   "line_gain_db": 0.8,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L3-J_t1_1.08.wav"
+  },
+  {
+   "line": "L4",
+   "take": "btk_L4_t2",
+   "step": "1.10",
+   "file_on": 10.92,
+   "file_off": 12.0291,
+   "voice_on": 10.95,
+   "voice_off": 12.0,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L4_t2_1.10.wav"
+  },
+  {
+   "line": "L5",
+   "take": "btk_L5-C_t1",
+   "step": "1.08",
+   "file_on": 14.12,
+   "file_off": 16.1478,
+   "voice_on": 14.15,
+   "voice_off": 16.13,
+   "cut": false,
+   "lufs_in": -17.6,
+   "line_gain_db": 1.6,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L5-C_t1_1.08.wav"
+  },
+  {
+   "line": "L6",
+   "take": "btk_L6-F_t1",
+   "step": "1.10",
+   "file_on": 16.92,
+   "file_off": 18.1018,
+   "voice_on": 16.95,
+   "voice_off": 18.11,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L6-F_t1_1.10.wav"
+  },
+  {
+   "line": "L7",
+   "take": "btk_L7-O_t1",
+   "step": "1.10",
+   "file_on": 19.74,
+   "file_off": 23.9127,
+   "voice_on": 19.75,
+   "voice_off": 23.93,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L7-O_t1_1.10.wav"
+  },
+  {
+   "line": "L8",
+   "take": "btk_L8_t1",
+   "step": "1.08",
+   "file_on": 24.42,
+   "file_off": 27.2626,
+   "voice_on": 24.45,
+   "voice_off": 27.27,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L8_t1_1.08.wav"
+  },
+  {
+   "line": "L9",
+   "take": "btk_L9_t1",
+   "step": "1.08",
+   "file_on": 28.22,
+   "file_off": 32.1089,
+   "voice_on": 28.25,
+   "voice_off": 32.09,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L9_t1_1.08.wav"
+  },
+  {
+   "line": "L10",
+   "take": "btk_L10_t2",
+   "step": "1.08",
+   "file_on": 32.53,
+   "file_off": 34.3356,
+   "voice_on": 32.55,
+   "voice_off": 34.35,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L10_t2_1.08.wav"
+  },
+  {
+   "line": "L11",
+   "take": "btk_L11_t2",
+   "step": "1.10",
+   "file_on": 34.71,
+   "file_off": 36.3736,
+   "voice_on": 34.73,
+   "voice_off": 36.35,
+   "cut": false,
+   "lufs_in": -16.0,
+   "line_gain_db": 0.0,
+   "proc": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L11_t2_1.10.wav"
+  }
+ ],
+ "checks": {
+  "fails": [],
+  "warns": [
+   "L11 onset 34.730 moved from the slot start 34.90 (ladder)"
+  ],
+  "seam_A": 0.15,
+  "seam_B": 0.15,
+  "over_limit": [
+   "L2 ends 4.370 > limit 4.300",
+   "L4 ends 12.000 > limit 11.850",
+   "L6 ends 18.110 > limit 18.100"
+  ],
+  "words": 53,
+  "words_ok": 53,
+  "A": {
+   "lufs": -16.0,
+   "lufs_precise": -16.04,
+   "lra": 4.8,
+   "tp": -2.5,
+   "tp_precise": -2.46
+  },
+  "B": {
+   "lufs": -16.0,
+   "lufs_precise": -16.1,
+   "lra": 4.8,
+   "tp": -2.5,
+   "tp_precise": -2.46
+  },
+  "body_identical_after_2_8": true,
+  "body_max_diff": 0.0,
+  "master": {
+   "pre_lufs": -16.5,
+   "pre_tp": -0.7,
+   "steps": [
+    {
+     "lufs": -16.5,
+     "tp": -0.7,
+     "gain_db": 0.5,
+     "limiter_db": -2.6
+    },
+    {
+     "lufs": -16.04,
+     "tp": -2.46
+    }
+   ]
+  },
+  "onset_error_in_stem": [
+   [
+    "L1",
+    0.0
+   ],
+   [
+    "L2",
+    -0.0
+   ],
+   [
+    "L3",
+    0.0
+   ],
+   [
+    "L4",
+    0.0
+   ],
+   [
+    "L5",
+    0.0
+   ],
+   [
+    "L6",
+    0.0
+   ],
+   [
+    "L7",
+    0.0
+   ],
+   [
+    "L8",
+    0.0
+   ],
+   [
+    "L9",
+    0.0
+   ],
+   [
+    "L10",
+    0.0
+   ],
+   [
+    "L11",
+    0.0
+   ]
+  ],
+  "line_lufs": [
+   [
+    "L1",
+    -15.54
+   ],
+   [
+    "L2",
+    -15.55
+   ],
+   [
+    "L3",
+    -15.42
+   ],
+   [
+    "L4",
+    -15.2
+   ],
+   [
+    "L5",
+    -15.53
+   ],
+   [
+    "L6",
+    -15.68
+   ],
+   [
+    "L7",
+    -15.54
+   ],
+   [
+    "L8",
+    -15.56
+   ],
+   [
+    "L9",
+    -16.05
+   ],
+   [
+    "L10",
+    -15.56
+   ],
+   [
+    "L11",
+    -15.54
+   ],
+   [
+    "L1B",
+    -15.91
+   ]
+  ],
+  "line_lufs_spread": []
+ }
+}

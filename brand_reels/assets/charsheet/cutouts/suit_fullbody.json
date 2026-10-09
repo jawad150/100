@@ -1,0 +1,87 @@
+{
+ "name": "suit_fullbody",
+ "sheet": "sheet_suit.webp",
+ "sheet_box": [
+  0,
+  0,
+  469,
+  1125
+ ],
+ "native_wh": [
+  469,
+  1125
+ ],
+ "cutout_wh": [
+  938,
+  2250
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  78,
+  71,
+  841,
+  2184
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": false,
+  "left": false,
+  "right": false
+ },
+ "halo_cv": -0.87,
+ "halo_cv_p95": 0.0,
+ "halo_cv_raw": 5.68,
+ "face_box": [
+  404.0,
+  152.4,
+  605.4,
+  397.4
+ ],
+ "eyes": [
+  [
+   466.7,
+   236.3
+  ],
+  [
+   557.0,
+   239.4
+  ]
+ ],
+ "nose": [
+  518.5,
+  289.3
+ ],
+ "mouth": [
+  [
+   470.0,
+   328.1
+  ],
+  [
+   543.9,
+   330.9
+  ]
+ ],
+ "face_score": 0.953,
+ "head_box": [
+  359.7,
+  17.7,
+  649.8,
+  417.0
+ ],
+ "face_h_native": 122.5,
+ "eye_mid": [
+  511.8,
+  237.8
+ ],
+ "tex_ratio": 3.5,
+ "cheek_patch": [
+  438,
+  264,
+  474,
+  300
+ ],
+ "tex_ratio_native": 0.77,
+ "max_display_w": 763,
+ "max_display_h": 2113
+}

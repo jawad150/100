@@ -1,0 +1,863 @@
+{
+ "V1": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/cuts/lkk_V1_cH1t2_t1.wav",
+  "take_dur": 3.421,
+  "heard": "सब से बड़ाटर, लोग क्या कहेंगे?",
+  "cer": 0.071,
+  "cer_loan": 0.071,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "सब से बड़ाटर, लोग क्या कहेंगे?",
+    "cer": 0.071,
+    "cer_loan": 0.071,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "darr,",
+      "dev": "डर,",
+      "heard": "बड़ाटर,",
+      "sim": 0.47
+     }
+    ]
+   },
+   {
+    "model": "medium",
+    "heard": "सब से बडा डर लोग क्या कहेंगे?",
+    "cer": 0.0,
+    "cer_loan": 0.0,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "darr,",
+      "dev": "डर,",
+      "heard": "डर",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.0,
+  "keywords": [
+   {
+    "i": 3,
+    "word": "darr,",
+    "dev": "डर,",
+    "aligned_ok": true,
+    "aligned_heard": "डर,",
+    "free": [
+     [
+      "small",
+      "बड़ाटर,",
+      0.47
+     ],
+     [
+      "medium",
+      "डर",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "7/7",
+  "unmatched": [],
+  "passes": {
+   "1.10": {
+    "final_dur": 2.745,
+    "speed": 1.1,
+    "lufs": -16.5,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 153.0,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V1_cH1t2_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [],
+  "seconds": 11.5
+ },
+ "V1B": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/cuts/lkk_V1B_cG1bt1_t1.wav",
+  "take_dur": 2.925,
+  "heard": "ये लोग आसल में हैं कोन?",
+  "cer": 0.1,
+  "cer_loan": 0.1,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "ये लोग आसल में हैं कोन?",
+    "cer": 0.1,
+    "cer_loan": 0.1,
+    "keywords": [
+     {
+      "i": 5,
+      "word": "kaun?",
+      "dev": "कौन?",
+      "heard": "कोन?",
+      "sim": 1.2
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.1,
+  "keywords": [
+   {
+    "i": 5,
+    "word": "kaun?",
+    "dev": "कौन?",
+    "aligned_ok": true,
+    "aligned_heard": "कौन?",
+    "free": [
+     [
+      "small",
+      "कोन?",
+      1.2
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "6/6",
+  "unmatched": [],
+  "passes": {
+   "1.10": {
+    "final_dur": 2.5,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.4,
+    "pauses": [
+     {
+      "at": 1.14,
+      "was": 0.32,
+      "now": 0.32,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 144.0,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V1B_cG1bt1_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [],
+  "seconds": 5.4
+ },
+ "V2": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/lkk_V2_t2.mp3",
+  "take_dur": 6.191,
+  "heard": "हम जिन्दगी उनके हिसाप से एडिट करते है जो पूरी विडियो देखते भी नहीं",
+  "cer": 0.065,
+  "cer_loan": 0.065,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "हम जिन्दगी उनके हिसाप से एडिट करते है जो पूरी विडियो देखते भी नहीं",
+    "cer": 0.065,
+    "cer_loan": 0.065,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "zindagi",
+      "dev": "ज़िंदगी",
+      "heard": "जिन्दगी",
+      "sim": 1.2
+     },
+     {
+      "i": 5,
+      "word": "edit",
+      "dev": "एडिट",
+      "heard": "एडिट",
+      "sim": 3.0
+     },
+     {
+      "i": 10,
+      "word": "video",
+      "dev": "वीडियो",
+      "heard": "विडियो",
+      "sim": 1.2
+     },
+     {
+      "i": 13,
+      "word": "nahi.",
+      "dev": "नहीं।",
+      "heard": "नहीं",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.065,
+  "keywords": [
+   {
+    "i": 1,
+    "word": "zindagi",
+    "dev": "ज़िंदगी",
+    "aligned_ok": true,
+    "aligned_heard": "जिन्दगी",
+    "free": [
+     [
+      "small",
+      "जिन्दगी",
+      1.2
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   },
+   {
+    "i": 5,
+    "word": "edit",
+    "dev": "एडिट",
+    "aligned_ok": true,
+    "aligned_heard": "एडिट",
+    "free": [
+     [
+      "small",
+      "एडिट",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   },
+   {
+    "i": 10,
+    "word": "video",
+    "dev": "वीडियो",
+    "aligned_ok": true,
+    "aligned_heard": "वीडियो",
+    "free": [
+     [
+      "small",
+      "विडियो",
+      1.2
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   },
+   {
+    "i": 13,
+    "word": "nahi.",
+    "dev": "नहीं।",
+    "aligned_ok": true,
+    "aligned_heard": "नहीं।",
+    "free": [
+     [
+      "small",
+      "नहीं",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "14/14",
+  "unmatched": [],
+  "passes": {
+   "1.10": {
+    "final_dur": 5.5,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 3.34,
+      "was": 0.52,
+      "now": 0.52,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 152.7,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V2_t2_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "zindagi"
+  ],
+  "seconds": 9.3
+ },
+ "V3": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/lkk_V3_t1.mp3",
+  "take_dur": 3.004,
+  "heard": "ये क्राउट फलाट है काट बोर्ट",
+  "cer": 0.267,
+  "cer_loan": 0.267,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "ये क्राउट फलाट है काट बोर्ट",
+    "cer": 0.267,
+    "cer_loan": 0.267,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "flat",
+      "dev": "फ़्लैट",
+      "heard": "फलाट",
+      "sim": 1.2
+     },
+     {
+      "i": 4,
+      "word": "Cardboard.",
+      "dev": "कार्डबोर्ड।",
+      "heard": "काटबोर्ट",
+      "sim": 0.47
+     }
+    ]
+   },
+   {
+    "model": "medium",
+    "heard": "ये Crowdflat है, Cardboard",
+    "cer": 1.2,
+    "cer_loan": 0.0,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "flat",
+      "dev": "फ़्लैट",
+      "heard": "क्राउड फ्लैट",
+      "sim": 0.47
+     },
+     {
+      "i": 4,
+      "word": "Cardboard.",
+      "dev": "कार्डबोर्ड।",
+      "heard": "कार्डबोर्ड",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.0,
+  "keywords": [
+   {
+    "i": 2,
+    "word": "flat",
+    "dev": "फ़्लैट",
+    "aligned_ok": true,
+    "aligned_heard": "फलाट",
+    "free": [
+     [
+      "small",
+      "फलाट",
+      1.2
+     ],
+     [
+      "medium",
+      "क्राउड फ्लैट",
+      0.47
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   },
+   {
+    "i": 4,
+    "word": "Cardboard.",
+    "dev": "कार्डबोर्ड।",
+    "aligned_ok": true,
+    "aligned_heard": "कार्डबोर्ड।",
+    "free": [
+     [
+      "small",
+      "काटबोर्ट",
+      0.47
+     ],
+     [
+      "medium",
+      "कार्डबोर्ड",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "5/5",
+  "unmatched": [],
+  "passes": {
+   "1.10": {
+    "final_dur": 2.536,
+    "speed": 1.1,
+    "lufs": -17.5,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 118.3,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V3_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "flat"
+  ],
+  "seconds": 15.1
+ },
+ "V4": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/cuts/lkk_V4_cG2t2_t1.wav",
+  "take_dur": 3.57,
+  "heard": "असली लोग पीचे बेटे हैं अपने फोन में",
+  "cer": 0.125,
+  "cer_loan": 0.125,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "असली लोग पीचे बेटे हैं अपने फोन में",
+    "cer": 0.125,
+    "cer_loan": 0.125,
+    "keywords": [
+     {
+      "i": 6,
+      "word": "phone",
+      "dev": "फ़ोन",
+      "heard": "फोन",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.125,
+  "keywords": [
+   {
+    "i": 6,
+    "word": "phone",
+    "dev": "फ़ोन",
+    "aligned_ok": true,
+    "aligned_heard": "फ़ोन",
+    "free": [
+     [
+      "small",
+      "फोन",
+      3.0
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "8/8",
+  "unmatched": [],
+  "passes": {
+   "1.06": {
+    "final_dur": 3.17,
+    "speed": 1.06,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 151.4,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V4_cG2t2_t1_1.06.wav"
+   },
+   "1.10": {
+    "final_dur": 3.055,
+    "speed": 1.1,
+    "lufs": -15.9,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 157.1,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V4_cG2t2_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "phone"
+  ],
+  "seconds": 12.3
+ },
+ "V5": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/cuts/lkk_V5_cG2t2_t1.wav",
+  "take_dur": 4.397,
+  "heard": "लोग बिजी है, अपने लोग क्या कहेंगे में?",
+  "cer": 0.0,
+  "cer_loan": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "लोग बिजी है, अपने लोग क्या कहेंगे में?",
+    "cer": 0.0,
+    "cer_loan": 0.0,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "busy",
+      "dev": "बिज़ी",
+      "heard": "बिजी",
+      "sim": 3.0
+     },
+     {
+      "i": 6,
+      "word": "kahenge",
+      "dev": "कहेंगे'",
+      "heard": "कहेंगे",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.0,
+  "keywords": [
+   {
+    "i": 1,
+    "word": "busy",
+    "dev": "बिज़ी",
+    "aligned_ok": true,
+    "aligned_heard": "बिज़ी",
+    "free": [
+     [
+      "small",
+      "बिजी",
+      3.0
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   },
+   {
+    "i": 6,
+    "word": "kahenge",
+    "dev": "कहेंगे'",
+    "aligned_ok": true,
+    "aligned_heard": "कहेंगे",
+    "free": [
+     [
+      "small",
+      "कहेंगे",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "8/8",
+  "unmatched": [],
+  "passes": {
+   "1.08": {
+    "final_dur": 3.741,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.53,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 128.3,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V5_cG2t2_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 3.673,
+    "speed": 1.1,
+    "lufs": -15.9,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.53,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 130.7,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V5_cG2t2_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "busy"
+  ],
+  "seconds": 12.4
+ },
+ "V6": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/cuts/lkk_V6_cG3t1_t1.wav",
+  "take_dur": 3.61,
+  "heard": "किसी और की नजर में हम भी लोग है",
+  "cer": 0.0,
+  "cer_loan": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "किसी और की नजर में हम भी लोग है",
+    "cer": 0.0,
+    "cer_loan": 0.0,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "nazar",
+      "dev": "नज़र",
+      "heard": "नजर",
+      "sim": 3.0
+     },
+     {
+      "i": 7,
+      "word": "'log'",
+      "dev": "'लोग'",
+      "heard": "लोग",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.0,
+  "keywords": [
+   {
+    "i": 3,
+    "word": "nazar",
+    "dev": "नज़र",
+    "aligned_ok": true,
+    "aligned_heard": "नज़र",
+    "free": [
+     [
+      "small",
+      "नजर",
+      3.0
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   },
+   {
+    "i": 7,
+    "word": "'log'",
+    "dev": "'लोग'",
+    "aligned_ok": true,
+    "aligned_heard": "लोग",
+    "free": [
+     [
+      "small",
+      "लोग",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "9/9",
+  "unmatched": [],
+  "passes": {
+   "1.05": {
+    "final_dur": 3.2,
+    "speed": 1.05,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 168.8,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V6_cG3t1_t1_1.05.wav"
+   },
+   "1.10": {
+    "final_dur": 3.055,
+    "speed": 1.1,
+    "lufs": -15.8,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 176.8,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V6_cG3t1_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "nazar"
+  ],
+  "seconds": 12.6
+ },
+ "V7": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/lkk_V7_t1.mp3",
+  "take_dur": 4.284,
+  "heard": "उस दोस्त को भेजो जिसे लोग का दर रोकता है",
+  "cer": 0.053,
+  "cer_loan": 0.053,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "उस दोस्त को भेजो जिसे लोग का दर रोकता है",
+    "cer": 0.053,
+    "cer_loan": 0.053,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "bhejo",
+      "dev": "भेजो",
+      "heard": "भेजो",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.053,
+  "keywords": [
+   {
+    "i": 3,
+    "word": "bhejo",
+    "dev": "भेजो",
+    "aligned_ok": true,
+    "aligned_heard": "भेजो",
+    "free": [
+     [
+      "small",
+      "भेजो",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "10/10",
+  "unmatched": [],
+  "passes": {
+   "1.00": {
+    "final_dur": 4.03,
+    "speed": 1.0,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 148.9,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V7_t1_1.00.wav"
+   },
+   "1.03": {
+    "final_dur": 3.913,
+    "speed": 1.03,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 153.3,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V7_t1_1.03.wav"
+   },
+   "1.06": {
+    "final_dur": 3.802,
+    "speed": 1.06,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 157.8,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V7_t1_1.06.wav"
+   },
+   "1.10": {
+    "final_dur": 3.664,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 163.8,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V7_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [],
+  "seconds": 2.4
+ },
+ "V5b": {
+  "take": "workspace/jawad_reels/log_kya_kahenge/vo/raw/lkk_V5_t1.mp3",
+  "take_dur": 3.866,
+  "heard": "लोग बिजी है, अपने लोग क्या कहेंगे में?",
+  "cer": 0.0,
+  "cer_loan": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "लोग बिजी है, अपने लोग क्या कहेंगे में?",
+    "cer": 0.0,
+    "cer_loan": 0.0,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "busy",
+      "dev": "बिज़ी",
+      "heard": "बिजी",
+      "sim": 3.0
+     },
+     {
+      "i": 6,
+      "word": "kahenge",
+      "dev": "कहेंगे'",
+      "heard": "कहेंगे",
+      "sim": 3.0
+     }
+    ]
+   }
+  ],
+  "cer_best": 0.0,
+  "keywords": [
+   {
+    "i": 1,
+    "word": "busy",
+    "dev": "बिज़ी",
+    "aligned_ok": true,
+    "aligned_heard": "बिज़ी",
+    "free": [
+     [
+      "small",
+      "बिजी",
+      3.0
+     ]
+    ],
+    "nukta": true,
+    "verdict": "ok"
+   },
+   {
+    "i": 6,
+    "word": "kahenge",
+    "dev": "कहेंगे'",
+    "aligned_ok": true,
+    "aligned_heard": "कहेंगे",
+    "free": [
+     [
+      "small",
+      "कहेंगे",
+      3.0
+     ]
+    ],
+    "nukta": false,
+    "verdict": "ok"
+   }
+  ],
+  "matched": "8/8",
+  "unmatched": [],
+  "passes": {
+   "1.08": {
+    "final_dur": 3.426,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.48,
+      "was": 0.38,
+      "now": 0.38,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 140.1,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V5_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 3.364,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.48,
+      "was": 0.38,
+      "now": 0.38,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 142.7,
+    "out": "workspace/jawad_reels/log_kya_kahenge/vo/proc/lkk_V5_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "listen": [
+   "busy"
+  ],
+  "seconds": 2.3
+ }
+}

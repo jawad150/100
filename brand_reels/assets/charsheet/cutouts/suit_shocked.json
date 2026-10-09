@@ -1,0 +1,87 @@
+{
+ "name": "suit_shocked",
+ "sheet": "sheet_suit.webp",
+ "sheet_box": [
+  477,
+  564,
+  883,
+  1125
+ ],
+ "native_wh": [
+  406,
+  561
+ ],
+ "cutout_wh": [
+  812,
+  1122
+ ],
+ "sr": "Real-ESRGAN x4plus (ONNX) -> area 2x",
+ "matte": "BiRefNet-portrait + backdrop edge solve + pymatting ML foreground",
+ "subject_bbox": [
+  0,
+  45,
+  812,
+  1122
+ ],
+ "open_sides": {
+  "top": false,
+  "bottom": true,
+  "left": true,
+  "right": true
+ },
+ "halo_cv": -0.78,
+ "halo_cv_p95": 3.21,
+ "halo_cv_raw": 10.12,
+ "face_box": [
+  275.3,
+  173.1,
+  611.1,
+  614.2
+ ],
+ "eyes": [
+  [
+   383.0,
+   335.5
+  ],
+  [
+   525.5,
+   344.2
+  ]
+ ],
+ "nose": [
+  456.2,
+  424.2
+ ],
+ "mouth": [
+  [
+   382.6,
+   493.5
+  ],
+  [
+   502.3,
+   500.6
+  ]
+ ],
+ "face_score": 0.913,
+ "head_box": [
+  201.4,
+  0.0,
+  685.0,
+  649.5
+ ],
+ "face_h_native": 220.6,
+ "eye_mid": [
+  454.2,
+  339.9
+ ],
+ "tex_ratio": 6.38,
+ "cheek_patch": [
+  332,
+  384,
+  392,
+  444
+ ],
+ "tex_ratio_native": 1.41,
+ "max_display_w": 812,
+ "max_display_h": 1077
+}

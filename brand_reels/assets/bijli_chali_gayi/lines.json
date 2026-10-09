@@ -1,0 +1,962 @@
+{
+ "V1": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/TA_r2.mp3",
+  "source": "group",
+  "take_dur": 2.691,
+  "speed": 1.1,
+  "dev": "बिजली चली गई।",
+  "heard": "बिजली चली गई",
+  "cer_raw": 0.0,
+  "cer": 0.0,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "बिजली चली गई",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "बिजली",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "विजली चली गई",
+    "cer_raw": 0.143,
+    "cer": 0.143,
+    "kw_heard": "विजली",
+    "kw_sim": 0.76
+   }
+  ],
+  "keyword": {
+   "i": 0,
+   "word": "Bijli",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "बिजली",
+     3.0
+    ],
+    [
+     "medium",
+     "विजली",
+     0.76
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "3/3",
+  "unmatched": [],
+  "speech_s": 1.22,
+  "words": 3,
+  "wps": 2.46,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 2.691,
+   "final_dur": 2.355,
+   "lufs": -16.0,
+   "tp": -2.6,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 12.4
+ },
+ "V2": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/TA_r2.mp3",
+  "source": "group",
+  "take_dur": 2.691,
+  "speed": 1.1,
+  "dev": "याद है?",
+  "heard": "याद है",
+  "cer_raw": 0.0,
+  "cer": 0.0,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "याद है",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "याद",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "याद हैं।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "याद",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 0,
+   "word": "Yaad",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "याद",
+     3.0
+    ],
+    [
+     "medium",
+     "याद",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "2/2",
+  "unmatched": [],
+  "speech_s": 0.71,
+  "words": 2,
+  "wps": 2.82,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 2.691,
+   "final_dur": 2.355,
+   "lufs": -16.0,
+   "tp": -2.6,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 6.5
+ },
+ "V1B": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/V1Bc_r1.mp3",
+  "source": "line",
+  "take_dur": 2.429,
+  "speed": 1.1,
+  "dev": "ये आवाज़, याद है?",
+  "heard": "ये आवाज याद है?",
+  "cer_raw": 0.0,
+  "cer": 0.0,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "ये आवाज याद है?",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "आवाज",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "यह आवाज याद है?",
+    "cer_raw": 0.143,
+    "cer": 0.143,
+    "kw_heard": "आवाज",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 1,
+   "word": "awaaz...",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "आवाज",
+     3.0
+    ],
+    [
+     "medium",
+     "आवाज",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "4/4",
+  "unmatched": [],
+  "speech_s": 2.11,
+  "words": 4,
+  "wps": 1.9,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 2.429,
+   "final_dur": 2.173,
+   "lufs": -17.8,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 1.26,
+     "was": 0.34,
+     "now": 0.34,
+     "dramatic": true
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [
+   "आवाज़,"
+  ],
+  "retake": false,
+  "seconds": 6.7
+ },
+ "V3a": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T2m_r1.mp3",
+  "source": "group",
+  "take_dur": 5.721,
+  "speed": 1.08,
+  "dev": "लाइट जाती थी,",
+  "heard": "लाइट जाती ती",
+  "cer_raw": 0.167,
+  "cer": 0.167,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "लाइट जाती ती",
+    "cer_raw": 0.167,
+    "cer": 0.167,
+    "kw_heard": "लाइट",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "light जाती थी",
+    "cer_raw": 0.833,
+    "cer": 0.0,
+    "kw_heard": "लाइट",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 0,
+   "word": "Light",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "लाइट",
+     3.0
+    ],
+    [
+     "medium",
+     "लाइट",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "3/3",
+  "unmatched": [],
+  "speech_s": 1.08,
+  "words": 3,
+  "wps": 2.78,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 5.721,
+   "final_dur": 5.111,
+   "lufs": -15.8,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 3.67,
+     "was": 0.54,
+     "now": 0.45,
+     "dramatic": false
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 6.4
+ },
+ "V3b": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T2m_r2.mp3",
+  "source": "group",
+  "take_dur": 5.956,
+  "speed": 1.08,
+  "dev": "तो पूरा मुहल्ला छत पे होता था।",
+  "heard": "तो पूरा महला च्हत्पे होता था",
+  "cer_raw": 0.154,
+  "cer": 0.154,
+  "cer_best": 0.077,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "तो पूरा महला च्हत्पे होता था",
+    "cer_raw": 0.154,
+    "cer": 0.154,
+    "kw_heard": "च्हत्पे",
+    "kw_sim": 0.76
+   },
+   {
+    "model": "medium",
+    "heard": "तो पूरा मुहला च्छत पे होता था।",
+    "cer_raw": 0.077,
+    "cer": 0.077,
+    "kw_heard": "च्छत",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 3,
+   "word": "chhat",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "च्हत्पे",
+     0.76
+    ],
+    [
+     "medium",
+     "च्छत",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "7/7",
+  "unmatched": [],
+  "speech_s": 2.17,
+  "words": 7,
+  "wps": 3.23,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 5.956,
+   "final_dur": 5.262,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 3.83,
+     "was": 0.55,
+     "now": 0.45,
+     "dramatic": false
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 9.7
+ },
+ "V4": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T2m_r2.mp3",
+  "source": "group",
+  "take_dur": 5.956,
+  "speed": 1.08,
+  "dev": "जब वापस आती थी...",
+  "heard": "जब वापस आती ठी",
+  "cer_raw": 0.125,
+  "cer": 0.125,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "जब वापस आती ठी",
+    "cer_raw": 0.125,
+    "cer": 0.125,
+    "kw_heard": "वापस",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "जब वापस आती थी।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "वापस",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 1,
+   "word": "wapas",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "वापस",
+     3.0
+    ],
+    [
+     "medium",
+     "वापस",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "4/4",
+  "unmatched": [],
+  "speech_s": 1.3,
+  "words": 4,
+  "wps": 3.08,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 5.956,
+   "final_dur": 5.262,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 3.83,
+     "was": 0.55,
+     "now": 0.45,
+     "dramatic": false
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 7.2
+ },
+ "V5": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/V5_r1.mp3",
+  "source": "line",
+  "take_dur": 2.116,
+  "speed": 1.08,
+  "dev": "फिर वो बच्चे बड़े हुए।",
+  "heard": "फिर वो बच्छे बड़े हुए",
+  "cer_raw": 0.1,
+  "cer": 0.1,
+  "cer_best": 0.1,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "फिर वो बच्छे बड़े हुए",
+    "cer_raw": 0.1,
+    "cer": 0.1,
+    "kw_heard": "बच्छे",
+    "kw_sim": 1.2
+   },
+   {
+    "model": "medium",
+    "heard": "फिर वो बच्चे बड़े हुए हैं।",
+    "cer_raw": 0.1,
+    "cer": 0.1,
+    "kw_heard": "बच्चे",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 2,
+   "word": "bachche",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "बच्छे",
+     1.2
+    ],
+    [
+     "medium",
+     "बच्चे",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "5/5",
+  "unmatched": [],
+  "speech_s": 1.73,
+  "words": 5,
+  "wps": 2.89,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 2.116,
+   "final_dur": 1.787,
+   "lufs": -16.0,
+   "tp": -3.0,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [
+   "बड़े"
+  ],
+  "retake": false,
+  "seconds": 7.7
+ },
+ "V6": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T3_r1.mp3",
+  "source": "group",
+  "take_dur": 4.127,
+  "speed": 1.08,
+  "dev": "कुछ एडिटर बन गए।",
+  "heard": "कुछ एटिटर बन गाई",
+  "cer_raw": 0.2,
+  "cer": 0.2,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "कुछ एटिटर बन गाई",
+    "cer_raw": 0.2,
+    "cer": 0.2,
+    "kw_heard": "एटिटर",
+    "kw_sim": 0.76
+   },
+   {
+    "model": "medium",
+    "heard": "कुछ एडिटर बन गए।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "एडिटर",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 1,
+   "word": "editor",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "एटिटर",
+     0.76
+    ],
+    [
+     "medium",
+     "एडिटर",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "4/4",
+  "unmatched": [],
+  "speech_s": 1.41,
+  "words": 4,
+  "wps": 2.84,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 4.127,
+   "final_dur": 3.583,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 1.92,
+     "was": 0.48,
+     "now": 0.45,
+     "dramatic": false
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 8.0
+ },
+ "V7": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T4_r2.mp3",
+  "source": "group",
+  "take_dur": 9.718,
+  "speed": 1.1,
+  "dev": "और बिजली बन गई सब से बड़ी दुश्मन।",
+  "heard": "और बिजली बन गई सब से बड़ी तुष्मन",
+  "cer_raw": 0.111,
+  "cer": 0.111,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "और बिजली बन गई सब से बड़ी तुष्मन",
+    "cer_raw": 0.111,
+    "cer": 0.111,
+    "kw_heard": "बड़ीतुष्मन",
+    "kw_sim": 0.76
+   },
+   {
+    "model": "medium",
+    "heard": "और बिजली बन गई सब से बड़ी दुश्मन।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "दुश्मन।",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 7,
+   "word": "dushman.",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "बड़ीतुष्मन",
+     0.76
+    ],
+    [
+     "medium",
+     "दुश्मन।",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "8/8",
+  "unmatched": [],
+  "speech_s": 2.86,
+  "words": 8,
+  "wps": 2.8,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 9.718,
+   "final_dur": 8.682,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 7.69,
+     "was": 0.45,
+     "now": 0.45,
+     "dramatic": false
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [
+   "बड़ी"
+  ],
+  "retake": false,
+  "seconds": 8.8
+ },
+ "V8": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T4_r3.mp3",
+  "source": "group",
+  "take_dur": 9.561,
+  "speed": 1.1,
+  "dev": "हर देसी एडिटर की उंगली ख़ुद कंट्रोल-एस दबाती है।",
+  "heard": "हर देसी एडिटर की उंगली खुद कंट्रोल स दबाती है",
+  "cer_raw": 0.042,
+  "cer": 0.042,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "हर देसी एडिटर की उंगली खुद कंट्रोल स दबाती है",
+    "cer_raw": 0.042,
+    "cer": 0.042,
+    "kw_heard": "खुद",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "हर देसी एडिटर की उंग्ली खुद कंट्रोल-S दबाती हैं.",
+    "cer_raw": 0.083,
+    "cer": 0.0,
+    "kw_heard": "खुद",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 5,
+   "word": "khud",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "खुद",
+     3.0
+    ],
+    [
+     "medium",
+     "खुद",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "9/9",
+  "unmatched": [],
+  "speech_s": 3.7,
+  "words": 9,
+  "wps": 2.43,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 9.561,
+   "final_dur": 8.536,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [
+   "ख़ुद"
+  ],
+  "retake": false,
+  "seconds": 9.4
+ },
+ "V9": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T4_r3.mp3",
+  "source": "group",
+  "take_dur": 9.561,
+  "speed": 1.08,
+  "dev": "हर तीस सेकंड।",
+  "heard": "हर ती सिक्न्ट",
+  "cer_raw": 0.429,
+  "cer": 0.429,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "हर ती सिक्न्ट",
+    "cer_raw": 0.429,
+    "cer": 0.429,
+    "kw_heard": "ती",
+    "kw_sim": 0.76
+   },
+   {
+    "model": "medium",
+    "heard": "हर तीस सेकंड।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "तीस",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 1,
+   "word": "tees",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "ती",
+     0.76
+    ],
+    [
+     "medium",
+     "तीस",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "3/3",
+  "unmatched": [],
+  "speech_s": 1.28,
+  "words": 3,
+  "wps": 2.34,
+  "chain": {
+   "speed": 1.08,
+   "raw_dur": 9.561,
+   "final_dur": 8.694,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 6.8
+ },
+ "V10": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T5_r2.mp3",
+  "source": "group",
+  "take_dur": 4.284,
+  "speed": 1.1,
+  "dev": "बिजली ने हमें एडिटिंग नहीं सिखाई...",
+  "heard": "बिज्ली ने हमें एडिटिंग नहीं सिखाई",
+  "cer_raw": 0.0,
+  "cer": 0.0,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "बिज्ली ने हमें एडिटिंग नहीं सिखाई",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "एडिटिंग",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "बिजली ने हमें एडिटिंग नहीं सिखाई।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "एडिटिंग",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 3,
+   "word": "editing",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "एडिटिंग",
+     3.0
+    ],
+    [
+     "medium",
+     "एडिटिंग",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "6/6",
+  "unmatched": [],
+  "speech_s": 2.2,
+  "words": 6,
+  "wps": 2.73,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 4.284,
+   "final_dur": 3.709,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 2.39,
+     "was": 0.43,
+     "now": 0.43,
+     "dramatic": true
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 8.9
+ },
+ "V11": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/T5_r2.mp3",
+  "source": "group",
+  "take_dur": 4.284,
+  "speed": 1.1,
+  "dev": "सब्र सिखाया।",
+  "heard": "सब्र सिखाया",
+  "cer_raw": 0.0,
+  "cer": 0.0,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "सब्र सिखाया",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "सब्र",
+    "kw_sim": 3.0
+   },
+   {
+    "model": "medium",
+    "heard": "सब्र सिखाया।",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "सब्र",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 0,
+   "word": "sabr",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "सब्र",
+     3.0
+    ],
+    [
+     "medium",
+     "सब्र",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "2/2",
+  "unmatched": [],
+  "speech_s": 1.16,
+  "words": 2,
+  "wps": 1.72,
+  "chain": {
+   "speed": 1.1,
+   "raw_dur": 4.284,
+   "final_dur": 3.709,
+   "lufs": -16.0,
+   "tp": -2.3,
+   "pauses": [
+    {
+     "at": 2.39,
+     "was": 0.43,
+     "now": 0.43,
+     "dramatic": true
+    }
+   ],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 6.9
+ },
+ "V12": {
+  "take": "workspace/jawad_reels/bijli_chali_gayi/vo/raw/V12_r1.mp3",
+  "source": "line",
+  "take_dur": 3.004,
+  "speed": 1.06,
+  "dev": "आप के घर लाइट जाने पे क्या होता था?",
+  "heard": "आपके गर लाईद जाने पे क्या हुता ता?",
+  "cer_raw": 0.25,
+  "cer": 0.25,
+  "cer_best": 0.0,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "आपके गर लाईद जाने पे क्या हुता ता?",
+    "cer_raw": 0.25,
+    "cer": 0.25,
+    "kw_heard": "गर",
+    "kw_sim": 1.2
+   },
+   {
+    "model": "medium",
+    "heard": "आपके घर लाइट जाने पे क्या होता था?",
+    "cer_raw": 0.0,
+    "cer": 0.0,
+    "kw_heard": "घर",
+    "kw_sim": 3.0
+   }
+  ],
+  "keyword": {
+   "i": 2,
+   "word": "ghar",
+   "aligned_ok": true,
+   "heard": [
+    [
+     "small",
+     "गर",
+     1.2
+    ],
+    [
+     "medium",
+     "घर",
+     3.0
+    ]
+   ],
+   "ok": true
+  },
+  "matched": "9/9",
+  "unmatched": [],
+  "speech_s": 2.68,
+  "words": 9,
+  "wps": 3.36,
+  "chain": {
+   "speed": 1.06,
+   "raw_dur": 3.004,
+   "final_dur": 2.708,
+   "lufs": -17.9,
+   "tp": -2.3,
+   "pauses": [],
+   "stretch": "rubberband"
+  },
+  "listen": [],
+  "retake": false,
+  "seconds": 7.9
+ }
+}

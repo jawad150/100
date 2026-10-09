@@ -1,0 +1,17 @@
+{
+  "name": "jawad-reels",
+  "owner": {
+    "name": "jawad150"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for producing motion-graphics reels and animations."
+  },
+  "plugins": [
+    {
+      "name": "reels-studio",
+      "source": "./plugins/reels-studio",
+      "description": "14-agent motion-reels production team (brief, brand kit, references, trends, hooks, 3D props, footage, timelines, toolkit, SFX, music, captions, QA, delivery), 4 skills and a bundled Python motion toolkit.",
+      "category": "media"
+    }
+  ]
+}

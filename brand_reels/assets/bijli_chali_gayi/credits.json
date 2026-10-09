@@ -1,0 +1,761 @@
+{
+ "reel": "bijli_chali_gayi",
+ "voice": "Vlad (preset e5666b9c-99a2-4fac-8b4e-abee078b186d) on elevenlabs_v4",
+ "budget_credits": 25,
+ "global_guard_min_balance": 6800,
+ "spent_credits": 15.41,
+ "requests": [
+  {
+   "at": "2026-10-09T06:05:56Z",
+   "label": "pron P0",
+   "cost": 0.23,
+   "job_id": "291e9881-430a-4a16-bd24-82bb6d172784"
+  },
+  {
+   "at": "2026-10-09T06:05:56Z",
+   "label": "pron P1",
+   "cost": 0.23,
+   "job_id": "c7a2769a-7a7c-4548-993a-25cca44ca985"
+  },
+  {
+   "at": "2026-10-09T06:05:57Z",
+   "label": "pron P2",
+   "cost": 0.23,
+   "job_id": "6412d6bc-cade-4918-afce-7316094eaffb"
+  },
+  {
+   "at": "2026-10-09T06:05:58Z",
+   "label": "pron P3",
+   "cost": 0.23,
+   "job_id": "9fa4c38e-aab2-49ac-b337-50af8ed55c5d"
+  },
+  {
+   "at": "2026-10-09T06:05:59Z",
+   "label": "pron P4",
+   "cost": 0.23,
+   "job_id": "596969d5-4b25-454f-a079-cd53dc7b78da"
+  },
+  {
+   "at": "2026-10-09T06:05:59Z",
+   "label": "pron P5",
+   "cost": 0.23,
+   "job_id": "4d763276-fb61-44dd-bc84-868155b80ded"
+  },
+  {
+   "at": "2026-10-09T06:05:59Z",
+   "label": "pron P6",
+   "cost": 0.23,
+   "job_id": "f0174ed8-8895-4e9f-b641-640ac4aaf0f8"
+  },
+  {
+   "at": "2026-10-09T06:05:59Z",
+   "label": "pron P7",
+   "cost": 0.23,
+   "job_id": "0fcc4f52-731a-43f3-a0d3-f8a1440cade8"
+  },
+  {
+   "at": "2026-10-09T06:05:59Z",
+   "label": "pron P8",
+   "cost": 0.23,
+   "job_id": "409ef051-ec37-4e6e-bb81-8c8c5dbb671c"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V1 r1",
+   "cost": 0.23,
+   "job_id": "880ccc20-3489-4112-806e-f243534d08f5"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V2 r1",
+   "cost": 0.23,
+   "job_id": "db932d40-44cd-4fdb-8b15-6f2fed4e4711"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V1B r1",
+   "cost": 0.23,
+   "job_id": "2d1d4c2b-6965-4e83-aaa1-43081534e241"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V3a r1",
+   "cost": 0.23,
+   "job_id": "00383b03-d615-4736-8e98-ef6d2763f510"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V3b r1",
+   "cost": 0.23,
+   "job_id": "ecaf8730-80c6-435e-857c-1f9710c0485f"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V4 r1",
+   "cost": 0.23,
+   "job_id": "542cfb8b-f567-42a0-87c9-31eea6c0343a"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V5 r1",
+   "cost": 0.23,
+   "job_id": "c98736ec-88e1-4a76-8c74-4c0c63efeba0"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V6 r1",
+   "cost": 0.23,
+   "job_id": "84429e71-da3c-448a-b58f-ec44488892df"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V7 r1",
+   "cost": 0.23,
+   "job_id": "7b3d9be0-fb8c-4936-8a3a-45f776d468b0"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V8 r1",
+   "cost": 0.23,
+   "job_id": "317bcf2a-9921-4e5e-8e93-09201f492f15"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V9 r1",
+   "cost": 0.23,
+   "job_id": "06f50f09-ca85-4f89-a13a-94ec2da845fc"
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "label": "line V10 r1",
+   "cost": 0.23,
+   "job_id": "0c8ac72a-f828-472c-8cfd-c64cb321ae16"
+  },
+  {
+   "at": "2026-10-09T06:13:41Z",
+   "label": "line V11 r1",
+   "cost": 0.23,
+   "job_id": "c28c9a01-218d-4015-bdb3-aa4029822d25"
+  },
+  {
+   "at": "2026-10-09T06:13:41Z",
+   "label": "line V12 r1",
+   "cost": 0.23,
+   "job_id": "ec403534-cfc7-4a80-9ba3-af8441b851c3"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "TA_r1",
+   "cost": 0.23,
+   "job_id": "856f4613-3a6c-40d6-8897-d0134e08434d"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "T2_r1",
+   "cost": 0.46,
+   "job_id": "be863b4e-c4c6-492b-8555-cdf4419ee492"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "T3_r1",
+   "cost": 0.23,
+   "job_id": "a9f928df-9a65-4df7-bb68-ab913c579f2b"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "T4_r1",
+   "cost": 0.46,
+   "job_id": "14da38ad-b13f-4590-b589-6fc309c2a83e"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "T5_r1",
+   "cost": 0.23,
+   "job_id": "6233052e-d984-4fff-8d80-1adebbac23e1"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V1B_r2",
+   "cost": 0.23,
+   "job_id": "666f7a19-9dc7-4dcb-99a8-0339c0f16517"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V12_r2",
+   "cost": 0.23,
+   "job_id": "5618edad-949c-4c05-a54d-f86fac59fb8a"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V2_r2",
+   "cost": 0.23,
+   "job_id": "a703ee8a-77ae-4a43-8a2d-b5cc650ffee7"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V3b_r2",
+   "cost": 0.23,
+   "job_id": "262f2773-5b10-4906-8602-4fc740508f95"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V1_r2",
+   "cost": 0.23,
+   "job_id": "4877d990-a4cb-4330-aa5e-b150a668ce4d"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V3a_r2",
+   "cost": 0.23,
+   "job_id": "b4ffb49c-2248-4813-a3b6-0649aac33d51"
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "label": "V9_r2",
+   "cost": 0.23,
+   "job_id": "41f438b7-13b6-4aa7-9c2b-84a70927c9f7"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V1Bc_r1",
+   "cost": 0.23,
+   "job_id": "edd6b385-13c9-4499-b601-857e36784d3a"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V1Bc_r2",
+   "cost": 0.23,
+   "job_id": "77d0ef2b-be57-4372-af21-e12c69b4598f"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V3bm_r1",
+   "cost": 0.23,
+   "job_id": "99d1c892-4546-485c-8668-e0bc75a852c7"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "T2m_r1",
+   "cost": 0.46,
+   "job_id": "063310f3-1717-436f-80b8-3c35750efc7e"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V8_r2",
+   "cost": 0.23,
+   "job_id": "3500f654-19dc-4207-83e7-0ab4a0924b42"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "T4_r2",
+   "cost": 0.46,
+   "job_id": "a3787d25-9971-47b3-b5a3-3bf0b6dc5d0c"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "T4_r3",
+   "cost": 0.46,
+   "job_id": "0f59303f-95c7-4d37-8878-0d252682d6b4"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "TA_r2",
+   "cost": 0.23,
+   "job_id": "320343d0-4d7e-4244-aef5-1b1529daebf4"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "T5_r2",
+   "cost": 0.23,
+   "job_id": "789c8298-a706-437b-979b-a3fc32115f7e"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V7_r2",
+   "cost": 0.23,
+   "job_id": "914511e5-228e-482d-8a1a-3323df40fa62"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V9_r3",
+   "cost": 0.23,
+   "job_id": "a06da01a-b067-48f1-a2a1-72cb5ed3a998"
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "label": "V2_r3",
+   "cost": 0.23,
+   "job_id": "34f16af8-67df-49aa-a6f2-111c0a990b7b"
+  },
+  {
+   "at": "2026-10-09T06:25:46Z",
+   "label": "T4p_r1",
+   "cost": 0.46,
+   "job_id": "bd1f266d-1c42-41a7-9ce1-9257d912d7fe"
+  },
+  {
+   "at": "2026-10-09T06:25:46Z",
+   "label": "T4p_r2",
+   "cost": 0.46,
+   "job_id": "e115b37a-610e-4d63-b74b-0e7497ff7f47"
+  },
+  {
+   "at": "2026-10-09T06:25:46Z",
+   "label": "V10c_r1",
+   "cost": 0.23,
+   "job_id": "9a57bdf1-de51-4951-9426-3df65054d562"
+  },
+  {
+   "at": "2026-10-09T06:25:46Z",
+   "label": "V10c_r2",
+   "cost": 0.23,
+   "job_id": "875419b3-852f-43cc-ac3a-8e4d41e41bd5"
+  },
+  {
+   "at": "2026-10-09T06:32:08Z",
+   "label": "T5f3_r1",
+   "cost": 0.23,
+   "job_id": "eea0affa-8ceb-4c39-b2d5-f818064457dc"
+  },
+  {
+   "at": "2026-10-09T06:32:08Z",
+   "label": "T5f3_r2",
+   "cost": 0.23,
+   "job_id": "ecb814ca-49d8-4d95-bed2-ee6998e3901f"
+  },
+  {
+   "at": "2026-10-09T06:48:25Z",
+   "label": "T2m_r2",
+   "cost": 0.46,
+   "job_id": "7c3c6ec7-3d6b-4cb7-93a7-53025fad1b20"
+  },
+  {
+   "at": "2026-10-09T06:48:25Z",
+   "label": "T2m_r3",
+   "cost": 0.46,
+   "job_id": "c85edb85-f67d-4194-8685-c807c84a47f6"
+  },
+  {
+   "at": "2026-10-09T07:03:06Z",
+   "label": "TA_r3",
+   "cost": 0.23,
+   "job_id": "6246757f-2976-43a8-bb50-cb6dd625bc99"
+  },
+  {
+   "at": "2026-10-09T07:03:06Z",
+   "label": "TA_r4",
+   "cost": 0.23,
+   "job_id": "d7f73153-5164-41db-a8df-3c6aedf71a0e"
+  },
+  {
+   "at": "2026-10-09T07:03:06Z",
+   "label": "TA_r5",
+   "cost": 0.23,
+   "job_id": "f4760699-a76f-4825-98c6-9d1bc6f5c1de"
+  }
+ ],
+ "balance_checks": [
+  {
+   "at": "2026-10-09T06:04:30Z",
+   "credits": 6978.56,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "credits": 6978.56,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:05:55Z",
+   "credits": 6975.8,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:13:27Z",
+   "credits": 6968.9,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:13:41Z",
+   "credits": 6966.14,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:18:22Z",
+   "credits": 6962.92,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:23:46Z",
+   "credits": 6954.41,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:25:46Z",
+   "credits": 6946.59,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:32:08Z",
+   "credits": 6939.69,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T06:48:25Z",
+   "credits": 6933.94,
+   "ok": true
+  },
+  {
+   "at": "2026-10-09T07:03:06Z",
+   "credits": 6927.96,
+   "ok": true
+  }
+ ],
+ "log": [
+  {
+   "at": "2026-10-08T23:40",
+   "event": "blocked before any request",
+   "detail": "ToolSearch does not exist for this agent, and direct calls to mcp__Higgsfield__balance, generate_audio (get_cost: true), generate_audio_batch (get_cost: true) and jobs_wait return 'Its MCP server Higgsfield is connected but does not offer this tool here'. No balance read, no get_cost preflight, no job submitted: 0 credits spent."
+  },
+  {
+   "at": "2026-10-09T06:04:30Z",
+   "event": "run 2 started: ToolSearch available; Higgsfield tools loaded"
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "event": "pronunciation batch P0-P8 checked (whisper small + medium, voiced-run gaps, spectrogram of awaaz): no spelling change needed; kept सब्र, कंट्रोल-एस (hyphen: max internal gap 55 ms vs 90-95 ms with a space), ख़ुद (खुद heard as कुत), आवाज़ (continuous frication, no closure)"
+  },
+  {
+   "at": "2026-10-09T06:17:43Z",
+   "event": "r1 single-line takes run slow (about 3.8 syl/s raw vs the 4.5 the brief windows assume; V1, V2, V1B, V3a, V4, V7, V8, V9, V11 over their windows even at 1.10x; V3b CER 0.172). Batch 3: the SCRIPT grouped takes TA, T2, T3, T4, T5 (context gives a narrative pace; lines are cut at sentence pauses) plus single re-takes V1B, V12, V2, V3b, V1, V3a, V9 = 3.22 credits"
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "event": "batch 4 plan (3.45 credits): TA r2, V2 r3 (V2 runs 0.69-0.76 s after 1.10x vs the 0.43/0.45 s target), V1B comma variant x2 (DEV punctuation only: 'ये आवाज़, याद है?'; the '...' drawls ये आवाज़ to 1.35-1.71 s), V3b and T2 with the SCRIPT 9 fallback मुहल्ला (मोहल्ला heard as महला/मौल्ला in all 3 context takes, V3b CER 0.172), T4 x2 + V7 + V8 + V9 singles (dense block 0.41 s over at 1.10x), T5 r2"
+  },
+  {
+   "at": "2026-10-09T06:25:21Z",
+   "event": "batch 5 plan (1.38 credits): dense block V7-V10 is 0.23 s over at 1.10x with 0.12 s gaps (best takes: V7 3.09, V8 3.94, V9 1.37, V10 2.34 raw). Before the brief's F3 (drop humein) try DEV-punctuation-only variants that cut sentence-final drawl: T4p ('दबाती है, हर तीस सेकंड।') x2 and V10c ('सिखाई,' instead of 'सिखाई...') x2; captions/ROM unchanged"
+  },
+  {
+   "at": "2026-10-09T06:31:54Z",
+   "event": "batch 6 plan (0.46): brief 6.7 overrun ladder F3 as insurance for the dense block (punctuation variants did not shorten V8/V10: T4p V8 4.18-4.29 s, V10c 2.50-2.53 s raw): T5 without हमें x2"
+  },
+  {
+   "at": "2026-10-09T06:48:08Z",
+   "event": "dense block measured at 1.10x (absolute -55 dBFS spans): V7 2.86 + V8 3.61-3.70 + V9 1.26 + V10 2.02 (F3) / 2.25 + 3 x 0.12 = 10.10-10.20 s (F3) vs 9.90 s between the bold 16.40 start and the bold 26.30 end: F3 alone does not fit, so ladder F4 (drop V9) is applied and V10 keeps humein. Batch 7 plan (0.92): T2m x2 because the V3b keyword chhat in T2m_r1 was heard as च्छात by whisper medium (sim 0.76 < 1.15)"
+  },
+  {
+   "at": "2026-10-09T07:02:50Z",
+   "event": "batch 8 plan (0.69): TA x3. The chosen V1 (TA_r2) is heard विजली by whisper medium after the chain (CER 0.143; small hears बिजली; the spectrogram shows a prevoiced b with a release burst). The hook's first word should pass both ears (GATE minor 9), and only TA-context takes fit V1 before the f40 beep (singles run 1.38-1.42 s at 1.10x)"
+  },
+  {
+   "at": "2026-10-09T07:17:34Z",
+   "event": "final: 58 requests, 15.41 credits (9 pronunciation carriers 2.07; 30 single-line and 19 grouped takes 13.34). Stems vo_stem.wav (A) / vo_stem_B.wav (B) assembled from select.json; F4 in force (V9 dropped)"
+  }
+ ],
+ "note": "Spend is tracked from this agent's own get_cost preflights (0.23 credits per request measured), not from balance deltas (the account owner spends credits too).",
+ "remaining_reel_budget": 9.59,
+ "preflights": [
+  {
+   "at": "2026-10-09T06:04:30Z",
+   "label": "test: carrier 13 chars",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:04:30Z",
+   "label": "test: V8 45 chars",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:27Z",
+   "label": "pron P0",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:28Z",
+   "label": "pron P1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:29Z",
+   "label": "pron P2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:29Z",
+   "label": "pron P3",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "label": "pron P4",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "label": "pron P5",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "label": "pron P6",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "label": "pron P7",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:05:30Z",
+   "label": "pron P8",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V1 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V2 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V1B r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V3a r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V3b r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V4 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V5 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V6 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V7 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V8 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V9 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V10 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V11 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:12:54Z",
+   "label": "line V12 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "group T4 r1 (96 chars)",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "group T2 r1 (62 chars)",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "group TA r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "group T3 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "group T5 r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V1B r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V12 r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V2 r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V3b r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V1 r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V3a r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:17:42Z",
+   "label": "line V9 r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:58Z",
+   "label": "V1Bc_r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:58Z",
+   "label": "V1Bc_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:58Z",
+   "label": "V3bm_r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:58Z",
+   "label": "T2m_r1",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "V8_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "T4_r2",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "T4_r3",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "TA_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "T5_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "V7_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "V9_r3",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:22:59Z",
+   "label": "V2_r3",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:25:21Z",
+   "label": "T4p_r1",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:25:21Z",
+   "label": "T4p_r2",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:25:21Z",
+   "label": "V10c_r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:25:21Z",
+   "label": "V10c_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:31:54Z",
+   "label": "T5f3_r1",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:31:54Z",
+   "label": "T5f3_r2",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T06:48:08Z",
+   "label": "T2m_r2",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T06:48:08Z",
+   "label": "T2m_r3",
+   "cost": 0.46
+  },
+  {
+   "at": "2026-10-09T07:02:50Z",
+   "label": "TA_r3",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T07:02:50Z",
+   "label": "TA_r4",
+   "cost": 0.23
+  },
+  {
+   "at": "2026-10-09T07:02:50Z",
+   "label": "TA_r5",
+   "cost": 0.23
+  }
+ ]
+}

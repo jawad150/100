@@ -1,0 +1,10 @@
+{
+  "name": "reels-studio",
+  "description": "A production team for premium 9:16 motion-graphics reels: SaaS-style animation, 3D props rendered in Blender, kinetic typography, glass UI, footage editing, SFX, music, trending captions, frame-by-frame QA and delivery. 14 agents, 4 skills and a bundled Python motion toolkit.",
+  "author": {
+    "name": "jawad150"
+  },
+  "homepage": "https://github.com/jawad150/100",
+  "repository": "https://github.com/jawad150/100",
+  "keywords": ["video", "motion-graphics", "reels", "animation", "blender", "3d", "sfx", "captions", "instagram", "tiktok"]
+}

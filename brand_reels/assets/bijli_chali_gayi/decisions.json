@@ -1,0 +1,22 @@
+{
+ "Ladder steps used (BRIEF 6.7 overrun ladder)": [
+  "**F1 (speed):** every line measured at 1.10x first; V3a, V3b, V4, V5, V6 fit at 1.08x and V12 at 1.06x (gentler), V1, V2, V1B, V7, V8, V10, V11 need 1.10x. Nothing above 1.10x, no pitch shift.",
+  "**F2 (gaps):** 0.12 s minimum between lines (measured at -55 dBFS, 20 ms RMS, on the mastered lines).",
+  "**F3 (V10 without humein) tested, not used:** takes `T5f3_r1/r2` give V10 2.02 s instead of 2.20-2.25 s. The dense block at Vlad's measured pace is V7 2.86 + V8 3.61-3.70 + V9 1.26 + V10 2.02 + 3 x 0.12 = 10.10-10.20 s against the 9.90 s between the bold V7 start (16.400) and the bold V10 end (26.300): still 0.20-0.30 s over, so F3 alone cannot fix it.",
+  "**F4 (drop V9) used:** `Har tees second.` is not in the VO. Timeline: show U3F `Saved · har 30 sec` as the last chip (f712-f719); the spoken-number lock (SLATE 4) allows that chip only under F4. With V9 out, V10 keeps \"humein\" and lands \"Bijli\" exactly on the f720 candle cut (24.000), ending 26.190. V9's best take (`T4_r3`, CER 0.000 medium) is processed and kept if the lead wants to trade something else for it.",
+  "Why the windows overrun: the chosen lines run 3.8-5.4 syllables/s before the speed-up (median 4.3; the dense block's V7 3.8 and V8 4.2), against the 4.5 the BRIEF 6.7 windows assume (4.95 after 1.10x). 30 single-line takes and 19 grouped takes were measured (plus 9 pronunciation carriers); grouped takes (SCRIPT 7) read faster than single lines and supplied 10 of the 13 placed lines."
+ ],
+ "Lead decisions needed": [
+  "**V2 \"Yaad hai?\" (hook A):** 0.70-0.77 s after 1.10x in all 8 takes (TA x5, single x3), so neither the SLATE slot (<= 0.43 s at 2.200) nor the GATE fix-5 fallback (<= 0.45 s at 1.550) can hold it. Placed at the fallback, 1.545 → 2.255: \"Yaad\" sits between the beep pairs and \"hai?\" (1.90-2.255) runs under the f60/f64 pulses (2.000-2.070, 2.133-2.203). Needs the lead OK (SLATE 3.2 deviation) plus a sound call: drop or duck the f60/f64 pair in version A, or accept the overlap. The SLATE slot (2.200 → ~2.91) would cross the f79 splice by ~0.28 s: not used.",
+  "**V8 \"Ctrl+S\" (bold f620-f640):** lands at 21.467 (f644), +0.134 s. It cannot land earlier: V7 starts on the bold 16.400 and runs 2.86 s, then the 0.12 s gap and 2.09 s from \"Har\" to \"Ctrl+S\". The nearest keycap presses are f640 (21.333) and f650 (21.667); the timeline builder can start the 8th-note presses on the word (f644) or keep f640.",
+  "**V7 end 19.26 (+0.43 s):** \"dushman\" (18.62-19.26) now overlaps the L8 iris cues of BRIEF 6.10 (18.633-19.033) again.",
+  "**V1B (hook B, trial):** DEV punctuation `ये आवाज़,` instead of `ये आवाज़...` (the ellipsis made Vlad drawl \"ye awaaz\" to 1.42-1.57 s; with a comma 1.09-1.12 s); the caption tokens are unchanged (`awaaz...`). \"Ye awaaz\" runs 0.300-1.420, so its final z overlaps the first f40 pulse (1.333-1.403); the f44 pulse (1.467-1.537) sits in the pause. \"yaad\" is on f50 (1.667) and the line ends 2.347 (+0.40 s after the 1.950 window end, before the HB lockup exit ends at 2.617 and the splice at 2.633). Alternative: \"yaad\" at 1.567 ends 2.247.",
+  "**V3b spelling:** DEV `मुहल्ला` (SCRIPT 9 fallback) because `मोहल्ला` was heard महला / मौल्ला in every context take (V3b_r1 CER 0.231, V3b_r2 0.154). The caption stays `mohalla`. Whisper still writes a single l (मुहला); the lateral lasts about 0.1 s on the spectrogram: listener check.",
+  "**V1 \"Bijli\":** whisper small hears बिजली on every take; whisper medium hears विजली on 4 of the 5 takes that fit before the f40 beep (CER 0.143). The spectrogram shows a prevoiced /b/ with a release burst. The one take medium hears as बिजली (`TA_r3`) runs 1.35 s, 0.10 s into the beep. Listener check; GATE minor 9's mix test should expect either spelling or use whisper small."
+ ],
+ "Other measured deviations (< 0.3 s)": [
+  "V11 ends 28.473 (+0.273 s after 28.200); the riser starts quietly at 28.133, the power return is at 29.333.",
+  "V12 starts 31.420 (-0.23 s, inside the +-0.25 s rule; the cheer ends at 31.1) and ends on the bold 34.100.",
+  "V3a starts 2.920 (-0.08), V3b \"chhat\" onset 5.351 (f160.5, never before f160), V4 ends exactly 7.850 (>= 0.15 s before the f240 slam), V5 \"bachche\" 11.333 (f340), V6 \"editor\" 13.367 (f401), V10 \"Bijli\" 24.000 (f720), V11 \"sabr\" 27.333 (f820): every bold anchor except V8 is on its frame."
+ ]
+}

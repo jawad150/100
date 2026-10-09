@@ -1,0 +1,630 @@
+{
+ "label": "MEASURED (Vlad takes)",
+ "checks": {
+  "A": {
+   "duration": 35.2,
+   "sr": 48000,
+   "channels": 1,
+   "fmt": "s32",
+   "bits": "24",
+   "lufs": -16.0,
+   "tp": -2.1,
+   "lufs_precise": -16.03,
+   "tp_precise": -2.14,
+   "lra": 6.5,
+   "fails": [],
+   "gaps": [
+    [
+     "V1",
+     "V2",
+     6.28
+    ],
+    [
+     "V2",
+     "V3a",
+     2.357
+    ],
+    [
+     "V3a",
+     "V3b",
+     0.493
+    ],
+    [
+     "V3b",
+     "V4",
+     0.393
+    ],
+    [
+     "V4",
+     "V5a",
+     0.187
+    ],
+    [
+     "V5a",
+     "V5b",
+     0.157
+    ],
+    [
+     "V5b",
+     "V6",
+     0.673
+    ],
+    [
+     "V6",
+     "V7",
+     2.483
+    ]
+   ],
+   "loop_seam_s": 0.227,
+   "first_voice_s": 0.09,
+   "last_voice_s": 35.08,
+   "words": 61,
+   "words_ok": 61
+  },
+  "B": {
+   "duration": 35.2,
+   "sr": 48000,
+   "channels": 1,
+   "fmt": "s32",
+   "bits": "24",
+   "lufs": -16.0,
+   "tp": -2.1,
+   "lufs_precise": -16.02,
+   "tp_precise": -2.14,
+   "lra": 6.4,
+   "fails": [],
+   "gaps": [
+    [
+     "V1B",
+     "V2",
+     6.26
+    ],
+    [
+     "V2",
+     "V3a",
+     2.357
+    ],
+    [
+     "V3a",
+     "V3b",
+     0.493
+    ],
+    [
+     "V3b",
+     "V4",
+     0.393
+    ],
+    [
+     "V4",
+     "V5a",
+     0.187
+    ],
+    [
+     "V5a",
+     "V5b",
+     0.157
+    ],
+    [
+     "V5b",
+     "V6",
+     0.673
+    ],
+    [
+     "V6",
+     "V7",
+     2.483
+    ]
+   ],
+   "loop_seam_s": 0.227,
+   "first_voice_s": 0.09,
+   "last_voice_s": 35.08,
+   "words": 60,
+   "words_ok": 60
+  },
+  "retakes": {
+   "V1": false,
+   "V1B": false,
+   "V2": false,
+   "V3": false,
+   "V4": false,
+   "V5": false,
+   "V6": false,
+   "V7": false,
+   "V5b": false
+  },
+  "rule_fails": {
+   "V5": [
+    "part 1 1.110 s ends 23.510 > 23.467 at 1.10x (no rule left; the pause still holds 23.600: yes)"
+   ],
+   "V7": [
+    "ends 35.240 > 35.100 at 1.10x even after the retakes: no rule left (V7 never shortens, never above 1.10x)"
+   ]
+  },
+  "xcheck": {
+   "A": {
+    "matched_independent": "61/61",
+    "inner_mean": 0.025,
+    "inner_median": 0.014,
+    "inner_max": 0.19,
+    "over_0_15": [
+     [
+      "V1",
+      "log",
+      1.33,
+      1.52
+     ],
+     [
+      "V2",
+      "Hum",
+      8.8,
+      8.32
+     ],
+     [
+      "V3",
+      "Yeh",
+      16.357,
+      15.92
+     ],
+     [
+      "V7",
+      "Us",
+      31.443,
+      30.98
+     ]
+    ],
+    "keywords": [
+     [
+      "darr,",
+      0.933,
+      0.92
+     ],
+     [
+      "zindagi",
+      9.015,
+      9.0
+     ],
+     [
+      "edit",
+      10.742,
+      10.72
+     ],
+     [
+      "video",
+      12.633,
+      12.62
+     ],
+     [
+      "nahi.",
+      13.615,
+      13.62
+     ],
+     [
+      "flat",
+      17.064,
+      17.02
+     ],
+     [
+      "Cardboard.",
+      18.2,
+      18.06
+     ],
+     [
+      "phone",
+      21.678,
+      21.66
+     ],
+     [
+      "busy",
+      22.687,
+      22.68
+     ],
+     [
+      "kahenge",
+      24.577,
+      24.58
+     ],
+     [
+      "nazar",
+      26.846,
+      26.86
+     ],
+     [
+      "'log'",
+      28.276,
+      28.26
+     ],
+     [
+      "bhejo",
+      32.158,
+      32.18
+     ]
+    ]
+   },
+   "B": {
+    "matched_independent": "60/60",
+    "inner_mean": 0.022,
+    "inner_median": 0.013,
+    "inner_max": 0.11,
+    "over_0_15": [
+     [
+      "V2",
+      "Hum",
+      8.8,
+      8.26
+     ],
+     [
+      "V3",
+      "Yeh",
+      16.357,
+      15.84
+     ],
+     [
+      "V7",
+      "Us",
+      31.443,
+      30.98
+     ]
+    ],
+    "keywords": [
+     [
+      "kaun?",
+      2.125,
+      2.14
+     ],
+     [
+      "zindagi",
+      9.015,
+      9.02
+     ],
+     [
+      "edit",
+      10.742,
+      10.7
+     ],
+     [
+      "video",
+      12.633,
+      12.62
+     ],
+     [
+      "nahi.",
+      13.615,
+      13.62
+     ],
+     [
+      "flat",
+      17.064,
+      17.02
+     ],
+     [
+      "Cardboard.",
+      18.2,
+      18.06
+     ],
+     [
+      "phone",
+      21.678,
+      21.66
+     ],
+     [
+      "busy",
+      22.687,
+      22.68
+     ],
+     [
+      "kahenge",
+      24.577,
+      24.58
+     ],
+     [
+      "nazar",
+      26.846,
+      26.86
+     ],
+     [
+      "'log'",
+      28.276,
+      28.26
+     ],
+     [
+      "bhejo",
+      32.158,
+      32.18
+     ]
+    ]
+   }
+  }
+ },
+ "decisions": {
+  "V1": {
+   "speed": 1.1,
+   "notes": [
+    "2.670 s > 2.60 s: pause after \"darr,\" 0.350 -> 0.100 s (overrun rule)"
+   ],
+   "fail": []
+  },
+  "V1B": {
+   "speed": 1.1,
+   "notes": [],
+   "fail": []
+  },
+  "V2": {
+   "speed": 1.1,
+   "notes": [
+    "pause after \"hain...\" 0.500 -> 0.300 s"
+   ],
+   "fail": []
+  },
+  "V3": {
+   "speed": 1.1,
+   "notes": [],
+   "fail": []
+  },
+  "V4": {
+   "speed": 1.1,
+   "notes": [
+    "pause after \"hain,\" 0.280 -> 0.200 s",
+    "1.06x ends 22.333 > 22.233: next pass",
+    "pause after \"hain,\" 0.280 -> 0.200 s"
+   ],
+   "fail": []
+  },
+  "V5": {
+   "speed": 1.1,
+   "notes": [
+    "1.08x: part 1 1.120 s (ends 23.520, max 23.467), part 2 1.690 s (max 1.733): next pass",
+    "1.10x: part 1 1.110 s (ends 23.510, max 23.467), part 2 1.660 s (max 1.780): next pass"
+   ],
+   "fail": [
+    "part 1 1.110 s ends 23.510 > 23.467 at 1.10x (no rule left; the pause still holds 23.600: yes)"
+   ]
+  },
+  "V6": {
+   "speed": 1.05,
+   "notes": [
+    "pause after \"mein,\" 0.370 -> 0.200 s"
+   ],
+   "fail": []
+  },
+  "V7": {
+   "speed": 1.1,
+   "notes": [
+    "1.00x ends 35.580 > 35.100: next pass",
+    "1.03x ends 35.470 > 35.100: next pass",
+    "1.06x ends 35.370 > 35.100: next pass",
+    "1.10x ends 35.240 > 35.100: next pass",
+    "onset moved 31.600 -> 31.433 s (f943, -0.167 s) so the last word ends by 35.100: decision for the lead",
+    "1.10x is outside the gate band 1.00-1.06x: tell the lead"
+   ],
+   "fail": [
+    "ends 35.240 > 35.100 at 1.10x even after the retakes: no rule left (V7 never shortens, never above 1.10x)"
+   ]
+  }
+ },
+ "stems": {
+  "A": {
+   "loud": {
+    "pre_lufs": -16.47,
+    "pre_tp": -2.28,
+    "gain_db": 0.47,
+    "limiter": true,
+    "iterations": [
+     [
+      -16.47,
+      -2.28
+     ],
+     [
+      -16.03,
+      -2.14
+     ]
+    ],
+    "lufs_precise": -16.03,
+    "tp_precise": -2.14,
+    "lufs": -16.0,
+    "lra": 6.5,
+    "tp": -2.1
+   },
+   "probe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "pcm_s24le",
+      "sample_fmt": "s32",
+      "sample_rate": "48000",
+      "channels": 1,
+      "bits_per_raw_sample": "24"
+     }
+    ],
+    "format": {
+     "duration": "35.200000"
+    }
+   },
+   "placed": [
+    {
+     "label": "V1",
+     "onset": 0.1,
+     "voice_on": 0.1,
+     "voice_off": 2.52,
+     "file_on": 0.06,
+     "file_off": 2.555
+    },
+    {
+     "label": "V2",
+     "onset": 8.8,
+     "voice_on": 8.8,
+     "voice_off": 14.01,
+     "file_on": 8.76,
+     "file_off": 14.06
+    },
+    {
+     "label": "V3a",
+     "onset": 16.367,
+     "voice_on": 16.367,
+     "voice_off": 17.707,
+     "file_on": 16.337,
+     "file_off": 17.747
+    },
+    {
+     "label": "V3b",
+     "onset": 18.2,
+     "voice_on": 18.2,
+     "voice_off": 18.94,
+     "file_on": 18.17,
+     "file_off": 18.976
+    },
+    {
+     "label": "V4",
+     "onset": 19.333,
+     "voice_on": 19.333,
+     "voice_off": 22.213,
+     "file_on": 19.303,
+     "file_off": 22.278
+    },
+    {
+     "label": "V5a",
+     "onset": 22.4,
+     "voice_on": 22.4,
+     "voice_off": 23.51,
+     "file_on": 22.36,
+     "file_off": 23.55
+    },
+    {
+     "label": "V5b",
+     "onset": 23.667,
+     "voice_on": 23.667,
+     "voice_off": 25.327,
+     "file_on": 23.627,
+     "file_off": 25.341
+    },
+    {
+     "label": "V6",
+     "onset": 26.0,
+     "voice_on": 26.0,
+     "voice_off": 28.95,
+     "file_on": 25.96,
+     "file_off": 28.99
+    },
+    {
+     "label": "V7",
+     "onset": 31.433,
+     "voice_on": 31.433,
+     "voice_off": 35.073,
+     "file_on": 31.413,
+     "file_off": 35.077
+    }
+   ]
+  },
+  "B": {
+   "loud": {
+    "pre_lufs": -16.42,
+    "pre_tp": -2.28,
+    "gain_db": 0.42,
+    "limiter": true,
+    "iterations": [
+     [
+      -16.42,
+      -2.28
+     ],
+     [
+      -16.02,
+      -2.14
+     ]
+    ],
+    "lufs_precise": -16.02,
+    "tp_precise": -2.14,
+    "lufs": -16.0,
+    "lra": 6.4,
+    "tp": -2.1
+   },
+   "probe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "pcm_s24le",
+      "sample_fmt": "s32",
+      "sample_rate": "48000",
+      "channels": 1,
+      "bits_per_raw_sample": "24"
+     }
+    ],
+    "format": {
+     "duration": "35.200000"
+    }
+   },
+   "placed": [
+    {
+     "label": "V1B",
+     "onset": 0.1,
+     "voice_on": 0.1,
+     "voice_off": 2.54,
+     "file_on": 0.07,
+     "file_off": 2.57
+    },
+    {
+     "label": "V2",
+     "onset": 8.8,
+     "voice_on": 8.8,
+     "voice_off": 14.01,
+     "file_on": 8.76,
+     "file_off": 14.06
+    },
+    {
+     "label": "V3a",
+     "onset": 16.367,
+     "voice_on": 16.367,
+     "voice_off": 17.707,
+     "file_on": 16.337,
+     "file_off": 17.747
+    },
+    {
+     "label": "V3b",
+     "onset": 18.2,
+     "voice_on": 18.2,
+     "voice_off": 18.94,
+     "file_on": 18.17,
+     "file_off": 18.976
+    },
+    {
+     "label": "V4",
+     "onset": 19.333,
+     "voice_on": 19.333,
+     "voice_off": 22.213,
+     "file_on": 19.303,
+     "file_off": 22.278
+    },
+    {
+     "label": "V5a",
+     "onset": 22.4,
+     "voice_on": 22.4,
+     "voice_off": 23.51,
+     "file_on": 22.36,
+     "file_off": 23.55
+    },
+    {
+     "label": "V5b",
+     "onset": 23.667,
+     "voice_on": 23.667,
+     "voice_off": 25.327,
+     "file_on": 23.627,
+     "file_off": 25.341
+    },
+    {
+     "label": "V6",
+     "onset": 26.0,
+     "voice_on": 26.0,
+     "voice_off": 28.95,
+     "file_on": 25.96,
+     "file_off": 28.99
+    },
+    {
+     "label": "V7",
+     "onset": 31.433,
+     "voice_on": 31.433,
+     "voice_off": 35.073,
+     "file_on": 31.413,
+     "file_off": 35.077
+    }
+   ]
+  }
+ }
+}

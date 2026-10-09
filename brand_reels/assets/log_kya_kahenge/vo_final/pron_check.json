@@ -1,0 +1,338 @@
+[
+ {
+  "id": "P1",
+  "take": "lkk_P1_t1.mp3",
+  "text": "ये क्राउड फ़्लैट है। ये कार्डबोर्ड है।",
+  "why": "V3 risks 1, 2, 5 in their script spelling",
+  "dur": 3.474,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "ये क्राउट फलाट है, ये कार्ट बो़़ है",
+    "cer": 0.235,
+    "cer_loan": 0.235
+   },
+   {
+    "model": "medium",
+    "heard": "ये Crowdflat है, ये Cardboard है",
+    "cer": 1.059,
+    "cer_loan": 0.529
+   }
+  ],
+  "words": [
+   {
+    "word": "क्राउड",
+    "heard": [
+     [
+      "small",
+      "क्राउट",
+      0.83
+     ],
+     [
+      "medium",
+      "कार्डबोर्ड",
+      0.47
+     ]
+    ],
+    "verdict": "fail",
+    "ear": false
+   },
+   {
+    "word": "फ़्लैट",
+    "heard": [
+     [
+      "small",
+      "फलाट",
+      1.2
+     ],
+     [
+      "medium",
+      "Crowdflat",
+      0.32
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   },
+   {
+    "word": "कार्डबोर्ड",
+    "heard": [
+     [
+      "small",
+      "कार्टबो़़",
+      0.55
+     ],
+     [
+      "medium",
+      "कार्डबोर्ड",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": false
+   }
+  ]
+ },
+ {
+  "id": "P2",
+  "take": "lkk_P2_t1.mp3",
+  "text": "ये कार्ड-बोर्ड है। ये फ्लैट है।",
+  "why": "V3 fallbacks (risk 1 hyphen, risk 2 no nukta)",
+  "dur": 3.318,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "ये कार्ट बोड है, ये ख्लाट है",
+    "cer": 0.231,
+    "cer_loan": 0.231
+   },
+   {
+    "model": "medium",
+    "heard": "ये कार्टबोड है, ये फ्लाट है",
+    "cer": 0.154,
+    "cer_loan": 0.154
+   }
+  ],
+  "words": [
+   {
+    "word": "कार्ड-बोर्ड",
+    "heard": [
+     [
+      "small",
+      "कार्टबोड",
+      0.71
+     ],
+     [
+      "medium",
+      "कार्टबोड",
+      0.71
+     ]
+    ],
+    "verdict": "fail",
+    "ear": false
+   },
+   {
+    "word": "फ्लैट",
+    "heard": [
+     [
+      "small",
+      "ख्लाट",
+      0.47
+     ],
+     [
+      "medium",
+      "फ्लाट",
+      1.2
+     ]
+    ],
+    "verdict": "ok",
+    "ear": false
+   }
+  ]
+ },
+ {
+  "id": "P3",
+  "take": "lkk_P3_t1.mp3",
+  "text": "लोग बिज़ी हैं। उसकी नज़र में। अपनी ज़िंदगी। अपना फ़ोन।",
+  "why": "z / f nukta words (risks 3, 4, 7, 8); ASR normalises nuktas, so a listener must confirm z and f",
+  "dur": 6.687,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "लोग भीजी है, उसकी नजर में, अपनी जिन्दगी, अपना फोन.",
+    "cer": 0.087,
+    "cer_loan": 0.087
+   },
+   {
+    "model": "medium",
+    "heard": "लोग बिजी हैं, उसकी नजर में अपनी जिन्दगी, अपना फोँन।",
+    "cer": 0.043,
+    "cer_loan": 0.043
+   }
+  ],
+  "words": [
+   {
+    "word": "बिज़ी",
+    "heard": [
+     [
+      "small",
+      "भीजी",
+      1.2
+     ],
+     [
+      "medium",
+      "बिजी",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   },
+   {
+    "word": "नज़र",
+    "heard": [
+     [
+      "small",
+      "नजर",
+      3.0
+     ],
+     [
+      "medium",
+      "नजर",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   },
+   {
+    "word": "ज़िंदगी",
+    "heard": [
+     [
+      "small",
+      "जिन्दगी,",
+      1.2
+     ],
+     [
+      "medium",
+      "जिन्दगी,",
+      1.2
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   },
+   {
+    "word": "फ़ोन",
+    "heard": [
+     [
+      "small",
+      "फोन.",
+      3.0
+     ],
+     [
+      "medium",
+      "फोँन।",
+      1.2
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   }
+  ]
+ },
+ {
+  "id": "P4",
+  "take": "lkk_P4_t1.mp3",
+  "text": "हम भी 'लोग' हैं। हम भी लोग हैं।",
+  "why": "risk 6: does the quoted 'log' hiccup or lose stress against the plain one",
+  "dur": 3.631,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "हम भी लोग है",
+    "cer": 0.5,
+    "cer_loan": 0.5
+   },
+   {
+    "model": "medium",
+    "heard": "हम भी लोग हैं!",
+    "cer": 0.5,
+    "cer_loan": 0.5
+   }
+  ],
+  "words": [
+   {
+    "word": "'लोग'",
+    "heard": [
+     [
+      "small",
+      "लोग",
+      3.0
+     ],
+     [
+      "medium",
+      "लोग",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": false
+   },
+   {
+    "word": "लोग",
+    "heard": [
+     [
+      "small",
+      "लोग",
+      3.0
+     ],
+     [
+      "medium",
+      "लोग",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": false
+   }
+  ]
+ },
+ {
+  "id": "P5",
+  "take": "lkk_P5_t1.mp3",
+  "text": "लोग busy हैं। ये गत्ता है।",
+  "why": "risk 3 fallback (Latin busy inside the DEV text) and risk 1 fallback (गत्ता)",
+  "dur": 3.239,
+  "asr": [
+   {
+    "model": "small",
+    "heard": "लोग भीजी है, ये गता है",
+    "cer": 0.417,
+    "cer_loan": 0.417
+   },
+   {
+    "model": "medium",
+    "heard": "लोग बिजी हैं, ये गता है।",
+    "cer": 0.417,
+    "cer_loan": 0.417
+   }
+  ],
+  "words": [
+   {
+    "word": "बिज़ी",
+    "heard": [
+     [
+      "small",
+      "भीजी",
+      1.2
+     ],
+     [
+      "medium",
+      "बिजी",
+      3.0
+     ]
+    ],
+    "verdict": "ok",
+    "ear": true
+   },
+   {
+    "word": "गत्ता",
+    "heard": [
+     [
+      "small",
+      "गता",
+      1.2
+     ],
+     [
+      "medium",
+      "गता",
+      1.2
+     ]
+    ],
+    "verdict": "ok",
+    "ear": false
+   }
+  ]
+ }
+]

@@ -1,0 +1,216 @@
+{
+ "A_note": "whisper diffs over the non-first words of each line (9 lines have >1 word)",
+ "A": {
+  "lines": [
+   {
+    "line": "L1",
+    "matched": "5/5",
+    "mean_start_diff": 0.015,
+    "max_start_diff": 0.02,
+    "first_word_to_onset": 0.01,
+    "heard": "बस एक छोटा सा चेंज"
+   },
+   {
+    "line": "L2",
+    "matched": "2/2",
+    "mean_start_diff": 0.004,
+    "max_start_diff": 0.004,
+    "first_word_to_onset": 0.007,
+    "heard": "हो जाएगा"
+   },
+   {
+    "line": "L3",
+    "matched": "5/5",
+    "mean_start_diff": 0.096,
+    "max_start_diff": 0.37,
+    "first_word_to_onset": 0.01,
+    "heard": "पोप किसी को नहीं बता"
+   },
+   {
+    "line": "L4",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.013,
+    "heard": "क्लीन"
+   },
+   {
+    "line": "L5",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.01,
+    "heard": "अनर्जेटिक"
+   },
+   {
+    "line": "L6",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.02,
+    "heard": "फुन"
+   },
+   {
+    "line": "L7",
+    "matched": "5/5",
+    "mean_start_diff": 0.019,
+    "max_start_diff": 0.056,
+    "first_word_to_onset": 0.017,
+    "heard": "अब मम्मी भी रिवू करेंगी"
+   },
+   {
+    "line": "L8",
+    "matched": "2/2",
+    "mean_start_diff": 0.03,
+    "max_start_diff": 0.03,
+    "first_word_to_onset": 0.01,
+    "heard": "बिल्कुल सिनमाटिक"
+   },
+   {
+    "line": "L9",
+    "matched": "6/6",
+    "mean_start_diff": 0.018,
+    "max_start_diff": 0.028,
+    "first_word_to_onset": 0.007,
+    "heard": "और एक, और एक, और एक"
+   },
+   {
+    "line": "L10",
+    "matched": "3/3",
+    "mean_start_diff": 0.06,
+    "max_start_diff": 0.1,
+    "first_word_to_onset": 0.0,
+    "heard": "फिर आख्री मेसेज"
+   },
+   {
+    "line": "L11",
+    "matched": "9/9",
+    "mean_start_diff": 0.015,
+    "max_start_diff": 0.043,
+    "first_word_to_onset": 0.003,
+    "heard": "हर अदिटर जानता है, वी वान ही फाणल होता है"
+   },
+   {
+    "line": "L12",
+    "matched": "5/5",
+    "mean_start_diff": 0.011,
+    "max_start_diff": 0.018,
+    "first_word_to_onset": 0.01,
+    "heard": "और फिर ख्लान्त ने बोला"
+   }
+  ],
+  "stray_voice": [],
+  "tokens_matched": "45/45",
+  "max_start_diff": 0.37,
+  "mean_start_diff": 0.03,
+  "max_first_word_to_onset": 0.02
+ },
+ "B_note": "whisper diffs over the non-first words of each line (9 lines have >1 word)",
+ "B": {
+  "lines": [
+   {
+    "line": "L1B",
+    "matched": "6/6",
+    "mean_start_diff": 0.046,
+    "max_start_diff": 0.12,
+    "first_word_to_onset": 0.0,
+    "heard": "चब्वीस रविज्यन बाद ख्लाएंट निकहा"
+   },
+   {
+    "line": "L2",
+    "matched": "2/2",
+    "mean_start_diff": 0.004,
+    "max_start_diff": 0.004,
+    "first_word_to_onset": 0.007,
+    "heard": "हो जाएगा"
+   },
+   {
+    "line": "L3",
+    "matched": "5/5",
+    "mean_start_diff": 0.096,
+    "max_start_diff": 0.37,
+    "first_word_to_onset": 0.01,
+    "heard": "पोप किसी को नहीं बता"
+   },
+   {
+    "line": "L4",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.013,
+    "heard": "क्लीन"
+   },
+   {
+    "line": "L5",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.01,
+    "heard": "अनर्जेटिक"
+   },
+   {
+    "line": "L6",
+    "matched": "1/1",
+    "mean_start_diff": null,
+    "max_start_diff": null,
+    "first_word_to_onset": 0.02,
+    "heard": "फुन"
+   },
+   {
+    "line": "L7",
+    "matched": "5/5",
+    "mean_start_diff": 0.019,
+    "max_start_diff": 0.056,
+    "first_word_to_onset": 0.017,
+    "heard": "अब मम्मी भी रिवू करेंगी"
+   },
+   {
+    "line": "L8",
+    "matched": "2/2",
+    "mean_start_diff": 0.03,
+    "max_start_diff": 0.03,
+    "first_word_to_onset": 0.01,
+    "heard": "बिल्कुल सिनमाटिक"
+   },
+   {
+    "line": "L9",
+    "matched": "6/6",
+    "mean_start_diff": 0.018,
+    "max_start_diff": 0.028,
+    "first_word_to_onset": 0.007,
+    "heard": "और एक, और एक, और एक"
+   },
+   {
+    "line": "L10",
+    "matched": "3/3",
+    "mean_start_diff": 0.06,
+    "max_start_diff": 0.1,
+    "first_word_to_onset": 0.0,
+    "heard": "फिर आख्री मेसेज"
+   },
+   {
+    "line": "L11",
+    "matched": "9/9",
+    "mean_start_diff": 0.015,
+    "max_start_diff": 0.043,
+    "first_word_to_onset": 0.003,
+    "heard": "हर अदिटर जानता है, वी वान ही फाणल होता है"
+   },
+   {
+    "line": "L12",
+    "matched": "5/5",
+    "mean_start_diff": 0.011,
+    "max_start_diff": 0.018,
+    "first_word_to_onset": 0.01,
+    "heard": "और फिर ख्लान्त ने बोला"
+   }
+  ],
+  "stray_voice": [],
+  "tokens_matched": "46/46",
+  "max_start_diff": 0.37,
+  "mean_start_diff": 0.033,
+  "max_first_word_to_onset": 0.02
+ },
+ "B_equals_A_after_3s_max_abs_diff": 0.0,
+ "B_equals_A_after_3s_max_abs_diff_dB": -240.0
+}

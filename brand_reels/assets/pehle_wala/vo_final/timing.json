@@ -1,0 +1,1089 @@
+{
+ "A": {
+  "file": "/home/user/100/workspace/jawad_reels/pehle_wala/vo/vo_stem.wav",
+  "loudness": {
+   "lufs": -16.0,
+   "lra": 5.9,
+   "tp": -2.8
+  },
+  "gain_db": 0.7,
+  "limiter_peak_reduction_db": 3.18,
+  "samples": 1638400,
+  "dur": 34.13333333333333,
+  "rows": [
+   {
+    "line": "L1",
+    "tag": "t3",
+    "line_lufs_in": -17.3,
+    "line_gain_db": 1.3,
+    "beat": "0.0+3f",
+    "frame": 3,
+    "target_start": 0.1,
+    "target_end": 1.631,
+    "hard_end": 2.6,
+    "t0": 0.1,
+    "t1": 2.27,
+    "t1_voice": 2.27,
+    "d_start": 0.0,
+    "d_end": 0.639,
+    "over_hard": -0.33,
+    "words": 5,
+    "speech_s": 2.17,
+    "wps": 2.3,
+    "keyword": "chhota",
+    "keyword_at": 1.0,
+    "phrases": [
+     [
+      0.1,
+      2.27
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      0.07,
+      2.301
+     ]
+    ]
+   },
+   {
+    "line": "L2",
+    "tag": "t1",
+    "line_lufs_in": -17.4,
+    "line_gain_db": 1.4,
+    "beat": "1.2+2f",
+    "frame": 98,
+    "target_start": 3.267,
+    "target_end": 4.055,
+    "hard_end": 4.25,
+    "t0": 3.267,
+    "t1": 4.227,
+    "t1_voice": 4.227,
+    "d_start": 0.0,
+    "d_end": 0.172,
+    "over_hard": -0.023,
+    "words": 2,
+    "speech_s": 0.96,
+    "wps": 2.08,
+    "keyword": "jayega",
+    "keyword_at": 3.523,
+    "phrases": [
+     [
+      3.267,
+      4.227
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      3.227,
+      4.267
+     ]
+    ]
+   },
+   {
+    "line": "L3",
+    "tag": "t1",
+    "line_lufs_in": -16.2,
+    "line_gain_db": 0.2,
+    "beat": "2.0+4f",
+    "frame": 132,
+    "target_start": 4.4,
+    "target_end": 6.547,
+    "hard_end": 6.583,
+    "t0": 4.4,
+    "t1": 6.117,
+    "t1_voice": 6.117,
+    "d_start": 0.0,
+    "d_end": -0.43,
+    "over_hard": -0.466,
+    "words": 5,
+    "speech_s": 1.467,
+    "wps": 2.91,
+    "keyword": "Pop",
+    "keyword_at": 4.4,
+    "phrases": [
+     [
+      4.4,
+      4.84
+     ],
+     [
+      5.09,
+      6.117
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      4.37,
+      4.88
+     ],
+     [
+      5.05,
+      6.127
+     ]
+    ]
+   },
+   {
+    "line": "L4",
+    "tag": "t1",
+    "line_lufs_in": -16.1,
+    "line_gain_db": 0.1,
+    "beat": "3.0+10f",
+    "frame": 202,
+    "target_start": 6.733,
+    "target_end": 7.304,
+    "hard_end": 7.45,
+    "t0": 6.733,
+    "t1": 7.533,
+    "t1_voice": 7.533,
+    "d_start": 0.0,
+    "d_end": 0.229,
+    "over_hard": 0.083,
+    "words": 1,
+    "speech_s": 0.8,
+    "wps": 1.25,
+    "keyword": "Clean",
+    "keyword_at": 6.733,
+    "phrases": [
+     [
+      6.733,
+      7.533
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      6.693,
+      7.573
+     ]
+    ]
+   },
+   {
+    "line": "L5",
+    "tag": "t1",
+    "line_lufs_in": -16.5,
+    "line_gain_db": 0.5,
+    "beat": "4.0+2f",
+    "frame": 258,
+    "target_start": 8.6,
+    "target_end": 9.468,
+    "hard_end": 9.55,
+    "t0": 8.6,
+    "t1": 9.57,
+    "t1_voice": 9.57,
+    "d_start": 0.0,
+    "d_end": 0.102,
+    "over_hard": 0.02,
+    "words": 1,
+    "speech_s": 0.97,
+    "wps": 1.03,
+    "keyword": "Energetic",
+    "keyword_at": 8.6,
+    "phrases": [
+     [
+      8.6,
+      9.57
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      8.56,
+      9.61
+     ]
+    ]
+   },
+   {
+    "line": "L6",
+    "tag": "t1",
+    "line_lufs_in": -16.3,
+    "line_gain_db": 0.3,
+    "beat": "5.0+4f",
+    "frame": 324,
+    "target_start": 10.8,
+    "target_end": 11.33,
+    "hard_end": 11.7,
+    "t0": 10.8,
+    "t1": 11.55,
+    "t1_voice": 11.55,
+    "d_start": 0.0,
+    "d_end": 0.22,
+    "over_hard": -0.15,
+    "words": 1,
+    "speech_s": 0.75,
+    "wps": 1.33,
+    "keyword": "Fun",
+    "keyword_at": 10.8,
+    "phrases": [
+     [
+      10.8,
+      11.55
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      10.76,
+      11.59
+     ]
+    ]
+   },
+   {
+    "line": "L7",
+    "tag": "t1",
+    "line_lufs_in": -15.8,
+    "line_gain_db": -0.2,
+    "beat": "6.0+2f",
+    "frame": 386,
+    "target_start": 12.867,
+    "target_end": 14.785,
+    "hard_end": 14.9,
+    "t0": 12.867,
+    "t1": 14.657,
+    "t1_voice": 14.657,
+    "d_start": 0.0,
+    "d_end": -0.128,
+    "over_hard": -0.243,
+    "words": 5,
+    "speech_s": 1.79,
+    "wps": 2.79,
+    "keyword": "Mummy",
+    "keyword_at": 13.131,
+    "phrases": [
+     [
+      12.867,
+      14.657
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      12.827,
+      14.697
+     ]
+    ]
+   },
+   {
+    "line": "L8",
+    "tag": "t1",
+    "line_lufs_in": -16.8,
+    "line_gain_db": 0.8,
+    "beat": "7.0+2f",
+    "frame": 450,
+    "target_start": 15.0,
+    "target_end": 16.367,
+    "hard_end": 16.5,
+    "t0": 15.0,
+    "t1": 16.42,
+    "t1_voice": 16.42,
+    "d_start": 0.0,
+    "d_end": 0.053,
+    "over_hard": -0.08,
+    "words": 2,
+    "speech_s": 1.42,
+    "wps": 1.41,
+    "keyword": "cinematic",
+    "keyword_at": 15.59,
+    "phrases": [
+     [
+      15.0,
+      16.42
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      14.96,
+      16.46
+     ]
+    ]
+   },
+   {
+    "line": "L9",
+    "tag": "t4",
+    "line_lufs_in": -15.7,
+    "line_gain_db": -0.3,
+    "beat": "9.0+1f",
+    "frame": 577,
+    "target_start": 19.233,
+    "target_end": 20.88,
+    "hard_end": 21.1,
+    "t0": 19.233,
+    "t1": 21.683,
+    "t1_voice": 21.683,
+    "d_start": 0.0,
+    "d_end": 0.803,
+    "over_hard": 0.583,
+    "words": 6,
+    "speech_s": 2.39,
+    "wps": 2.45,
+    "keyword": "ek",
+    "keyword_at": 21.27,
+    "phrases": [
+     [
+      19.233,
+      20.213
+     ],
+     [
+      20.243,
+      20.943
+     ],
+     [
+      20.973,
+      21.683
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      19.203,
+      20.253
+     ],
+     [
+      20.203,
+      20.983
+     ],
+     [
+      20.933,
+      21.706
+     ]
+    ]
+   },
+   {
+    "line": "L10",
+    "tag": "t5",
+    "line_lufs_in": -17.8,
+    "line_gain_db": 1.8,
+    "beat": "11.0+1f",
+    "frame": 705,
+    "target_start": 23.5,
+    "target_end": 24.777,
+    "hard_end": 24.95,
+    "t0": 23.5,
+    "t1": 24.93,
+    "t1_voice": 24.93,
+    "d_start": 0.0,
+    "d_end": 0.153,
+    "over_hard": -0.02,
+    "words": 3,
+    "speech_s": 1.43,
+    "wps": 2.1,
+    "keyword": "aakhri",
+    "keyword_at": 23.94,
+    "phrases": [
+     [
+      23.5,
+      24.93
+     ]
+    ],
+    "gaps_closed": [
+     [
+      0.45,
+      0.53,
+      0.08
+     ]
+    ],
+    "seg_edges": [
+     [
+      23.46,
+      24.97
+     ]
+    ]
+   },
+   {
+    "line": "L11",
+    "tag": "t1",
+    "line_lufs_in": -15.9,
+    "line_gain_db": -0.1,
+    "beat": "13.0+12f",
+    "frame": 844,
+    "target_start": 28.133,
+    "target_end": 31.361,
+    "hard_end": 32.35,
+    "t0": 28.133,
+    "t1": 31.993,
+    "t1_voice": 31.993,
+    "d_start": 0.0,
+    "d_end": 0.632,
+    "over_hard": -0.357,
+    "words": 10,
+    "speech_s": 3.71,
+    "wps": 2.59,
+    "keyword": null,
+    "keyword_at": null,
+    "phrases": [
+     [
+      28.133,
+      29.723
+     ],
+     [
+      29.873,
+      31.993
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      28.093,
+      29.763
+     ],
+     [
+      29.833,
+      32.018
+     ]
+    ]
+   },
+   {
+    "line": "L12",
+    "tag": "t1",
+    "line_lufs_in": -15.5,
+    "line_gain_db": -0.5,
+    "beat": "15.1+3f",
+    "frame": 979,
+    "target_start": 32.639,
+    "target_end": 34.05,
+    "hard_end": 34.053,
+    "t0": 32.6,
+    "t1": 34.05,
+    "t1_voice": 34.05,
+    "d_start": -0.039,
+    "d_end": 0.0,
+    "over_hard": -0.003,
+    "words": 5,
+    "speech_s": 1.45,
+    "wps": 3.45,
+    "keyword": null,
+    "keyword_at": null,
+    "phrases": [
+     [
+      32.6,
+      34.05
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      32.57,
+      34.09
+     ]
+    ]
+   }
+  ],
+  "gaps": [
+   [
+    "L1",
+    "L2",
+    0.997
+   ],
+   [
+    "L2",
+    "L3",
+    0.173
+   ],
+   [
+    "L3",
+    "L4",
+    0.616
+   ],
+   [
+    "L4",
+    "L5",
+    1.067
+   ],
+   [
+    "L5",
+    "L6",
+    1.23
+   ],
+   [
+    "L6",
+    "L7",
+    1.317
+   ],
+   [
+    "L7",
+    "L8",
+    0.343
+   ],
+   [
+    "L8",
+    "L9",
+    2.813
+   ],
+   [
+    "L9",
+    "L10",
+    1.817
+   ],
+   [
+    "L10",
+    "L11",
+    3.203
+   ],
+   [
+    "L11",
+    "L12",
+    0.607
+   ]
+  ],
+  "loop_seam_gap": 0.183,
+  "speech_s": 19.59,
+  "first_voice": 0.1,
+  "last_voice": 34.08
+ },
+ "B": {
+  "file": "/home/user/100/workspace/jawad_reels/pehle_wala/vo/vo_stem_B.wav",
+  "loudness": {
+   "lufs": -16.0,
+   "lra": 5.9,
+   "tp": -2.8
+  },
+  "gain_db": 0.7,
+  "limiter_peak_reduction_db": 3.18,
+  "samples": 1638400,
+  "dur": 34.13333333333333,
+  "rows": [
+   {
+    "line": "L1B",
+    "tag": "t5",
+    "line_lufs_in": -15.8,
+    "line_gain_db": -0.2,
+    "beat": "0.0+3f",
+    "frame": 3,
+    "target_start": 0.1,
+    "target_end": 2.564,
+    "hard_end": 2.7,
+    "t0": 0.1,
+    "t1": 2.58,
+    "t1_voice": 2.58,
+    "d_start": 0.0,
+    "d_end": 0.016,
+    "over_hard": -0.12,
+    "words": 6,
+    "speech_s": 2.48,
+    "wps": 2.42,
+    "keyword": "26",
+    "keyword_at": 0.1,
+    "phrases": [
+     [
+      0.1,
+      2.58
+     ]
+    ],
+    "gaps_closed": [
+     [
+      1.55,
+      1.75,
+      0.2
+     ]
+    ],
+    "seg_edges": [
+     [
+      0.06,
+      2.61
+     ]
+    ]
+   },
+   {
+    "line": "L2",
+    "tag": "t1",
+    "line_lufs_in": -17.4,
+    "line_gain_db": 1.4,
+    "beat": "1.2+2f",
+    "frame": 98,
+    "target_start": 3.267,
+    "target_end": 4.055,
+    "hard_end": 4.25,
+    "t0": 3.267,
+    "t1": 4.227,
+    "t1_voice": 4.227,
+    "d_start": 0.0,
+    "d_end": 0.172,
+    "over_hard": -0.023,
+    "words": 2,
+    "speech_s": 0.96,
+    "wps": 2.08,
+    "keyword": "jayega",
+    "keyword_at": 3.523,
+    "phrases": [
+     [
+      3.267,
+      4.227
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      3.227,
+      4.267
+     ]
+    ]
+   },
+   {
+    "line": "L3",
+    "tag": "t1",
+    "line_lufs_in": -16.2,
+    "line_gain_db": 0.2,
+    "beat": "2.0+4f",
+    "frame": 132,
+    "target_start": 4.4,
+    "target_end": 6.547,
+    "hard_end": 6.583,
+    "t0": 4.4,
+    "t1": 6.117,
+    "t1_voice": 6.117,
+    "d_start": 0.0,
+    "d_end": -0.43,
+    "over_hard": -0.466,
+    "words": 5,
+    "speech_s": 1.467,
+    "wps": 2.91,
+    "keyword": "Pop",
+    "keyword_at": 4.4,
+    "phrases": [
+     [
+      4.4,
+      4.84
+     ],
+     [
+      5.09,
+      6.117
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      4.37,
+      4.88
+     ],
+     [
+      5.05,
+      6.127
+     ]
+    ]
+   },
+   {
+    "line": "L4",
+    "tag": "t1",
+    "line_lufs_in": -16.1,
+    "line_gain_db": 0.1,
+    "beat": "3.0+10f",
+    "frame": 202,
+    "target_start": 6.733,
+    "target_end": 7.304,
+    "hard_end": 7.45,
+    "t0": 6.733,
+    "t1": 7.533,
+    "t1_voice": 7.533,
+    "d_start": 0.0,
+    "d_end": 0.229,
+    "over_hard": 0.083,
+    "words": 1,
+    "speech_s": 0.8,
+    "wps": 1.25,
+    "keyword": "Clean",
+    "keyword_at": 6.733,
+    "phrases": [
+     [
+      6.733,
+      7.533
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      6.693,
+      7.573
+     ]
+    ]
+   },
+   {
+    "line": "L5",
+    "tag": "t1",
+    "line_lufs_in": -16.5,
+    "line_gain_db": 0.5,
+    "beat": "4.0+2f",
+    "frame": 258,
+    "target_start": 8.6,
+    "target_end": 9.468,
+    "hard_end": 9.55,
+    "t0": 8.6,
+    "t1": 9.57,
+    "t1_voice": 9.57,
+    "d_start": 0.0,
+    "d_end": 0.102,
+    "over_hard": 0.02,
+    "words": 1,
+    "speech_s": 0.97,
+    "wps": 1.03,
+    "keyword": "Energetic",
+    "keyword_at": 8.6,
+    "phrases": [
+     [
+      8.6,
+      9.57
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      8.56,
+      9.61
+     ]
+    ]
+   },
+   {
+    "line": "L6",
+    "tag": "t1",
+    "line_lufs_in": -16.3,
+    "line_gain_db": 0.3,
+    "beat": "5.0+4f",
+    "frame": 324,
+    "target_start": 10.8,
+    "target_end": 11.33,
+    "hard_end": 11.7,
+    "t0": 10.8,
+    "t1": 11.55,
+    "t1_voice": 11.55,
+    "d_start": 0.0,
+    "d_end": 0.22,
+    "over_hard": -0.15,
+    "words": 1,
+    "speech_s": 0.75,
+    "wps": 1.33,
+    "keyword": "Fun",
+    "keyword_at": 10.8,
+    "phrases": [
+     [
+      10.8,
+      11.55
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      10.76,
+      11.59
+     ]
+    ]
+   },
+   {
+    "line": "L7",
+    "tag": "t1",
+    "line_lufs_in": -15.8,
+    "line_gain_db": -0.2,
+    "beat": "6.0+2f",
+    "frame": 386,
+    "target_start": 12.867,
+    "target_end": 14.785,
+    "hard_end": 14.9,
+    "t0": 12.867,
+    "t1": 14.657,
+    "t1_voice": 14.657,
+    "d_start": 0.0,
+    "d_end": -0.128,
+    "over_hard": -0.243,
+    "words": 5,
+    "speech_s": 1.79,
+    "wps": 2.79,
+    "keyword": "Mummy",
+    "keyword_at": 13.131,
+    "phrases": [
+     [
+      12.867,
+      14.657
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      12.827,
+      14.697
+     ]
+    ]
+   },
+   {
+    "line": "L8",
+    "tag": "t1",
+    "line_lufs_in": -16.8,
+    "line_gain_db": 0.8,
+    "beat": "7.0+2f",
+    "frame": 450,
+    "target_start": 15.0,
+    "target_end": 16.367,
+    "hard_end": 16.5,
+    "t0": 15.0,
+    "t1": 16.42,
+    "t1_voice": 16.42,
+    "d_start": 0.0,
+    "d_end": 0.053,
+    "over_hard": -0.08,
+    "words": 2,
+    "speech_s": 1.42,
+    "wps": 1.41,
+    "keyword": "cinematic",
+    "keyword_at": 15.59,
+    "phrases": [
+     [
+      15.0,
+      16.42
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      14.96,
+      16.46
+     ]
+    ]
+   },
+   {
+    "line": "L9",
+    "tag": "t4",
+    "line_lufs_in": -15.7,
+    "line_gain_db": -0.3,
+    "beat": "9.0+1f",
+    "frame": 577,
+    "target_start": 19.233,
+    "target_end": 20.88,
+    "hard_end": 21.1,
+    "t0": 19.233,
+    "t1": 21.683,
+    "t1_voice": 21.683,
+    "d_start": 0.0,
+    "d_end": 0.803,
+    "over_hard": 0.583,
+    "words": 6,
+    "speech_s": 2.39,
+    "wps": 2.45,
+    "keyword": "ek",
+    "keyword_at": 21.27,
+    "phrases": [
+     [
+      19.233,
+      20.213
+     ],
+     [
+      20.243,
+      20.943
+     ],
+     [
+      20.973,
+      21.683
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      19.203,
+      20.253
+     ],
+     [
+      20.203,
+      20.983
+     ],
+     [
+      20.933,
+      21.706
+     ]
+    ]
+   },
+   {
+    "line": "L10",
+    "tag": "t5",
+    "line_lufs_in": -17.8,
+    "line_gain_db": 1.8,
+    "beat": "11.0+1f",
+    "frame": 705,
+    "target_start": 23.5,
+    "target_end": 24.777,
+    "hard_end": 24.95,
+    "t0": 23.5,
+    "t1": 24.93,
+    "t1_voice": 24.93,
+    "d_start": 0.0,
+    "d_end": 0.153,
+    "over_hard": -0.02,
+    "words": 3,
+    "speech_s": 1.43,
+    "wps": 2.1,
+    "keyword": "aakhri",
+    "keyword_at": 23.94,
+    "phrases": [
+     [
+      23.5,
+      24.93
+     ]
+    ],
+    "gaps_closed": [
+     [
+      0.45,
+      0.53,
+      0.08
+     ]
+    ],
+    "seg_edges": [
+     [
+      23.46,
+      24.97
+     ]
+    ]
+   },
+   {
+    "line": "L11",
+    "tag": "t1",
+    "line_lufs_in": -15.9,
+    "line_gain_db": -0.1,
+    "beat": "13.0+12f",
+    "frame": 844,
+    "target_start": 28.133,
+    "target_end": 31.361,
+    "hard_end": 32.35,
+    "t0": 28.133,
+    "t1": 31.993,
+    "t1_voice": 31.993,
+    "d_start": 0.0,
+    "d_end": 0.632,
+    "over_hard": -0.357,
+    "words": 10,
+    "speech_s": 3.71,
+    "wps": 2.59,
+    "keyword": null,
+    "keyword_at": null,
+    "phrases": [
+     [
+      28.133,
+      29.723
+     ],
+     [
+      29.873,
+      31.993
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      28.093,
+      29.763
+     ],
+     [
+      29.833,
+      32.018
+     ]
+    ]
+   },
+   {
+    "line": "L12",
+    "tag": "t1",
+    "line_lufs_in": -15.5,
+    "line_gain_db": -0.5,
+    "beat": "15.1+3f",
+    "frame": 979,
+    "target_start": 32.639,
+    "target_end": 34.05,
+    "hard_end": 34.053,
+    "t0": 32.6,
+    "t1": 34.05,
+    "t1_voice": 34.05,
+    "d_start": -0.039,
+    "d_end": 0.0,
+    "over_hard": -0.003,
+    "words": 5,
+    "speech_s": 1.45,
+    "wps": 3.45,
+    "keyword": null,
+    "keyword_at": null,
+    "phrases": [
+     [
+      32.6,
+      34.05
+     ]
+    ],
+    "gaps_closed": [],
+    "seg_edges": [
+     [
+      32.57,
+      34.09
+     ]
+    ]
+   }
+  ],
+  "gaps": [
+   [
+    "L1B",
+    "L2",
+    0.687
+   ],
+   [
+    "L2",
+    "L3",
+    0.173
+   ],
+   [
+    "L3",
+    "L4",
+    0.616
+   ],
+   [
+    "L4",
+    "L5",
+    1.067
+   ],
+   [
+    "L5",
+    "L6",
+    1.23
+   ],
+   [
+    "L6",
+    "L7",
+    1.317
+   ],
+   [
+    "L7",
+    "L8",
+    0.343
+   ],
+   [
+    "L8",
+    "L9",
+    2.813
+   ],
+   [
+    "L9",
+    "L10",
+    1.817
+   ],
+   [
+    "L10",
+    "L11",
+    3.203
+   ],
+   [
+    "L11",
+    "L12",
+    0.607
+   ]
+  ],
+  "loop_seam_gap": 0.183,
+  "speech_s": 20.13,
+  "first_voice": 0.1,
+  "last_voice": 34.08
+ },
+ "selected": {
+  "L1": "t3",
+  "L1B": "t5",
+  "L2": "t1",
+  "L3": "t1",
+  "L4": "t1",
+  "L5": "t1",
+  "L6": "t1",
+  "L7": "t1",
+  "L8": "t1",
+  "L9": "t4",
+  "L10": "t5",
+  "L11": "t1",
+  "L12": "t1"
+ }
+}

@@ -1,0 +1,2433 @@
+{
+ "reel": "beta_tum_karte_kya_ho",
+ "slot": 4,
+ "concept": "C02",
+ "title": "Beta, tum karte kya ho?",
+ "look": "gold_hour",
+ "bpm": 85.714,
+ "bpm_exact": "600/7",
+ "fps": 30,
+ "frames_per_beat": 21,
+ "frames_per_bar": 84,
+ "dur_s": 36.4,
+ "dur_frames": 1092,
+ "splice_s": 2.8,
+ "splice_frame": 84,
+ "status": "script v2 (hinglish-scriptwriter, 2026-10-08): viral gate r1 fixes 4b (new L11 loop line) and 5 (hook B \"Mummy ke liye, cartoon.\") applied; re-verified 2026-10-09 (token parity, word budget, hook length, slot gaps incl. the loop seam, number lock: all pass); estimated timings, no TTS rendered yet",
+ "sources": [
+  "brand_reels/design/SLATE.md 0, 2, 3.4, 4, 5",
+  "brand_reels/design/reels/beta_tum_karte_kya_ho/BRIEF.md 6.2, 6.3, 6.7, 6.11",
+  "pipeline/jawad_reels/vo_config.json",
+  "workspace/brand_reels/tts/hf_dl/vlad/vlad_v4_r1_DEV.mp3 (rate)",
+  "brand_reels/design/reels/beta_tum_karte_kya_ho/GATE.md r1 (§3.2 hook lab, §8 fixes 4-5, notes 7, 9)"
+ ],
+ "voice": {
+  "provider": "Higgsfield (voice generation only)",
+  "model": "elevenlabs_v4",
+  "voice_name": "Vlad",
+  "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+  "voice_type": "preset",
+  "text": "Devanagari (dev field)",
+  "settings": "provider defaults; stability 0.35 if a take is flat, 0.55 if unstable (vo_config)",
+  "narrator": "har editor / hum / aap; never \"main\" about Jawad"
+ },
+ "rate_model": {
+  "words_per_s_before_speedup": 2.7,
+  "syllables_per_s_net_measured": 4.56,
+  "measured_on": "vlad_v4_r1_DEV.mp3: 53 words, 83 syllables, 22.27 s incl. 10 pauses (4.05 s) -> 2.38 words/s gross, 2.91 words/s and 4.56 syllables/s net (faster-whisper small)",
+  "pauses_s": {
+   ",": 0.3,
+   "?": 0.45,
+   ":": 0.3,
+   "...": 0.45
+  },
+  "l5_phir_pause_s": 0.6,
+  "speedups": [
+   1.06,
+   1.08,
+   1.1
+  ],
+  "rule": "raw = max(words / 2.7, syllables / 4.56) + mid-line pauses; final = raw / speed; overrun > 0.15 s => cut words (BRIEF 6.7)"
+ },
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "status": "LOCKED (SLATE 3.4), public version",
+   "mechanism": "dialogue / scene",
+   "on_screen": "BETA, TUM / *karte kya* / HO?",
+   "roman": "Sab se mushkil sawaal client nahi poochta.",
+   "dev": "सब से मुश्किल सवाल क्लाइंट नहीं पूछता।",
+   "words": 7,
+   "ends_at_1_08x_s": 2.54,
+   "viral_score": "8/8",
+   "fallback": "Yeh sawaal client nahi poochta. (SLATE fallback, 5 words)"
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "status": "Trial Reel; gate r1 fix 5 wording (replaces a SLATE-locked line: lead's OK needed)",
+   "mechanism": "result-first",
+   "on_screen": "MOTION DESIGNER / *cartoon?*",
+   "roman": "Mummy ke liye, cartoon.",
+   "dev": "मम्मी के लिए, कार्टून।",
+   "words": 4,
+   "ends_at_1_08x_s": 1.8,
+   "viral_score": "8/8",
+   "slate_locked_roman": "Motion designer? Mummy ke liye: cartoon.",
+   "slate_locked_ends_at_1_08x_s": 3.23,
+   "v1_roman": "Motion designer? Cartoon.",
+   "v1_viral_score": "7/8"
+  },
+  {
+   "id": "C",
+   "rank": 3,
+   "status": "reserve (not produced)",
+   "mechanism": "contrarian",
+   "on_screen": "*client* NAHI, MUMMY",
+   "roman": "Sab se mushkil client nahi. Mummy hain.",
+   "words": 7,
+   "viral_score": "7/8",
+   "note": "viral panel 4.2 hook D; same picture as A"
+  },
+  {
+   "id": "D",
+   "rank": 4,
+   "status": "reserve (not produced)",
+   "mechanism": "relatable callout",
+   "on_screen": "GHAR WALE: *ye karta kya hai?*",
+   "roman": "Ghar walon ko aaj tak samajh nahi aaya.",
+   "words": 7,
+   "viral_score": "6/8",
+   "note": "viral panel 4.2 hook C; weaker specificity"
+  }
+ ],
+ "versions": {
+  "A": [
+   "L1",
+   "L2",
+   "L3",
+   "L4",
+   "L5",
+   "L6",
+   "L7",
+   "L8",
+   "L9",
+   "L10",
+   "L11"
+  ],
+  "B": [
+   "L1B",
+   "L2",
+   "L3",
+   "L4",
+   "L5",
+   "L6",
+   "L7",
+   "L8",
+   "L9",
+   "L10",
+   "L11"
+  ]
+ },
+ "lines": [
+  {
+   "id": "L1",
+   "version": "A",
+   "part": "Hook",
+   "shot": "S0 (S1-01)",
+   "beat": "0.0+3f (onset); Hook",
+   "start_target": 0.1,
+   "end_target": 2.69,
+   "start_frame": 3,
+   "end_frame": 81,
+   "slot_s": 2.59,
+   "locked": true,
+   "roman": "Sab se mushkil sawaal client nahi poochta.",
+   "roman_marked": "Sab se mushkil sawaal client nahi poochta.",
+   "rom_chain": "Sab se mushkil sawaal client nahi poochta.",
+   "dev": "सब से मुश्किल सवाल क्लाइंट नहीं पूछता।",
+   "tts": "सब से मुश्किल सवाल क्लाइंट नहीं पूछता।",
+   "chars_dev": 38,
+   "words": 7,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Sab",
+     "word": "Sab",
+     "dev": "सब",
+     "tts": "सब",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 0.1
+    },
+    {
+     "i": 1,
+     "roman": "se",
+     "word": "se",
+     "dev": "से",
+     "tts": "से",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 0.3
+    },
+    {
+     "i": 2,
+     "roman": "mushkil",
+     "word": "mushkil",
+     "dev": "मुश्किल",
+     "tts": "मुश्किल",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 0.51
+    },
+    {
+     "i": 3,
+     "roman": "sawaal",
+     "word": "sawaal",
+     "dev": "सवाल",
+     "tts": "सवाल",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 0.91
+    },
+    {
+     "i": 4,
+     "roman": "client",
+     "word": "client",
+     "dev": "क्लाइंट",
+     "tts": "क्लाइंट",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 1.32
+    },
+    {
+     "i": 5,
+     "roman": "nahi",
+     "word": "nahi",
+     "dev": "नहीं",
+     "tts": "नहीं",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 1.72
+    },
+    {
+     "i": 6,
+     "roman": "poochta.",
+     "word": "poochta",
+     "dev": "पूछता।",
+     "tts": "पूछता।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 2.13
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": "karte kya",
+   "captions": "shown (CAP_HOOK, upper band; no caption keyword: lockup H1 *karte kya* is on screen)",
+   "emotion": "wry, plain statement",
+   "delivery": "plain statement, no pause, flat landing on \"poochta\"",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "Mummy bubble: BETA, TUM / *karte kya* / HO?",
+   "est": {
+    "words": 7,
+    "syllables": 12,
+    "pauses_s": 0.0,
+    "raw_words_method_s": 2.59,
+    "raw_syllable_method_s": 2.63,
+    "raw_s": 2.63,
+    "dur_at_1.06x_s": 2.48,
+    "dur_at_1.08x_s": 2.44,
+    "dur_at_1.10x_s": 2.39,
+    "end_at_1.08x_s": 2.54,
+    "words_per_s_at_1.08x": 2.87,
+    "overrun_s_range": [
+     -0.2,
+     -0.11
+    ],
+    "fit": "ok"
+   },
+   "fallback": "SLATE fallback \"Yeh sawaal client nahi poochta.\" / \"ये सवाल क्लाइंट नहीं पूछता।\" (5 words, est 1.83 s at 1.08x)",
+   "pause_after_s": 0.26
+  },
+  {
+   "id": "L1B",
+   "version": "B (gate fix 5)",
+   "part": "Hook (Trial)",
+   "shot": "hook B (HB-01)",
+   "beat": "0.0+3f (onset); Hook (Trial)",
+   "start_target": 0.1,
+   "end_target": 2.4,
+   "start_frame": 3,
+   "end_frame": 72,
+   "slot_s": 2.3,
+   "locked": false,
+   "roman": "Mummy ke liye, cartoon.",
+   "roman_marked": "Mummy ke liye, cartoon.",
+   "rom_chain": "Mummy ke liye, cartoon.",
+   "dev": "मम्मी के लिए, कार्टून।",
+   "tts": "मम्मी के लिए, कार्टून।",
+   "chars_dev": 22,
+   "words": 4,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Mummy",
+     "word": "Mummy",
+     "dev": "मम्मी",
+     "tts": "मम्मी",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 0.1
+    },
+    {
+     "i": 1,
+     "roman": "ke",
+     "word": "ke",
+     "dev": "के",
+     "tts": "के",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 0.51
+    },
+    {
+     "i": 2,
+     "roman": "liye,",
+     "word": "liye",
+     "dev": "लिए,",
+     "tts": "लिए,",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 0.71
+    },
+    {
+     "i": 3,
+     "roman": "cartoon.",
+     "word": "cartoon",
+     "dev": "कार्टून।",
+     "tts": "कार्टून।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 1.39
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": "cartoon?",
+   "captions": "hidden (hook B has no captions)",
+   "emotion": "deadpan",
+   "delivery": "plain on \"Mummy ke liye\", a short comma beat, then a dry, flat \"cartoon\" (final fall, no smile)",
+   "vo_chain": {
+    "cap": 0.3,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "MOTION DESIGNER / *cartoon?* + \"Mummy translate\" card, MOTION wobbling",
+   "est": {
+    "words": 4,
+    "syllables": 7,
+    "pauses_s": 0.3,
+    "raw_words_method_s": 1.78,
+    "raw_syllable_method_s": 1.84,
+    "raw_s": 1.84,
+    "dur_at_1.06x_s": 1.73,
+    "dur_at_1.08x_s": 1.7,
+    "dur_at_1.10x_s": 1.67,
+    "end_at_1.08x_s": 1.8,
+    "words_per_s_at_1.08x": 2.35,
+    "overrun_s_range": [
+     -0.63,
+     -0.57
+    ],
+    "fit": "ok"
+   },
+   "fallback": "none needed (est end 1.80 s, 0.6 s spare before the f74 cut); if the comma beat runs long, re-process with cap=0.2 (end ~1.71 s)",
+   "change_from_brief": "SLATE line \"Motion designer? Mummy ke liye: cartoon.\" cannot fit the 2.30 s slot (even with zero pauses at 1.10x it ends at 2.49 s > the 2.45 s limit). Script v1 cut it to \"Motion designer? Cartoon.\" (7/8 in the gate hook lab: it reads the H2 lockup word for word and drops Mummy from the audio). Gate r1 fix 5: keep \"Mummy ke liye\", drop \"Motion designer\" (the lockup already shows it), so the voice adds who is reading the job title (8/8). Picture unchanged. Replaces a SLATE-locked line: needs the lead's OK.",
+   "pause_after_s": 0.55,
+   "previous": {
+    "v1": {
+     "roman": "Motion designer? Cartoon.",
+     "dev": "मोशन डिज़ाइनर? कार्टून।",
+     "words": 3,
+     "end_at_1.08x_s": 1.94,
+     "gate_score": "7/8"
+    }
+   }
+  },
+  {
+   "id": "L1B_SLATE",
+   "version": "B (locked, reference only)",
+   "part": "Hook (Trial)",
+   "shot": "hook B (HB-01)",
+   "beat": "0.0+3f (onset); Hook (Trial)",
+   "start_target": 0.1,
+   "end_target": 2.4,
+   "start_frame": 3,
+   "end_frame": 72,
+   "slot_s": 2.3,
+   "locked": true,
+   "roman": "Motion designer? Mummy ke liye: cartoon.",
+   "roman_marked": "Motion designer? Mummy ke liye: cartoon.",
+   "rom_chain": "Motion designer? Mummy ke liye: cartoon.",
+   "dev": "मोशन डिज़ाइनर? मम्मी के लिए, कार्टून।",
+   "tts": "मोशन डिज़ाइनर? मम्मी के लिए, कार्टून।",
+   "chars_dev": 37,
+   "words": 6,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Motion",
+     "word": "Motion",
+     "dev": "मोशन",
+     "tts": "मोशन",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 0.1
+    },
+    {
+     "i": 1,
+     "roman": "designer?",
+     "word": "designer",
+     "dev": "डिज़ाइनर?",
+     "tts": "डिज़ाइनर?",
+     "keyword": false,
+     "syl": 3,
+     "est_t": 0.51
+    },
+    {
+     "i": 2,
+     "roman": "Mummy",
+     "word": "Mummy",
+     "dev": "मम्मी",
+     "tts": "मम्मी",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 1.53
+    },
+    {
+     "i": 3,
+     "roman": "ke",
+     "word": "ke",
+     "dev": "के",
+     "tts": "के",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 1.94
+    },
+    {
+     "i": 4,
+     "roman": "liye:",
+     "word": "liye",
+     "dev": "लिए,",
+     "tts": "लिए,",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 2.14
+    },
+    {
+     "i": 5,
+     "roman": "cartoon.",
+     "word": "cartoon",
+     "dev": "कार्टून।",
+     "tts": "कार्टून।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 2.82
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": "cartoon?",
+   "captions": "hidden (hook B has no captions)",
+   "emotion": "deadpan",
+   "delivery": "light question, dry answer",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "as L1B",
+   "est": {
+    "words": 6,
+    "syllables": 12,
+    "pauses_s": 0.75,
+    "raw_words_method_s": 2.97,
+    "raw_syllable_method_s": 3.38,
+    "raw_s": 3.38,
+    "dur_at_1.06x_s": 3.19,
+    "dur_at_1.08x_s": 3.13,
+    "dur_at_1.10x_s": 3.07,
+    "end_at_1.08x_s": 3.23,
+    "words_per_s_at_1.08x": 1.92,
+    "overrun_s_range": [
+     0.77,
+     0.89
+    ],
+    "fit": "OVER"
+   },
+   "fallback": "use L1B",
+   "change_from_brief": "kept for the record; generate only if the lead wants proof; usable only if the processed take ends <= 2.45 s",
+   "pause_after_s": 0.55
+  },
+  {
+   "id": "L2",
+   "version": "A+B",
+   "part": "Turn",
+   "shot": "S1 (S2-01)",
+   "beat": "1.0+4f (onset); Turn",
+   "start_target": 2.95,
+   "end_target": 4.15,
+   "start_frame": 88,
+   "end_frame": 125,
+   "slot_s": 1.2,
+   "locked": false,
+   "roman": "Jawab ka translation...",
+   "roman_marked": "Jawab ka {translation}...",
+   "rom_chain": "Jawab ka *translation...",
+   "dev": "जवाब का ट्रांसलेशन...",
+   "tts": "जवाब का ट्रांसलेशन...",
+   "chars_dev": 21,
+   "words": 3,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Jawab",
+     "word": "Jawab",
+     "dev": "जवाब",
+     "tts": "जवाब",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 2.95
+    },
+    {
+     "i": 1,
+     "roman": "ka",
+     "word": "ka",
+     "dev": "का",
+     "tts": "का",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 3.36
+    },
+    {
+     "i": 2,
+     "roman": "translation...",
+     "word": "translation",
+     "dev": "ट्रांसलेशन...",
+     "tts": "ट्रांसलेशन...",
+     "keyword": true,
+     "syl": 3,
+     "est_t": 3.56
+    }
+   ],
+   "keyword": "translation",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "teasing set-up",
+   "delivery": "trails off on \"translation...\" so the pop at 4.2 answers it",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "\"Mummy translate\" card; \"Video editor\" types 3.27-3.87; \"Shaadi wala?\" pops 4.2",
+   "est": {
+    "words": 3,
+    "syllables": 6,
+    "pauses_s": 0.0,
+    "raw_words_method_s": 1.11,
+    "raw_syllable_method_s": 1.32,
+    "raw_s": 1.32,
+    "dur_at_1.06x_s": 1.24,
+    "dur_at_1.08x_s": 1.22,
+    "dur_at_1.10x_s": 1.2,
+    "end_at_1.08x_s": 4.17,
+    "words_per_s_at_1.08x": 2.46,
+    "overrun_s_range": [
+     -0.0,
+     0.04
+    ],
+    "fit": "ok",
+    "keyword_est_t": 3.56,
+    "keyword_nearest_grid": {
+     "frame": 105,
+     "t": 3.5,
+     "kind": "beat",
+     "bar_beat": "1.1",
+     "off_s": 0.06
+    }
+   },
+   "fallback": "speed 1.10x (est 1.20 s); the 4-word \"Aur jawab ka translation...\" only if the take measures <= 1.35 s",
+   "change_from_brief": "BRIEF fallback applied (\"Aur\" dropped): the 4-word line is estimated at 1.40-1.45 s after the speed-up vs a 1.20 s slot (> 0.15 s over).",
+   "pause_after_s": 0.95
+  },
+  {
+   "id": "L3",
+   "version": "A+B",
+   "part": "Turn",
+   "shot": "S2 (S2-02)",
+   "beat": "1.3+6f (onset); Turn",
+   "start_target": 5.1,
+   "end_target": 6.95,
+   "start_frame": 153,
+   "end_frame": 208,
+   "slot_s": 1.85,
+   "locked": false,
+   "roman": "Jitna samjhao, utna ulta.",
+   "roman_marked": "Jitna samjhao, utna {ulta}.",
+   "rom_chain": "Jitna samjhao, utna *ulta.",
+   "dev": "जितना समझाओ, उतना उल्टा।",
+   "tts": "जितना समझाओ, उतना उल्टा।",
+   "chars_dev": 24,
+   "words": 4,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Jitna",
+     "word": "Jitna",
+     "dev": "जितना",
+     "tts": "जितना",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 5.1
+    },
+    {
+     "i": 1,
+     "roman": "samjhao,",
+     "word": "samjhao",
+     "dev": "समझाओ,",
+     "tts": "समझाओ,",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 5.51
+    },
+    {
+     "i": 2,
+     "roman": "utna",
+     "word": "utna",
+     "dev": "उतना",
+     "tts": "उतना",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 6.1
+    },
+    {
+     "i": 3,
+     "roman": "ulta.",
+     "word": "ulta",
+     "dev": "उल्टा।",
+     "tts": "उल्टा।",
+     "keyword": true,
+     "syl": 2,
+     "est_t": 6.5
+    }
+   ],
+   "keyword": "ulta",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "dry",
+   "delivery": "dry; a short comma beat, \"ulta\" flat and final (ends before the \"Cartoon?\" pop at 7.0)",
+   "vo_chain": {
+    "cap": 0.2,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "\"Happy Wedding\" parody (4.9-6.3), then \"Motion designer\" types (6.33-6.83)",
+   "est": {
+    "words": 4,
+    "syllables": 8,
+    "pauses_s": 0.2,
+    "raw_words_method_s": 1.68,
+    "raw_syllable_method_s": 1.95,
+    "raw_s": 1.95,
+    "dur_at_1.06x_s": 1.84,
+    "dur_at_1.08x_s": 1.81,
+    "dur_at_1.10x_s": 1.78,
+    "end_at_1.08x_s": 6.91,
+    "words_per_s_at_1.08x": 2.21,
+    "overrun_s_range": [
+     -0.07,
+     -0.01
+    ],
+    "fit": "ok",
+    "keyword_est_t": 6.5,
+    "keyword_nearest_grid": {
+     "frame": 200,
+     "t": 6.667,
+     "kind": "8th",
+     "bar_beat": "2.1+11f",
+     "off_s": -0.167
+    }
+   },
+   "fallback": "vo_chain cap 0.15 and speed 1.10x (est 1.73 s); if \"ulta\" blurs: \"Jitna samjhao, utna galat.\" / \"जितना समझाओ, उतना ग़लत।\" (keyword galat)",
+   "change_from_brief": "\"...\" -> \",\" (vo_chain keeps pauses after \"...\" up to 0.9 s); comma beat capped at 0.20 s (vo_chain cap=0.2) so \"ulta\" ends before the \"Cartoon?\" pop at 7.0.",
+   "pause_after_s": 4.0
+  },
+  {
+   "id": "L4",
+   "version": "A+B",
+   "part": "Escalation (re-hook 1)",
+   "shot": "S4 -> S5 (S3-02)",
+   "beat": "3.3+13f (onset); Escalation (re-hook 1)",
+   "start_target": 10.95,
+   "end_target": 11.7,
+   "start_frame": 328,
+   "end_frame": 351,
+   "slot_s": 0.75,
+   "locked": false,
+   "roman": "Seedha jawab:",
+   "roman_marked": "{Seedha} jawab:",
+   "rom_chain": "*Seedha jawab:",
+   "dev": "सीधा जवाब,",
+   "tts": "सीधा जवाब,",
+   "chars_dev": 10,
+   "words": 2,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Seedha",
+     "word": "Seedha",
+     "dev": "सीधा",
+     "tts": "सीधा",
+     "keyword": true,
+     "syl": 2,
+     "est_t": 10.95
+    },
+    {
+     "i": 1,
+     "roman": "jawab:",
+     "word": "jawab",
+     "dev": "जवाब,",
+     "tts": "जवाब,",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 11.36
+    }
+   ],
+   "keyword": "Seedha",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "determined",
+   "delivery": "determined lead-in with a slight lift (not a final fall); \"jawab\" rides the M3 swipe at 11.2",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "M3 swipe 11.2; card B pre-filled \"Brands ke liye cinematic reels\"; killer bubble 12.6",
+   "est": {
+    "words": 2,
+    "syllables": 4,
+    "pauses_s": 0.0,
+    "raw_words_method_s": 0.74,
+    "raw_syllable_method_s": 0.88,
+    "raw_s": 0.88,
+    "dur_at_1.06x_s": 0.83,
+    "dur_at_1.08x_s": 0.81,
+    "dur_at_1.10x_s": 0.8,
+    "end_at_1.08x_s": 11.76,
+    "words_per_s_at_1.08x": 2.46,
+    "overrun_s_range": [
+     0.05,
+     0.08
+    ],
+    "fit": "ok (within the 0.15 s tolerance)",
+    "keyword_est_t": 10.95,
+    "keyword_nearest_grid": {
+     "frame": 326,
+     "t": 10.867,
+     "kind": "8th",
+     "bar_beat": "3.3+11f",
+     "off_s": 0.083
+    }
+   },
+   "fallback": "speed 1.10x (est 0.80 s, inside the 0.15 s tolerance)",
+   "pause_after_s": 2.45
+  },
+  {
+   "id": "L5",
+   "version": "A+B",
+   "part": "Escalation",
+   "shot": "S6 (S4-01)",
+   "beat": "5.0+4f (onset); Escalation",
+   "start_target": 14.15,
+   "end_target": 16.15,
+   "start_frame": 424,
+   "end_frame": 484,
+   "slot_s": 2.0,
+   "locked": true,
+   "roman": "Phir... haar maan li.",
+   "roman_marked": "Phir... {haar} maan li.",
+   "rom_chain": "Phir... *haar maan li.",
+   "dev": "फिर... हार मान ली।",
+   "tts": "फिर... हार मान ली।",
+   "chars_dev": 18,
+   "words": 4,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Phir...",
+     "word": "Phir",
+     "dev": "फिर...",
+     "tts": "फिर...",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 14.15
+    },
+    {
+     "i": 1,
+     "roman": "haar",
+     "word": "haar",
+     "dev": "हार",
+     "tts": "हार",
+     "keyword": true,
+     "syl": 1,
+     "est_t": 15.05
+    },
+    {
+     "i": 2,
+     "roman": "maan",
+     "word": "maan",
+     "dev": "मान",
+     "tts": "मान",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 15.39
+    },
+    {
+     "i": 3,
+     "roman": "li.",
+     "word": "li",
+     "dev": "ली।",
+     "tts": "ली।",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 15.73
+    }
+   ],
+   "keyword": "haar",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "resigned",
+   "delivery": "\"Phir...\" held up to 0.6 s, then \"haar maan li\" soft and falling",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": 0.6,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "JD suit_neutral under \"Achha. / Naukri kab lagegi?\"",
+   "est": {
+    "words": 4,
+    "syllables": 4,
+    "pauses_s": 0.6,
+    "raw_words_method_s": 2.08,
+    "raw_syllable_method_s": 1.48,
+    "raw_s": 2.08,
+    "dur_at_1.06x_s": 1.96,
+    "dur_at_1.08x_s": 1.93,
+    "dur_at_1.10x_s": 1.89,
+    "end_at_1.08x_s": 16.08,
+    "words_per_s_at_1.08x": 2.08,
+    "overrun_s_range": [
+     -0.11,
+     -0.04
+    ],
+    "fit": "ok",
+    "keyword_est_t": 15.05,
+    "keyword_nearest_grid": {
+     "frame": 452,
+     "t": 15.067,
+     "kind": "8th",
+     "bar_beat": "5.1+11f",
+     "off_s": -0.017
+    }
+   },
+   "fallback": "none needed; \"Phir...\" beat may shrink to 0.45 s",
+   "pause_after_s": 0.8
+  },
+  {
+   "id": "L6",
+   "version": "A+B",
+   "part": "Escalation (time skip)",
+   "shot": "S7 (S5-01)",
+   "beat": "6.0+4f (onset); Escalation (time skip)",
+   "start_target": 16.95,
+   "end_target": 17.95,
+   "start_frame": 508,
+   "end_frame": 538,
+   "slot_s": 1.0,
+   "locked": false,
+   "roman": "Kuch mahine baad...",
+   "roman_marked": "Kuch mahine baad...",
+   "rom_chain": "Kuch mahine baad...",
+   "dev": "कुछ महीने बाद...",
+   "tts": "कुछ महीने बाद...",
+   "chars_dev": 16,
+   "words": 3,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Kuch",
+     "word": "Kuch",
+     "dev": "कुछ",
+     "tts": "कुछ",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 16.95
+    },
+    {
+     "i": 1,
+     "roman": "mahine",
+     "word": "mahine",
+     "dev": "महीने",
+     "tts": "महीने",
+     "keyword": false,
+     "syl": 3,
+     "est_t": 17.16
+    },
+    {
+     "i": 2,
+     "roman": "baad...",
+     "word": "baad",
+     "dev": "बाद...",
+     "tts": "बाद...",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 17.77
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": null,
+   "captions": "hidden (chip \"Kuch mahine baad\" shows the words)",
+   "emotion": "soft",
+   "delivery": "soft, unhurried: time passing",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "chip \"Kuch mahine baad\"; phone face-down buzzes",
+   "est": {
+    "words": 3,
+    "syllables": 5,
+    "pauses_s": 0.0,
+    "raw_words_method_s": 1.11,
+    "raw_syllable_method_s": 1.1,
+    "raw_s": 1.11,
+    "dur_at_1.06x_s": 1.05,
+    "dur_at_1.08x_s": 1.03,
+    "dur_at_1.10x_s": 1.01,
+    "end_at_1.08x_s": 17.98,
+    "words_per_s_at_1.08x": 2.92,
+    "overrun_s_range": [
+     0.01,
+     0.05
+    ],
+    "fit": "ok"
+   },
+   "fallback": "\"Mahine baad...\" / \"महीने बाद...\" (2 words, est 0.81 s)",
+   "pause_after_s": 1.8
+  },
+  {
+   "id": "L7",
+   "version": "A+B",
+   "part": "Escalation (re-hook 2)",
+   "shot": "S8 (S6-01)",
+   "beat": "7.0+4f (onset); Escalation (re-hook 2)",
+   "start_target": 19.75,
+   "end_target": 24.27,
+   "start_frame": 592,
+   "end_frame": 728,
+   "slot_s": 4.52,
+   "locked": true,
+   "roman": "Phir ek din family group mein... ek reel forward hoti hai.",
+   "roman_marked": "Phir ek din family group mein... ek {reel} forward hoti hai.",
+   "rom_chain": "Phir ek din family group mein... ek *reel forward hoti hai.",
+   "dev": "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।",
+   "tts": "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।",
+   "chars_dev": 56,
+   "words": 11,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Phir",
+     "word": "Phir",
+     "dev": "फिर",
+     "tts": "फिर",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 19.75
+    },
+    {
+     "i": 1,
+     "roman": "ek",
+     "word": "ek",
+     "dev": "एक",
+     "tts": "एक",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 20.0
+    },
+    {
+     "i": 2,
+     "roman": "din",
+     "word": "din",
+     "dev": "दिन",
+     "tts": "दिन",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 20.25
+    },
+    {
+     "i": 3,
+     "roman": "family",
+     "word": "family",
+     "dev": "फ़ैमिली",
+     "tts": "फ़ैमिली",
+     "keyword": false,
+     "syl": 3,
+     "est_t": 20.5
+    },
+    {
+     "i": 4,
+     "roman": "group",
+     "word": "group",
+     "dev": "ग्रुप",
+     "tts": "ग्रुप",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 21.26
+    },
+    {
+     "i": 5,
+     "roman": "mein...",
+     "word": "mein",
+     "dev": "में...",
+     "tts": "में...",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 21.51
+    },
+    {
+     "i": 6,
+     "roman": "ek",
+     "word": "ek",
+     "dev": "एक",
+     "tts": "एक",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 22.18
+    },
+    {
+     "i": 7,
+     "roman": "reel",
+     "word": "reel",
+     "dev": "रील",
+     "tts": "रील",
+     "keyword": true,
+     "syl": 1,
+     "est_t": 22.43
+    },
+    {
+     "i": 8,
+     "roman": "forward",
+     "word": "forward",
+     "dev": "फ़ॉरवर्ड",
+     "tts": "फ़ॉरवर्ड",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 22.68
+    },
+    {
+     "i": 9,
+     "roman": "hoti",
+     "word": "hoti",
+     "dev": "होती",
+     "tts": "होती",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 23.18
+    },
+    {
+     "i": 10,
+     "roman": "hai.",
+     "word": "hai",
+     "dev": "है।",
+     "tts": "है।",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 23.69
+    }
+   ],
+   "keyword": "reel",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "storyteller, rising",
+   "delivery": "storyteller, rising; brighten on \"ek reel\"",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": 0.45,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "\"Khandaan\" floods 19.6; forwarded reel bubble lands 21.7",
+   "est": {
+    "words": 11,
+    "syllables": 15,
+    "pauses_s": 0.45,
+    "raw_words_method_s": 4.52,
+    "raw_syllable_method_s": 3.74,
+    "raw_s": 4.52,
+    "dur_at_1.06x_s": 4.27,
+    "dur_at_1.08x_s": 4.19,
+    "dur_at_1.10x_s": 4.11,
+    "end_at_1.08x_s": 23.94,
+    "words_per_s_at_1.08x": 2.63,
+    "overrun_s_range": [
+     -0.41,
+     -0.25
+    ],
+    "fit": "ok",
+    "keyword_est_t": 22.43,
+    "keyword_nearest_grid": {
+     "frame": 672,
+     "t": 22.4,
+     "kind": "beat",
+     "bar_beat": "8.0",
+     "off_s": 0.03
+    }
+   },
+   "fallback": "none needed (0.25-0.41 s spare)",
+   "pause_after_s": 0.18
+  },
+  {
+   "id": "L8",
+   "version": "A+B",
+   "part": "Escalation (suspense)",
+   "shot": "S8 (S6-01)",
+   "beat": "8.2+20f (onset); Escalation (suspense)",
+   "start_target": 24.45,
+   "end_target": 27.12,
+   "start_frame": 734,
+   "end_frame": 814,
+   "slot_s": 2.67,
+   "locked": false,
+   "roman": "Sab ki nazar... Mummy pe.",
+   "roman_marked": "Sab ki {nazar}... Mummy pe.",
+   "rom_chain": "Sab ki *nazar... Mummy pe.",
+   "dev": "सब की नज़र... मम्मी पे।",
+   "tts": "सब की नज़र... मम्मी पे।",
+   "chars_dev": 23,
+   "words": 5,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Sab",
+     "word": "Sab",
+     "dev": "सब",
+     "tts": "सब",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 24.45
+    },
+    {
+     "i": 1,
+     "roman": "ki",
+     "word": "ki",
+     "dev": "की",
+     "tts": "की",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 24.69
+    },
+    {
+     "i": 2,
+     "roman": "nazar...",
+     "word": "nazar",
+     "dev": "नज़र...",
+     "tts": "नज़र...",
+     "keyword": true,
+     "syl": 2,
+     "est_t": 24.94
+    },
+    {
+     "i": 3,
+     "roman": "Mummy",
+     "word": "Mummy",
+     "dev": "मम्मी",
+     "tts": "मम्मी",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 25.85
+    },
+    {
+     "i": 4,
+     "roman": "pe.",
+     "word": "pe",
+     "dev": "पे।",
+     "tts": "पे।",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 26.34
+    }
+   ],
+   "keyword": "nazar",
+   "screen_keyword": null,
+   "captions": "shown",
+   "emotion": "hushed suspense",
+   "delivery": "hushed, leaning in; \"Mummy pe\" lands just after the typing pill (25.2)",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": 0.45,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "\"Kamaal!\", \"Wah!\", then \"Mummy is typing\" 25.2 (stops 25.9, resumes 26.6)",
+   "est": {
+    "words": 5,
+    "syllables": 7,
+    "pauses_s": 0.45,
+    "raw_words_method_s": 2.3,
+    "raw_syllable_method_s": 1.99,
+    "raw_s": 2.3,
+    "dur_at_1.06x_s": 2.17,
+    "dur_at_1.08x_s": 2.13,
+    "dur_at_1.10x_s": 2.09,
+    "end_at_1.08x_s": 26.58,
+    "words_per_s_at_1.08x": 2.35,
+    "overrun_s_range": [
+     -0.58,
+     -0.5
+    ],
+    "fit": "ok",
+    "keyword_est_t": 24.94,
+    "keyword_nearest_grid": {
+     "frame": 746,
+     "t": 24.867,
+     "kind": "8th",
+     "bar_beat": "8.3+11f",
+     "off_s": 0.073
+    }
+   },
+   "fallback": "optional line: cut it entirely (BRIEF 6.7) before touching any other line",
+   "change_from_brief": "\"Ab sab ki nazar...\" -> \"Sab ki nazar...\" so it does not start like the locked L9 (\"Ab woh sab ko...\") two lines later.",
+   "pause_after_s": 1.13
+  },
+  {
+   "id": "L9",
+   "version": "A+B",
+   "part": "Payoff",
+   "shot": "S9-S10 (S7-01/02)",
+   "beat": "10.0+8f (onset); Payoff",
+   "start_target": 28.25,
+   "end_target": 31.97,
+   "start_frame": 848,
+   "end_frame": 959,
+   "slot_s": 3.72,
+   "locked": true,
+   "roman": "Ab woh sab ko khud samjhaati hain... humse behtar.",
+   "roman_marked": "Ab woh sab ko khud samjhaati hain... humse behtar.",
+   "rom_chain": "Ab woh sab ko khud samjhaati hain... humse behtar.",
+   "dev": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+   "tts": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+   "chars_dev": 42,
+   "words": 9,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Ab",
+     "word": "Ab",
+     "dev": "अब",
+     "tts": "अब",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 28.25
+    },
+    {
+     "i": 1,
+     "roman": "woh",
+     "word": "woh",
+     "dev": "वो",
+     "tts": "वो",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 28.49
+    },
+    {
+     "i": 2,
+     "roman": "sab",
+     "word": "sab",
+     "dev": "सब",
+     "tts": "सब",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 28.72
+    },
+    {
+     "i": 3,
+     "roman": "ko",
+     "word": "ko",
+     "dev": "को",
+     "tts": "को",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 28.96
+    },
+    {
+     "i": 4,
+     "roman": "khud",
+     "word": "khud",
+     "dev": "ख़ुद",
+     "tts": "ख़ुद",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 29.2
+    },
+    {
+     "i": 5,
+     "roman": "samjhaati",
+     "word": "samjhaati",
+     "dev": "समझाती",
+     "tts": "समझाती",
+     "keyword": false,
+     "syl": 3,
+     "est_t": 29.44
+    },
+    {
+     "i": 6,
+     "roman": "hain...",
+     "word": "hain",
+     "dev": "हैं...",
+     "tts": "हैं...",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 30.15
+    },
+    {
+     "i": 7,
+     "roman": "humse",
+     "word": "humse",
+     "dev": "हमसे",
+     "tts": "हमसे",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 30.8
+    },
+    {
+     "i": 8,
+     "roman": "behtar.",
+     "word": "behtar",
+     "dev": "बेहतर।",
+     "tts": "बेहतर।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 31.28
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": "cinema",
+   "captions": "shown (no caption keyword: lockup P1 *cinema* is on screen)",
+   "emotion": "warm, small smile",
+   "delivery": "warm; a small smile on \"humse behtar\"",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": 0.45,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "Mummy bubble MERA BETA / *cinema* / BANATA HAI; JD hand-on-chest from 28.7",
+   "est": {
+    "words": 9,
+    "syllables": 13,
+    "pauses_s": 0.45,
+    "raw_words_method_s": 3.78,
+    "raw_syllable_method_s": 3.3,
+    "raw_s": 3.78,
+    "dur_at_1.06x_s": 3.57,
+    "dur_at_1.08x_s": 3.5,
+    "dur_at_1.10x_s": 3.44,
+    "end_at_1.08x_s": 31.75,
+    "words_per_s_at_1.08x": 2.57,
+    "overrun_s_range": [
+     -0.28,
+     -0.15
+    ],
+    "fit": "ok"
+   },
+   "fallback": "none needed; \"...\" beat may shrink to 0.3 s",
+   "pause_after_s": 0.58
+  },
+  {
+   "id": "L10",
+   "version": "A+B",
+   "part": "CTA",
+   "shot": "S11 (S8-01)",
+   "beat": "11.2+10f (onset); CTA + loop",
+   "start_target": 32.55,
+   "end_target": 34.4,
+   "start_frame": 976,
+   "end_frame": 1032,
+   "slot_s": 1.85,
+   "locked": false,
+   "roman": "Isko family group mein bhejo.",
+   "roman_marked": "Isko family group mein bhejo.",
+   "rom_chain": "Isko family group mein bhejo.",
+   "dev": "इसको फ़ैमिली ग्रुप में भेजो।",
+   "tts": "इसको फ़ैमिली ग्रुप में भेजो।",
+   "chars_dev": 28,
+   "words": 5,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Isko",
+     "word": "Isko",
+     "dev": "इसको",
+     "tts": "इसको",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 32.55
+    },
+    {
+     "i": 1,
+     "roman": "family",
+     "word": "family",
+     "dev": "फ़ैमिली",
+     "tts": "फ़ैमिली",
+     "keyword": false,
+     "syl": 3,
+     "est_t": 32.96
+    },
+    {
+     "i": 2,
+     "roman": "group",
+     "word": "group",
+     "dev": "ग्रुप",
+     "tts": "ग्रुप",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 33.57
+    },
+    {
+     "i": 3,
+     "roman": "mein",
+     "word": "mein",
+     "dev": "में",
+     "tts": "में",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 33.77
+    },
+    {
+     "i": 4,
+     "roman": "bhejo.",
+     "word": "bhejo",
+     "dev": "भेजो।",
+     "tts": "भेजो।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 33.97
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": "bhejo",
+   "captions": "hidden (end card GROUP MEIN / *bhejo*)",
+   "emotion": "friendly",
+   "delivery": "friendly, not salesy; \"bhejo\" clear and aspirated",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed 1.06-1.10 only"
+   },
+   "on_screen": "end card GROUP MEIN / *bhejo* + JD + @jawad_mp4 (settles 34.03); then L11 over the Nani pill (35.0)",
+   "est": {
+    "words": 5,
+    "syllables": 9,
+    "pauses_s": 0.0,
+    "raw_words_method_s": 1.85,
+    "raw_syllable_method_s": 1.97,
+    "raw_s": 1.97,
+    "dur_at_1.06x_s": 1.86,
+    "dur_at_1.08x_s": 1.83,
+    "dur_at_1.10x_s": 1.79,
+    "end_at_1.08x_s": 34.38,
+    "words_per_s_at_1.08x": 2.74,
+    "overrun_s_range": [
+     -0.06,
+     0.01
+    ],
+    "fit": "ok"
+   },
+   "fallback": "\"Family group mein bhejo.\" / \"फ़ैमिली ग्रुप में भेजो।\" (4 words, est 1.42 s)",
+   "pause_after_s": 0.5
+  },
+  {
+   "id": "L11",
+   "version": "A+B",
+   "part": "Loop (button)",
+   "shot": "S11 -> S12 (S8-01 -> S8-02)",
+   "beat": "12.1+18f (onset, 3 f before beat 12.2 = the Nani chip pop at 35.0); Loop (button)",
+   "start_target": 34.9,
+   "end_target": 36.35,
+   "start_frame": 1047,
+   "end_frame": 1090,
+   "slot_s": 1.45,
+   "locked": false,
+   "roman": "Ab Nani ki baari.",
+   "roman_marked": "Ab Nani ki baari.",
+   "rom_chain": "Ab Nani ki baari.",
+   "dev": "अब नानी की बारी।",
+   "tts": "अब नानी की बारी।",
+   "chars_dev": 16,
+   "words": 4,
+   "tokens": [
+    {
+     "i": 0,
+     "roman": "Ab",
+     "word": "Ab",
+     "dev": "अब",
+     "tts": "अब",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 34.9
+    },
+    {
+     "i": 1,
+     "roman": "Nani",
+     "word": "Nani",
+     "dev": "नानी",
+     "tts": "नानी",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 35.13
+    },
+    {
+     "i": 2,
+     "roman": "ki",
+     "word": "ki",
+     "dev": "की",
+     "tts": "की",
+     "keyword": false,
+     "syl": 1,
+     "est_t": 35.59
+    },
+    {
+     "i": 3,
+     "roman": "baari.",
+     "word": "baari",
+     "dev": "बारी।",
+     "tts": "बारी।",
+     "keyword": false,
+     "syl": 2,
+     "est_t": 35.81
+    }
+   ],
+   "keyword": null,
+   "screen_keyword": null,
+   "captions": "hidden (inside the end-card hide window 32.2-36.4; the \"Nani\" chip + typing pill show it)",
+   "emotion": "wry, knowing",
+   "delivery": "light and knowing, a small smile on \"Nani\"; \"baari\" falls and stops dead: no breath, no tail (frame 0's bubble completes the sentence)",
+   "vo_chain": {
+    "cap": 0.45,
+    "keep_cap": null,
+    "speed": 1.08,
+    "note": "process(take, dev, rom_chain, cap=..., keep_cap=...); speed: the slowest of 1.06-1.10 whose processed take is <= 1.45 s (34.90 -> 36.35); vo_chain trims the tail to 40 ms: check rep[\"tail_trim\"] and that no breath is left after \"baari\""
+   },
+   "on_screen": "end card GROUP MEIN / *bhejo* settled; \"Nani\" chip + typing pill pop at 35.0 in the f0 pill position (gate fix 4a, creative-director) and carry across the c12 cut (35.7) to frame 0",
+   "est": {
+    "words": 4,
+    "syllables": 6,
+    "pauses_s": 0,
+    "raw_words_method_s": 1.48,
+    "raw_syllable_method_s": 1.32,
+    "raw_s": 1.48,
+    "dur_at_1.06x_s": 1.4,
+    "dur_at_1.08x_s": 1.37,
+    "dur_at_1.10x_s": 1.35,
+    "end_at_1.08x_s": 36.27,
+    "words_per_s_at_1.08x": 2.92,
+    "overrun_s_range": [
+     -0.1,
+     -0.05
+    ],
+    "fit": "ok (tight: hard end 36.36)"
+   },
+   "fallback": "\"Ab Nani.\" / \"अब नानी।\" (2 words, est 0.69 s at 1.08x). Ladder if the processed take ends after 36.35 s: 1.10x, then move the onset earlier (not before 34.70: keeps >= 0.30 s after L10), then the fallback. Never later than 34.95.",
+   "change_from_brief": "new line (gate r1 fix 4b): a sentence loop. \"Ab Nani ki baari.\" -> frame 0 bubble \"BETA, TUM / karte kya / HO?\" + L1. Not in SLATE/BRIEF; universal POV, no fact about Jawad.",
+   "pause_after_s": 0.15
+  }
+ ],
+ "tokens": [
+  {
+   "line": "L1",
+   "i": 0,
+   "roman": "Sab",
+   "tts": "सब",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 1,
+   "roman": "se",
+   "tts": "से",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 2,
+   "roman": "mushkil",
+   "tts": "मुश्किल",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 3,
+   "roman": "sawaal",
+   "tts": "सवाल",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 4,
+   "roman": "client",
+   "tts": "क्लाइंट",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 5,
+   "roman": "nahi",
+   "tts": "नहीं",
+   "keyword": false
+  },
+  {
+   "line": "L1",
+   "i": 6,
+   "roman": "poochta.",
+   "tts": "पूछता।",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 0,
+   "roman": "Mummy",
+   "tts": "मम्मी",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 1,
+   "roman": "ke",
+   "tts": "के",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 2,
+   "roman": "liye,",
+   "tts": "लिए,",
+   "keyword": false
+  },
+  {
+   "line": "L1B",
+   "i": 3,
+   "roman": "cartoon.",
+   "tts": "कार्टून।",
+   "keyword": false
+  },
+  {
+   "line": "L2",
+   "i": 0,
+   "roman": "Jawab",
+   "tts": "जवाब",
+   "keyword": false
+  },
+  {
+   "line": "L2",
+   "i": 1,
+   "roman": "ka",
+   "tts": "का",
+   "keyword": false
+  },
+  {
+   "line": "L2",
+   "i": 2,
+   "roman": "translation...",
+   "tts": "ट्रांसलेशन...",
+   "keyword": true
+  },
+  {
+   "line": "L3",
+   "i": 0,
+   "roman": "Jitna",
+   "tts": "जितना",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 1,
+   "roman": "samjhao,",
+   "tts": "समझाओ,",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 2,
+   "roman": "utna",
+   "tts": "उतना",
+   "keyword": false
+  },
+  {
+   "line": "L3",
+   "i": 3,
+   "roman": "ulta.",
+   "tts": "उल्टा।",
+   "keyword": true
+  },
+  {
+   "line": "L4",
+   "i": 0,
+   "roman": "Seedha",
+   "tts": "सीधा",
+   "keyword": true
+  },
+  {
+   "line": "L4",
+   "i": 1,
+   "roman": "jawab:",
+   "tts": "जवाब,",
+   "keyword": false
+  },
+  {
+   "line": "L5",
+   "i": 0,
+   "roman": "Phir...",
+   "tts": "फिर...",
+   "keyword": false
+  },
+  {
+   "line": "L5",
+   "i": 1,
+   "roman": "haar",
+   "tts": "हार",
+   "keyword": true
+  },
+  {
+   "line": "L5",
+   "i": 2,
+   "roman": "maan",
+   "tts": "मान",
+   "keyword": false
+  },
+  {
+   "line": "L5",
+   "i": 3,
+   "roman": "li.",
+   "tts": "ली।",
+   "keyword": false
+  },
+  {
+   "line": "L6",
+   "i": 0,
+   "roman": "Kuch",
+   "tts": "कुछ",
+   "keyword": false
+  },
+  {
+   "line": "L6",
+   "i": 1,
+   "roman": "mahine",
+   "tts": "महीने",
+   "keyword": false
+  },
+  {
+   "line": "L6",
+   "i": 2,
+   "roman": "baad...",
+   "tts": "बाद...",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 0,
+   "roman": "Phir",
+   "tts": "फिर",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 1,
+   "roman": "ek",
+   "tts": "एक",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 2,
+   "roman": "din",
+   "tts": "दिन",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 3,
+   "roman": "family",
+   "tts": "फ़ैमिली",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 4,
+   "roman": "group",
+   "tts": "ग्रुप",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 5,
+   "roman": "mein...",
+   "tts": "में...",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 6,
+   "roman": "ek",
+   "tts": "एक",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 7,
+   "roman": "reel",
+   "tts": "रील",
+   "keyword": true
+  },
+  {
+   "line": "L7",
+   "i": 8,
+   "roman": "forward",
+   "tts": "फ़ॉरवर्ड",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 9,
+   "roman": "hoti",
+   "tts": "होती",
+   "keyword": false
+  },
+  {
+   "line": "L7",
+   "i": 10,
+   "roman": "hai.",
+   "tts": "है।",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 0,
+   "roman": "Sab",
+   "tts": "सब",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 1,
+   "roman": "ki",
+   "tts": "की",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 2,
+   "roman": "nazar...",
+   "tts": "नज़र...",
+   "keyword": true
+  },
+  {
+   "line": "L8",
+   "i": 3,
+   "roman": "Mummy",
+   "tts": "मम्मी",
+   "keyword": false
+  },
+  {
+   "line": "L8",
+   "i": 4,
+   "roman": "pe.",
+   "tts": "पे।",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 0,
+   "roman": "Ab",
+   "tts": "अब",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 1,
+   "roman": "woh",
+   "tts": "वो",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 2,
+   "roman": "sab",
+   "tts": "सब",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 3,
+   "roman": "ko",
+   "tts": "को",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 4,
+   "roman": "khud",
+   "tts": "ख़ुद",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 5,
+   "roman": "samjhaati",
+   "tts": "समझाती",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 6,
+   "roman": "hain...",
+   "tts": "हैं...",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 7,
+   "roman": "humse",
+   "tts": "हमसे",
+   "keyword": false
+  },
+  {
+   "line": "L9",
+   "i": 8,
+   "roman": "behtar.",
+   "tts": "बेहतर।",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 0,
+   "roman": "Isko",
+   "tts": "इसको",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 1,
+   "roman": "family",
+   "tts": "फ़ैमिली",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 2,
+   "roman": "group",
+   "tts": "ग्रुप",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 3,
+   "roman": "mein",
+   "tts": "में",
+   "keyword": false
+  },
+  {
+   "line": "L10",
+   "i": 4,
+   "roman": "bhejo.",
+   "tts": "भेजो।",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 0,
+   "roman": "Ab",
+   "tts": "अब",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 1,
+   "roman": "Nani",
+   "tts": "नानी",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 2,
+   "roman": "ki",
+   "tts": "की",
+   "keyword": false
+  },
+  {
+   "line": "L11",
+   "i": 3,
+   "roman": "baari.",
+   "tts": "बारी।",
+   "keyword": false
+  }
+ ],
+ "totals": {
+  "A": {
+   "words": 57,
+   "speech_raw_s": 24.02,
+   "speech_at_1_06x_s": 22.67,
+   "speech_at_1_08x_s": 22.26,
+   "speech_at_1_10x_s": 21.85,
+   "chars_dev": 292,
+   "share_of_reel_at_1_08x": 0.612
+  },
+  "B": {
+   "words": 54,
+   "speech_raw_s": 23.23,
+   "speech_at_1_06x_s": 21.92,
+   "speech_at_1_08x_s": 21.52,
+   "speech_at_1_10x_s": 21.13,
+   "chars_dev": 276,
+   "share_of_reel_at_1_08x": 0.591
+  }
+ },
+ "checks": {
+  "date": "2026-10-09",
+  "word_budget": "A 57 words (QA cap 60), B 54; est. speech at 1.08x A 22.26 s / B 21.52 s of 36.4 s; max 2.92 w/s (L6, L11; limit 3.2)",
+  "hook_length": "A: 7 words (limit 7), onset 0.10 s, est. end 2.49-2.58 s (limit 2.69, QA 2.75). B: 4 words, onset 0.10 s, est. end 1.77-1.83 s (limit 2.40, QA 2.45)",
+  "gaps": "every gap >= 0.15 s (min 0.18 s, L7 -> L8); loop seam L11 -> L1 / L1B 0.15 s by slot, 0.23 s at the 1.08x estimate",
+  "l11_hard_end": "onset 34.90 s: est. end 36.25-36.30 s vs hard limit 36.36 s; an onset at 34.95 s would end 36.35 s at 1.06x (0.01 s margin), so 34.90 stays",
+  "number_lock": "SLATE 4, C02: none. No digit, numeral or number word is spoken as a quantity. The only numeral token is एक 'ek' twice in the SLATE-locked L7 ('ek din', 'ek reel' = one day / a reel: indefinite article, not a count). The Khandaan 12 -> 47 -> 99+ count pill (gate fix 1) is picture only and never voiced.",
+  "token_parity": "vo_chain.tokens(dev) == vo_chain.tokens(rom_chain) count for every line; 61 token rows = A 57 + L1B 4; SCRIPT.md tables identical to this file"
+ },
+ "pron_risk": [
+  {
+   "rank": 1,
+   "word": "क्लाइंट",
+   "roman": "client",
+   "lines": [
+    "L1"
+   ],
+   "why": "hook A, first 3 s; the Vlad audition was heard as \"ख्लाईट\" (aspirated k, nasal + t blurred)",
+   "fallback": "क्लायंट"
+  },
+  {
+   "rank": 2,
+   "word": "मम्मी",
+   "roman": "Mummy",
+   "lines": [
+    "L1B",
+    "L8"
+   ],
+   "why": "now the FIRST word of hook B and the main character; stress must be on the first syllable (MUM-mee), not \"mam-MEE\"; whisper may write मामी (a different relative), so judge it by ear",
+   "fallback": "ममी"
+  },
+  {
+   "rank": 3,
+   "word": "भेजो",
+   "roman": "bhejo",
+   "lines": [
+    "L10"
+   ],
+   "why": "the CTA word; audition de-aspirated भ (\"भाई\" heard as \"बाई\"), so it may come out \"bejo\"",
+   "fallback": "retake with stability 0.55; else accept (the end card spells it)"
+  },
+  {
+   "rank": 4,
+   "word": "ट्रांसलेशन",
+   "roman": "translation",
+   "lines": [
+    "L2"
+   ],
+   "why": "caption keyword; retroflex cluster ट्र may go dental",
+   "fallback": "ट्रैन्सलेशन"
+  },
+  {
+   "rank": 5,
+   "word": "फ़ैमिली ग्रुप",
+   "roman": "family group",
+   "lines": [
+    "L7",
+    "L10"
+   ],
+   "why": "said twice; audition turned फ़ into प at \"लाइफ़\" (\"लाइप\")",
+   "fallback": "फ़ेमिली ग्रुप"
+  },
+  {
+   "rank": 6,
+   "word": "कार्टून",
+   "roman": "Cartoon",
+   "lines": [
+    "L1B"
+   ],
+   "why": "hook B punchline, now the line's last word after the comma beat; retroflex ट may go dental; it must land dry and flat (final fall)",
+   "fallback": "कार्टून with stability 0.55"
+  },
+  {
+   "rank": 7,
+   "word": "फ़ॉरवर्ड",
+   "roman": "forward",
+   "lines": [
+    "L7"
+   ],
+   "why": "word-initial फ़ (see rank 5) and the r cluster",
+   "fallback": "फ़ॉर्वर्ड"
+  },
+  {
+   "rank": 8,
+   "word": "उल्टा",
+   "roman": "ulta",
+   "lines": [
+    "L3"
+   ],
+   "why": "caption keyword with a retroflex cluster ल्ट",
+   "fallback": "swap the word: \"Jitna samjhao, utna galat.\" (ग़लत, keyword galat)"
+  },
+  {
+   "rank": 9,
+   "word": "सीधा",
+   "roman": "Seedha",
+   "lines": [
+    "L4"
+   ],
+   "why": "caption keyword; aspirated ध may flatten to \"seeda\"",
+   "fallback": "accept (caption spells it) or \"Sach bataya:\" (सच बताया,)"
+  },
+  {
+   "rank": 10,
+   "word": "पूछता",
+   "roman": "poochta",
+   "lines": [
+    "L1"
+   ],
+   "why": "hook A last word; audition voiced च (\"सच\" heard as \"सज\")",
+   "fallback": "retake once (no better spelling exists)"
+  },
+  {
+   "rank": 11,
+   "word": "ख़ुद / नज़र",
+   "roman": "khud / nazar",
+   "lines": [
+    "L9",
+    "L8"
+   ],
+   "why": "nukta fricatives (Urdu-natural); low risk: check they are not over-hissed",
+   "fallback": "खुद / नजर (no nukta)"
+  },
+  {
+   "rank": 12,
+   "word": "बेहतर",
+   "roman": "behtar",
+   "lines": [
+    "L9"
+   ],
+   "why": "last word of the payoff line; \"eh\" may split into \"be-ha-tar\"",
+   "fallback": "retake once (बेहतर is the standard spelling)"
+  },
+  {
+   "rank": 13,
+   "word": "नानी / बारी",
+   "roman": "Nani / baari",
+   "lines": [
+    "L11"
+   ],
+   "why": "low risk (long vowels, no retroflex); check बारी is not heard as भारी (\"bhaari\", heavy) and that the take stops dead after it (no breath: the line ends 0.05-0.2 s before the loop seam)",
+   "fallback": "retake once; else the fallback \"Ab Nani.\""
+  }
+ ],
+ "pron_test": {
+  "dev": "सब से मुश्किल सवाल क्लाइंट नहीं पूछता। मम्मी के लिए, कार्टून। जवाब का ट्रांसलेशन... जितना समझाओ, उतना उल्टा। सीधा जवाब। फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है। सब की नज़र... मम्मी पे। अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर। इसको फ़ैमिली ग्रुप में भेजो। अब नानी की बारी।",
+  "chars": 289,
+  "purpose": "one take before the run: every rank 1-13 word in its real context + a rate check (whisper word timestamps per line); v2 text: hook B \"मम्मी के लिए, कार्टून।\" and L11 added, \"मोशन डिज़ाइनर\" removed (no longer voiced)",
+  "check": "faster-whisper (hi) on the take; listen to ranks 1-6 by ear; then measure each line's duration against its slot"
+ },
+ "caption_notes": {
+  "keywords": {
+   "L1": null,
+   "L2": "translation",
+   "L3": "ulta",
+   "L4": "Seedha",
+   "L5": "haar",
+   "L6": null,
+   "L7": "reel",
+   "L8": "nazar",
+   "L9": null,
+   "L10": null,
+   "L11": null
+  },
+  "hidden": {
+   "L6": [
+    16.85,
+    18.2
+   ],
+   "L10": [
+    32.2,
+    36.4
+   ],
+   "hook_B": "no captions f0-f83",
+   "L11": [
+    32.2,
+    36.4
+   ]
+  },
+  "whisper_merge_risks": [
+   "सब से -> सबसे (L1: 2 roman tokens, 1 heard word)",
+   "हमसे -> हम से (L9: split)",
+   "इसको -> इस को (L10: split)",
+   "वो -> वह (L9)",
+   "पे -> पर (L8)",
+   "nukta dropped by whisper (फैमिली, फॉरवर्ड, खुद, नजर): vo_chain.norm_dev strips it",
+   "लिए -> लिये (L1B: spelling variant, same skeleton in vo_chain.skel)",
+   "मम्मी -> मामी / ममी (L1B, L8: ASR confusion; check by ear, never \"fix\" the caption to Mami)",
+   "बारी -> भारी (L11: check)"
+  ],
+  "display": "snake_captions keeps ? ! ... and drops , . and the danda; \"translation...\" chunk alone (602.6 px at 128 px key size, <= 780)",
+  "gate_note_7_for_caption_designer": "the chunks \"translation...\" (L2, est end 4.17) and \"utna *ulta*\" (L3) must be gone before \"Shaadi wala?\" pops at 4.20 and \"Cartoon?\" at 7.00: add hide windows from 4.20 and from 7.00 on the real words.json (L3 est end 6.91)"
+ },
+ "gate_r1": {
+  "verdict": "FIX",
+  "applied_here": {
+   "fix_4b": "L11 \"Ab Nani ki baari.\" 34.90-36.35 (captions hidden)",
+   "fix_5": "L1B \"Mummy ke liye, cartoon.\" (needs the lead's OK: SLATE-locked line)",
+   "note_9": "L1 is generated only after the test take passes ASR and one human listen on क्लाइंट (fallback क्लायंट, then \"Yeh sawaal client nahi poochta.\")"
+  },
+  "depends_on_other_owners": {
+   "fix_1 (creative-director)": "chip \"Kuch mahine baad\" -> count pill \"Khandaan · 12\" at ~18.0 when L6 ends: L6 est end 17.98 at 1.08x (18.00 at 1.06x); place the swap at the measured L6 end + 1 frame, or process L6 at 1.10x. The count (12 -> 47 -> 99+) is never spoken (C02 number lock: none).",
+   "fix_3 (creative-director, caption-designer)": "the enlarged reel thumb (~300x533, this reel's cover with the H1 lockup inside) is on screen under L7 \"ek *reel*\" (~22.4): add the thumb rect to AVOID so the caption chunk never covers it, and count the thumb lockup in the 2-block budget.",
+   "fix_4a (creative-director, sound-designer)": "Nani chip + pill + notif_ping A6 at 35.0 fall on \"Ab\" (34.90-35.13); duck the ping >= 6 LU under the VO; the reverse_swell (35.6-36.4) and the 35.7 tin sit under \"ki baari\": keep them >= 6 LU under speech."
+  }
+ },
+ "vo_final": {
+  "date": "2026-10-09",
+  "source": "brand_reels/design/reels/beta_tum_karte_kya_ho/VO_TIMING.md (measured)",
+  "note": "The text actually recorded. Where it differs from lines[].dev / rom_chain, this block wins for the VO, the captions (words.json) and QA; lines[] keeps the script history.",
+  "stems": {
+   "A": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/vo_stem.wav (= beta_tum_karte_kya_ho_vo_A.wav)",
+   "B": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/beta_tum_karte_kya_ho_vo_B.wav",
+   "words_A": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/words.json",
+   "words_B": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/words_B.json"
+  },
+  "tts_spelling_fixes": {
+   "क्लाइंट": "क्लायंट"
+  },
+  "lines": [
+   {
+    "id": "L1",
+    "take": "btk_L1-F_t1",
+    "step": "1.08",
+    "kind": "fallback",
+    "dev": "ये सवाल क्लायंट नहीं पूछता।",
+    "rom": "Yeh sawaal client nahi poochta.",
+    "changed_from_script": true,
+    "voice_on": 0.1,
+    "voice_off": 2.43,
+    "start_target": 0.1,
+    "end_target": 2.69,
+    "cer_small": 0.143,
+    "cer_medium": 0.048,
+    "why": "SLATE 3.4 fallback; the locked line measured 3.28 s of voice (limit 2.59 s from 0.10)"
+   },
+   {
+    "id": "L1B",
+    "take": "btk_L1B-R_t1",
+    "step": "1.08",
+    "kind": "prosody",
+    "dev": "मम्मी के लिए, कारटून।",
+    "rom": "Mummy ke liye, cartoon.",
+    "changed_from_script": true,
+    "voice_on": 0.1,
+    "voice_off": 2.05,
+    "start_target": 0.1,
+    "end_target": 2.4,
+    "cer_small": 0.067,
+    "cer_medium": 0.067,
+    "why": "both ASR models heard कार्टून as काटून (r dropped) in both takes; full र spelling"
+   },
+   {
+    "id": "L2",
+    "take": "btk_L2_t3",
+    "step": "1.10",
+    "kind": "script",
+    "dev": "जवाब का ट्रांसलेशन...",
+    "rom": "Jawab ka *translation...",
+    "changed_from_script": false,
+    "voice_on": 2.95,
+    "voice_off": 4.37,
+    "start_target": 2.95,
+    "end_target": 4.15,
+    "cer_small": 0.067,
+    "cer_medium": 0.0,
+    "why": ""
+   },
+   {
+    "id": "L3",
+    "take": "btk_L3-J_t1",
+    "step": "1.08",
+    "kind": "fallback",
+    "dev": "जितना समझाओ, उल्टा।",
+    "rom": "Jitna samjhao, *ulta.",
+    "changed_from_script": true,
+    "voice_on": 5.1,
+    "voice_off": 7.09,
+    "start_target": 5.1,
+    "end_target": 6.95,
+    "cer_small": 0.286,
+    "cer_medium": 0.071,
+    "why": "word cut (alternative to L3-S): drops \"utna\""
+   },
+   {
+    "id": "L4",
+    "take": "btk_L4_t2",
+    "step": "1.10",
+    "kind": "script",
+    "dev": "सीधा जवाब,",
+    "rom": "*Seedha jawab:",
+    "changed_from_script": false,
+    "voice_on": 10.95,
+    "voice_off": 12.0,
+    "start_target": 10.95,
+    "end_target": 11.7,
+    "cer_small": 0.375,
+    "cer_medium": 0.125,
+    "why": ""
+   },
+   {
+    "id": "L5",
+    "take": "btk_L5-C_t1",
+    "step": "1.08",
+    "kind": "prosody",
+    "dev": "फिर, हार मान ली।",
+    "rom": "Phir... *haar maan li.",
+    "changed_from_script": true,
+    "voice_on": 14.15,
+    "voice_off": 16.13,
+    "start_target": 14.15,
+    "end_target": 16.15,
+    "cer_small": 0.091,
+    "cer_medium": 0.0,
+    "why": "\"Phir...\" was drawn out to 1.0 s; a comma beat is shorter"
+   },
+   {
+    "id": "L6",
+    "take": "btk_L6-F_t1",
+    "step": "1.10",
+    "kind": "fallback",
+    "dev": "महीने बाद...",
+    "rom": "Mahine baad...",
+    "changed_from_script": true,
+    "voice_on": 16.95,
+    "voice_off": 18.11,
+    "start_target": 16.95,
+    "end_target": 17.95,
+    "cer_small": 0.0,
+    "cer_medium": 0.125,
+    "why": "script.json L6 fallback (2 words)"
+   },
+   {
+    "id": "L7",
+    "take": "btk_L7-O_t1",
+    "step": "1.10",
+    "kind": "prosody",
+    "dev": "फिर एक दिन फ़ैमिली ग्रुप में, एक रील फ़ोरवर्ड होती है।",
+    "rom": "Phir ek din family group mein... ek *reel forward hoti hai.",
+    "changed_from_script": true,
+    "voice_on": 19.75,
+    "voice_off": 23.93,
+    "start_target": 19.75,
+    "end_target": 24.27,
+    "cer_small": 0.079,
+    "cer_medium": 0.158,
+    "why": "both ASR models heard फ़ॉरवर्ड / फ़ॉर्वर्ड as फोवर्ड (first r dropped) in 3 takes; ो + full र (the कारटून fix brought the r back in L1B) + the L7-C comma beat that fits the slot"
+   },
+   {
+    "id": "L8",
+    "take": "btk_L8_t1",
+    "step": "1.08",
+    "kind": "script",
+    "dev": "सब की नज़र... मम्मी पे।",
+    "rom": "Sab ki *nazar... Mummy pe.",
+    "changed_from_script": false,
+    "voice_on": 24.45,
+    "voice_off": 27.27,
+    "start_target": 24.45,
+    "end_target": 27.12,
+    "cer_small": 0.077,
+    "cer_medium": 0.077,
+    "why": ""
+   },
+   {
+    "id": "L9",
+    "take": "btk_L9_t1",
+    "step": "1.08",
+    "kind": "script",
+    "dev": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+    "rom": "Ab woh sab ko khud samjhaati hain... humse behtar.",
+    "changed_from_script": false,
+    "voice_on": 28.25,
+    "voice_off": 32.09,
+    "start_target": 28.25,
+    "end_target": 31.97,
+    "cer_small": 0.241,
+    "cer_medium": 0.138,
+    "why": ""
+   },
+   {
+    "id": "L10",
+    "take": "btk_L10_t2",
+    "step": "1.08",
+    "kind": "script",
+    "dev": "इसको फ़ैमिली ग्रुप में भेजो।",
+    "rom": "Isko family group mein bhejo.",
+    "changed_from_script": false,
+    "voice_on": 32.55,
+    "voice_off": 34.35,
+    "start_target": 32.55,
+    "end_target": 34.4,
+    "cer_small": 0.143,
+    "cer_medium": 0.238,
+    "why": ""
+   },
+   {
+    "id": "L11",
+    "take": "btk_L11_t2",
+    "step": "1.10",
+    "kind": "script",
+    "dev": "अब नानी की बारी।",
+    "rom": "Ab Nani ki baari.",
+    "changed_from_script": false,
+    "voice_on": 34.73,
+    "voice_off": 36.35,
+    "start_target": 34.9,
+    "end_target": 36.35,
+    "cer_small": 0.0,
+    "cer_medium": 0.0,
+    "why": ""
+   }
+  ]
+ }
+}

@@ -1,0 +1,73 @@
+{
+ "name": "pankhi",
+ "variant": "passes",
+ "mode": "static",
+ "frames": 2,
+ "fps_hint": 30,
+ "size": [
+  900,
+  1100
+ ],
+ "loop": false,
+ "labels": [
+  "key_l",
+  "key_r"
+ ],
+ "notes": "Woven straw hand fan (pankhi), \u00d8 300 mm: two-tone basket weave (AMBER x0.55 / EMBER concentric bands), RED fabric piping, bamboo handle 250 mm. 85 mm, front 3/4 (yaw 20). key_l / key_r = candle light from screen-left / screen-right + soft warm back rim. pivot = handle end.",
+ "features": {
+  "pivot": [
+   451.8,
+   987.4
+  ],
+  "blade_centre": [
+   459.6,
+   364.8
+  ]
+ },
+ "samples": {
+  "key_l": 128,
+  "key_r": 128
+ },
+ "preview": false,
+ "render_seconds": {
+  "key_l": 36.4,
+  "key_r": 46.9
+ },
+ "device": "CPU",
+ "threads": 2,
+ "camera": {
+  "lens": 85.0,
+  "sensor_fit": "AUTO",
+  "location": [
+   -0.0014,
+   -1.6191,
+   0.4488
+  ],
+  "rotation_deg": [
+   84.0,
+   -0.0,
+   0.0
+  ],
+  "shift": [
+   -0.00669,
+   0.00803
+  ]
+ },
+ "builder": "pipeline/jawad_reels/assets3d_bijli_chali_gayi.py",
+ "pivot": [
+  451.8,
+  987.4
+ ],
+ "anchor": [
+  450.0,
+  550.0
+ ],
+ "bbox": [
+  212,
+  109,
+  688,
+  991
+ ],
+ "ground_y": 989,
+ "rendered": "2026-10-08 22:57:08"
+}

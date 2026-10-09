@@ -1,0 +1,416 @@
+# Production Packet: C11 Bijli Chali Gayi (@jawad_mp4), Jawad's cinematic-director schema
+# (assets/production-packet-template.yaml; World Bible per references/world-bible.md).
+# Companion of BRIEF.md in this folder: the brief holds the frame-exact tables (grid, text, VO, SFX, QA);
+# this packet holds the direction layer. Nothing here is generated on Higgsfield or any image/video model:
+# every shot is built locally (Blender props, 2.5D cut-outs, numpy/toolkit compositing). The only generation is
+# the Vlad TTS voice. "directed_prompt" is therefore a build direction in film language for the builders.
+# r2 (2026-10-08): viral gate FIX applied (GATE.md fixes 1-5, minor 6-9), mirrored from BRIEF.md r2 (see its CHANGELOG):
+# trimmed V4/V7/V8, r2 VO windows, payoff spelling SIKHAYA, bold CRT edit + the same edit on the S5 monitor,
+# rooftops readable at 360 px + the f220 far-window false start, V2 fallback placement, dedicated cover still.
+project: "jawad_mp4 · reel 2 of 5 · C11 Bijli Chali Gayi"
+version: 2
+deliverable:
+  type: reel
+  platform: [reels]
+  aspect: "9:16"
+  duration_s: 34.667          # 1040 frames at 30 fps = 13 bars at 90 BPM
+  count: 2                    # hook A (public) and hook B (Trial Reel), identical from frame 80
+  fps: 30
+  resolution_target: "1080p"
+  extra_cuts: ["hook B trial version (f0-f79 differ)", "mix DRY: VO + SFX without the harmonium"]
+emotional_core: "nostalgia that turns into quiet pride (sabr)"
+human_truth: "Light jaati thi toh poora mohalla chhat pe hota tha; and every desi editor's finger still presses Ctrl+S by itself."
+single_image: "Black room. A torch beam cuts through dust and finds the orange LED of a power-backup box blinking, while the word Bijli glows as the only thing still on battery (frame 60, the cover)."
+world_bible:
+  palette:
+    - {name: "night", hex: "#070404"}
+    - {name: "torch and tube-light ivory", hex: "#FFF3E6"}
+    - {name: "LED flame", hex: "#FF6A1A"}
+    - {name: "candle amber", hex: "#FFB547"}
+    - {name: "drain red", hex: "#F2312B"}
+    - {name: "dusk indigo shadow", hex: "#171431"}   # shadows only, never a light colour
+  light_logic: "Every light is a battery (torch, candle, the backup box's LED) until the power returns; then every mains practical (tube light, bulbs, CRT, monitor) blooms locally at once. Mains light never fades: it snaps on, flickers darker, or dies."
+  lens_set: ["28 mm for rooms and rooftops", "85 mm for JD and the tabletop", "100 mm macro for the candle, LED and keycaps"]
+  camera_law: "Handheld torch-operator drift while the power is off; locked off the instant it is on."
+  texture_line: "dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks."
+  sound_motif: "the backup box's double beep: two 70 ms piezo pulses at D7, 4 frames apart"
+  symbol: "the blinking orange LED"
+  forbidden:
+    - "more than 4 frames of empty near-black"
+    - "white frames or full-frame flashes; flicker that brightens"
+    - "utility, government, company, city or country names; load-shedding politics"
+    - "UPS or inverter labels or logos on any prop; money on screen"
+    - "a laptop, or any unsaved / ERROR / delete dialog"
+    - "synthesised voices; crowd samples with intelligible words"
+    - "cold blue moonlight"
+    - "religious or national markers on rooftops (domes, minarets, temples, flags); cricket cues; team colours"
+    - "mirrored JD; cross-dissolved faces; lip-sync"
+    - "anything from Organic Fostering or Floret; the old prop library"
+    - "first-person 'main' memories about Jawad"
+cast:
+  - tag: JD
+    identity_source: locked
+    identity_ref: "workspace/brand_reels/charsheet/cutouts/suit_profile.png | suit_smiling.png (2x masters, depth + metadata alongside)"
+    block: "JD: Jawad (@jawad_mp4) from his suit character sheet: full dark beard and moustache, dark hair swept up and back, warm brown skin, black three-piece suit, white shirt, dark tie. Shown only as the face of 'an editor'; never narrated as 'main'."
+    wardrobe_by_scene: {S7: "suit as on the sheet", S8: "suit as on the sheet"}
+    gesture: "watches the candle in profile with lips pressed and steady breathing; at the power return, a closed-mouth smile"
+locations:
+  - tag: ROOM_2000S
+    block: "A 2000s desi room at night: lime-washed plaster wall, a wall-mounted tube light, a ceiling fan, a dark teak table with a CRT monitor and an unlabelled power-backup box, the desktop tower on the floor under the table, an iron window grille onto a deep indigo night."
+    anchors: ["tube-light fixture top-left (x 90-380, y 250-275)", "CRT on the table centre-left (glass x 300-640, y 1050-1290)", "backup box on the table right, LED at (800, 1265)"]
+    light_plot: "Power on: tube light top-left (ivory), CRT spill (amber), faint indigo window spill. Power off: only the LED (flame), the CRT afterglow dot, and the torch from camera-right low; or the candle on the table."
+  - tag: ROOFTOPS
+    block: "Night rooftops of a dense neighbourhood: parapets, plastic water tanks, stairwell rooms, TV antennas, clotheslines, charpais with neighbours fanning themselves; candles on the parapets; bare bulbs on the stairwell walls; a warm dust-haze band behind the far skyline."
+    anchors: ["near parapet (top y 1500) with a charpai, an adult sitting and a child with a pankhi standing at the parapet (head about (720, 1335))", "stairwell bulbs on the mid roofs (12, off until 8.0 s)", "far stairwell window at about (330, 1040) (the f220 false start)", "sky band with stars above y 1000; warm haze band centred about y 1010"]
+    light_plot: "Stars, a warm dust-haze band behind the far skyline (SMOKE, never blue), parapet candles (amber points) each lighting a warm pool on the parapet, the charpai and the silhouettes' candle-side rims; f220-f221 one far window snaps on and dies; 8.0-10.0 s bare bulbs as local blooms; no moon."
+  - tag: EDIT_DESK
+    block: "A present-day edit desk at night: a monitor showing the same 3-track edit as the 2000s CRT (playhead parked where the CRT died) next to a 9:16 still of the rooftops, a desk lamp, a keyboard edge, a render HUD floating below the monitor."
+    anchors: ["monitor centred at (540, 700)", "render HUD at y 1030-1094", "desk lamp glow top-left"]
+    light_plot: "Power on: desk lamp top-left (amber) + monitor glow. Power off: only the red HUD."
+props:
+  - tag: CRT
+    block: "15-inch CRT monitor, aged dark warm plastic #3B2A22, bezel #2A1A15, convex dark glass #0C0807; shows a fictional edit drawn bold so it reads on a phone: three 48 px clip tracks of flame and ember blocks, a 6 px ivory playhead crawling 60 px/s, a tick ruler; no text (BRIEF §6.9)."
+    state_by_shot: {S1-01: "on, then collapses to a dot at f12-f15", S1-02: "dead glass, torch reflection", S4-01: "dead glass", S8-01: "on (rim behind JD)", S8-02: "on, playhead crawling (frame-0 state)"}
+  - tag: TOWER
+    block: "Desktop tower, body #2A1A15, bezel #170A07, 5.25-inch tray, floppy slot, red HDD LED; no logo; on the floor under the table."
+    state_by_shot: {S1-01: "HDD LED on, dies at f14", S8-02: "HDD LED on"}
+  - tag: BOX
+    block: "Unlabelled power-backup box, matte powder-coated metal #120C0A, side vents, rocker switch, one round LED; no text, no logo."
+    state_by_shot: {S1-01: "LED steady amber on mains; from f14 flame on battery, pulses on every beep", S1-02: "LED pulses on beeps", S4-01: "LED pulses at f380", S8-02: "LED steady amber"}
+  - tag: FAN
+    block: "Ceiling fan, three dark wood blades, hub and down-rod (2D sprite); 4.5 rev/s on mains."
+    state_by_shot: {S1-01: "full speed, winds down from f14 (tau 1.0 s)", S8-01: "spinning up over 2.5 s", S8-02: "full speed (frame-0 clock)"}
+  - tag: TUBE
+    block: "Wall-mounted tube light, warm ivory #FFF3E6 when lit (2D glow over the plate's fixture)."
+    state_by_shot: {S1-01: "on, browns out f10-f13, dead f14", S8-01: "strikes at f882", S8-02: "on"}
+  - tag: CANDLE
+    block: "Plain ivory paraffin candle with drips and a charred wick on a steel saucer with a wax pool; procedural flame (amber core, flame edge)."
+    state_by_shot: {S2-01: "lit by a match at f80", S7-01: "burning", S7-02: "burning, screen-right of JD", S7-03: "burning, steady"}
+  - tag: PANKHI
+    block: "Woven straw hand fan, two-tone amber and ember weave, red fabric piping, bamboo handle; no motifs."
+    state_by_shot: {S2-01: "swings in from the right on beats f100, f120, f140"}
+  - tag: COPY
+    block: "Homework exercise book with a kraft-brown paper cover, open on ruled pages, no legible writing."
+    state_by_shot: {S2-01: "open by the candle", S4-01: "on the table, found by the torch"}
+  - tag: KEYCAP_CTRL
+    block: "Mechanical keycap, OEM profile 1.25u, black PBT #0E0908, legend 'Ctrl' in Poppins SemiBold, shine-through flame."
+    state_by_shot: {S6-01: "pressed on f579, 599, 619, 639, 649 ... 709 (1 frame before S)"}
+  - tag: KEYCAP_S
+    block: "Mechanical keycap, OEM profile 1u, black PBT #0E0908, legend 'S', shine-through flame."
+    state_by_shot: {S6-01: "pressed on f580, 600, 620 (quarters), then 640-710 every 10 frames (8ths)"}
+  - tag: MONITOR
+    block: "Present-day monitor as dark glass UI (ui.glass_card 880x520): left, the same edit as the CRT (same tracks and blocks, 1.75x wider, playhead parked at x about 440); right, a 9:16 viewer (236x420) with a still of the rooftops."
+    state_by_shot: {S5-01: "on f400-f479, collapses to a line f480-f485 exactly as the CRT did"}
+  - tag: FAR_WINDOW
+    block: "One window of a far stairwell room on the rooftops, 22x30 px at about (330, 1040), a mains tube light behind it."
+    state_by_shot: {S3-01: "dark until f219; snapped on IVORY on f220-f221 (no fade); dark from f222 (no afterglow); lights with the distant windows at f240; dies at f300"}
+  - tag: HUD
+    block: "Render HUD: 'RENDERING' and a percentage in JetBrains Mono, a 770 px flame-to-red bar."
+    state_by_shot: {S5-01: "63% f400-f439, 64% f440-f485, drains to 0% f486-f520, 0% in red to f550"}
+  - tag: BULBS
+    block: "Twelve bare bulbs on stairwell walls and parapets (local blooms, amber core capped at 3x linear)."
+    state_by_shot: {S3-01: "off; ignite far to near f240-f245; die near to far f300-f302"}
+scenes:
+  - id: S1
+    location: ROOM_2000S
+    time_of_day: "night"
+    axis: "camera faces the back wall; the torch operator stands off-frame bottom-right"
+    light_plot: "f0-f13 tube light top-left + CRT spill; f14 on, only battery light (LED, CRT dot, torch from camera-right low)"
+    shots:
+      - id: S1-01
+        purpose: change
+        anchor: true
+        start_from: null
+        size: "wide room"
+        lens: "28 mm"
+        move: "locked f0-f19; handheld drift from f20 (amplitude ramps in over 15 frames)"
+        action: "The fan turns and the CRT shows a bold edit with its playhead crawling; at f10 the room browns out, at f12-f15 the CRT folds into a dot with the edit on it, Bijli glows on the wall, at f20 a torch clicks on, sweeps down and finds the box, whose LED pulses with each beep."
+        cast: []
+        props: [CRT, TOWER, BOX, FAN, TUBE]
+        light: "tube light top-left until f13; then the LED, the CRT afterglow and a torch from camera-right low; shadows of the CRT fall up-left from the beam"
+        atmosphere: "dust motes inside the torch beam"
+        uncomposed_element: "the tower half-hidden under the table edge"
+        duration_s: 2.667
+        sound: "fan hum, tube buzz, relay click, fan winding down, crickets arriving, two double beeps"
+        transition_out: cut
+        directed_prompt: "Wide shot, 28 mm. A 2000s desi room loses power: the ceiling fan slows, the CRT, mid-edit, folds into a glowing dot, the word Bijli glows on the plaster wall, a torch beam finds an unlabelled box whose orange LED blinks. Lit first by a wall tube light top-left, then only by the LED, the dot and a torch from camera-right low, shadows thrown up-left. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Camera locked, then handheld drift once the power dies. Dust in the beam. The tower half-hidden under the table edge. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: interrupted."
+      - id: S1-02
+        purpose: change
+        anchor: false
+        start_from: S1-01
+        size: "wide room"
+        lens: "28 mm"
+        move: "handheld drift from f0"
+        action: "Trial version: the room is already dark; the LED pulses with a beep on frame 0 under YEH awaaz YAAD HAI?, and the beam drifts from the box up to the dead CRT glass."
+        cast: []
+        props: [BOX, CRT]
+        light: "torch only, from camera-right low"
+        atmosphere: "dust motes inside the beam"
+        uncomposed_element: "a cable drooping off the table edge"
+        duration_s: 2.667
+        sound: "beep on f0, crickets, room tone"
+        transition_out: cut
+        directed_prompt: "Wide shot, 28 mm. A dark 2000s desi room; a torch beam rests on an unlabelled box whose orange LED blinks with a beep, then drifts up to a dead CRT. Lit only by the torch from camera-right low and the LED. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Handheld drift. Dust in the beam. A cable drooping off the table. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: recognition."
+  - id: S2
+    location: ROOM_2000S
+    time_of_day: "night, power off"
+    axis: "tabletop seen from the front; the pankhi enters from frame right"
+    light_plot: "the candle flame at frame centre is the only source; shadows fall outward from it"
+    shots:
+      - id: S2-01
+        purpose: atmosphere
+        anchor: true
+        start_from: null
+        size: "tabletop"
+        lens: "85 mm"
+        move: "handheld drift; tilt up through the ceiling f140-f159 (in_cubic, 900 px)"
+        action: "A match flares and lights a candle on a steel saucer; a pankhi swings in from the right on three beats; an open homework copy lies by the candle; the camera tilts up into the dark ceiling."
+        cast: []
+        props: [CANDLE, PANKHI, COPY]
+        light: "candle flame at centre, warm pool falling off by 600 px"
+        atmosphere: "faint smoke from the match, heat shimmer above the flame"
+        uncomposed_element: "the burnt match stick left on the saucer rim"
+        duration_s: 2.667
+        sound: "match strike on f80, straw rustle on each swing, a slow whoosh into the tilt"
+        transition_out: cut
+        directed_prompt: "Tabletop, 85 mm. A match flares and lights a candle on a steel saucer; a woven pankhi swings in from the right; an open homework copy with a kraft-brown cover lies by it. Lit only by the candle at frame centre, the pool falling off into dark. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Handheld drift, then a tilt up into the ceiling. Match smoke and heat shimmer. The burnt match on the saucer rim. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: warm."
+  - id: S3
+    location: ROOFTOPS
+    time_of_day: "night"
+    axis: "looking across the roofs; the near parapet at the bottom of frame"
+    light_plot: "stars and parapet candles; bulbs bloom locally 8.0-10.0 s"
+    shots:
+      - id: S3-01
+        purpose: reveal
+        anchor: true
+        start_from: S2-01
+        size: "wide"
+        lens: "28 mm"
+        move: "tilt settles f160-f180 (out_cubic); drift; locks at f240; drift again from f300"
+        action: "Neighbours on charpais fan themselves; at f220 a far window's tube light snaps on for two frames and dies, and at f224-f230 the near child turns its head toward it; at f240 every bulb cascades on, AA GAYI! slams and the street cheers; at f300 everything dies again and only the candles stay."
+        cast: []
+        props: [BULBS, FAR_WINDOW]
+        light: "stars, a warm dust-haze band behind the far skyline, parapet candles with warm pools on the parapet, the charpai and the silhouettes' candle-side rims; one far window f220-f221; bulbs as local blooms f240-f299"
+        atmosphere: "night haze over the far roofs"
+        uncomposed_element: "one bulb lights a frame late and buzzes"
+        duration_s: 5.333
+        sound: "crickets, night air, a low far hum blip at f220 (nothing in 1-4 kHz), mains thunk, wordless cheer cut dead at f300, a distant beep"
+        transition_out: light_wipe
+        directed_prompt: "Wide, 28 mm. Night rooftops of a dense neighbourhood: water tanks, stairwell rooms, antennas, clotheslines, neighbours on charpais fanning themselves, candles on parapets; a far window flickers on for an instant and dies, a child turns to look; then every bare bulb cascades on and dies again. Lit by stars, a warm haze band behind the far skyline and candle pools with warm rims on the silhouettes, bulbs as local blooms. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Handheld drift, locked while the bulbs are on. Night haze over the far roofs. One bulb lights late and buzzes. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: shared joy."
+  - id: S4
+    location: ROOM_2000S
+    time_of_day: "night, power off"
+    axis: "as S1"
+    light_plot: "torch only, from camera-right low"
+    shots:
+      - id: S4-01
+        purpose: inform
+        anchor: true
+        start_from: null
+        size: "wide room"
+        lens: "28 mm"
+        move: "handheld drift; slow push 1.00 to 1.04 (easy_ease)"
+        action: "Entered under the L7 beam: the torch finds the homework copy on the table, then the dead CRT and the box."
+        cast: []
+        props: [COPY, CRT, BOX]
+        light: "torch from camera-right low"
+        atmosphere: "dust in the beam"
+        uncomposed_element: "the pankhi lying on the table where it fell"
+        duration_s: 2.667
+        sound: "room tone, crickets through the window, a beep at f380"
+        transition_out: cut
+        directed_prompt: "Wide, 28 mm. In the same dark room a torch finds a kraft-brown homework copy, then a dead CRT and an unlabelled box with a blinking orange LED. Lit only by the torch from camera-right low. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Handheld drift with a slow push. Dust in the beam. A pankhi lying where it fell. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: time passing."
+  - id: S5
+    location: EDIT_DESK
+    time_of_day: "night"
+    axis: "facing the monitor"
+    light_plot: "desk lamp top-left + monitor glow until f479; then only the red HUD"
+    shots:
+      - id: S5-01
+        purpose: change
+        anchor: true
+        start_from: null
+        size: "medium desk"
+        lens: "28 mm"
+        move: "locked f400-f479; handheld drift from f480"
+        action: "The monitor shows the same edit the CRT showed, next to a vertical still of the rooftops; a render sits at 63 %, ticks to 64 %, the lamp dips once, and at f480 the power dies: the monitor folds into a line and the HUD drains to 0 % in red."
+        cast: []
+        props: [MONITOR, HUD]
+        light: "desk lamp top-left, monitor glow; then only the red HUD"
+        atmosphere: "none"
+        uncomposed_element: "a cold cup of chai at the right edge with a ring stain under it"
+        duration_s: 5.333
+        sound: "edit-suite hum, a tick at 64 %, mains dying, monitor thoomp, sub drop, PC fans winding down, ticks draining"
+        transition_out: light_wipe
+        directed_prompt: "Medium, 28 mm. A present-day edit desk at night: a monitor with the same three-track edit as the old CRT and a vertical still of the rooftops, a render at 63 per cent; the power dies, the monitor folds into a line, the render bar drains to zero in red. Lit by a desk lamp top-left and the monitor, then only the red bar. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Locked, then handheld drift. A cold cup of chai with a ring stain. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: loss."
+  - id: S6
+    location: EDIT_DESK
+    time_of_day: "night, power on"
+    axis: "keycaps seen from 35 degrees above"
+    light_plot: "monitor glow from above-front; legends glow flame on each press"
+    shots:
+      - id: S6-01
+        purpose: move
+        anchor: true
+        start_from: null
+        size: "macro"
+        lens: "100 mm macro"
+        move: "locked"
+        action: "Ctrl and S are pressed together on quarters, then on 8ths; each press pops a Saved chip."
+        cast: []
+        props: [KEYCAP_CTRL, KEYCAP_S]
+        light: "soft warm top light from the monitor; legends shine through in flame"
+        atmosphere: "none"
+        uncomposed_element: "a crumb between the keys"
+        duration_s: 5.333
+        sound: "keycap thocks on the 90 BPM grid, a tick per Saved chip, edit-suite hum"
+        transition_out: cut
+        directed_prompt: "Macro, 100 mm. Two black mechanical keycaps, Ctrl and S, pressed together again and again on the beat, legends glowing flame on each press, small Saved chips popping above. Soft warm top light from the monitor. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Camera locked. A crumb between the keys. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: habit."
+  - id: S7
+    location: ROOM_2000S
+    time_of_day: "night, power off"
+    axis: "JD faces screen-right toward the candle"
+    light_plot: "the candle screen-right at eye height is the only source: warm rim on JD's face front, the back of his head falls into indigo dark"
+    shots:
+      - id: S7-01
+        purpose: atmosphere
+        anchor: false
+        start_from: null
+        size: "macro"
+        lens: "100 mm macro"
+        move: "handheld drift at half amplitude"
+        action: "A candle burns on the saucer; the flame leans and recovers."
+        cast: []
+        props: [CANDLE]
+        light: "the flame only"
+        atmosphere: "heat shimmer above the flame"
+        uncomposed_element: "a wax drip running down one side"
+        duration_s: 0.667
+        sound: "room tone, crickets, a soft low thump on the cut"
+        transition_out: cut
+        directed_prompt: "Macro, 100 mm. A plain candle burning on a steel saucer, the flame leaning and recovering. Lit only by the flame. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Gentle handheld drift. Heat shimmer. A wax drip running down one side. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: waiting."
+      - id: S7-02
+        purpose: change
+        anchor: true
+        start_from: null
+        size: "medium close-up"
+        lens: "85 mm"
+        move: "handheld drift capped at 4 px and 0.3 degrees"
+        action: "JD in profile watches the candle with lips pressed and steady breathing; the sound drops out for ten frames; BIJLI NE SIKHAYA / sabr rises above him."
+        cast: [JD]
+        props: [CANDLE]
+        light: "candle screen-right at eye height: warm rim on the face front; the far side falls into indigo dark"
+        atmosphere: "a few sparks drifting up from the flame, kept off the type"
+        uncomposed_element: "a loose hair at the crown catching the rim"
+        duration_s: 3.333
+        sound: "room tone held at about -45 LUFS through the drop-out, then a soft heartbeat thump and a harmonium swell peaking on 'sabr'"
+        transition_out: cut
+        directed_prompt: "Medium close-up, 85 mm. JD in profile facing screen-right watches a candle, lips pressed, breathing steadily. A candle screen-right at eye height rims his face; the back of his head falls into indigo dark. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Gentle handheld drift. A few sparks rising from the flame. A loose hair catching the rim. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: patience."
+      - id: S7-03
+        purpose: atmosphere
+        anchor: false
+        start_from: S7-01
+        size: "macro"
+        lens: "100 mm macro"
+        move: "handheld drift at half amplitude"
+        action: "The flame steadies under the lockup; a riser builds toward the power's return."
+        cast: []
+        props: [CANDLE]
+        light: "the flame only"
+        atmosphere: "heat shimmer"
+        uncomposed_element: "the wick curling"
+        duration_s: 1.333
+        sound: "a riser ending on f880"
+        transition_out: light_wipe
+        directed_prompt: "Macro, 100 mm. A candle flame steadies, centred low in frame under the payoff words. Lit only by the flame. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Gentle handheld drift. Heat shimmer. The wick curling. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: held breath."
+  - id: S8
+    location: ROOM_2000S
+    time_of_day: "night, power on"
+    axis: "JD frontal at frame centre; then the empty room exactly as frame 0"
+    light_plot: "tube light top-left key, CRT glow behind JD's head as a rim, fan spinning up"
+    shots:
+      - id: S8-01
+        purpose: change
+        anchor: true
+        start_from: null
+        size: "medium close-up"
+        lens: "85 mm"
+        move: "locked"
+        action: "The tube light strikes, the fan spins up behind him, JD smiles."
+        cast: [JD]
+        props: [TUBE, FAN, CRT]
+        light: "tube light top-left, CRT glow behind the head as a rim"
+        atmosphere: "none"
+        uncomposed_element: "the fan still accelerating"
+        duration_s: 1.333
+        sound: "mains thunk, sub, fan spin-up, tube strike, CRT degauss, the neighbourhood cheering again (the loudest moment)"
+        transition_out: cut
+        directed_prompt: "Medium close-up, 85 mm. The power returns: a tube light strikes top-left, a ceiling fan spins up, JD smiles with his mouth closed, a CRT glowing behind his head. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Camera locked. The fan still accelerating. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: relief."
+      - id: S8-02
+        purpose: move
+        anchor: false
+        start_from: S1-01
+        size: "wide room"
+        lens: "28 mm"
+        move: "locked (frame-0 composition; every moving element runs on the frame-0 clock at t - DUR)"
+        action: "The lit room as at frame 0 under the end card: fan turning, CRT playhead crawling, LED steady amber."
+        cast: []
+        props: [CRT, TOWER, BOX, FAN, TUBE]
+        light: "as frame 0"
+        atmosphere: "none"
+        uncomposed_element: "as frame 0"
+        duration_s: 4.0
+        sound: "mains hum, end-card swish and shimmer, a reverse swell ending on frame 0"
+        transition_out: loop_seam
+        directed_prompt: "Wide, 28 mm. The 2000s room with the power on, exactly as at the start: fan turning, CRT glowing with a crawling playhead, tube light on, the box's LED steady amber. Palette: night #070404, torch and tube-light ivory #FFF3E6, LED flame #FF6A1A, candle amber #FFB547, drain red #F2312B, dusk indigo shadow #171431. Camera locked. dusk finish, fine warm grain 0.020 at 1.7 px, halation on every practical, indigo-violet shadows, crushed but legal blacks. Mood: home."
+audio:
+  voice:
+    present: true
+    casting_brief: "warm, even, unhurried, with a private smile; Higgsfield preset Vlad on elevenlabs_v4, Devanagari text (vo_config.json); synthetic voice, disclosed"
+    lines:
+      - {shot_id: S1-01, text: "Bijli chali gayi.", delivery: "matter-of-fact, as the room browns out; 0.10-1.30 s (ends before the beep at 1.333)"}
+      - {shot_id: S1-01, text: "Yaad hai?", delivery: "softer, a half smile, after the second beep; 2.20-2.60 s; if the processed take runs > 0.43 s, 1.55-2.00 s between the beeps (lead OK); never trim the rising 'hai?'"}
+      - {shot_id: S1-02, text: "Yeh awaaz... yaad hai?", delivery: "trial hook; hold the pause for the beep at 1.333 s; 0.30-1.95 s"}
+      - {shot_id: S2-01, text: "Light jaati thi, toh poora mohalla chhat pe hota tha.", delivery: "remembering, 'chhat' lands after the cut to the rooftops (5.35-5.45 s); 3.00-4.00 and 4.20-6.45 s"}
+      - {shot_id: S3-01, text: "Jab wapas aati thi...", delivery: "anticipation, rising; the far window false-starts under 'aati thi'; ends by 7.85 s, before the slam"}
+      - {shot_id: S4-01, text: "Phir woh bachche bare hue.", delivery: "the turn, slower; 11.00-12.65 s"}
+      - {shot_id: S5-01, text: "Kuch editor ban gaye.", delivery: "on-word cut: 'editor' starts on f401; 13.15-14.60 s"}
+      - {shot_id: S5-01, text: "Aur bijli ban gayi sab se bari dushman.", delivery: "after 0.4 s of silence; dry, wry, unhurried; 16.40-18.83 s"}
+      - {shot_id: S6-01, text: "Har desi editor ki ungli khud Ctrl+S dabati hai.", delivery: "amused, 'khud' with a wink; 'Ctrl+S' lands between the last quarter press (f620) and the 8ths switch (f640); 18.95-22.39 s"}
+      - {shot_id: S6-01, text: "Har tees second.", delivery: "deadpan joke; 22.51-23.32 s"}
+      - {shot_id: S7-02, text: "Bijli ne humein editing nahi sikhai...", delivery: "quiet, sincere, at Vlad's average pace; 23.68-26.30 s ('Bijli' on the f720 cut when the take allows, else a J-cut pre-lap of up to 0.33 s); ends by 26.30 s before the drop-out"}
+      - {shot_id: S7-02, text: "sabr sikhaya.", delivery: "'sabr' on f820 with the harmonium peak; warm, final; 27.30-28.20 s"}
+      - {shot_id: S8-02, text: "Aap ke ghar light jaane pe kya hota tha?", delivery: "inviting question, rising pitch, no breath at the end; 31.65-34.10 s"}
+  music_brief: "No music bed and no score (SLATE: diegetic sound world). 90 BPM is carried by the beeps, the keycap percussion (quarters then 8ths) and the fan's blade pass. The one desi voice is a harmonium chord D3-A3-D4-F#4 (Sa = D) peaking on 'sabr'. Drop-out f790-f799 with room tone held at about -45 LUFS. The loudest moment is the power returning at f880. The end resolves into frame 0 with the same mains hum."
+  sfx:
+    - {shot_id: S1-01, sound: "fan hum and tube buzz, then a relay click as the box switches to battery, the fan winding down, crickets arriving", perspective: "room"}
+    - {shot_id: S1-01, sound: "double piezo beep from the box on beats 2 and 3", perspective: "close"}
+    - {shot_id: S2-01, sound: "match strike and flare on the cut, straw rustle of the pankhi on each swing", perspective: "close"}
+    - {shot_id: S3-01, sound: "a low far hum blip at f220 (tube_flicker lp 250, -24 dB) for the window's false start; mains thunk and a wordless neighbourhood cheer at f240, cut dead at f300; a distant beep from downstairs", perspective: "wide, outdoor"}
+    - {shot_id: S5-01, sound: "edit-suite hum, a tick at 64 %, mains dying, CRT-style thoomp, sub drop, ticks draining", perspective: "room"}
+    - {shot_id: S6-01, sound: "mechanical keycap thocks, Ctrl a frame before S, on the 90 BPM grid; a small tick per Saved chip", perspective: "macro close"}
+    - {shot_id: S7-02, sound: "silence with room tone, a heartbeat thump and the harmonium on the payoff", perspective: "intimate"}
+    - {shot_id: S8-01, sound: "appliance chorus: thunk, sub, fan spin-up, tube strike, CRT degauss, the cheer again", perspective: "room, loudest"}
+  mix_notes: "VO first: VO stem -16 LUFS, SFX stem -18 LUFS, final -14 LUFS +-0.5, TP <= -2.0 dBTP (wav), LRA 5-9; speech >= 8 LU above the beds; no fade at the end (tail_fade 0); the bed runs into frame 0. Mix FULL and mix DRY (no harmonium)."
+finish:
+  grain: "dusk finish grain 0.020 at 1.7 px (G.finish), identical across the reel; no extra grain layers"
+  grade: "LOOK 'dusk' (jawad_grade): indigo-violet shadows, red-orange practicals; brightest 5 % of saturated pixels >= 60 % red-orange, violet <= 45 %; blacks legal (luma p1 16-22)"
+  upscale_target: "2K"      # schema field; no upscale is applied: native 1080x1920 render
+  deliverables:
+    - {name: "jawad_c11_bijli_chali_gayi_A", aspect: "9:16", duration_s: 34.667, format: "mp4 h264 High 2-pass ~22 Mbps, AAC 320k, +faststart"}
+    - {name: "jawad_c11_bijli_chali_gayi_B (Trial Reel)", aspect: "9:16", duration_s: 34.667, format: "mp4 h264 High 2-pass ~22 Mbps, AAC 320k, +faststart"}
+    - {name: "jawad_c11_bijli_chali_gayi_A_master", aspect: "9:16", duration_s: 34.667, format: "mp4 h264 CRF 14"}
+    - {name: "stems (VO, SFX, mix FULL, mix DRY)", aspect: "n/a", duration_s: 34.667, format: "wav 48 kHz 24-bit"}
+    - {name: "cover", aspect: "9:16", duration_s: 0, format: "jpg, a dedicated still of A's frame 60 with the Bijli keyword at full glow (JAWAD_C11_COVER=1)"}
+  end_card: "endcard.EndCard('COMMENT MEIN', 'batao', sub='Chhat ya candle?', monogram='JD', dur=4.0, y_mono=360, y_key=730, y_sub=965, y_sig=1575) over the lit room from f920; settled hold 1.79 s; exits into the loop push"
+notes:
+  forbidden_reminders:
+    - "never 'main' or 'meri' in the VO; 'har tees second' is a joke, not a statistic"
+    - "no UPS / inverter labels, no utility or place names, no money, no laptop, no ERROR dialog"
+    - "no more than 4 frames of empty near-black; flicker only darkens; no white frames"
+    - "faces: scale <= 1.0, <= 3.5 s per pose, no dissolves, no mirroring"
+  client_mandatories:
+    - "@jawad_mp4 end card with the JD monogram, held >= 1.5 s settled"
+    - "serif-italic keyword moment at the payoff (sabr) with the glowing underline"
+    - "AI info label on (synthetic voice)"
+    - "caption line 1: 'Bijli chali gayi: har video editor ki pehli class' (49 characters); hashtags #videoediting #nostalgia #editorlife #jawadmp4; pinned comment prompt 'Aap ke ghar light jaane pe kya hota tha? Chhat ya candle?'"

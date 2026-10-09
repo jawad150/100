@@ -1,0 +1,15 @@
+{
+ "title": "Pehle Wala Hi Theek Tha",
+ "tiles_left_to_right": [
+  "hook 0.7s",
+  "v16 15.6s",
+  "v27 mess 22.6s",
+  "payoff/cover 28.5s",
+  "end card 31.6s",
+  "hook B (trial)",
+  "3D chai glass"
+ ],
+ "audio_sources": [
+  "pehle_wala/audio/pehle_wala_A_rough_mix.wav"
+ ]
+}

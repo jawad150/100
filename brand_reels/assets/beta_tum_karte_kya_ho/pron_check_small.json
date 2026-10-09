@@ -1,0 +1,266 @@
+[
+ {
+  "id": "P0",
+  "take": "btk_P0_t1.mp3",
+  "model": "small",
+  "text": "ये सवाल क्लाइंट नहीं पूछता।",
+  "why": "rank 1 client (L1), rank 10 poochta",
+  "dur": 2.586,
+  "heard": "ये सवाल प्लैंट नहीं पूछता",
+  "cer": 0.136,
+  "words": {
+   "क्लाइंट": {
+    "heard": "प्लैंट",
+    "score": 0.65,
+    "verdict": "fail"
+   },
+   "पूछता": {
+    "heard": "पूछता",
+    "score": 3.0,
+    "verdict": "exact",
+    "aspirate_heard": true
+   }
+  }
+ },
+ {
+  "id": "P1",
+  "take": "btk_P1_t1.mp3",
+  "model": "small",
+  "text": "ये सवाल क्लायंट नहीं पूछता।",
+  "why": "rank 1 fallback spelling",
+  "dur": 2.769,
+  "heard": "ये सवाल ख्लान्त नहीं पुछता",
+  "cer": 0.227,
+  "words": {
+   "क्लायंट": {
+    "heard": "ख्लान्त",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "पूछता": {
+    "heard": "पुछता",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": true
+   }
+  }
+ },
+ {
+  "id": "P2",
+  "take": "btk_P2_t1.mp3",
+  "model": "small",
+  "text": "मम्मी बोलीं, कार्टून।",
+  "why": "rank 2 Mummy (L1B, L8), rank 6 cartoon",
+  "dur": 2.351,
+  "heard": "मम्मी बोली कार्टून",
+  "cer": 0.059,
+  "words": {
+   "मम्मी": {
+    "heard": "मम्मी",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "कार्टून": {
+    "heard": "कार्टून",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  }
+ },
+ {
+  "id": "P3",
+  "take": "btk_P3_t1.mp3",
+  "model": "small",
+  "text": "ममी बोलीं, कार्टून।",
+  "why": "rank 2 fallback spelling",
+  "dur": 2.273,
+  "heard": "ममी बोली कार्टून",
+  "cer": 0.067,
+  "words": {
+   "ममी": {
+    "heard": "ममी",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "कार्टून": {
+    "heard": "कार्टून",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  }
+ },
+ {
+  "id": "P4",
+  "take": "btk_P4_t1.mp3",
+  "model": "small",
+  "text": "पहले इसका ट्रांसलेशन करो।",
+  "why": "rank 4 translation (L2 keyword)",
+  "dur": 2.351,
+  "heard": "पहले इसका ट्रान्सलेशिन करो",
+  "cer": 0.143,
+  "words": {
+   "ट्रांसलेशन": {
+    "heard": "ट्रान्सलेशिन",
+    "score": 1.2,
+    "verdict": "skeleton"
+   }
+  }
+ },
+ {
+  "id": "P6",
+  "take": "btk_P6_t1.mp3",
+  "model": "small",
+  "text": "फ़ैमिली ग्रुप में भेजो।",
+  "why": "rank 5 family group, rank 3 bhejo",
+  "dur": 1.802,
+  "heard": "फामली ग्रुपने बेजो",
+  "cer": 0.278,
+  "words": {
+   "फ़ैमिली": {
+    "heard": "फामली",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "ग्रुप": {
+    "heard": "ग्रुपने",
+    "score": 0.89,
+    "verdict": "fail"
+   },
+   "भेजो": {
+    "heard": "बेजो",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": false
+   }
+  }
+ },
+ {
+  "id": "P7",
+  "take": "btk_P7_t1.mp3",
+  "model": "small",
+  "text": "फ़ेमिली ग्रुप में भेजो।",
+  "why": "rank 5 fallback spelling",
+  "dur": 1.802,
+  "heard": "फामली गुरुप में भेजो",
+  "cer": 0.167,
+  "words": {
+   "फ़ेमिली": {
+    "heard": "फामली",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "ग्रुप": {
+    "heard": "गुरुप",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "भेजो": {
+    "heard": "भेजो",
+    "score": 3.0,
+    "verdict": "exact",
+    "aspirate_heard": true
+   }
+  }
+ },
+ {
+  "id": "P8",
+  "take": "btk_P8_t1.mp3",
+  "model": "small",
+  "text": "एक रील फ़ॉरवर्ड हुई।",
+  "why": "rank 7 forward (L7)",
+  "dur": 2.038,
+  "heard": "तेख रील पववड हुई",
+  "cer": 0.533,
+  "words": {
+   "रील": {
+    "heard": "रील",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "फ़ॉरवर्ड": {
+    "heard": "रीलपववड",
+    "score": 0.32,
+    "verdict": "fail"
+   }
+  }
+ },
+ {
+  "id": "P9",
+  "take": "btk_P9_t1.mp3",
+  "model": "small",
+  "text": "सब उल्टा है, सब सीधा है।",
+  "why": "rank 8 ulta (L3 keyword), rank 9 seedha",
+  "dur": 3.553,
+  "heard": "सब उर्टा है सब सीदा है",
+  "cer": 0.118,
+  "words": {
+   "उल्टा": {
+    "heard": "उर्टा",
+    "score": 0.76,
+    "verdict": "fail"
+   },
+   "सीधा": {
+    "heard": "सीदा",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": false
+   }
+  }
+ },
+ {
+  "id": "P10",
+  "take": "btk_P10_t1.mp3",
+  "model": "small",
+  "text": "सब की नज़र उन पे, वो ख़ुद हमसे बेहतर हैं।",
+  "why": "rank 11 khud / nazar, rank 12 behtar",
+  "dur": 4.519,
+  "heard": "सब की नजर उन पे वो खुद हम से बहतर है",
+  "cer": 0.071,
+  "words": {
+   "नज़र": {
+    "heard": "नजर",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "ख़ुद": {
+    "heard": "खुद",
+    "score": 3.0,
+    "verdict": "exact",
+    "aspirate_heard": true
+   },
+   "हमसे": {
+    "heard": "हमसे",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "बेहतर": {
+    "heard": "बहतर",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": true
+   }
+  }
+ },
+ {
+  "id": "P11",
+  "take": "btk_P11_t1.mp3",
+  "model": "small",
+  "text": "अब नानी की बारी आई।",
+  "why": "rank 13 Nani / baari (L11)",
+  "dur": 2.273,
+  "heard": "अब नानी की बारी आई",
+  "cer": 0.0,
+  "words": {
+   "नानी": {
+    "heard": "नानी",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "बारी": {
+    "heard": "बारी",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  }
+ }
+]

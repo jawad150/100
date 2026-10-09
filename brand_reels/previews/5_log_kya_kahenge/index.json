@@ -1,0 +1,14 @@
+{
+ "title": "Log Kya Kahenge",
+ "tiles_left_to_right": [
+  "hook/cover 1.5s",
+  "judgement 8.9s",
+  "JD 9.8s",
+  "payoff 27.5s",
+  "end card 33.8s",
+  "hook B (trial)"
+ ],
+ "audio_sources": [
+  "log_kya_kahenge/audio/final/log_kya_kahenge_mix.wav"
+ ]
+}

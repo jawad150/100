@@ -1,0 +1,2213 @@
+{
+ "reel": "log_kya_kahenge",
+ "concept": "C15 Log Kya Kahenge",
+ "slot": 5,
+ "look": "noir_ember",
+ "bpm": 75,
+ "fps": 30,
+ "dur_s": 35.2,
+ "frames": 1056,
+ "grid": {
+  "f_per_beat": 24,
+  "f_per_bar": 96,
+  "beatless_until_s": 16.0
+ },
+ "voice": {
+  "provider": "Higgsfield (voice only)",
+  "model": "elevenlabs_v4",
+  "voice": "Vlad",
+  "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+  "text": "Devanagari (DEV)",
+  "settings": "provider defaults (no stability override)",
+  "post": "vo_chain.py process --speed <per line, see speed_plan> (pitch-preserving rubberband; 1.00 = no stretch), -16 LUFS; one local pass per speed on the same take, each line cut from the pass at its speed"
+ },
+ "narrator": "hum (we) + tum imperatives (bhejo); never main / mera / meri; JD not spoken",
+ "status": "script v2: viral gate r1 (GATE.md, verdict FIX) fixes 3, 4, 5 applied; windows match BRIEF r2 §5/§9 (V4 planned to f667, 2 frames inside f669); timings ESTIMATED (no take exists yet) | v3 (2026-10-09): V2 = the 14-word BRIEF fallback (overrun rule); measured timings in VO_TIMING.md",
+ "gate_fixes_applied": [
+  {
+   "fix": 3,
+   "what": "V6 window end 28.667 -> 29.100 s, processed at 1.05x (gate band 1.04-1.06); V7 onset 32.000 -> 31.600 s (f948), processed at 1.00x (gate band 1.00-1.06), last word <= 35.100 s"
+  },
+  {
+   "fix": 4,
+   "what": "V7 = \"Us dost ko bhejo jise 'log' ka darr rokta hai.\" / उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है। (10 tokens); end-card sub = \"jise 'log' ka darr rokta hai\" (T.measure jw_body: 632.8 px at 50 px, x 223.6-856.4; 708.7 px at 56 px)"
+  },
+  {
+   "fix": 5,
+   "what": "(a) V4 = the 8-word BRIEF fallback by default at 1.06x; (b) V5 part 1 at 22.400 (f672), part 2 at 23.667 (f710); (c) overrun rules for V1 and V5 (lines[].overrun_rule)"
+  }
+ ],
+ "speed_plan": {
+  "V1": 1.1,
+  "V1B": 1.1,
+  "V2": 1.1,
+  "V3": 1.1,
+  "V4": 1.06,
+  "V5": 1.08,
+  "V6": 1.05,
+  "V7": 1.0
+ },
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "version": "public",
+   "mechanism": "identity question + the search phrase",
+   "line": "V1",
+   "roman": "Sab se bara darr, log kya kahenge.",
+   "dev": "सब से बड़ा डर, लोग क्या कहेंगे।",
+   "on_screen": "LOG KYA / kahenge?",
+   "words": 7,
+   "first_word_at_s": 0.1,
+   "est_end_s": 2.485,
+   "window_end_s": 2.7,
+   "hard_end_s": 2.85,
+   "muted": "works: the lockup carries \"log kya kahenge?\""
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "version": "Trial Reel (frames 0-89, splice f90)",
+   "mechanism": "curiosity gap",
+   "line": "V1B",
+   "roman": "Yeh 'log'... asal mein hain kaun?",
+   "dev": "ये 'लोग'... असल में हैं कौन?",
+   "on_screen": "YEH / log / HAIN KAUN?",
+   "words": 6,
+   "first_word_at_s": 0.1,
+   "est_end_s": 2.094,
+   "window_end_s": 2.7,
+   "hard_end_s": 2.7,
+   "muted": "works: the lockup carries the whole question (all V1B captions hidden)"
+  }
+ ],
+ "hooks_considered_not_used": [
+  {
+   "mechanism": "result-first",
+   "roman": "Yeh crowd asli nahi hai.",
+   "why": "spends the 16 s reveal in the first second; no lockup designed; reserve only"
+  },
+  {
+   "mechanism": "contrarian",
+   "roman": "Log kuch nahi kehte.",
+   "why": "spoils the payoff (viral panel: Pull F)"
+  },
+  {
+   "mechanism": "number",
+   "roman": "Paanch hazaar log. Ek hi sawaal.",
+   "why": "banned: no crowd counts (BRIEF §2)"
+  },
+  {
+   "mechanism": "POV callout",
+   "roman": "POV: tum ruke ho... 'log' ki wajah se.",
+   "why": "repeats the CTA phrase; weaker gap"
+  }
+ ],
+ "loop": {
+  "from_line": "V7",
+  "to_line": "V1",
+  "bridge_word": "darr",
+  "text": "...ka darr rokta hai. -> Sab se bara darr, log kya kahenge.",
+  "est_gap_across_seam_s": 0.37
+ },
+ "end_card": {
+  "caps": "US DOST KO",
+  "key": "bhejo",
+  "sub": "jise 'log' ka darr rokta hai",
+  "sub_px": 50.0,
+  "sub_measured": {
+   "px50": {
+    "w": 632.8,
+    "x0": 223.6,
+    "x1": 856.4,
+    "clear_of_x930": 73.6
+   },
+   "px56": {
+    "w": 708.7,
+    "x0": 185.6,
+    "x1": 894.4,
+    "clear_of_x930": 35.6
+   }
+  },
+  "note": "keep the local 50 px override (request R2); V7 is spoken under the card from 31.600 and fully hidden in the captions (31.2-35.2)"
+ },
+ "ig_caption_line4": "Us dost ko bhejo jise 'log' ka darr rokta hai.",
+ "lines": [
+  {
+   "id": "V1",
+   "hook": "A",
+   "beat": "HOOK A",
+   "grid": "bar 0 beat 1 +3 f (f3)",
+   "shot": "S1-01",
+   "start_target": 0.1,
+   "end_target": 2.7,
+   "hard_end": 2.85,
+   "f_start": 3,
+   "f_end_max": 81,
+   "roman": "Sab se bara darr, log kya kahenge.",
+   "roman_marked": "Sab se bara *darr, log kya kahenge.",
+   "dev": "सब से बड़ा डर, लोग क्या कहेंगे।",
+   "tts": "सब से बड़ा डर, लोग क्या कहेंगे।",
+   "tokens": [
+    "Sab",
+    "se",
+    "bara",
+    "darr,",
+    "log",
+    "kya",
+    "kahenge."
+   ],
+   "dev_tokens": [
+    "सब",
+    "से",
+    "बड़ा",
+    "डर,",
+    "लोग",
+    "क्या",
+    "कहेंगे।"
+   ],
+   "rom_tokens_marked": [
+    "Sab",
+    "se",
+    "bara",
+    "*darr,",
+    "log",
+    "kya",
+    "kahenge."
+   ],
+   "keyword": "darr",
+   "caption_keywords": [
+    "darr,"
+   ],
+   "lockup": "LOG KYA / kahenge?",
+   "words": 7,
+   "syllables": 10,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.1,
+    "speech_s": 2.2,
+    "start": 0.1,
+    "end": 2.485,
+    "dur_s": 2.38,
+    "slack_s": 0.22,
+    "worst_end_at_speed": 2.831,
+    "worst_end_at_1_10": 2.831,
+    "words_per_s": 3.18,
+    "syl_per_s": 4.54,
+    "keyword_at": 0.935,
+    "parts": null,
+    "lead_model_2_7wps_raw": 2.59,
+    "lead_model_after_speedup": [
+     2.36,
+     2.45
+    ]
+   },
+   "placement": "one segment",
+   "delivery": "low, close, almost confiding; no rise at the end",
+   "emotion": "dread (named quietly)",
+   "status": "approved (SLATE hook A; colon -> comma for the TTS)",
+   "approved_original": null,
+   "fallback": null,
+   "overrun_rule": "processed > 2.60 s (ends > 2.700): cut the comma pause to 0.10 s; hard ceiling: ends <= 2.850 s (<= 2.75 s long; the lockup is gone by 2.9 s); still over -> one T1 retake (reserve); never above 1.10x",
+   "alternates": [],
+   "pause_after_s": 6.32,
+   "measured": {
+    "take": "cuts/lkk_V1_cH1t2_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V1",
+      "on": 0.1,
+      "off": 2.52
+     }
+    ],
+    "start": 0.1,
+    "end": 2.52,
+    "keywords": [
+     [
+      "darr,",
+      0.933
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "2.670 s > 2.60 s: pause after \"darr,\" 0.350 -> 0.100 s (overrun rule)"
+    ],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V1B",
+   "hook": "B",
+   "beat": "HOOK B (Trial Reel)",
+   "grid": "bar 0 beat 1 +3 f (f3)",
+   "shot": "S1-01B",
+   "start_target": 0.1,
+   "end_target": 2.7,
+   "hard_end": 2.7,
+   "f_start": 3,
+   "f_end_max": 81,
+   "roman": "Yeh 'log'... asal mein hain kaun?",
+   "roman_marked": "Yeh 'log'... asal mein hain *kaun?",
+   "dev": "ये 'लोग'... असल में हैं कौन?",
+   "tts": "ये 'लोग'... असल में हैं कौन?",
+   "tokens": [
+    "Yeh",
+    "'log'...",
+    "asal",
+    "mein",
+    "hain",
+    "kaun?"
+   ],
+   "dev_tokens": [
+    "ये",
+    "'लोग'...",
+    "असल",
+    "में",
+    "हैं",
+    "कौन?"
+   ],
+   "rom_tokens_marked": [
+    "Yeh",
+    "'log'...",
+    "asal",
+    "mein",
+    "hain",
+    "*kaun?"
+   ],
+   "keyword": "kaun",
+   "caption_keywords": [
+    "kaun?"
+   ],
+   "lockup": "YEH / log / HAIN KAUN?",
+   "words": 6,
+   "syllables": 7,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.1,
+    "speech_s": 1.54,
+    "start": 0.1,
+    "end": 2.094,
+    "dur_s": 1.99,
+    "slack_s": 0.61,
+    "worst_end_at_speed": 2.295,
+    "worst_end_at_1_10": 2.295,
+    "words_per_s": 3.9,
+    "syl_per_s": 4.55,
+    "keyword_at": 1.903,
+    "parts": null,
+    "lead_model_2_7wps_raw": 2.22,
+    "lead_model_after_speedup": [
+     2.02,
+     2.1
+    ]
+   },
+   "placement": "one segment",
+   "delivery": "curious, slightly amused on 'kaun'",
+   "emotion": "curiosity",
+   "status": "approved (SLATE hook B); captions: all of V1B hidden (gate r1 sign-off, BRIEF r2 §6.2)",
+   "approved_original": null,
+   "fallback": null,
+   "overrun_rule": "processed > 2.60 s: cut the \"...\" pause to 0.30 s; still over -> one T1 retake",
+   "alternates": [],
+   "pause_after_s": 6.71,
+   "measured": {
+    "take": "cuts/lkk_V1B_cG1bt1_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V1B",
+      "on": 0.1,
+      "off": 2.54
+     }
+    ],
+    "start": 0.1,
+    "end": 2.54,
+    "keywords": [
+     [
+      "kaun?",
+      2.125
+     ]
+    ],
+    "cer_best": 0.1,
+    "rule_notes": [],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V2",
+   "hook": "AB",
+   "beat": "RE-HOOK 1: JD alone -> heads tilt",
+   "grid": "bar 2 beat 4 (f264)",
+   "shot": "S3-01/S3-02",
+   "start_target": 8.8,
+   "end_target": 14.833,
+   "hard_end": 14.833,
+   "f_start": 264,
+   "f_end_max": 445,
+   "roman": "Hum zindagi unke hisaab se edit karte hain... jo poori video dekhte bhi nahi.",
+   "roman_marked": "Hum *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi.",
+   "dev": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+   "tts": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+   "tokens": [
+    "Hum",
+    "zindagi",
+    "unke",
+    "hisaab",
+    "se",
+    "edit",
+    "karte",
+    "hain...",
+    "jo",
+    "poori",
+    "video",
+    "dekhte",
+    "bhi",
+    "nahi."
+   ],
+   "dev_tokens": [
+    "हम",
+    "ज़िंदगी",
+    "उनके",
+    "हिसाब",
+    "से",
+    "एडिट",
+    "करते",
+    "हैं...",
+    "जो",
+    "पूरी",
+    "वीडियो",
+    "देखते",
+    "भी",
+    "नहीं।"
+   ],
+   "rom_tokens_marked": [
+    "Hum",
+    "*zindagi",
+    "unke",
+    "hisaab",
+    "se",
+    "*edit",
+    "karte",
+    "hain...",
+    "jo",
+    "poori",
+    "*video",
+    "dekhte",
+    "bhi",
+    "*nahi."
+   ],
+   "keyword": "edit",
+   "caption_keywords": [
+    "zindagi",
+    "edit",
+    "video",
+    "nahi."
+   ],
+   "lockup": null,
+   "words": 14,
+   "syllables": 25,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.1,
+    "speech_s": 5.19,
+    "start": 8.8,
+    "end": 14.441,
+    "dur_s": 5.64,
+    "slack_s": 0.39,
+    "worst_end_at_speed": 15.271,
+    "worst_end_at_1_10": 15.271,
+    "words_per_s": 2.89,
+    "syl_per_s": 5.21,
+    "keyword_at": 10.758,
+    "parts": null,
+    "lead_model_2_7wps_raw": 5.56,
+    "lead_model_after_speedup": [
+     5.05,
+     5.24
+    ]
+   },
+   "placement": "one segment",
+   "delivery": "wry on 'edit', a small smile on 'dekhte bhi nahi'",
+   "emotion": "wry recognition",
+   "status": "v3 (measured): BRIEF r2 section 9 overrun rule applied - the 15-word take ran 6.51 s at 1.10x (about 6.34 s with the 0.30 s pause, window 6.03 s), so the line is the 14-word BRIEF fallback",
+   "approved_original": "Hum apni *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi. (15 words; recorded as lkk_V2_t1, overran its window)",
+   "fallback": "Hum *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi. (14 words; BRIEF fallback)",
+   "overrun_rule": "processed > 6.03 s with the \"...\" pause cut to 0.30 s: one T2 retake with the 14-word BRIEF fallback",
+   "alternates": [
+    {
+     "label": "fallback (BRIEF, 14 words)",
+     "speed": 1.1,
+     "start": 8.8,
+     "est_end": 14.045,
+     "slack_s": 0.79
+    }
+   ],
+   "pause_after_s": 1.93,
+   "measured": {
+    "take": "lkk_V2_t2.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V2",
+      "on": 8.8,
+      "off": 14.01
+     }
+    ],
+    "start": 8.8,
+    "end": 14.01,
+    "keywords": [
+     [
+      "zindagi",
+      9.015
+     ],
+     [
+      "edit",
+      10.742
+     ],
+     [
+      "video",
+      12.633
+     ],
+     [
+      "nahi.",
+      13.615
+     ]
+    ],
+    "cer_best": 0.065,
+    "rule_notes": [
+     "pause after \"hain...\" 0.500 -> 0.300 s"
+    ],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V3",
+   "hook": "AB",
+   "beat": "REVEAL (orbit)",
+   "grid": "bar 5 beat 1 +11 f (f491)",
+   "shot": "S4-01",
+   "start_target": 16.367,
+   "end_target": 19.133,
+   "hard_end": 19.133,
+   "f_start": 491,
+   "f_end_max": 574,
+   "roman": "Yeh crowd flat hai. Cardboard.",
+   "roman_marked": "Yeh crowd *flat hai. *Cardboard.",
+   "dev": "ये क्राउड फ़्लैट है। कार्डबोर्ड।",
+   "tts": "ये क्राउड फ़्लैट है। कार्डबोर्ड।",
+   "tokens": [
+    "Yeh",
+    "crowd",
+    "flat",
+    "hai.",
+    "Cardboard."
+   ],
+   "dev_tokens": [
+    "ये",
+    "क्राउड",
+    "फ़्लैट",
+    "है।",
+    "कार्डबोर्ड।"
+   ],
+   "rom_tokens_marked": [
+    "Yeh",
+    "crowd",
+    "*flat",
+    "hai.",
+    "*Cardboard."
+   ],
+   "keyword": "Cardboard",
+   "caption_keywords": [
+    "flat",
+    "Cardboard."
+   ],
+   "lockup": null,
+   "words": 5,
+   "syllables": 6,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.1,
+    "speech_s": 1.98,
+    "start": 16.367,
+    "end": 19.003,
+    "dur_s": 2.64,
+    "slack_s": 0.13,
+    "worst_end_at_speed": 19.201,
+    "worst_end_at_1_10": 19.201,
+    "words_per_s": 2.52,
+    "syl_per_s": 3.03,
+    "keyword_at": 18.2,
+    "parts": [
+     {
+      "onset": 16.367,
+      "est_end": 17.546,
+      "est_dur": 1.179
+     },
+     {
+      "onset": 18.2,
+      "est_end": 19.003,
+      "est_dur": 0.803
+     }
+    ],
+    "lead_model_2_7wps_raw": 1.85,
+    "lead_model_after_speedup": [
+     1.68,
+     1.75
+    ]
+   },
+   "placement": "split at the sentence end; parts at 16.367 / 18.200 s",
+   "delivery": "quiet discovery; 'Cardboard.' dry, flat, a beat on its own",
+   "emotion": "discovery",
+   "status": "EDIT approved (gate r1, BRIEF r2 change 8): \"Gaur se dekho.\" cut; it stays in IG caption line 3",
+   "approved_original": "Gaur se dekho. Yeh crowd flat hai. Cardboard. (SLATE / BRIEF r1, 8 words; not recorded)",
+   "fallback": "Gaur se *dekho. *Cardboard. (4 words; keeps the instruction, loses flat)",
+   "overrun_rule": "part 1 > 1.45 s or \"Cardboard\" > 1.10 s (onset 18.0-18.3, ends <= 19.133): retake only that word with its §6 fallback spelling",
+   "alternates": [
+    {
+     "label": "approved 8 words, full stops",
+     "speed": 1.1,
+     "start": 16.367,
+     "est_end": 20.247,
+     "slack_s": -1.11
+    },
+    {
+     "label": "alternate: Gaur se dekho. Cardboard. (Cardboard placed at 18.2)",
+     "speed": 1.1,
+     "start": 16.367,
+     "est_end": 19.003,
+     "slack_s": 0.13
+    }
+   ],
+   "pause_after_s": 0.33,
+   "measured": {
+    "take": "lkk_V3_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V3a",
+      "on": 16.367,
+      "off": 17.707
+     },
+     {
+      "label": "V3b",
+      "on": 18.2,
+      "off": 18.94
+     }
+    ],
+    "start": 16.367,
+    "end": 18.94,
+    "keywords": [
+     [
+      "flat",
+      17.064
+     ],
+     [
+      "Cardboard.",
+      18.2
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V4",
+   "hook": "AB",
+   "beat": "THE SINGLE IMAGE (focus pull)",
+   "grid": "bar 6 beat 1 +4 f (f580)",
+   "shot": "S4-02",
+   "start_target": 19.333,
+   "end_target": 22.233,
+   "hard_end": 22.233,
+   "f_start": 580,
+   "f_end_max": 667,
+   "roman": "Asli log peeche baithe hain, apne phone mein.",
+   "roman_marked": "Asli log peeche baithe hain, apne *phone mein.",
+   "dev": "असली लोग पीछे बैठे हैं, अपने फ़ोन में।",
+   "tts": "असली लोग पीछे बैठे हैं, अपने फ़ोन में।",
+   "tokens": [
+    "Asli",
+    "log",
+    "peeche",
+    "baithe",
+    "hain,",
+    "apne",
+    "phone",
+    "mein."
+   ],
+   "dev_tokens": [
+    "असली",
+    "लोग",
+    "पीछे",
+    "बैठे",
+    "हैं,",
+    "अपने",
+    "फ़ोन",
+    "में।"
+   ],
+   "rom_tokens_marked": [
+    "Asli",
+    "log",
+    "peeche",
+    "baithe",
+    "hain,",
+    "apne",
+    "*phone",
+    "mein."
+   ],
+   "keyword": "phone",
+   "caption_keywords": [
+    "phone"
+   ],
+   "lockup": null,
+   "words": 8,
+   "syllables": 12,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.06,
+    "speech_s": 2.61,
+    "start": 19.333,
+    "end": 22.127,
+    "dur_s": 2.79,
+    "slack_s": 0.11,
+    "worst_end_at_speed": 22.486,
+    "worst_end_at_1_10": 22.371,
+    "words_per_s": 3.07,
+    "syl_per_s": 4.61,
+    "keyword_at": 21.571,
+    "parts": null,
+    "lead_model_2_7wps_raw": 2.96,
+    "lead_model_after_speedup": [
+     2.69,
+     2.8
+    ]
+   },
+   "placement": "one segment",
+   "delivery": "matter-of-fact, gentle",
+   "emotion": "gentle observation",
+   "status": "r2: the BRIEF fallback by default (gate r1 fix 5a): \"toh\" dropped, full stop -> comma, comma pause 0.20 s; runs at 1.06x",
+   "approved_original": "Asli log toh peeche baithe hain. Apne phone mein. (SLATE / BRIEF r1, 9 words; not recorded)",
+   "fallback": null,
+   "overrun_rule": "processed > 2.900 s at 1.06x (ends after f667 = 22.233, i.e. < 0.15 s before V5 at 22.400): the 1.10x pass of the same take; still over -> one T2 retake of V4",
+   "alternates": [
+    {
+     "label": "8 words at 1.10x (the overrun pass)",
+     "speed": 1.1,
+     "start": 19.333,
+     "est_end": 22.025,
+     "slack_s": 0.21
+    },
+    {
+     "label": "8 words at 1.00x",
+     "speed": 1.0,
+     "start": 19.333,
+     "est_end": 22.294,
+     "slack_s": -0.06
+    },
+    {
+     "label": "v1 plan: 9 words with toh, comma, 1.10x",
+     "speed": 1.1,
+     "start": 19.333,
+     "est_end": 22.219,
+     "slack_s": 0.01
+    }
+   ],
+   "pause_after_s": 0.27,
+   "measured": {
+    "take": "cuts/lkk_V4_cG2t2_t1.wav",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V4",
+      "on": 19.333,
+      "off": 22.213
+     }
+    ],
+    "start": 19.333,
+    "end": 22.213,
+    "keywords": [
+     [
+      "phone",
+      21.678
+     ]
+    ],
+    "cer_best": 0.125,
+    "rule_notes": [
+     "pause after \"hain,\" 0.280 -> 0.200 s",
+     "1.06x ends 22.333 > 22.233: next pass",
+     "pause after \"hain,\" 0.280 -> 0.200 s"
+    ],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V5",
+   "hook": "AB",
+   "beat": "O6 BURN",
+   "grid": "bar 7 beat 1 (f672)",
+   "shot": "S4-03/S4-04",
+   "start_target": 22.4,
+   "end_target": 25.4,
+   "hard_end": 25.48,
+   "f_start": 672,
+   "f_end_max": 762,
+   "roman": "Log busy hain... apne log kya kahenge mein.",
+   "roman_marked": "Log *busy hain... apne log kya *kahenge mein.",
+   "dev": "लोग बिज़ी हैं... अपने 'लोग क्या कहेंगे' में।",
+   "tts": "लोग बिज़ी हैं... अपने 'लोग क्या कहेंगे' में।",
+   "tokens": [
+    "Log",
+    "busy",
+    "hain...",
+    "apne",
+    "log",
+    "kya",
+    "kahenge",
+    "mein."
+   ],
+   "dev_tokens": [
+    "लोग",
+    "बिज़ी",
+    "हैं...",
+    "अपने",
+    "'लोग",
+    "क्या",
+    "कहेंगे'",
+    "में।"
+   ],
+   "rom_tokens_marked": [
+    "Log",
+    "*busy",
+    "hain...",
+    "apne",
+    "log",
+    "kya",
+    "*kahenge",
+    "mein."
+   ],
+   "keyword": "busy",
+   "caption_keywords": [
+    "busy",
+    "kahenge"
+   ],
+   "lockup": null,
+   "words": 8,
+   "syllables": 12,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.08,
+    "speech_s": 2.56,
+    "start": 22.4,
+    "end": 25.393,
+    "dur_s": 2.99,
+    "slack_s": 0.01,
+    "worst_end_at_speed": 25.82,
+    "worst_end_at_1_10": 25.781,
+    "words_per_s": 3.13,
+    "syl_per_s": 4.69,
+    "keyword_at": 22.608,
+    "parts": [
+     {
+      "onset": 22.4,
+      "est_end": 23.232,
+      "est_dur": 0.832
+     },
+     {
+      "onset": 23.667,
+      "est_end": 25.393,
+      "est_dur": 1.726
+     }
+    ],
+    "lead_model_2_7wps_raw": 2.96,
+    "lead_model_after_speedup": [
+     2.69,
+     2.8
+    ]
+   },
+   "placement": "split at the sentence end; parts at 22.400 / 23.667 s",
+   "delivery": "the quotable line: slow, warm, a smile in the voice; the pause holds 23.6 s (O6 complete)",
+   "emotion": "warm irony",
+   "status": "approved (BRIEF §9 V5; never shortens); r2: part 1 at 22.400 (f672, bar 7 downbeat), part 2 at 23.667 (f710); 1.08x",
+   "approved_original": null,
+   "fallback": null,
+   "overrun_rule": "part 1 > 1.067 s (ends > 23.467) or part 2 > 1.733 s at 1.08x (ends > 25.400): the 1.10x pass; at 1.10x part 2 up to 1.78 s is accepted (ends <= 25.447, inside the 25.48 clunk guard); part 2 > 1.78 s at 1.10x: one retake with \"हैं...\" written \"हैं,\" (ROM \"hain...\" -> \"hain,\") and part 2 placed at 23.650; never past 25.480, never move the clunk",
+   "alternates": [
+    {
+     "label": "1.10x pass (the overrun step)",
+     "speed": 1.1,
+     "start": 22.4,
+     "est_end": 25.361,
+     "slack_s": 0.04
+    },
+    {
+     "label": "1.06x",
+     "speed": 1.06,
+     "start": 22.4,
+     "est_end": 25.425,
+     "slack_s": -0.03
+    },
+    {
+     "label": "v1 plan: 22.500 / 23.700 at 1.10x",
+     "speed": 1.1,
+     "start": 22.5,
+     "est_end": 25.394,
+     "slack_s": 0.01
+    }
+   ],
+   "pause_after_s": 0.61,
+   "measured": {
+    "take": "cuts/lkk_V5_cG2t2_t1.wav",
+    "take_part2": "lkk_V5_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V5a",
+      "on": 22.4,
+      "off": 23.51
+     },
+     {
+      "label": "V5b",
+      "on": 23.667,
+      "off": 25.327
+     }
+    ],
+    "start": 22.4,
+    "end": 25.327,
+    "keywords": [
+     [
+      "busy",
+      22.687
+     ],
+     [
+      "kahenge",
+      24.577
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "1.08x: part 1 1.120 s (ends 23.520, max 23.467), part 2 1.690 s (max 1.733): next pass",
+     "1.10x: part 1 1.110 s (ends 23.510, max 23.467), part 2 1.660 s (max 1.780): next pass"
+    ],
+    "rule_fail": [
+     "part 1 1.110 s ends 23.510 > 23.467 at 1.10x (no rule left; the pause still holds 23.600: yes)"
+    ]
+   }
+  },
+  {
+   "id": "V6",
+   "hook": "AB",
+   "beat": "PAYOFF",
+   "grid": "bar 8 beat 1 +12 f (f780)",
+   "shot": "S5-01 (may cross the f864 cut into S6-01)",
+   "start_target": 26.0,
+   "end_target": 29.1,
+   "hard_end": 29.1,
+   "f_start": 780,
+   "f_end_max": 873,
+   "roman": "Kisi aur ki nazar mein, hum bhi 'log' hain.",
+   "roman_marked": "Kisi aur ki *nazar mein, hum bhi *'log' hain.",
+   "dev": "किसी और की नज़र में, हम भी 'लोग' हैं।",
+   "tts": "किसी और की नज़र में, हम भी 'लोग' हैं।",
+   "tokens": [
+    "Kisi",
+    "aur",
+    "ki",
+    "nazar",
+    "mein,",
+    "hum",
+    "bhi",
+    "'log'",
+    "hain."
+   ],
+   "dev_tokens": [
+    "किसी",
+    "और",
+    "की",
+    "नज़र",
+    "में,",
+    "हम",
+    "भी",
+    "'लोग'",
+    "हैं।"
+   ],
+   "rom_tokens_marked": [
+    "Kisi",
+    "aur",
+    "ki",
+    "*nazar",
+    "mein,",
+    "hum",
+    "bhi",
+    "*'log'",
+    "hain."
+   ],
+   "keyword": "'log'",
+   "caption_keywords": [
+    "nazar",
+    "'log'"
+   ],
+   "lockup": "LOG / busy / HAIN.",
+   "words": 9,
+   "syllables": 11,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.05,
+    "speech_s": 2.58,
+    "start": 26.0,
+    "end": 28.769,
+    "dur_s": 2.77,
+    "slack_s": 0.33,
+    "worst_end_at_speed": 29.154,
+    "worst_end_at_1_10": 29.011,
+    "words_per_s": 3.49,
+    "syl_per_s": 4.27,
+    "keyword_at": 28.141,
+    "parts": null,
+    "lead_model_2_7wps_raw": 3.33,
+    "lead_model_after_speedup": [
+     3.03,
+     3.14
+    ]
+   },
+   "placement": "one segment",
+   "delivery": "soft realisation, falling cadence",
+   "emotion": "realisation, release",
+   "status": "BRIEF fallback (gate r1 approved; BRIEF r2 change 10); r2 window end 29.100 (gate fix 3), 1.05x",
+   "approved_original": "Aur kisi aur ki nazar mein, hum bhi 'log' hain. (SLATE / BRIEF r1, 10 words; not recorded)",
+   "fallback": null,
+   "overrun_rule": "processed > 3.10 s at 1.05x (ends > 29.100, < 0.1 s before the 29.2 swish): the 1.10x pass; still over -> onset 25.933 (f778, <= 3.167 s); never earlier (the clunk guard ends 25.90); the comma is always cut to 0.20 s",
+   "alternates": [
+    {
+     "label": "1.04x",
+     "speed": 1.04,
+     "start": 26.0,
+     "est_end": 28.795,
+     "slack_s": 0.3
+    },
+    {
+     "label": "1.06x",
+     "speed": 1.06,
+     "start": 26.0,
+     "est_end": 28.743,
+     "slack_s": 0.36
+    },
+    {
+     "label": "1.10x pass (the overrun step)",
+     "speed": 1.1,
+     "start": 26.0,
+     "est_end": 28.643,
+     "slack_s": 0.46
+    },
+    {
+     "label": "approved 10 words at 1.05x (record only)",
+     "speed": 1.05,
+     "start": 26.0,
+     "est_end": 28.913,
+     "slack_s": 0.19
+    }
+   ],
+   "pause_after_s": 2.83,
+   "measured": {
+    "take": "cuts/lkk_V6_cG3t1_t1.wav",
+    "speed": 1.05,
+    "segments": [
+     {
+      "label": "V6",
+      "on": 26.0,
+      "off": 28.95
+     }
+    ],
+    "start": 26.0,
+    "end": 28.95,
+    "keywords": [
+     [
+      "nazar",
+      26.846
+     ],
+     [
+      "'log'",
+      28.276
+     ]
+    ],
+    "cer_best": 0.0,
+    "rule_notes": [
+     "pause after \"mein,\" 0.370 -> 0.200 s"
+    ],
+    "rule_fail": []
+   }
+  },
+  {
+   "id": "V7",
+   "hook": "AB",
+   "beat": "END CARD + LOOP",
+   "grid": "bar 9 beat 4 +12 f (f948)",
+   "shot": "S6-02 (end card from f936)",
+   "start_target": 31.6,
+   "end_target": 35.1,
+   "hard_end": 35.1,
+   "f_start": 948,
+   "f_end_max": 1053,
+   "roman": "Us dost ko bhejo jise 'log' ka darr rokta hai.",
+   "roman_marked": "Us dost ko *bhejo jise 'log' ka darr rokta hai.",
+   "dev": "उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है।",
+   "tts": "उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है।",
+   "tokens": [
+    "Us",
+    "dost",
+    "ko",
+    "bhejo",
+    "jise",
+    "'log'",
+    "ka",
+    "darr",
+    "rokta",
+    "hai."
+   ],
+   "dev_tokens": [
+    "उस",
+    "दोस्त",
+    "को",
+    "भेजो",
+    "जिसे",
+    "'लोग'",
+    "का",
+    "डर",
+    "रोकता",
+    "है।"
+   ],
+   "rom_tokens_marked": [
+    "Us",
+    "dost",
+    "ko",
+    "*bhejo",
+    "jise",
+    "'log'",
+    "ka",
+    "darr",
+    "rokta",
+    "hai."
+   ],
+   "keyword": "bhejo",
+   "caption_keywords": [
+    "bhejo"
+   ],
+   "lockup": "US DOST KO / bhejo / jise 'log' ka darr rokta hai",
+   "words": 10,
+   "syllables": 13,
+   "est": {
+    "model": "calibrated (Kokoro hm_psi phrase durations x Vlad/Kokoro ratio from the casting take)",
+    "speed": 1.0,
+    "speech_s": 3.33,
+    "start": 31.6,
+    "end": 34.926,
+    "dur_s": 3.33,
+    "slack_s": 0.17,
+    "worst_end_at_speed": 35.464,
+    "worst_end_at_1_10": 35.113,
+    "words_per_s": 3.01,
+    "syl_per_s": 3.91,
+    "keyword_at": 32.368,
+    "parts": null,
+    "lead_model_2_7wps_raw": 3.7,
+    "lead_model_after_speedup": [
+     3.37,
+     3.49
+    ],
+    "dry_run_check": {
+     "kokoro_in_context_span_s": 3.33,
+     "bhejo_after_first_word_s": 0.98,
+     "bhejo_at_1_00x_s": 32.57,
+     "note": "syllable split gives 32.37; the dry run gives ~32.57; card keyword settled at 33.05"
+    }
+   },
+   "placement": "one segment",
+   "delivery": "warm, direct; no final fall if the take allows; \"darr\" hands over to V1's \"darr\" at frame 0 (the loop line)",
+   "emotion": "warm push",
+   "status": "r2 copy (gate r1 fix 4, BRIEF r2 change 7): gender-neutral, drops वजह, echoes V1's darr; onset 31.600 (f948, gate fix 3); 1.00x",
+   "approved_original": "Us dost ko bhejo jo 'log' ki wajah se ruka hai. (SLATE §3.5 / BRIEF r1, 11 words; replaced)",
+   "fallback": null,
+   "overrun_rule": "processed > 3.50 s at 1.00x (last word after 35.100): the slowest of the 1.03x / 1.06x passes that ends by 35.100; over at 1.06x -> the 1.10x pass (outside the gate band: tell the lead); over at 1.10x -> one retake of V7",
+   "alternates": [
+    {
+     "label": "1.03x",
+     "speed": 1.03,
+     "start": 31.6,
+     "est_end": 34.83,
+     "slack_s": 0.27
+    },
+    {
+     "label": "1.06x",
+     "speed": 1.06,
+     "start": 31.6,
+     "est_end": 34.738,
+     "slack_s": 0.36
+    },
+    {
+     "label": "1.10x pass (emergency step)",
+     "speed": 1.1,
+     "start": 31.6,
+     "est_end": 34.624,
+     "slack_s": 0.48
+    },
+    {
+     "label": "old 11-word line from 31.600 at 1.00x (record only)",
+     "speed": 1.0,
+     "start": 31.6,
+     "est_end": 34.857,
+     "slack_s": 0.24
+    }
+   ],
+   "pause_after_s": 0.37,
+   "measured": {
+    "take": "lkk_V7_t1.mp3",
+    "speed": 1.1,
+    "segments": [
+     {
+      "label": "V7",
+      "on": 31.433,
+      "off": 35.073
+     }
+    ],
+    "start": 31.433,
+    "end": 35.073,
+    "keywords": [
+     [
+      "bhejo",
+      32.158
+     ]
+    ],
+    "cer_best": 0.053,
+    "rule_notes": [
+     "1.00x ends 35.580 > 35.100: next pass",
+     "1.03x ends 35.470 > 35.100: next pass",
+     "1.06x ends 35.370 > 35.100: next pass",
+     "1.10x ends 35.240 > 35.100: next pass",
+     "onset moved 31.600 -> 31.433 s (f943, -0.167 s) so the last word ends by 35.100: decision for the lead",
+     "1.10x is outside the gate band 1.00-1.06x: tell the lead"
+    ],
+    "rule_fail": [
+     "ends 35.240 > 35.100 at 1.10x even after the retakes: no rule left (V7 never shortens, never above 1.10x)"
+    ]
+   }
+  }
+ ],
+ "tokens": [
+  {
+   "line": "V1",
+   "i": 0,
+   "roman": "Sab",
+   "dev": "सब",
+   "tts": "सब",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 0.1,
+   "est_end": 0.309
+  },
+  {
+   "line": "V1",
+   "i": 1,
+   "roman": "se",
+   "dev": "से",
+   "tts": "से",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 0.309,
+   "est_end": 0.517
+  },
+  {
+   "line": "V1",
+   "i": 2,
+   "roman": "bara",
+   "dev": "बड़ा",
+   "tts": "बड़ा",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 0.517,
+   "est_end": 0.935
+  },
+  {
+   "line": "V1",
+   "i": 3,
+   "roman": "darr,",
+   "dev": "डर,",
+   "tts": "डर,",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 0.935,
+   "est_end": 1.144
+  },
+  {
+   "line": "V1",
+   "i": 4,
+   "roman": "log",
+   "dev": "लोग",
+   "tts": "लोग",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.326,
+   "est_end": 1.557
+  },
+  {
+   "line": "V1",
+   "i": 5,
+   "roman": "kya",
+   "dev": "क्या",
+   "tts": "क्या",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.557,
+   "est_end": 1.789
+  },
+  {
+   "line": "V1",
+   "i": 6,
+   "roman": "kahenge.",
+   "dev": "कहेंगे।",
+   "tts": "कहेंगे।",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.789,
+   "est_end": 2.485
+  },
+  {
+   "line": "V1B",
+   "i": 0,
+   "roman": "Yeh",
+   "dev": "ये",
+   "tts": "ये",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 0.1,
+   "est_end": 0.391
+  },
+  {
+   "line": "V1B",
+   "i": 1,
+   "roman": "'log'...",
+   "dev": "'लोग'...",
+   "tts": "'लोग'...",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 0.391,
+   "est_end": 0.683
+  },
+  {
+   "line": "V1B",
+   "i": 2,
+   "roman": "asal",
+   "dev": "असल",
+   "tts": "असल",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.137,
+   "est_end": 1.52
+  },
+  {
+   "line": "V1B",
+   "i": 3,
+   "roman": "mein",
+   "dev": "में",
+   "tts": "में",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.52,
+   "est_end": 1.711
+  },
+  {
+   "line": "V1B",
+   "i": 4,
+   "roman": "hain",
+   "dev": "हैं",
+   "tts": "हैं",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.711,
+   "est_end": 1.903
+  },
+  {
+   "line": "V1B",
+   "i": 5,
+   "roman": "kaun?",
+   "dev": "कौन?",
+   "tts": "कौन?",
+   "keyword": true,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 1.903,
+   "est_end": 2.094
+  },
+  {
+   "line": "V2",
+   "i": 0,
+   "roman": "Hum",
+   "dev": "हम",
+   "tts": "हम",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 8.8,
+   "est_end": 8.978
+  },
+  {
+   "line": "V2",
+   "i": 1,
+   "roman": "zindagi",
+   "dev": "ज़िंदगी",
+   "tts": "ज़िंदगी",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 9.334,
+   "est_end": 9.868
+  },
+  {
+   "line": "V2",
+   "i": 2,
+   "roman": "unke",
+   "dev": "उनके",
+   "tts": "उनके",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 9.868,
+   "est_end": 10.224
+  },
+  {
+   "line": "V2",
+   "i": 3,
+   "roman": "hisaab",
+   "dev": "हिसाब",
+   "tts": "हिसाब",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 10.224,
+   "est_end": 10.58
+  },
+  {
+   "line": "V2",
+   "i": 4,
+   "roman": "se",
+   "dev": "से",
+   "tts": "से",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 10.58,
+   "est_end": 10.758
+  },
+  {
+   "line": "V2",
+   "i": 5,
+   "roman": "edit",
+   "dev": "एडिट",
+   "tts": "एडिट",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 10.758,
+   "est_end": 11.114
+  },
+  {
+   "line": "V2",
+   "i": 6,
+   "roman": "karte",
+   "dev": "करते",
+   "tts": "करते",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 11.114,
+   "est_end": 11.47
+  },
+  {
+   "line": "V2",
+   "i": 7,
+   "roman": "hain...",
+   "dev": "हैं...",
+   "tts": "हैं...",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 11.47,
+   "est_end": 11.648
+  },
+  {
+   "line": "V2",
+   "i": 8,
+   "roman": "jo",
+   "dev": "जो",
+   "tts": "जो",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 12.103,
+   "est_end": 12.315
+  },
+  {
+   "line": "V2",
+   "i": 9,
+   "roman": "poori",
+   "dev": "पूरी",
+   "tts": "पूरी",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 12.315,
+   "est_end": 12.74
+  },
+  {
+   "line": "V2",
+   "i": 10,
+   "roman": "video",
+   "dev": "वीडियो",
+   "tts": "वीडियो",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 12.74,
+   "est_end": 13.378
+  },
+  {
+   "line": "V2",
+   "i": 11,
+   "roman": "dekhte",
+   "dev": "देखते",
+   "tts": "देखते",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 13.378,
+   "est_end": 13.803
+  },
+  {
+   "line": "V2",
+   "i": 12,
+   "roman": "bhi",
+   "dev": "भी",
+   "tts": "भी",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 13.803,
+   "est_end": 14.016
+  },
+  {
+   "line": "V2",
+   "i": 13,
+   "roman": "nahi.",
+   "dev": "नहीं।",
+   "tts": "नहीं।",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 14.016,
+   "est_end": 14.441
+  },
+  {
+   "line": "V3",
+   "i": 0,
+   "roman": "Yeh",
+   "dev": "ये",
+   "tts": "ये",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 16.367,
+   "est_end": 16.662
+  },
+  {
+   "line": "V3",
+   "i": 1,
+   "roman": "crowd",
+   "dev": "क्राउड",
+   "tts": "क्राउड",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 16.662,
+   "est_end": 16.957
+  },
+  {
+   "line": "V3",
+   "i": 2,
+   "roman": "flat",
+   "dev": "फ़्लैट",
+   "tts": "फ़्लैट",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 16.957,
+   "est_end": 17.251
+  },
+  {
+   "line": "V3",
+   "i": 3,
+   "roman": "hai.",
+   "dev": "है।",
+   "tts": "है।",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 17.251,
+   "est_end": 17.546
+  },
+  {
+   "line": "V3",
+   "i": 4,
+   "roman": "Cardboard.",
+   "dev": "कार्डबोर्ड।",
+   "tts": "कार्डबोर्ड।",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 18.2,
+   "est_end": 19.003
+  },
+  {
+   "line": "V4",
+   "i": 0,
+   "roman": "Asli",
+   "dev": "असली",
+   "tts": "असली",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 19.333,
+   "est_end": 19.707
+  },
+  {
+   "line": "V4",
+   "i": 1,
+   "roman": "log",
+   "dev": "लोग",
+   "tts": "लोग",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 19.707,
+   "est_end": 19.893
+  },
+  {
+   "line": "V4",
+   "i": 2,
+   "roman": "peeche",
+   "dev": "पीछे",
+   "tts": "पीछे",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 19.893,
+   "est_end": 20.267
+  },
+  {
+   "line": "V4",
+   "i": 3,
+   "roman": "baithe",
+   "dev": "बैठे",
+   "tts": "बैठे",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 20.267,
+   "est_end": 20.641
+  },
+  {
+   "line": "V4",
+   "i": 4,
+   "roman": "hain,",
+   "dev": "हैं,",
+   "tts": "हैं,",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 20.641,
+   "est_end": 20.828
+  },
+  {
+   "line": "V4",
+   "i": 5,
+   "roman": "apne",
+   "dev": "अपने",
+   "tts": "अपने",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 21.016,
+   "est_end": 21.571
+  },
+  {
+   "line": "V4",
+   "i": 6,
+   "roman": "phone",
+   "dev": "फ़ोन",
+   "tts": "फ़ोन",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 21.571,
+   "est_end": 21.849
+  },
+  {
+   "line": "V4",
+   "i": 7,
+   "roman": "mein.",
+   "dev": "में।",
+   "tts": "में।",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 21.849,
+   "est_end": 22.127
+  },
+  {
+   "line": "V5",
+   "i": 0,
+   "roman": "Log",
+   "dev": "लोग",
+   "tts": "लोग",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 22.4,
+   "est_end": 22.608
+  },
+  {
+   "line": "V5",
+   "i": 1,
+   "roman": "busy",
+   "dev": "बिज़ी",
+   "tts": "बिज़ी",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 22.608,
+   "est_end": 23.024
+  },
+  {
+   "line": "V5",
+   "i": 2,
+   "roman": "hain...",
+   "dev": "हैं...",
+   "tts": "हैं...",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 23.024,
+   "est_end": 23.232
+  },
+  {
+   "line": "V5",
+   "i": 3,
+   "roman": "apne",
+   "dev": "अपने",
+   "tts": "अपने",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 23.667,
+   "est_end": 24.098
+  },
+  {
+   "line": "V5",
+   "i": 4,
+   "roman": "log",
+   "dev": "'लोग",
+   "tts": "'लोग",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 24.098,
+   "est_end": 24.314
+  },
+  {
+   "line": "V5",
+   "i": 5,
+   "roman": "kya",
+   "dev": "क्या",
+   "tts": "क्या",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 24.314,
+   "est_end": 24.53
+  },
+  {
+   "line": "V5",
+   "i": 6,
+   "roman": "kahenge",
+   "dev": "कहेंगे'",
+   "tts": "कहेंगे'",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 24.53,
+   "est_end": 25.177
+  },
+  {
+   "line": "V5",
+   "i": 7,
+   "roman": "mein.",
+   "dev": "में।",
+   "tts": "में।",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 25.177,
+   "est_end": 25.393
+  },
+  {
+   "line": "V6",
+   "i": 0,
+   "roman": "Kisi",
+   "dev": "किसी",
+   "tts": "किसी",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 26.0,
+   "est_end": 26.378
+  },
+  {
+   "line": "V6",
+   "i": 1,
+   "roman": "aur",
+   "dev": "और",
+   "tts": "और",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 26.378,
+   "est_end": 26.567
+  },
+  {
+   "line": "V6",
+   "i": 2,
+   "roman": "ki",
+   "dev": "की",
+   "tts": "की",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 26.567,
+   "est_end": 26.756
+  },
+  {
+   "line": "V6",
+   "i": 3,
+   "roman": "nazar",
+   "dev": "नज़र",
+   "tts": "नज़र",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 26.756,
+   "est_end": 27.133
+  },
+  {
+   "line": "V6",
+   "i": 4,
+   "roman": "mein,",
+   "dev": "में,",
+   "tts": "में,",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 27.133,
+   "est_end": 27.322
+  },
+  {
+   "line": "V6",
+   "i": 5,
+   "roman": "hum",
+   "dev": "हम",
+   "tts": "हम",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 27.513,
+   "est_end": 27.827
+  },
+  {
+   "line": "V6",
+   "i": 6,
+   "roman": "bhi",
+   "dev": "भी",
+   "tts": "भी",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 27.827,
+   "est_end": 28.141
+  },
+  {
+   "line": "V6",
+   "i": 7,
+   "roman": "'log'",
+   "dev": "'लोग'",
+   "tts": "'लोग'",
+   "keyword": true,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 28.141,
+   "est_end": 28.455
+  },
+  {
+   "line": "V6",
+   "i": 8,
+   "roman": "hain.",
+   "dev": "हैं।",
+   "tts": "हैं।",
+   "keyword": false,
+   "hide": false,
+   "hide_suggested": false,
+   "est_start": 28.455,
+   "est_end": 28.769
+  },
+  {
+   "line": "V7",
+   "i": 0,
+   "roman": "Us",
+   "dev": "उस",
+   "tts": "उस",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 31.6,
+   "est_end": 31.856
+  },
+  {
+   "line": "V7",
+   "i": 1,
+   "roman": "dost",
+   "dev": "दोस्त",
+   "tts": "दोस्त",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 31.856,
+   "est_end": 32.112
+  },
+  {
+   "line": "V7",
+   "i": 2,
+   "roman": "ko",
+   "dev": "को",
+   "tts": "को",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 32.112,
+   "est_end": 32.368
+  },
+  {
+   "line": "V7",
+   "i": 3,
+   "roman": "bhejo",
+   "dev": "भेजो",
+   "tts": "भेजो",
+   "keyword": true,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 32.368,
+   "est_end": 32.879
+  },
+  {
+   "line": "V7",
+   "i": 4,
+   "roman": "jise",
+   "dev": "जिसे",
+   "tts": "जिसे",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 32.879,
+   "est_end": 33.391
+  },
+  {
+   "line": "V7",
+   "i": 5,
+   "roman": "'log'",
+   "dev": "'लोग'",
+   "tts": "'लोग'",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 33.391,
+   "est_end": 33.647
+  },
+  {
+   "line": "V7",
+   "i": 6,
+   "roman": "ka",
+   "dev": "का",
+   "tts": "का",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 33.647,
+   "est_end": 33.903
+  },
+  {
+   "line": "V7",
+   "i": 7,
+   "roman": "darr",
+   "dev": "डर",
+   "tts": "डर",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 33.903,
+   "est_end": 34.159
+  },
+  {
+   "line": "V7",
+   "i": 8,
+   "roman": "rokta",
+   "dev": "रोकता",
+   "tts": "रोकता",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 34.159,
+   "est_end": 34.671
+  },
+  {
+   "line": "V7",
+   "i": 9,
+   "roman": "hai.",
+   "dev": "है।",
+   "tts": "है।",
+   "keyword": false,
+   "hide": true,
+   "hide_suggested": false,
+   "est_start": 34.671,
+   "est_end": 34.926
+  }
+ ],
+ "totals": {
+  "hook_A": {
+   "words": 61,
+   "syllables": 89,
+   "speech_s": 20.45,
+   "line_spans_s": 22.54,
+   "window_s": 23.9,
+   "words_per_s_overall": 1.76,
+   "lead_model_2_7wps_raw_s": 22.96,
+   "lead_model_after_1_06_1_10_s": [
+    20.88,
+    21.66
+   ]
+  },
+  "hook_B": {
+   "words": 60,
+   "syllables": 86,
+   "speech_s": 19.79,
+   "line_spans_s": 22.15,
+   "window_s": 23.9,
+   "words_per_s_overall": 1.73,
+   "lead_model_2_7wps_raw_s": 22.59,
+   "lead_model_after_1_06_1_10_s": [
+    20.54,
+    21.31
+   ]
+  },
+  "note": "lead model = words / 2.7 w/s before the speed-up; calibrated = Vlad casting take (vlad_v4_r1_DEV.mp3) measured at 2.30 w/s, 4.35 syll/s voiced, raw"
+ },
+ "takes": [
+  {
+   "id": "T0",
+   "purpose": "pronunciation test + production (every risk word: V3, V5, V6; plus V7, the loop line)",
+   "lines": [
+    "V3",
+    "V5",
+    "V6",
+    "V7"
+   ],
+   "dev": "ये क्राउड फ़्लैट है। कार्डबोर्ड। लोग बिज़ी हैं... अपने 'लोग क्या कहेंगे' में। किसी और की नज़र में, हम भी 'लोग' हैं। उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है।",
+   "rom": "Yeh crowd *flat hai. *Cardboard. Log *busy hain... apne log kya *kahenge mein. Kisi aur ki *nazar mein, hum bhi *'log' hain. Us dost ko *bhejo jise 'log' ka darr rokta hai.",
+   "chars": 159,
+   "tokens": 32,
+   "vo_chain_passes": {
+    "1.10": [
+     "V3",
+     "V5 (overrun step)",
+     "V6 (overrun step)"
+    ],
+    "1.08": [
+     "V5"
+    ],
+    "1.06": [
+     "V7 (overrun step)"
+    ],
+    "1.05": [
+     "V6"
+    ],
+    "1.03": [
+     "V7 (overrun step)"
+    ],
+    "1.00": [
+     "V7"
+    ]
+   }
+  },
+  {
+   "id": "T1",
+   "purpose": "hooks",
+   "lines": [
+    "V1",
+    "V1B"
+   ],
+   "dev": "सब से बड़ा डर, लोग क्या कहेंगे। ये 'लोग'... असल में हैं कौन?",
+   "rom": "Sab se bara *darr, log kya kahenge. Yeh 'log'... asal mein hain *kaun?",
+   "chars": 60,
+   "tokens": 13,
+   "vo_chain_passes": {
+    "1.10": [
+     "V1",
+     "V1B"
+    ]
+   }
+  },
+  {
+   "id": "T2",
+   "purpose": "body",
+   "lines": [
+    "V2",
+    "V4"
+   ],
+   "dev": "हम अपनी ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं। असली लोग पीछे बैठे हैं, अपने फ़ोन में।",
+   "rom": "Hum apni *zindagi unke hisaab se *edit karte hain... jo poori *video dekhte bhi *nahi. Asli log peeche baithe hain, apne *phone mein.",
+   "chars": 115,
+   "tokens": 23,
+   "vo_chain_passes": {
+    "1.10": [
+     "V2",
+     "V4 (overrun step)"
+    ],
+    "1.06": [
+     "V4"
+    ]
+   }
+  }
+ ],
+ "dry_run": {
+  "what": "Kokoro hm_psi scratch takes of T0/T1/T2 (never a VO take) through vo_chain.py process --speed 1.00: faster-whisper alignment to the DEV/ROM tokens",
+  "result": {
+   "T0": {
+    "n": 32,
+    "ok": 32
+   },
+   "T1": {
+    "n": 13,
+    "ok": 13
+   },
+   "T2": {
+    "n": 23,
+    "ok": 23
+   }
+  },
+  "all_ok": true,
+  "notes": "whisper writes बिजी / नजर without the nukta (normalisation); it heard कार्डबोर्ड as \"कार्बोर्ड\" on the Kokoro read (risk 1)"
+ },
+ "credits_plan": "3 jobs (T0, T1, T2) + 1 retake reserve; at <= 2.5 credits per job <= 10 of the reel cap 12; the extra vo_chain passes are local (no credits)",
+ "pronunciation_risks": [
+  {
+   "rank": 1,
+   "dev": "कार्डबोर्ड",
+   "roman": "Cardboard",
+   "line": "V3",
+   "risk": "two r + retroflex clusters on the reveal word; a flat read blurs to \"kaarbord\"",
+   "fallback": [
+    "कार्ड-बोर्ड",
+    "गत्ता (Gatta: Hindustani for cardboard, used on both sides)"
+   ]
+  },
+  {
+   "rank": 2,
+   "dev": "फ़्लैट",
+   "roman": "flat",
+   "line": "V3",
+   "risk": "f + cluster; the casting ASR heard लाइफ़ as \"लाइप\", so f may come out as p (\"plat\")",
+   "fallback": [
+    "फ्लैट (no nukta)",
+    "टू-डी (2D), caption \"2D\""
+   ]
+  },
+  {
+   "rank": 3,
+   "dev": "बिज़ी",
+   "roman": "busy",
+   "line": "V5",
+   "risk": "z must not become j (\"biji\"); payoff keyword",
+   "fallback": [
+    "Latin \"busy\" inside the DEV text (only if the take proves it better)"
+   ]
+  },
+  {
+   "rank": 4,
+   "dev": "नज़र",
+   "roman": "nazar",
+   "line": "V6",
+   "risk": "z vs j (\"najar\"); Pakistani ear notices",
+   "fallback": [
+    "none needed if z is heard; \"najar\" is acceptable to Indian ears"
+   ]
+  },
+  {
+   "rank": 5,
+   "dev": "क्राउड",
+   "roman": "crowd",
+   "line": "V3",
+   "risk": "cluster kr + au diphthong may get an epenthetic vowel (\"karaud\")",
+   "fallback": [
+    "drop the word: \"Yeh flat hai. Cardboard.\""
+   ]
+  },
+  {
+   "rank": 6,
+   "dev": "'लोग'",
+   "roman": "'log'",
+   "line": "V5/V6/V7",
+   "risk": "quote marks may add a hiccup pause or nothing; the stress on log must survive",
+   "fallback": [
+    "remove the quotes from the DEV text"
+   ]
+  },
+  {
+   "rank": 7,
+   "dev": "ज़िंदगी",
+   "roman": "zindagi",
+   "line": "V2",
+   "risk": "z vs j (\"jindagi\")",
+   "fallback": [
+    "none (common word; check by ear)"
+   ]
+  },
+  {
+   "rank": 8,
+   "dev": "फ़ोन",
+   "roman": "phone",
+   "line": "V4",
+   "risk": "f vs p (\"pone\")",
+   "fallback": [
+    "फोन (no nukta)"
+   ]
+  }
+ ],
+ "measured_note": "v3 2026-10-09: measured on the Vlad takes; stems + word timings in workspace/jawad_reels/log_kya_kahenge/vo/ (vo_stem.wav = hook A, words.json); full table VO_TIMING.md"
+}
