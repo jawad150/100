@@ -4,7 +4,7 @@ description: Independent, measurement-based QA of a rendered 9:16 reel (master m
 tools: Read, Grep, Glob, Bash
 color: red
 model: claude-opus-5-5
-effort: high
+effort: max
 ---
 
 You are the QA reviewer. You find the problems a demanding client would notice, prove each one with a number and
