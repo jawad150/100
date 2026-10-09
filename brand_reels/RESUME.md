@@ -18,6 +18,23 @@ re-buildable scratch only, except what is saved under `brand_reels/assets/`.
   script headers / SLATE), shared context `pipeline/jawad_reels/workflows/ctx.txt`.
 
 
+## Session 3 (2026-10-09, fresh container, Higgsfield connected again) - read this first
+- Restore: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
+  (deps above + `fonttools`). The crops are rebuilt from the cut-outs (`tools/rebuild_crops.py`); the character sheets,
+  `prior/` and `refs/` are lost for good. Agent context: `workspace/brand_reels/wf/ctx.txt` (regenerated from
+  `pipeline/jawad_reels/workflows/ctx.txt` + the session-3 notes appended in that file).
+- Sound kit: rebuilt as committed code by `pipeline/jawad_reels/workflows/soundkit_s3.js` -> `pipeline/jawad_reels/epic_sfx.py`,
+  `epic_music.py`, `epic_mix.py`, `tools/fetch_sfx_library.py` (CC0/PD samples -> `workspace/brand_reels/sfx/library/`,
+  licences in `pipeline/jawad_reels/sfx_library_LICENSES.md`). Marker when verified: `workspace/brand_reels/wf/KIT_READY`.
+- Per reel: `pipeline/jawad_reels/workflows/reel_s3.js` with args
+  `{"id","title","slug","look","dur","slot","handoff"(reels 2-4),"faces"(reel 3)}`: pre-production finish (faces, audio
+  on the rebuilt kit, HANDOFF.md) -> build -> preview review -> fix -> master -> two-lens QA + adversarial verify (max 3
+  rounds) -> delivery into `reel/jawad_reels/<slug>/` (no preview mp4; every file < 95 MB; committed + pushed).
+- Agents commit + push every finished step with `pipeline/jawad_reels/tools/commit_step.sh` (locked, size-checked).
+- Higgsfield: balance 6924.51 at session start; voice re-takes only, max 5 credits per reel, logged per reel in
+  `workspace/jawad_reels/<slug>/vo/credits_s3.json`.
+- Status: see the git log (`<slug>: ...` commits) and `reel/jawad_reels/<slug>/README.md` once delivered.
+
 ## Session 2 (2026-10-09, resumed in a fresh container) - read this first
 - Workspace restore is now one command: `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`
   (deps: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`; session 3 found
