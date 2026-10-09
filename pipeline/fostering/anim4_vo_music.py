@@ -32,14 +32,20 @@ JOURNEY    | b14-26    | 7.00-13.00  | coins pulled into the ribbon; VO      | g
            |           |             | home 11.74                            | 16ths, sub (1 + and-of-3), EP stabs,
            |           |             |                                       | glassy 16th arp, pad. Dadd9, A/C#, Bm9,
            |           |             |                                       | Gmaj9; motif 11.0-11.5
-HOME       | b26-34    | 13.00-17.00 | house pop 12.267, arrive 12.777 (mid- | + claps on 2 & 4 (sparingly). D/F#, Em9;
-           |           |             | bar -> b26); VO home 13.19-15.06      | motif 15.25-15.50
+HOME       | b26-34    | 13.00-17.00 | house pop 12.267, arrive 12.777 (mid- | D/F# lands ON b26 (pad + EP downbeat
+           |           |             | bar -> b26); VO home 13.19-15.06      | stab); + claps on 2 & 4 (-13 dB in the
+           |           |             |                                       | gaps, -20 under speech); glassy arp an
+           |           |             |                                       | octave up + brighter, EP and-of-4 stab,
+           |           |             |                                       | shaker +2.5 dB. D/F#, Em9; motif
+           |           |             |                                       | 15.25-15.50
 FOOD       | b34-44    | 17.00-22.00 | arrive 17.011 (clinks 16.951); VO     | SWAP the arp: glassy pluck -> FM bell arp
            |           |             | food 17.52-19.45                      | (octave up). Gmaj9, Asus4-A; motif
            |           |             |                                       | 20.0-20.5
-CLOTHES    | b44-54    | 22.00-27.00 | arrive 21.516 (clinks 21.452) -> bar  | claps out, + bass pluck off-beat 8ths
-           |           |             | line b44; VO clothes 22.11-25.03      | (octave bounce). Bm9, Gmaj9, D/F#; motif
-           |           |             |                                       | 26.0-26.25
+CLOTHES    | b44-54    | 22.00-27.00 | arrive 21.516 (clinks 21.452) -> bar  | + bass pluck off-beat 8ths (octave
+           |           |             | line b44; VO clothes 22.11-25.03      | bounce), its first note on b43.5 (21.75,
+           |           |             |                                       | right after the arrival, 0.30 s after
+           |           |             |                                       | the clinks); claps out + Bm9 on b44.
+           |           |             |                                       | Bm9, Gmaj9, D/F#; motif 26.0-26.25
 TRAVEL     | b54-65    | 27.00-32.50 | arrive 27.016 (clinks 26.952); VO     | + glassy counter-arp (off-beat 8ths,
            |           |             | travel 27.61-30.34                    | panned). E/G# (Lydian lift), Asus4-A;
            |           |             |                                       | motif 30.5-31.5 (the sus resolves)
@@ -59,9 +65,9 @@ END CARD   | b88-102.5 | 44.00-51.27 | logo 44.267, pop 44.767, chime        | R
            |           |             | 46.98-49.65                           | bar 22); D pedal: Dmaj9, Gmaj7/D, E/D,
            |           |             |                                       | Dadd9; ANSWER motif E5-F#5-A5-D6
            |           |             |                                       | (49.75-50.50) resolves the question; fade
-           |           |             |                                       | 49.847-51.247, silent after
+           |           |             |                                       | 50.247-51.247 (1.0 s), silent after
 
-CHORDS (beat: chord)  0 Dmaj9 | 4 Bm9 | 8 E/D | 14 Dadd9 | 16 A/C# | 20 Bm9 | 24 Gmaj9 | 28 D/F# | 32 Em9 |
+CHORDS (beat: chord)  0 Dmaj9 | 4 Bm9 | 8 E/D | 14 Dadd9 | 16 A/C# | 20 Bm9 | 24 Gmaj9 | 26 D/F# | 32 Em9 |
 36 Gmaj9 | 40 Asus4 | 42 A | 44 Bm9 | 48 Gmaj9 | 52 D/F# | 56 E/G# | 60 Asus4 | 62 A | 64 Bm9 | 68 Em9 |
 72 Asus4 | 75 Gmaj9 | 80 F#m7 | 84 Em9 | 86 A7sus4 | 88 Dmaj9 | 92 Gmaj7/D | 96 E/D | 100 Dadd9.
 Bass line: D B D | D C# B G F# E G A | B G F# G# A | B E A | G F# E A | D pedal. Hand voice-led 4-5 voice upper
@@ -69,8 +75,10 @@ structures (PADV); EP = the same an octave down, opened so no 2nds (ep_voicing);
 
 SPEECH RULES  No melody while the voice speaks: the bell motifs sit only in the VO gaps, between the gap's SFX (no
 SFX cue >= -12 dB within +-60 ms of a motif note). The pads / EP / arps / motifs run through a speech-aware filter
-(speech_carve: 2-pole low-pass at 1.7 kHz while a VO line plays, 15 kHz in the gaps, plus a -6 dB peaking dip at 2.6
-kHz under speech; 60 ms close / 300 ms open); the arps drop 3 dB and the claps 4 dB under speech. Hero hits: no kick
+(speech_carve: 2-pole low-pass at 1.3 kHz while a VO line plays, 15 kHz in the gaps, plus a -6 dB peaking dip at 2.6
+kHz under speech, and on the pads / EP / arps a broad -8 dB low-mid dip at 650 Hz (Q 0.5) under speech, where the
+voice's 300 Hz - 1 kHz energy was masked; 60 ms close / 300 ms open); the arps drop 3 dB under speech and the claps
+sit at -20 dB under speech (-13 dB in the gaps). Hero hits: no kick
 / clap / motif onset within +-60 ms of an SFX hero hit (gain >= -6); the only same-instant support is the music's
 first downbeat on the 0.000 slam. Near a hero hit kicks become -15 dB ghosts, claps are dropped, arp / bass-pluck
 notes drop 12 dB, EP stabs and shaker strokes 9 dB, and a sub note there swells in (50 ms attack) (event log +
@@ -85,7 +93,8 @@ room), shaker 16ths (shaker strokes), riser + reverse_swell (breakdown, hook). S
 everything except kick and bass; sub / kick mono in the centre. Bus: hp 30 Hz, bus_comp -18 / 1.6, tilt +0.8,
 fade, normalise_lufs -16 LUFS / -1.2 dBTP.
 
-DELIVERY  M.render_bed (VO duck 9 dB 40 / 400 ms, SFX duck 3 dB, gaps 7 LU under the delivered mix, voice >= 10 LU
+DELIVERY  M.render_bed (VO duck 11 dB set = ~9 dB effective under speech with audio.sidechain's level law, 40 / 400
+ms, SFX duck 3 dB, gaps 7 LU under the delivered mix's integrated loudness, voice >= 10 LU
 over the music) -> M.master_withmusic (-14 LUFS, limiter at -2.3, <= -2.0 dBTP) -> MP3s (M.write_mp3) and the
 preview (M.make_preview). Outputs: see OUT_* below.
 """
@@ -194,7 +203,7 @@ def speaking(t, pre=0.05, post=0.1):
 
 # ============================================================================================ harmony
 CHART = [(0, 'Dmaj9'), (4, 'Bm9'), (8, 'E/D'), (14, 'Dadd9'), (16, 'A/C#'), (20, 'Bm9'), (24, 'Gmaj9'),
-         (28, 'D/F#'), (32, 'Em9'), (36, 'Gmaj9'), (40, 'Asus4'), (42, 'A'), (44, 'Bm9'), (48, 'Gmaj9'),
+         (26, 'D/F#'), (32, 'Em9'), (36, 'Gmaj9'), (40, 'Asus4'), (42, 'A'), (44, 'Bm9'), (48, 'Gmaj9'),
          (52, 'D/F#'), (56, 'E/G#'), (60, 'Asus4'), (62, 'A'), (64, 'Bm9'), (68, 'Em9'), (72, 'Asus4'),
          (75, 'Gmaj9'), (80, 'F#m7'), (84, 'Em9'), (86, 'A7sus4'), (88, 'Dmaj9'), (92, 'Gmaj7/D'), (96, 'E/D'),
          (100, 'Dadd9')]
@@ -322,8 +331,8 @@ def ep_voicing(i):
 
 def layer_ep():
     """Soft FM electric piano, octave 3. Hook / end card: one long chord per chord change; groove sections:
-    stabs on 1, the and-of-2 and the and-of-3 (+ the and-of-4 in travel and the lift); section entries that fall
-    mid-bar (b14, b75) get their own downbeat stab. A chord never rings over the next change."""
+    stabs on 1, the and-of-2 and the and-of-3 (+ the and-of-4 in home, travel and the lift); section entries that
+    fall mid-bar (b14, b26, b75) get their own downbeat stab. A chord never rings over the next change."""
     tr = M.Track(T, 'ep')
     rng = np.random.default_rng(SEED + 1)
     hits = []                                                     # (beat, dur_beats, vel)
@@ -333,12 +342,12 @@ def layer_ep():
     for bar in range(int(np.ceil(END_BEAT / 4))):
         bb = bar * 4
         pat = [(0.0, 0.9, 0.46), (1.5, 0.6, 0.38), (2.5, 0.8, 0.42)]
-        if section(bb) in ('travel', 'lift') or section(bb + 3.5) in ('travel', 'lift'):
+        if section(bb) in ('home', 'travel', 'lift') or section(bb + 3.5) in ('home', 'travel', 'lift'):
             pat.append((3.5, 0.4, 0.34))
         for q, dl, vel in pat:
             if section(bb + q) in GROOVE:
                 hits.append((bb + q, dl, vel + (0.05 if section(bb + q) == 'lift' else 0.0)))
-    for b in (14, 75):                                            # mid-bar section entries
+    for b in (14, 26, 75):                                        # mid-bar section entries
         hits = [h for h in hits if not (b < h[0] < b + 1)]
         hits.append((b, 0.9, 0.5))
     for j, (b, dl, vel) in enumerate(sorted(hits)):
@@ -388,15 +397,17 @@ def layer_arps():
         gp = None
         if sec in ('hookA', 'hookB') and k % 2 == 0:
             gp, oct_, gdb = ARP_PAT['hook'][(k // 2) % 8], 0, -19.0
-        elif sec in ('msg', 'home'):
-            gp, oct_, gdb = ARP_PAT['msg'][k % 16], 0, -19.5
+        elif sec in ('msg', 'home'):                       # home: the same line an octave up (the station change)
+            oct_ = 1 if sec == 'home' else 0
+            gp, gdb = ARP_PAT['msg'][k % 16], (-18.0 if oct_ else -19.5)
         elif sec == 'lift' and b >= 76:
             gp, oct_, gdb = ARP_PAT['msg'][(k + 4) % 16], 0, -19.0
         elif sec == 'end' and k % 2 == 0 and b < 96:
             gp, oct_, gdb = ARP_PAT['end'][(k // 2) % 8], 0, -21.0 - 0.5 * (b - 88)
         if gp is not None:
-            x = M.pluck_synth(pool[gp] + 12 * oct_, dur=STEP * 0.8, vel=acc, cutoff=1000.0, env_oct=2.4, decay=0.06,
-                              amp_decay=0.2, q=1.1, wave='square', detune=5.0, release=0.06, seed=SEED + k)
+            x = M.pluck_synth(pool[gp] + 12 * oct_, dur=STEP * 0.8, vel=acc, cutoff=1000.0 + 600.0 * oct_,
+                              env_oct=2.4, decay=0.06, amp_decay=0.2, q=1.1, wave='square', detune=5.0, release=0.06,
+                              seed=SEED + k)
             glass.add(A.hp(x, 200.0, 2), t, gain_db=gdb + hg, pan=0.32 if k % 2 else -0.32)
             log(t, 'arp', gdb + hg)
         # glassy counter-arp: travel (off-beat 8ths, octave up)
@@ -482,7 +493,7 @@ def layer_bass():
         if k % 2 == 0:
             continue
         sec = section(b)
-        if sec in ('cloth', 'travel') or (sec == 'lift' and b >= 76):
+        if sec in ('cloth', 'travel') or b == 43.5 or (sec == 'lift' and b >= 76):   # b43.5: reads at the arrival
             t = b * BEAT
             i = chord_index(b)
             g = -18.0 - (12.0 if near_hero(t) else 0.0)
@@ -515,7 +526,7 @@ def layer_drums():
         # claps on 2 and 4: home + food, and the lift from bar 19
         if (sec in ('home', 'food') or (sec == 'lift' and b >= 76)) and b % 4 in (1, 3):
             if not near_hero(t):
-                g = -16.0 - (4.0 if speaking(t) else 0.0)
+                g = -20.0 if speaking(t) else -13.0
                 clap.add(A.hp(M.clap(vel=0.62, tone=1150.0, room='room', wet_db=-8.0, seed=b % 4), 200.0, 2),
                          t - 0.03, gain_db=g)
                 log(t, 'clap', g)
@@ -529,7 +540,7 @@ def layer_drums():
                 continue
             g, vel = -27.0 + 1.0 * (b - 8), 0.5
         elif sec in kick_secs:
-            g, vel = (-21.0 if sec != 'lift' else -20.0), 0.55
+            g, vel = {'lift': -20.0, 'home': -18.5}.get(sec, -21.0), 0.55     # home: the shaker opens up 2.5 dB
             if sec == 'msg' and b < 16:
                 g -= 1.5
         elif sec == 'end' and b < 92:
@@ -580,18 +591,24 @@ def speech_env(n, pre=0.06, post=0.12, close=0.06, open_=0.30):
     return np.interp(np.arange(n), (np.arange(m) + 0.5) * blk, y)
 
 
-SPEECH_LP = (1700.0, 15000.0)      # low-pass cutoff under speech / in the gaps
+SPEECH_LP = (1300.0, 15000.0)      # low-pass cutoff under speech / in the gaps
 SPEECH_DIP = (2600.0, 0.8, -6.0)   # + a peaking dip under speech (Hz, Q, dB)
+SPEECH_LOWMID = (650.0, 0.5, -8.0) # + a broad low-mid dip under speech (pads / EP / arps only; low_mid=True)
 
 
-def speech_carve(x, s):
+def speech_carve(x, s, low_mid=False):
     """The speech-aware filter: a 2-pole low-pass sliding between SPEECH_LP[1] (gaps) and SPEECH_LP[0] (speech)
-    in the log domain, plus a SPEECH_DIP peaking cut cross-faded in by the speech envelope s."""
+    in the log domain, plus a SPEECH_DIP peaking cut cross-faded in by the speech envelope s; with low_mid, also
+    the broad SPEECH_LOWMID dip (300 Hz - 1 kHz, where the pad / EP masked the voice), cross-faded the same way."""
     lo, hi = SPEECH_LP
     fc = np.exp(np.log(hi) + s * (np.log(lo) - np.log(hi)))
     y = M.tv_lowpass(x, fc, q=0.707)
     f, q, g = SPEECH_DIP
-    return y + s[:, None] * (A.eq(y, 'peak', f, q, g) - y)
+    y = y + s[:, None] * (A.eq(y, 'peak', f, q, g) - y)
+    if low_mid:
+        f, q, g = SPEECH_LOWMID
+        y = y + s[:, None] * (A.eq(y, 'peak', f, q, g) - y)
+    return y
 
 
 # ============================================================================================ render
@@ -612,8 +629,10 @@ def render(verbose=True):
     kick, clap, shk = kick * u('kick'), clap * u('clap'), shk * u('shaker')
     fx = layer_fx() * u('fx')
     sp = speech_env(N)
-    pe_f = speech_carve(M.pump(pad + airpad + ep, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp)
-    ar_f = speech_carve(M.pump(glass + bellarp, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp)
+    pe_f = speech_carve(M.pump(pad + airpad + ep, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp,
+                        low_mid=True)
+    ar_f = speech_carve(M.pump(glass + bellarp, kick_times, depth_db=2.5, attack=0.004, release=0.2), sp,
+                        low_mid=True)
     ar_f *= A.undb(-3.0 * sp)[:, None]                   # the arps also sit 3 dB lower under speech
     mot_f = speech_carve(motif + glock, sp)
     sends = (M.reverb_send(pe_f, 'hall', wet_db=-16.0, hp_hz=250.0)
@@ -627,7 +646,7 @@ def render(verbose=True):
     mix = A.hp(mix, 30.0, 2)
     mix = M.bus_comp(mix, thresh_db=-18.0, ratio=1.6, attack=0.012, release=0.2)
     mix = M.tilt_eq(mix, 0.8)
-    mix = M.fade_out(mix, 1.4, end=T - 0.02)             # fade 49.847-51.247, silence in the last 20 ms
+    mix = M.fade_out(mix, 1.0, end=T - 0.02)             # fade 50.247-51.247, silence in the last 20 ms
     mix, info = M.normalise_lufs(mix, target=-16.0, tp_ceiling=-1.2)
     mix[int(round((T - 0.02) * SR)):] = 0.0
     stems = dict(pad=pad + airpad, ep=ep, arps=glass + bellarp, motif=motif + glock, sub=sub, bass_pluck=bpl,
@@ -737,7 +756,41 @@ def qa(clean, bed, bedm, mix, rep, stems):
                                  voiced_band1_4k_100ms_median_db=round(float(np.median(dv)), 2),
                                  voiced_band1_4k_100ms_p10_db=round(float(np.percentile(dv, 10)), 2),
                                  voiced_band1_4k_100ms_min_db=round(float(np.min(dv)), 2), n_voiced=int(voiced.sum()))
+    out['speech_band_masking'] = masking(rep['stems']['vo'], rep['stems']['music'])
     out['hero'] = hero_audit(clean)
+    return out
+
+
+def _band_pow_db(x, lo, hi, nw, w):
+    """Per-window band energy (dB), 100 ms windows, power-averaged over both channels (a decorrelated stereo bed
+    is not under-read by a mono sum)."""
+    y = A.bp(A._st(x), lo, hi, 2)
+    return 10 * np.log10((y[:nw * w] ** 2).reshape(nw, w, 2).mean((1, 2)) + 1e-20)
+
+
+def masking(vo, mu):
+    """Speech-band masking: 100 ms windows inside the VO lines (voice 300 Hz - 4 kHz energy within 30 dB of its
+    peak); share of windows where the music is within 6 dB of the voice, for all of them, voiced ones (voice within
+    10 dB of its median) and strongly voiced ones (within 6 dB); plus per-band medians and the worst lines."""
+    w = int(0.1 * SR)
+    nw = len(vo) // w
+    tc = (np.arange(nw) + 0.5) * 0.1
+    lab = np.array([''] * nw, dtype=object)
+    for ln, s0, e0 in VO_LINES:
+        lab[(tc >= s0) & (tc <= e0)] = ln
+    bv, bm = _band_pow_db(vo, 300.0, 4000.0, nw, w), _band_pow_db(mu, 300.0, 4000.0, nw, w)
+    ins = (lab != '') & (bv > bv.max() - 30.0)
+    med = np.median(bv[ins])
+    d = bv - bm
+    out = {}
+    for nm, mk in (('all', ins), ('voiced', ins & (bv > med - 10.0)), ('strong', ins & (bv > med - 6.0))):
+        out[nm + '_within6_pct'] = '%d/%d = %.1f%%' % ((d[mk] < 6).sum(), mk.sum(), 100.0 * (d[mk] < 6).mean())
+    voiced = ins & (bv > med - 10.0)
+    for lo, hi in ((300, 600), (600, 1000), (1000, 4000)):
+        dd = (_band_pow_db(vo, lo, hi, nw, w) - _band_pow_db(mu, lo, hi, nw, w))[voiced]
+        out['band_%d_%d' % (lo, hi)] = 'median %.1f dB, %.1f%% within 6 dB' % (np.median(dd), 100 * (dd < 6).mean())
+    out['voiced_by_line'] = {ln: '%d/%d' % ((d[voiced & (lab == ln)] < 6).sum(), (voiced & (lab == ln)).sum())
+                             for ln, _, _ in VO_LINES}
     return out
 
 
@@ -749,7 +802,7 @@ def main():
     assert len(clean) == N
     A._write_wav(OUT_CLEAN, clean, 24)
     st = M.load_reel_stems('anim4')
-    bed, bedm = M.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0, vo_duck_db=9.0,
+    bed, bedm = M.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0, vo_duck_db=11.0,
                              vo_attack=0.04, vo_release=0.4, sfx_duck_db=3.0, sfx_attack=0.01, sfx_release=0.25)
     bed[-int(0.02 * SR):] = 0.0
     A._write_wav(OUT_BED, bed, 24)

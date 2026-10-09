@@ -4,10 +4,10 @@
 
 Synthesised with music_synth.py (MS) + audio.py (A): numpy / scipy only, no samples. Warm, homely, gently
 playful, hopeful. Background music under a voice-over: no lead melody while the voice speaks (the melodic
-figures sit in the VO gaps). While a line is spoken, the bus above the bass gets a zero-phase 0.8-5 kHz dip of
-12 dB (+2 dB level), and each event is choked per layer (SPEECH_DB: glock -14, mallets / snaps -6, uke -5,
-guitars -4, sub -3, piano -3, pad -2 dB). The choke is monotonic, so a ringing tail never swells back up when
-the line ends.
+figures sit in the VO gaps). While a line is spoken, the bus above the bass gets two zero-phase dips: 0.8-5 kHz
+by 12 dB (+2 dB level) and 280-800 Hz (the low-mid body of the voice) by 6 dB; and each event is choked per
+layer (SPEECH_DB: glock -14, fx -10, piano -8, mallets / snaps / guitars -6, uke -5, pad -4, sub -3 dB). The
+choke is monotonic, so a ringing tail never swells back up when the line ends.
 
 KEY F major | 100 BPM | beat n = n * 0.6 s from 0.000 (beat 1 at 0.000 s) | bar = 2.4 s | 13 bars = 52 beats =
 31.2 s exactly. Section boundaries are computed in OUTPUT time from the VO module (V = anim1_vo, V.SRC = anim1):
@@ -24,24 +24,29 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
              |         |        |             | FOSTERING .6 REALLY .9 LOOK  | staccato uke picks on 8ths (on the
              |         |        |             | 1.05 LIKE? 1.2; clock lands  | stamps), low warm pad, sub; soft kick
              |         |        |             | 1.35; brackets 1.52; marker  | under WHAT and FOSTERING, then on 1 and
-             |         |        |             | 1.8; VO 0.05-2.18,           | 3; brushes in bar 1. Glock motif M1
-             |         |        |             | 2.50-4.53; clock ticks       | F6-A6-C7-G6 (the "question", ends on G)
-             |         |        |             | 3.3-5.04                     | in the VO gap 4.80-5.40
- B list      | 2-4.5   | b8-18  | 4.80-10.80  | slide 5.28-5.62; stamps      | F Dm7 / Bbadd9 C / Am7. Bouncy: kick +
-             |         |        |             | SCHOOL RUNS 5.70, HOMEWORK   | sub on 1 and 3 and on the 'and's that
-             |         |        |             | 7.50, BAKING 8.70 (VO 5.78 / | carry the stamps (LIST_GROOVE), bass
-             |         |        |             | 7.58 / 8.78); bus 6.82; oven | pluck on the 'and's, finger snaps on 2
-             |         |        |             | ding (C7) 9.90; props ->     | and 4, shaker 16ths, nylon strums D/U (an
-             |         |        |             | blocks 10.50-10.74           | up-strum on each stamp). Low marimba dyad
-             |         |        |             |                              | on each stamp (top note rising C4-D4-E4);
-             |         |        |             |                              | marimba answers the ding C6-A5-E5 in the
-             |         |        |             |                              | VO gap 10.05-10.35
+             |         |        |             | 1.8; VO 0.05-2.18,           | 3; brushes in bar 1
+             |         |        |             | 2.50-4.53; clock ticks       |
+             |         |        |             | 3.3-5.04                     |
+ B list      | 2-4.5   | b8-18  | 4.80-10.80  | slide 5.28-5.62; stamps      | M1 glock motif F6-A6-C7-G6 (the
+             |         |        |             | SCHOOL RUNS 5.70, HOMEWORK   | "question", ends on G) in the VO gap
+             |         |        |             | 7.50, BAKING 8.70 (VO 5.78 / | 4.80-5.40. F Dm7 / Bbadd9 C / Am7.
+             |         |        |             | 7.58 / 8.78); bus 6.82; oven | Bouncy: kick + sub on 1 and 3 and on the
+             |         |        |             | ding (C7) 9.90; props ->     | 'and's that carry the stamps
+             |         |        |             | blocks 10.50-10.74           | (LIST_GROOVE), bass pluck on the 'and's,
+             |         |        |             |                              | finger snaps on 2 and 4, shaker 16ths,
+             |         |        |             |                              | nylon strums D/U (an up-strum on each
+             |         |        |             |                              | stamp). Low marimba dyad on each stamp
+             |         |        |             |                              | (top note rising C4-D4-E4); marimba
+             |         |        |             |                              | answers the ding C6-A5-E5 in the VO gap
+             |         |        |             |                              | 10.05-10.35
  C1 warm     | 4.5-5   | b18-24 | 10.80-14.40 | blocks land 11.10 / 11.70 /  | Bbmaj7 / F/A. Settles warmer, more
              |         |        |             | 12.30 (STABILITY) with       | sustained: snaps, strums, pluck bass out;
              |         |        |             | swishes + poofs; VO          | the pad swells in (1.2 s) and opens;
              |         |        |             | 11.20-13.87                  | sustained sub; the busy tower SFX are
-             |         |        |             |                              | left alone until the felt-piano F/A chord
-             |         |        |             |                              | ON the STABILITY landing (12.30); nylon
+             |         |        |             |                              | left alone until a soft felt-piano F/A
+             |         |        |             |                              | chord ON the STABILITY landing (12.30,
+             |         |        |             |                              | rolled 3.5 ms/note, all 4 notes within
+             |         |        |             |                              | 12 ms of the hit); nylon
              |         |        |             |                              | picked arpeggio, brushes
  C2 warm     | 6-7     | b24-32 | 14.40-19.20 | checklist rows 14.37 / 16.17 | Dm7 / Bbmaj7 C7sus4. Felt-piano Dm7
              |         |        |             | / 18.27 (pop + tick); VO     | anticipation 14.10 and C7sus4 + C5 at
@@ -67,10 +72,12 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
              |         |        |             | sting (C bell) 25.65; VO     | the tonic. Half-time strums, felt-piano
              |         |        |             | 25.35-26.39, 26.74-29.63     | chords, uke picks return in bar 11
              |         |        |             |                              | (bookend), kick on 1 and 3 to 28.80; then
-             |         |        |             |                              | the drums stop, the F chord rings, glock
+             |         |        |             |                              | the drums stop, the F chord (soft, under
+             |         |        |             |                              | "Start your enquiry") rings, soft glock
              |         |        |             |                              | + marimba motif M3 F6-A6-C7-F6 (the
-             |         |        |             |                              | "answer", ends on F) 29.70-30.30. Fade
-             |         |        |             |                              | 30.10-31.17, last 30 ms silent
+             |         |        |             |                              | "answer", ends on F; 1.8x decay) in the
+             |         |        |             |                              | gap after the CTA 29.70-30.30. Fade
+             |         |        |             |                              | 29.70-31.17 (1.47 s), last 30 ms silent
  Chords (beat: chord, "|" = bar line): 0 Fadd9 | 4 Bbadd9 6 Csus4 | 8 F 10 Dm7 | 12 Bbadd9 14 C | 16 Am7
  18 Bbmaj7 | 20 F/A | 24 Dm7 | 28 Bbmaj7 30 C7sus4 | 32 Gm7 34 Am7 | 36 Bbadd9 38 C | 40 Dm7 41 C/E 42 Fadd9 |
  44 Bbmaj7 46 Csus4 47 C | 48 Fadd9. Voicings are hand voice-led (CHORDS); bass F2 / Bb1 / C2 / D2 / A1 / G1 /
@@ -94,12 +101,16 @@ twice: on the event log (log_check) and on the audio (music_onsets / transient_c
 onset detector calibrated against the log).
 
 MEASURED (last render; main() prints the full report)
-    clean -16.0 LUFS, -1.5 dBTP, 1 497 600 samples, last 20 ms digital silence, DC 1e-6, no clicks, sub-40 Hz
-    energy -40.7 dB, mono fold-down -0.3 dB; beat grid 99.999 BPM, phase +3.8 ms. Bed: duck 8.1 dB median under
-    speech, music in the VO gaps at ref - 7.0 LU (median 3 s short-term), voice over music 16.7 LU (median,
-    speech frames; every line >= 10 LU), voice over music in the 1-4 kHz band 27.6 dB (median, 100 ms windows).
-    With-music mix -14.03 LUFS, -2.30 dBTP. SFX rule: 0 log violations; the audio onset check flags one 6.2 dB
-    level rise of the sustained pad 37 ms after bus_pass (chorus beating, not a transient).
+    clean -16.01 LUFS, -1.50 dBTP (ffmpeg -16.0 / -1.5), 1 497 600 samples, last 20 ms digital silence, DC 2e-6,
+    no clicks, sub-40 Hz -39.9 dB; beat grid 100.0 BPM, phase +3.7 ms. Bed: duck 8.06 dB median under speech,
+    music in the VO gaps at ref - 7.0 LU (median 3 s short-term), voice over music 17.5 LU (median momentary,
+    speech frames; lowest line 12.9 LU), 1-4 kHz 100 ms windows median 28.5 dB. Masking (100 ms windows,
+    300 Hz-4 kHz, music within 6 dB of the voice): 0 of 303 windows with the voice within 20 dB of its p95,
+    5 of 340 (1.5%) within 25 dB. With-music mix -14.02 LUFS, -2.30 dBTP, DC 6e-6 (the delivered VO / SFX stems
+    are high-passed at 10 Hz here, removing the -4e-4 DC they carry). SFX rule: 0 log violations; every
+    rolled piano note on a hit lies within 11 ms of it. The audio onset check flags the pad's 6.5 dB chorus swell
+    37 ms after bus_pass and 6.0-6.1 dB periodic beating (26-34 ms spacing) at 11.70 / 11.75 with no event
+    logged at 11.4-11.9 s: sustained-chord ripple, not transients.
 
 DELIVERY (MS.render_bed / MS.master_withmusic, the chain shared by all five reels)
     <AUDIO>/anim1_vo_music.wav             clean, -16 LUFS, <= -1 dBTP, 48 kHz 24-bit, 1 497 600 samples
@@ -140,7 +151,7 @@ SCRATCH = '/tmp/claude-0/-home-user-100/bb73d22e-ad11-5aa0-a0b2-8033920f7c07/scr
 PREVIEW_IN = os.path.join(SCRATCH, 'anim1_vo_preview.mp4')
 PREVIEW_OUT = os.path.join(SCRATCH, 'anim1_vo_music_preview.mp4')
 
-FADE_T0, FADE_T1 = 30.10, 31.17         # final fade (1.07 s); zeros after FADE_T1
+FADE_T0, FADE_T1 = 29.70, 31.17         # final fade (1.47 s); zeros after FADE_T1
 
 
 def B(n):
@@ -451,12 +462,17 @@ def build():
         mar(nt, bt, v, -13.5, pan=0.12)
     # M3 end-card "answer" (after the CTA, 29.63-): F6 A6 C7 F6 (glock), marimba an octave down
     for bt, nt, v in ((49.5, 'F6', 0.5), (49.75, 'A6', 0.45), (50.25, 'C7', 0.5), (50.5, 'F6', 0.5)):
-        glk(nt, bt, v, -15.0, pan=0.2, decay=1.3)
-        mar(MS.midi(nt) - 12, bt, 0.52, -13.5, pan=-0.15, decay=1.3)
+        glk(nt, bt, v, -18.0, pan=0.2, decay=1.8)
+        mar(MS.midi(nt) - 12, bt, 0.52, -14.5, pan=-0.15, decay=1.8)
 
     # ---------------------------------------------------------------- FELT PIANO: warm section + end card
     def piano_chord(notes, t, vel=0.45, gdb=-9.0, tail=3.0, dur=None, roll=0.012, check=True):
-        if check and not clear(t):
+        # every rolled note is checked: on a hit, every note must stay within 12 ms of it (one gesture);
+        # otherwise every note must be clear (no hit 12-60 ms away)
+        sup = [h for h, _, al in HEROES if abs(t - h) <= 0.012 and al == 'hit']
+        ok = all((clear(t + roll * i, ignore=sup) and all(abs(t + roll * i - h) <= 0.012 for h in sup))
+                 if i else clear(t) for i in range(len(notes)))
+        if check and not ok:
             R.skipped.append((round(t, 3), 'keys', 'piano chord'))
             return
         for i, nt in enumerate(sorted(notes)):
@@ -466,7 +482,7 @@ def build():
                   tag='piano %s' % MS.note_name(nt, True))
 
     # blocks 1 / 2 (11.10 / 11.70) land 40 ms after their swishes (heroes): left to the SFX
-    piano_chord(CHORDS[9][3], 12.30, 0.5, tail=4.0)           # block 3 STABILITY (F/A), same instant
+    piano_chord(CHORDS[9][3], 12.30, 0.38, tail=4.0, roll=0.0035)   # block 3 STABILITY (F/A), same instant
     piano_chord(CHORDS[10][3], B(23.5), 0.42)                 # Dm7 anticipation in the VO gap (14.10)
     piano_chord(CHORDS[11][3], B(28), 0.36)                   # Bbmaj7 (16.80)
     piano_chord(CHORDS[12][3], B(30), 0.42)                   # C7sus4 in the VO gap (18.00)
@@ -474,11 +490,11 @@ def build():
           pan=0.2, tag='piano C5')
     piano_chord(CHORDS[13][3], B(32), 0.38)                   # Gm7 (19.20)
     piano_chord(CHORDS[14][3], B(34), 0.4)                    # Am7 (20.40)
-    piano_chord(CHORDS[19][3], B(42), 0.46)                   # Fadd9 end card (25.20)
+    piano_chord(CHORDS[19][3], B(42), 0.46, roll=0.0035)       # Fadd9 end card (25.20, light switch)
     piano_chord(CHORDS[20][3], B(44), 0.38)                   # Bbmaj7
     piano_chord(CHORDS[21][3], B(46), 0.36, dur=B(1))         # Csus4
     piano_chord(CHORDS[22][3], B(47), 0.36, dur=B(1))         # C
-    piano_chord((53, 60, 65, 67, 69), B(48), 0.46, tail=5.0, dur=B(3.5))   # final F(add9)
+    piano_chord((53, 60, 65, 67, 69), B(48), 0.36, tail=5.0, dur=B(3.5))   # final F(add9)
 
     # ---------------------------------------------------------------- FX: reverse swells into the lift / end card
     R.put('fx', MS.reverse_swell(1.2, vel=0.55, notes=[58, 62, 65, 72], seed=5), B(36) - 1.2, gain_db=-19.0,
@@ -530,11 +546,12 @@ def choke(x, t, layer):
 
 
 _BAND_SOS = signal.butter(2, [800.0, 5000.0], 'bandpass', fs=SR, output='sos')
+_LOWMID_SOS = signal.butter(2, [280.0, 800.0], 'bandpass', fs=SR, output='sos')
 
 
-def speech_dip(x, e, depth_db=12.0, level_db=2.0):
-    """Zero-phase 0.9-4.5 kHz band cut of depth_db (and level_db overall) while e = 1."""
-    band = signal.sosfiltfilt(_BAND_SOS, x, axis=0)
+def speech_dip(x, e, depth_db=12.0, level_db=2.0, sos=None):
+    """Zero-phase 0.8-5 kHz band cut (or the band of `sos`) of depth_db (and level_db overall) while e = 1."""
+    band = signal.sosfiltfilt(_BAND_SOS if sos is None else sos, x, axis=0)
     k = 1.0 - 10.0 ** (-depth_db / 20.0)
     g = 10.0 ** (-level_db * e / 20.0)
     return (x - (e * k)[:, None] * band) * g[:, None]
@@ -556,7 +573,7 @@ TRIM = dict(pad=8.0, sub=-6.0, kick=-1.0, keys=2.0, gtr=9.0, uke=8.5, mallet=2.0
             fx=5.0)
 # extra level (dB) while a VO line is spoken, per layer, applied per event by choke(): the ringing / bright
 # layers are choked under the voice (a glock note struck in a gap is pulled down when the next line starts)
-SPEECH_DB = dict(glock=-14.0, mallet=-6.0, uke=-5.0, gtr=-4.0, perc=-6.0, keys=-3.0, pad=-2.0, fx=-6.0, sub=-3.0)
+SPEECH_DB = dict(glock=-14.0, mallet=-6.0, uke=-5.0, gtr=-6.0, perc=-6.0, keys=-8.0, pad=-4.0, fx=-10.0, sub=-3.0)
 
 
 def mixdown(R):
@@ -583,6 +600,7 @@ def mixdown(R):
     # everything in / near the speech band gets the speech dip; the sub, bass pluck and kick bypass it
     upper = tonal + T['keys'] + T['uke'] + T['mallet'] + T['glock'] + T['perc'] + T['fx'] + sends
     upper = speech_dip(upper, e)
+    upper = speech_dip(upper, e, depth_db=6.0, level_db=0.0, sos=_LOWMID_SOS)   # 280-800 Hz low-mid dip
     mix = upper + sub_d + kick
     mix = A.hp(mix, 25.0, 2)
     mix = mono_low(mix, 150.0)
@@ -688,7 +706,8 @@ def main():
     st = MS.load_reel_stems('anim1')
     bed, m = MS.render_bed(clean, st['vo'], st['sfx'], st['mix'])
     A._write_wav(OUT_BED, bed, 24)
-    mix, rep = MS.master_withmusic(st['vo'], st['sfx'], bed)
+    # 10 Hz high-pass on the delivered VO / SFX stems: removes their inherited DC (-4e-4) from the with-music mix
+    mix, rep = MS.master_withmusic(A.hp(st['vo'], 10.0, 2), A.hp(st['sfx'], 10.0, 2), bed)
     A._write_wav(OUT_MIX, mix, 24)
     os.makedirs(REEL_DIR, exist_ok=True)
     mp3b = MS.write_mp3(OUT_BED, MP3_BED, TITLE + ' (ducked bed)')
@@ -711,6 +730,16 @@ def main():
     diff = (vo_b - mu_b)[sel]
     act = sel & (vo_b > np.percentile(vo_b[sel], 95) - 20.0)     # frames where the voice is actually sounding
     dact = (vo_b - mu_b)[act]
+    # masking: 100 ms windows (50 ms hop), 300 Hz-4 kHz, music within 6 dB of the voice; all speech windows and
+    # the windows where the voice is within 20 / 25 dB of its p95 band level
+    _, vo_w = band_db(rep['stems']['vo'], 300.0, 4000.0)
+    _, mu_w = band_db(rep['stems']['music'], 300.0, 4000.0)
+    dw, p95w = vo_w - mu_w, np.percentile(vo_w[sel], 95)
+    masking = dict(speech_windows=int(sel.sum()), within6=int((dw[sel] < 6).sum()),
+                   within6_pct=round(float(100 * (dw[sel] < 6).mean()), 1))
+    for r_ in (20, 25):
+        a_ = sel & (vo_w > p95w - r_)
+        masking['voice_p95-%d' % r_] = '%d/%d (%.1f%%)' % ((dw[a_] < 6).sum(), a_.sum(), 100 * (dw[a_] < 6).mean())
     tc = transient_check(cw, R.log)
     lay_on = {k: music_onsets(v) for k, v in T.items() if np.any(v)}
     for v in tc['violations']:
@@ -748,7 +777,7 @@ def main():
                                active_frames=int(act.sum()), active_median_db=round(float(np.median(dact)), 1),
                                active_p10_db=round(float(np.percentile(dact, 10)), 1),
                                active_min_db=round(float(dact.min()), 1)),
-        sections_lufs=secl, mp3_probe=probes,
+        masking_300_4k=masking, sections_lufs=secl, mp3_probe=probes,
         hero_rule=dict(log_violations=log_check(R.log), audio=tc),
         mp3=[mp3b, mp3c], preview=dict(path=prev, mb=round(os.path.getsize(prev) / 1e6, 2),
                                        streams=prev_streams) if prev else None,

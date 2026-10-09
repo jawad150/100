@@ -108,7 +108,7 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
               |                   |             | holds to 49.5                  | and stops at 46.0, piano G5 ON the CTA
               |                   |             |                                | click (46.258). Motif M3, the answer,
               |                   |             |                                | after the last line: E5 D5 C5 (48.00-
-              |                   |             |                                | 48.50) over a low C. Fade 48.00-49.45,
+              |                   |             |                                | 48.50) over a low C. Fade 48.45-49.45,
               |                   |             |                                | zeros after 49.45
  Chords (beat: chord): 0 Am(add9) 3.5 Fmaj7 6 C(add9) 7 Dm(add9) | 10 E7sus4 | 17 Am(add9) 20 Fmaj9 24 C(add9)
  28 G6 32 Am7 36 Fmaj7 40 Dm9 43 C/E 44 Dm7 46 E7sus4 47 E7 | 48 Fmaj9 52 C/E 56 Dm9 60 Am7 64 Fmaj7 68 Dm9 70 C/E
@@ -133,7 +133,7 @@ exists the event is skipped and logged. Verified on the event log (log_check) an
 
 DELIVERY (MS.render_bed / MS.master_withmusic, the chain shared by all five reels)
     <AUDIO>/reel1_vo_music.wav            clean, -16 LUFS, <= -1 dBTP, 48 kHz 24-bit, 2 376 000 samples
-    <AUDIO>/reel1_vo_music_bed.wav        ducked (9 dB under the VO, 3 dB under the SFX) and levelled bed
+    <AUDIO>/reel1_vo_music_bed.wav        ducked (12 dB under the VO, 3 dB under the SFX) and levelled bed
     <AUDIO>/reel1_vo_withmusic_mix.wav    VO + SFX + bed mastered to -14 LUFS, <= -2.0 dBTP
     reel/organic_fostering/organic_fostering_reel1_vo_could_you_music.mp3 (bed) and ..._music_clean.mp3
     <scratchpad>/reel1_vo_music_preview.mp4   picture copied from reel1_vo_preview.mp4, plus the with-music mix
@@ -172,7 +172,7 @@ SCRATCH = '/tmp/claude-0/-home-user-100/bb73d22e-ad11-5aa0-a0b2-8033920f7c07/scr
 PREVIEW_IN = os.path.join(SCRATCH, 'reel1_vo_preview.mp4')
 PREVIEW_OUT = os.path.join(SCRATCH, 'reel1_vo_music_preview.mp4')
 
-FADE_T0, FADE_T1 = 48.00, 49.45        # final fade (1.45 s); zeros after FADE_T1 (last 50 ms silent)
+FADE_T0, FADE_T1 = 48.45, 49.45        # final fade (1.0 s, after M3's C5 lands at 48.5); zeros after FADE_T1
 
 
 def B(n):
@@ -874,6 +874,33 @@ def mix_report(x):
                 band_1k4k_db=dict(during_speech=round(sp_db, 1), gaps=round(gp_db, 1), dip=round(sp_db - gp_db, 1)))
 
 
+def masking_report(stems, lo=300.0, hi=4000.0, near_db=6.0):
+    """Low-mid masking check: 100 ms non-overlapping windows inside the VO lines, lo-hi Hz level of the music
+    (as laid in the with-music mix) vs the voice; count windows where the music is within near_db of the voice,
+    over all in-line windows and over voiced windows (voice within 25 / 20 dB of its p95). Also the 1-4 kHz
+    count and the worst windows."""
+    out = {}
+    for blo, bhi in ((lo, hi), (1000.0, 4000.0)):
+        st_, vb = band_db(stems['vo'], blo, bhi, 0.1, 0.1)
+        _, mb = band_db(stems['music'], blo, bhi, 0.1, 0.1)
+        ctr = (st_ + int(0.05 * SR)) / SR
+        inl = np.zeros(len(st_), bool)
+        for c in VO:
+            inl |= (ctr >= c['start']) & (ctr <= c['end'])
+        d = vb - mb
+        p95 = np.percentile(vb[inl], 95)
+        r = dict(inline_n=int(inl.sum()), inline_near=int((inl & (d < near_db)).sum()))
+        for gate in (25.0, 20.0):
+            v = inl & (vb > p95 - gate)
+            r['gate%d' % gate] = '%d/%d (%.1f%%)' % ((v & (d < near_db)).sum(), v.sum(),
+                                                     100.0 * (v & (d < near_db)).sum() / max(v.sum(), 1))
+        v = inl & (vb > p95 - 25.0)
+        worst = np.argsort(np.where(v, d, 99.0))[:5]
+        r['worst_voiced'] = [(round(float(ctr[i]), 2), round(float(d[i]), 1)) for i in worst if v[i]]
+        out['%d-%d' % (blo, bhi)] = r
+    return out
+
+
 def main():
     t0 = time.time()
     R = build()
@@ -882,10 +909,10 @@ def main():
     A._write_wav(OUT_CLEAN, clean, 24)
     st = MS.load_reel_stems('reel1')
     assert st['n'] == N, (st['n'], N)
-    bed, m = MS.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0, vo_duck_db=9.0,
+    bed, m = MS.render_bed(clean, st['vo'], st['sfx'], st['mix'], gap_lu=7.0, min_vo_lu=10.0, vo_duck_db=12.0,
                            vo_attack=0.04, vo_release=0.4, sfx_duck_db=3.0, sfx_attack=0.01, sfx_release=0.25)
     A._write_wav(OUT_BED, bed, 24)
-    mix, rep = MS.master_withmusic(st['vo'], st['sfx'], bed, target=-14.0, tol=0.2, ceiling=-2.3, tp_max=-2.0)
+    mix, rep = MS.master_withmusic(A.hp(st['vo'], 20.0, 2), st['sfx'], bed, target=-14.0, tol=0.2, ceiling=-2.3, tp_max=-2.0)
     A._write_wav(OUT_MIX, mix, 24)
     os.makedirs(REEL_DIR, exist_ok=True)
     mp3b = MS.write_mp3(OUT_BED, MP3_BED, TITLE + ' (ducked bed)', artist='Organic Fostering')
@@ -958,7 +985,7 @@ def main():
                                active_frames=int(act.sum()), active_median_db=round(float(np.median(dact)), 1),
                                active_p10_db=round(float(np.percentile(dact, 10)), 1),
                                active_min_db=round(float(dact.min()), 1)),
-        vo_minus_bed_momentary=vmm, sections_lufs=secl, mix=mix_report(cw), mp3_probe=probes,
+        vo_minus_bed_momentary=vmm, masking_300_4k=masking_report(rep['stems']), sections_lufs=secl, mix=mix_report(cw), mp3_probe=probes,
         hero_rule=dict(log_violations=log_check(R.log), audio=tc), grid=grid_check(R.log),
         melody_in_speech=melody_check(R.log),
         mp3=[mp3b, mp3c], preview=prev_info, events=len(R.log))
