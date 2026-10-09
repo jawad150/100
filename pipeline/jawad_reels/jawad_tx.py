@@ -1168,8 +1168,9 @@ def _tx_burn(t, w, A, B, hot=(620.0, 760.0), seed=11):
     return cv
 
 
-def _tx_cut(t, w, A, B):
-    """Hard cut at c (HALF rule) - the base of L3 / L4 / D7 whose work happens in finish() (post_kw)."""
+def _tx_cut(t, w, A, B, **_o):
+    """Hard cut at c (HALF rule) - the base of L3 / L4 / D7 whose work happens in finish() (post_kw). Step options
+    (e.g. L3 push_gain) are for the post functions only and are ignored here (SHARED_REQUESTS R7, log_kya_kahenge)."""
     return (B if side_b(t, w.c) else A)(t)
 
 
