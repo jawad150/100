@@ -19,7 +19,7 @@ API (the five <slug>_music.py modules are the contract):
     instruments (mono float64 unless noted, calibrated by CAL so gain 0 peaks near audio.REF_LUFS momentary):
         kick(r, punch=0.5)  hat(r, open=False)  clap(r)  bass808(notes, n, drive=2.0)
         epiano(f, dur, r, bright=0.5)  string_note(f, dur, r, attack=0.004, release=0.05, cutoff=1500)
-        pad(f, dur, r, cutoff=1200) (stereo)  pad_chord(midis, dur, r, cutoff=1200) (stereo)
+        pad(f, dur, r, cutoff=1200) (stereo)  pad_chord(midis, dur, r, cutoff=1200) (stereo; envelope inside dur)
     render(style, dur, bpm=None, key='D', drop_bar=None, seed=0, out=None) -> dict(mix, stems, info)
     beatgrid(x, bpm) -> dict(tempo, phase_s, strength)    level_rider(x, ...) -> linear gain curve
     CAL, STEM_DB, STYLES, PHRYG_DOM, MINOR, DORIAN, KAHARWA
@@ -171,9 +171,11 @@ def bass808(notes, n, drive=2.0):
 
 def epiano(f, dur, r, bright=0.5):
     """Electric piano (Rhodes-like): decaying sine partials 1, 2, 3, 4 plus the tine ping (14 x f0, 1 ms attack,
-    20 ms decay) scaled by `bright`; 0.3 ms attack, held `dur`, 0.25 s raised-cosine release. Mono, dur + 0.25 s."""
+    20 ms decay) scaled by `bright`; 0.3 ms attack and a raised-cosine release (0.25 s, at most 30 % of dur) that ends
+    ON dur: the note is exactly dur long (callers schedule last notes to end before a loop seam). Mono (dur,)."""
     b = float(np.clip(bright, 0.0, 1.0))
-    n = _n(dur + 0.25)
+    n = _n(dur)
+    rel = min(0.25, 0.3 * dur)
     t = np.arange(n) / SR
     ph = r.uniform(0, 1)
     x = np.zeros(n)
@@ -183,7 +185,7 @@ def epiano(f, dur, r, bright=0.5):
         tine = np.sin(2 * np.pi * 14 * f * t) * np.clip(t / 0.001, 0, 1) * np.exp(-t / 0.020)
         x += 0.35 * b * tine
     x *= 1.0 + 0.04 * np.sin(2 * np.pi * 4.5 * t)                 # gentle tremolo
-    x *= _env_ar(n, 0.0003, dur, 0.25)
+    x *= _env_ar(n, 0.0003, dur - rel, rel)
     return undb(CAL['epiano']) * x
 
 
@@ -208,23 +210,26 @@ def _pad_voices(midis, n, r, detune=0.003, spread=0.5):
     return x
 
 
-def pad_chord(midis, dur, r, cutoff=1200.0, attack=0.35, release=0.6):
-    """Detuned-saw pad chord (2 saws per note, +-0.3 %, panned +-0.5), LP `cutoff`, linear attack, held `dur`,
-    raised-cosine release after it. Stereo (dur + release, 2)."""
+def pad_chord(midis, dur, r, cutoff=1200.0, attack=0.6, release=0.6):
+    """Detuned-saw pad chord (2 saws per note, +-0.3 %, panned +-0.5), LP `cutoff`. The chord is exactly `dur` long:
+    linear attack and raised-cosine release both INSIDE it (each at most dur / 3), so chords whose spans straddle a
+    bar line by +-0.3 s cross-fade on it and a last chord ending on DUR is silent at the loop seam. Stereo (dur, 2)."""
     midis = list(midis)
-    n = _n(dur + release)
+    n = _n(dur)
+    attack, release = min(attack, dur / 3), min(release, dur / 3)
     x = _pad_voices(midis, n, r)
-    env = _env_ar(n, attack, dur, release)
+    env = _env_ar(n, attack, dur - release, release)
     return undb(CAL['pad']) * A.lp(x, float(cutoff), 2) * env[:, None] / max(len(midis), 1)
 
 
-def pad(f, dur, r, cutoff=1200.0, attack=0.35, release=0.6):
-    """One pad voice at f Hz (the pad grammar, single note). Stereo."""
-    n = _n(dur + release)
+def pad(f, dur, r, cutoff=1200.0, attack=0.6, release=0.6):
+    """One pad voice at f Hz (the pad grammar, single note; envelope inside dur as pad_chord). Stereo (dur, 2)."""
+    n = _n(dur)
+    attack, release = min(attack, dur / 3), min(release, dur / 3)
     x = np.zeros((n, 2))
     for c in (-1, 1):
         A._add(x, A.pan(E.saw(np.full(n, f * (1 + c * 0.003)), r.uniform(0, 1)), 0.5 * c), 0.0)
-    env = _env_ar(n, attack, dur, release)
+    env = _env_ar(n, attack, dur - release, release)
     return undb(CAL['pad']) * A.lp(x, float(cutoff), 2) * env[:, None]
 
 

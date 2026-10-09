@@ -648,6 +648,10 @@ def _xfade(a, b, t, d=0.005):
     return y
 
 
+GLUE = dict(ratio=1.5, below_p98_db=1.5)          # session 4 kit: the default 2:1 / -3 dB glue left A at LRA 1.8 and B at
+                                                # 1.9 LU (< LEAD_DECISIONS 1's 2.0); this gentler glue: A 2.4, B 2.2, limiter <= 2.7 dB
+
+
 def mix(hook='A', vo=None, sfx=None, music=None, vo_b=None, sfx_b=None, out_dir=None):
     """Run 2 (after the VO and the SFX stem exist): epic_mix.mix_reel -> A (VO + SFX + music) and B (VO + SFX), stems,
     report. hook='B' also builds the Trial-Reel audio: hook-B VO/SFX for 0-3.0 s, then the hook-A mixes from 3.000 s
@@ -656,7 +660,7 @@ def mix(hook='A', vo=None, sfx=None, music=None, vo_b=None, sfx_b=None, out_dir=
     out_dir = out_dir or AUD
     vo, sfx, music = vo or VO_A, sfx or SFX_A, music or os.path.join(OUT, 'music_full.wav')
     _need(vo, sfx, music)
-    rep = M.mix_reel(MODULE, DUR, vo=vo, sfx=sfx, music=music, out_dir=out_dir)
+    rep = M.mix_reel(MODULE, DUR, vo=vo, sfx=sfx, music=music, out_dir=out_dir, glue=GLUE)
     rep['ebur128'] = {k: M.ebur128(rep['files'][k]) for k in ('mix', 'vo_sfx')}
     if hook == 'B':
         vo_b, sfx_b = vo_b or VO_B, sfx_b or SFX_B
@@ -666,7 +670,7 @@ def mix(hook='A', vo=None, sfx=None, music=None, vo_b=None, sfx_b=None, out_dir=
         for src_b, src_a, name in ((vo_b, vo, 'vo'), (sfx_b, sfx, 'sfx')):
             A._write_wav(os.path.join(tmp, name + '.wav'), _xfade(M.load(src_b, DUR), M.load(src_a, DUR), SPLICE), 24)
         rb = M.mix_reel(MODULE + '_hookb', DUR, vo=os.path.join(tmp, 'vo.wav'), sfx=os.path.join(tmp, 'sfx.wav'),
-                        music=music, out_dir=tmp)
+                        music=music, out_dir=tmp, glue=GLUE)
         for k in ('mix', 'vo_sfx'):
             y = _xfade(A.read_wav(rb['files'][k])[0], A.read_wav(rep['files'][k])[0], SPLICE)
             p = os.path.join(out_dir, '%s_hookb_%s.wav' % (MODULE, k))
