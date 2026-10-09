@@ -1331,7 +1331,9 @@ def _test_bed(dur, bpm=112.5, seed=7):
         hat[i:i + m] += A.pan(np.stack([hx, hx], 1), 0.3 * (-1) ** b)[:m]
     d0, d1 = 11 * bar + 3 * beat, 12 * bar
     rr = (tl > 10 * bar) & (tl < d0)
-    riser[rr] = A.bp(rng.standard_normal(int(rr.sum())), 600.0, 7000.0, 2) * ((tl[rr] - 10 * bar) / (d0 - 10 * bar)) ** 2
+    if rr.sum() > 16:                              # a bed shorter than bar 11 has no riser (and no drop-out / drop)
+        riser[rr] = A.bp(rng.standard_normal(int(rr.sum())), 600.0, 7000.0, 2) * ((tl[rr] - 10 * bar) /
+                                                                                  (d0 - 10 * bar)) ** 2
     pad = A.reverb(pad, 'hall', wet_db=-12.0)[:N]
     duck = A.sidechain(np.ones(N), kick, depth_db=4.0, attack=0.005, release=0.16)[:, 0]
     mus = 0.30 * pad * duck[:, None] + _stereo(0.45 * bass * duck + 0.9 * kick + 0.08 * riser) + 0.12 * hat
