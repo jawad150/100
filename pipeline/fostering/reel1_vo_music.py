@@ -7,8 +7,9 @@ hopeful: tender A minor in the hook and the question, a light pulse under the el
 moving in the support dock, the emotional peak in C major on the slow-motion payoff, a resolving end card.
 Background music under a voice-over: no lead melody while the voice speaks (the felt-piano motifs sit in the VO
 gaps). While a line is spoken the bus above the bass gets a zero-phase 0.8-5 kHz dip (SPEECH_DIP_DB) and each
-event is choked per layer (SPEECH_DB); the choke of a struck event is monotonic, so a ringing tail never swells
-back up when the line ends.
+event is choked per layer (SPEECH_DB; deeper in the payoff, SPEECH_DB_PAYOFF, so its C-major peak blooms in the
+gaps and stays under "Open your home." / "Change a child's life."); the choke of a struck event is monotonic, so a
+ringing tail never swells back up when the line ends.
 
 KEY A minor -> C major (payoff, end card) | 120 BPM | beat n = n * 0.5 s from 0.000 (beat 1 at 0.000 s) | bar =
 2.0 s | 99 beats = 24 bars + 3 beats = 49.5 s exactly. Section boundaries are computed in OUTPUT time from the VO
@@ -91,10 +92,13 @@ MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >=
               |                   |             | footage); riser 39.77-41.77;   | C2 -> B1 -> A1 -> F1 -> G1 with glides:
               |                   |             | logo sting + impact_big 41.767 | C(add9) G/B (39) Am7 (40) Fmaj7 (41)
               |                   |             |                                | Gsus4 (41.5). Kick on the hit, then
-              |                   |             |                                | none under the heartbeat; 40 / 41 /
-              |                   |             |                                | 41.5. Motif M2 (= M1 in C) in the VO
-              |                   |             |                                | gap: E5 D5 E5 G5 (40.75-41.50), done
-              |                   |             |                                | before the sting
+              |                   |             |                                | none under the heartbeat; 40 (soft,
+              |                   |             |                                | under "life") / 41 / 41.5. Pad, sub
+              |                   |             |                                | and keys dip deeper under both lines
+              |                   |             |                                | (the peak blooms in the gaps). Motif
+              |                   |             |                                | M2 (= M1 in C) in the VO gap: E5 D5
+              |                   |             |                                | E5 G5 (40.75-41.50), done before the
+              |                   |             |                                | sting
  F end card   | 21-24.75 (b84-99) | 42.00-49.50 | wordmark 42.52; VO "Organic    | Resolves to the tonic: C(add9) (42.0,
               |                   |             | Fostering, rated Good by       | no kick: the sting's impact_big has
               |                   |             | Ofsted." 42.52-45.91; CTA pop  | it; the sub swells in), Fmaj9 (44)
@@ -311,12 +315,19 @@ def env_cached():
 # extra level (dB) while a VO line is spoken, per layer, applied per event. Struck layers hold the reduction
 # (running max: a tail never swells back up); sustained layers follow the envelope.
 SPEECH_DB = dict(keys=-4.0, air=-7.0, arp=-3.0, perc=-4.0, fx=-6.0, pulse=-1.5, pad=-1.5, low=-1.0, sub=-1.0)
+# the payoff is the emotional peak but stays under the voice: deeper chokes for events that start in it (from the
+# pad's pre-lap at 37.25 to the end card at 42.0) while its two lines are spoken; the peak blooms in the gaps (the
+# hit at 37.5, 38.82-39.08 and the M2 motif from 40.63)
+SPEECH_DB_PAYOFF = dict(keys=-5.0, air=-9.0, arp=-4.0, perc=-5.0, pad=-4.5, low=-3.0, sub=-2.5)
+PAYOFF_T = (B(75) - 0.3, B(84))
 HOLD = {'keys', 'arp', 'perc', 'fx', 'pulse'}
 SPEECH_DIP_DB, SPEECH_DIP_LEVEL = 10.0, 1.5
 
 
 def choke(x, t, layer):
     db = SPEECH_DB.get(layer, 0.0)
+    if PAYOFF_T[0] <= t < PAYOFF_T[1]:
+        db = SPEECH_DB_PAYOFF.get(layer, db)
     if not db:
         return x
     e = env_cached()
@@ -539,7 +550,7 @@ def build():
     kick_beats += [(72, 0.72)]                                                  # build: the kick stops
     # payoff: the hit, then room for the SFX heartbeat reprise (lub/dub 37.75 / 38.04 / 38.69 / 38.97), then
     # half-time into the end card
-    kick_beats += [(75, 0.7), (80, 0.72), (82, 0.7), (83, 0.64)]
+    kick_beats += [(75, 0.7), (80, 0.62), (82, 0.7), (83, 0.64)]            # 40.0 is under "...life": softer
     kick_beats += [(88, 0.58), (92, 0.58)]           # end card (42.0 is left to the logo sting's impact_big)
     for b, v in kick_beats:
         R.put('kick', MS.soft_kick(vel=v, punch=0.3, tone=48.0, decay=0.32, click=0.12, drive=1.3,
@@ -899,7 +910,20 @@ def main():
     dact = (vo_b - mu_b)[act]
     # gap level of the bed vs the delivered mix (short-term 3 s, VO gaps)
     tc = transient_check(cw, R.log)
-    secl = {nm: round(A.loudness(cw[int(B(b0) * SR):int(B(b1) * SR)]), 1) for nm, b0, b1 in SECTIONS}
+    # voice minus bed, momentary (400 ms) loudness on speech frames (>= half the window is speech, within 20 LU
+    # of the VO's loudest), overall and per VO line (the bed as laid at 0 dB under the delivered mix)
+    tl, lvo = A.loudness_curve(st['vo'])
+    _, lbd = A.loudness_curve(bw)
+    spf = np.array([sp[max(0, int((x - 0.2) * SR)):int((x + 0.2) * SR)].mean() for x in tl])
+    ssel = (spf > 0.5) & (lvo > lvo.max() - 20.0)
+    per_line = {}
+    for c in VO:
+        s_ = ssel & (tl >= c['start']) & (tl <= c['end'])
+        if s_.any():
+            per_line['%.2f %s' % (c['start'], c.get('text', '')[:28])] = round(float(np.median((lvo - lbd)[s_])), 1)
+    vmm = dict(frames=int(ssel.sum()), median=round(float(np.median((lvo - lbd)[ssel])), 1),
+               min_line_median=min(per_line.values()), per_line=per_line)
+    secl ={nm: round(A.loudness(cw[int(B(b0) * SR):int(B(b1) * SR)]), 1) for nm, b0, b1 in SECTIONS}
     probes = []
     for pth in (MP3_BED, MP3_CLEAN):
         pr = MS._probe(pth)
@@ -934,7 +958,7 @@ def main():
                                active_frames=int(act.sum()), active_median_db=round(float(np.median(dact)), 1),
                                active_p10_db=round(float(np.percentile(dact, 10)), 1),
                                active_min_db=round(float(dact.min()), 1)),
-        sections_lufs=secl, mix=mix_report(cw), mp3_probe=probes,
+        vo_minus_bed_momentary=vmm, sections_lufs=secl, mix=mix_report(cw), mp3_probe=probes,
         hero_rule=dict(log_violations=log_check(R.log), audio=tc), grid=grid_check(R.log),
         melody_in_speech=melody_check(R.log),
         mp3=[mp3b, mp3c], preview=prev_info, events=len(R.log))
