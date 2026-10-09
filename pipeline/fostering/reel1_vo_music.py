@@ -5,7 +5,7 @@
 Synthesised with music_synth.py (MS) + audio.py (A): numpy / scipy only, no samples. Emotional and cinematic but
 hopeful: tender A minor in the hook and the question, a light pulse under the eligibility checklist, warmer and
 moving in the support dock, the emotional peak in C major on the slow-motion payoff, a resolving end card.
-Background music under a voice-over: no lead melody while the voice speaks (the felt-piano figures sit in the VO
+Background music under a voice-over: no lead melody while the voice speaks (the felt-piano motifs sit in the VO
 gaps). While a line is spoken the bus above the bass gets a zero-phase 0.8-5 kHz dip (SPEECH_DIP_DB) and each
 event is choked per layer (SPEECH_DB); the choke of a struck event is monotonic, so a ringing tail never swells
 back up when the line ends.
@@ -13,103 +13,114 @@ back up when the line ends.
 KEY A minor -> C major (payoff, end card) | 120 BPM | beat n = n * 0.5 s from 0.000 (beat 1 at 0.000 s) | bar =
 2.0 s | 99 beats = 24 bars + 3 beats = 49.5 s exactly. Section boundaries are computed in OUTPUT time from the VO
 module (V = reel1_vo, V.SRC = reel1) and snapped to the nearest bar line (within half a beat) or else the nearest
-beat (sections()):
+beat (snap_beat, asserted in SEC_BEAT):
     V.out_time(T_Q)    =  4.767 (smash to the question; impact_big + sub_drop)  -> mid-bar: beat 10 =  5.00
     V.out_time(T_LIST) =  8.267 (whip down into the checklist)                  -> mid-bar: beat 17 =  8.50
     V.out_time(T_DOCK) = 24.000 (whip pan into the support dock)                -> bar 12          = 24.00
     V.out_time(T_PAY)  = 37.500 (zoom-through into the slow-motion payoff)      -> mid-bar: beat 75 = 37.50
-    V.out_time(T_END)  = 41.767 (logo sting, impact_big)                        -> bar 21          = 42.00
+    V.out_time(T_END)  = 41.767 (logo sting + impact_big)                       -> bar 21          = 42.00
     ticks V.out_time(TICKS) = 10.764 12.247 14.264 16.514 18.764; ring pop 20.998; toast V.out_time(TOAST_T) = 21.50
 
 MUSIC MAP (output seconds; VO = V.vo_cues(); hero hit = V.cues() with gain_db >= -6)
  section      | bars (beats)      | t0-t1 s     | edit events                    | music events
  -------------+-------------------+-------------+--------------------------------+------------------------------------
- A hook       | 0-2.5 (b0-10)     | 0.00-5.00   | heartbeat 0.00 (lub/dub); word | Pad Am(add9) swells in from 0 (no
-              |                   |             | slams 0.50 / 1.756 / 2.989 /   | transient under the heartbeat). Felt
-              |                   |             | 3.50 (flash + impact) with     | piano chords ON the four slams (same
-              |                   |             | whips; air_zoom 3.25; VO "A    | instant): Am(add9) / Fmaj7 / C(add9)
-              |                   |             | safe home." 0.58-1.63,         | / Dm(add9), sub A1 F1 C2 D2. Low
-              |                   |             | "Everyday care." 1.85-2.99, "A | pulse: dark plucked 8ths from beat 1
-              |                   |             | place to belong." 3.14-4.35;   | (0.50) to 4.25. The music breathes
-              |                   |             | smash + impact_big + sub_drop  | out (pulse, sub, piano released by
-              |                   |             | 4.767, whoosh 4.907            | 4.6) and leaves the smash to the SFX
- B question   | 2.5-4.25 (b10-17) | 5.00-8.50   | ? lands (glass_tap) 5.267; VO  | Held suspension E7sus4: pad swells
-              |                   |             | "Could you be a foster carer?" | in (1.0 s) with a slow filter swell
-              |                   |             | 5.52-7.03, YOU slam 5.767,     | (700 -> 1500 Hz), soft E2/B2 piano
-              |                   |             | ui_tick 6.017; whip down 8.267 | ground at 5.00, sustained sub E2, a
-              |                   |             |                                | high air pad (E5 A5 B5) blooms into
-              |                   |             |                                | the gap. Motif M1 (felt piano) in the
-              |                   |             |                                | VO gap: E5 D5 E5 A5 7.25-8.00, the A5
-              |                   |             |                                | (the sus 4th) rings over the whip
- C1 checklist | 4.25-8 (b17-32)   | 8.50-16.00  | glass_tap 8.767; VO "Am I      | Am(add9) Fmaj9 | C(add9) | G6 (bar
-              |                   |             | eligible to foster?" 8.67-     | lines 10 / 12 / 14). Soft cinematic
-              |                   |             | 10.37; ticks (ui_click +       | kick on every beat from 8.50, light
-              |                   |             | check_ding) 10.764 12.247      | pulse (plucked 8ths on the root), sub
-              |                   |             | 14.264, each followed by its   | roots. One subtle accent per tick,
-              |                   |             | line (spare bedroom / time and | on the tick: a low felt-piano dyad
-              |                   |             | flexibility / single or in a   | (top note rising A3 C4 D4 E4 F4) plus
-              |                   |             | relationship)                  | an accented pulse note (+6..+8 ms
-              |                   |             |                                | from the grid, i.e. within 6 ms of
-              |                   |             |                                | the tick)
- C2 checklist | 8-10.75 (b32-43)  | 16.00-21.50 | ticks 16.514 18.764 (rent or   | Am7 | Fmaj7 | Dm9. Adds soft off-beat
-              |                   |             | own / no experience); ring pop | hats, pulse alternates root / fifth,
-              |                   |             | 20.998                         | sub re-strikes on beat 3, pad opens
- C3 toast     | 10.75-12 (b43-48) | 21.50-24.00 | toast "You could be a great    | Toast 21.50 (beat 43, same instant):
-              |                   |             | fit" chime 21.50, VO 21.55-    | C/E piano chord + kick, air pad C5 E5
-              |                   |             | 23.10                          | G5 blooms, shaker 16ths; Dm7 (22.0)
-              |                   |             |                                | E7sus4 (23.0) E7 (23.5). Pickup in
-              |                   |             |                                | the VO gap: E5 D5 B4 (23.25-23.75)
+ A hook       | 0-2.5 (b0-10)     | 0.00-5.00   | heartbeat 0.00 (lub 0.00, dub  | Pad Am(add9) swells in from 0 (1.6 s,
+              |                   |             | 0.29); word slams 0.50 / 1.756 | nothing struck under the heartbeat).
+              |                   |             | / 2.989 / 3.50 (flash_hit +    | Felt-piano chords ON the four slams
+              |                   |             | impact_soft) with whips;       | (0.500 / 1.756 / 2.992 / 3.500):
+              |                   |             | air_zoom 3.25; VO "A safe      | Am(add9) Fmaj7 C(add9) Dm(add9), sub
+              |                   |             | home." 0.58-1.63, "Everyday    | A1 F1 C2 D2, the pad pre-laps each
+              |                   |             | care." 1.85-2.99, "A place to  | slam (0.25 s). Low pulse: dark
+              |                   |             | belong." 3.14-4.35; smash +    | plucked 8ths 0.50-4.25. Pulse, sub
+              |                   |             | impact_big + sub_drop 4.767,   | and piano are released by ~4.6: the
+              |                   |             | whoosh_by 4.907                | smash belongs to the SFX
+ B question   | 2.5-4.25 (b10-17) | 5.00-8.50   | ? lands (glass_tap) 5.267; VO  | Held suspension E7sus4: pad swells in
+              |                   |             | "Could you be a foster carer?" | (1.0 s) with a slow filter swell (700
+              |                   |             | 5.52-7.03, YOU slam 5.767,     | -> 1500 Hz), soft E2 + B2 piano ground
+              |                   |             | ui_tick 6.017; whip down 8.267 | at 5.00; sub E2 and a high air pad (E5
+              |                   |             |                                | A5 B5) swell in from 6.00 (after the
+              |                   |             |                                | sub_drop). Motif M1 in the VO gap: E5
+              |                   |             |                                | D5 E5 A5 (7.25-8.00); the A5 (the sus
+              |                   |             |                                | 4th) rings over the whip and becomes
+              |                   |             |                                | the root of the checklist's Am
+ C1 checklist | 4.25-8 (b17-32)   | 8.50-16.00  | glass_tap 8.767; VO "Am I      | Am(add9) (8.5) Fmaj9 (10) C(add9) (12)
+              |                   |             | eligible to foster?" 8.67-     | G6 (14). Soft cinematic kick on every
+              |                   |             | 10.37; ticks (ui_click +       | beat from 8.50, light pulse (plucked
+              |                   |             | check_ding) 10.764 / 12.247 /  | 8ths on the root), sustained sub. One
+              |                   |             | 14.264, each followed by its   | subtle accent per tick, ON the tick
+              |                   |             | line (spare bedroom / time and | (the 8th-note grid point moved <= 8 ms
+              |                   |             | flexibility / single or in a   | to within 6 ms of it): a low felt-piano
+              |                   |             | relationship)                  | dyad (top note rising A3 C4 D4 E4 F4
+              |                   |             |                                | over the five ticks) + an accented
+              |                   |             |                                | pulse note
+ C2 checklist | 8-10.75 (b32-43)  | 16.00-21.50 | ticks 16.514 / 18.764 (rent or | Am7 (16) Fmaj7 (18) Dm9 (20). Adds
+              |                   |             | own / no experience needed);   | soft off-beat hats; the pulse moves
+              |                   |             | ring pop 20.998                | root / fifth; the sub re-strikes every
+              |                   |             |                                | 2 beats; the pad filter keeps opening
+ C3 toast     | 10.75-12 (b43-48) | 21.50-24.00 | toast "You could be a great    | Toast lift ON 21.50 (beat 43): C/E
+              |                   |             | fit" (toast_chime) 21.50, VO   | piano chord + kick + pulse accent, air
+              |                   |             | 21.55-23.10                    | pad C5 E5 G5 blooms, shaker 16ths;
+              |                   |             |                                | Dm7 (22) E7sus4 (23) E7 (23.5). Pickup
+              |                   |             |                                | in the VO gap E5 D5 B4 (23.25-23.75)
               |                   |             |                                | -> C5 on the dock downbeat (24.00)
  D1 dock      | 12-15 (b48-60)    | 24.00-30.00 | whip pan 24.00 + card_slides   | Deceptive cadence E7 -> Fmaj9 on the
-              |                   |             | 24.125/.25/.375; VO "Support   | whip (warm surprise). Fmaj9 | C/E |
-              |                   |             | is part of the role." 24.30-   | Dm9: warmer pad (wider, filter sweep)
-              |                   |             | 26.12, "Full training." 26.55- | plucked arpeggio in 8ths, kick on the
-              |                   |             | 27.70, "Ongoing support."      | beat, sub with motion (beat 1 + the
-              |                   |             | 28.55-29.92; tile focus        | 'and' of 3), off-beat hats, shaker
-              |                   |             | (hover + click) 26.148/26.498, | 8ths. Piano gap figures G5 A5 F5
-              |                   |             | 28.38/28.50, 30.38/30.50       | (27.75-28.25), E5 C5 (30.0-30.25)
- D2 dock      | 15-18 (b60-72)    | 30.00-36.00 | VO "And a weekly allowance,    | Am7 | Fmaj7 | Dm9 C/E. More motion:
-              |                   |             | from 447.60 a week per child." | arpeggio in 16ths (filter opening),
-              |                   |             | 30.55-36.32                    | shaker 16ths, brushes on 2 and 4
- D3 build     | 18-18.75 (b72-75) | 36.00-37.50 | VO gap 36.32-37.75             | Gsus4 -> G: the kick stops after
-              |                   |             |                                | 36.0, shaker crescendo, reverse
-              |                   |             |                                | swell (C(add9)) into 37.508, rising
-              |                   |             |                                | piano pickup G4 A4 B4 D5 (36.5-37.25)
- E payoff     | 18.75-21 (b75-84) | 37.50-42.00 | zoom-through: air_zoom +       | The emotional peak in C major at
-              |                   |             | flash_hit 37.50, impact_soft   | 37.508 (8 ms late: within 12 ms of
-              |                   |             | 37.52; VO "Open your home."    | both the flash and the impact):
-              |                   |             | 37.75-38.82, "Change a child's | C(add9) piano chord (top E5 = the
-              |                   |             | life." 39.08-40.63 (slow-mo    | pickup's arrival), widest pad, low
-              |                   |             | footage); riser 39.77-41.77;   | string pad, air pad, arpeggio 16ths,
-              |                   |             | logo sting + impact_big 41.767 | half-time kick, sub C2 -> B1 -> A1 ->
-              |                   |             |                                | F1 -> G1 with glides: C(add9) G/B
-              |                   |             |                                | Am7 Fmaj7 Gsus4. Motif M2 (= M1 in
-              |                   |             |                                | C) in the VO gap: E5 D5 E5 G5
-              |                   |             |                                | 40.75-41.50 (stops before the sting)
- F end card   | 21-24.75 (b84-99) | 42.00-49.50 | wordmark 42.52; VO "Organic    | Resolves to the tonic: C(add9) (42.0)
-              |                   |             | Fostering, rated Good by       | Fmaj9 (44.0) Gsus4 G (45.0-45.5)
-              |                   |             | Ofsted." 42.52-45.91; CTA pop  | C(add9) (46.0, in the VO gap) held to
-              |                   |             | 43.52; cursor click 46.258     | the end. Kick on 42 / 44 / 46 only,
-              |                   |             | (hero); VO "Start your enquiry | arpeggio thins to 8ths and stops at
-              |                   |             | today." 46.34-47.93; card      | 46.0, piano note on the CTA click
-              |                   |             | holds to 49.5                  | (46.258). Motif M3, the answer, after
-              |                   |             |                                | the last line: E5 D5 C5 (48.0-48.5).
-              |                   |             |                                | Fade 47.60-49.45, zeros after 49.46
+              |                   |             | 24.125 / 24.25 / 24.375; VO    | whip (a warm surprise; soft reverse
+              |                   |             | "Support is part of the role." | swell into it). Fmaj9 (24) C/E (26)
+              |                   |             | 24.30-26.12, "Full training."  | Dm9 (28): warmer, wider pad with a
+              |                   |             | 26.55-27.70, "Ongoing          | filter sweep, plucked arpeggio in 8ths,
+              |                   |             | support." 28.55-29.92; tile    | kick on the beat, sub on beat 1 + the
+              |                   |             | focus (hover + click) 26.148 / | 'and' of 3, off-beat hats, shaker 8ths.
+              |                   |             | 26.498, 28.38 / 28.50, 30.38 / | Piano gap figures G5 A5 F5 (27.75-
+              |                   |             | 30.50                          | 28.25) and E5 C5 (30.00-30.25)
+ D2 dock      | 15-18 (b60-72)    | 30.00-36.00 | VO "And a weekly allowance,    | Am7 (30) Fmaj7 (32) Dm9 (34) C/E (35).
+              |                   |             | from 447.60 a week per child." | More motion: arpeggio in 16ths (filter
+              |                   |             | 30.55-36.32                    | opening), shaker 16ths, brushes on 2
+              |                   |             |                                | and 4, sub pushes
+ D3 build     | 18-18.75 (b72-75) | 36.00-37.50 | VO gap 36.32-37.75             | Gsus4 (36) G (37): the kick stops after
+              |                   |             |                                | 36.0, shaker + arpeggio crescendo,
+              |                   |             |                                | reverse swell (C(add9)) into 37.508,
+              |                   |             |                                | rising piano pickup G4 A4 B4 D5
+              |                   |             |                                | (36.50-37.25)
+ E payoff     | 18.75-21 (b75-84) | 37.50-42.00 | zoom-through: air_zoom +       | The emotional peak in C major, ON the
+              |                   |             | flash_hit 37.50, impact_soft   | hit at 37.508 (8 ms late: within 12 ms
+              |                   |             | 37.52; heartbeat reprise (lub/ | of both the flash and the impact):
+              |                   |             | dub 37.75 / 38.04 / 38.69 /    | C(add9) piano chord (top E5 = the
+              |                   |             | 38.97); VO "Open your home."   | pickup's goal), widest pad, low string
+              |                   |             | 37.75-38.82, "Change a child's | pad and air pad (swelling in from
+              |                   |             | life." 39.08-40.63 (slow-mo    | 37.25), arpeggio 16ths, shaker, sub
+              |                   |             | footage); riser 39.77-41.77;   | C2 -> B1 -> A1 -> F1 -> G1 with glides:
+              |                   |             | logo sting + impact_big 41.767 | C(add9) G/B (39) Am7 (40) Fmaj7 (41)
+              |                   |             |                                | Gsus4 (41.5). Kick on the hit, then
+              |                   |             |                                | none under the heartbeat; 40 / 41 /
+              |                   |             |                                | 41.5. Motif M2 (= M1 in C) in the VO
+              |                   |             |                                | gap: E5 D5 E5 G5 (40.75-41.50), done
+              |                   |             |                                | before the sting
+ F end card   | 21-24.75 (b84-99) | 42.00-49.50 | wordmark 42.52; VO "Organic    | Resolves to the tonic: C(add9) (42.0,
+              |                   |             | Fostering, rated Good by       | no kick: the sting's impact_big has
+              |                   |             | Ofsted." 42.52-45.91; CTA pop  | it; the sub swells in), Fmaj9 (44)
+              |                   |             | 43.52; cursor click 46.258     | Gsus4 (45) G (45.5) C(add9) (46.0, in
+              |                   |             | (hero); VO "Start your enquiry | the VO gap) held to the end. Kick on
+              |                   |             | today." 46.34-47.93; the card  | 44 / 46 only, arpeggio thins (8ths)
+              |                   |             | holds to 49.5                  | and stops at 46.0, piano G5 ON the CTA
+              |                   |             |                                | click (46.258). Motif M3, the answer,
+              |                   |             |                                | after the last line: E5 D5 C5 (48.00-
+              |                   |             |                                | 48.50) over a low C. Fade 48.00-49.45,
+              |                   |             |                                | zeros after 49.45
  Chords (beat: chord): 0 Am(add9) 3.5 Fmaj7 6 C(add9) 7 Dm(add9) | 10 E7sus4 | 17 Am(add9) 20 Fmaj9 24 C(add9)
  28 G6 32 Am7 36 Fmaj7 40 Dm9 43 C/E 44 Dm7 46 E7sus4 47 E7 | 48 Fmaj9 52 C/E 56 Dm9 60 Am7 64 Fmaj7 68 Dm9 70 C/E
  72 Gsus4 74 G | 75 C(add9) 78 G/B 80 Am7 82 Fmaj7 83 Gsus4 | 84 C(add9) 88 Fmaj9 90 Gsus4 91 G 92 C(add9).
- Voicings are hand voice-led (CHORDS); sub bass A1 / F1 / C2 / D2 / E2 / G1 / B1 (44-82 Hz).
+ Voicings are hand voice-led (CHORDS); sub bass A1 F1 C2 D2 E2 G1 B1 (44-82 Hz).
 
-INSTRUMENTS (all from MS): felt_piano (chords on the slams, tick accents, the motifs, gap figures), pad (wave
-'warm', 5 voices, detune, chorus, slow filter swell / LFO sweep), pad 'tri' (high air layer), pad 'saw' (low
-string layer, payoff and end card), pluck_synth 'warm' (low pulse, hook and checklist), pluck_synth 'saw'
-(plucked arpeggio, dock to end card), sub_bass (glides in the payoff), soft_kick, hat, shaker, brush,
-reverse_swell.
-MIX: per-layer bus trims (TRIM); zero-phase high-pass on every layer except kick, sub and pulse (keys 120, pad 150,
-low strings 120, arp 180, air 300, perc 200, fx 180 Hz); sends to hall (pad, air, low strings, keys) and plate
-(arp, perc), high-passed at 220 / 260 Hz; gentle kick pump (3 dB) on the pad, arp, pulse and sub; side channel
-high-passed at 150 Hz (mono low end); bus 25 Hz high-pass, bus_comp (-18 dB, 1.6:1), +0.5 dB tilt, then
--16 LUFS with <= -1.2 dBTP via MS.normalise_lufs.
+INSTRUMENTS (all from MS): felt_piano (chords on the slams, tick accents, toast, motifs M1-M3, gap figures,
+pickups, payoff and end-card chords), pad (wave 'warm', 5 voices, 13-cent detune, chorus, slow filter swell /
+LFO sweep), pad 'tri' (high air layer), pad 'saw' (low string layer, payoff and end card), pluck_synth 'warm'
+(low pulse: hook and checklist), pluck_synth 'saw' (plucked arpeggio: dock to end card), sub_bass (glides in the
+payoff), soft_kick, hat, shaker, brush, reverse_swell.
+MIX: per-layer bus trims (TRIM); zero-phase high-pass on every layer except kick, sub and pulse (keys 120, pad
+150, low strings 120, arp 180, air 300, perc 200, fx 180 Hz); sends to hall (pad, air, low strings, keys; soft
+early reflections, slow build: HALL_KW) and plate (arp, perc), high-passed at 220 / 260 Hz; gentle kick pump
+(3 dB) on the pad, arp, pulse and sub; side channel high-passed at 150 Hz (mono low end); bus 25 Hz high-pass,
+bus_comp (-18 dB, 1.6:1), +1 dB tilt, then -16 LUFS with <= -1.2 dBTP via MS.normalise_lufs.
 
 SFX RULE: no music transient 12-60 ms from an SFX hero hit. Every transient event goes through place(): it may
 move up to 8 ms off the grid (the humanise budget) so that every hero hit within 60 ms is within 12 ms (support on
@@ -157,7 +168,7 @@ SCRATCH = '/tmp/claude-0/-home-user-100/bb73d22e-ad11-5aa0-a0b2-8033920f7c07/scr
 PREVIEW_IN = os.path.join(SCRATCH, 'reel1_vo_preview.mp4')
 PREVIEW_OUT = os.path.join(SCRATCH, 'reel1_vo_music_preview.mp4')
 
-FADE_T0, FADE_T1 = 47.60, 49.45        # final fade (1.85 s); zeros after FADE_T1 (last 50 ms silent)
+FADE_T0, FADE_T1 = 48.00, 49.45        # final fade (1.45 s); zeros after FADE_T1 (last 50 ms silent)
 
 
 def B(n):
@@ -371,7 +382,7 @@ def build():
         t0, d = B(s0), B(s1 - s0)
         att, rel, sweep, open_to = 0.3, 0.8, 0.2, None
         if sec == 'A hook':
-            vel, cut, gdb = 0.55, 800.0, -14.0
+            vel, cut, gdb = 0.55, 800.0, -14.5
             if k == 0:
                 att, open_to = 1.6, 1000.0                  # swells in from silence under the heartbeat
             else:                                           # pre-lap: swells into each slam (no pad onset on it)
@@ -460,7 +471,7 @@ def build():
     sub(36, B(6), 0.45, vel=0.6, tag='sub C2')
     sub(38, B(7), 0.95, vel=0.62, tag='sub D2')
     # question: soft held E2
-    sub(40, B(10), B(17) - B(10) - 0.05, vel=0.46, attack=0.35, gdb=-7.0, tag='sub E2 (held)')
+    sub(40, B(12), B(17) - B(12) - 0.05, vel=0.46, attack=0.6, gdb=-7.0, tag='sub E2 (held, after the sub_drop)')
     for k, (b0, name, sn, voic) in enumerate(CHORDS):
         if b0 < 17:
             continue
@@ -484,11 +495,11 @@ def build():
         elif sec == 'E payoff':
             sub(sn, B(s0), B(s1 - s0) - 0.02, vel=0.74, glide_from=prev if b0 != 75 else None,
                 tag='sub ' + name)
-        else:                                               # end card
+        else:                                               # end card (swells in under the logo's sub_drop)
             last = k == len(CHORDS) - 1
             dur = (FADE_T1 - B(s0) - 0.3) if last else B(s1 - s0) - 0.04
             sub(sn, B(s0), dur, vel=0.7 if not last else 0.66, glide_from=prev if b0 in (88, 90) else None,
-                tag='sub ' + name)
+                attack=0.3 if b0 == 84 else 0.012, tag='sub ' + name)
 
     # ---------------------------------------------------------------- LOW PULSE (hook) / LIGHT PULSE (checklist)
     def pulse_note(beat, fifth=False):
@@ -502,7 +513,7 @@ def build():
         v = (0.5 if e8 % 2 == 0 else 0.4) * (0.85 + 0.15 * e8 / 17)
         x = MS.pluck_synth(pulse_note(bt), dur=0.2, vel=v, cutoff=230.0, env_oct=1.8, decay=0.05,
                            amp_decay=0.16, q=0.9, wave='warm', detune=5.0, release=0.06, seed=e8)
-        R.put('pulse', x, B(bt), gain_db=-9.0, tag='pulse hook')
+        R.put('pulse', x, B(bt), gain_db=-10.5, tag='pulse hook')
     for e8 in range(34, 96):                                 # checklist: 8ths 8.50-23.75
         bt = e8 / 2.0
         sec = section_of(bt)
@@ -526,8 +537,10 @@ def build():
     kick_beats += [(b, 0.74) for b in range(43, 48)]                            # C3 toast lift
     kick_beats += [(b, 0.76 if b % 2 == 0 else 0.7) for b in range(48, 72)]    # dock
     kick_beats += [(72, 0.72)]                                                  # build: the kick stops
-    kick_beats += [(75, 0.7), (76, 0.68), (78, 0.74), (80, 0.74), (82, 0.72), (83, 0.66)]   # payoff half-time
-    kick_beats += [(84, 0.66), (88, 0.58), (92, 0.58)]                           # end card
+    # payoff: the hit, then room for the SFX heartbeat reprise (lub/dub 37.75 / 38.04 / 38.69 / 38.97), then
+    # half-time into the end card
+    kick_beats += [(75, 0.7), (80, 0.72), (82, 0.7), (83, 0.64)]
+    kick_beats += [(88, 0.58), (92, 0.58)]           # end card (42.0 is left to the logo sting's impact_big)
     for b, v in kick_beats:
         R.put('kick', MS.soft_kick(vel=v, punch=0.3, tone=48.0, decay=0.32, click=0.12, drive=1.3,
                                    seed=int(b)), B(b), gain_db=-4.0, tag='kick')
@@ -611,10 +624,10 @@ def build():
         return tp
 
     # hook: sustained chords ON the four slams (same instant)
-    piano((45, 52, 60, 64, 71), B(1), vel=0.46, dur=1.2, rel=0.45, gdb=-9.0, tag='slam1 Am(add9)')
-    piano((41, 48, 57, 64, 69), B(3.5), vel=0.46, dur=1.15, rel=0.45, gdb=-9.0, tag='slam2 Fmaj7')
-    piano((48, 55, 62, 64, 67), B(6), vel=0.44, dur=0.5, rel=0.3, gdb=-9.0, tag='slam3 C(add9)')
-    piano((38, 45, 53, 57, 64), B(7), vel=0.5, dur=1.05, rel=0.5, gdb=-9.0, tag='slam4 Dm(add9)')
+    piano((45, 52, 60, 64, 71), B(1), vel=0.46, dur=1.2, rel=0.45, gdb=-10.0, tag='slam1 Am(add9)')
+    piano((41, 48, 57, 64, 69), B(3.5), vel=0.46, dur=1.15, rel=0.45, gdb=-10.0, tag='slam2 Fmaj7')
+    piano((48, 55, 62, 64, 67), B(6), vel=0.44, dur=0.5, rel=0.3, gdb=-10.0, tag='slam3 C(add9)')
+    piano((38, 45, 53, 57, 64), B(7), vel=0.5, dur=1.05, rel=0.5, gdb=-10.0, tag='slam4 Dm(add9)')
     # question: soft ground, then motif M1 in the VO gap (the A5 rings over the whip into the checklist)
     piano((40, 47), B(10), vel=0.36, dur=3.0, rel=0.6, gdb=-9.0, tag='ground E')
     for bt, nt, v, d in ((14.5, 76, 0.44, 0.3), (15.0, 74, 0.4, 0.3), (15.5, 76, 0.44, 0.3),
@@ -648,10 +661,10 @@ def build():
               tag='M2')
     piano((41, 48, 57, 64), B(82), vel=0.38, dur=0.45, rel=0.3, gdb=-10.0, tag='payoff Fmaj7')
     # end card
-    piano((48, 55, 64, 67, 72), B(84), vel=0.44, dur=1.8, rel=0.6, gdb=-9.5, roll=0.014, tag='end C(add9)')
+    piano((48, 55, 64, 67, 72), B(84), vel=0.44, dur=1.8, rel=0.6, gdb=-9.5, roll=0.002, tag='end C(add9)')
     piano((41, 48, 57, 64, 67), B(88), vel=0.36, dur=0.95, rel=0.4, gdb=-10.0, tag='end Fmaj9')
     piano((43, 50, 60, 62, 67), B(90), vel=0.34, dur=0.95, rel=0.4, gdb=-10.0, tag='end Gsus4')
-    piano((48, 55, 62, 64, 67), B(92), vel=0.44, dur=2.5, rel=0.8, gdb=-9.0, roll=0.012, tag='end C(add9) resolve')
+    piano((48, 55, 62, 64, 67), B(92), vel=0.44, dur=2.5, rel=0.8, gdb=-9.0, roll=0.002, tag='end C(add9) resolve')
     piano((79,), B(92.5), vel=0.38, dur=0.4, rel=0.3, gdb=-10.0, pan=0.15, felt=0.9, tag='CTA click G5')
     # motif M3, the answer, after the last line (47.93-): E5 D5 C5 over the held C
     for bt, nt, v, d in ((96.0, 76, 0.44, 0.3), (96.5, 74, 0.4, 0.3), (97.0, 72, 0.46, 1.2)):
@@ -681,7 +694,9 @@ def zpf_hp(x, fc, order=2):
 
 
 # bus trims (dB) on top of the per-event gains
-TRIM = dict(pad=9.0, air=12.0, low=6.0, keys=2.0, pulse=4.0, arp=9.0, sub=-2.0, kick=-1.5, perc=15.0, fx=10.0)
+TRIM = dict(pad=9.5, air=13.0, low=6.0, keys=2.5, pulse=4.0, arp=9.5, sub=-3.5, kick=-2.5, perc=15.0, fx=10.0)
+# hall with soft early reflections and a slower build: no slap / flam after the slammed chords
+HALL_KW = dict(er=0.08, build=0.12, predelay=0.03)
 HPF = dict(pad=150.0, air=300.0, low=120.0, keys=120.0, arp=180.0, perc=200.0, fx=180.0, pulse=45.0, sub=30.0,
            kick=28.0)
 
@@ -693,7 +708,7 @@ def mixdown(R):
     kick = T['kick']
     tonal = MS.duck(T['pad'] + T['low'] + T['arp'] + T['pulse'], kick, depth_db=3.0, attack=0.004, release=0.17)
     sub_d = MS.duck(T['sub'], kick, depth_db=3.5, attack=0.004, release=0.17)
-    sends = (MS.reverb_send(T['pad'] + T['air'] + T['low'] + T['keys'], 'hall', wet_db=-14.0, hp_hz=220.0)
+    sends = (MS.reverb_send(T['pad'] + T['air'] + T['low'] + T['keys'], 'hall', wet_db=-14.0, hp_hz=220.0, **HALL_KW)
              + MS.reverb_send(T['arp'] + T['perc'], 'plate', wet_db=-17.0, hp_hz=260.0))
     upper = tonal + T['keys'] + T['air'] + T['perc'] + T['fx'] + sends
     upper = speech_dip(upper, e)
@@ -701,7 +716,7 @@ def mixdown(R):
     mix = A.hp(mix, 25.0, 2)
     mix = mono_low(mix, 150.0)
     mix = MS.bus_comp(mix, thresh_db=-18.0, ratio=1.6, knee_db=6.0, attack=0.012, release=0.2)
-    mix = MS.tilt_eq(mix, 0.5, 900.0)
+    mix = MS.tilt_eq(mix, 1.0, 900.0)
     mix = MS.fade_out(mix, FADE_T1 - FADE_T0, end=FADE_T1)
     mix[int(round(FADE_T1 * SR)):] = 0.0
     nf = int(0.001 * SR)                          # 1 ms start ramp: sample 0 exactly 0 (beat 1 stays at 0.000)
@@ -722,16 +737,17 @@ def band_db(x, lo=1000.0, hi=4000.0, win=0.1, hop=0.05):
     return st, 10 * np.log10((c[st + nw] - c[st]) / nw + 1e-20)
 
 
-def music_onsets(x, thr_db=6.0, hp_hz=300.0, floor_db=30.0, refractory=0.05, renew_db=3.0):
-    """Onsets of the clean music: the 300 Hz+ power (3 ms smoothing, 0.5 ms hop) of the next 8 ms vs the mean of
+def music_onsets(x, thr_db=6.0, hp_hz=500.0, floor_db=30.0, refractory=0.05, renew_db=3.0):
+    """Onsets of the clean music: the 500 Hz+ power (4th-order high-pass, so the beating of low partials cannot
+    fake an onset; 4 ms smoothing, 0.5 ms hop) of the next 8 ms vs the mean of
     a 40 ms window ending 10 ms before (a transient against its context) >= thr_db, within floor_db of the
     99.5th-percentile power. The onset time is the threshold crossing (its constant lead is removed by the bias
     correction in transient_check); a re-detection of the same event (within `refractory` s of an onset and not
     renew_db louder) is not counted. Returns [(t_s, strength_db)]."""
     from scipy.ndimage import maximum_filter1d, uniform_filter1d
-    y = A.hp(A._st(x).mean(1), hp_hz, 2)
+    y = A.hp(A._st(x).mean(1), hp_hz, 4)
     hop = int(0.0005 * SR)
-    p = uniform_filter1d(y * y, int(0.003 * SR))[::hop]
+    p = uniform_filter1d(y * y, int(0.004 * SR))[::hop]
     n_pre, gap, n_post = 80, 20, 16
     c = np.concatenate([[0.0], np.cumsum(p)])
     idx = np.arange(len(p))
@@ -763,9 +779,10 @@ def music_onsets(x, thr_db=6.0, hp_hz=300.0, floor_db=30.0, refractory=0.05, ren
 
 def transient_check(clean, log):
     """Audio check of the SFX rule: music onsets 12-60 ms from a hero hit, after removing the detector's timing
-    bias (median offset to the logged transient times). A flagged onset within 15 ms of a logged transient that
-    was placed as a same-instant support (within 12 ms of every near hero, log_check) is that event read with
-    the detector's +-5 ms timing scatter: listed under 'support_events'; anything else is a violation."""
+    bias (median offset to the logged transient times). A flagged onset from 10 ms before to 22 ms after a
+    logged transient that was placed as a same-instant support (within 12 ms of every near hero, log_check) is
+    that event, read late by the detector (a chord whose partials build up, the speech dip easing its attack):
+    listed under 'support_events'; anything else is a violation."""
     ons = music_onsets(clean)
     ev = np.array(sorted(t for t, _, _, tr, _ in log if tr))
     offs = []
@@ -784,7 +801,8 @@ def transient_check(clean, log):
         near = HERO_T[np.abs(HERO_T - tc) <= 0.060]
         if len(near) and np.any(np.abs(near - tc) > 0.012):
             row = [round(tc, 3), round(r, 1), [round(float(h), 3) for h in near]]
-            own = len(sup_t) and float(np.min(np.abs(sup_t - tc))) <= 0.015
+            dd = tc - sup_t
+            own = len(sup_t) and bool(np.any((dd >= -0.010) & (dd <= 0.022)))
             (sup_ev if own else bad).append(row)
     return dict(onsets=len(ons), bias_ms=round(bias * 1000, 1), matched=len(offs), violations=bad,
                 support_events=sup_ev)
@@ -815,6 +833,34 @@ def melody_check(log):
     return [(t, tag) for t, layer, tag, tr, _ in log
             if layer == 'keys' and tag.split()[0] in ('M1', 'M2', 'M3', 'pickup', 'gap', 'payoff', 'CTA')
             and tag.split()[1] not in ('C(add9)', 'G/B', 'Am7', 'Fmaj7') and in_speech(t, 0.0)]
+
+
+def mix_report(x):
+    """Stereo and spectral QA of the clean music: side / mid energy (all, < 150 Hz), L/R correlation, mono-sum
+    loudness change, energy share per band (%), and the 1-4 kHz band level of the music while the voice speaks
+    vs in the gaps (the speech dip)."""
+    x = A._st(x)
+    m, sd = 0.5 * (x[:, 0] + x[:, 1]), 0.5 * (x[:, 0] - x[:, 1])
+    lo = signal.butter(4, 150.0, 'lowpass', fs=SR, output='sos')
+    sm = lambda v: float(np.sum(v * v)) + 1e-20                                # noqa: E731
+    corr = float(np.corrcoef(x[:, 0], x[:, 1])[0, 1])
+    mono = np.stack([m, m], 1)
+    P = np.abs(np.fft.rfft(m)) ** 2
+    f = np.fft.rfftfreq(len(m), 1.0 / SR)
+    edges = [0, 40, 120, 500, 2000, 6000, SR / 2]
+    bands = {'%d-%d' % (edges[i], edges[i + 1]): round(100.0 * float(P[(f >= edges[i]) & (f < edges[i + 1])].sum()
+                                                                        / P.sum()), 1) for i in range(6)}
+    e = env_cached()
+    st_, lv = band_db(x)
+    ev = e[np.minimum(st_ + int(0.05 * SR), N - 1)]
+    sp_db = float(np.median(lv[ev > 0.99]))
+    gp_db = float(np.median(lv[ev < 0.01]))
+    return dict(side_to_mid_db=round(10 * np.log10(sm(sd) / sm(m)), 1),
+                side_to_mid_below150_db=round(10 * np.log10(sm(signal.sosfiltfilt(lo, sd)) /
+                                                            sm(signal.sosfiltfilt(lo, m))), 1),
+                lr_correlation=round(corr, 3), mono_minus_stereo_lu=round(A.loudness(mono) - A.loudness(x), 2),
+                band_energy_pct=bands,
+                band_1k4k_db=dict(during_speech=round(sp_db, 1), gaps=round(gp_db, 1), dip=round(sp_db - gp_db, 1)))
 
 
 def main():
@@ -888,7 +934,7 @@ def main():
                                active_frames=int(act.sum()), active_median_db=round(float(np.median(dact)), 1),
                                active_p10_db=round(float(np.percentile(dact, 10)), 1),
                                active_min_db=round(float(dact.min()), 1)),
-        sections_lufs=secl, mp3_probe=probes,
+        sections_lufs=secl, mix=mix_report(cw), mp3_probe=probes,
         hero_rule=dict(log_violations=log_check(R.log), audio=tc), grid=grid_check(R.log),
         melody_in_speech=melody_check(R.log),
         mp3=[mp3b, mp3c], preview=prev_info, events=len(R.log))

@@ -17,51 +17,54 @@ EDIT     Section edges are computed in OUTPUT time from reel2_vo (V.out_time on 
          nearest beat (edge_beat(); asserted against the table below).
 
 MUSIC MAP (output time; b = beat index from 0.000 s, bar = b // 4)
-section  | beats      | t0-t1 s      | edit events (reel2_vo)                 | music events
----------|------------|--------------|----------------------------------------|------------------------------------------
-HOOK     | b0-8       | 0.000-3.750  | coin flip 0.03, tunnel B1 0.469         | b0-3: Ab/Bb pad swelling (filter opening),
-(bars    |            |              | (flash), whooshes b1.5-2.5, TITLE SLAM | short riser + reversed Ebmaj9 swell ENDING
- 0-1)    |            |              | b3 1.406 (impact_big), "Support" b3.5, | on the slam; b3: music downbeat ON the slam
-         |            |              | swish b4; VO financial_support         | (kick, sub Eb, EP + pad Ebmaj9), kick on
-         |            |              | 0.20-3.76                              | b3.5 ("Support"); Cm9 b6; filtered pluck
-         |            |              |                                        | arp 8ths, shaker 8ths creep in
-NUMBER   | b8-26      | 3.750-12.188 | T_NUM 4.011 (air_zoom, b8.56 -> bar    | steady pulse: soft four-on-the-floor kick,
-(bars    |            |              | line b8), counter rolls 4.06, LANDS    | offbeat hats, sub (1 + and-of-2), EP stabs,
- 2-6)    |            |              | 5.417 (kaching); pop 5.886; VO         | 16th saw-pluck arp; claps 2 & 4 + shaker
-         |            |              | from_amount 5.20-11.35                 | 16ths from b16. Abmaj9 Ebmaj7/G Cm9 Fm9
-         |            |              |                                        | Bb9sus Ebadd9. Gap motifs b9-10.5 (rising,
-         |            |              |                                        | under the roll) and b24.5-25.5
-CALC A   | b26-32     | 12.188-15.000| T_CALC whip 12.190 (b26.005, mid-bar ->| downbeat ON the whip (kick, sub, EP Abmaj9);
-(clicks) |            |              | b26); chip clicks b27-31 (+2.5 ms);    | then NO kick: the clicks are the beat. Pad
-         |            |              | VO rise_with_age 12.86-14.99           | Abmaj9 Bb/Ab (Lydian lift) Cm9, shaker 16ths
-         |            |              |                                        | between the clicks, offbeat pluck 8ths
-DRAG     | b32-35     | 15.000-16.406| slider drag 15.237 (b32.5) -> TOTAL    | kick back b32-34, Fm9 -> Bb9, rising pluck/
-         |            |              | GBP 23,275.20 lands 16.409 (b35.005)   | bell motif b32.75-34 in the gap, snare
-         |            |              |                                        | pickup b34.5-34.75, downbeat ON the landing
-CALC B   | b35-62     | 16.406-29.063| VO fifty_two_weeks 16.16-24.37,        | groove: kick, claps 2 & 4, hats, shaker,
-(groove) |            |              | rates_vary 24.82-28.39; coin wipe      | sub, EP, arp. b44: + bass-pluck bounce, EP
-         |            |              | 28.97-29.21 (T_ORB 29.090 = b62.06:    | syncopated, arp pattern B. b52: arp octave
-         |            |              | mid-bar -> b62)                        | up, hats 16ths, glass pad. Ebmaj9 Cm9
-         |            |              |                                        | Abmaj9 Bb9sus Bb Ebmaj7/G Abmaj9 Fm9 Bb9sus;
-         |            |              |                                        | gap motifs b52.25-52.5, b60.75-61.5
-ORBIT A  | b62-68     | 29.063-31.875| tag pops b63-67 (+27.5 ms); VO         | drums OUT (the pops are the rhythm): open
-(tags)   |            |              | support_household 29.32-31.37          | Abmaj9 -> Gm7, floating arp on the 16ths
-         |            |              |                                        | between the pops, offbeat shaker, glass pad
-ORBIT B  | b68-76     | 31.875-35.625| VO gap 31.37-35.65; push into the door | reversed swell into b68; THEME (pluck + FM
-(theme)  |            |              | 34.47, riser -> air_zoom 35.177        | bell) b68-74.5 over Cm9 Fm9 Bb9sus; groove
-         |            |              | (b75.05), heartbeat 35.26 / 36.19      | b68-74.75; drums out b75 (the heartbeat)
-LIFT     | b76-84     | 35.625-39.375| T_HEART -> bar line b76; VO            | harmonic + brightness lift: Abmaj9 Bb/Ab
-(recogn.)|            |              | recognition 35.65-37.85; light-leak    | Cm9 Fm9 Bb9sus, pad opens, airy pad; full
-         |            |              | wipe T_END 38.923 (b83.04)             | groove b78-82.75 (after the heartbeat):
-         |            |              |                                        | hats 16ths, bass bounce, arp octave up +
-         |            |              |                                        | counter-arp; LIFT motif b81-82.5 (the high
-         |            |              |                                        | point Eb6); nothing on b83 (wipe)
-END CARD | b84-94.72  | 39.375-44.400| logo sting 39.392 (b84.035), CTA pop   | RESOLVE to Eb (Eb6/9 with the sting's C) as
-(bars    |            |              | 40.095, click 40.563; VO discuss       | a soft swell under the sting; no drums; Eb
- 21-23)  |            |              | 40.10-42.72                            | pedal: Eb6/9 Ab/Eb Bb/Eb Eb; EP swells,
-         |            |              |                                        | thinning 8th arp; ANSWER motif b91.5-92 ->
-         |            |              |                                        | Eb6 + glock on b92 (43.125); fade 43.08-
-         |            |              |                                        | 44.38, silent after
+section  | beats     | t0-t1 s      | edit events (reel2_vo)               | music events
+---------|-----------|--------------|--------------------------------------|-------------------------------------------
+HOOK     | b0-8      | 0.000-3.750  | coin flip 0.03, tunnel B1 0.469      | b0-3: Ab/Bb pad swelling (filter opening),
+(bars    |           |              | (flash), whooshes b1.5-2.5, TITLE    | short riser + reversed Ebmaj9 swell ENDING
+0-1)     |           |              | SLAM b3 1.406 (impact_big),          | on the slam; b3: music downbeat ON the slam
+         |           |              | "Support" b3.5, swish b4; VO         | (kick, sub Eb, EP + pad Ebmaj9), kick on
+         |           |              | financial_support 0.20-3.76          | b3.5 ("Support"); Cm9 b6; filtered pluck
+         |           |              |                                      | arp 8ths, shaker 8ths creep in
+NUMBER   | b8-26     | 3.750-12.188 | T_NUM 4.011 (air_zoom, b8.56 -> bar  | steady pulse: soft four-on-the-floor kick,
+(bars    |           |              | line b8), counter rolls 4.06, LANDS  | offbeat hats, sub (1 + and-of-2), EP stabs,
+2-6)     |           |              | 5.417 (kaching); pop 5.886; VO       | 16th saw-pluck arp; claps 2 & 4 + shaker
+         |           |              | from_amount 5.20-11.35               | 16ths from b16. Abmaj9 Ebmaj7/G Cm9 Fm9
+         |           |              |                                      | Bb9sus Ebadd9. Gap motifs b9-10.5 (rising,
+         |           |              |                                      | under the roll) and b24.5-25.5
+CALC A   | b26-32    | 12.188-15.000| T_CALC whip 12.190 (b26.005, mid-bar | downbeat ON the whip (kick, sub, EP
+(clicks) |           |              | -> b26); chip clicks b27-31 (+2.5    | Abmaj9); then NO kick: the clicks are the
+         |           |              | ms); VO rise_with_age 12.86-14.99    | beat. Pad Abmaj9 Bb/Ab (Lydian lift) Cm9,
+         |           |              |                                      | shaker 16ths between the clicks, offbeat
+         |           |              |                                      | pluck 8ths
+DRAG     | b32-35    | 15.000-16.406| slider drag 15.237 (b32.5) -> TOTAL  | kick back b32-34, Fm9 -> Bb9, rising pluck/
+         |           |              | GBP 23,275.20 lands 16.409 (b35.005) | bell motif b32.75-34 in the gap, snare
+         |           |              |                                      | pickup b34.5-34.75, downbeat ON the landing
+CALC B   | b35-62    | 16.406-29.063| VO fifty_two_weeks 16.16-24.37,      | groove: kick, claps 2 & 4, hats, shaker,
+(groove) |           |              | rates_vary 24.82-28.39; coin wipe    | sub, EP, arp. b44: + bass-pluck bounce, EP
+         |           |              | 28.97-29.21 (T_ORB 29.090 = b62.06:  | syncopated, arp pattern B. b52: + glass
+         |           |              | mid-bar -> b62)                      | pad, hats 16ths, brighter arp. Ebmaj9 Cm9
+         |           |              |                                      | Abmaj9 Bb9sus Bb Ebmaj7/G Abmaj9 Fm9
+         |           |              |                                      | Bb9sus; gap motifs b52.25-52.5, b60.75-61.5
+ORBIT A  | b62-68    | 29.063-31.875| tag pops b63-67 (+27.5 ms); VO       | drums OUT (the pops are the rhythm): open
+(tags)   |           |              | support_household 29.32-31.37        | Abmaj9 -> Gm7, floating arp on the 16ths
+         |           |              |                                      | between the pops, offbeat shaker, glass pad
+ORBIT B  | b68-76    | 31.875-35.625| VO gap 31.37-35.65; push into the    | reversed swell into b68; THEME (pluck + FM
+(theme)  |           |              | door 34.47, riser -> air_zoom 35.177 | bell) b68-74.5 over Cm9 Fm9 Bb9sus; groove
+         |           |              | (b75.05), heartbeat 35.26 / 36.19    | b68-74.75 (arp an octave down under the
+         |           |              |                                      | theme); drums out b75 (the heartbeat)
+LIFT     | b76-84    | 35.625-39.375| T_HEART -> bar line b76; VO          | harmonic + brightness lift: Abmaj9 Bb/Ab
+(recogn.)|           |              | recognition 35.65-37.85; light-leak  | Cm9 Fm9 Bb9sus, pad opens, airy pad; full
+         |           |              | wipe T_END 38.923 (b83.04)           | groove b78-82.75 (after the heartbeat):
+         |           |              |                                      | hats 16ths, bass bounce, EP syncopated;
+         |           |              |                                      | after the line: high counter-arp + LIFT
+         |           |              |                                      | motif b81-82.5 (the high point Eb6);
+         |           |              |                                      | nothing on b83 (the wipe)
+END CARD | b84-94.72 | 39.375-44.400| logo sting 39.392 (b84.035), CTA pop | RESOLVE to Eb (Eb6/9 with the sting's C) as
+(bars    |           |              | 40.095, click 40.563; VO discuss     | a soft swell under the sting; no drums; Eb
+21-23)   |           |              | 40.10-42.72                          | pedal: Eb6/9 Ab/Eb Bb/Eb Eb; soft EP,
+         |           |              |                                      | thinning 8th arp; ANSWER motif b91.5-92 ->
+         |           |              |                                      | Eb6 + glock on b92 (43.125); fade
+         |           |              |                                      | 43.08-44.38, silent after
 
 CHORDS (beat: chord)  0 Ab/Bb | 3 Ebmaj9 | 6 Cm9 | 8 Abmaj9 | 12 Ebmaj7/G | 16 Cm9 | 20 Fm9 | 22 Bb9sus4 |
 24 Ebadd9 | 26 Abmaj9 | 28 Bb/Ab | 30 Cm9 | 32 Fm9 | 34 Bb9 | 35 Ebmaj9 | 40 Cm9 | 44 Abmaj9 | 48 Bb9sus4 |
@@ -73,20 +76,22 @@ plays the same structure an octave down (no seconds); arps and motifs use chord 
 SPEECH RULES  No melody while the voice speaks: every motif sits in a VO gap (asserted: >= 80 ms after a line ends,
 >= 80 ms before the next starts, no SFX cue >= -12 dB within +-60 ms). Pads / EP / arps / motifs pass a speech-aware
 filter (2-pole low-pass 1.7 kHz while a line plays, 15 kHz in the gaps, + a -6 dB peak dip at 2.6 kHz; 60 ms close /
-300 ms open); arps -3 dB and claps -4 dB under speech; FX get the dip only. Hero hits: no kick / clap / snare / arp /
+300 ms open); arps -3 dB and claps -4 dB under speech; claps / hats / FX get the dip only; octave-up arps and the
+counter-arp play only in the gaps (an octave lower under speech). Hero hits: no kick / clap / snare / arp /
 motif / EP / shaker / hat onset within +-60 ms of an SFX hero hit, except music downbeats deliberately ON a slam
 (SUPPORT: the title slam b3 and "Support" b3.5, the calculator whip b26, the 52-week total b35: kick, sub, EP, pad);
 sub notes near a hero hit swell in (50 ms attack); chord changes there are pad swells (hero_audit() logs and measures).
 
-INSTRUMENTS (music_synth)  glassy pad (pad 'warm' 5 voices + 'tri' glass top an octave up, chorus, filter per
-section), warm electric piano (fm_epiano), plucky saw arp (pluck_synth 'saw', filter envelope) + counter-arp
-(pluck_synth 'square'), FM bell + saw-pluck motif layer (fm_epiano bright tine + pluck_synth), glockenspiel
-(end), sub bass (sub_bass), bass pluck (bass_pluck, octave bounce), soft punchy kick (soft_kick), clap (room),
-closed hats (hat), shaker (shaker strokes), snare pickup (snare_soft), riser + reverse_swell (hook, theme entry).
-Sends: hall (pad + EP), plate (arps, motifs, claps), air (motifs). Kick pump 2.5 dB on the harmonic bus and
-3 dB on the sub (the kick owns its transient). High-pass
-150-300 Hz on everything except kick and bass; sub / kick mono in the centre; width from detune, chorus, pan and
-reverb. Bus: hp 30 Hz, bus_comp -18 / 1.6, tilt +0.8, fade, normalise_lufs -16 LUFS / -1.2 dBTP.
+INSTRUMENTS (music_synth)  glassy pad (pad 'warm' 5 voices + 'tri' glass top an octave up from b52, chorus,
+filter per section), warm electric piano (fm_epiano), plucky saw arp (pluck_synth 'saw', filter envelope) +
+counter-arp (pluck_synth 'square', Haas 9 ms), FM bell + saw-pluck motif layer (fm_epiano bright tine +
+pluck_synth), glockenspiel (end), sub bass (sub_bass), bass pluck (bass_pluck, octave bounce), soft punchy kick
+(soft_kick), clap (room), closed hats (hat), shaker (shaker strokes), snare pickup (snare_soft), riser +
+reverse_swell (hook, theme entry). Sends: hall (pad + EP), plate (arps, motifs, claps), air (motifs). Kick pump
+2.5 dB on the harmonic bus and 3 dB on the sub (the kick owns its transient). High-pass 150-500 Hz on everything
+except kick and bass (sends 250-500 Hz); sub / kick mono in the centre; width from detune, chorus, pan, Haas and
+reverb. Bus: hp 30 Hz, bus_comp -18 / 1.6, tilt +0.8, section gain (SEC_GAIN), fade, normalise_lufs -16 LUFS /
+-1.2 dBTP.
 
 DELIVERY  M.render_bed (VO duck 9 dB 40 / 400 ms, SFX duck 3 dB, gaps 7 LU under the delivered mix, voice >= 10 LU
 over the music) -> M.master_withmusic (-14 LUFS, limiter at -2.3, <= -2.0 dBTP) -> MP3s (M.write_mp3) and the
@@ -300,12 +305,13 @@ MOTIFS = [
 
 EVENTS = []          # (t, kind, gain_db) for the hero-hit audit
 # stem trims (dB) applied when the stems are summed (set from the measured stem loudness, see qa: stems_lufs)
-TRIM = dict(pad=7.0, ep=4.0, arps=7.0, motif=3.0, sub=-3.0, bass_pluck=5.0, kick=-2.0, clap=7.0, hats=3.0,
+TRIM = dict(pad=7.0, ep=4.0, arps=7.0, motif=3.0, sub=-4.5, bass_pluck=5.0, kick=-2.0, clap=7.0, hats=3.0,
             fx=4.0)
 # section dynamics (dB, applied after the bus compressor): the hook swells into the slam, the tag ring breathes,
 # the lift lifts, the end card settles
-SEC_GAIN = [(0.0, -3.0), (3 * BEAT - 0.05, 0.0), (62 * BEAT, 0.0), (62 * BEAT + 0.3, -1.5), (68 * BEAT - 0.5, -1.5),
-            (68 * BEAT, 0.0), (76 * BEAT, 0.0), (76 * BEAT + 0.5, 1.0), (84 * BEAT - 0.3, 1.0), (84 * BEAT + 0.5, -0.5)]
+SEC_GAIN = [(0.0, -3.0), (3 * BEAT - 0.05, 0.0), (62 * BEAT, 0.0), (62 * BEAT + 0.3, -1.5),
+            (68 * BEAT - 0.5, -1.5), (68 * BEAT, -0.6), (76 * BEAT, -0.6), (76 * BEAT + 0.5, 1.0),
+            (84 * BEAT - 0.3, 1.0), (84 * BEAT + 0.5, -0.5)]
 
 
 def log(t, kind, gain_db):
@@ -352,12 +358,12 @@ def layer_pad():
 def layer_ep():
     """Warm FM electric piano, octave 3-4. Pattern P1 = 1, and-of-2, (3 short); P2 = 1, and-of-1 (short),
     and-of-2, and-of-3 (more syncopated: CALC B2 and the lift). Long chords on the slam, Cm9 (hook), the whip and
-    the drag; swells on the end card. A chord never rings over the next change."""
+    the drag; soft chords on the end card (b85, b88, b90). A chord never rings over the next change."""
     tr = M.Track(T, 'ep')
     rng = np.random.default_rng(SEED + 1)
     hits = [(3.0, 2.9, 0.50, True), (6.0, 1.9, 0.40, False), (26.0, 1.9, 0.46, True), (32.0, 1.9, 0.44, False),
-            (34.0, 0.9, 0.46, False), (35.0, 0.9, 0.50, True), (78.0, 0.4, 0.50, False), (85.0, 2.8, 0.36, False), (88.0, 1.9, 0.36, False),
-            (90.0, 1.9, 0.34, False)]
+            (34.0, 0.9, 0.46, False), (35.0, 0.9, 0.50, True), (78.0, 0.4, 0.50, False), (85.0, 2.8, 0.36, False),
+            (88.0, 1.9, 0.36, False), (90.0, 1.9, 0.34, False)]
     P1 = [(0.0, 1.0, 0.46), (1.5, 0.8, 0.40), (3.0, 0.4, 0.34)]
     P2 = [(0.0, 0.4, 0.46), (0.5, 0.4, 0.36), (1.5, 0.8, 0.42), (2.5, 0.8, 0.40)]
     for bar in range(int(np.ceil(END_BEAT / 4))):
@@ -427,21 +433,23 @@ def layer_arps():
                 p, oct_, gdb, cut = ARP['B'][k % 16], 1, -21.0, 1100.0
         elif sec == 'orbA':
             p, oct_, gdb, cut = ARP['float'][k % 16], 1, -21.0, 1200.0
-        elif sec == 'orbB' and b < 74.75:
-            p, gdb, cut = ARP['A'][k % 16], -19.5, 1000.0
+        elif sec == 'orbB' and b < 74.75:                 # an octave down: the theme owns the register above
+            p, oct_, gdb, cut = ARP['A'][k % 16], -1, -19.5, 1100.0
         elif sec == 'lift':
-            p, oct_, gdb, cut = ARP['B'][(k + 8) % 16], 1, -20.5, 1300.0
+            p, gdb, cut = ARP['B'][(k + 8) % 16], -20.0, 1300.0
             if b >= 82.75:
                 p = None
         elif sec == 'end' and k % 4 == 0 and b < 90:
             p, oct_, gdb, cut = ARP['hook'][(k // 4) % 8], 1, -21.0 - 0.6 * (b - 84), 1000.0
+        if oct_ > 0 and speaking(t, 0.15, 0.15):    # octave-up arps only in the VO gaps (out of the speech band)
+            oct_ = 0
         if p is not None and not near_hero(t):
             x = M.pluck_synth(pool[p] + 12 * oct_, dur=STEP * 0.8, vel=acc, cutoff=cut, env_oct=2.6, decay=0.07,
                               amp_decay=0.22, q=1.15, wave='saw', detune=6.0, release=0.06, seed=SEED + k)
             arp.add(A.hp(x, 220.0, 2), t, gain_db=gdb, pan=0.3 if k % 2 else -0.3)
             log(t, 'arp', gdb)
         # counter-arp (off-beat 8ths, square pluck): the lift groove
-        if sec == 'lift' and 78 <= b < 82.75 and k % 2 == 0:
+        if sec == 'lift' and 78 <= b < 82.75 and k % 2 == 0 and not speaking(t, 0.1, 0.1):
             cp = ARP['counter'][(k // 2) % 8]
             if cp is not None and not near_hero(t):
                 x = M.pluck_synth(pool[cp] + 12, dur=STEP * 0.9, vel=0.5, cutoff=1400.0, env_oct=2.0, decay=0.05,
@@ -449,7 +457,7 @@ def layer_arps():
                                   seed=SEED + 3000 + k)
                 cnt.add(A.hp(x, 300.0, 2), t, gain_db=-23.0, pan=0.5)
                 log(t, 'arp', -23.0)
-    return arp.buf, cnt.buf
+    return arp.buf, M.haas(cnt.buf, ms=9.0, side='left', level_db=-2.0)
 
 
 def layer_motif():
@@ -611,7 +619,8 @@ def layer_drums():
             sv, sg = 0.55, -21.5
         if sv is not None:
             x = M.shaker(vel=sv * acc[k % 4], length=0.06, tone=7600.0, attack=0.012, seed=k % 16)
-            hats.add(x, t - 0.012 + rng.uniform(-0.002, 0.002), gain_db=sg, pan=-0.25 if k % 2 else -0.12)
+            hats.add(A.hp(x, 200.0, 2), t - 0.012 + rng.uniform(-0.002, 0.002), gain_db=sg,
+                     pan=-0.35 if k % 2 else 0.1)
     return kick.buf, clap.buf, hats.buf, kick_times
 
 
@@ -691,6 +700,7 @@ def render(verbose=True):
     ar_f *= A.undb(-3.0 * sp)[:, None]                   # the arps also sit 3 dB lower under speech
     mot_f = speech_carve(motif + glock, sp)
     clap_f = speech_dip(clap, sp)
+    hats = speech_dip(hats, sp)
     fx_f = speech_dip(fx, sp)
     sends = (M.reverb_send(harm, 'hall', wet_db=-16.0, hp_hz=250.0)
              + M.reverb_send(ar_f + clap_f, 'plate', wet_db=-16.0, hp_hz=300.0)
@@ -822,7 +832,18 @@ def qa(clean, bed, bedm, mix, rep, stems):
                                  voiced_band1_4k_100ms_median_db=round(float(np.median(dv)), 2),
                                  voiced_band1_4k_100ms_p10_db=round(float(np.percentile(dv, 10)), 2),
                                  voiced_band1_4k_100ms_min_db=round(float(np.min(dv)), 2), n_voiced=int(voiced.sum()))
-    # gaps: music short-term loudness vs the delivered mix (bed laid at 0 dB under reel2_vo_mix.wav)
+    # each VO gap (from 0.4 s after a line, past the duck release, to 50 ms before the next): bed loudness vs the
+    # delivered mix's integrated loudness (the bed is laid at 0 dB under reel2_vo_mix.wav)
+    ref = bedm['ref_lufs']
+    rows = []
+    edges = [(0.0, VO_LINES[0][1])] + [(VO_LINES[i][2], VO_LINES[i + 1][1]) for i in range(len(VO_LINES) - 1)] \
+        + [(VO_LINES[-1][2], T)]
+    for a, b in edges:
+        a2, b2 = a + 0.4, b - 0.05
+        if b2 - a2 >= 0.4:
+            lb = A.loudness(bed[int(a2 * SR):int(b2 * SR)])
+            rows.append((round(a, 2), round(b, 2), round(lb, 1), round(lb - ref, 1)))
+    out['gaps_bed_lufs_minus_ref'] = rows
     out['hero'] = hero_audit(clean)
     return out
 
