@@ -8,10 +8,13 @@
     "Poppins": "Poppins:wght@400;500;600;700;800;900",
     "InstrumentSerif": "Instrument+Serif:ital@0;1",
     "JetBrainsMono": "JetBrains+Mono:wght@400;500;600;700;800",
-    "Caveat": "Caveat:wght@700"
+    "Caveat": "Caveat:wght@700",
+    "Cinzel": "Cinzel:wght@700",
+    "Bungee": "Bungee"
   },
   "font_map": {"Nunito": "Poppins", "Poppins": "Poppins", "Caveat": "InstrumentSerif"},
-  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic", "pw_parody_fun": "Caveat-Bold"},
+  "font_copies": {"InstrumentSerif-Bold": "InstrumentSerif-RegularItalic", "pw_parody_fun": "Caveat-Bold",
+                  "c02_parody_wedding": "Cinzel-Bold", "c02_parody_cartoon": "Bungee-Regular"},
   "logo_src": "pipeline/jawad_reels/brand_src/logo_full.svg",
   "logo_dark_lum": 0.12,
   "palette": {
