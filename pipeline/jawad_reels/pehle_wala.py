@@ -5,7 +5,7 @@ Sources (binding order): brand_reels/design/SLATE.md 3.1 + 5 -> reels/pehle_wala
 the measured VO and the real Blender glass; D1-D6 applied) -> SCRIPT.md / VO_TIMING.md (words) -> SOUND.md / FACES.md.
 Helpers (this reel only): pehle_wala_state.py (pure state clock, VERSIONS, pins, pre1 path), pehle_wala_ad.py (the ad
 under review), pehle_wala_ui.py (the review player), pehle_wala_faces.py (JD tile, face-compositor),
-pehle_wala_sfx.py (cues, sound-designer), pehle_wala_dev.py (QA).
+pehle_wala_sfx.py (cues, sound-designer; needs the shared sound kit epic_sfx / epic_music / epic_mix).
 
 SHOT LIST (as built; camera locked all reel long: the frame under review does all the moving)
 | shot   | f (s)                | bar.beat | picture                                                         | transition out | SFX anchor (pehle_wala_sfx) |
@@ -349,7 +349,12 @@ def cues():
 
 
 def __getattr__(name):
+    """BED / BED_GAIN_DB from the sound-designer's module; an AttributeError (not an ImportError) while the shared
+    sound kit (epic_sfx / epic_music / epic_mix) is being rebuilt, so hasattr / getattr(..., default) keep working."""
     if name in ('BED', 'BED_GAIN_DB'):
-        import pehle_wala_sfx
+        try:
+            import pehle_wala_sfx
+        except ImportError as e:
+            raise AttributeError('%s: pehle_wala_sfx not importable (%s)' % (name, e)) from None
         return getattr(pehle_wala_sfx, name)
     raise AttributeError(name)
