@@ -707,6 +707,9 @@ def build(hooks='AB', out_dir=AUD):
                              A=dict(cues=ca), B=dict(cues=res['B']['placed']) if 'B' in res else None)),
               open(os.path.join(out_dir, MODULE + '_cues.json'), 'w'), indent=1)
     json.dump(_jsonable(res), open(os.path.join(out_dir, MODULE + '_sfx_report.json'), 'w'), indent=1)
+    # qa_measure.py `cues` format (reel time, align): python3 $QA cues <master.mp4> <this file>
+    json.dump(dict(cues=[dict(t=c['t'], name=c['name'], align=c.get('align', 'hit'), why=c.get('why', ''))
+                         for c in ca]), open(os.path.join(out_dir, MODULE + '_qa_cues.json'), 'w'), indent=1)
     return res
 
 

@@ -449,6 +449,56 @@ def o6_cards(t, n=4000, seed=5, life=1.2, band=20.0, noise=120.0):
     return cv
 
 
+# ============================================================================================== O2 without the wrap seam
+@functools.lru_cache(maxsize=8)
+def _fbm_tall(seed, scale, octaves, extra=220):
+    """jawad_tx.fbm with extra rows at the bottom (read-only): the smoke scrolls through it without wrapping, so the
+    shared O2's np.roll seam (a hard horizontal line across the smoke) never appears."""
+    H4, W4 = X.H4, X.W4
+    rows = H4 + extra
+    rng = np.random.default_rng(seed)
+    acc = np.zeros((rows, W4), np.float32)
+    a = 1.0
+    for o in range(octaves):
+        n = rng.standard_normal((int(rows / scale * 2 ** o) + 2, int(W4 / scale * 2 ** o) + 2)).astype(np.float32)
+        acc += a * cv2.resize(n, (W4, rows), interpolation=cv2.INTER_CUBIC)
+        a *= 0.5
+    acc = (acc - acc.min()) / max(1e-6, float(acc.max() - acc.min()))
+    acc.flags.writeable = False
+    return acc
+
+
+def o2_smoke(t, w, A, B, seed=31, rise=260.0):
+    """Copy of jawad_tx._tx_smoke (O2) reading its noise from _fbm_tall instead of np.roll (same look, no seam)."""
+    u = w.u(t)
+    sh = int(rise * u / 4)
+    n = _fbm_tall(seed, 18.0, 3)[sh:sh + X.H4]
+    n2 = _fbm_tall(seed + 1, 7.0, 3)[2 * sh:2 * sh + X.H4]
+    dens = np.clip((n * 0.75 + n2 * 0.25 - 0.2) * 1.6, 0, 1)
+    Xg, Yg = X.grid4()
+    vert = (Yg / X.H)
+    thr_a = K.EASE['inout_sine'](K.clamp(u / 0.55))
+    thr_b = K.EASE['inout_sine'](K.clamp((u - 0.45) / 0.55))
+    cover = np.clip((thr_a * 1.6 - (dens * 0.7 + (1 - vert) * 0.3)) / 0.12, 0, 1) * \
+        (1 - np.clip((thr_b * 1.6 - (dens * 0.7 + vert * 0.3)) / 0.12, 0, 1))
+    cv = (B if u >= 0.5 else A)(t)
+    Cm = X.up(cover)[..., None] * np.float32(0.88)
+    lit = X.up((dens * vert ** 2).astype(np.float32))[..., None]
+    smoke = np.float32(K.C['SMOKE']) * (0.5 + 0.6 * X.up(dens)[..., None]) + np.float32(K.C['FLAME']) * 0.45 * lit
+    cv[..., :3] = cv[..., :3] * (1 - Cm) + smoke * Cm
+    return cv
+
+
+def plan_draw(plan, t, scenes):
+    """plan.draw with every O2 window drawn by the local seam-free o2_smoke (windows, cut rule, samples unchanged)."""
+    for i, (x, c, o) in enumerate(plan.steps):
+        if x.id == 'O2':
+            w = x.win(c, **o)
+            if w.inside(t):
+                return o2_smoke(t, w, scenes[i], scenes[i + 1], seed=o.get('seed', 31), rise=o.get('rise', 260.0))
+    return plan.draw(t, scenes)
+
+
 # ============================================================================================== text
 def _jline_state(i, t):
     """(x, y, scale, opacity, blur) of judgement line i at t, or None. Arrival out_expo from the crowd (scale 0.35,
@@ -531,7 +581,7 @@ def build(hook='A'):
     def world(tt):
         if tt < 0:
             return S_A(tt, 'A')                       # frame 0's past for both versions (the seam lands on A's f0)
-        return plan.draw(tt, scenes)
+        return plan_draw(plan, tt, scenes)
 
     def draw(t):
         cv = E.loop_world(world, t, DUR, d=0.5)
