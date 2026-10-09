@@ -5,7 +5,8 @@ Spec: brand_reels/research/sound_design.md section 2 (sources) and section 3 (th
 data; this script is the committed recipe that rebuilds it, with a per-file licence record.
 
     python3 -I pipeline/jawad_reels/tools/fetch_sfx_library.py [--lib DIR] [--only kenney,opengameart,wikimedia]
-                                                               [--extras] [--force] [--dry-run] [--no-copy] [--no-kit-links]
+                                    [--extras] [--force] [--dry-run] [--no-copy] [--no-kit-links]
+                                    [--wm-budget SECONDS] [--no-transcode]
 
 Sources (CC0 / public domain ONLY; never freesound, pixabay, BBC, CC-BY or BY-SA):
     kenney/<pack>/...           Kenney.nl audio packs interface-sounds, impact-sounds, ui-audio, sci-fi-sounds, digital-audio
@@ -33,16 +34,24 @@ Outputs (default library = <repo>/workspace/brand_reels/sfx/library, or $EPIC_SF
 Behaviour:
     * idempotent: a file whose bytes match the manifest (size + sha256; Commons: the API's sha1) and that ffprobe decodes is
       never downloaded again; --force re-downloads everything
-    * polite: one request at a time, a minimum gap per host (Commons API / upload 3 s), a descriptive User-Agent, retries
-      with exponential backoff on 429 / 5xx / time-outs / HTML error pages, honouring Retry-After (upload.wikimedia.org
-      rate-limits with HTML pages); the Commons metadata is ONE batched API query
+    * polite: one request at a time, a minimum gap per host (Commons API 3 s, upload.wikimedia.org 10 s), a descriptive
+      User-Agent, retries with exponential backoff on 429 / 5xx / time-outs / HTML error pages, honouring Retry-After;
+      the Commons metadata is ONE batched API query, its records cached in wikimedia/commons_api.json
+    * Wikimedia rate limits never block the run: upload.wikimedia.org answers shared IPs with HTML 429 pages and
+      Retry-After: 600, so the Wikimedia stage spends at most --wm-budget seconds (default 240) in all. A file whose
+      original stays rate-limited falls back to Commons' own MP3 transcode of it (same recording, same licence; duration
+      checked against the API record; stored as <file>.mp3, --no-transcode to skip); otherwise it is QUEUED: listed in
+      LICENSES.md and wikimedia/manifest.json, and the *_real sound that needs it does not register until a later run
+      fetches it
     * every licence is re-checked at fetch time (Kenney License.txt says CC0, the OpenGameArt page's licence field lists
-      CC0, the Commons extmetadata licence is CC0 or public domain); anything else is refused
+      CC0, the Commons extmetadata licence is CC0 or public domain; a cached API record counts, it was checked when it was
+      read); anything else is refused
     * downloads are untrusted data: written only into their source folder, checked by magic bytes (an HTML page is
       rejected), decoded only by ffprobe / ffmpeg, never executed or imported; zips are unpacked by this script with
       path, type, size and ratio limits (audio + licence text only). Run with python3 -I (the script re-executes itself
       under -I when it is not)
-Exit status 0 when every required file is present and verified, 1 otherwise (the summary names what failed).
+Exit status 0 when every required file (Kenney, OpenGameArt and the two paths the reel modules read) is present and
+verified, 1 otherwise; queued optional Wikimedia files are reported but do not fail the run.
 """
 import argparse
 import hashlib
@@ -121,14 +130,17 @@ WIKIMEDIA_EXTRAS = [
      '(extra: stereo rain, 42 MB)'),
 ]
 WM_OK_LICENCES = {'cc0', 'pd', 'public domain', 'cc-zero', 'cc0 1.0'}
-USED_BY = {  # which epic_sfx sounds read which file (documentation only; epic_sfx.SAMPLES is the authority)
-    'opengameart/crowd_shouting/crowd_shouting_0.ogg': 'crowd_cheer_real; bijli_chali_gayi_sfx mohalla_cheer; '
-                                                       'log_kya_kahenge_sfx whisper wall',
+USED_BY = {  # which sounds / reel modules read which file (epic_sfx.SAMPLES is the authority for the sounds)
+    'opengameart/crowd_shouting/crowd_shouting_0.ogg': 'crowd_cheer_real (contains English speech: "Oh my God, look at '
+                                                       'that!"); bijli_chali_gayi_sfx mohalla_cheer; log_kya_kahenge_sfx '
+                                                       'whisper wall (both read this path directly)',
     'opengameart/applause_church/applause-clapping-church-crowd-immersive.wav': 'applause_real',
     'opengameart/crowd_ooo/oooooooooo.ogg': 'crowd_ooh_real',
     'opengameart/traffic_road/gatve_Varniu.ogg': 'traffic_real',
+    'opengameart/rain_loopable/1.ogg': 'rain_real',
     'kenney/impact-sounds/Audio/impactBell_heavy_000.ogg': 'bell_impact_real',
 }
+REEL_PATHS = ('opengameart/crowd_shouting/crowd_shouting_0.ogg', 'wikimedia/crowd/Ohhh_ahhh.ogg')  # read by reel modules
 
 
 # ============================================================================================ small utilities
@@ -170,6 +182,10 @@ def within(path, root):
     return path == root or path.startswith(root + os.sep)
 
 
+class RateLimited(RuntimeError):
+    """The server keeps answering 429 (or asks for a wait that does not fit the time budget)."""
+
+
 class Net:
     """Sequential HTTP client: per-host minimum gap, retries with backoff (429 / 5xx / time-outs / HTML pages)."""
 
@@ -177,6 +193,7 @@ class Net:
         self.last = {}
         self.dry = dry
         self.requests = 0
+        self.rate_limited = 0
 
     def _wait(self, host):
         gap = HOST_GAP.get(host, 1.0)
@@ -185,11 +202,16 @@ class Net:
             time.sleep(gap - dt)
         self.last[host] = time.time()
 
-    def get(self, url, binary=True, tries=7, max_bytes=MAX_FILE, to_file=None):
-        """GET url -> bytes (or streams into to_file and returns its size). binary=True rejects an HTML body."""
+    def get(self, url, binary=True, tries=7, max_bytes=MAX_FILE, to_file=None, deadline=None, max_wait=RETRY_CAP):
+        """GET url -> bytes (or streams into to_file and returns its size). binary=True rejects an HTML body.
+        deadline (time.time() value): never wait past it; a retry that would is abandoned with RateLimited (HTTP 429)
+        or RuntimeError. max_wait caps one back-off wait (a longer Retry-After counts as 'does not fit')."""
         host = urllib.parse.urlsplit(url).hostname or ''
         err = None
+        last_code = None
         for k in range(tries):
+            if deadline is not None and time.time() > deadline:
+                break
             self._wait(host)
             self.requests += 1
             req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': '*/*'})
@@ -220,17 +242,27 @@ class Net:
                     return data
             except urllib.error.HTTPError as e:
                 err = 'HTTP %d' % e.code
+                last_code = e.code
                 if e.code in (401, 403, 404, 405, 407, 410):
                     raise RuntimeError('%s for %s (not retried)' % (err, url))
                 ra = e.headers.get('Retry-After') if e.headers else None
                 wait = float(ra) if ra and ra.strip().isdigit() else 5.0 * 2 ** k
+                if e.code == 429:
+                    self.rate_limited += 1
             except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError, OSError) as e:
                 err = '%s: %s' % (type(e).__name__, e)
+                last_code = None
                 wait = 5.0 * 2 ** k
-            wait = min(wait + 2.0, RETRY_CAP)                  # honour Retry-After (upload.wikimedia.org: 600 s)
+            wait = wait + 2.0                                  # honour Retry-After (upload.wikimedia.org: 600 s)
+            if k >= tries - 1:
+                break
+            if wait > max_wait or (deadline is not None and time.time() + wait > deadline):
+                log('    %s: a %.0f s back-off does not fit the time budget, giving up on this URL for now' % (err, wait))
+                break
             log('    retry %d/%d in %.0f s (%s)' % (k + 1, tries - 1, wait, err))
-            if k < tries - 1:
-                time.sleep(wait)
+            time.sleep(wait)
+        if last_code == 429:
+            raise RateLimited('rate-limited (HTTP 429): %s' % url)
         raise RuntimeError('gave up after %d tries: %s (%s)' % (tries, url, err))
 
 
@@ -512,100 +544,202 @@ def fetch_opengameart(net, man, lib, force=False):
     return errors
 
 
-def fetch_wikimedia(net, man, lib, extras=False, force=False):
-    errors = []
+def _wm_licence_ok(em):
+    """(ok, short, code, why) for a Commons extmetadata dict: only CC0 / public domain pass."""
+    g = lambda k: strip_tags(em.get(k, {}).get('value', ''))
+    lic_short, lic = g('LicenseShortName'), g('License').lower()
+    if lic_short.lower() not in WM_OK_LICENCES and lic not in WM_OK_LICENCES:
+        return False, lic_short, lic, 'licence %r / %r is not CC0 / public domain' % (lic_short, lic)
+    if re.search(r'\b(by|sa|nc|nd)\b', lic) and lic not in WM_OK_LICENCES:
+        return False, lic_short, lic, 'licence %r has conditions' % lic
+    return True, lic_short, lic, ''
+
+
+def _transcode_url(url):
+    """Commons' own MP3 transcode of an original audio file (TimedMediaHandler derivative, same host), e.g.
+    .../commons/a/a3/X.ogg -> .../commons/transcoded/a/a3/X.ogg/X.ogg.mp3. It is a re-encode of the same CC0 / PD
+    recording (same licence), used only when the original keeps answering 429."""
+    m = re.match(r'(https://upload\.wikimedia\.org/wikipedia/commons)/([0-9a-f])/([0-9a-f]{2})/([^/?#]+)$', url)
+    if not m:
+        return None
+    base, h1, h2, name = m.groups()
+    return '%s/transcoded/%s/%s/%s/%s.mp3' % (base, h1, h2, name, name)
+
+
+def fetch_wikimedia(net, man, lib, extras=False, force=False, budget=240.0, transcode=True):
+    """The Commons files: ONE batched API query (licence + sha1 + URL), its records cached in
+    wikimedia/commons_api.json (a later run that cannot reach the API still has the licence verified at fetch time),
+    then each original (sha1 must match). upload.wikimedia.org rate-limits by IP with HTML 429 pages and
+    Retry-After 600: this stage never waits longer than `budget` seconds in all; a file whose original stays
+    rate-limited falls back to Commons' MP3 transcode of it (--no-transcode to skip; duration checked against the API)
+    and otherwise is left QUEUED (listed in LICENSES.md and wikimedia/manifest.json; rerun the fetcher later).
+    Returns (errors, queued)."""
+    errors, queued = [], []
     items = WIKIMEDIA + (WIKIMEDIA_EXTRAS if extras else [])
     dest = os.path.join(lib, 'wikimedia')
     mpath = os.path.join(dest, 'manifest.json')
+    cpath = os.path.join(dest, 'commons_api.json')
+    deadline = time.time() + max(0.0, float(budget))
     try:
         with open(mpath) as f:
             wman = {e['title']: e for e in json.load(f).get('files', [])}
     except Exception:
         wman = {}
-    todo = [it for it in items if force or not (it[0] in wman and man.ok('wikimedia/' + it[1]) and
-                                                 wman[it[0]].get('sha1') == sha1_of(os.path.join(dest, it[1])))]
+    try:
+        with open(cpath) as f:
+            api_cache = json.load(f).get('records', {})
+    except Exception:
+        api_cache = {}
+
+    def present(it):
+        title, rel, _ = it
+        e = wman.get(title)
+        if not e or not man.ok(e['path']):
+            return False
+        p = os.path.join(lib, e['path'])
+        if e.get('variant') == 'transcode-mp3':
+            return True                                   # a transcode has no Commons sha1; size + sha256 checked
+        return e.get('sha1') == sha1_of(p)
+    todo = [it for it in items if force or not present(it)]
     for it in items:
         if it not in todo:
-            man.keep('wikimedia/' + it[1])
-            log('  wikimedia/%s: present, verified' % it[1])
-    if todo:
-        log('  wikimedia: one batched Commons API query for %d file(s)' % len(todo))
-        q = dict(action='query', format='json', prop='imageinfo', iiprop='url|size|mime|sha1|extmetadata',
-                 iiextmetadatafilter='LicenseShortName|License|UsageTerms|Artist|Credit|ImageDescription|LicenseUrl',
-                 iiextmetadatalanguage='en', titles='|'.join(t for t, _, _ in todo))
-        try:
-            d = json.loads(net.get('https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode(q),
-                                   binary=False).decode('utf-8'))
-        except (RuntimeError, ValueError) as e:
-            return errors + ['wikimedia: Commons API not readable: %s' % e]
+            e = wman[it[0]]
+            man.keep(e['path'])
+            log('  wikimedia/%s: present, verified%s' % (e['path'][10:], ' (Commons MP3 transcode)'
+                                                          if e.get('variant') == 'transcode-mp3' else ''))
+    if not todo:
+        _save_wman(wman, lib, mpath, [])
+        return errors, queued
+    log('  wikimedia: one batched Commons API query for %d file(s) (time budget %.0f s)' % (len(todo), budget))
+    q = dict(action='query', format='json', prop='imageinfo', iiprop='url|size|mime|sha1|extmetadata',
+             iiextmetadatafilter='LicenseShortName|License|UsageTerms|Artist|Credit|ImageDescription|LicenseUrl',
+             iiextmetadatalanguage='en', titles='|'.join(t for t, _, _ in todo))
+    pages = {}
+    try:
+        d = json.loads(net.get('https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode(q), binary=False,
+                               tries=5, deadline=deadline, max_wait=min(120.0, budget)).decode('utf-8'))
         norm = {n['from']: n['to'] for n in d.get('query', {}).get('normalized', [])}
-        pages = {p.get('title'): p for p in d.get('query', {}).get('pages', {}).values()}
+        byt = {p.get('title'): p for p in d.get('query', {}).get('pages', {}).values()}
         for title, rel, used in todo:
-            p = pages.get(norm.get(title, title))
+            p = byt.get(norm.get(title, title))
             ii = (p or {}).get('imageinfo') or []
-            if not ii:
+            if ii:
+                pages[title] = ii[0]
+                api_cache[title] = dict(ii[0], fetched_by='pipeline/jawad_reels/tools/fetch_sfx_library.py')
+            elif p is not None:
                 errors.append('wikimedia: %s not found on Commons' % title)
-                continue
-            ii = ii[0]
-            em = ii.get('extmetadata', {})
-            g = lambda k: strip_tags(em.get(k, {}).get('value', ''))
-            lic_short, lic = g('LicenseShortName'), g('License').lower()
-            if lic_short.lower() not in WM_OK_LICENCES and lic not in WM_OK_LICENCES:
-                errors.append('wikimedia: %s licence %r / %r is not CC0 / public domain: refused' %
-                              (title, lic_short, lic))
-                continue
-            if re.search(r'\b(by|sa|nc|nd)\b', lic) and lic not in WM_OK_LICENCES:
-                errors.append('wikimedia: %s licence %r has conditions: refused' % (title, lic))
-                continue
-            url = ii['url'].split('?')[0]
-            dst = os.path.join(dest, rel)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            tmp = dst + '.part'
-            try:
-                if not force and os.path.isfile(dst) and sha1_of(dst) == ii.get('sha1'):
-                    log('  wikimedia/%s: on disk, sha1 matches Commons' % rel)
+        os.makedirs(dest, exist_ok=True)
+        with open(cpath + '.part', 'w') as f:
+            json.dump(dict(note='Commons API imageinfo records (licence, sha1, URL) as read by the fetcher; used when '
+                                'the API is unreachable', records={k: api_cache[k] for k in sorted(api_cache)}),
+                      f, indent=1)
+        os.replace(cpath + '.part', cpath)
+    except (RuntimeError, ValueError) as e:
+        log('  wikimedia: Commons API not readable (%s): using the cached API records (%d)' % (e, len(api_cache)))
+        pages = {t: api_cache[t] for t, _, _ in todo if t in api_cache}
+    for title, rel, used in todo:
+        ii = pages.get(title)
+        if not ii:
+            queued.append(dict(title=title, path='wikimedia/' + rel, used_by=used,
+                               reason='Commons API unreachable and no cached record (licence not verified yet)'))
+            continue
+        em = ii.get('extmetadata', {})
+        g = lambda k: strip_tags(em.get(k, {}).get('value', ''))
+        ok, lic_short, lic, why = _wm_licence_ok(em)
+        if not ok:
+            errors.append('wikimedia: %s %s: refused' % (title, why))
+            continue
+        url = ii['url'].split('?')[0]
+        dst = os.path.join(dest, rel)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        tmp = dst + '.part'
+        variant, got, why_q = 'original', None, ''
+        try:
+            if not force and os.path.isfile(dst) and sha1_of(dst) == ii.get('sha1'):
+                log('  wikimedia/%s: on disk, sha1 matches Commons' % rel)
+                got = dst
+            elif time.time() >= deadline:
+                why_q = 'Wikimedia time budget used up before this file'
+            else:
+                log('  wikimedia/%s <- %s (%.2f MB)' % (rel, url, ii.get('size', 0) / 1e6))
+                for attempt in range(3):    # a truncated / rate-limit body fails the sha1: fetch again, slowly
+                    net.get(url, to_file=tmp, tries=3, deadline=deadline, max_wait=min(90.0, budget))
+                    if sha1_of(tmp) == ii.get('sha1'):
+                        break
+                    log('    sha1 mismatch (truncated or rate-limited body), retrying')
+                    time.sleep(10.0 * (attempt + 1))
                 else:
-                    log('  wikimedia/%s <- %s (%.2f MB)' % (rel, url, ii.get('size', 0) / 1e6))
-                    for attempt in range(4):    # a truncated / rate-limit body fails the sha1: fetch again, slowly
-                        net.get(url, to_file=tmp)
-                        if sha1_of(tmp) == ii.get('sha1'):
-                            break
-                        log('    sha1 mismatch (truncated or rate-limited body), retrying')
-                        time.sleep(15.0 * (attempt + 1))
-                    else:
-                        raise ValueError('sha1 never matched the Commons record')
-                    os.replace(tmp, dst)
-                probe = verify_audio(dst)
+                    raise ValueError('sha1 never matched the Commons record')
+                os.replace(tmp, dst)
+                got = dst
+        except RateLimited as e:
+            why_q = 'upload.wikimedia.org answered 429 (rate limit) for the original'
+            log('    %s' % e)
+        except (RuntimeError, ValueError) as e:
+            errors.append('wikimedia/%s: %s' % (rel, e))
+            continue
+        finally:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+        if got is None and transcode and why_q.startswith('upload') and _transcode_url(url):
+            turl = _transcode_url(url)
+            tdst = dst + '.mp3'
+            ttmp = tdst + '.part'
+            try:
+                log('    falling back to the Commons MP3 transcode: %s' % turl)
+                net.get(turl, to_file=ttmp, tries=3, deadline=deadline + 60.0, max_wait=60.0)
+                pr = verify_audio(ttmp if ttmp.endswith('.mp3') else ttmp)
+                want = float(ii.get('duration') or 0.0)
+                if want and abs(pr['duration'] - want) > max(0.5, 0.02 * want):
+                    raise ValueError('transcode lasts %.2f s, the original %.2f s' % (pr['duration'], want))
+                os.replace(ttmp, tdst)
+                got, variant = tdst, 'transcode-mp3'
             except (RuntimeError, ValueError) as e:
-                errors.append('wikimedia/%s: %s' % (rel, e))
-                continue
+                why_q += '; the MP3 transcode failed too (%s)' % e
             finally:
-                if os.path.exists(tmp):
-                    os.remove(tmp)
-            rec = dict(title=title, path='wikimedia/' + rel, file_page=ii.get('descriptionurl'), url=url,
-                       sha1=ii.get('sha1'), bytes=ii.get('size'), mime=ii.get('mime'), licence=lic_short,
-                       licence_code=lic, usage_terms=g('UsageTerms'), artist=g('Artist'), credit=g('Credit'),
-                       description=g('ImageDescription')[:300], used_by=used, probe=probe)
-            wman[title] = rec
-            man.add('wikimedia/' + rel, source='wikimedia', page=ii.get('descriptionurl'), url=url,
-                    author=g('Artist'), title=title[5:], licence='%s (Wikimedia Commons)' % lic_short,
-                    credit=g('Credit'))
-            _save_wman(wman, lib, mpath)            # progress survives an interrupted run
-            man.save()
-    _save_wman(wman, lib, mpath)
-    return errors
+                if os.path.exists(ttmp):
+                    os.remove(ttmp)
+        if got is None:
+            queued.append(dict(title=title, path='wikimedia/' + rel, used_by=used, url=url,
+                               file_page=ii.get('descriptionurl'), licence=lic_short, artist=g('Artist'),
+                               bytes=ii.get('size'), reason=why_q or 'not downloaded'))
+            continue
+        try:
+            probe = verify_audio(got)
+        except ValueError as e:
+            errors.append('wikimedia/%s: %s' % (rel, e))
+            continue
+        prel = os.path.relpath(got, lib)
+        rec = dict(title=title, path=prel, file_page=ii.get('descriptionurl'), url=url, sha1=ii.get('sha1'),
+                   bytes=ii.get('size'), mime=ii.get('mime'), licence=lic_short, licence_code=lic,
+                   usage_terms=g('UsageTerms'), artist=g('Artist'), credit=g('Credit'),
+                   description=g('ImageDescription')[:300], used_by=used, probe=probe, variant=variant)
+        if variant != 'original':
+            rec['transcode_url'] = _transcode_url(url)
+            rec['note'] = ('Commons MP3 transcode of the original (same recording, same licence); the original '
+                           '(sha1 %s) was rate-limited at fetch time' % ii.get('sha1'))
+        wman[title] = rec
+        man.add(prel, source='wikimedia', page=ii.get('descriptionurl'),
+                url=rec.get('transcode_url', url), author=g('Artist'), title=title[5:],
+                licence='%s (Wikimedia Commons)' % lic_short, credit=g('Credit'), variant=variant,
+                original_url=url, original_sha1=ii.get('sha1'))
+        _save_wman(wman, lib, mpath, queued)            # progress survives an interrupted run
+        man.save()
+    _save_wman(wman, lib, mpath, queued)
+    return errors, queued
 
 
-def _save_wman(wman, lib, mpath):
+def _save_wman(wman, lib, mpath, queued=()):
     os.makedirs(os.path.dirname(mpath), exist_ok=True)
     keep = [wman[t] for t in sorted(wman) if os.path.isfile(os.path.join(lib, wman[t]['path']))]
     with open(mpath + '.part', 'w') as f:
-        json.dump(dict(generator='pipeline/jawad_reels/tools/fetch_sfx_library.py', files=keep), f, indent=1)
+        json.dump(dict(generator='pipeline/jawad_reels/tools/fetch_sfx_library.py', files=keep,
+                       queued=sorted(queued, key=lambda q: q['path'])), f, indent=1)
     os.replace(mpath + '.part', mpath)
 
 
 # ============================================================================================ LICENSES.md
-def write_licenses(lib, files):
+def write_licenses(lib, files, queued=()):
     by = {}
     for e in files:
         by.setdefault(e.get('source', '?'), []).append(e)
@@ -630,8 +764,22 @@ def write_licenses(lib, files):
         L.append('| `%s` | %s |' % (rel, USED_BY[rel]))
     for title, rel, used in WIKIMEDIA:
         if not used.startswith('('):
-            L.append('| `wikimedia/%s` | %s |' % (rel, used))
-    L += ['| `opengameart/rain_loopable/...` | rain_real (see epic_sfx.SAMPLES for the exact file) |', '']
+            L.append('| `wikimedia/%s` (or its Commons MP3 transcode `wikimedia/%s.mp3`) | %s |' % (rel, rel, used))
+    L += ['', 'A `*_real` sound registers only when its file is present (epic_sfx.register()); the reel modules read '
+          '`%s` directly.' % '` and `'.join(REEL_PATHS), '']
+    if queued:
+        L += ['## QUEUED: not downloaded yet (optional; rerun the fetcher later)', '',
+              'These CC0 / public-domain Commons files are part of the kit but were not fetched on the last run '
+              '(upload.wikimedia.org rate-limits shared IPs with HTTP 429 pages and `Retry-After: 600`). The sounds that '
+              'need them simply do not register until they are present. Rerun '
+              '`python3 -I pipeline/jawad_reels/tools/fetch_sfx_library.py --only wikimedia` later.', '',
+              '| file | Commons page | licence | author | used by | why queued |', '|---|---|---|---|---|---|']
+        for q in sorted(queued, key=lambda q: q['path']):
+            L.append('| `%s` | %s | %s | %s | %s | %s |' % (
+                q['path'], q.get('file_page') or 'https://commons.wikimedia.org/wiki/' + q['title'].replace(' ', '_'),
+                q.get('licence') or '(CC0 / PD per sound_design.md section 2; re-checked at download)',
+                q.get('artist') or '?', q.get('used_by', ''), q.get('reason', '')))
+        L.append('')
     L += ['## Kenney (www.kenney.nl), CC0 1.0', '']
     for pack, count, _ in KENNEY:
         es = sorted([e for e in by.get('kenney', []) if e.get('pack') == pack], key=lambda e: e['path'])
@@ -660,9 +808,11 @@ def write_licenses(lib, files):
     L += ['## Wikimedia Commons (CC0 / public domain)', '', '| file | Commons page | author | licence | source / credit '
           '| bytes | sha256 |', '|---|---|---|---|---|---|---|']
     for e in sorted(by.get('wikimedia', []), key=lambda e: e['path']):
-        L.append('| `%s` | %s | %s | %s | %s | %d | %s |' % (e['path'], e.get('page'), e.get('author') or '?',
-                                                            e.get('licence'), (e.get('credit') or '')[:160],
-                                                            e['bytes'], e['sha256'][:16]))
+        note = (' (Commons MP3 transcode of the original, sha1 %s; same recording, same licence)'
+                % (e.get('original_sha1') or '?')) if e.get('variant') == 'transcode-mp3' else ''
+        L.append('| `%s` | %s | %s | %s | %s%s | %d | %s |' % (e['path'], e.get('page'), e.get('author') or '?',
+                                                              e.get('licence'), (e.get('credit') or '')[:160], note,
+                                                              e['bytes'], e['sha256'][:16]))
     L += ['', 'Machine-readable records: `library/manifest.json` (every file) and `library/wikimedia/manifest.json` '
           '(the Commons metadata, incl. sha1 and the original URL).', '']
     txt = '\n'.join(L)
@@ -700,6 +850,10 @@ def main(argv):
     ap.add_argument('--dry-run', action='store_true', help='list what would be fetched, download nothing')
     ap.add_argument('--no-copy', action='store_true', help='do not copy LICENSES.md to pipeline/jawad_reels')
     ap.add_argument('--no-kit-links', action='store_true')
+    ap.add_argument('--wm-budget', type=float, default=240.0,
+                    help='seconds the Wikimedia stage may spend in all (rate-limit back-offs included); default 240')
+    ap.add_argument('--no-transcode', action='store_true',
+                    help='never fall back to the Commons MP3 transcode when an original stays rate-limited')
     a = ap.parse_args(argv)
     lib = os.path.abspath(a.lib)
     only = set(x.strip() for x in a.only.split(',') if x.strip())
@@ -723,18 +877,28 @@ def main(argv):
     if 'opengameart' in only:
         errors += fetch_opengameart(net, man, lib, a.force)
         man.save()
+    queued = []
     if 'wikimedia' in only:
-        errors += fetch_wikimedia(net, man, lib, a.extras, a.force)
+        er, queued = fetch_wikimedia(net, man, lib, a.extras, a.force, a.wm_budget, not a.no_transcode)
+        errors += er
+    else:
+        try:
+            with open(os.path.join(lib, 'wikimedia', 'manifest.json')) as f:
+                queued = json.load(f).get('queued', [])
+        except Exception:
+            queued = []
     files = man.save()
-    p, txt = write_licenses(lib, files)
+    p, txt = write_licenses(lib, files, queued)
     if not a.no_copy:
         with open(LICENSE_COPY + '.part', 'w') as f:
             f.write(txt)
         os.replace(LICENSE_COPY + '.part', LICENSE_COPY)
     links = [] if a.no_kit_links else kit_links(lib)
     need = (['opengameart/%s/%s' % (it['key'], loc) for it in OPENGAMEART for _, loc in it['files'] if loc] +
-            ['wikimedia/' + rel for _, rel, _ in WIKIMEDIA] + sorted(USED_BY))
-    missing = [r for r in need if not os.path.isfile(os.path.join(lib, r))]
+            list(REEL_PATHS) + sorted(USED_BY))
+    missing = sorted(set(r for r in need if not os.path.isfile(os.path.join(lib, r))))
+    have = lambda rel: os.path.isfile(os.path.join(lib, rel)) or os.path.isfile(os.path.join(lib, rel + '.mp3'))
+    optional = [('wikimedia/' + rel) for _, rel, _ in WIKIMEDIA if not have('wikimedia/' + rel)]
     nbytes = sum(e['bytes'] for e in files)
     log('')
     log('files: %d (%.1f MB) | audio: %d | requests: %d | %.0f s' % (
@@ -742,10 +906,15 @@ def main(argv):
     log('licences: %s%s' % (p, '' if a.no_copy else ' (copy: %s)' % LICENSE_COPY))
     for m in links:
         log('kit link: %s' % m)
+    for q in queued:
+        log('QUEUED (optional): %s (%s)' % (q['path'], q.get('reason', '')))
+    for r in optional:
+        if r not in [q['path'] for q in queued]:
+            log('NOT PRESENT (optional): %s' % r)
     for e in errors:
         log('ERROR: %s' % e)
     for r in missing:
-        log('MISSING: %s' % r)
+        log('MISSING (required): %s' % r)
     return 1 if (errors or missing) else 0
 
 
