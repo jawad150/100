@@ -92,6 +92,7 @@ J_LINES = [('Yeh bhi koi\nkaam hai?', 96, 10, 'c15_judge'), ('Paise milte hain?'
 J_HOLD = (540.0, 980.0)
 J_FROM = (540.0, 905.0)
 J_BACK = (540.0, 800.0)
+J_ANT = 1                                                               # recede starts this many frames early
 FLAP_LAND = (967, 967, 975, 982, 984, 989, 996, 996, 1004, 1011)       # row i lands upright on this frame (HANDOFF #9)
 SUB = "jise 'log' ka darr rokta hai"
 WORDS = {'A': RW + '/vo/lkk_vo_A.words.json', 'B': RW + '/vo/lkk_vo_B.words.json'}
@@ -528,9 +529,11 @@ def _jline_state(i, t):
     b = K.lerp(8.0, 0.0, u)
     op = K.ramp(t, t0, t0 + fr(2), 'linear')
     if i + 1 < len(J_LINES):
-        n0 = fr(J_LINES[i + 1][1])
+        # pushed back on impact: out_cubic from 1 f before the next line (brief: inout_cubic from its start, which left
+        # the arriving line on top of this one for 4 f per change, 2,000-8,600 px of glyph overlap; now 1 f, measured)
+        n0 = fr(J_LINES[i + 1][1] - J_ANT)
         if t >= n0:
-            v = K.ramp(t, n0, n0 + fr(9), 'inout_cubic')
+            v = K.ramp(t, n0, n0 + fr(9), 'out_cubic')
             x, y = K.lerp(x, J_BACK[0], v), K.lerp(y, J_BACK[1], v)
             s = K.lerp(s, 0.72, v)
             b = K.lerp(b, 6.0, v)
@@ -633,11 +636,11 @@ def build(hook='A'):
         w = X.TX['O6'].win(T_O6, pre=O6_PRE, post=O6_POST)
         if w.inside(t):
             s = X.TX['O6'].samples_at(t, T_O6, 3, pre=O6_PRE, post=O6_POST)
-        for _, f0, arr, _ in J_LINES:
+        for i, (_, f0, arr, _) in enumerate(J_LINES):
             if f0 <= f < f0 + 2:
                 s = max(s, 7)
-            elif f0 + 2 <= f < f0 + arr:
-                s = max(s, 5)
+            elif (i > 0 and f0 - J_ANT <= f < f0) or f0 + 2 <= f < f0 + arr:
+                s = max(s, 5)                         # f0 - J_ANT: the previous line's push-back starts
         if 876 <= f <= 888 or 960 <= f <= 1011:
             s = max(s, 5)
         return s
