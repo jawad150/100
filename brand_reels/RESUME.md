@@ -18,7 +18,21 @@ re-buildable scratch only, except what is saved under `brand_reels/assets/`.
   script headers / SLATE), shared context `pipeline/jawad_reels/workflows/ctx.txt`.
 
 
-## Session 4 (2026-10-09, fresh container) - read this first
+## Session 5 (2026-10-09, fresh container) - read this first
+- Branch is now `claude/brand-reels-continue-40m817` (fast-forwarded from `claude/beautiful-planck-mtdn0c`; that branch
+  is no longer pushed to). `tools/commit_step.sh` pushes to whatever branch is checked out (override: `JR_BRANCH=`).
+- Restore: same as session 4, plus `mkdir -p workspace/brand_reels/wf` before writing ctx.txt, and
+  `python3 -I pipeline/jawad_reels/tools/fetch_sfx_library.py --wm-budget 300` (sample library, 24 MB, and the
+  `workspace/brand_reels/sfx/epic_*.py` links the music modules hash). Then write `workspace/brand_reels/wf/KIT_READY`
+  (the kit is released: see below).
+- **Sound kit complete**: `pipeline/jawad_reels/epic_music.py` written (Song, instruments, CAL, STEM_DB, STYLES,
+  beatgrid, level_rider, render + CLI; `python3 epic_music.py selftest` passes all four styles). With it every reel's
+  `<slug>_music.py` build + verify passes, except two 1 ms matched-filter analysis checks in beta_tum_karte_kya_ho
+  (inaudible; listed per LEAD_DECISIONS 7). ek_frame_ki_keemat_music CHAAL 2& / 3 trimmed 1-1.5 dB so the drop stays the
+  loudest moment. epic_sfx contract 89/89 ok; all five `<slug>_sfx.register()` work.
+- Pre-production for all five reels is done. Next: the builds (step 3 below / `reel_s3.js` stages), in this order of
+  readiness: log_kya_kahenge (preview done), pehle_wala (preview done), bijli_chali_gayi (preview done),
+  ek_frame_ki_keemat and beta_tum_karte_kya_ho (reel modules WIP).
 - Restore: `pip install opencv-python-headless scipy faster-whisper cairosvg soundfile bpy fonttools`, then
   `python3 pipeline/jawad_reels/setup_workspace.py && python3 pipeline/jawad_reels/tools/restore_workspace.py`, then
   `cat pipeline/jawad_reels/workflows/ctx.txt pipeline/jawad_reels/workflows/ctx_s4_notes.txt > workspace/brand_reels/wf/ctx.txt`.

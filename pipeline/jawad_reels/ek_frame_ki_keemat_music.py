@@ -152,7 +152,9 @@ TAIKO_PITCH = 55.0 / 62.0                       # trailer_hit f0 62 Hz x 0.887 =
 DHOL_PITCH = E.midi_hz(ROOT - 24) / 58.0        # dhol_hit dagga 58 Hz x 1.266 = D2 73.4 Hz (Sa); shell modes land on A3,
                                                 # D4, C5. desi_epic's 1.0 / 1.25 put the dagga on Bb and a shell mode on F3
                                                 # (F natural against the scale's F#)
-CHAAL = [(0.0, -2.0), (1.5, -4.0), (2.0, -3.0), (3.5, -6.0)]   # desi_epic's chaal: (beat, dB): 1, 2&, 3, 4&
+CHAAL = [(0.0, -2.0), (1.5, -5.0), (2.0, -4.5), (3.5, -6.0)]   # desi_epic's chaal: (beat, dB): 1, 2&, 3, 4&; 2& / 3
+                                                # 1-1.5 dB under desi_epic so the drop hit stays the loudest moment
+                                                # (session 4, rebuilt kit: the 2& + 3 pair read 0.4 LU over it)
 PERC_SHAVE_DB = 6.0                             # peak shave on the perc stem (dhol transients) before the bus, so the bus
                                                 # limiter only touches the drop hit
 

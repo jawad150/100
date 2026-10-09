@@ -21,7 +21,7 @@ Downloads are untrusted data: one folder per source, decoded only by ffmpeg / ff
 | `opengameart/crowd_shouting/crowd_shouting_0.ogg` | crowd_cheer_real (contains English speech: "Oh my God, look at that!"); bijli_chali_gayi_sfx mohalla_cheer; log_kya_kahenge_sfx whisper wall (both read this path directly) |
 | `opengameart/rain_loopable/1.ogg` | rain_real |
 | `opengameart/traffic_road/gatve_Varniu.ogg` | traffic_real |
-| `wikimedia/crowd/Ohhh_ahhh.ogg` (or its Commons MP3 transcode `wikimedia/crowd/Ohhh_ahhh.ogg.mp3`) | crowd_ahh_real; log_kya_kahenge_sfx whisper wall |
+| `wikimedia/crowd/Ohhh_ahhh.ogg` (this exact original: a reel module reads the path) | crowd_ahh_real; log_kya_kahenge_sfx whisper wall |
 | `wikimedia/crowd/Slow_starting_applause.ogg` (or its Commons MP3 transcode `wikimedia/crowd/Slow_starting_applause.ogg.mp3`) | applause_build_real |
 | `wikimedia/rain/Rain_and_thunder.ogg` (or its Commons MP3 transcode `wikimedia/rain/Rain_and_thunder.ogg.mp3`) | rain_thunder_real |
 | `wikimedia/clock/Clock_ticking.ogg` (or its Commons MP3 transcode `wikimedia/clock/Clock_ticking.ogg.mp3`) | clock_real |
