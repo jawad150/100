@@ -579,8 +579,10 @@ def build(hook='A'):
     scenes = [SA, S_B, S_C, S_D, S_E] if hook == 'A' else [S_HB, SA, S_B, S_C, S_D, S_E]
 
     def world(tt):
+        if tt < -HALF:
+            return S_A(tt, 'A')                       # the loop tail: frame 0's past of version A (both versions)
         if tt < 0:
-            return S_A(tt, 'A')                       # frame 0's past for both versions (the seam lands on A's f0)
+            return scenes[0](tt)                      # frame 0's own shutter: never blur across the seam cut (B)
         return plan_draw(plan, tt, scenes)
 
     def draw(t):

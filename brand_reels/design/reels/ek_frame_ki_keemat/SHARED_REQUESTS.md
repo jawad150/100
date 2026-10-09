@@ -49,3 +49,15 @@ nothing blocks the build. Owners decide; please do not change behaviour that oth
   (after the gap when the previous token ends a clause), the previous word ending on the voice offset.
 - **Workaround (local):** `ek_frame_ki_keemat_vo.fix_gap_words()` applies exactly that rule to every placed clip before
   placement; checked against the spectrograms (`<RW>/vo/asr/spec_V9.png`).
+
+## R7 · `epic_mix.load` / `mix_reel`: a mono VO wav raises (sound-designer, 2026-10-09)
+- **Found (final VO, real run):** the FINAL VO stems are 48 kHz 24-bit **mono**. `audio.read_wav` returns them as `(N, 1)`, and
+  `audio._st` passes any 2-D array through unchanged, so `epic_mix.load()` hands `mix_reel` a `(N, 1)` array and line 118
+  (`np.concatenate([np.zeros((_n(vo_offset), 2)), v])`) raises `ValueError: ... size 2 and ... size 1`. The music-supervisor's
+  `ek_frame_ki_keemat_music.py mix` calls `mix_reel` with `<RW>/vo/ek_frame_ki_keemat_vo.wav`, so the final mix will fail the
+  same way (it was tested on stereo placeholders only, MUSIC_ek_frame_ki_keemat.md "Run 2").
+- **Ask:** in `epic_mix.load`, expand a 1-column array to stereo (`x = np.repeat(x, 2, 1) if x.ndim == 2 and x.shape[1] == 1`),
+  or have `audio._st` treat `(N, 1)` as mono.
+- **Workaround (local, no shared edit):** `ek_frame_ki_keemat_sfx.rough()` writes dual-mono stereo copies of the VO stems
+  (identical L/R samples) to a temporary folder, passes those, and deletes them. The music-supervisor can pass the same kind of
+  copy with `--vo` / `--vo-b` until the loader is fixed.

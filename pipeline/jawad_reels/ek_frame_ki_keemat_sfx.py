@@ -12,17 +12,22 @@ What this module owns (BRIEF 17.1: `cues(hook='A')`, `build()` -> SFX stem files
     events()            the picture events the cues sit on: BRIEF r2 section 5 (EV), overridden key by key by
                         `ek_frame_ki_keemat.SFX_EVENTS` when the reel module exists and defines it (lazy import), so a
                         picture retime (VO_TIMING.md section 4) moves the sound with it. Keys: see EV below.
-    raw_cues(hook)      the brief's cue list for 'A' (public hook) or 'B' (Trial hook, 0-3.0 s replaced), before the VO fit,
-                        with three measured-VO adjustments (clear_spans) and the key tuning (TUNE)
-    cues(hook)          raw_cues -> sfx_jawad.fit_under_vo against the final words + the VO audio (hero test); raises
-                        HeroOnWordError if a hero lands on speech; checks names and the <= 3 starts per instant rule
+    raw_cues(hook)      the brief's cue list for 'A' (public hook) or 'B' (Trial hook, 0-3.0 s replaced), before the VO fit:
+                        levels LV (measured deviations from the brief, each cue keeps 'brief_db'), transient saturation
+                        SAT on the reveal and the C3 hit, tonal SFX tuned into the bar's harmony (TUNE), explicit seeds
+    cues(hook)          raw_cues -> clear_spans (a swell whose body would start inside speech is shortened to start after
+                        it, if it still lasts >= 0.5 s) -> sfx_jawad.fit_under_vo against the final words + the VO audio
+                        (raises HeroOnWordError if a hero lands on speech) -> assign_carve (tails and pre-hit bodies of the
+                        cues fit_under_vo left alone are carved -14 dB (reveal stack) / -8 dB (others) under speech, the hit
+                        itself never) -> checks: every name in audio.SOUNDS, <= 3 sounds per instant. Hook B fits its head
+                        against the hook-B VO and its body against the A VO, so the body cues are identical
     mix_loop(...)       audio.mix's chain (duck_under -> per-cue render with seed variation -> 'studio' room send -> glue
                         2:1 at target + 8 -> loudness to -18 LUFS + 4x true-peak limiter) with the two things this reel needs:
                         (1) the drop-out: cues that start before 25.800 s (and their room sends) are cut at 25.796-25.800 and
                         stay cut, so 25.800-26.066 is digital silence and the play click at f782 is the only sound until the
                         C8 whip's lead-in and the flash_hit suck; (2) the loop: tails that run past DUR wrap onto t = 0
                         (no tail fade; the card's reverse swell ends exactly on 33.600 and frame 0's impact_soft releases it).
-                        checked against audio.mix (same cues, no gate, no wrap): see verify()
+                        With the gate, wrap, sat and carve off it is bit-identical to audio.mix (verify(): max |diff| 0.0)
     build(hook)         SFX stems -> <RW>/audio/ek_frame_ki_keemat_sfx_stem.wav (A) and ..._hookb_sfx_stem.wav (B: hook-B cues
                         0-3.0 s + the A body, rendered at A's exact gains so the 3.000 s splice is seamless), _cues.json,
                         _sfx_report.json, _sfx_overview.png; -18 LUFS (A), TP <= -2.0 dBTP, 48 kHz 24-bit
