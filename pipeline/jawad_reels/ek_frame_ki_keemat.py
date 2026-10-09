@@ -1296,12 +1296,20 @@ def _words(t0, t1):
     return [w for w in ws if t0 <= w['start'] < t1]
 
 
+def live_face_rect(t, m=10.0):
+    """Screen box of JD's face on the corridor's live stack (pane 04, frame px 242-564 x 1120-1564) at t."""
+    cam, gap = corr_cam(max(t, 16.8)), corr_gap(t)
+    P = np.array([[x - 540.0, y - 960.0, LIVE_Z + zk(4, gap)] for x in (242.0, 564.0) for y in (1120.0, 1564.0)])
+    xy, _ = cam.project(P)
+    return (float(xy[:, 0].min() - m), float(xy[:, 1].min() - m), float(xy[:, 0].max() + m), float(xy[:, 1].max() + m))
+
+
 @functools.lru_cache(maxsize=1)
 def captions():
     c1 = SC.Captions(_words(12.0, 16.25), band='upper', y=420, hold=0.15, max_words=3, clear=[(16.25, 16.9)],
                      avoid=lambda t: [stack_rect(max(t, 13.2)), (245, 565, 715, 635)])
     c2 = SC.Captions(_words(16.9, 20.5), band='lower', hold=0.15, max_words=3, clear=[(20.6, 22.3)],
-                     avoid=lambda t: [(100, 280, 980, 560)] if t >= 18.9 else [])
+                     avoid=lambda t: ([(100, 280, 980, 560)] if t >= 18.9 else []) + [live_face_rect(t)])
     c3 = SC.Captions(_words(22.1, 24.7), band='upper', y=420, hold=0.15, max_words=3, avoid=[LEGEND_BOX])
     return (c1, c2, c3)
 
