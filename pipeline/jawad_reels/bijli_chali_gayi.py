@@ -194,7 +194,7 @@ def draw_overlays(cv, t):
     if F(240) - HALF <= t < F(306):
         f = BW.fi(t)
         if t < 8.6:
-            A['r1g'].slam(cv, t, 540.0, 620.0, t0=8.0 - HALF, fade=0, s0=1.18, dur=0.25, smear=False)
+            A['r1g'].slam(cv, t, 540.0, 620.0, t0=8.0 - HALF, fade=0, s0=1.14, dur=0.25, smear=False)  # f240 x1.125: ink x 72-1008
         else:
             op = {300: 0.35, 301: 0.80, 302: 0.15, 303: 0.45, 304: 0.05}.get(f, 1.0 if f < 300 else 0.0)
             if op > 0:
