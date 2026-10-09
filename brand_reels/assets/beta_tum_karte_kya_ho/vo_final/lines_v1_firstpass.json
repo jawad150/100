@@ -1,0 +1,1632 @@
+{
+ "L1": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L1_t1.mp3",
+  "take_dur": 3.788,
+  "req": "सब से मुश्किल सवाल क्लायंट नहीं पूछता।",
+  "cer_raw": 0.097,
+  "cer_raw_strict": 0.097,
+  "heard_raw": "सब से मुष्किल सवाल ख्लांट नहीं पूछता",
+  "cer": 0.161,
+  "cer_strict": 0.161,
+  "heard": "सब से मुशकिल सवाल ख्लाईट नहीं पुछता",
+  "words": {
+   "सब": {
+    "heard": "सब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "से": {
+    "heard": "से",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "मुश्किल": {
+    "heard": "मुशकिल",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "सवाल": {
+    "heard": "सवाल",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "क्लायंट": {
+    "heard": "ख्लाईट",
+    "score": 0.89,
+    "verdict": "fail"
+   },
+   "नहीं": {
+    "heard": "नहीं",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "पूछता": {
+    "heard": "पुछता",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": true
+   }
+  },
+  "failed_words": [
+   "क्लायंट"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 3.315,
+    "speed": 1.08,
+    "lufs": -15.8,
+    "tp": -3.2,
+    "pauses": [],
+    "wpm_after": 126.7,
+    "lead_trim": 0.01,
+    "tail_trim": 0.198,
+    "matched": "7/7",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.056,
+     "median": 0.011,
+     "max": 0.33,
+     "over_0_15": [
+      [
+       "client",
+       1.97,
+       1.64
+      ]
+     ],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 3.255,
+    "speed": 1.1,
+    "lufs": -15.8,
+    "tp": -2.8,
+    "pauses": [],
+    "wpm_after": 129.1,
+    "lead_trim": 0.01,
+    "tail_trim": 0.198,
+    "matched": "7/7",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.069,
+     "median": 0.02,
+     "max": 0.38,
+     "over_0_15": [
+      [
+       "client",
+       1.94,
+       1.56
+      ]
+     ],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 21.8,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L1_t1.mp3",
+     "heard": "सबसे मुष्किल सवाल क्लाइंट नहीं पूँचता",
+     "cer": 0.138,
+     "cer_strict": 0.129,
+     "failed_words": [
+      "सब",
+      "से",
+      "पूछता"
+     ],
+     "words": {
+      "सब": {
+       "heard": "सबसे",
+       "score": 0.76,
+       "verdict": "fail"
+      },
+      "से": {
+       "heard": "सबसे",
+       "score": 0.47,
+       "verdict": "fail"
+      },
+      "मुश्किल": {
+       "heard": "मुष्किल",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "सवाल": {
+       "heard": "सवाल",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "क्लायंट": {
+       "heard": "क्लाइंट",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "नहीं": {
+       "heard": "नहीं",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "पूछता": {
+       "heard": "पूँचता",
+       "score": 0.89,
+       "verdict": "fail",
+       "aspirate_heard": false
+      }
+     }
+    }
+   }
+  }
+ },
+ "L1B": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L1B_t1.mp3",
+  "take_dur": 2.508,
+  "req": "मम्मी के लिए, कार्टून।",
+  "cer_raw": 0.0,
+  "cer_raw_strict": 0.0,
+  "heard_raw": "मम्मी के लिए कार्टून",
+  "cer": 0.118,
+  "cer_strict": 0.118,
+  "heard": "मम्मी के लिए काटून",
+  "words": {
+   "मम्मी": {
+    "heard": "मम्मी",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "के": {
+    "heard": "के",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "लिए": {
+    "heard": "लिए",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "कार्टून": {
+    "heard": "काटून",
+    "score": 0.89,
+    "verdict": "fail"
+   }
+  },
+  "failed_words": [
+   "कार्टून"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 2.028,
+    "speed": 1.08,
+    "lufs": -16.8,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.18,
+      "was": 0.36,
+      "now": 0.3,
+      "dramatic": false
+     }
+    ],
+    "wpm_after": 118.4,
+    "lead_trim": 0.02,
+    "tail_trim": 0.228,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.009,
+     "median": 0.003,
+     "max": 0.03,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1B_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.991,
+    "speed": 1.1,
+    "lufs": -16.3,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.18,
+      "was": 0.36,
+      "now": 0.3,
+      "dramatic": false
+     }
+    ],
+    "wpm_after": 120.5,
+    "lead_trim": 0.02,
+    "tail_trim": 0.228,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.016,
+     "median": 0.015,
+     "max": 0.027,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L1B_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 16.5,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L1B_t1.mp3",
+     "heard": "मम्मी के लिए काटुन",
+     "cer": 0.133,
+     "cer_strict": 0.176,
+     "failed_words": [
+      "कार्टून"
+     ],
+     "words": {
+      "मम्मी": {
+       "heard": "मम्मी",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "के": {
+       "heard": "के",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "लिए": {
+       "heard": "लिए",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "कार्टून": {
+       "heard": "काटुन",
+       "score": 0.89,
+       "verdict": "fail"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L2": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L2_t1.mp3",
+  "take_dur": 1.802,
+  "req": "जवाब का ट्रांसलेशन...",
+  "cer_raw": 0.25,
+  "cer_raw_strict": 0.25,
+  "heard_raw": "जवाब का ट्रान्स्लेशिन",
+  "cer": 0.25,
+  "cer_strict": 0.25,
+  "heard": "जवाब का ट्रान्स्लेशिन",
+  "words": {
+   "जवाब": {
+    "heard": "जवाब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "का": {
+    "heard": "का",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "ट्रांसलेशन": {
+    "heard": "ट्रान्स्लेशिन",
+    "score": 1.2,
+    "verdict": "skeleton"
+   }
+  },
+  "failed_words": [],
+  "passes": {
+   "1.08": {
+    "final_dur": 1.491,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.6,
+    "pauses": [],
+    "wpm_after": 120.7,
+    "lead_trim": 0.01,
+    "tail_trim": 0.182,
+    "matched": "3/3",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.025,
+     "median": 0.016,
+     "max": 0.05,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L2_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.464,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 123.0,
+    "lead_trim": 0.01,
+    "tail_trim": 0.182,
+    "matched": "3/3",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.023,
+     "median": 0.016,
+     "max": 0.05,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L2_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 18.0,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L2_t1.mp3",
+     "heard": "जवाब का translation",
+     "cer": 0.0,
+     "cer_strict": 0.0,
+     "failed_words": [],
+     "words": {
+      "जवाब": {
+       "heard": "जवाब",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "का": {
+       "heard": "का",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "ट्रांसलेशन": {
+       "heard": "ट्रांसलेशन",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L3": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L3_t1.mp3",
+  "take_dur": 3.161,
+  "req": "जितना समझाओ, उतना उल्टा।",
+  "cer_raw": 0.105,
+  "cer_raw_strict": 0.105,
+  "heard_raw": "जितना समजाउ उतना उल्टा",
+  "cer": 0.105,
+  "cer_strict": 0.105,
+  "heard": "जितना समजहाओ उतना उल्टा",
+  "words": {
+   "जितना": {
+    "heard": "जितना",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "समझाओ": {
+    "heard": "समजहाओ",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "उतना": {
+    "heard": "उतना",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "उल्टा": {
+    "heard": "उल्टा",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  },
+  "failed_words": [],
+  "passes": {
+   "1.08": {
+    "final_dur": 2.657,
+    "speed": 1.08,
+    "lufs": -17.6,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.5,
+      "was": 0.29,
+      "now": 0.2,
+      "dramatic": false
+     }
+    ],
+    "wpm_after": 90.3,
+    "lead_trim": 0.0,
+    "tail_trim": 0.191,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.022,
+     "median": 0.017,
+     "max": 0.057,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L3_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 2.609,
+    "speed": 1.1,
+    "lufs": -17.8,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.5,
+      "was": 0.29,
+      "now": 0.2,
+      "dramatic": false
+     }
+    ],
+    "wpm_after": 92.0,
+    "lead_trim": 0.0,
+    "tail_trim": 0.191,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.025,
+     "median": 0.02,
+     "max": 0.053,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L3_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 18.8,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L3_t1.mp3",
+     "heard": "जितना सम्झाओ, उतना उल्टा",
+     "cer": 0.056,
+     "cer_strict": 0.053,
+     "failed_words": [],
+     "words": {
+      "जितना": {
+       "heard": "जितना",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "समझाओ": {
+       "heard": "सम्झाओ,",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "उतना": {
+       "heard": "उतना",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "उल्टा": {
+       "heard": "उल्टा",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L4": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L4_t1.mp3",
+  "take_dur": 1.411,
+  "req": "सीधा जवाब,",
+  "cer_raw": 0.375,
+  "cer_raw_strict": 0.375,
+  "heard_raw": "सीद हा जबाब",
+  "cer": 0.375,
+  "cer_strict": 0.375,
+  "heard": "सीद हजबाब",
+  "words": {
+   "सीधा": {
+    "heard": "सीद",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": false
+   },
+   "जवाब": {
+    "heard": "हजबाब",
+    "score": 0.47,
+    "verdict": "fail"
+   }
+  },
+  "failed_words": [
+   "जवाब"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 1.157,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -3.0,
+    "pauses": [],
+    "wpm_after": 103.7,
+    "lead_trim": 0.0,
+    "tail_trim": 0.161,
+    "matched": "2/2",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.04,
+     "median": 0.04,
+     "max": 0.06,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L4_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.136,
+    "speed": 1.1,
+    "lufs": -15.9,
+    "tp": -3.0,
+    "pauses": [],
+    "wpm_after": 105.6,
+    "lead_trim": 0.0,
+    "tail_trim": 0.161,
+    "matched": "2/2",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.035,
+     "median": 0.035,
+     "max": 0.06,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L4_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 16.2,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L4_t1.mp3",
+     "heard": "सीधा जवाब",
+     "cer": 0.0,
+     "cer_strict": 0.0,
+     "failed_words": [],
+     "words": {
+      "सीधा": {
+       "heard": "सीधा",
+       "score": 3.0,
+       "verdict": "exact",
+       "aspirate_heard": true
+      },
+      "जवाब": {
+       "heard": "जवाब",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L5": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L5_t1.mp3",
+  "take_dur": 2.926,
+  "req": "फिर... हार मान ली।",
+  "cer_raw": 0.182,
+  "cer_raw_strict": 0.182,
+  "heard_raw": "फिर हार्मान्ली",
+  "cer": 0.182,
+  "cer_strict": 0.182,
+  "heard": "फिर हार्मान्ली",
+  "words": {
+   "फिर": {
+    "heard": "फिर",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "हार": {
+    "heard": "फिर",
+    "score": 0.47,
+    "verdict": "fail"
+   },
+   "मान": {
+    "heard": "हार्मान्ली",
+    "score": 0.47,
+    "verdict": "fail"
+   },
+   "ली": {
+    "heard": "हार्मान्ली",
+    "score": -0.12,
+    "verdict": "fail"
+   }
+  },
+  "failed_words": [
+   "हार",
+   "मान",
+   "ली"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 2.537,
+    "speed": 1.08,
+    "lufs": -18.4,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.08,
+      "was": 0.39,
+      "now": 0.39,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 94.6,
+    "lead_trim": 0.0,
+    "tail_trim": 0.186,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.093,
+     "median": 0.022,
+     "max": 0.329,
+     "over_0_15": [
+      [
+       "haar",
+       1.389,
+       1.06
+      ]
+     ],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L5_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 2.491,
+    "speed": 1.1,
+    "lufs": -18.4,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 1.08,
+      "was": 0.39,
+      "now": 0.39,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 96.4,
+    "lead_trim": 0.0,
+    "tail_trim": 0.186,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.041,
+     "median": 0.02,
+     "max": 0.116,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L5_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 17.2,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L5_t1.mp3",
+     "heard": "फिर हार मान लिए",
+     "cer": 0.182,
+     "cer_strict": 0.182,
+     "failed_words": [],
+     "words": {
+      "फिर": {
+       "heard": "फिर",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "हार": {
+       "heard": "हार",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "मान": {
+       "heard": "मान",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "ली": {
+       "heard": "लिए",
+       "score": 1.2,
+       "verdict": "skeleton"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L6": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L6_t1.mp3",
+  "take_dur": 1.646,
+  "req": "कुछ महीने बाद...",
+  "cer_raw": 0.091,
+  "cer_raw_strict": 0.091,
+  "heard_raw": "कुच महीने बाद",
+  "cer": 0.0,
+  "cer_strict": 0.0,
+  "heard": "कुछ महीने बाद",
+  "words": {
+   "कुछ": {
+    "heard": "कुछ",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "महीने": {
+    "heard": "महीने",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "बाद": {
+    "heard": "बाद",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  },
+  "failed_words": [],
+  "passes": {
+   "1.08": {
+    "final_dur": 1.389,
+    "speed": 1.08,
+    "lufs": -16.4,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 129.6,
+    "lead_trim": 0.06,
+    "tail_trim": 0.086,
+    "matched": "3/3",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.02,
+     "median": 0.019,
+     "max": 0.04,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L6_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.364,
+    "speed": 1.1,
+    "lufs": -16.2,
+    "tp": -2.3,
+    "pauses": [],
+    "wpm_after": 132.0,
+    "lead_trim": 0.06,
+    "tail_trim": 0.086,
+    "matched": "3/3",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.023,
+     "median": 0.024,
+     "max": 0.04,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L6_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 17.3,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L6_t1.mp3",
+     "heard": "कुछ महिने बाद",
+     "cer": 0.091,
+     "cer_strict": 0.091,
+     "failed_words": [],
+     "words": {
+      "कुछ": {
+       "heard": "कुछ",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "महीने": {
+       "heard": "महिने",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "बाद": {
+       "heard": "बाद",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L7": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L7_t1.mp3",
+  "take_dur": 5.486,
+  "req": "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।",
+  "cer_raw": 0.1,
+  "cer_raw_strict": 0.1,
+  "heard_raw": "फिर एक दिन फामली ग्रुप में एक रील फोवर्ड होती है",
+  "cer": 0.1,
+  "cer_strict": 0.1,
+  "heard": "फिर एक दिन फामली ग्रुप में एक रील फोवर्ड होती है",
+  "words": {
+   "फिर": {
+    "heard": "फिर",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "एक": {
+    "heard": "एक",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "दिन": {
+    "heard": "दिन",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "फ़ैमिली": {
+    "heard": "फामली",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "ग्रुप": {
+    "heard": "ग्रुप",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "में": {
+    "heard": "में",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "रील": {
+    "heard": "रील",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "फ़ॉरवर्ड": {
+    "heard": "फोवर्ड",
+    "score": 0.96,
+    "verdict": "fail"
+   },
+   "होती": {
+    "heard": "होती",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "है": {
+    "heard": "है",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  },
+  "failed_words": [
+   "फ़ॉरवर्ड"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 4.88,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 2.79,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 135.3,
+    "lead_trim": 0.0,
+    "tail_trim": 0.176,
+    "matched": "11/11",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.021,
+     "median": 0.016,
+     "max": 0.07,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L7_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 4.791,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 2.79,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 137.8,
+    "lead_trim": 0.0,
+    "tail_trim": 0.176,
+    "matched": "11/11",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.017,
+     "median": 0.016,
+     "max": 0.04,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L7_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 23.9,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L7_t1.mp3",
+     "heard": "फिर एक दिन, फामिली गूप में एक रील फौवड होती है।",
+     "cer": 0.158,
+     "cer_strict": 0.2,
+     "failed_words": [
+      "ग्रुप",
+      "फ़ॉरवर्ड"
+     ],
+     "words": {
+      "फिर": {
+       "heard": "फिर",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "एक": {
+       "heard": "एक",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "दिन": {
+       "heard": "दिन,",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "फ़ैमिली": {
+       "heard": "फामिली",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "ग्रुप": {
+       "heard": "गूप",
+       "score": 0.76,
+       "verdict": "fail"
+      },
+      "में": {
+       "heard": "में",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "रील": {
+       "heard": "रील",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "फ़ॉरवर्ड": {
+       "heard": "फौवड",
+       "score": 0.65,
+       "verdict": "fail"
+      },
+      "होती": {
+       "heard": "होती",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "है": {
+       "heard": "है।",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L8": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L8_t1.mp3",
+  "take_dur": 3.239,
+  "req": "सब की नज़र... मम्मी पे।",
+  "cer_raw": 0.143,
+  "cer_raw_strict": 0.143,
+  "heard_raw": "सब की नजर ममी पे",
+  "cer": 0.143,
+  "cer_strict": 0.143,
+  "heard": "सब की नजर ममीपे",
+  "words": {
+   "सब": {
+    "heard": "सब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "की": {
+    "heard": "की",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "नज़र": {
+    "heard": "नजर",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "मम्मी": {
+    "heard": "ममीपे",
+    "score": 0.47,
+    "verdict": "fail"
+   },
+   "पे": {
+    "heard": "ममीपे",
+    "score": 0.47,
+    "verdict": "fail"
+   }
+  },
+  "failed_words": [
+   "मम्मी",
+   "पे"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 2.843,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -3.5,
+    "pauses": [
+     {
+      "at": 1.79,
+      "was": 0.36,
+      "now": 0.36,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 105.5,
+    "lead_trim": 0.02,
+    "tail_trim": 0.149,
+    "matched": "5/5",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.021,
+     "median": 0.017,
+     "max": 0.04,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L8_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 2.791,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.8,
+    "pauses": [
+     {
+      "at": 1.79,
+      "was": 0.36,
+      "now": 0.36,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 107.5,
+    "lead_trim": 0.02,
+    "tail_trim": 0.149,
+    "matched": "5/5",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.021,
+     "median": 0.022,
+     "max": 0.04,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L8_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 17.7,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L8_t1.mp3",
+     "heard": "सब की नजर ममी पे",
+     "cer": 0.077,
+     "cer_strict": 0.143,
+     "failed_words": [],
+     "words": {
+      "सब": {
+       "heard": "सब",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "की": {
+       "heard": "की",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "नज़र": {
+       "heard": "नजर",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "मम्मी": {
+       "heard": "ममी",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "पे": {
+       "heard": "पे",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ },
+ "L9": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L9_t1.mp3",
+  "take_dur": 4.519,
+  "req": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+  "cer_raw": 0.207,
+  "cer_raw_strict": 0.207,
+  "heard_raw": "अब वो सब को हुज़ सनजाती है हम से बहतर",
+  "cer": 0.172,
+  "cer_strict": 0.172,
+  "heard": "अब वो सब को खुड संजाती है हम से बहतर",
+  "words": {
+   "अब": {
+    "heard": "अब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "वो": {
+    "heard": "वो",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "सब": {
+    "heard": "सब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "को": {
+    "heard": "को",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "ख़ुद": {
+    "heard": "खुड",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": true
+   },
+   "समझाती": {
+    "heard": "संजाती",
+    "score": 0.65,
+    "verdict": "fail"
+   },
+   "हैं": {
+    "heard": "है",
+    "score": 0.76,
+    "verdict": "fail"
+   },
+   "हमसे": {
+    "heard": "हमसे",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "बेहतर": {
+    "heard": "बहतर",
+    "score": 1.2,
+    "verdict": "skeleton",
+    "aspirate_heard": true
+   }
+  },
+  "failed_words": [
+   "समझाती",
+   "हैं"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 3.889,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 2.54,
+      "was": 0.56,
+      "now": 0.45,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 138.9,
+    "lead_trim": 0.0,
+    "tail_trim": 0.199,
+    "matched": "9/9",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.039,
+     "median": 0.012,
+     "max": 0.25,
+     "over_0_15": [
+      [
+       "humse",
+       2.75,
+       2.5
+      ]
+     ],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L9_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 3.818,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.3,
+    "pauses": [
+     {
+      "at": 2.54,
+      "was": 0.56,
+      "now": 0.45,
+      "dramatic": true
+     }
+    ],
+    "wpm_after": 141.4,
+    "lead_trim": 0.0,
+    "tail_trim": 0.199,
+    "matched": "9/9",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.041,
+     "median": 0.016,
+     "max": 0.26,
+     "over_0_15": [
+      [
+       "humse",
+       2.7,
+       2.44
+      ]
+     ],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L9_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 32.4,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L9_t1.mp3",
+     "heard": "अब वो सब को खुट संजाती हैं, हम से बहतर।",
+     "cer": 0.138,
+     "cer_strict": 0.138,
+     "failed_words": [
+      "ख़ुद",
+      "समझाती"
+     ],
+     "words": {
+      "अब": {
+       "heard": "अब",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "वो": {
+       "heard": "वो",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "सब": {
+       "heard": "सब",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "को": {
+       "heard": "को",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "ख़ुद": {
+       "heard": "को",
+       "score": 0.47,
+       "verdict": "fail",
+       "aspirate_heard": false
+      },
+      "समझाती": {
+       "heard": "संजाती",
+       "score": 0.65,
+       "verdict": "fail"
+      },
+      "हैं": {
+       "heard": "हैं,",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "हमसे": {
+       "heard": "हमसे",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "बेहतर": {
+       "heard": "बहतर।",
+       "score": 1.2,
+       "verdict": "skeleton",
+       "aspirate_heard": true
+      }
+     }
+    }
+   }
+  }
+ },
+ "L10": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L10_t1.mp3",
+  "take_dur": 2.116,
+  "req": "इसको फ़ैमिली ग्रुप में भेजो।",
+  "cer_raw": 0.182,
+  "cer_raw_strict": 0.182,
+  "heard_raw": "इसको फामिली गॉप में भेजो",
+  "cer": 0.182,
+  "cer_strict": 0.182,
+  "heard": "इसको फामेली गुरुक में भेजो",
+  "words": {
+   "इसको": {
+    "heard": "इसको",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "फ़ैमिली": {
+    "heard": "फामेली",
+    "score": 1.2,
+    "verdict": "skeleton"
+   },
+   "ग्रुप": {
+    "heard": "गुरुक",
+    "score": 0.47,
+    "verdict": "fail"
+   },
+   "में": {
+    "heard": "में",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "भेजो": {
+    "heard": "भेजो",
+    "score": 3.0,
+    "verdict": "exact",
+    "aspirate_heard": true
+   }
+  },
+  "failed_words": [
+   "ग्रुप"
+  ],
+  "passes": {
+   "1.08": {
+    "final_dur": 1.787,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.9,
+    "pauses": [],
+    "wpm_after": 167.9,
+    "lead_trim": 0.01,
+    "tail_trim": 0.176,
+    "matched": "5/5",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.015,
+     "median": 0.007,
+     "max": 0.05,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L10_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.755,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -3.0,
+    "pauses": [],
+    "wpm_after": 171.0,
+    "lead_trim": 0.01,
+    "tail_trim": 0.176,
+    "matched": "5/5",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.015,
+     "median": 0.007,
+     "max": 0.05,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L10_t1_1.10.wav"
+   }
+  },
+  "retake": true,
+  "seconds": 19.6,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L10_t1.mp3",
+     "heard": "इसको फामिली गूप में भेजो।",
+     "cer": 0.143,
+     "cer_strict": 0.182,
+     "failed_words": [
+      "ग्रुप"
+     ],
+     "words": {
+      "इसको": {
+       "heard": "इसको",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "फ़ैमिली": {
+       "heard": "फामिली",
+       "score": 1.2,
+       "verdict": "skeleton"
+      },
+      "ग्रुप": {
+       "heard": "गूप",
+       "score": 0.76,
+       "verdict": "fail"
+      },
+      "में": {
+       "heard": "में",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "भेजो": {
+       "heard": "भेजो।",
+       "score": 3.0,
+       "verdict": "exact",
+       "aspirate_heard": true
+      }
+     }
+    }
+   }
+  }
+ },
+ "L11": {
+  "take": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/raw/btk_L11_t1.mp3",
+  "take_dur": 2.038,
+  "req": "अब नानी की बारी।",
+  "cer_raw": 0.083,
+  "cer_raw_strict": 0.083,
+  "heard_raw": "अब नानी किबारी",
+  "cer": 0.0,
+  "cer_strict": 0.0,
+  "heard": "अब नानी की बारी",
+  "words": {
+   "अब": {
+    "heard": "अब",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "नानी": {
+    "heard": "नानी",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "की": {
+    "heard": "की",
+    "score": 3.0,
+    "verdict": "exact"
+   },
+   "बारी": {
+    "heard": "बारी",
+    "score": 3.0,
+    "verdict": "exact"
+   }
+  },
+  "failed_words": [],
+  "passes": {
+   "1.06": {
+    "final_dur": 1.774,
+    "speed": 1.06,
+    "lufs": -16.0,
+    "tp": -2.4,
+    "pauses": [],
+    "wpm_after": 135.3,
+    "lead_trim": 0.0,
+    "tail_trim": 0.158,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.031,
+     "median": 0.026,
+     "max": 0.07,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L11_t1_1.06.wav"
+   },
+   "1.08": {
+    "final_dur": 1.741,
+    "speed": 1.08,
+    "lufs": -16.0,
+    "tp": -2.4,
+    "pauses": [],
+    "wpm_after": 137.9,
+    "lead_trim": 0.0,
+    "tail_trim": 0.158,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.027,
+     "median": 0.022,
+     "max": 0.06,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L11_t1_1.08.wav"
+   },
+   "1.10": {
+    "final_dur": 1.709,
+    "speed": 1.1,
+    "lufs": -16.0,
+    "tp": -2.5,
+    "pauses": [],
+    "wpm_after": 140.4,
+    "lead_trim": 0.0,
+    "tail_trim": 0.158,
+    "matched": "4/4",
+    "unmatched": [],
+    "realign": {
+     "mean": 0.033,
+     "median": 0.023,
+     "max": 0.07,
+     "over_0_15": [],
+     "note": "final starts vs the re-transcription before snap_to_voice"
+    },
+    "out": "workspace/jawad_reels/beta_tum_karte_kya_ho/vo/proc/btk_L11_t1_1.10.wav"
+   }
+  },
+  "retake": false,
+  "seconds": 25.5,
+  "asr": {
+   "medium": {
+    "1.08": {
+     "take": "btk_L11_t1.mp3",
+     "heard": "अब नानी की बारी।",
+     "cer": 0.0,
+     "cer_strict": 0.0,
+     "failed_words": [],
+     "words": {
+      "अब": {
+       "heard": "अब",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "नानी": {
+       "heard": "नानी",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "की": {
+       "heard": "की",
+       "score": 3.0,
+       "verdict": "exact"
+      },
+      "बारी": {
+       "heard": "बारी।",
+       "score": 3.0,
+       "verdict": "exact"
+      }
+     }
+    }
+   }
+  }
+ }
+}

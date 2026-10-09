@@ -1,0 +1,657 @@
+{
+ "reel": "beta_tum_karte_kya_ho",
+ "voice": "Vlad (preset) on elevenlabs_v4",
+ "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+ "rules": [
+  "balance first and before each batch; STOP if the balance is below 6800",
+  "preflight every request with get_cost: true; keep the running sum in vo/credits.json; reel budget 25",
+  "leave use_unlim unset (answer an unlim_choice with false); omit folder_id; provider default stability",
+  "poll job ids with jobs_wait; never resubmit blindly",
+  "download result_url with curl into vo/raw/ as btk_<id>_t<n>.mp3"
+ ],
+ "spelling_fixes": {
+  "क्लाइंट": "क्लायंट"
+ },
+ "batch_1_pronunciation": [
+  {
+   "id": "P0",
+   "save_as": "btk_P0_t1.mp3",
+   "why": "rank 1 client (L1), rank 10 poochta",
+   "chars": 27,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये सवाल क्लाइंट नहीं पूछता।",
+    "dialogue": [
+     {
+      "text": "ये सवाल क्लाइंट नहीं पूछता।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P1",
+   "save_as": "btk_P1_t1.mp3",
+   "why": "rank 1 fallback spelling",
+   "chars": 27,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये सवाल क्लायंट नहीं पूछता।",
+    "dialogue": [
+     {
+      "text": "ये सवाल क्लायंट नहीं पूछता।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P2",
+   "save_as": "btk_P2_t1.mp3",
+   "why": "rank 2 Mummy (L1B, L8), rank 6 cartoon",
+   "chars": 21,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "मम्मी बोलीं, कार्टून।",
+    "dialogue": [
+     {
+      "text": "मम्मी बोलीं, कार्टून।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P3",
+   "save_as": "btk_P3_t1.mp3",
+   "why": "rank 2 fallback spelling",
+   "chars": 19,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ममी बोलीं, कार्टून।",
+    "dialogue": [
+     {
+      "text": "ममी बोलीं, कार्टून।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P4",
+   "save_as": "btk_P4_t1.mp3",
+   "why": "rank 4 translation (L2 keyword)",
+   "chars": 25,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "पहले इसका ट्रांसलेशन करो।",
+    "dialogue": [
+     {
+      "text": "पहले इसका ट्रांसलेशन करो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P5",
+   "save_as": "btk_P5_t1.mp3",
+   "why": "rank 4 fallback spelling",
+   "chars": 26,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "पहले इसका ट्रैन्सलेशन करो।",
+    "dialogue": [
+     {
+      "text": "पहले इसका ट्रैन्सलेशन करो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P6",
+   "save_as": "btk_P6_t1.mp3",
+   "why": "rank 5 family group, rank 3 bhejo",
+   "chars": 23,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फ़ैमिली ग्रुप में भेजो।",
+    "dialogue": [
+     {
+      "text": "फ़ैमिली ग्रुप में भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P7",
+   "save_as": "btk_P7_t1.mp3",
+   "why": "rank 5 fallback spelling",
+   "chars": 23,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फ़ेमिली ग्रुप में भेजो।",
+    "dialogue": [
+     {
+      "text": "फ़ेमिली ग्रुप में भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P8",
+   "save_as": "btk_P8_t1.mp3",
+   "why": "rank 7 forward (L7)",
+   "chars": 20,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "एक रील फ़ॉरवर्ड हुई।",
+    "dialogue": [
+     {
+      "text": "एक रील फ़ॉरवर्ड हुई।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P9",
+   "save_as": "btk_P9_t1.mp3",
+   "why": "rank 8 ulta (L3 keyword), rank 9 seedha",
+   "chars": 24,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब उल्टा है, सब सीधा है।",
+    "dialogue": [
+     {
+      "text": "सब उल्टा है, सब सीधा है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P10",
+   "save_as": "btk_P10_t1.mp3",
+   "why": "rank 11 khud / nazar, rank 12 behtar",
+   "chars": 41,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब की नज़र उन पे, वो ख़ुद हमसे बेहतर हैं।",
+    "dialogue": [
+     {
+      "text": "सब की नज़र उन पे, वो ख़ुद हमसे बेहतर हैं।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P11",
+   "save_as": "btk_P11_t1.mp3",
+   "why": "rank 13 Nani / baari (L11)",
+   "chars": 19,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "अब नानी की बारी आई।",
+    "dialogue": [
+     {
+      "text": "अब नानी की बारी आई।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ],
+ "batch_2_lines": [
+  {
+   "id": "L1",
+   "save_as": "btk_L1_t1.mp3",
+   "chars": 38,
+   "slot": "0.10-2.69",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब से मुश्किल सवाल क्लायंट नहीं पूछता।",
+    "dialogue": [
+     {
+      "text": "सब से मुश्किल सवाल क्लायंट नहीं पूछता।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L1B",
+   "save_as": "btk_L1B_t1.mp3",
+   "chars": 22,
+   "slot": "0.10-2.40",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "मम्मी के लिए, कार्टून।",
+    "dialogue": [
+     {
+      "text": "मम्मी के लिए, कार्टून।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L2",
+   "save_as": "btk_L2_t1.mp3",
+   "chars": 21,
+   "slot": "2.95-4.15",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जवाब का ट्रांसलेशन...",
+    "dialogue": [
+     {
+      "text": "जवाब का ट्रांसलेशन...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L3",
+   "save_as": "btk_L3_t1.mp3",
+   "chars": 24,
+   "slot": "5.10-6.95",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जितना समझाओ, उतना उल्टा।",
+    "dialogue": [
+     {
+      "text": "जितना समझाओ, उतना उल्टा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L4",
+   "save_as": "btk_L4_t1.mp3",
+   "chars": 10,
+   "slot": "10.95-11.70",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सीधा जवाब,",
+    "dialogue": [
+     {
+      "text": "सीधा जवाब,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L5",
+   "save_as": "btk_L5_t1.mp3",
+   "chars": 18,
+   "slot": "14.15-16.15",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर... हार मान ली।",
+    "dialogue": [
+     {
+      "text": "फिर... हार मान ली।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L6",
+   "save_as": "btk_L6_t1.mp3",
+   "chars": 16,
+   "slot": "16.95-17.95",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "कुछ महीने बाद...",
+    "dialogue": [
+     {
+      "text": "कुछ महीने बाद...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L7",
+   "save_as": "btk_L7_t1.mp3",
+   "chars": 56,
+   "slot": "19.75-24.27",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।",
+    "dialogue": [
+     {
+      "text": "फिर एक दिन फ़ैमिली ग्रुप में... एक रील फ़ॉरवर्ड होती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L8",
+   "save_as": "btk_L8_t1.mp3",
+   "chars": 23,
+   "slot": "24.45-27.12",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब की नज़र... मम्मी पे।",
+    "dialogue": [
+     {
+      "text": "सब की नज़र... मम्मी पे।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L9",
+   "save_as": "btk_L9_t1.mp3",
+   "chars": 42,
+   "slot": "28.25-31.97",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+    "dialogue": [
+     {
+      "text": "अब वो सब को ख़ुद समझाती हैं... हमसे बेहतर।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L10",
+   "save_as": "btk_L10_t1.mp3",
+   "chars": 28,
+   "slot": "32.55-34.40",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "इसको फ़ैमिली ग्रुप में भेजो।",
+    "dialogue": [
+     {
+      "text": "इसको फ़ैमिली ग्रुप में भेजो।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L11",
+   "save_as": "btk_L11_t1.mp3",
+   "chars": 16,
+   "slot": "34.90-36.35",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "अब नानी की बारी।",
+    "dialogue": [
+     {
+      "text": "अब नानी की बारी।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ],
+ "variants": [
+  {
+   "id": "L1-F",
+   "line": "L1",
+   "kind": "fallback",
+   "why": "SLATE 3.4 fallback; the locked line measured 3.28 s of voice (limit 2.59 s from 0.10)",
+   "chars": 27,
+   "rom": "Yeh sawaal client nahi poochta.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये सवाल क्लायंट नहीं पूछता।",
+    "dialogue": [
+     {
+      "text": "ये सवाल क्लायंट नहीं पूछता।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L2-C",
+   "line": "L2",
+   "kind": "prosody",
+   "why": "\"...\" stretched \"translation\" (0.74 s); a comma keeps the open, continuing tone",
+   "chars": 19,
+   "rom": "Jawab ka *translation...",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जवाब का ट्रांसलेशन,",
+    "dialogue": [
+     {
+      "text": "जवाब का ट्रांसलेशन,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L3-N",
+   "line": "L3",
+   "kind": "prosody",
+   "why": "no comma: one breath, no beat (the take ran 0.7 s over and into the 7.0 pop)",
+   "chars": 23,
+   "rom": "Jitna samjhao, utna *ulta.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जितना समझाओ उतना उल्टा।",
+    "dialogue": [
+     {
+      "text": "जितना समझाओ उतना उल्टा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L5-C",
+   "line": "L5",
+   "kind": "prosody",
+   "why": "\"Phir...\" was drawn out to 1.0 s; a comma beat is shorter",
+   "chars": 16,
+   "rom": "Phir... *haar maan li.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर, हार मान ली।",
+    "dialogue": [
+     {
+      "text": "फिर, हार मान ली।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L6-C",
+   "line": "L6",
+   "kind": "prosody",
+   "why": "\"baad...\" stretched; a comma ending",
+   "chars": 14,
+   "rom": "Kuch mahine baad...",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "कुछ महीने बाद,",
+    "dialogue": [
+     {
+      "text": "कुछ महीने बाद,",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L6-F",
+   "line": "L6",
+   "kind": "fallback",
+   "why": "script.json L6 fallback (2 words)",
+   "chars": 12,
+   "rom": "Mahine baad...",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "महीने बाद...",
+    "dialogue": [
+     {
+      "text": "महीने बाद...",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L7-C",
+   "line": "L7",
+   "kind": "prosody",
+   "why": "comma beat instead of \"...\" (shorter) + the SCRIPT 6 rank 7 fallback spelling फ़ॉर्वर्ड (r kept)",
+   "chars": 55,
+   "rom": "Phir ek din family group mein... ek *reel forward hoti hai.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर एक दिन फ़ैमिली ग्रुप में, एक रील फ़ॉर्वर्ड होती है।",
+    "dialogue": [
+     {
+      "text": "फिर एक दिन फ़ैमिली ग्रुप में, एक रील फ़ॉर्वर्ड होती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L11-F",
+   "line": "L11",
+   "kind": "fallback",
+   "why": "script.json L11 fallback (the loop line must end <= 36.35 s)",
+   "chars": 8,
+   "rom": "Ab Nani.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "अब नानी।",
+    "dialogue": [
+     {
+      "text": "अब नानी।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L3-S",
+   "line": "L3",
+   "kind": "fallback",
+   "why": "word cut: 4 words cannot fit 1.85 s (best 2.52 s); same joke, keyword *ulta* kept",
+   "chars": 15,
+   "rom": "Samjhao toh *ulta.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "समझाओ तो उल्टा।",
+    "dialogue": [
+     {
+      "text": "समझाओ तो उल्टा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L3-J",
+   "line": "L3",
+   "kind": "fallback",
+   "why": "word cut (alternative to L3-S): drops \"utna\"",
+   "chars": 19,
+   "rom": "Jitna samjhao, *ulta.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "जितना समझाओ, उल्टा।",
+    "dialogue": [
+     {
+      "text": "जितना समझाओ, उल्टा।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L1B-R",
+   "line": "L1B",
+   "kind": "prosody",
+   "why": "both ASR models heard कार्टून as काटून (r dropped) in both takes; full र spelling",
+   "chars": 21,
+   "rom": "Mummy ke liye, cartoon.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "मम्मी के लिए, कारटून।",
+    "dialogue": [
+     {
+      "text": "मम्मी के लिए, कारटून।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "L7-O",
+   "line": "L7",
+   "kind": "prosody",
+   "why": "both ASR models heard फ़ॉरवर्ड / फ़ॉर्वर्ड as फोवर्ड (first r dropped) in 3 takes; ो + full र (the कारटून fix brought the r back in L1B) + the L7-C comma beat that fits the slot",
+   "chars": 54,
+   "rom": "Phir ek din family group mein... ek *reel forward hoti hai.",
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "फिर एक दिन फ़ैमिली ग्रुप में, एक रील फ़ोरवर्ड होती है।",
+    "dialogue": [
+     {
+      "text": "फिर एक दिन फ़ैमिली ग्रुप में, एक रील फ़ोरवर्ड होती है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ]
+}

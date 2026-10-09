@@ -1,0 +1,229 @@
+{
+ "reel": "log_kya_kahenge",
+ "voice": "Vlad (preset) on elevenlabs_v4",
+ "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+ "rules": [
+  "balance first and before each batch; stop if the balance is below 6800 (task guard, 2026-10-09)",
+  "preflight every request with get_cost: true; keep the running sum in vo/credits.json; reel budget 25",
+  "leave use_unlim unset (answer an unlim_choice with false); omit folder_id; no stability override",
+  "poll job ids with jobs_wait; never resubmit blindly",
+  "download result_url with curl into vo/raw/ as lkk_<id>_t<n>.mp3 (n = 1 for the first take)"
+ ],
+ "batch_1_pronunciation": [
+  {
+   "id": "P1",
+   "save_as": "lkk_P1_t1.mp3",
+   "why": "V3 risks 1, 2, 5 in their script spelling",
+   "chars": 38,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये क्राउड फ़्लैट है। ये कार्डबोर्ड है।",
+    "dialogue": [
+     {
+      "text": "ये क्राउड फ़्लैट है। ये कार्डबोर्ड है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P2",
+   "save_as": "lkk_P2_t1.mp3",
+   "why": "V3 fallbacks (risk 1 hyphen, risk 2 no nukta)",
+   "chars": 31,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये कार्ड-बोर्ड है। ये फ्लैट है।",
+    "dialogue": [
+     {
+      "text": "ये कार्ड-बोर्ड है। ये फ्लैट है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P3",
+   "save_as": "lkk_P3_t1.mp3",
+   "why": "z / f nukta words (risks 3, 4, 7, 8); ASR normalises nuktas, so a listener must confirm z and f",
+   "chars": 54,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लोग बिज़ी हैं। उसकी नज़र में। अपनी ज़िंदगी। अपना फ़ोन।",
+    "dialogue": [
+     {
+      "text": "लोग बिज़ी हैं। उसकी नज़र में। अपनी ज़िंदगी। अपना फ़ोन।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P4",
+   "save_as": "lkk_P4_t1.mp3",
+   "why": "risk 6: does the quoted 'log' hiccup or lose stress against the plain one",
+   "chars": 31,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हम भी 'लोग' हैं। हम भी लोग हैं।",
+    "dialogue": [
+     {
+      "text": "हम भी 'लोग' हैं। हम भी लोग हैं।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "P5",
+   "save_as": "lkk_P5_t1.mp3",
+   "why": "risk 3 fallback (Latin busy inside the DEV text) and risk 1 fallback (गत्ता)",
+   "chars": 26,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लोग busy हैं। ये गत्ता है।",
+    "dialogue": [
+     {
+      "text": "लोग busy हैं। ये गत्ता है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ],
+ "batch_2_lines": [
+  {
+   "id": "V1",
+   "save_as": "lkk_V1_t1.mp3",
+   "chars": 31,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "सब से बड़ा डर, लोग क्या कहेंगे।",
+    "dialogue": [
+     {
+      "text": "सब से बड़ा डर, लोग क्या कहेंगे।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V1B",
+   "save_as": "lkk_V1B_t1.mp3",
+   "chars": 28,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये 'लोग'... असल में हैं कौन?",
+    "dialogue": [
+     {
+      "text": "ये 'लोग'... असल में हैं कौन?",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V2",
+   "save_as": "lkk_V2_t1.mp3",
+   "chars": 71,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+    "dialogue": [
+     {
+      "text": "हम ज़िंदगी उनके हिसाब से एडिट करते हैं... जो पूरी वीडियो देखते भी नहीं।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V3",
+   "save_as": "lkk_V3_t1.mp3",
+   "chars": 32,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "ये क्राउड फ़्लैट है। कार्डबोर्ड।",
+    "dialogue": [
+     {
+      "text": "ये क्राउड फ़्लैट है। कार्डबोर्ड।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V4",
+   "save_as": "lkk_V4_t1.mp3",
+   "chars": 38,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "असली लोग पीछे बैठे हैं, अपने फ़ोन में।",
+    "dialogue": [
+     {
+      "text": "असली लोग पीछे बैठे हैं, अपने फ़ोन में।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V5",
+   "save_as": "lkk_V5_t1.mp3",
+   "chars": 44,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "लोग बिज़ी हैं... अपने 'लोग क्या कहेंगे' में।",
+    "dialogue": [
+     {
+      "text": "लोग बिज़ी हैं... अपने 'लोग क्या कहेंगे' में।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V6",
+   "save_as": "lkk_V6_t1.mp3",
+   "chars": 37,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "किसी और की नज़र में, हम भी 'लोग' हैं।",
+    "dialogue": [
+     {
+      "text": "किसी और की नज़र में, हम भी 'लोग' हैं।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  },
+  {
+   "id": "V7",
+   "save_as": "lkk_V7_t1.mp3",
+   "chars": 43,
+   "params": {
+    "model": "elevenlabs_v4",
+    "prompt": "उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है।",
+    "dialogue": [
+     {
+      "text": "उस दोस्त को भेजो जिसे 'लोग' का डर रोकता है।",
+      "voice_id": "e5666b9c-99a2-4fac-8b4e-abee078b186d",
+      "voice_type": "preset"
+     }
+    ]
+   }
+  }
+ ]
+}

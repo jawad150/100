@@ -1,0 +1,448 @@
+{
+ "reel": "ek_frame_ki_keemat",
+ "voice": "Vlad (preset e5666b9c-99a2-4fac-8b4e-abee078b186d) on elevenlabs_v4",
+ "budget_credits": 25,
+ "global_guard_min_balance": 6800,
+ "spent_credits": 7.13,
+ "requests": [
+  {
+   "at": "2026-10-09T06:04:40",
+   "id": "P1",
+   "job_id": "24d78fb5-ee9a-45db-8033-aa4a7a1c3fee",
+   "cost_preflight": 0.23,
+   "chars": 43,
+   "status": "downloaded",
+   "file": "vo/raw/efk_P1_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:04:41",
+   "id": "P2",
+   "job_id": "6d13aee9-1077-4efa-953c-690fdd07c869",
+   "cost_preflight": 0.23,
+   "chars": 45,
+   "status": "downloaded",
+   "file": "vo/raw/efk_P2_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:04:41",
+   "id": "P3",
+   "job_id": "d333a8fc-45b1-487e-93da-c4080e670560",
+   "cost_preflight": 0.46,
+   "chars": 65,
+   "status": "downloaded",
+   "file": "vo/raw/efk_P3_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:04:41",
+   "id": "P4",
+   "job_id": "a76c0b10-4af8-47f1-8c32-11123dd6c028",
+   "cost_preflight": 0.46,
+   "chars": 54,
+   "status": "downloaded",
+   "file": "vo/raw/efk_P4_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V1A",
+   "job_id": "66d85fb3-f474-4da7-9eb6-741e28bc020f",
+   "cost_preflight": 0.23,
+   "chars": 25,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1A_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V1B",
+   "job_id": "39e0963a-5bcd-41f7-8d2e-1b2e1916c6d9",
+   "cost_preflight": 0.23,
+   "chars": 28,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1B_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V2",
+   "job_id": "bf8783d6-b2fe-4ad8-b5c3-c1c9e37c087d",
+   "cost_preflight": 0.23,
+   "chars": 42,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V2_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V3",
+   "job_id": "b35a0ee3-ebd0-43db-928a-dfcadb44eeec",
+   "cost_preflight": 0.23,
+   "chars": 27,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V3_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V4",
+   "job_id": "29f5a83f-8cad-48e3-8749-b0369b1cfaa4",
+   "cost_preflight": 0.23,
+   "chars": 18,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V4_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V5",
+   "job_id": "45a90716-054a-4efa-9c92-cc177bbb8e1d",
+   "cost_preflight": 0.23,
+   "chars": 49,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V5_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V6",
+   "job_id": "cb6ba4e1-d017-4f81-b640-db2f6bb54e7c",
+   "cost_preflight": 0.23,
+   "chars": 26,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V6_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V7",
+   "job_id": "38ce051a-088d-4217-9428-532e521c6aba",
+   "cost_preflight": 0.23,
+   "chars": 35,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V7_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V8",
+   "job_id": "4d29f8a9-b191-4f39-99fb-2bd91c7dafb4",
+   "cost_preflight": 0.23,
+   "chars": 24,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V8_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V9",
+   "job_id": "733c7d05-50c6-438c-b08b-535ef68f5da5",
+   "cost_preflight": 0.23,
+   "chars": 29,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V9_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V10",
+   "job_id": "aaa11b82-dec8-46f9-93b3-eda74884f17d",
+   "cost_preflight": 0.23,
+   "chars": 44,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V10_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:13:05",
+   "id": "V10K",
+   "job_id": "0454bad7-3acc-464e-869f-4b723726d6a4",
+   "cost_preflight": 0.23,
+   "chars": 43,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V10K_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:15",
+   "id": "T1",
+   "job_id": "f1498497-a787-4385-ba28-147a5364d1ee",
+   "cost_preflight": 0.69,
+   "chars": 137,
+   "status": "downloaded",
+   "file": "vo/raw/efk_T1_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:15",
+   "id": "T2",
+   "job_id": "64f901b1-b879-4e5f-9c4a-535f2b445985",
+   "cost_preflight": 0.46,
+   "chars": 89,
+   "status": "downloaded",
+   "file": "vo/raw/efk_T2_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:15",
+   "id": "T3",
+   "job_id": "6f6d8ee1-a8f9-45af-8c57-6de5bfcb5c37",
+   "cost_preflight": 0.46,
+   "chars": 74,
+   "status": "downloaded",
+   "file": "vo/raw/efk_T3_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:16",
+   "id": "V1B_t2",
+   "job_id": "1de2a709-f241-40d8-9715-1a7b0f5d818d",
+   "cost_preflight": 0.23,
+   "chars": 28,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1B_t2.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:16",
+   "id": "V1A_t2",
+   "job_id": "a532acb1-64ef-47aa-8dba-af1bd1ae1926",
+   "cost_preflight": 0.23,
+   "chars": 25,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1A_t2.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:16",
+   "id": "V3c",
+   "job_id": "6c57731b-1ace-41c3-9e30-e36bdd381f81",
+   "cost_preflight": 0.23,
+   "chars": 27,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V3c_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T06:24:16",
+   "id": "V4c",
+   "job_id": "610cc521-1c66-4c7b-a4d8-dc20b1fbb5a2",
+   "cost_preflight": 0.23,
+   "chars": 18,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V4c_t1.mp3"
+  },
+  {
+   "at": "2026-10-09T07:09:26",
+   "id": "V1B_t3",
+   "job_id": "2415fa2e-831c-4604-8675-62dcca6ac108",
+   "cost_preflight": 0.23,
+   "chars": 28,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1B_t3.mp3"
+  },
+  {
+   "at": "2026-10-09T07:09:26",
+   "id": "V1B_t4_stab055",
+   "job_id": "88594291-7f98-423d-b71c-6648e8a0d51c",
+   "cost_preflight": 0.23,
+   "chars": 28,
+   "status": "downloaded",
+   "file": "vo/raw/efk_V1B_t4.mp3"
+  }
+ ],
+ "balance_checks": [
+  {
+   "at": "2026-10-09T06:04:18",
+   "credits": 6978.56,
+   "note": "before batch 1 (pronunciation)"
+  },
+  {
+   "at": "2026-10-09T06:12:51",
+   "credits": 6971.66,
+   "note": "before batch 2 (11 lines + V10K)"
+  },
+  {
+   "at": "2026-10-09T06:24:05",
+   "credits": 6954.41,
+   "note": "before batch 3 (running takes + retakes)"
+  },
+  {
+   "at": "2026-10-09T07:09:19",
+   "credits": 6927.27,
+   "note": "before batch 4 (V1B retakes for CER)"
+  },
+  {
+   "at": "2026-10-09T07:18:34",
+   "credits": 6926.35,
+   "note": "after the final batch (account balance; includes the owner's and other reels' spend)"
+  }
+ ],
+ "log": [
+  {
+   "at": "2026-10-08T23:27",
+   "event": "blocked before any request",
+   "detail": "mcp__Higgsfield__balance / generate_audio / generate_audio_batch / jobs_wait are not exposed to this agent: ToolSearch does not exist here, and direct calls return 'Its MCP server Higgsfield is connected but does not offer this tool here'. No balance read, no get_cost preflight, no job submitted, 0 credits spent."
+  },
+  {
+   "at": "2026-10-09T06:04:18",
+   "event": "session 2 start",
+   "detail": "Higgsfield tools available via ToolSearch; guard lowered to 6800 per the current task"
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "event": "batch 1 result",
+   "detail": "P1-P4 pronunciation: no spelling change needed (saath heard as 360 by medium, f and z are fricatives on the spectrogram, see vo/asr/); jhapakte aspiration to be checked on V1A"
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "event": "batch 2 result",
+   "detail": "per-line takes run 1.1-1.7x longer than the script's syllable model (isolated short lines are drawn out: 3.74 syl/s raw vs 4.40 on running text); V2-V9 miss windows at 1.08-1.10x. Batch 3 = SCRIPT section 7 running takes T1-T3 + V1A/V1B retakes + comma variants of V3/V4 (punctuation only)"
+  },
+  {
+   "at": "2026-10-09T07:18:34",
+   "event": "final",
+   "detail": "no more generation; 25 requests (4 carriers + 12 line takes + 3 running takes + 4 retakes / variants + 2 V1B retakes), own spend 7.13 credits (sum of get_cost preflights of submitted jobs); final stem built by ek_frame_ki_keemat_vo.py final; V1B 4 takes all show the same whisper loanword transliteration (CER not take-driven)"
+  }
+ ],
+ "remaining_reel_budget": 17.87,
+ "preflights": [
+  {
+   "at": "2026-10-09T06:04:18",
+   "id": "P1",
+   "cost": 0.23,
+   "chars": 43
+  },
+  {
+   "at": "2026-10-09T06:04:18",
+   "id": "P2",
+   "cost": 0.23,
+   "chars": 45
+  },
+  {
+   "at": "2026-10-09T06:04:18",
+   "id": "P3",
+   "cost": 0.46,
+   "chars": 65
+  },
+  {
+   "at": "2026-10-09T06:04:19",
+   "id": "P4",
+   "cost": 0.46,
+   "chars": 54
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V1A",
+   "cost": 0.23,
+   "chars": 25
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V1B",
+   "cost": 0.23,
+   "chars": 28
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V2",
+   "cost": 0.23,
+   "chars": 42
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V3",
+   "cost": 0.23,
+   "chars": 27
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V4",
+   "cost": 0.23,
+   "chars": 18
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V5",
+   "cost": 0.23,
+   "chars": 49
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V6",
+   "cost": 0.23,
+   "chars": 26
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V7",
+   "cost": 0.23,
+   "chars": 35
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V8",
+   "cost": 0.23,
+   "chars": 24
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V9",
+   "cost": 0.23,
+   "chars": 29
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V10",
+   "cost": 0.23,
+   "chars": 44
+  },
+  {
+   "at": "2026-10-09T06:12:20",
+   "id": "V10K",
+   "cost": 0.23,
+   "chars": 43
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "T1",
+   "cost": 0.69,
+   "chars": 137
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "T2",
+   "cost": 0.46,
+   "chars": 89
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "T3",
+   "cost": 0.46,
+   "chars": 74
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "V1B_t2",
+   "cost": 0.23,
+   "chars": 28
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "V1A_t2",
+   "cost": 0.23,
+   "chars": 25
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "V3c",
+   "cost": 0.23,
+   "chars": 27
+  },
+  {
+   "at": "2026-10-09T06:23:38",
+   "id": "V4c",
+   "cost": 0.23,
+   "chars": 18
+  },
+  {
+   "at": "2026-10-09T07:09:19",
+   "id": "V1B_t3",
+   "cost": 0.23,
+   "chars": 28
+  },
+  {
+   "at": "2026-10-09T07:09:19",
+   "id": "V1B_t4_stab055",
+   "cost": 0.23,
+   "chars": 28
+  }
+ ],
+ "summary": {
+  "requests": 25,
+  "spent_credits": 7.13,
+  "budget": 25,
+  "remaining": 17.87,
+  "how": "own spend = sum of the get_cost preflight of every submitted job (0.23 credits per started 50 characters); the account balance also moves with the owner's and the other reels' work and is never used to count this reel's spend"
+ }
+}

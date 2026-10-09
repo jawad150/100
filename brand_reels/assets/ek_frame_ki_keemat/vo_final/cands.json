@@ -1,0 +1,6647 @@
+{
+ "V1A": {
+  "efk_V1A_t1.mp3": {
+   "1.08": {
+    "final_dur": 2.231,
+    "runs": [
+     [
+      0.03,
+      0.76
+     ],
+     [
+      0.96,
+      2.15
+     ]
+    ],
+    "words": [
+     [
+      "Aap",
+      0.03,
+      0.259,
+      true,
+      "आप"
+     ],
+     [
+      "ne",
+      0.259,
+      0.444,
+      true,
+      "ने"
+     ],
+     [
+      "ise",
+      0.444,
+      0.76,
+      true,
+      "इसे"
+     ],
+     [
+      "palak",
+      0.96,
+      1.222,
+      true,
+      "पलक"
+     ],
+     [
+      "jhapakte",
+      1.222,
+      1.704,
+      true,
+      "जपकते"
+     ],
+     [
+      "dekha.",
+      1.704,
+      2.15,
+      true,
+      "देखा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -19.1
+   },
+   "1.10": {
+    "final_dur": 2.191,
+    "runs": [
+     [
+      0.02,
+      0.75
+     ],
+     [
+      0.94,
+      2.11
+     ]
+    ],
+    "words": [
+     [
+      "Aap",
+      0.02,
+      0.255,
+      true,
+      "आप"
+     ],
+     [
+      "ne",
+      0.255,
+      0.436,
+      true,
+      "ने"
+     ],
+     [
+      "ise",
+      0.436,
+      0.75,
+      true,
+      "इसे"
+     ],
+     [
+      "palak",
+      0.94,
+      1.2,
+      true,
+      "पलक"
+     ],
+     [
+      "jhapakte",
+      1.2,
+      1.673,
+      true,
+      "जपकते"
+     ],
+     [
+      "dekha.",
+      1.673,
+      2.11,
+      true,
+      "देखा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -18.5
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "आपने इसे पलक जबकते देखा",
+      "cer": 0.143,
+      "words": [
+       {
+        "i": 3,
+        "word": "palak",
+        "dev": "पलक",
+        "heard": "पलक",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "jhapakte",
+        "dev": "झपकते",
+        "heard": "जबकते",
+        "sim": 0.65,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "आपने इसे पलक जपकते देखा।",
+      "cer": 0.071,
+      "words": [
+       {
+        "i": 3,
+        "word": "palak",
+        "dev": "पलक",
+        "heard": "पलक",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "jhapakte",
+        "dev": "झपकते",
+        "heard": "जपकते",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.143,
+    "cer_best": 0.071,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "palak",
+      "dev": "पलक",
+      "aligned_ok": true,
+      "aligned_heard": "पलक",
+      "free": [
+       [
+        "small",
+        "पलक",
+        3.0
+       ],
+       [
+        "medium",
+        "पलक",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "jhapakte",
+      "dev": "झपकते",
+      "aligned_ok": true,
+      "aligned_heard": "जपकते",
+      "free": [
+       [
+        "small",
+        "जबकते",
+        0.65
+       ],
+       [
+        "medium",
+        "जपकते",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  },
+  "efk_V1A_t2.mp3": {
+   "1.08": {
+    "final_dur": 2.269,
+    "runs": [
+     [
+      0.03,
+      0.85
+     ],
+     [
+      1.01,
+      2.23
+     ]
+    ],
+    "words": [
+     [
+      "Aap",
+      0.03,
+      0.296,
+      true,
+      "आप"
+     ],
+     [
+      "ne",
+      0.296,
+      0.481,
+      true,
+      "ने"
+     ],
+     [
+      "ise",
+      0.481,
+      0.85,
+      true,
+      "इसे"
+     ],
+     [
+      "palak",
+      1.01,
+      1.278,
+      true,
+      "पलक"
+     ],
+     [
+      "jhapakte",
+      1.278,
+      1.778,
+      true,
+      "जबकते"
+     ],
+     [
+      "dekha.",
+      1.778,
+      2.23,
+      true,
+      "देखा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -18.6
+   },
+   "1.10": {
+    "final_dur": 2.227,
+    "runs": [
+     [
+      0.03,
+      0.84
+     ],
+     [
+      0.99,
+      2.16
+     ]
+    ],
+    "words": [
+     [
+      "Aap",
+      0.03,
+      0.291,
+      true,
+      "आप"
+     ],
+     [
+      "ne",
+      0.291,
+      0.473,
+      true,
+      "ने"
+     ],
+     [
+      "ise",
+      0.473,
+      0.84,
+      true,
+      "इसे"
+     ],
+     [
+      "palak",
+      0.99,
+      1.255,
+      true,
+      "पलक"
+     ],
+     [
+      "jhapakte",
+      1.255,
+      1.745,
+      true,
+      "जबकते"
+     ],
+     [
+      "dekha.",
+      1.745,
+      2.16,
+      true,
+      "देखा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -18.3
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "आपने इसे पलक जबकते देखा",
+      "cer": 0.143,
+      "words": [
+       {
+        "i": 3,
+        "word": "palak",
+        "dev": "पलक",
+        "heard": "पलक",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "jhapakte",
+        "dev": "झपकते",
+        "heard": "जबकते",
+        "sim": 0.65,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "आपने इसे पलक जपकते देखा।",
+      "cer": 0.071,
+      "words": [
+       {
+        "i": 3,
+        "word": "palak",
+        "dev": "पलक",
+        "heard": "पलक",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "jhapakte",
+        "dev": "झपकते",
+        "heard": "जपकते",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.143,
+    "cer_best": 0.071,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "palak",
+      "dev": "पलक",
+      "aligned_ok": true,
+      "aligned_heard": "पलक",
+      "free": [
+       [
+        "small",
+        "पलक",
+        3.0
+       ],
+       [
+        "medium",
+        "पलक",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "jhapakte",
+      "dev": "झपकते",
+      "aligned_ok": true,
+      "aligned_heard": "जबकते",
+      "free": [
+       [
+        "small",
+        "जबकते",
+        0.65
+       ],
+       [
+        "medium",
+        "जपकते",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  }
+ },
+ "V1B": {
+  "efk_V1B_t1.mp3": {
+   "1.08": {
+    "final_dur": 2.787,
+    "runs": [
+     [
+      0.02,
+      0.94
+     ],
+     [
+      1.24,
+      2.77
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.02,
+      0.241,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.241,
+      0.94,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.24,
+      1.444,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.444,
+      1.648,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.648,
+      2.074,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.074,
+      2.759,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 2.736,
+    "runs": [
+     [
+      0.02,
+      0.92
+     ],
+     [
+      1.21,
+      2.72
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.02,
+      0.236,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.236,
+      0.92,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.21,
+      1.418,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.418,
+      1.618,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.618,
+      2.036,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.036,
+      2.709,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "एक सेकिन्ट, तींसो सार्ट लेयाज",
+      "cer": 0.5,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तींसो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "तींसो",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "सार्ट",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेयाज",
+        "sim": 0.2,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकिंड तीन सो साथ लेयर्ज",
+      "cer": 0.143,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेयर्ज",
+        "sim": 0.83,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.5,
+    "cer_best": 0.143,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "Teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तींसो",
+        0.76
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 3,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "तींसो",
+        0.1
+       ],
+       [
+        "medium",
+        "सो",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "सार्ट",
+        0.76
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 5,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "लेयाज",
+        0.2
+       ],
+       [
+        "medium",
+        "लेयर्ज",
+        0.83
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  },
+  "efk_V1B_t2.mp3": {
+   "1.08": {
+    "final_dur": 2.667,
+    "runs": [
+     [
+      0.03,
+      0.87
+     ],
+     [
+      1.19,
+      2.6
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.241,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.241,
+      0.87,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.19,
+      1.389,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.389,
+      1.593,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.593,
+      2.019,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.019,
+      2.6,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.2
+   },
+   "1.10": {
+    "final_dur": 2.618,
+    "runs": [
+     [
+      0.03,
+      0.86
+     ],
+     [
+      1.16,
+      2.56
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.236,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.236,
+      0.86,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.16,
+      1.364,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.364,
+      1.564,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.564,
+      1.982,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      1.982,
+      2.56,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.1
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "एक सेकिन्ट तींसो सार्ट लेज",
+      "cer": 0.571,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तींसो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "तींसो",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "सार्ट",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेज",
+        "sim": -0.02,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकिंड तींसो साथ लेएर्ज",
+      "cer": 0.286,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तींसो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "साथ",
+        "sim": 0.47,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेएर्ज",
+        "sim": 0.47,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.571,
+    "cer_best": 0.286,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "Teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तींसो",
+        0.76
+       ],
+       [
+        "medium",
+        "तींसो",
+        0.76
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "तींसो",
+        0.1
+       ],
+       [
+        "medium",
+        "साथ",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 4,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "सार्ट",
+        0.76
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 5,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "लेज",
+        -0.02
+       ],
+       [
+        "medium",
+        "लेएर्ज",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  },
+  "efk_V1B_t3.mp3": {
+   "1.08": {
+    "final_dur": 2.713,
+    "runs": [
+     [
+      0.03,
+      0.9
+     ],
+     [
+      1.2,
+      2.64
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.241,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.241,
+      0.9,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.2,
+      1.407,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.407,
+      1.593,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.593,
+      2.056,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.056,
+      2.64,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.8
+   },
+   "1.10": {
+    "final_dur": 2.664,
+    "runs": [
+     [
+      0.03,
+      0.88
+     ],
+     [
+      1.18,
+      2.59
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.236,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.236,
+      0.88,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.18,
+      1.382,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.382,
+      1.564,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.564,
+      2.018,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.018,
+      2.59,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.4
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "इक सेकिन्ट, तीन्सो सार्ट लेयाज",
+      "cer": 0.5,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तीन्सो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "तीन्सो",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "सार्ट",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेयाज",
+        "sim": 0.2,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकिंड तीन सो साथ लेएर्ज",
+      "cer": 0.214,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेएर्ज",
+        "sim": 0.47,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.5,
+    "cer_best": 0.214,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "Teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तीन्सो",
+        0.76
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 3,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "तीन्सो",
+        0.1
+       ],
+       [
+        "medium",
+        "सो",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "सार्ट",
+        0.76
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 5,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "लेयाज",
+        0.2
+       ],
+       [
+        "medium",
+        "लेएर्ज",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  },
+  "efk_V1B_t4.mp3": {
+   "1.08": {
+    "final_dur": 2.806,
+    "runs": [
+     [
+      0.03,
+      0.91
+     ],
+     [
+      1.21,
+      2.78
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.241,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.241,
+      0.91,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.21,
+      1.426,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.426,
+      1.648,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.648,
+      2.13,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.13,
+      2.778,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.3
+   },
+   "1.10": {
+    "final_dur": 2.755,
+    "runs": [
+     [
+      0.02,
+      0.9
+     ],
+     [
+      1.18,
+      2.73
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.02,
+      0.236,
+      true,
+      "एक"
+     ],
+     [
+      "second.",
+      0.236,
+      0.9,
+      true,
+      "सेकंड।"
+     ],
+     [
+      "Teen",
+      1.18,
+      1.4,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.4,
+      1.618,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      1.618,
+      2.091,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.091,
+      2.727,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "इक सेकिन्ट, तीन सो सार्ट लेज",
+      "cer": 0.571,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "सार्ट",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "सो",
+        "sim": 0.1,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकंड तीन सो साथ लेएर्ज।",
+      "cer": 0.214,
+      "words": [
+       {
+        "i": 2,
+        "word": "Teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेएर्ज।",
+        "sim": 0.47,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.571,
+    "cer_best": 0.214,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "Teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तीन",
+        3.0
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 3,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "सो",
+        1.2
+       ],
+       [
+        "medium",
+        "सो",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "सार्ट",
+        0.76
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 5,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "सो",
+        0.1
+       ],
+       [
+        "medium",
+        "लेएर्ज।",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  }
+ },
+ "V2": {
+  "efk_V2_t1.mp3": {
+   "1.08": {
+    "final_dur": 3.704,
+    "runs": [
+     [
+      0.03,
+      1.94
+     ],
+     [
+      2.24,
+      3.68
+     ]
+    ],
+    "words": [
+     [
+      "Lekin",
+      0.03,
+      0.556,
+      true,
+      "लेकिन"
+     ],
+     [
+      "is",
+      0.556,
+      0.815,
+      true,
+      "इस"
+     ],
+     [
+      "ek",
+      0.815,
+      1.204,
+      true,
+      "एक"
+     ],
+     [
+      "frame",
+      1.204,
+      1.556,
+      true,
+      "फ्रेम"
+     ],
+     [
+      "mein...",
+      1.556,
+      1.94,
+      true,
+      "में"
+     ],
+     [
+      "12",
+      2.24,
+      2.796,
+      true,
+      "बारह"
+     ],
+     [
+      "layers",
+      2.796,
+      3.315,
+      true,
+      "लेयर्स"
+     ],
+     [
+      "hain.",
+      3.315,
+      3.68,
+      true,
+      "हैं।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.07,
+      "was": 0.34,
+      "now": 0.34,
+      "dramatic": true
+     }
+    ],
+    "lufs": -15.7
+   },
+   "1.10": {
+    "final_dur": 3.636,
+    "runs": [
+     [
+      0.03,
+      1.91
+     ],
+     [
+      2.19,
+      3.61
+     ]
+    ],
+    "words": [
+     [
+      "Lekin",
+      0.03,
+      0.545,
+      true,
+      "लेकिन"
+     ],
+     [
+      "is",
+      0.545,
+      0.8,
+      true,
+      "इस"
+     ],
+     [
+      "ek",
+      0.8,
+      1.182,
+      true,
+      "एक"
+     ],
+     [
+      "frame",
+      1.182,
+      1.527,
+      true,
+      "फ्रेम"
+     ],
+     [
+      "mein...",
+      1.527,
+      1.91,
+      true,
+      "में"
+     ],
+     [
+      "12",
+      2.19,
+      2.745,
+      true,
+      "बारह"
+     ],
+     [
+      "layers",
+      2.745,
+      3.255,
+      true,
+      "लेयर्स"
+     ],
+     [
+      "hain.",
+      3.255,
+      3.61,
+      true,
+      "हैं।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.07,
+      "was": 0.34,
+      "now": 0.34,
+      "dramatic": true
+     }
+    ],
+    "lufs": -15.7
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "लिकिन इस एक फ्रेम में 12 लेर्ज है",
+      "cer": 0.105,
+      "words": [
+       {
+        "i": 3,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "12",
+        "dev": "बारह",
+        "heard": "बारह",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "layers",
+        "dev": "लेयर्स",
+        "heard": "लेर्ज",
+        "sim": 0.6,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "लेकिन इस एक फ्रेम में बारह लेर्ज हैं।",
+      "cer": 0.105,
+      "words": [
+       {
+        "i": 3,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "12",
+        "dev": "बारह",
+        "heard": "बारह",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "layers",
+        "dev": "लेयर्स",
+        "heard": "लेर्ज",
+        "sim": 0.6,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.105,
+    "cer_best": 0.105,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "frame",
+      "dev": "फ़्रेम",
+      "aligned_ok": true,
+      "aligned_heard": "फ्रेम",
+      "free": [
+       [
+        "small",
+        "फ्रेम",
+        3.0
+       ],
+       [
+        "medium",
+        "फ्रेम",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 5,
+      "word": "12",
+      "dev": "बारह",
+      "aligned_ok": true,
+      "aligned_heard": "बारह",
+      "free": [
+       [
+        "small",
+        "बारह",
+        3.0
+       ],
+       [
+        "medium",
+        "बारह",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 6,
+      "word": "layers",
+      "dev": "लेयर्स",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स",
+      "free": [
+       [
+        "small",
+        "लेर्ज",
+        0.6
+       ],
+       [
+        "medium",
+        "लेर्ज",
+        0.6
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": true,
+    "retake": true
+   }
+  },
+  "efk_V2_t2.wav": {
+   "1.08": {
+    "final_dur": 3.676,
+    "runs": [
+     [
+      0.03,
+      0.55
+     ],
+     [
+      0.72,
+      2.08
+     ],
+     [
+      2.33,
+      3.66
+     ]
+    ],
+    "words": [
+     [
+      "Lekin",
+      0.03,
+      0.55,
+      true,
+      "लेकिन"
+     ],
+     [
+      "is",
+      0.72,
+      0.944,
+      true,
+      "इस"
+     ],
+     [
+      "ek",
+      0.944,
+      1.352,
+      true,
+      "एक"
+     ],
+     [
+      "frame",
+      1.352,
+      1.722,
+      true,
+      "फ्रेम"
+     ],
+     [
+      "mein...",
+      1.722,
+      2.37,
+      true,
+      "में"
+     ],
+     [
+      "12",
+      2.37,
+      2.889,
+      true,
+      "बारह"
+     ],
+     [
+      "layers",
+      2.889,
+      3.352,
+      true,
+      "लेयर्स"
+     ],
+     [
+      "hain.",
+      3.352,
+      3.676,
+      true,
+      "हैं।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.22,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.609,
+    "runs": [
+     [
+      0.03,
+      0.54
+     ],
+     [
+      0.71,
+      2.04
+     ],
+     [
+      2.29,
+      3.59
+     ]
+    ],
+    "words": [
+     [
+      "Lekin",
+      0.03,
+      0.54,
+      true,
+      "लेकिन"
+     ],
+     [
+      "is",
+      0.71,
+      0.927,
+      true,
+      "इस"
+     ],
+     [
+      "ek",
+      0.927,
+      1.327,
+      true,
+      "एक"
+     ],
+     [
+      "frame",
+      1.327,
+      1.691,
+      true,
+      "फ्रेम"
+     ],
+     [
+      "mein...",
+      1.691,
+      2.327,
+      true,
+      "में"
+     ],
+     [
+      "12",
+      2.327,
+      2.836,
+      true,
+      "बारह"
+     ],
+     [
+      "layers",
+      2.836,
+      3.291,
+      true,
+      "लेयर्स"
+     ],
+     [
+      "hain.",
+      3.291,
+      3.609,
+      true,
+      "हैं।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.22,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "लेकिन इस एक फ्रेम में बारा लेर्ज हैं",
+      "cer": 0.158,
+      "words": [
+       {
+        "i": 3,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "12",
+        "dev": "बारह",
+        "heard": "बारा",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "layers",
+        "dev": "लेयर्स",
+        "heard": "लेर्ज",
+        "sim": 0.6,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "लेकिन इस एक फ्रेम में बारा लेर्ज हैं।",
+      "cer": 0.158,
+      "words": [
+       {
+        "i": 3,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "12",
+        "dev": "बारह",
+        "heard": "बारा",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "layers",
+        "dev": "लेयर्स",
+        "heard": "लेर्ज",
+        "sim": 0.6,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.158,
+    "cer_best": 0.158,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "frame",
+      "dev": "फ़्रेम",
+      "aligned_ok": true,
+      "aligned_heard": "फ्रेम",
+      "free": [
+       [
+        "small",
+        "फ्रेम",
+        3.0
+       ],
+       [
+        "medium",
+        "फ्रेम",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 5,
+      "word": "12",
+      "dev": "बारह",
+      "aligned_ok": true,
+      "aligned_heard": "बारह",
+      "free": [
+       [
+        "small",
+        "बारा",
+        1.2
+       ],
+       [
+        "medium",
+        "बारा",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 6,
+      "word": "layers",
+      "dev": "लेयर्स",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स",
+      "free": [
+       [
+        "small",
+        "लेर्ज",
+        0.6
+       ],
+       [
+        "medium",
+        "लेर्ज",
+        0.6
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": true,
+    "retake": true
+   }
+  }
+ },
+ "V3": {
+  "efk_V3_t1.mp3": {
+   "1.08": {
+    "final_dur": 4.176,
+    "runs": [
+     [
+      0.03,
+      0.82
+     ],
+     [
+      1.17,
+      1.92
+     ],
+     [
+      2.26,
+      3.11
+     ],
+     [
+      3.49,
+      4.17
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.03,
+      0.82,
+      true,
+      "अंधेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.17,
+      1.92,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.26,
+      3.11,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.49,
+      4.176,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.01,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": false
+     },
+     {
+      "at": 3.38,
+      "was": 0.46,
+      "now": 0.45,
+      "dramatic": false
+     }
+    ],
+    "lufs": -15.9
+   },
+   "1.10": {
+    "final_dur": 4.1,
+    "runs": [
+     [
+      0.03,
+      0.81
+     ],
+     [
+      1.15,
+      1.88
+     ],
+     [
+      2.22,
+      3.06
+     ],
+     [
+      3.43,
+      4.1
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.03,
+      0.81,
+      true,
+      "अंधेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.15,
+      1.88,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.22,
+      3.06,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.43,
+      4.1,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 2.01,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": false
+     },
+     {
+      "at": 3.38,
+      "was": 0.46,
+      "now": 0.45,
+      "dramatic": false
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "अदेरा, दूमा, रोशनी, चिहरा",
+      "cer": 0.273,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चिहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "अन्धेरा दुमा रोश्नी चहरा",
+      "cer": 0.273,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.273,
+    "cer_best": 0.273,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "Chehra.",
+      "dev": "चेहरा।",
+      "aligned_ok": true,
+      "aligned_heard": "चेहरा।",
+      "free": [
+       [
+        "small",
+        "चिहरा",
+        1.2
+       ],
+       [
+        "medium",
+        "चहरा",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": true
+   }
+  },
+  "efk_V3_t2.wav": {
+   "1.08": {
+    "final_dur": 4.074,
+    "runs": [
+     [
+      0.03,
+      0.82
+     ],
+     [
+      1.12,
+      1.86
+     ],
+     [
+      2.16,
+      3.03
+     ],
+     [
+      3.36,
+      4.05
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.03,
+      0.82,
+      true,
+      "अंदेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.12,
+      1.86,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.16,
+      3.03,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.36,
+      4.05,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -15.8
+   },
+   "1.10": {
+    "final_dur": 4.0,
+    "runs": [
+     [
+      0.03,
+      0.81
+     ],
+     [
+      1.1,
+      1.82
+     ],
+     [
+      2.12,
+      2.97
+     ],
+     [
+      3.3,
+      3.97
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.03,
+      0.81,
+      true,
+      "अंदेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.1,
+      1.82,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.12,
+      2.97,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.3,
+      3.97,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "अदेरा, दूमा, रोशनी, चहरा",
+      "cer": 0.273,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "अंधेरा, दुमा, रोशनी, चहरा",
+      "cer": 0.182,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.273,
+    "cer_best": 0.182,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "Chehra.",
+      "dev": "चेहरा।",
+      "aligned_ok": true,
+      "aligned_heard": "चेहरा।",
+      "free": [
+       [
+        "small",
+        "चहरा",
+        1.2
+       ],
+       [
+        "medium",
+        "चहरा",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": true
+   }
+  },
+  "efk_V3_t3.mp3": {
+   "1.08": {
+    "final_dur": 4.176,
+    "runs": [
+     [
+      0.03,
+      0.82
+     ],
+     [
+      1.07,
+      1.86
+     ],
+     [
+      2.24,
+      3.09
+     ],
+     [
+      3.43,
+      4.15
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.03,
+      0.82,
+      true,
+      "अंधेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.07,
+      1.86,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.24,
+      3.09,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.43,
+      4.15,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.99,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": false
+     }
+    ],
+    "lufs": -15.9
+   },
+   "1.10": {
+    "final_dur": 4.1,
+    "runs": [
+     [
+      0.02,
+      0.8
+     ],
+     [
+      1.04,
+      1.83
+     ],
+     [
+      2.2,
+      3.03
+     ],
+     [
+      3.37,
+      4.08
+     ]
+    ],
+    "words": [
+     [
+      "Andhera.",
+      0.02,
+      0.8,
+      true,
+      "अंधेरा।"
+     ],
+     [
+      "Dhuaan.",
+      1.04,
+      1.83,
+      true,
+      "धुआ।"
+     ],
+     [
+      "Roshni.",
+      2.2,
+      3.03,
+      true,
+      "रोशनी।"
+     ],
+     [
+      "Chehra.",
+      3.37,
+      4.1,
+      true,
+      "चेहरा।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.99,
+      "was": 0.48,
+      "now": 0.45,
+      "dramatic": false
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "अदेरा दूमा रूशनी चहरा",
+      "cer": 0.273,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "अन्धेरा, दुआ, रोशनी, चहरा",
+      "cer": 0.182,
+      "words": [
+       {
+        "i": 3,
+        "word": "Chehra.",
+        "dev": "चेहरा।",
+        "heard": "चहरा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.273,
+    "cer_best": 0.182,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "Chehra.",
+      "dev": "चेहरा।",
+      "aligned_ok": true,
+      "aligned_heard": "चेहरा।",
+      "free": [
+       [
+        "small",
+        "चहरा",
+        1.2
+       ],
+       [
+        "medium",
+        "चहरा",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": true
+   }
+  }
+ },
+ "V4": {
+  "efk_V4_t1.mp3": {
+   "1.08": {
+    "final_dur": 2.648,
+    "runs": [
+     [
+      0.03,
+      1.14
+     ],
+     [
+      1.52,
+      2.64
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.03,
+      0.352,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.352,
+      1.019,
+      true,
+      "लफ़,"
+     ],
+     [
+      "Har",
+      1.52,
+      1.796,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.796,
+      2.611,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 2.6,
+    "runs": [
+     [
+      0.03,
+      1.13
+     ],
+     [
+      1.49,
+      2.59
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.03,
+      0.345,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.345,
+      1.0,
+      true,
+      "लफ़,"
+     ],
+     [
+      "Har",
+      1.49,
+      1.764,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.764,
+      2.564,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.7
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "हर लफज, हर चमक",
+      "cer": 0.0,
+      "words": [
+       {
+        "i": 1,
+        "word": "lafz.",
+        "dev": "लफ़्ज़।",
+        "heard": "लफज,",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "chamak.",
+        "dev": "चमक।",
+        "heard": "चमक",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.0,
+    "cer_best": 0.0,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "lafz.",
+      "dev": "लफ़्ज़।",
+      "aligned_ok": true,
+      "aligned_heard": "लफ़,",
+      "free": [
+       [
+        "small",
+        "लफज,",
+        1.2
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 3,
+      "word": "chamak.",
+      "dev": "चमक।",
+      "aligned_ok": true,
+      "aligned_heard": "चमक।",
+      "free": [
+       [
+        "small",
+        "चमक",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  },
+  "efk_V4_t2.wav": {
+   "1.08": {
+    "final_dur": 2.278,
+    "runs": [
+     [
+      0.04,
+      0.99
+     ],
+     [
+      1.24,
+      2.25
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.04,
+      0.333,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.333,
+      0.852,
+      true,
+      "लवज,"
+     ],
+     [
+      "Har",
+      1.24,
+      1.481,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.481,
+      2.259,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.3
+   },
+   "1.10": {
+    "final_dur": 2.236,
+    "runs": [
+     [
+      0.04,
+      0.98
+     ],
+     [
+      1.22,
+      2.21
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.04,
+      0.327,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.327,
+      0.836,
+      true,
+      "लवज,"
+     ],
+     [
+      "Har",
+      1.22,
+      1.455,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.455,
+      2.218,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.2
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "हर लव्ज, हर चमक",
+      "cer": 0.1,
+      "words": [
+       {
+        "i": 1,
+        "word": "lafz.",
+        "dev": "लफ़्ज़।",
+        "heard": "लव्ज,",
+        "sim": 0.65,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "chamak.",
+        "dev": "चमक।",
+        "heard": "चमक",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "हर लवस, हर चमक",
+      "cer": 0.2,
+      "words": [
+       {
+        "i": 1,
+        "word": "lafz.",
+        "dev": "लफ़्ज़।",
+        "heard": "लवस,",
+        "sim": -0.27,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "chamak.",
+        "dev": "चमक।",
+        "heard": "चमक",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.1,
+    "cer_best": 0.1,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "lafz.",
+      "dev": "लफ़्ज़।",
+      "aligned_ok": true,
+      "aligned_heard": "लवज,",
+      "free": [
+       [
+        "small",
+        "लव्ज,",
+        0.65
+       ],
+       [
+        "medium",
+        "लवस,",
+        -0.27
+       ]
+      ],
+      "listen": true,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "chamak.",
+      "dev": "चमक।",
+      "aligned_ok": true,
+      "aligned_heard": "चमक।",
+      "free": [
+       [
+        "small",
+        "चमक",
+        3.0
+       ],
+       [
+        "medium",
+        "चमक",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": true
+   }
+  },
+  "efk_V4_t3.mp3": {
+   "1.08": {
+    "final_dur": 2.528,
+    "runs": [
+     [
+      0.04,
+      1.15
+     ],
+     [
+      1.44,
+      2.5
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.04,
+      0.333,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.333,
+      1.15,
+      true,
+      "लफ़।"
+     ],
+     [
+      "Har",
+      1.44,
+      1.685,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.685,
+      2.5,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.1
+   },
+   "1.10": {
+    "final_dur": 2.482,
+    "runs": [
+     [
+      0.03,
+      1.13
+     ],
+     [
+      1.41,
+      2.46
+     ]
+    ],
+    "words": [
+     [
+      "Har",
+      0.03,
+      0.327,
+      true,
+      "हर"
+     ],
+     [
+      "lafz.",
+      0.327,
+      1.13,
+      true,
+      "लफ़।"
+     ],
+     [
+      "Har",
+      1.41,
+      1.655,
+      true,
+      "हर"
+     ],
+     [
+      "chamak.",
+      1.655,
+      2.455,
+      true,
+      "चमक।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.4
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "हर लाफ़, हर जमग",
+      "cer": 0.3,
+      "words": [
+       {
+        "i": 1,
+        "word": "lafz.",
+        "dev": "लफ़्ज़।",
+        "heard": "लाफ़,",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "chamak.",
+        "dev": "चमक।",
+        "heard": "जमग",
+        "sim": -0.27,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": null
+     },
+     {
+      "model": "medium",
+      "heard": "हर लफ़, हर जमक",
+      "cer": 0.2,
+      "words": [
+       {
+        "i": 1,
+        "word": "lafz.",
+        "dev": "लफ़्ज़।",
+        "heard": "लफ़,",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "chamak.",
+        "dev": "चमक।",
+        "heard": "जमक",
+        "sim": 0.47,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.3,
+    "cer_best": 0.2,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "lafz.",
+      "dev": "लफ़्ज़।",
+      "aligned_ok": true,
+      "aligned_heard": "लफ़।",
+      "free": [
+       [
+        "small",
+        "लाफ़,",
+        0.76
+       ],
+       [
+        "medium",
+        "लफ़,",
+        0.76
+       ]
+      ],
+      "listen": true,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "chamak.",
+      "dev": "चमक।",
+      "aligned_ok": true,
+      "aligned_heard": "चमक।",
+      "free": [
+       [
+        "small",
+        "जमग",
+        -0.27
+       ],
+       [
+        "medium",
+        "जमक",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     }
+    ],
+    "number_ok": null,
+    "retake": true
+   }
+  }
+ },
+ "V5": {
+  "efk_V5_t1.mp3": {
+   "1.08": {
+    "final_dur": 4.778,
+    "runs": [
+     [
+      0.03,
+      0.5
+     ],
+     [
+      0.6,
+      1.66
+     ],
+     [
+      1.97,
+      2.85
+     ],
+     [
+      3.04,
+      4.75
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.03,
+      0.5,
+      true,
+      "और"
+     ],
+     [
+      "ek",
+      0.6,
+      0.926,
+      true,
+      "एक"
+     ],
+     [
+      "layer...",
+      0.926,
+      1.66,
+      true,
+      "लेयर..."
+     ],
+     [
+      "jiske",
+      1.97,
+      2.389,
+      true,
+      "जिसके"
+     ],
+     [
+      "bina",
+      2.389,
+      2.85,
+      true,
+      "बिना"
+     ],
+     [
+      "frame",
+      3.04,
+      3.481,
+      true,
+      "फ़्रेम"
+     ],
+     [
+      "zinda",
+      3.481,
+      3.981,
+      true,
+      "जिन्दा"
+     ],
+     [
+      "nahi",
+      3.981,
+      4.222,
+      true,
+      "नहीं"
+     ],
+     [
+      "lagta.",
+      4.222,
+      4.759,
+      true,
+      "लगता।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.78,
+      "was": 0.34,
+      "now": 0.34,
+      "dramatic": true
+     }
+    ],
+    "lufs": -15.9
+   },
+   "1.10": {
+    "final_dur": 4.691,
+    "runs": [
+     [
+      0.03,
+      0.48
+     ],
+     [
+      0.59,
+      1.63
+     ],
+     [
+      1.93,
+      2.8
+     ],
+     [
+      2.98,
+      4.67
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.03,
+      0.48,
+      true,
+      "और"
+     ],
+     [
+      "ek",
+      0.59,
+      0.909,
+      true,
+      "एक"
+     ],
+     [
+      "layer...",
+      0.909,
+      1.63,
+      true,
+      "लेयर..."
+     ],
+     [
+      "jiske",
+      1.93,
+      2.345,
+      true,
+      "जिसके"
+     ],
+     [
+      "bina",
+      2.345,
+      2.8,
+      true,
+      "बिना"
+     ],
+     [
+      "frame",
+      2.98,
+      3.418,
+      true,
+      "फ़्रेम"
+     ],
+     [
+      "zinda",
+      3.418,
+      3.909,
+      true,
+      "जिन्दा"
+     ],
+     [
+      "nahi",
+      3.909,
+      4.145,
+      true,
+      "नहीं"
+     ],
+     [
+      "lagta.",
+      4.145,
+      4.673,
+      true,
+      "लगता।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.78,
+      "was": 0.34,
+      "now": 0.34,
+      "dramatic": true
+     }
+    ],
+    "lufs": -15.9
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "और एक लेयर, जिसके बिना फ्रेम जिन्दा नहीं लक्ता.",
+      "cer": 0.091,
+      "words": [
+       {
+        "i": 2,
+        "word": "layer...",
+        "dev": "लेयर...",
+        "heard": "लेयर,",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "zinda",
+        "dev": "ज़िंदा",
+        "heard": "जिन्दा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.091,
+    "cer_best": 0.091,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "layer...",
+      "dev": "लेयर...",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर...",
+      "free": [
+       [
+        "small",
+        "लेयर,",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 5,
+      "word": "frame",
+      "dev": "फ़्रेम",
+      "aligned_ok": true,
+      "aligned_heard": "फ़्रेम",
+      "free": [
+       [
+        "small",
+        "फ्रेम",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 6,
+      "word": "zinda",
+      "dev": "ज़िंदा",
+      "aligned_ok": true,
+      "aligned_heard": "जिन्दा",
+      "free": [
+       [
+        "small",
+        "जिन्दा",
+        1.2
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  },
+  "efk_V5_t2.wav": {
+   "1.08": {
+    "final_dur": 4.231,
+    "runs": [
+     [
+      0.03,
+      0.42
+     ],
+     [
+      0.53,
+      1.38
+     ],
+     [
+      1.71,
+      4.18
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.03,
+      0.426,
+      true,
+      "और"
+     ],
+     [
+      "ek",
+      0.53,
+      0.815,
+      true,
+      "एक"
+     ],
+     [
+      "layer...",
+      0.815,
+      1.38,
+      true,
+      "लेयर..."
+     ],
+     [
+      "jiske",
+      1.71,
+      2.13,
+      true,
+      "जिसके"
+     ],
+     [
+      "bina",
+      2.13,
+      2.407,
+      true,
+      "बिना"
+     ],
+     [
+      "frame",
+      2.407,
+      2.963,
+      true,
+      "फ़्रेम"
+     ],
+     [
+      "zinda",
+      2.963,
+      3.481,
+      true,
+      "जिन्दा"
+     ],
+     [
+      "nahi",
+      3.481,
+      3.722,
+      true,
+      "नहीं"
+     ],
+     [
+      "lagta.",
+      3.722,
+      4.18,
+      true,
+      "लगता।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.54,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 4.155,
+    "runs": [
+     [
+      0.03,
+      0.42
+     ],
+     [
+      0.52,
+      1.37
+     ],
+     [
+      1.68,
+      4.11
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.03,
+      0.42,
+      true,
+      "और"
+     ],
+     [
+      "ek",
+      0.52,
+      0.8,
+      true,
+      "एक"
+     ],
+     [
+      "layer...",
+      0.8,
+      1.37,
+      true,
+      "लेयर..."
+     ],
+     [
+      "jiske",
+      1.68,
+      2.091,
+      true,
+      "जिसके"
+     ],
+     [
+      "bina",
+      2.091,
+      2.364,
+      true,
+      "बिना"
+     ],
+     [
+      "frame",
+      2.364,
+      2.909,
+      true,
+      "फ़्रेम"
+     ],
+     [
+      "zinda",
+      2.909,
+      3.418,
+      true,
+      "जिन्दा"
+     ],
+     [
+      "nahi",
+      3.418,
+      3.655,
+      true,
+      "नहीं"
+     ],
+     [
+      "lagta.",
+      3.655,
+      4.11,
+      true,
+      "लगता।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.54,
+      "was": 0.3,
+      "now": 0.3,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "और एक लेयर जिसके बिना फ्रेम जिन्दा नहीं लगता",
+      "cer": 0.045,
+      "words": [
+       {
+        "i": 2,
+        "word": "layer...",
+        "dev": "लेयर...",
+        "heard": "लेयर",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "frame",
+        "dev": "फ़्रेम",
+        "heard": "फ्रेम",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 6,
+        "word": "zinda",
+        "dev": "ज़िंदा",
+        "heard": "जिन्दा",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.045,
+    "cer_best": 0.045,
+    "keywords": [
+     {
+      "i": 2,
+      "word": "layer...",
+      "dev": "लेयर...",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर...",
+      "free": [
+       [
+        "small",
+        "लेयर",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 5,
+      "word": "frame",
+      "dev": "फ़्रेम",
+      "aligned_ok": true,
+      "aligned_heard": "फ़्रेम",
+      "free": [
+       [
+        "small",
+        "फ्रेम",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 6,
+      "word": "zinda",
+      "dev": "ज़िंदा",
+      "aligned_ok": true,
+      "aligned_heard": "जिन्दा",
+      "free": [
+       [
+        "small",
+        "जिन्दा",
+        1.2
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  }
+ },
+ "V6": {
+  "efk_V6_t1.mp3": {
+   "1.08": {
+    "final_dur": 2.167,
+    "runs": [
+     [
+      0.03,
+      0.99
+     ],
+     [
+      1.2,
+      2.11
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.315,
+      true,
+      "एक"
+     ],
+     [
+      "second",
+      0.315,
+      0.759,
+      true,
+      "सेकंड"
+     ],
+     [
+      "mein",
+      0.759,
+      0.99,
+      true,
+      "में"
+     ],
+     [
+      "30",
+      1.2,
+      1.5,
+      true,
+      "तीस"
+     ],
+     [
+      "frames.",
+      1.5,
+      2.13,
+      true,
+      "फ़्रेम्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.7
+   },
+   "1.10": {
+    "final_dur": 2.127,
+    "runs": [
+     [
+      0.02,
+      0.98
+     ],
+     [
+      1.18,
+      2.08
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.02,
+      0.309,
+      true,
+      "एक"
+     ],
+     [
+      "second",
+      0.309,
+      0.745,
+      true,
+      "सेकंड"
+     ],
+     [
+      "mein",
+      0.745,
+      0.98,
+      true,
+      "में"
+     ],
+     [
+      "30",
+      1.18,
+      1.473,
+      true,
+      "तीस"
+     ],
+     [
+      "frames.",
+      1.473,
+      2.091,
+      true,
+      "फ़्रेम्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "देख सेक्किन में, तीस फ्रेम्स",
+      "cer": 0.333,
+      "words": [
+       {
+        "i": 1,
+        "word": "second",
+        "dev": "सेकंड",
+        "heard": "सेक्किन",
+        "sim": 0.89,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "30",
+        "dev": "तीस",
+        "heard": "तीस",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "frames.",
+        "dev": "फ़्रेम्स।",
+        "heard": "फ्रेम्स",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकिन्ट में तीस फ्रेम्स।",
+      "cer": 0.167,
+      "words": [
+       {
+        "i": 1,
+        "word": "second",
+        "dev": "सेकंड",
+        "heard": "सेकिन्ट",
+        "sim": 0.65,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "30",
+        "dev": "तीस",
+        "heard": "तीस",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "frames.",
+        "dev": "फ़्रेम्स।",
+        "heard": "फ्रेम्स।",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.333,
+    "cer_best": 0.167,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "second",
+      "dev": "सेकंड",
+      "aligned_ok": true,
+      "aligned_heard": "सेकंड",
+      "free": [
+       [
+        "small",
+        "सेक्किन",
+        0.89
+       ],
+       [
+        "medium",
+        "सेकिन्ट",
+        0.65
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "30",
+      "dev": "तीस",
+      "aligned_ok": true,
+      "aligned_heard": "तीस",
+      "free": [
+       [
+        "small",
+        "तीस",
+        3.0
+       ],
+       [
+        "medium",
+        "तीस",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "frames.",
+      "dev": "फ़्रेम्स।",
+      "aligned_ok": true,
+      "aligned_heard": "फ़्रेम्स।",
+      "free": [
+       [
+        "small",
+        "फ्रेम्स",
+        3.0
+       ],
+       [
+        "medium",
+        "फ्रेम्स।",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": true,
+    "retake": true
+   }
+  },
+  "efk_V6_t2.wav": {
+   "1.08": {
+    "final_dur": 2.111,
+    "runs": [
+     [
+      0.03,
+      0.95
+     ],
+     [
+      1.15,
+      2.07
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.287,
+      true,
+      "एक"
+     ],
+     [
+      "second",
+      0.287,
+      0.694,
+      true,
+      "सेकंड"
+     ],
+     [
+      "mein",
+      0.694,
+      0.95,
+      true,
+      "में"
+     ],
+     [
+      "30",
+      1.15,
+      1.454,
+      true,
+      "तीस"
+     ],
+     [
+      "frames.",
+      1.454,
+      2.07,
+      true,
+      "फ़्रेम्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.6
+   },
+   "1.10": {
+    "final_dur": 2.073,
+    "runs": [
+     [
+      0.03,
+      0.93
+     ],
+     [
+      1.13,
+      2.03
+     ]
+    ],
+    "words": [
+     [
+      "Ek",
+      0.03,
+      0.282,
+      true,
+      "एक"
+     ],
+     [
+      "second",
+      0.282,
+      0.682,
+      true,
+      "सेकंड"
+     ],
+     [
+      "mein",
+      0.682,
+      0.93,
+      true,
+      "में"
+     ],
+     [
+      "30",
+      1.13,
+      1.427,
+      true,
+      "तीस"
+     ],
+     [
+      "frames.",
+      1.427,
+      2.03,
+      true,
+      "फ़्रेम्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.7
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "एक सेकिन में, तीस फ्रेम्स",
+      "cer": 0.083,
+      "words": [
+       {
+        "i": 1,
+        "word": "second",
+        "dev": "सेकंड",
+        "heard": "सेकिन",
+        "sim": 0.89,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "30",
+        "dev": "तीस",
+        "heard": "तीस",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "frames.",
+        "dev": "फ़्रेम्स।",
+        "heard": "फ्रेम्स",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "एक सेकंट में 30 फ्रेम्स",
+      "cer": 0.083,
+      "words": [
+       {
+        "i": 1,
+        "word": "second",
+        "dev": "सेकंड",
+        "heard": "सेकंट",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "30",
+        "dev": "तीस",
+        "heard": "तीस",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "frames.",
+        "dev": "फ़्रेम्स।",
+        "heard": "फ्रेम्स",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.083,
+    "cer_best": 0.083,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "second",
+      "dev": "सेकंड",
+      "aligned_ok": true,
+      "aligned_heard": "सेकंड",
+      "free": [
+       [
+        "small",
+        "सेकिन",
+        0.89
+       ],
+       [
+        "medium",
+        "सेकंट",
+        0.76
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "30",
+      "dev": "तीस",
+      "aligned_ok": true,
+      "aligned_heard": "तीस",
+      "free": [
+       [
+        "small",
+        "तीस",
+        3.0
+       ],
+       [
+        "medium",
+        "तीस",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "frames.",
+      "dev": "फ़्रेम्स।",
+      "aligned_ok": true,
+      "aligned_heard": "फ़्रेम्स।",
+      "free": [
+       [
+        "small",
+        "फ्रेम्स",
+        3.0
+       ],
+       [
+        "medium",
+        "फ्रेम्स",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": true,
+    "retake": true
+   }
+  }
+ },
+ "V7": {
+  "efk_V7_t1.mp3": {
+   "1.08": {
+    "final_dur": 3.843,
+    "runs": [
+     [
+      0.03,
+      0.55
+     ],
+     [
+      0.77,
+      1.84
+     ],
+     [
+      2.2,
+      3.82
+     ]
+    ],
+    "words": [
+     [
+      "Yaani",
+      0.03,
+      0.55,
+      true,
+      "यानी"
+     ],
+     [
+      "har",
+      0.77,
+      1.074,
+      true,
+      "हर"
+     ],
+     [
+      "second...",
+      1.074,
+      1.704,
+      true,
+      "सेकंड"
+     ],
+     [
+      "teen",
+      1.704,
+      2.444,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      2.444,
+      2.648,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      2.648,
+      3.13,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      3.13,
+      3.82,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.98,
+      "was": 0.41,
+      "now": 0.41,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.773,
+    "runs": [
+     [
+      0.03,
+      0.54
+     ],
+     [
+      0.75,
+      1.81
+     ],
+     [
+      2.16,
+      3.75
+     ]
+    ],
+    "words": [
+     [
+      "Yaani",
+      0.03,
+      0.54,
+      true,
+      "यानी"
+     ],
+     [
+      "har",
+      0.75,
+      1.055,
+      true,
+      "हर"
+     ],
+     [
+      "second...",
+      1.055,
+      1.673,
+      true,
+      "सेकंड"
+     ],
+     [
+      "teen",
+      1.673,
+      2.4,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      2.4,
+      2.6,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      2.6,
+      3.073,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      3.073,
+      3.75,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.98,
+      "was": 0.41,
+      "now": 0.41,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "यानी हर सेकिन्ट तींसो साथ लेर्ज",
+      "cer": 0.375,
+      "words": [
+       {
+        "i": 3,
+        "word": "teen",
+        "dev": "तीन",
+        "heard": "तींसो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "साथ",
+        "sim": 0.47,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 6,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेर्ज",
+        "sim": 0.6,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "यानी हर सेकिंड तीन्सो साथ लेर्स।",
+      "cer": 0.125,
+      "words": [
+       {
+        "i": 3,
+        "word": "teen",
+        "dev": "तीन",
+        "heard": "तीन्सो",
+        "sim": 0.76,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "साथ",
+        "sim": 0.47,
+        "verdict": "fail"
+       },
+       {
+        "i": 5,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 6,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेर्स।",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.375,
+    "cer_best": 0.125,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तींसो",
+        0.76
+       ],
+       [
+        "medium",
+        "तीन्सो",
+        0.76
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 4,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "साथ",
+        0.47
+       ],
+       [
+        "medium",
+        "साथ",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 5,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "साथ",
+        1.2
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 6,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "लेर्ज",
+        0.6
+       ],
+       [
+        "medium",
+        "लेर्स।",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  },
+  "efk_V7_t2.wav": {
+   "1.08": {
+    "final_dur": 3.426,
+    "runs": [
+     [
+      0.05,
+      1.45
+     ],
+     [
+      1.72,
+      3.38
+     ]
+    ],
+    "words": [
+     [
+      "Yaani",
+      0.05,
+      0.472,
+      true,
+      "यानी"
+     ],
+     [
+      "har",
+      0.472,
+      0.861,
+      true,
+      "हर"
+     ],
+     [
+      "second...",
+      0.861,
+      1.45,
+      true,
+      "सेकंड"
+     ],
+     [
+      "teen",
+      1.72,
+      1.991,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.991,
+      2.269,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      2.269,
+      2.769,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.769,
+      3.38,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.72,
+      "was": 0.27,
+      "now": 0.27,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.364,
+    "runs": [
+     [
+      0.05,
+      1.42
+     ],
+     [
+      1.69,
+      3.31
+     ]
+    ],
+    "words": [
+     [
+      "Yaani",
+      0.05,
+      0.464,
+      true,
+      "यानी"
+     ],
+     [
+      "har",
+      0.464,
+      0.845,
+      true,
+      "हर"
+     ],
+     [
+      "second...",
+      0.845,
+      1.42,
+      true,
+      "सेकंड"
+     ],
+     [
+      "teen",
+      1.69,
+      1.955,
+      true,
+      "तीन"
+     ],
+     [
+      "sau",
+      1.955,
+      2.227,
+      true,
+      "सौ"
+     ],
+     [
+      "saath",
+      2.227,
+      2.718,
+      true,
+      "साठ"
+     ],
+     [
+      "layers.",
+      2.718,
+      3.31,
+      true,
+      "लेयर्स।"
+     ]
+    ],
+    "pauses": [
+     {
+      "at": 1.72,
+      "was": 0.27,
+      "now": 0.27,
+      "dramatic": true
+     }
+    ],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "यानी हर सेकिन्ट, तीन सो साथ लेयर्स",
+      "cer": 0.188,
+      "words": [
+       {
+        "i": 3,
+        "word": "teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 6,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लेयर्स",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": false
+     },
+     {
+      "model": "medium",
+      "heard": "यानी हर सेकंड तीन सो साथ लैयर्ज।",
+      "cer": 0.125,
+      "words": [
+       {
+        "i": 3,
+        "word": "teen",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "sau",
+        "dev": "सौ",
+        "heard": "सो",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 5,
+        "word": "saath",
+        "dev": "साठ",
+        "heard": "साथ",
+        "sim": 1.2,
+        "verdict": "fail"
+       },
+       {
+        "i": 6,
+        "word": "layers.",
+        "dev": "लेयर्स।",
+        "heard": "लैयर्ज।",
+        "sim": 0.47,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": false
+     }
+    ],
+    "cer": 0.188,
+    "cer_best": 0.125,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "teen",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तीन",
+        3.0
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "sau",
+      "dev": "सौ",
+      "aligned_ok": true,
+      "aligned_heard": "सौ",
+      "free": [
+       [
+        "small",
+        "सो",
+        1.2
+       ],
+       [
+        "medium",
+        "सो",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 5,
+      "word": "saath",
+      "dev": "साठ",
+      "aligned_ok": true,
+      "aligned_heard": "साठ",
+      "free": [
+       [
+        "small",
+        "साथ",
+        1.2
+       ],
+       [
+        "medium",
+        "साथ",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "retake"
+     },
+     {
+      "i": 6,
+      "word": "layers.",
+      "dev": "लेयर्स।",
+      "aligned_ok": true,
+      "aligned_heard": "लेयर्स।",
+      "free": [
+       [
+        "small",
+        "लेयर्स",
+        3.0
+       ],
+       [
+        "medium",
+        "लैयर्ज।",
+        0.47
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": false,
+    "retake": true
+   }
+  }
+ },
+ "V8": {
+  "efk_V8_t1.mp3": {
+   "1.08": {
+    "final_dur": 2.093,
+    "runs": [
+     [
+      0.04,
+      1.0
+     ],
+     [
+      1.16,
+      2.03
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.04,
+      0.222,
+      true,
+      "और"
+     ],
+     [
+      "awaaz",
+      0.222,
+      0.741,
+      true,
+      "आवाज"
+     ],
+     [
+      "ke",
+      0.741,
+      1.019,
+      true,
+      "के"
+     ],
+     [
+      "3",
+      1.16,
+      1.444,
+      true,
+      "तीन"
+     ],
+     [
+      "tracks.",
+      1.444,
+      2.03,
+      true,
+      "ट्रैक्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.1
+   },
+   "1.10": {
+    "final_dur": 2.055,
+    "runs": [
+     [
+      0.04,
+      0.98
+     ],
+     [
+      1.14,
+      1.99
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.04,
+      0.218,
+      true,
+      "और"
+     ],
+     [
+      "awaaz",
+      0.218,
+      0.727,
+      true,
+      "आवाज"
+     ],
+     [
+      "ke",
+      0.727,
+      1.0,
+      true,
+      "के"
+     ],
+     [
+      "3",
+      1.0,
+      1.418,
+      true,
+      "तीन"
+     ],
+     [
+      "tracks.",
+      1.418,
+      1.99,
+      true,
+      "ट्रैक्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.3
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "और अवास के तींट्रैक्स",
+      "cer": 0.25,
+      "words": [
+       {
+        "i": 1,
+        "word": "awaaz",
+        "dev": "आवाज़",
+        "heard": "अवास",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "3",
+        "dev": "तीन",
+        "heard": "तींट्रैक्स",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "tracks.",
+        "dev": "ट्रैक्स।",
+        "heard": "तींट्रैक्स",
+        "sim": 0.81,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "और आवास के तीन ट्रैक्स।",
+      "cer": 0.083,
+      "words": [
+       {
+        "i": 1,
+        "word": "awaaz",
+        "dev": "आवाज़",
+        "heard": "आवास",
+        "sim": 0.65,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "3",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "tracks.",
+        "dev": "ट्रैक्स।",
+        "heard": "ट्रैक्स।",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.25,
+    "cer_best": 0.083,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "awaaz",
+      "dev": "आवाज़",
+      "aligned_ok": true,
+      "aligned_heard": "आवाज",
+      "free": [
+       [
+        "small",
+        "अवास",
+        0.1
+       ],
+       [
+        "medium",
+        "आवास",
+        0.65
+       ]
+      ],
+      "listen": true,
+      "verdict": "retake"
+     },
+     {
+      "i": 3,
+      "word": "3",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तींट्रैक्स",
+        0.1
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "tracks.",
+      "dev": "ट्रैक्स।",
+      "aligned_ok": true,
+      "aligned_heard": "ट्रैक्स।",
+      "free": [
+       [
+        "small",
+        "तींट्रैक्स",
+        0.81
+       ],
+       [
+        "medium",
+        "ट्रैक्स।",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": true,
+    "retake": true
+   }
+  },
+  "efk_V8_t2.wav": {
+   "1.08": {
+    "final_dur": 2.13,
+    "runs": [
+     [
+      0.04,
+      1.04
+     ],
+     [
+      1.2,
+      2.08
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.04,
+      0.25,
+      true,
+      "और"
+     ],
+     [
+      "awaaz",
+      0.25,
+      0.769,
+      true,
+      "आवाज"
+     ],
+     [
+      "ke",
+      0.9,
+      1.04,
+      true,
+      "के"
+     ],
+     [
+      "3",
+      1.2,
+      1.491,
+      true,
+      "तीन"
+     ],
+     [
+      "tracks.",
+      1.491,
+      2.08,
+      true,
+      "ट्रैक्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.5
+   },
+   "1.10": {
+    "final_dur": 2.091,
+    "runs": [
+     [
+      0.04,
+      1.02
+     ],
+     [
+      1.18,
+      2.05
+     ]
+    ],
+    "words": [
+     [
+      "Aur",
+      0.04,
+      0.245,
+      true,
+      "और"
+     ],
+     [
+      "awaaz",
+      0.245,
+      0.755,
+      true,
+      "आवाज"
+     ],
+     [
+      "ke",
+      0.88,
+      1.02,
+      true,
+      "के"
+     ],
+     [
+      "3",
+      1.18,
+      1.464,
+      true,
+      "तीन"
+     ],
+     [
+      "tracks.",
+      1.464,
+      2.05,
+      true,
+      "ट्रैक्स।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -17.4
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "और आवाज के तींट्रैक्स",
+      "cer": 0.083,
+      "words": [
+       {
+        "i": 1,
+        "word": "awaaz",
+        "dev": "आवाज़",
+        "heard": "आवाज",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 3,
+        "word": "3",
+        "dev": "तीन",
+        "heard": "तींट्रैक्स",
+        "sim": 0.1,
+        "verdict": "fail"
+       },
+       {
+        "i": 4,
+        "word": "tracks.",
+        "dev": "ट्रैक्स।",
+        "heard": "तींट्रैक्स",
+        "sim": 0.81,
+        "verdict": "fail"
+       }
+      ],
+      "number_ok": true
+     },
+     {
+      "model": "medium",
+      "heard": "और आवास के तीन ट्राक्स।",
+      "cer": 0.083,
+      "words": [
+       {
+        "i": 1,
+        "word": "awaaz",
+        "dev": "आवाज़",
+        "heard": "आवास",
+        "sim": 0.65,
+        "verdict": "fail"
+       },
+       {
+        "i": 3,
+        "word": "3",
+        "dev": "तीन",
+        "heard": "तीन",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 4,
+        "word": "tracks.",
+        "dev": "ट्रैक्स।",
+        "heard": "ट्राक्स।",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": true
+     }
+    ],
+    "cer": 0.083,
+    "cer_best": 0.083,
+    "keywords": [
+     {
+      "i": 1,
+      "word": "awaaz",
+      "dev": "आवाज़",
+      "aligned_ok": true,
+      "aligned_heard": "आवाज",
+      "free": [
+       [
+        "small",
+        "आवाज",
+        3.0
+       ],
+       [
+        "medium",
+        "आवास",
+        0.65
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 3,
+      "word": "3",
+      "dev": "तीन",
+      "aligned_ok": true,
+      "aligned_heard": "तीन",
+      "free": [
+       [
+        "small",
+        "तींट्रैक्स",
+        0.1
+       ],
+       [
+        "medium",
+        "तीन",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 4,
+      "word": "tracks.",
+      "dev": "ट्रैक्स।",
+      "aligned_ok": true,
+      "aligned_heard": "ट्रैक्स।",
+      "free": [
+       [
+        "small",
+        "तींट्रैक्स",
+        0.81
+       ],
+       [
+        "medium",
+        "ट्राक्स।",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": true,
+    "retake": false
+   }
+  }
+ },
+ "V9": {
+  "efk_V9_t1.mp3": {
+   "1.08": {
+    "final_dur": 3.231,
+    "runs": [
+     [
+      0.03,
+      0.93
+     ],
+     [
+      1.29,
+      3.2
+     ]
+    ],
+    "words": [
+     [
+      "Keemat...",
+      0.03,
+      0.556,
+      true,
+      "कीमत"
+     ],
+     [
+      "banane",
+      0.556,
+      1.833,
+      true,
+      "बनाने"
+     ],
+     [
+      "wala",
+      1.833,
+      2.148,
+      true,
+      "वाला"
+     ],
+     [
+      "jaanta",
+      2.148,
+      2.815,
+      true,
+      "जानता"
+     ],
+     [
+      "hai.",
+      2.815,
+      3.2,
+      true,
+      "है।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.173,
+    "runs": [
+     [
+      0.03,
+      0.9
+     ],
+     [
+      1.27,
+      3.14
+     ]
+    ],
+    "words": [
+     [
+      "Keemat...",
+      0.03,
+      0.545,
+      true,
+      "कीमत"
+     ],
+     [
+      "banane",
+      0.545,
+      1.8,
+      true,
+      "बनाने"
+     ],
+     [
+      "wala",
+      1.8,
+      2.109,
+      true,
+      "वाला"
+     ],
+     [
+      "jaanta",
+      2.109,
+      2.764,
+      true,
+      "जानता"
+     ],
+     [
+      "hai.",
+      2.764,
+      3.14,
+      true,
+      "है।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -15.9
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "कीमत बनाने वाला जानता है",
+      "cer": 0.0,
+      "words": [
+       {
+        "i": 0,
+        "word": "Keemat...",
+        "dev": "क़ीमत...",
+        "heard": "कीमत",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 1,
+        "word": "banane",
+        "dev": "बनाने",
+        "heard": "बनाने",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.0,
+    "cer_best": 0.0,
+    "keywords": [
+     {
+      "i": 0,
+      "word": "Keemat...",
+      "dev": "क़ीमत...",
+      "aligned_ok": true,
+      "aligned_heard": "कीमत",
+      "free": [
+       [
+        "small",
+        "कीमत",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 1,
+      "word": "banane",
+      "dev": "बनाने",
+      "aligned_ok": true,
+      "aligned_heard": "बनाने",
+      "free": [
+       [
+        "small",
+        "बनाने",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  },
+  "efk_V9_t2.wav": {
+   "1.08": {
+    "final_dur": 2.519,
+    "runs": [
+     [
+      0.04,
+      0.79
+     ],
+     [
+      1.0,
+      2.45
+     ]
+    ],
+    "words": [
+     [
+      "Keemat...",
+      0.04,
+      0.519,
+      true,
+      "कीमत"
+     ],
+     [
+      "banane",
+      0.519,
+      1.481,
+      true,
+      "बनाने"
+     ],
+     [
+      "wala",
+      1.481,
+      1.759,
+      true,
+      "वाला"
+     ],
+     [
+      "jaanta",
+      1.759,
+      2.204,
+      true,
+      "जानता"
+     ],
+     [
+      "hai.",
+      2.204,
+      2.463,
+      true,
+      "है।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.8
+   },
+   "1.10": {
+    "final_dur": 2.473,
+    "runs": [
+     [
+      0.04,
+      0.77
+     ],
+     [
+      0.98,
+      2.41
+     ]
+    ],
+    "words": [
+     [
+      "Keemat...",
+      0.04,
+      0.509,
+      true,
+      "कीमत"
+     ],
+     [
+      "banane",
+      0.509,
+      1.455,
+      true,
+      "बनाने"
+     ],
+     [
+      "wala",
+      1.455,
+      1.727,
+      true,
+      "वाला"
+     ],
+     [
+      "jaanta",
+      1.727,
+      2.164,
+      true,
+      "जानता"
+     ],
+     [
+      "hai.",
+      2.164,
+      2.418,
+      true,
+      "है।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.6
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "कीमत बनाने वाला जानता है",
+      "cer": 0.0,
+      "words": [
+       {
+        "i": 0,
+        "word": "Keemat...",
+        "dev": "क़ीमत...",
+        "heard": "कीमत",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 1,
+        "word": "banane",
+        "dev": "बनाने",
+        "heard": "बनाने",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.0,
+    "cer_best": 0.0,
+    "keywords": [
+     {
+      "i": 0,
+      "word": "Keemat...",
+      "dev": "क़ीमत...",
+      "aligned_ok": true,
+      "aligned_heard": "कीमत",
+      "free": [
+       [
+        "small",
+        "कीमत",
+        3.0
+       ]
+      ],
+      "listen": true,
+      "verdict": "ok"
+     },
+     {
+      "i": 1,
+      "word": "banane",
+      "dev": "बनाने",
+      "aligned_ok": true,
+      "aligned_heard": "बनाने",
+      "free": [
+       [
+        "small",
+        "बनाने",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  }
+ },
+ "V10": {
+  "efk_V10_t1.mp3": {
+   "1.08": {
+    "final_dur": 3.574,
+    "runs": [
+     [
+      0.03,
+      1.04
+     ],
+     [
+      1.35,
+      2.47
+     ],
+     [
+      2.82,
+      3.55
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.03,
+      0.259,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.259,
+      0.648,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.648,
+      1.04,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.35,
+      1.796,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.796,
+      1.944,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.944,
+      2.167,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      2.167,
+      2.47,
+      true,
+      "है,"
+     ],
+     [
+      "usko",
+      2.82,
+      3.111,
+      true,
+      "उसको"
+     ],
+     [
+      "bhejo.",
+      3.111,
+      3.556,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.509,
+    "runs": [
+     [
+      0.03,
+      1.02
+     ],
+     [
+      1.32,
+      2.41
+     ],
+     [
+      2.77,
+      3.48
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.03,
+      0.255,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.255,
+      0.636,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.636,
+      1.02,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.32,
+      1.764,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.764,
+      1.909,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.909,
+      2.127,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      2.127,
+      2.41,
+      true,
+      "है,"
+     ],
+     [
+      "usko",
+      2.77,
+      3.055,
+      true,
+      "उसको"
+     ],
+     [
+      "bhejo.",
+      3.055,
+      3.491,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "जो कहता है, एदिटिंग में क्या है, उसको भेजो.",
+      "cer": 0.056,
+      "words": [
+       {
+        "i": 3,
+        "word": "\"editing",
+        "dev": "\"एडिटिंग",
+        "heard": "एदिटिंग",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 7,
+        "word": "usko",
+        "dev": "उसको",
+        "heard": "उसको",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 8,
+        "word": "bhejo.",
+        "dev": "भेजो।",
+        "heard": "भेजो.",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.056,
+    "cer_best": 0.056,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "\"editing",
+      "dev": "\"एडिटिंग",
+      "aligned_ok": true,
+      "aligned_heard": "एडिटिंग",
+      "free": [
+       [
+        "small",
+        "एदिटिंग",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 7,
+      "word": "usko",
+      "dev": "उसको",
+      "aligned_ok": true,
+      "aligned_heard": "उसको",
+      "free": [
+       [
+        "small",
+        "उसको",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 8,
+      "word": "bhejo.",
+      "dev": "भेजो।",
+      "aligned_ok": true,
+      "aligned_heard": "भेजो।",
+      "free": [
+       [
+        "small",
+        "भेजो.",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  },
+  "efk_V10_t2.wav": {
+   "1.08": {
+    "final_dur": 3.444,
+    "runs": [
+     [
+      0.02,
+      0.88
+     ],
+     [
+      1.14,
+      2.18
+     ],
+     [
+      2.52,
+      3.21
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.02,
+      0.222,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.222,
+      0.537,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.537,
+      0.88,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.14,
+      1.574,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.574,
+      1.704,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.704,
+      1.907,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      1.907,
+      2.18,
+      true,
+      "है,"
+     ],
+     [
+      "usko",
+      2.52,
+      2.796,
+      true,
+      "उसको"
+     ],
+     [
+      "bhejo.",
+      2.796,
+      3.21,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.381,
+    "runs": [
+     [
+      0.02,
+      0.86
+     ],
+     [
+      1.12,
+      2.14
+     ],
+     [
+      2.47,
+      3.15
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.02,
+      0.218,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.218,
+      0.527,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.527,
+      0.86,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.12,
+      1.545,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.545,
+      1.673,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.673,
+      1.873,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      1.873,
+      2.14,
+      true,
+      "है,"
+     ],
+     [
+      "usko",
+      2.47,
+      2.745,
+      true,
+      "उसको"
+     ],
+     [
+      "bhejo.",
+      2.745,
+      3.15,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "जो कहता है, एदिटिंग में क्या है, उसको भेजो।",
+      "cer": 0.056,
+      "words": [
+       {
+        "i": 3,
+        "word": "\"editing",
+        "dev": "\"एडिटिंग",
+        "heard": "एदिटिंग",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 7,
+        "word": "usko",
+        "dev": "उसको",
+        "heard": "उसको",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 8,
+        "word": "bhejo.",
+        "dev": "भेजो।",
+        "heard": "भेजो।",
+        "sim": 3.0,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.056,
+    "cer_best": 0.056,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "\"editing",
+      "dev": "\"एडिटिंग",
+      "aligned_ok": true,
+      "aligned_heard": "एडिटिंग",
+      "free": [
+       [
+        "small",
+        "एदिटिंग",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 7,
+      "word": "usko",
+      "dev": "उसको",
+      "aligned_ok": true,
+      "aligned_heard": "उसको",
+      "free": [
+       [
+        "small",
+        "उसको",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 8,
+      "word": "bhejo.",
+      "dev": "भेजो।",
+      "aligned_ok": true,
+      "aligned_heard": "भेजो।",
+      "free": [
+       [
+        "small",
+        "भेजो।",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  }
+ },
+ "V10K": {
+  "efk_V10K_t1.mp3": {
+   "1.08": {
+    "final_dur": 3.486,
+    "runs": [
+     [
+      0.03,
+      1.04
+     ],
+     [
+      1.31,
+      2.47
+     ],
+     [
+      2.82,
+      3.48
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.03,
+      0.259,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.259,
+      0.648,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.648,
+      1.04,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.31,
+      1.778,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.778,
+      1.926,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.926,
+      2.185,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      2.185,
+      2.47,
+      true,
+      "है,"
+     ],
+     [
+      "usey",
+      2.82,
+      3.074,
+      true,
+      "उसे"
+     ],
+     [
+      "bhejo.",
+      3.074,
+      3.48,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "1.10": {
+    "final_dur": 3.422,
+    "runs": [
+     [
+      0.03,
+      1.01
+     ],
+     [
+      1.28,
+      2.43
+     ],
+     [
+      2.77,
+      3.42
+     ]
+    ],
+    "words": [
+     [
+      "Jo",
+      0.03,
+      0.255,
+      true,
+      "जो"
+     ],
+     [
+      "kehta",
+      0.255,
+      0.636,
+      true,
+      "कहता"
+     ],
+     [
+      "hai",
+      0.636,
+      1.01,
+      true,
+      "है,"
+     ],
+     [
+      "\"editing",
+      1.28,
+      1.745,
+      true,
+      "एडिटिंग"
+     ],
+     [
+      "mein",
+      1.745,
+      1.891,
+      true,
+      "में"
+     ],
+     [
+      "kya",
+      1.891,
+      2.145,
+      true,
+      "क्या"
+     ],
+     [
+      "hai\",",
+      2.145,
+      2.43,
+      true,
+      "है,"
+     ],
+     [
+      "usey",
+      2.77,
+      3.018,
+      true,
+      "उसे"
+     ],
+     [
+      "bhejo.",
+      3.018,
+      3.42,
+      true,
+      "भेजो।"
+     ]
+    ],
+    "pauses": [],
+    "lufs": -16.0
+   },
+   "score": {
+    "asr": [
+     {
+      "model": "small",
+      "heard": "जो कहता है, एदिटिंग में क्या है, उसे भीजो.",
+      "cer": 0.059,
+      "words": [
+       {
+        "i": 3,
+        "word": "\"editing",
+        "dev": "\"एडिटिंग",
+        "heard": "एदिटिंग",
+        "sim": 1.2,
+        "verdict": "ok"
+       },
+       {
+        "i": 7,
+        "word": "usey",
+        "dev": "उसे",
+        "heard": "उसे",
+        "sim": 3.0,
+        "verdict": "ok"
+       },
+       {
+        "i": 8,
+        "word": "bhejo.",
+        "dev": "भेजो।",
+        "heard": "भीजो.",
+        "sim": 1.2,
+        "verdict": "ok"
+       }
+      ],
+      "number_ok": null
+     }
+    ],
+    "cer": 0.059,
+    "cer_best": 0.059,
+    "keywords": [
+     {
+      "i": 3,
+      "word": "\"editing",
+      "dev": "\"एडिटिंग",
+      "aligned_ok": true,
+      "aligned_heard": "एडिटिंग",
+      "free": [
+       [
+        "small",
+        "एदिटिंग",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 7,
+      "word": "usey",
+      "dev": "उसे",
+      "aligned_ok": true,
+      "aligned_heard": "उसे",
+      "free": [
+       [
+        "small",
+        "उसे",
+        3.0
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     },
+     {
+      "i": 8,
+      "word": "bhejo.",
+      "dev": "भेजो।",
+      "aligned_ok": true,
+      "aligned_heard": "भेजो।",
+      "free": [
+       [
+        "small",
+        "भीजो.",
+        1.2
+       ]
+      ],
+      "listen": false,
+      "verdict": "ok"
+     }
+    ],
+    "number_ok": null,
+    "retake": false
+   }
+  }
+ }
+}

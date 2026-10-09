@@ -73,7 +73,8 @@ RW = os.path.join(REPO, 'workspace', 'jawad_reels', MODULE)
 AUD = os.path.join(RW, 'audio')
 VODIR = os.path.join(RW, 'vo')
 VO_A = os.path.join(VODIR, 'vo_stem.wav')                                  # = ek_frame_ki_keemat_vo.wav (FINAL)
-VO_A_WORDS = os.path.join(VODIR, MODULE + '_vo.words.json')               # = words.json = vo_stem.words.json
+VO_A_WORDS = os.path.join(VODIR, 'vo_stem.words.json')                    # = words.json = ek_frame_ki_keemat_vo.words.json
+VO_A_TWIN = os.path.join(VODIR, MODULE + '_vo.wav')                       # the name the music module mixes by default
 VO_B = os.path.join(VODIR, MODULE + '_hookb_vo.wav')
 VO_B_WORDS = os.path.join(VODIR, MODULE + '_hookb_vo.words.json')
 MUSIC = os.path.join(RW, 'music', 'music_full.wav')
@@ -681,7 +682,15 @@ def _jsonable(o):
     return o
 
 
+def check_vo_twins():
+    """vo_stem.wav (used here) and ek_frame_ki_keemat_vo.wav (the music module's default) must be the same take."""
+    import filecmp
+    if os.path.exists(VO_A_TWIN) and not filecmp.cmp(VO_A, VO_A_TWIN, shallow=False):
+        raise ValueError('%s and %s differ: rebuild against the VO the final mix will use' % (VO_A, VO_A_TWIN))
+
+
 def build(hooks='AB', out_dir=AUD):
+    check_vo_twins()
     os.makedirs(out_dir, exist_ok=True)
     res = {}
     ca, fa = cues('A', report=True)
@@ -781,6 +790,10 @@ def measure(out_dir=ROUGH):
         voiced |= (tt >= w['start']) & (tt <= w['end'])
     voiced &= lv > lv.max() - 20
     dvs, dvm = (lv - ls)[voiced], (lv - lm)[voiced]
+    _, lb = _curve(s + m)
+    dvb = (lv - lb)[voiced]
+    out['vo_over_bed_lu'] = dict(median=round(float(np.median(dvb)), 1), p10=round(float(np.percentile(dvb, 10)), 1),
+                                 min=round(float(dvb.min()), 1))
     worst = np.argsort(dvs)[:5]
     out['vo_over_sfx_lu'] = dict(median=round(float(np.median(dvs)), 1), p10=round(float(np.percentile(dvs, 10)), 1),
                                  min=round(float(dvs.min()), 1),
