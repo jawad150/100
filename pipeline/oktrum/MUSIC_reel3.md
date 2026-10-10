@@ -20,7 +20,7 @@
 | Crash | (b2.6-4) | 1.40-2.18 | candle punches through on "crashes" (VO-pinned 1.40), balance plunges | The pad is cut. A dark B1/F#2/B2 drone (LP 320 Hz) and a B1 sub take over; the SFX impact and downlifter carry the hit. |
 | Light returns | 1 (b4-8) | 2.18-4.36 | "With Oktrum," 2.66, the camera follows the counter down | Gmaj7 pad fades in, with a quiet 8th e-piano arp from b5 (2.73). |
 | Lift to zero | 2 (b8-9.6) | 4.36-5.26 | "...never go below *zero*", counter stops at 5.26 | The A sus pad rises (1.3 -> 2.2 kHz) and a soft swell ends on "zero". |
-| **Zero** | (b9.6) | 5.26 | shield slams, counter 0.00 (VO-pinned) | The Dmaj9 pad blooms with a D1 sub swell; the padlock click follows at 5.80. |
+| **Zero** | (b9.6) | 5.26 | shield slams, counter 0.00 (VO-pinned) | The Dmaj9 pad blooms with a D1 sub swell; the padlock click follows at 5.65. |
 | Journey | 2-4 (b10-20) | 5.45-10.91 | shield + light trail, cards at 6.32, 8.40 and 9.90, PCI badge 10.55 | The 2-step groove starts on b10. Chords: Dmaj9, then Bm9 (6.55), then Gmaj9 (8.73), with the e-piano arp in 8ths. |
 | **Lift** | bar 5 line (b20) | 10.909 | gather 11.12, "peace of mind" 11.98 | Dmaj9, brighter (2 kHz, 5 voices). A soft crash, louder hats with off-beat open hats, a bigger sub. |
 | Plate | 6 (b24-26) | 13.09-14.18 | navy plate grows 13.01, "Trade With" 13.88 | Gmaj9 groove. |
