@@ -63,9 +63,10 @@ def chord(buf, notes, t0, t1, amp, fc, a=0.15, r=0.4, det=0.0045, wid=0.7, voice
 
 
 def sine_note(buf, f, t0, d, amp, a=0.01, tau=None, h2=0.25):
-    """Sine (+2nd harmonic so phones hear it). tau: exp decay, else sustained over d with 0.1 s release."""
+    """Sine (+2nd harmonic so phones hear it). tau: exp decay (30 ms end fade), else sustained, 0.1 s release."""
     n = int(d * SR); u = np.arange(n) / SR
-    env = np.clip(u / a, 0, 1) * (np.exp(-u / tau) if tau else np.clip((d - u) / 0.1, 0, 1))
+    env = np.clip(u / a, 0, 1) * (np.exp(-u / tau) * np.clip((d - u) / 0.03, 0, 1) if tau
+                                  else np.clip((d - u) / 0.1, 0, 1))
     add(buf, (np.sin(TAU * f * u) + h2 * np.sin(TAU * 2 * f * u)) * env * amp, t0)
 
 
