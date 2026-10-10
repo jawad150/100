@@ -1,0 +1,24 @@
+{
+  "project": "oktrum",
+  "workspace": "workspace_oktrum",
+  "site": "https://www.oktrum.com",
+  "site_images_regex": "poster\\.jpg",
+  "google_fonts": {
+    "InterTight": "Inter+Tight:wght@400;500;600;700;800;900",
+    "Inter": "Inter:wght@400;500;600;700;800;900",
+    "InstrumentSerif": "Instrument+Serif:ital@0;1",
+    "JetBrainsMono": "JetBrains+Mono:wght@400;500;700"
+  },
+  "font_map": {"Nunito": "InterTight", "Poppins": "Inter", "Caveat": "InstrumentSerif"},
+  "logo_src": "pipeline/oktrum/brand_src/logo.png",
+  "logo_dark_lum": 0.0,
+  "palette": {
+    "MAGENTA": "#5170FF", "HOT_PINK": "#81AAFF", "ORANGE": "#81D4E6", "AMBER": "#F2C46D", "LEAF": "#8465F4",
+    "LEAF_HI": "#B4A3FF", "PLUM": "#2A2370", "INK": "#07091A", "NIGHT_0": "#020309", "NIGHT_1": "#0A0E2A",
+    "IVORY": "#F3F6FF", "PEACH": "#CFDBFF", "LAVENDER": "#E4DCFF", "LOGO_MAGENTA": "#8465F4", "LOGO_ORANGE": "#81D4E6",
+    "BLUE": "#5170FF", "VIOLET": "#8465F4", "CYAN": "#81D4E6", "NAVY": "#07091A", "UP": "#34D399",
+    "DOWN": "#F87171", "BLUE_HOVER": "#6180FF", "BLUE_MID": "#4A65FF", "BLUE_DEEP": "#3A55E0", "UP_DEEP": "#047857",
+    "DOWN_DEEP": "#B91C1C"
+  },
+  "deliver": {"dir": "reel/oktrum", "prefix": "oktrum"}
+}
