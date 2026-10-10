@@ -1,0 +1,55 @@
+{
+ "source": "media/oktrum/vo/reel2_A.mp3",
+ "voice": "A",
+ "offset": 0.2,
+ "cap": 0.34,
+ "dur": 17.66,
+ "vo_end": 17.66,
+ "phrases": [
+  {
+   "text": "Blink...",
+   "t0": 0.24,
+   "t1": 0.65
+  },
+  {
+   "text": "and the price has already moved.",
+   "t0": 1.16,
+   "t1": 2.56
+  },
+  {
+   "text": "In trading,",
+   "t0": 2.9,
+   "t1": 3.54
+  },
+  {
+   "text": "every millisecond counts.",
+   "t0": 3.88,
+   "t1": 5.39
+  },
+  {
+   "text": "Oktrum runs on ultra-low-latency servers for instant order filling,",
+   "t0": 5.73,
+   "t1": 9.73
+  },
+  {
+   "text": "on MetaTrader 5.",
+   "t0": 10.07,
+   "t1": 11.26
+  },
+  {
+   "text": "Eliminate lag,",
+   "t0": 11.6,
+   "t1": 12.65
+  },
+  {
+   "text": "and seize every market opportunity.",
+   "t0": 12.91,
+   "t1": 14.81
+  },
+  {
+   "text": "Open your live account at oktrum dot com.",
+   "t0": 15.15,
+   "t1": 17.66
+  }
+ ]
+}
