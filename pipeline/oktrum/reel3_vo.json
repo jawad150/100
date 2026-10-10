@@ -1,0 +1,60 @@
+{
+ "source": "media/oktrum/vo/reel3_A.mp3",
+ "voice": "A",
+ "offset": 0.2,
+ "cap": 0.34,
+ "dur": 17.18,
+ "vo_end": 17.16,
+ "phrases": [
+  {
+   "text": "What happens if the market crashes overnight?",
+   "t0": 0.26,
+   "t1": 2.32
+  },
+  {
+   "text": "With Oktrum,",
+   "t0": 2.66,
+   "t1": 3.42
+  },
+  {
+   "text": "your account can never go below zero.",
+   "t0": 3.76,
+   "t1": 5.77
+  },
+  {
+   "text": "That's negative balance protection,",
+   "t0": 6.11,
+   "t1": 7.8
+  },
+  {
+   "text": "plus bank-tier encryption",
+   "t0": 8.14,
+   "t1": 9.57
+  },
+  {
+   "text": "and expert support.",
+   "t0": 9.75,
+   "t1": 10.78
+  },
+  {
+   "text": "Trade with total peace of mind.",
+   "t0": 11.12,
+   "t1": 12.67
+  },
+  {
+   "text": "Oktrum.",
+   "t0": 13.01,
+   "t1": 13.54
+  },
+  {
+   "text": "Trade with confidence.",
+   "t0": 13.88,
+   "t1": 14.96
+  },
+  {
+   "text": "Get started at oktrum dot com.",
+   "t0": 15.3,
+   "t1": 17.16
+  }
+ ]
+}
