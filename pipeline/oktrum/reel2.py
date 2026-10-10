@@ -260,7 +260,7 @@ def shot_a(t):
         drift = K.ramp(t, T_BLINK, 1.0, 'linear')
         x, y, z = wp(540, 560, -150)
         A['blink'].draw_plane(cv, cam, (x, y, z), scale=(D0 - 150) / D0 * K.lerp(1.10, 1.0, u) * (1 + 0.025 * drift),
-                              opacity=K.lerp(0.55, 1.0, u), blur=10 * (1 - u))
+                              opacity=K.lerp(0.7, 1.0, u), blur=10 * (1 - u))
     # price block (2D, screen-locked: the info the eye reads after the blink)
     py = 905
     A['btc'].draw(cv, 92, 812, anchor=(0.0, 0.5), opacity=0.85)
@@ -290,10 +290,10 @@ def shot_a(t):
 
 # =================================================================================================== shot B
 FLY = [  # x, y, z at CUT_B, width, yaw, speed (units/s)
-    (-430, -260, 700, 900, -18, 3600),
-    (520, 380, 1000, 1000, 22, 3600),
-    (-120, 640, 1500, 900, 8, 3400),
-    (380, -620, 1900, 800, -10, 3300),
+    (-430, -260, 500, 900, -18, 5200),
+    (520, 380, 900, 1000, 22, 5600),
+    (-120, 640, 1500, 900, 8, 6200),
+    (380, -620, 2100, 800, -10, 6400),
 ]
 FAR = [(-360, -420, 2600, 900, 12), (420, 520, 3000, 1000, -16), (40, 60, 3600, 1100, 4)]
 
@@ -448,7 +448,7 @@ def shot_d(t):
     cam = cam_d(t)
     sh = 9 * K.impulse(t, T_LAG, 7) if t >= T_LAG else 0.0
     cv = backdrop(t, cam, 0.2)
-    prog = K.ramp(t, 11.55, 13.70, 'inout_sine')
+    prog = K.lerp(0.22, 1.0, K.ramp(t, CUT_D, 13.70, 'inout_sine'))
     lc = OK.line_chart(940, 440, LC_VALUES, prog, LOOK)
     K.draw_plane(cv, lc, cam, LC_P, LC_W, rot=LC_R)
     # head of the line (approx: x by progress, y by value)
@@ -500,6 +500,14 @@ def _mark_bbox():
     return K.alpha_bbox(f)
 
 
+@functools.lru_cache(maxsize=4)
+def _feather(h, w, f=44):
+    y = np.minimum(np.arange(h), np.arange(h)[::-1]).astype(np.float32)
+    x = np.minimum(np.arange(w), np.arange(w)[::-1]).astype(np.float32)
+    m = np.clip(y[:, None] / f, 0, 1) * np.clip(x[None, :] / f, 0, 1)
+    return (m * m * (3 - 2 * m))[..., None]
+
+
 def end_card(t):
     A = assets()
     cam = K.Cam(pos=(0.0, 0.0, -D0), aperture=0)
@@ -516,15 +524,15 @@ def end_card(t):
     if sph_op > 0.002:
         if have3d('okt_mark', 'night_anim'):
             a = S3.get('okt_mark', 'night', mode='anim')
-            spr = a.at_time(max(0.0, e), loop=False)
+            spr = a.at_time(max(0.0, t - (WH0 - 0.1)), loop=False)
             x0, y0, x1, y1 = _mark_bbox()
             sc = 2 * r / max(1.0, (y1 - y0))
             K.draw(cv, spr, cx, cy, scale=sc, opacity=sph_op,
                    anchor=((x0 + x1) / 2 / spr.shape[1], (y0 + y1) / 2 / spr.shape[0]))
         else:
-            asm = K.ramp(t, WHIP, 15.35, 'out_cubic')
+            asm = K.lerp(0.5, 1.0, K.ramp(t, WH0, 15.30, 'out_cubic'))
             OK.dot_sphere(cv, cam, (cx - K.CX, cy - K.CY, 0.0), r, t, spin=K.lerp(60, 6, asm), assemble=asm,
-                          look=LOOK, opacity=sph_op * K.ramp(t, WHIP, WHIP + 0.25, 'linear'), dof=False)
+                          look=LOOK, opacity=sph_op * K.ramp(t, WH0, WH0 + 0.2, 'linear'), dof=False)
             A['mark_label'].draw(cv, cx, cy + r + 34, opacity=0.55 * sph_op)
     # flat logo: mark crossfades in, wordmark wipes in left -> right
     lg = A['logo']
@@ -547,6 +555,7 @@ def end_card(t):
         hv = K.ramp(t, T_CLICK - 0.35, T_CLICK - 0.1, 'inout_sine')
         pr = K.impulse(t, T_CLICK, 9) if t >= T_CLICK - 0.02 else 0.0
         btn = ui.button(COPY['cta'], hover=hv, press=pr, ripple=(t - T_CLICK) if t >= T_CLICK else None, look=LOOK)
+        btn = btn * _feather(*btn.shape[:2])          # ui.button's glow is clipped at the sprite edge: feather it
         ui.place(cv, btn, BTN_C[0], BTN_C[1], scale=K.lerp(0.7, 1.0, b),
                  opacity=K.ramp(t, T_CTA - 0.03, T_CTA + 0.10, 'linear'))
     if t >= T_RISK:
@@ -602,12 +611,12 @@ def draw(t):
 def post(cv, t):
     tc = t + HALF
     push = 1.1 * K.impulse(t, CUT_B - 0.02, 14) * (tc >= CUT_B) + 0.5 * K.impulse(t, CUT_D - 0.02, 16) * (tc >= CUT_D) \
-        + 0.6 * K.impulse(t, T_LAG - 0.02, 14) * (t >= T_LAG - 0.04)
+        + 0.3 * K.impulse(t, T_LAG - 0.02, 14) * (t >= T_LAG - 0.04)
     ana = 0.30
     if CUT_C <= tc < CUT_D:
         ana = 0.10                               # tame the anamorphic pass on the hovered BUY button
-    elif tc >= WH1:
-        ana = 0.18
+    elif tc >= CUT_D:
+        ana = K.lerp(0.30, 0.06, K.ramp(t, WH0, WHIP, 'linear'))   # end card: no flare band through the CTA
     L = K.LOOKS[LOOK]
     return K.post(cv, LOOK, t, exposure=L['exposure'] + push, bloom=L['bloom'] * (1 + 0.8 * push), anamorphic=ana)
 
