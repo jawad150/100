@@ -569,8 +569,10 @@ def r2_actives(t):
     name, val, dec, unit = ACTIVES[i]
     col = ACT_COL[i]
     # big counter
+    pouch(c, ['raspberry', 'orange', 'pear', 'raspberry', 'orange'][i], W / 2, 1830, 760,
+          angle=330 + (t - t0) * 30, op=0.95, shadow_op=0.3)
     kv = e_out_cubic(prog(lt, 0.05, 0.9))
-    cs = counter_spr(val * kv, dec, unit, 300, WHT)
+    cs = counter_spr(val * kv, dec, unit, 300 if unit == 'g' else 250, WHT)
     glow_add(c, cs, W / 2, 640, col, sigma=36, strength=0.55)
     draw(c, cs, W / 2, 640 + 40 * (1 - e_out_expo(prog(lt, 0, 0.4))), opacity=min(1, prog(lt, 0, 0.2) * 3))
     title(c, name, W / 2, 870, 96, t, st + 0.25, fname=H9, color=col, glow=col, glow_str=0.35, sweep_t=st + 0.9)
