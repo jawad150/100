@@ -92,3 +92,20 @@ pulse with sub hits and ticking, hit at 3.0; reel3 airy future-garage, lift at 1
 `import oktrum_kit as OK` first. `DUR, LOOK, BPM`, `prewarm()`, pure `draw(t)`, `post(cv, t)`, `samples(t)`,
 `cues()` (draft until the sound designer delivers). Static sprites cached in `prewarm()`. `draw(t)` never keeps
 per-frame state.
+
+## 10. Real VO timings (voice A, `vo_prep.py`; supersedes the VO estimates in §6)
+`python3 vo_prep.py` writes `<WS>/audio/reelN_vo.wav` (VO at 0.20 s, pauses tightened to <= 0.34 s, -16 LUFS) and
+`reelN_vo.json` (phrase t0/t1 in edit time, also copied next to the code). Builders read `reelN_vo.json` and pin each
+§6 beat to its phrase: the scene boundaries in §6 move with the phrases; the look, devices and order stay.
+| reel | VO ends | DUR | end card settled by |
+|---|---|---|---|
+| 1 | 18.51 s | 22.0 | 17.6 (CTA phrase 17.24-18.51) |
+| 2 | 17.66 s | 21.5 | 16.4 (CTA phrase 15.15-17.66) |
+| 3 | 17.16 s | 21.5 | 16.2 (CTA phrase 15.30-17.16) |
+Key phrase onsets: reel1 Forex 0.26, Gold 1.19, Bitcoin 2.10, Nvidia 3.17, "All on one platform" 4.11, list 5.79,
+"Spreads" 10.44, "Zero hidden fees" 12.69, "Oktrum" 14.24, "Trade the global markets" 15.08, CTA 17.24.
+reel2 Blink 0.24, "price has already moved" 1.16, "every millisecond counts" 3.88, "Oktrum runs" 5.73, "on MetaTrader 5"
+10.07, "Eliminate lag" 11.60, "seize" 12.91, CTA 15.15.
+reel3 question 0.26, "With Oktrum" 2.66, "never go below zero" 3.76 (counter stops ~4.9 on "zero"), "negative balance
+protection" 6.11, "bank-tier encryption" 8.14, "expert support" 9.75, "peace of mind" 11.12, "Oktrum" 13.01,
+"Trade with confidence" 13.88, CTA 15.30.
