@@ -11,38 +11,41 @@ Get (started) 15.30 · oktrum (dot com) 16.04.
 
 Shot list as built (one continuous camera; t in s, beat = t / 0.545):
  0.00-2.66 HOOK (b0-4.9). Ice-white page. Glass chart card (OK.candles, light look) in 3D; a red 3D glass
-           candle (candle_red day) is already falling at frame 0 at the right of the frame, accelerates and punches
+           candle (candle_red day) is already falling at frame 0, fully in frame at the right, accelerates and punches
            through the chart's crash slot at 1.40 ("crashes"): candles(crash=) drops the long DOWN_DEEP candle,
            camera judder, "Balance" counter (JetBrains Mono, DOWN_DEEP, no currency) plunges 8,460.20 -> ~1,180.
            Copy word by word on the VO: "What if the market" (INK 96) / "crashes" (serif DOWN_DEEP 250, slam on
            1.40) / "overnight?" (INK 96, 1.82). Candle smeared vertically per layer (K.whip_blur), 7 samples.
- 2.66-5.95 ZERO. Headline fades in 0.28 s as the camera follows the falling counter down (2.66-3.75): the chart
+ 2.46-2.72 hook copy leaves before "With Oktrum," lands.
+ 2.66-5.92 ZERO. Headline fades in 0.28 s as the camera follows the falling counter down (2.66-3.75): the chart
            scrolls off the top. "With Oktrum," (BLUE_DEEP 64, 2.78) / "your account can never" (INK 80, per word)
-           / "go below" + "zero." (serif BLUE_DEEP 190, slam 5.26). The counter accelerates toward zero and is
+           / "go below" + "zero." (serif BLUE_DEEP 190, slam 5.26). From 3.80 a faint blurred shield ghost slides
+           in from behind/above (opacity <= 0.3) and hands over to the slam. The counter accelerates toward zero and is
            stopped dead at 0.00 on "zero" (5.26) as shield_lock slams in above it (scale 1.8 -> 1, in_cubic,
-           solid on 5.26; damped judder). Counter turns DOWN_DEEP -> BLUE_DEEP. Padlock clicks shut 5.80
-           (day_anim click_frame remapped onto 5.80).
- 5.70-11.12 JOURNEY (no cuts). The shield launches and leads; it draws a violet -> blue -> cyan light-trail
+           solid on 5.26; damped judder). Counter turns DOWN_DEEP -> BLUE_DEEP. Padlock seats and clicks
+           shut on T_LOCK 5.65 (day_anim land_frame -> 5.61, click_frame -> 5.65); 0.00 + shield hold to 5.92.
+ 5.92-11.12 JOURNEY (no cuts). The shield launches and leads; it draws a violet -> blue -> cyan light-trail
            ribbon (Catmull-Rom through world stations, twisting flat ribbon with a soft tinted glow). The camera
-           rides behind it (moves inout_sine, banked by lateral speed, 7 samples):
-             5.70-6.42 to card 1 "Negative Balance / Protection" (pops 6.32 "negative")
+           rides behind it (moves inout_sine, banked by lateral speed, 9 samples; 13 on the 0.5 s launch):
+             5.92-6.42 to card 1 "Negative Balance / Protection" (pops 6.32 "negative")
              7.66-8.46 to card 2 "Bank-Tier / Encryption" (pops 8.40 "bank")
-             9.22-9.96 to card 3 "22/5 Expert / Support" (pops 9.90 "expert"); badge "PCI DSS Compliant" 10.55
+             9.22-9.96 to card 3 "22/5 Expert / support" (pops 9.90 "expert"); badge "PCI DSS Compliant" 10.55
            Cards: white frosted glass (ui.glass_card airy) with a VIOLET -> CYAN icon disc, INK titles 52 px.
  11.12-13.01 GATHER. Camera pulls back (dist 1400 -> 2200) as the three cards and the badge fly into a ring
            round the shield (now hero size). "Trade with total" (INK 92, 11.12) / "peace of mind." (serif VIOLET
-           170, 11.98).
+           170, 11.98). The ribbon fades out above screen y 560 (clear of the headline) and is gone by 13.36.
  13.01-15.30 NAVY PLATE. A rounded navy plate grows out of the shield (13.01), holds as a big card (13.85) and
            fills the frame by 15.15. The shield sinks into it while okt_mark night_anim swirls in at the same spot
            ("Oktrum" 13.01) and rises to y 640. "Trade With" (IVORY 120, 13.88) / "Confidence" (serif CYAN 200,
            slam 14.33); both leave 14.95-15.25.
  15.00-21.50 END CARD on navy: the mark glides into the logo's mark slot and crossfades into logo_full
            (640 px, y 700) 15.55-15.85 while the wordmark wipes in 15.40-15.85; button "Get Started" springs in
-           15.30, hand cursor presses it 15.82 (beat 29); "oktrum.com" 16.04; risk line 30 px, two lines, 15.55.
+           15.30, hand cursor presses it 15.82 (beat 29) and leaves up/right, faded by
+           16.12; "oktrum.com" 16.04; risk line 30 px, two lines, 15.55.
            Settled 16.30-21.50 (5.2 s).
 
 SFX (draft, see cues()): hook whoosh_fast 1.22, impact_soft + downlifter 1.40, swish_small 2.70, slot_tick
-3.76-5.26, impact_soft + glass_tap + sub_drop 5.26, ui_click + toggle_on 5.80, whoosh_by 6.10 / 8.10 / 9.62,
+3.76-5.26, impact_soft + glass_tap + sub_drop 5.26, ui_click + toggle_on 5.65, whoosh_by 6.17 / 8.10 / 9.62,
 pop 6.32 / 8.40 / 9.90 / 10.55, shimmer 6.5, whoosh_slow 11.6, shimmer 11.98, grow_swell 13.01, shimmer 13.05,
 impact_soft 14.33, riser -> 15.15, pop 15.30, logo_sting 15.55, ui_click + toggle_on 15.82.
 
@@ -69,7 +72,8 @@ PH = [p['t0'] for p in _VO['phrases']]
 T_WHAT, T_IF, T_THE, T_MARKET, T_CRASH, T_OVER = PH[0], 0.93, 1.02, 1.10, 1.40, 1.82
 T_WITH, T_OKT1 = PH[1], 2.78
 T_YOUR, T_ACC, T_CAN, T_NEVER, T_GO, T_BELOW, T_ZERO = PH[2], 3.85, 4.27, 4.45, 4.80, 5.00, 5.26
-T_LOCK = 5.80
+T_LOCK = 5.65                        # padlock seats + shackle snaps (anim frames 22 -> 30 remapped here)
+T_FORM = 3.80                        # the shield starts forming (ghost) behind the copy
 T_NEG, T_BANK, T_EXP, T_PCI = 6.32, 8.40, 9.90, 10.55
 T_TRADE, T_PEACE = PH[6], 11.98
 T_OKT2 = PH[7]                       # 13.01 plate + mark
@@ -80,12 +84,12 @@ T_CLICK = 15.82                      # beat 29
 T_RISK = 15.55
 T_FULL = 15.15                       # plate covers the frame
 
-MOVES = [(5.70, 6.42), (7.66, 8.46), (9.22, 9.96)]
+MOVES = [(5.92, 6.42), (7.66, 8.46), (9.22, 9.96)]
 GATHER = (11.12, 12.60)
 
 COPY = dict(cta='Get Started', url='oktrum.com',
             risk=('Trading involves high risk.', 'You could lose some or all of your investment.'),
-            cards=(('Negative Balance', 'Protection'), ('Bank-Tier', 'Encryption'), ('22/5 Expert', 'Support')),
+            cards=(('Negative Balance', 'Protection'), ('Bank-Tier', 'Encryption'), ('22/5 Expert', 'support')),
             badge='PCI DSS Compliant')
 
 INK, BLUE_DEEP, DOWN_DEEP, VIOLET, CYAN, BLUE = '#07091A', '#3A55E0', '#B91C1C', '#8465F4', '#81D4E6', '#5170FF'
@@ -340,7 +344,7 @@ def shield_pos(t):
 def ring_slots():
     """World positions / rotations of the cards and badge in the gather ring, from the final camera."""
     c = cam(GATHER[1], aperture=0)
-    slots = [((345, 1095), 2250, (2, 10, -2)), ((735, 1255), 2250, (2, -10, 2)), ((345, 1415), 2250, (-2, 8, 1)),
+    slots = [((345, 1095), 2250, (2, 10, -2)), ((685, 1255), 2250, (2, -10, 2)), ((345, 1415), 2250, (-2, 8, 1)),
              ((540, 588), 1700, (0, 0, 0))]
     return [(unproject(c, sx, sy, d), rot) for (sx, sy), d, rot in slots]
 
@@ -365,17 +369,21 @@ def crash_x():
     return 330.0
 
 
+CY0, CV0 = -380.0, 100.0                                      # whole candle in frame at t=0
+CB = (-11.6 - CY0 - CV0 * T_CRASH) / T_CRASH ** 4              # still crosses y -11.6 on "crashes"
+
+
 def draw_candle(cv, c, t):
     """The red 3D candle falling through the frame (hook)."""
     if t > 2.15:
         return
     if t < T_CRASH:
-        y = -1000.0 + 300.0 * t + 0.5 * 580.0 * t * t
-        vy = 300.0 + 580.0 * t
+        y = CY0 + CV0 * t + CB * t ** 4
+        vy = CV0 + 4.0 * CB * t ** 3
     else:
         d = t - T_CRASH
-        y0 = -1000.0 + 300.0 * T_CRASH + 0.5 * 580.0 * T_CRASH ** 2
-        v0 = 300.0 + 580.0 * T_CRASH
+        y0 = CY0 + CV0 * T_CRASH + CB * T_CRASH ** 4
+        v0 = CV0 + 4.0 * CB * T_CRASH ** 3
         y = y0 + v0 * d + 0.5 * 6500.0 * d * d
         vy = v0 + 6500.0 * d
     P = np.array([crash_x(), y, -260.0])
@@ -437,10 +445,13 @@ def shield_anim_frame(t):
         return S3.get('shield_lock', 'day').at_yaw(yaw), False
     if have3d('shield_lock', 'day_anim'):
         a = S3.get('shield_lock', 'day', mode='anim')
-        cf = float(a.meta.get('click_frame', 25)) / 30.0
-        t0 = T_ZERO - 0.20
-        if t < T_LOCK:
-            at = K.lerp(0.0, cf, (t - t0) / (T_LOCK - t0))
+        cf = float(a.meta.get('click_frame', 30)) / 30.0
+        lf = float(a.meta.get('land_frame', 22)) / 30.0
+        t0, tl = T_ZERO - 0.20, T_LOCK - 0.04
+        if t < tl:
+            at = K.lerp(0.0, lf, (t - t0) / (tl - t0))
+        elif t < T_LOCK:
+            at = K.lerp(lf, cf, (t - tl) / (T_LOCK - tl))
         else:
             at = cf + (t - T_LOCK)
         return a.at_time(max(0.0, at), loop=False), False
@@ -460,7 +471,26 @@ def _bbox_frac(key):
     return (x1 - x0) / spr.shape[1]
 
 
+def draw_shield_ghost(cv, c, t):
+    """The shield forming 3.8 -> 5.2 s: a faint, blurred ghost sliding in from behind and above; it hands over
+    to the slam (the anim pops in over it) and is gone by T_ZERO - 0.04."""
+    op = 0.30 * K.ramp(t, T_FORM, T_FORM + 0.6, 'inout_sine') * (1 - K.ramp(t, T_ZERO - 0.20, T_ZERO - 0.04,
+                                                                            'inout_sine'))
+    if op <= 0.002:
+        return
+    e = K.ramp(t, T_FORM, T_ZERO, 'inout_sine')
+    P = SHIELD0 + np.array([0.0, -200.0 * (1 - e), 600.0 * (1 - e)])
+    if have3d('shield_lock', 'day'):
+        spr, frac = S3.get('shield_lock', 'day').at_yaw(K.lerp(-28.0, -12.0, e)), _bbox_frac('day')
+    else:
+        spr, frac = assets()['shield_ph'], _bbox_frac('ph')
+    K.draw_billboard(cv, spr, c, P, SHIELD_W(t) / frac * K.lerp(1.2, 1.6, e), opacity=op, dof=False,
+                     blur=K.lerp(26.0, 12.0, e))
+
+
 def draw_shield(cv, c, t, P=None, width=None, opacity=1.0):
+    if P is None and t < T_ZERO:
+        draw_shield_ghost(cv, c, t)
     if t < T_ZERO - 0.22:
         return
     A = assets()
@@ -545,7 +575,8 @@ def _rib_cols():
     return stops[i] * (1 - f) + stops[i + 1] * f
 
 
-def draw_ribbon(cv, c, t, s_head, opacity=1.0, width=34.0):
+def draw_ribbon(cv, c, t, s_head, opacity=1.0, width=34.0, top_fade=0.0):
+    """top_fade 0..1 fades the ribbon out above screen y 560 (clear of the gather headline)."""
     if s_head <= 0.002 or opacity <= 0:
         return
     pts, s, _ = path()
@@ -566,6 +597,9 @@ def draw_ribbon(cv, c, t, s_head, opacity=1.0, width=34.0):
     R = xy - nrm * wpx[:, None] / 2
     shade = (0.75 + 0.35 * tw)[:, None]
     fade = np.clip(ss / 0.03, 0, 1) * np.clip((s_head - ss) / 0.004 + 0.3, 0, 1)
+    if top_fade > 0:
+        fy = np.clip((xy[:, 1] - 560.0) / 140.0, 0, 1)
+        fade = fade * (1 - top_fade * (1 - fy * fy * (3 - 2 * fy)))
     lay = np.zeros((K.H, K.W, 4), np.float32)
     SH = 4
     for j in range(len(P) - 1):
@@ -620,10 +654,10 @@ def line(cv, words, total, times, cx, base, t, exit_op=1.0, dy=0.0):
 
 def copy_hook(cv, t):
     A = assets()
-    ex = 1 - K.ramp(t, T_WITH, T_WITH + 0.28, 'linear')
+    ex = 1 - K.ramp(t, T_WITH - 0.20, T_WITH + 0.06, 'linear')
     if ex <= 0:
         return
-    dy = -60.0 * K.ramp(t, T_WITH, T_WITH + 0.35, 'in_cubic')
+    dy = -60.0 * K.ramp(t, T_WITH - 0.20, T_WITH + 0.12, 'in_cubic')
     w, tot = A['l1']
     line(cv, w, tot, (T_WHAT, T_IF, T_THE, T_MARKET), 540, 310, t, ex, dy)
     if t >= T_CRASH - 0.15:
@@ -814,8 +848,8 @@ def plate_content(lay, c, t):
         A['url'].draw(lay, 540, 1212 + 16 * (1 - u), opacity=u)
     if T_CTA + 0.05 <= t <= 16.25:
         p = K.Track([(T_CTA + 0.05, (900.0, 1640.0)), (15.66, (612.0, 1088.0), 'out_cubic'),
-                     (15.92, (612.0, 1088.0), 'in_cubic'), (16.25, (960.0, 1700.0))], ease='out_cubic')(t)
-        op = K.ramp(t, T_CTA + 0.05, T_CTA + 0.2, 'linear') * (1 - K.ramp(t, 15.95, 16.20, 'linear'))
+                     (15.92, (612.0, 1088.0), 'in_cubic'), (16.22, (1000.0, 980.0))], ease='out_cubic')(t)
+        op = K.ramp(t, T_CTA + 0.05, T_CTA + 0.2, 'linear') * (1 - K.ramp(t, 15.92, 16.12, 'inout_sine'))
         ui.draw_cursor(lay, p[0], p[1], 'hand', 84, press=K.impulse(t, T_CLICK, 9) if t >= T_CLICK - 0.02 else 0.0,
                        click=(t - T_CLICK) if t >= T_CLICK else None, look='neon', opacity=op)
 
@@ -857,11 +891,13 @@ def draw(t):
     draw_chart(cv, c, t)
     if t >= MOVES[0][0]:
         st = shield_track()(t)
-        draw_ribbon(cv, c, t, st, opacity=1.0 - 0.35 * K.ramp(t, GATHER[0], GATHER[1], 'inout_sine'))
+        draw_ribbon(cv, c, t, st, opacity=(1.0 - 0.35 * K.ramp(t, GATHER[0], GATHER[1], 'inout_sine'))
+                    * (1 - K.ramp(t, T_OKT2 - 0.1, T_OKT2 + 0.35, 'inout_sine')),
+                    top_fade=K.ramp(t, GATHER[0] - 0.1, GATHER[0] + 0.3, 'inout_sine'))
     items = []
     if t <= 6.4:
         items.append((c.depth((0.0, CNT_Y(t), 0.0)), lambda: draw_counter(cv, c, t)))
-    if T_ZERO - 0.22 <= t < T_OKT2 + 0.02:
+    if T_FORM <= t < T_OKT2 + 0.02:
         P = shield_pos(t)
         items.append((c.depth(P) - 40.0, lambda: draw_shield(cv, c, t)))
     for i in range(4):
@@ -880,9 +916,15 @@ def draw(t):
     return cv
 
 
+def _push(t, t0, amp):
+    """Exposure nudge: 3-frame inout_sine attack ending on t0, then exp decay."""
+    if t < t0:
+        return amp * K.ramp(t, t0 - 0.10, t0, 'inout_sine')
+    return amp * math.exp(-12.0 * (t - t0))
+
+
 def post(cv, t):
-    push = 0.35 * K.impulse(t, T_CRASH - 0.02, 14) * (t >= T_CRASH - 0.04) \
-        + 0.25 * K.impulse(t, T_ZERO - 0.02, 14) * (t >= T_ZERO - 0.04)
+    push = _push(t, T_CRASH, 0.10) + _push(t, T_ZERO, 0.08)
     L = K.LOOKS[LOOK]
     return K.post(cv, LOOK, t, exposure=L['exposure'] + push, bloom=L['bloom'] * (1 + 0.6 * push))
 
@@ -890,8 +932,12 @@ def post(cv, t):
 def samples(t):
     if t < 2.15:
         return 7
+    if MOVES[0][0] - 0.05 <= t <= MOVES[0][1] + 0.1:
+        return 13                     # 0.5 s launch: shield peaks ~100 px/frame
     if any(a - 0.05 <= t <= b + 0.1 for a, b in MOVES):
         return 9                      # shield peaks ~67 px/frame
+    if T_ZERO - 0.22 <= t <= T_LOCK + 0.1:
+        return 7                      # slam, anim pop and padlock seat
     if T_WITH <= t <= 3.8 or T_ZERO - 0.22 <= t <= T_ZERO + 0.25:
         return 5
     if GATHER[0] <= t <= GATHER[1] + 0.1 or T_OKT2 <= t <= 13.95:

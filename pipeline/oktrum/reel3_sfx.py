@@ -37,7 +37,7 @@ def cues():
         dict(t=M.T_ZERO, name='glass_tap', params=dict(pitch=D7), gain_db=-4),
         dict(t=M.T_ZERO, name='sub_drop', params=dict(dur=1.4), gain_db=-6),
         dict(t=M.T_LOCK, name='ui_click', gain_db=-5),
-        dict(t=M.T_LOCK + 0.02, name='toggle_on', gain_db=-4),
+        dict(t=M.T_LOCK, name='toggle_on', gain_db=-4),                       # padlock seats + snaps on T_LOCK
         # journey: shield leads the light trail; whoosh pass at the fastest point of each move, card pops
         dict(t=round((mv[0][0] + mv[0][1]) / 2, 3), name='whoosh_by', params=dict(dur=0.9, direction=1),
              pan=0.25, gain_db=-6),
@@ -63,7 +63,7 @@ def cues():
         dict(t=M.T_CTA, name='pop', gain_db=-4),
         dict(t=M.T_RISK, name='logo_sting', params=dict(tone=STING_D), gain_db=-2),       # mark -> logo_full 15.55
         dict(t=M.T_CLICK, name='ui_click', gain_db=-5),
-        dict(t=M.T_CLICK + 0.02, name='toggle_on', gain_db=-4),
+        dict(t=M.T_CLICK, name='toggle_on', gain_db=-4),
     ]
 
 
