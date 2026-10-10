@@ -108,7 +108,7 @@ def smooth(t):
 
 # ============================================================================= world + rig
 
-def world(variant):
+def world(variant, warm=False):
     """night: navy dome, CYAN soft-box back-right, VIOLET back-left, cool top light.
     day: ice-white dome over a cool grey-blue floor, pale cyan / violet blobs, a dark flag behind the camera."""
     sc = bpy.context.scene
@@ -152,7 +152,13 @@ def world(variant):
     mix = nt.nodes.new('ShaderNodeMix')
     mix.data_type = 'RGBA'
     nt.links.new(mr.outputs[0], mix.inputs['Factor'])
-    if variant == 'night':
+    if variant == 'night' and warm:      # gold props: warm soft-boxes so polished gold never mirrors violet/cyan
+        lo, hi = _c('NAVY'), tuple(x * 0.7 for x in _c('NAVY_HI'))
+        blobs = [blob((0.85, 0.75, 0.35), 0.55, 0.92, mixlin('AMBER', (1, 1, 1), 0.35), 1.4),
+                 blob((-0.9, 0.65, 0.1), 0.6, 0.93, mixlin('AMBER', (1, 1, 1), 0.6), 1.0),
+                 blob((0.0, -0.4, 0.9), 0.75, 0.97, (1.0, 0.97, 0.92), 0.8)]
+        strength = 1.0
+    elif variant == 'night':
         lo, hi = _c('NAVY'), tuple(x * 0.7 for x in _c('NAVY_HI'))
         blobs = [blob((0.85, 0.75, 0.35), 0.55, 0.92, 'CYAN', 1.6),
                  blob((-0.9, 0.65, 0.1), 0.6, 0.93, 'VIOLET', 1.3),
@@ -179,7 +185,7 @@ def world(variant):
     return w
 
 
-def rig(variant, s=1.0, key=1.0, metal=False, rims=1.0):
+def rig(variant, s=1.0, key=1.0, metal=False, rims=1.0, warm=False):
     """Key top-left-front + fill front-right (diffuse only), reflection cards for the highlights, coloured rims
     behind (night: CYAN right, VIOLET left; day: pale cyan / white). metal=True adds the soft-box wall and
     glint strips polished metal needs."""
@@ -199,7 +205,11 @@ def rig(variant, s=1.0, key=1.0, metal=False, rims=1.0):
         for j, (x, y) in enumerate(((-4.3, -6.2), (-7.0, -2.6), (4.3, -6.2), (7.0, -2.6))):
             C(f'm_glint{j}', (x * s, y * s, 0.2 * s), (0.9 * s, 6.0 * s), (0.95, 0.97, 1.0), 3.0, soft=0.3)
         C('m_low', (0.0, -5.0 * s, -3.5 * s), (6.0 * s, 1.2 * s), _c('CYAN'), 0.9, soft=0.4)
-    if variant == 'night':
+    if variant == 'night' and warm:
+        A('rim_cyan', (4.2 * s, 3.4 * s, 1.6 * s), (1.4 * s, 4.5 * s), 1300 * e * rims, 'AMBER')
+        A('rim_violet', (-4.4 * s, 3.0 * s, 0.2 * s), (1.4 * s, 4.5 * s), 900 * e * rims, mixlin('AMBER', (1, 1, 1), 0.5))
+        A('top', (0.4 * s, 1.8 * s, 5.2 * s), (3.0 * s, 1.2 * s), 200 * e, (1.0, 0.97, 0.92))
+    elif variant == 'night':
         A('rim_cyan', (4.2 * s, 3.4 * s, 1.6 * s), (1.4 * s, 4.5 * s), 1300 * e * rims, 'CYAN')
         A('rim_violet', (-4.4 * s, 3.0 * s, 0.2 * s), (1.4 * s, 4.5 * s), 1000 * e * rims, 'VIOLET')
         A('top', (0.4 * s, 1.8 * s, 5.2 * s), (3.0 * s, 1.2 * s), 200 * e, (0.86, 0.92, 1.0))
@@ -441,9 +451,9 @@ def render_asset(name, variant, mode, preview=False, frames=None, samples=None):
     root = I.empty('root')
     q = 0.6 if preview else 1.0
     opts = spec['build'](root, variant, q) or {}
-    world(variant)
+    world(variant, warm=opts.get('warm', False))
     rig(variant, opts.get('rig_scale', 1.0), opts.get('key', 1.0), metal=opts.get('metal', False),
-        rims=opts.get('rims', 1.0))
+        rims=opts.get('rims', 1.0), warm=opts.get('warm', False))
     if opts.get('glass'):
         sc.cycles.max_bounces = 12
         sc.cycles.transmission_bounces = 12
@@ -748,7 +758,7 @@ LOCK_C = (0.0, -0.16, 0.50)       # padlock body centre (icon frame); the shield
 
 
 @asset('shield_lock', [('day', 'yaw', 49), ('day', 'anim', 48)], (900, 900),
-       notes='thick violet->blue tinted glass shield with a cyan edge glow and a chrome padlock', samples=1.5)
+       notes='thick violet->blue tinted glass shield with a cyan edge glow and a chrome padlock', samples=1.25)
 def build_shield_lock(root, variant, q=1.0):
     gs = _grp('g_shield', root)
     gl = _grp('g_lock', root, LOCK_C)
@@ -861,7 +871,7 @@ def build_coin_btc(root, variant, q=1.0):
     T = 0.155
     mg = I.m_gold('gold', base='AMBER', edge='GOLD_DEEP', rough=0.15, relief=('Y', T + 0.004, T + 0.02, 0.34))
     _coin(root, '₿', mg, gh=1.08, q=q)
-    return dict(metal=True, sym180=True, features={'centre': lambda: (0, 0, 0)},
+    return dict(metal=True, warm=True, sym180=True, features={'centre': lambda: (0, 0, 0)},
                 notes='polished gold coin (AMBER face, deep-gold edge tint), Bitcoin sign both faces, reeded rim')
 
 
@@ -877,6 +887,7 @@ def build_coin_usd(root, variant, q=1.0):
 # ============================================================================= gold_bar
 
 def _smax(ds, k):
+    ds = np.broadcast_arrays(*ds)
     m = np.maximum.reduce(ds)
     return m + k * np.log(sum(np.exp((d - m) / k) for d in ds))
 
@@ -902,7 +913,7 @@ def build_gold_bar(root, variant, q=1.0):
     F = I.u_sub(bar, cut)
     mg = I.m_gold('gold', base='AMBER', edge='GOLD_DEEP', rough=0.13)
     sdf('bar', F, ((-1.08, -0.6, -0.3), (1.08, 0.6, 0.3)), 380, mg, tilt, q=q)
-    return dict(metal=True, features={'stamp': lambda: tuple(np.array(tilt.matrix_world) @ np.r_[0, -hz, 0, 1])[:3]},
+    return dict(metal=True, warm=True, features={'stamp': lambda: tuple(np.array(tilt.matrix_world) @ np.r_[0, -hz, 0, 1])[:3]},
                 notes='polished gold bullion bar (AMBER, deep-gold edge tint), engraved "999.9" in a rounded '
                       'cartouche on the front face, tilted 24 deg back so the stamp faces the viewer')
 
