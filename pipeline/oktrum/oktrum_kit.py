@@ -1206,11 +1206,11 @@ def _order_toast(text, look, w, rim):
         toks = sub.split(' ', 1)
         side = toks[0].upper()
         if side in ('BUY', 'SELL'):
-            ws = ui.put_text(f, tx, p + h / 2 + 36, toks[0], 28, 'mono_bold', c['up'] if side == 'BUY' else c['down'],
+            ws = ui.put_text(f, tx, p + h / 2 + 36, toks[0], 34, 'mono_bold', c['up'] if side == 'BUY' else c['down'],
                              'ls')
-            ui.put_text(f, tx + ws + 12, p + h / 2 + 36, toks[1] if len(toks) > 1 else '', 28, 'mono', c['text2'], 'ls')
+            ui.put_text(f, tx + ws + 12, p + h / 2 + 36, toks[1] if len(toks) > 1 else '', 34, 'mono', c['text2'], 'ls')
         else:
-            ui.put_text(f, tx, p + h / 2 + 36, sub, 28, 'mono', c['text2'], 'ls')
+            ui.put_text(f, tx, p + h / 2 + 36, sub, 34, 'mono', c['text2'], 'ls')
     else:
         ui.put_text(f, tx, p + h / 2, title, 36, FONT_UI, c['text'], 'lm')
     return ui.derive_panel(base, f)
@@ -1243,9 +1243,9 @@ def _trade_base(pair, bid, ask, lot, look, w, h, chart, sub, change, seed, rim):
     S.fill(a_, X0, Y0, g)
     S.sheen(p + 33, p + 47, 46, 46, 23, 0.16, 0.0, 0.6)
     ui.put_text(f, p + 96, p + 84, pair, 42, FONT_HEAD, c['text'], 'ls')
-    ui.put_text(f, p + 97, p + 118, sub, 24, FONT_BODY, c['text2'], 'ls')
+    ui.put_text(f, p + 97, p + 118, sub, 30, FONT_BODY, c['text2'], 'ls')
     ui.put_text(f, p + w - 36, p + 84, _fmt(ask), 40, 'mono_bold', c['text'], 'rs')
-    _arrow_text(f, p + w - 36, p + 118, change, 24, c['up'] if change >= 0 else c['down'], anchor='r')
+    _arrow_text(f, p + w - 36, p + 118, change, 30, c['up'] if change >= 0 else c['down'], anchor='r')
     _fillrect(f, p + 28, p + 146, p + w - 28, p + 147.2, c['text'], 0.10)
     # chart slot
     cx0, cy0, cw, ch = 28, 164, w - 56, h - 164 - 300
@@ -1257,7 +1257,7 @@ def _trade_base(pair, bid, ask, lot, look, w, h, chart, sub, change, seed, rim):
         ui.paste(f, spr, p + cx0 - PAD, p + cy0 - PAD)
     # volume stepper
     vy = h - 286
-    ui.put_text(f, p + 36, p + vy + 46, 'Volume', 26, FONT_UI_MED, c['text2'], 'ls')
+    ui.put_text(f, p + 36, p + vy + 46, 'Volume', 30, FONT_UI_MED, c['text2'], 'ls')
     sx, sw_ = w - 36 - 330, 330
     S.rrect(p + sx, p + vy, sw_, 72, 22, IVORY if dark else INK, 0.06 if dark else 0.05)
     S.stroke_rrect(p + sx, p + vy, sw_, 72, 22, 1.4, c['text'], 0.16)
@@ -1268,7 +1268,7 @@ def _trade_base(pair, bid, ask, lot, look, w, h, chart, sub, change, seed, rim):
         if sym == '+':
             _fillrect(f, bx + 24.8, p + vy + 26, bx + 27.2, p + vy + 46, c['text'], 0.9)
     ui.put_text(f, p + sx + sw_ / 2 - 6, p + vy + 49, '{:.2f}'.format(lot), 34, 'mono_bold', c['text'], 'rs')
-    ui.put_text(f, p + sx + sw_ / 2 + 4, p + vy + 49, 'lot', 24, FONT_BODY, c['text2'], 'ls')
+    ui.put_text(f, p + sx + sw_ / 2 + 4, p + vy + 49, 'lot', 30, FONT_BODY, c['text2'], 'ls')
     return base, _ro(f)
 
 
@@ -1301,8 +1301,8 @@ def _trade_window(pair, bid, ask, lot, look, w, h, chart, hover, press, which, s
         elif hv > 0:
             S.glow(a_, X0, Y0, col, (8, 22), 0.25 * hv, knock=0.9)
         tc = INK if dark else IVORY
-        ui.put_text(f, x + ww / 2, y + hh / 2 - 10, side, 30, FONT_HEAD, tc, 'ms', tracking=0.06)
-        ui.put_text(f, x + ww / 2, y + hh / 2 + 34, _fmt(price), 32, 'mono_bold', tc, 'ms')
+        ui.put_text(f, x + ww / 2, y + hh / 2 - 10, side, 32, FONT_HEAD, tc, 'ms', tracking=0.06)
+        ui.put_text(f, x + ww / 2, y + hh / 2 + 34, _fmt(price), 36, 'mono_bold', tc, 'ms')
     meta['chart'] = (28, 164, w - 56, h - 164 - 300)
     return ui.derive_panel(base, f, meta)
 

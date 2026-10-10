@@ -473,9 +473,9 @@ def shot_d(t):
         A['lag'].draw(cv, 540 + dx, 610 + dy, scale=s, opacity=1.0, sweep=sw if 0 < sw < 1 else None)
     if t >= T_SEIZE - 0.03:
         u = K.ramp(t, T_SEIZE - 0.03, T_SEIZE + 0.30, 'out_cubic')
-        A['seize'].draw(cv, 540, 1300 + 20 * (1 - u), opacity=u)
+        A['seize'].draw(cv, 540, 1275 + 20 * (1 - u), opacity=u)
         u2 = K.ramp(t, T_SEIZE + 0.08, T_SEIZE + 0.34, 'out_cubic')
-        A['opp'].draw(cv, 540, 1408, scale=K.lerp(1.06, 1.0, u2), blur=8 * (1 - u2),
+        A['opp'].draw(cv, 540, 1380, scale=K.lerp(1.06, 1.0, u2), blur=8 * (1 - u2),
                       opacity=K.ramp(t, T_SEIZE + 0.08, T_SEIZE + 0.18, 'linear'))
     return cv
 
@@ -568,8 +568,8 @@ def end_card(t):
     # cursor press
     if 15.30 <= t <= 16.40:
         p = K.Track([(15.30, (900.0, 1640.0)), (15.68, (612.0, 1088.0), 'out_cubic'), (15.95, (612.0, 1088.0),
-                    'in_cubic'), (16.40, (960.0, 1700.0))], ease='out_cubic')(t)
-        op = K.ramp(t, 15.30, 15.45, 'linear') * (1 - K.ramp(t, 16.15, 16.40, 'linear'))
+                    'in_cubic'), (16.30, (1000.0, 980.0))], ease='out_cubic')(t)
+        op = K.ramp(t, 15.30, 15.45, 'linear') * (1 - K.ramp(t, 15.98, 16.12, 'linear'))
         ui.draw_cursor(cv, p[0], p[1], 'hand', 84, press=K.impulse(t, T_CLICK, 9) if t >= T_CLICK - 0.02 else 0.0,
                        click=(t - T_CLICK) if t >= T_CLICK else None, look=LOOK, opacity=op)
     return cv
