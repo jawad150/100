@@ -210,129 +210,135 @@ def bird(vel=0.12):
 
 
 # ------------------------------------------------------------------ score
-BPM = 100.0
-B = 60 / BPM          # 0.6 s
-BAR = 4 * B           # 2.4 s
-START = 0.84          # music downbeat on the coin hit
-# D major: I vi IV V  (D, Bm, G, A)
-CHORDS = [(50, [62, 66, 69, 74]), (47, [59, 62, 66, 71]), (43, [59, 62, 67, 71]), (45, [61, 64, 69, 73]),
-          (50, [62, 66, 69, 74]), (47, [59, 62, 66, 71]), (43, [59, 62, 67, 71]), (45, [61, 64, 69, 76])]
-ARP = [0, 2, 1, 3, 2, 1, 3, 2]   # index into chord tones per eighth note
+def main():
+    global music, sfx
+    BPM = 100.0
+    B = 60 / BPM          # 0.6 s
+    BAR = 4 * B           # 2.4 s
+    START = 0.84          # music downbeat on the coin hit
+    # D major: I vi IV V  (D, Bm, G, A)
+    CHORDS = [(50, [62, 66, 69, 74]), (47, [59, 62, 66, 71]), (43, [59, 62, 67, 71]), (45, [61, 64, 69, 73]),
+              (50, [62, 66, 69, 74]), (47, [59, 62, 66, 71]), (43, [59, 62, 67, 71]), (45, [61, 64, 69, 76])]
+    ARP = [0, 2, 1, 3, 2, 1, 3, 2]   # index into chord tones per eighth note
 
-for bi, (root, tones) in enumerate(CHORDS):
-    t0 = START + bi * BAR
-    if t0 >= DUR:
-        break
-    night = 11.0 <= t0 < 14.1
-    add(music, t0, pad(tones[:3], BAR + 0.6, vel=0.30 if not night else 0.38, bright=1200 if night else 1700))
-    add(music, t0, bass(root, BAR, 0.32 if not night else 0.18))
-    for e8 in range(8):
-        te = t0 + e8 * B / 2
-        if te >= DUR - 0.2:
+    for bi, (root, tones) in enumerate(CHORDS):
+        t0 = START + bi * BAR
+        if t0 >= DUR:
             break
-        m = tones[ARP[e8]] + (12 if e8 in (3, 7) and not night else 0)
-        vel = 0.30 if e8 % 2 == 0 else 0.22
-        if t0 < 2.7:
-            vel *= 0.8
-        add(music, te, piano(m, 0.9, vel), pan=-0.25 + 0.5 * (e8 % 2))
-    # melody on top in the second half of each bar (simple, singable)
-    mel = {0: [74, 76, 78], 1: [78, 76, 74], 2: [74, 71, 74], 3: [76, 73, 69]}[bi % 4]
-    for j, m in enumerate(mel):
-        add(music, t0 + 2 * B + j * B * 0.66, piano(m + 12, 1.4, 0.18 if not night else 0.22), pan=0.1)
+        night = 11.0 <= t0 < 14.1
+        add(music, t0, pad(tones[:3], BAR + 0.6, vel=0.30 if not night else 0.38, bright=1200 if night else 1700))
+        add(music, t0, bass(root, BAR, 0.32 if not night else 0.18))
+        for e8 in range(8):
+            te = t0 + e8 * B / 2
+            if te >= DUR - 0.2:
+                break
+            m = tones[ARP[e8]] + (12 if e8 in (3, 7) and not night else 0)
+            vel = 0.30 if e8 % 2 == 0 else 0.22
+            if t0 < 2.7:
+                vel *= 0.8
+            add(music, te, piano(m, 0.9, vel), pan=-0.25 + 0.5 * (e8 % 2))
+        # melody on top in the second half of each bar (simple, singable)
+        mel = {0: [74, 76, 78], 1: [78, 76, 74], 2: [74, 71, 74], 3: [76, 73, 69]}[bi % 4]
+        for j, m in enumerate(mel):
+            add(music, t0 + 2 * B + j * B * 0.66, piano(m + 12, 1.4, 0.18 if not night else 0.22), pan=0.1)
 
-# pulse: soft kick on beats + shaker offbeats (day), drops out at night, returns at the message
-for i in range(int((DUR - START) / B) + 1):
-    tb = START + i * B
-    if tb >= 16.85:
-        break
-    if 11.0 <= tb < 14.15 or tb < 2.75:
-        continue
-    add(music, tb, kick(0.55 if i % 4 == 0 else 0.38))
-    add(music, tb + B / 2, shaker(0.16), pan=0.3)
-    if i % 2 == 1:
-        add(music, tb, snap(0.12), pan=-0.1)
+    # pulse: soft kick on beats + shaker offbeats (day), drops out at night, returns at the message
+    for i in range(int((DUR - START) / B) + 1):
+        tb = START + i * B
+        if tb >= 16.85:
+            break
+        if 11.0 <= tb < 14.15 or tb < 2.75:
+            continue
+        add(music, tb, kick(0.55 if i % 4 == 0 else 0.38))
+        add(music, tb + B / 2, shaker(0.16), pan=0.3)
+        if i % 2 == 1:
+            add(music, tb, snap(0.12), pan=-0.1)
 
-# big resolving chord for the end card
-add(music, 16.85, pad([62, 66, 69, 74, 78], 2.3, vel=0.42, bright=2200))
-add(music, 16.85, bass(38, 2.1, 0.4))
-for j, m in enumerate([62, 66, 69, 74, 78, 81]):
-    add(music, 16.9 + j * 0.06, piano(m, 2.0, 0.26), pan=-0.3 + j * 0.12)
+    # big resolving chord for the end card
+    add(music, 16.85, pad([62, 66, 69, 74, 78], 2.3, vel=0.42, bright=2200))
+    add(music, 16.85, bass(38, 2.1, 0.4))
+    for j, m in enumerate([62, 66, 69, 74, 78, 81]):
+        add(music, 16.9 + j * 0.06, piano(m, 2.0, 0.26), pan=-0.3 + j * 0.12)
 
-music = reverb(music, wet=0.28, length=2.4, key='hall')
+    music = reverb(music, wet=0.28, length=2.4, key='hall')
 
-# ------------------------------------------------------------------ SFX
-# hook montage: riser + ticks on each cut
-add(sfx, 0.0, riser(0.86, 0.38))
-for i in range(6):
-    add(sfx, i * 0.14, snap(0.35), pan=(-1) ** i * 0.3)
-    add(sfx, i * 0.14, tick(0.4))
-# coin hit + shimmer
-add(sfx, 0.84, boom(0.9))
-add(sfx, 0.84, chime(86, 0.5, 2.2), pan=0.1)
-add(sfx, 0.86, shimmer(0.8, 0.35, 86))
-add(sfx, 1.35, pop(0.3, 700))                       # pill
-for k in range(17):                                 # typing "Where does it go?"
-    add(sfx, 1.75 + k / 24 + rng.uniform(-0.008, 0.008), key_click(0.16), pan=rng.uniform(-0.2, 0.2))
-add(sfx, 2.28, whoosh(0.5, 400, 7000, 0.45))        # orbs burst out
-add(sfx, 2.28, shimmer(0.4, 0.25, 91))
-add(sfx, 2.72, boom(0.55))
-# bedroom: morning birds + word swishes
-for tb in [2.95, 3.4, 3.9, 4.3, 5.4, 5.9, 6.6, 7.3, 7.9]:
-    for j in range(rng.integers(2, 4)):
-        add(sfx, tb + j * 0.11, bird(0.07), pan=rng.uniform(-0.7, 0.7))
-for tl in (3.0, 3.45, 3.75):
-    add(sfx, tl, whoosh(0.35, 800, 5000, 0.12), pan=0.0)
-add(sfx, 4.15, shimmer(0.4, 0.18, 93))
-# transitions
-for tw, d, v in [(4.93, 0.3, 0.55), (5.98, 0.25, 0.45), (7.13, 0.25, 0.45), (8.3, 0.35, 0.35), (10.85, 0.4, 0.3),
-                 (13.92, 0.45, 0.55), (16.68, 0.35, 0.45)]:
-    add(sfx, tw, whoosh(d, 250, 6000, v))
-# orbs: swish in + chime on landing; tag pop + check tick
-for (ts, tl, m) in [(5.25, 5.85, 81), (6.12, 6.5, 83), (7.27, 7.62, 86), (8.5, 8.85, 88)]:
-    add(sfx, ts, whoosh(tl - ts + 0.1, 900, 8000, 0.25), pan=-0.4)
-    add(sfx, ts, shimmer(tl - ts, 0.15, m))
-    add(sfx, tl, chime(m, 0.42, 1.6), pan=0.2)
-    add(sfx, tl, chime(m + 7, 0.2, 1.2), pan=-0.2)
-for tg in (6.5, 7.62, 8.9):
-    add(sfx, tg, pop(0.35, 820))
-    add(sfx, tg + 0.28, pop(0.22, 1500))
-    add(sfx, tg + 0.3, tick(0.25))
-# clock pill ticks on time change
-for tc in (5.15, 6.15, 7.3, 8.5):
-    for j in range(3):
-        add(sfx, tc + j * 0.045, tick(0.28))
-add(sfx, 11.05, shimmer(0.5, 0.15, 79))
-for j in range(8):
-    add(sfx, 10.95 + j * 0.04, tick(0.2))
-# kitchen heart pop
-add(sfx, 9.6, pop(0.3, 600))
-# night: chat typing dots + message pop + heart
-for j in range(4):
-    add(sfx, 12.95 + j * 0.12, key_click(0.08))
-add(sfx, 13.4, pop(0.38, 1000))
-add(sfx, 13.42, chime(88, 0.22, 1.0))
-add(sfx, 13.95, pop(0.3, 650))
-# message: 3D 'extraordinary' impact + shimmer, 'change.' sparkle
-add(sfx, 14.15, boom(0.6))
-add(sfx, 15.05, boom(0.7))
-add(sfx, 15.05, shimmer(0.7, 0.3, 86))
-add(sfx, 15.55, whoosh(0.6, 2000, 12000, 0.12))
-add(sfx, 15.45, chime(81, 0.3, 1.6))
-# logo reveal
-add(sfx, 16.95, chime(74, 0.4, 2.0))
-add(sfx, 16.95, chime(81, 0.3, 2.0))
-add(sfx, 17.0, shimmer(0.8, 0.22, 86))
-add(sfx, 17.7, pop(0.25, 760))
+    # ------------------------------------------------------------------ SFX
+    # hook montage: riser + ticks on each cut
+    add(sfx, 0.0, riser(0.86, 0.38))
+    for i in range(6):
+        add(sfx, i * 0.14, snap(0.35), pan=(-1) ** i * 0.3)
+        add(sfx, i * 0.14, tick(0.4))
+    # coin hit + shimmer
+    add(sfx, 0.84, boom(0.9))
+    add(sfx, 0.84, chime(86, 0.5, 2.2), pan=0.1)
+    add(sfx, 0.86, shimmer(0.8, 0.35, 86))
+    add(sfx, 1.35, pop(0.3, 700))                       # pill
+    for k in range(17):                                 # typing "Where does it go?"
+        add(sfx, 1.75 + k / 24 + rng.uniform(-0.008, 0.008), key_click(0.16), pan=rng.uniform(-0.2, 0.2))
+    add(sfx, 2.28, whoosh(0.5, 400, 7000, 0.45))        # orbs burst out
+    add(sfx, 2.28, shimmer(0.4, 0.25, 91))
+    add(sfx, 2.72, boom(0.55))
+    # bedroom: morning birds + word swishes
+    for tb in [2.95, 3.4, 3.9, 4.3, 5.4, 5.9, 6.6, 7.3, 7.9]:
+        for j in range(rng.integers(2, 4)):
+            add(sfx, tb + j * 0.11, bird(0.07), pan=rng.uniform(-0.7, 0.7))
+    for tl in (3.0, 3.45, 3.75):
+        add(sfx, tl, whoosh(0.35, 800, 5000, 0.12), pan=0.0)
+    add(sfx, 4.15, shimmer(0.4, 0.18, 93))
+    # transitions
+    for tw, d, v in [(4.93, 0.3, 0.55), (5.98, 0.25, 0.45), (7.13, 0.25, 0.45), (8.3, 0.35, 0.35), (10.85, 0.4, 0.3),
+                     (13.92, 0.45, 0.55), (16.68, 0.35, 0.45)]:
+        add(sfx, tw, whoosh(d, 250, 6000, v))
+    # orbs: swish in + chime on landing; tag pop + check tick
+    for (ts, tl, m) in [(5.25, 5.85, 81), (6.12, 6.5, 83), (7.27, 7.62, 86), (8.5, 8.85, 88)]:
+        add(sfx, ts, whoosh(tl - ts + 0.1, 900, 8000, 0.25), pan=-0.4)
+        add(sfx, ts, shimmer(tl - ts, 0.15, m))
+        add(sfx, tl, chime(m, 0.42, 1.6), pan=0.2)
+        add(sfx, tl, chime(m + 7, 0.2, 1.2), pan=-0.2)
+    for tg in (6.5, 7.62, 8.9):
+        add(sfx, tg, pop(0.35, 820))
+        add(sfx, tg + 0.28, pop(0.22, 1500))
+        add(sfx, tg + 0.3, tick(0.25))
+    # clock pill ticks on time change
+    for tc in (5.15, 6.15, 7.3, 8.5):
+        for j in range(3):
+            add(sfx, tc + j * 0.045, tick(0.28))
+    add(sfx, 11.05, shimmer(0.5, 0.15, 79))
+    for j in range(8):
+        add(sfx, 10.95 + j * 0.04, tick(0.2))
+    # kitchen heart pop
+    add(sfx, 9.6, pop(0.3, 600))
+    # night: chat typing dots + message pop + heart
+    for j in range(4):
+        add(sfx, 12.95 + j * 0.12, key_click(0.08))
+    add(sfx, 13.4, pop(0.38, 1000))
+    add(sfx, 13.42, chime(88, 0.22, 1.0))
+    add(sfx, 13.95, pop(0.3, 650))
+    # message: 3D 'extraordinary' impact + shimmer, 'change.' sparkle
+    add(sfx, 14.15, boom(0.6))
+    add(sfx, 15.05, boom(0.7))
+    add(sfx, 15.05, shimmer(0.7, 0.3, 86))
+    add(sfx, 15.55, whoosh(0.6, 2000, 12000, 0.12))
+    add(sfx, 15.45, chime(81, 0.3, 1.6))
+    # logo reveal
+    add(sfx, 16.95, chime(74, 0.4, 2.0))
+    add(sfx, 16.95, chime(81, 0.3, 2.0))
+    add(sfx, 17.0, shimmer(0.8, 0.22, 86))
+    add(sfx, 17.7, pop(0.25, 760))
 
-sfx = reverb(sfx, wet=0.18, length=1.4, key='room')
+    sfx = reverb(sfx, wet=0.18, length=1.4, key='room')
 
-mix = music * 0.85 + sfx * 0.9
-# gentle bus glue: soft clip
-mix = np.tanh(mix * 1.1) / 1.1
-fade = np.ones(N)
-fade[-int(0.35 * SR):] = np.linspace(1, 0, int(0.35 * SR))
-mix *= fade[:, None]
-mix /= max(1e-6, np.abs(mix).max()) / 0.89
-os.makedirs(f'{S}/audio', exist_ok=True)
-wavfile.write(f'{S}/audio/mix_raw.wav', SR, (mix * 32767).astype(np.int16))
-print('wrote', f'{S}/audio/mix_raw.wav')
+    mix = music * 0.85 + sfx * 0.9
+    # gentle bus glue: soft clip
+    mix = np.tanh(mix * 1.1) / 1.1
+    fade = np.ones(N)
+    fade[-int(0.35 * SR):] = np.linspace(1, 0, int(0.35 * SR))
+    mix *= fade[:, None]
+    mix /= max(1e-6, np.abs(mix).max()) / 0.89
+    os.makedirs(f'{S}/audio', exist_ok=True)
+    wavfile.write(f'{S}/audio/mix_raw.wav', SR, (mix * 32767).astype(np.int16))
+    print('wrote', f'{S}/audio/mix_raw.wav')
+
+
+if __name__ == '__main__':
+    main()
