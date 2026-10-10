@@ -37,6 +37,20 @@ COLOURS / FONTS (constants; linear RGB like K.C)
     'Inter-Regular', FONT_MONO 'JetBrainsMono-Medium', FONT_MONO_BOLD 'JetBrainsMono-Bold',
     FONT_SERIF 'InstrumentSerif-RegularItalic'.
 
+WIDGETS (part B; pure functions of their arguments and t; static parts cached; costs in KIT.md)
+    OK.dot_sphere(cv, cam, (0, -120, 0), 330, t, assemble=K.ramp(t, 0.2, 1.6, 'linear'))   # 3D halftone logo sphere
+    spr = OK.candles(28, 900, 560, K.ramp(t, 0.3, 2.0, 'linear'), t, look='cine', crash=0.0); K.draw(cv, spr, 540, 900)
+    OK.ticker_tape(cv, t, 1560, look='neon')            # or plane=dict(cam=cam, center=P, width=1600, rot=(..))
+    K.draw(cv, OK.line_chart(900, 420, None, K.ramp(t, 0.5, 2.5, 'inout_sine'), 'cine'), 540, 1100)
+    win = OK.trade_window(look='cine', hover=hv, press=pr); win.plane(cv, cam, P, 760, rot=(6, -12, 0))
+    OK.order_toast('Order Filled — BUY 0.5 BTC @ 67,200', 'cine').draw(cv, 540, 1240, opacity=u)
+    OK.blink(cv, K.remap(t, 0.6, 1.3))                  # eyelids over the whole frame, before K.post
+    OK.streaks(cv, [(820, 640, 1.0)], strength=K.impulse(t, 2.1, 5))   # local anamorphic streaks
+    OK.light_rays(cv, (760, 380), 0.5, t, angle=120, cone=110)          # local volumetric rays
+    ui.orbit_ring(cv, cam, [OK.asset_tag(*row, look='neon') for row in OK.TICKERS[:6]], phase=t * .05, look='neon')
+    OK.TICKERS (INTAKE.md section 3 rows), OK.PAD (chart sprite padding), OK.blink_closure(u).
+    Per-frame sprite cache: byte budget OKTRUM_KIT_CACHE_MB (default 160 MB per worker).
+
 SELF-TEST
     python3 oktrum_kit.py selftest [names...]   -> <WS>/out/kit/kit_*.png (one still per look and per widget,
                                                   with measured cost per call) + kit_report.json
@@ -1306,7 +1320,7 @@ def blink_closure(u):
     return 1.0 - (1 - (1 - x) ** 3)
 
 
-def blink(cv, u, color=None, soft=1.0, rim=0.35, meet=0.55):
+def blink(cv, u, color=None, soft=1.0, rim=0.08, meet=0.55):
     """Eyelid blink overlay on the whole frame, in place: upper and lower lids with a soft curved (almond)
     edge close and reopen (u 0..1 = open -> closed at ~0.4-0.52 -> open), an occlusion shadow inside the edge
     and a faint cyan rim light on the lid edge. reel2 hook: tick the price while u is in the closed hold.
@@ -1318,26 +1332,40 @@ def blink(cv, u, color=None, soft=1.0, rim=0.35, meet=0.55):
     gw, gh = W0 // 4, H0 // 4
     xs = (np.arange(gw, dtype=np.float32) + 0.5) * 4
     ys = (np.arange(gh, dtype=np.float32) + 0.5) * 4
-    xn = (xs - W0 / 2) / (W0 * 0.75)
-    prof = np.sqrt(np.clip(1 - xn * xn, 0, 1))
+    xn = (xs - W0 / 2) / (W0 * 0.5)
+    prof = 1.0 - 0.10 * xn * xn                           # gentle lid arc: higher in the middle, no porthole
     m = H0 * meet
-    gu = (1 - c) * 1750.0
-    gl = (1 - c) * 1380.0
-    yu = m - gu * prof + 40 * c * xn * xn                 # corners droop a touch (lid curvature)
-    yl = m + gl * prof - 25 * c * xn * xn
+    gu = (1 - c) * (m + 140) / 0.82
+    gl = (1 - c) * (H0 - m + 140) / 0.82
+    yu = m - gu * prof + 36 * c * xn * xn                 # closing lids curve a touch more at the sides
+    yl = m + gl * prof - 20 * c * xn * xn
     d = np.minimum(ys[:, None] - yu[None, :], yl[None, :] - ys[:, None])
     s = (8 + 22 * soft) * (0.6 + 0.4 * c)
     a = np.clip(d / (2 * s), 0, 1)
     a = a * a * (3 - 2 * a)
-    shade = 0.30 + 0.70 * np.clip(d / 150.0, 0, 1) ** 0.8
+    shade = 0.35 + 0.65 * np.clip(d / 160.0, 0, 1) ** 0.8
     mult = (a * shade).astype(np.float32)
     lid = _rgb(color, _lin('NIGHT_0') * 0.5)
-    rimm = np.exp(-((d + s * 0.6) / (s * 1.2)) ** 2) * rim * (1 - a)
-    add = (1 - a)[..., None] * lid + rimm[..., None] * CYAN
-    mult = cv2.resize(mult, (W0, H0), interpolation=cv2.INTER_LINEAR)
-    add = cv2.resize(add.astype(np.float32), (W0, H0), interpolation=cv2.INTER_LINEAR)
-    cv[..., :3] *= mult[..., None]
-    cv[..., :3] += add
+    rimm = np.exp(-((d + s * 0.3) / (s * 0.45)) ** 2) * rim * (1 - a)
+    add = ((1 - a)[..., None] * lid + rimm[..., None] * (CYAN * 0.6)).astype(np.float32)
+    need = (mult < 0.999).any(axis=1) | (add > 1e-5).any(axis=(1, 2))
+    rows = np.nonzero(need)[0]
+    if not len(rows):
+        return cv
+    # work on the lid bands only (rows the overlay touches); the open middle stays untouched
+    mid = np.nonzero(~need)[0]
+    spans = [(0, gh)] if not len(mid) else [(0, int(mid[0])), (int(mid[-1]) + 1, gh)]
+    for r0, r1 in spans:
+        if r1 <= r0:
+            continue
+        R0, R1 = r0 * 4, min(H0, r1 * 4)
+        q0, q1 = max(0, r0 - 1), min(gh, r1 + 1)               # one row of margin for the bilinear resize
+        mu = cv2.resize(mult[q0:q1], (W0, (q1 - q0) * 4), interpolation=cv2.INTER_LINEAR)
+        ad = cv2.resize(add[q0:q1], (W0, (q1 - q0) * 4), interpolation=cv2.INTER_LINEAR)
+        o = R0 - q0 * 4
+        reg = cv[R0:R1]
+        reg[..., :3] *= mu[o:o + (R1 - R0), :, None]
+        reg[..., :3] += ad[o:o + (R1 - R0)]
     cv[..., 3] = 1.0
     return cv
 
@@ -1484,11 +1512,15 @@ def _st_widgets(out):
     # line chart + trade window + toast
     for look_ in ('cine', 'airy'):
         cv = K.background(look_, 0.5, cam)
-        rep['line_chart %s' % look_] = _timed(lambda: line_chart(900, 360, None, 0.73 + np.random.rand() * 0.01,
-                                                                 look_))
+        rep['line_chart %s' % look_] = _timed(lambda: _line_chart(900, 360, tuple(np.cumsum(np.ones(40))), 0.73,
+                                                                  look_, None, 0.3, 1.0, 4.0, True, 8))
         K.draw(cv, line_chart(900, 360, None, 0.73, look_), 540, 330)
-        rep['trade_window %s (cached base)' % look_] = _timed(
-            lambda: trade_window(look=look_, hover=np.random.rand(), press=0.0))
+        rep['trade_window build %s (state change)' % look_] = _timed(
+            lambda: _trade_window('BTC/USD', 67180.0, 67200.0, 0.5, look_, 760, 720, 'line', 0.5, 0.0, 'buy',
+                                  'Bitcoin / US Dollar', 2.34, 4, 0.9))
+        rep['trade_window build %s (first, base)' % look_] = _timed(
+            lambda: _trade_base.__wrapped__('BTC/USD', 67180.0, 67200.0, 0.5, look_, 760, 720, 'line',
+                                            'Bitcoin / US Dollar', 2.34, 4, 0.9), 1)
         win = trade_window(look=look_, hover=1.0, press=0.5)
         rep['trade_window.draw %s' % look_] = _timed(lambda: win.draw(cv.copy(), 540, 1010))
         win.draw(cv, 540, 1010)
