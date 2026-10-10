@@ -202,7 +202,12 @@ def kinetic_line(canvas, text, cx, cy, size, t, t0, color=WHITE_, fname=F_B, sta
         k = prog(t, out_t, out_t + out_dur)
         fade_out = 1 - e_in_cubic(k)
         blur_out = 14 * k
+    fnt = font(fname, size)
+    rb = fnt.getbbox('H')
+    ref_c = (rb[1] + rb[3]) / 2
     for i, (wd, s, wdt) in enumerate(zip(words, sprs, widths)):
+        bb = fnt.getbbox(wd)
+        base_dy = (bb[1] + bb[3]) / 2 - ref_c   # baseline-align words with descenders
         k = prog(t, t0 + i * stagger, t0 + i * stagger + dur)
         if k <= 0:
             x += wdt + sw
@@ -212,7 +217,7 @@ def kinetic_line(canvas, text, cx, cy, size, t, t0, color=WHITE_, fname=F_B, sta
         b = (1 - e) * 12 + blur_out
         sc = 1 + 0.10 * (1 - e)
         wx = x + wdt / 2
-        wy = cy + rise * (1 - e)
+        wy = cy + base_dy + rise * (1 - e)
         spr = s
         if sweep_t is not None and t >= sweep_t:
             p = (t - sweep_t) / 0.7 * 1.6 - 0.3 - (wx - (cx - total / 2)) / total * 0.6
