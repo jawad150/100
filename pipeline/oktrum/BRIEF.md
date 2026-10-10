@@ -44,7 +44,7 @@ motion blur never crosses a cut (switch half a frame early); eased exits; 5-7 sa
 
 ## 6. Timelines (t in s; VO times are estimates until the files land)
 
-### 6.1 reel1 "Every market" (DUR 22.0, BPM 124: beat 0.484 s; music drop at 3.0)
+### 6.1 reel1 "Every market" (DUR 22.0, BPM 124: beat 0.484 s; music drop at 3.871 (on the VO))
 | t | VO | on screen | visuals / camera | SFX / music |
 |---|---|---|---|---|
 | 0.00-0.80 | "Forex." | FOREX (extrude3d_brand ~210 px, y 760) | coin_usd spins in from depth to the lens, whip right | impact_big + whoosh_fast at the slam (0.30) |
@@ -68,7 +68,7 @@ motion blur never crosses a cut (switch half a frame early); eased exits; 5-7 sa
 | 11.00-14.40 | "Eliminate lag, and seize every market opportunity." | "Eliminate *lag*." slam, then "Seize every opportunity." | `line_chart` draws up with a light sweep; whip to the end card at 14.4 | impact_big 11.2, whip 14.4 |
 | 14.40-22.00 | "Open your live account at oktrum dot com." | okt_mark night_anim -> flat logo, button "Open Live Account" (press 15.8), "oktrum.com", risk line | navy pool, gentle streak behind (not on) the logo; settled 16.8-22.0 | logo_sting 14.6, ui_click + toggle_on 15.8 |
 
-### 6.3 reel3 "Peace of mind" (DUR 22.5, BPM 110: beat 0.545 s; calm, lifts at 11.0)
+### 6.3 reel3 "Peace of mind" (DUR 22.5, BPM 110: beat 0.545 s; calm, lifts at 10.909)
 | t | VO | on screen | visuals / camera | SFX / music |
 |---|---|---|---|---|
 | 0.00-2.80 | "What happens if the market crashes overnight?" | "What if the market *crashes* overnight?" (INK + serif accent in DOWN_DEEP) | ice-white page; candle_red (day) plunges top to bottom through the frame with a `candles` crash behind; "Balance" `T.Counter` falling fast (illustrative) | downlifter into 2.8, impact_soft at the plunge |
@@ -84,8 +84,8 @@ placeholders until `<WS>/assets3d/<name>/<variant>/meta.json` exists.
 
 ## 8. Sound and music
 Sound designer: `reelN_sfx.py` with the cues above (align='hit', <= 3 sounds per instant). Music supervisor:
-`reelN_music.py`, a procedural bed per reel on its BPM grid (reel1 tech-house drive, drop at 3.0; reel2 cinematic
-pulse with sub hits and ticking, hit at 3.0; reel3 airy future-garage, lift at 11.0), VO-ducked, final mix
+`reelN_music.py`, a procedural bed per reel on its BPM grid (reel1 tech-house drive, drop at 3.871; reel2 cinematic
+pulse with sub hits and ticking, hit at 3.0; reel3 airy future-garage, lift at 10.909), VO-ducked, final mix
 `<WS>/audio/reelN_mix.wav`. Render with `--audio <WS>/audio/reelN_mix.wav`.
 
 ## 9. Module contract

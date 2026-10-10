@@ -910,32 +910,4 @@ def samples(t):
     return 3
 
 
-# ---------------------------------------------------------------------------------------------- cues (draft)
-def cues():
-    c = [dict(t=W['forex'] - 0.10, name='whoosh_fast'), dict(t=W['forex'], name='impact_big')]
-    for i, tw in enumerate(WHIPS):
-        c.append(dict(t=tw, name='whip', params=dict(direction=1), pan=0.2 if i % 2 else -0.2))
-    c += [dict(t=W['gold'], name='impact_big'), dict(t=W['gold'] + 0.02, name='coin_ring', gain_db=-4),
-          dict(t=W['bitcoin'] - 0.12, name='coin_flip', gain_db=-2), dict(t=W['bitcoin'], name='impact_big'),
-          dict(t=W['nvidia'], name='impact_big'),
-          dict(t=WHIPS[3], name='riser', params=dict(duration=0.65), gain_db=-3),
-          dict(t=WHIPS[3], name='sub_drop'),
-          dict(t=4.50, name='impact_soft'), dict(t=4.70, name='shimmer', gain_db=-4)]
-    for _, k in CHIPS:
-        c.append(dict(t=W[k], name='glass_tap', gain_db=-2))
-    c += [dict(t=8.78, name='reverse_swell', params=dict(duration=0.45), gain_db=-4),
-          dict(t=8.78, name='air_zoom'),
-          dict(t=W['mt5'], name='shimmer', gain_db=-6),
-          dict(t=T_TUN + 0.15, name='whoosh_by', params=dict(direction=1)),
-          dict(t=W['zero'], name='slot_tick', align='start', params=dict(dur=W['two'] - W['zero'])),
-          dict(t=W['two'], name='check_ding'),
-          dict(t=T_ZERO, name='whip', params=dict(direction=-1)),
-          dict(t=W['zero_fees'], name='impact_big'), dict(t=W['zero_fees'], name='glitch_short', gain_db=-3),
-          dict(t=W['hidden'], name='swish_small', gain_db=-6), dict(t=W['fees'], name='swish_small', gain_db=-6),
-          dict(t=T_GLOBE2, name='impact_soft'), dict(t=W['oktrum'], name='shimmer', gain_db=-4),
-          dict(t=16.40, name='shimmer', gain_db=-6),
-          dict(t=E0 + 0.05, name='riser', params=dict(duration=1.2), gain_db=-6),
-          dict(t=E0 + 0.25, name='logo_sting'),
-          dict(t=W['cta'], name='pop', gain_db=-3),
-          dict(t=TC, name='ui_click'), dict(t=TC + 0.03, name='toggle_on', gain_db=-3)]
-    return c
+from reel1_sfx import cues, BED, BED_GAIN_DB  # noqa: E402,F401  (sound designer owns the cue sheet)

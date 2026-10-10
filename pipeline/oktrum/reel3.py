@@ -901,35 +901,4 @@ def samples(t):
     return 3
 
 
-def cues():
-    return [
-        dict(t=0.05, name='whoosh_slow', gain_db=-10),
-        dict(t=T_CRASH - 0.18, name='whoosh_fast', gain_db=-6),
-        dict(t=T_CRASH, name='impact_soft'),
-        dict(t=T_CRASH, name='downlifter', gain_db=-3),
-        dict(t=T_WITH + 0.04, name='swish_small', gain_db=-6),
-        dict(t=T_YOUR, name='slot_tick', align='start', params=dict(dur=T_ZERO - T_YOUR), gain_db=-8),
-        dict(t=T_ZERO, name='impact_soft'),
-        dict(t=T_ZERO, name='glass_tap', gain_db=-2),
-        dict(t=T_ZERO, name='sub_drop', params=dict(dur=1.4), gain_db=-6),
-        dict(t=T_LOCK, name='ui_click', gain_db=-2),
-        dict(t=T_LOCK + 0.02, name='toggle_on', gain_db=-3),
-        dict(t=6.10, name='whoosh_by', params=dict(dur=0.9, direction=1), pan=0.25, gain_db=-5),
-        dict(t=T_NEG, name='pop', gain_db=-4),
-        dict(t=T_NEG + 0.2, name='shimmer', gain_db=-10),
-        dict(t=8.10, name='whoosh_by', params=dict(dur=0.9, direction=-1), pan=-0.25, gain_db=-5),
-        dict(t=T_BANK, name='pop', gain_db=-4),
-        dict(t=9.62, name='whoosh_by', params=dict(dur=0.9, direction=1), pan=0.25, gain_db=-5),
-        dict(t=T_EXP, name='pop', gain_db=-4),
-        dict(t=T_PCI, name='glass_tap', gain_db=-5),
-        dict(t=11.65, name='whoosh_slow', gain_db=-6),
-        dict(t=T_PEACE, name='shimmer', gain_db=-7),
-        dict(t=T_OKT2, name='grow_swell', align='start', params=dict(duration=T_FULL - T_OKT2), gain_db=-6),
-        dict(t=T_OKT2 + 0.04, name='shimmer', gain_db=-8),
-        dict(t=T_CONF, name='impact_soft', gain_db=-4),
-        dict(t=T_FULL, name='riser', params=dict(duration=1.6), gain_db=-8),
-        dict(t=T_CTA, name='pop', gain_db=-4),
-        dict(t=15.55, name='logo_sting'),
-        dict(t=T_CLICK, name='ui_click'),
-        dict(t=T_CLICK + 0.02, name='toggle_on', gain_db=-3),
-    ]
+from reel3_sfx import cues, BED, BED_GAIN_DB  # noqa: E402,F401  (sound designer owns the cue sheet)
