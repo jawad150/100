@@ -171,7 +171,7 @@ def assets():
     d['prec'] = T.render('precision.', 'serif_italic', px=200, fill=('HOT_PINK', 'CYAN'), fill_angle=-45)
     d['url'] = T.render('oktrum.com', 'ui', px=40, fill='IVORY')
     d['risk'] = [T.render(s, 'ui', px=30, fill=('IVORY', 0.82)) for s in RISK]
-    d['tags'] = [OK.asset_tag(lab, pr, ch, look=LOOK, size=26, h=64) for lab, pr, ch in TAGS]
+    d['tags'] = [OK.asset_tag(lab, pr, ch, look=LOOK, size=32, h=72) for lab, pr, ch in TAGS]
     d['chips'] = [ui.chip(c, 0.0, look=LOOK, size=38, h=84) for c, _ in CHIPS]
     d['chips_sel'] = [ui.chip(c, 1.0, look=LOOK, size=38, h=84) for c, _ in CHIPS]
     d['glow'] = K.radial(512, (1, 1, 1), power=2.2)
@@ -467,7 +467,7 @@ def draw_globe(t):
             K.draw_billboard(cv, spr, cam, P, wdt * sq, height=wdt, opacity=1 - K.ramp(t, 4.36, 4.52, 'linear'))
     glow_at(cv, cam, C, 1600.0, K.C['BLUE'] * 0.9, hit * 1.2 + 0.25 * K.ramp(t, 4.3, 5.0, 'linear'))
     # sphere + orbit tags (sphere drawn between back and front tags)
-    s_op = K.ramp(t, 4.32, 4.62, 'inout_sine')
+    s_op = K.ramp(t, 4.32, 4.62, 'inout_sine') * (1 - K.ramp(t, 8.62, 8.72, 'in_cubic'))  # gone before the lens crosses it
     asm = K.ramp(t, 4.32, 5.15, 'out_cubic')
     t_op = 1 - K.ramp(t, ZS0 - 0.02, ZS0 + 0.22, 'in_cubic')
     enter = [K.ramp(t, 4.85 + 0.11 * i, 5.25 + 0.11 * i, 'out_cubic') for i in range(len(A['tags']))]
@@ -477,7 +477,7 @@ def draw_globe(t):
             OK.dot_sphere(c, cam, tuple(C), 300.0, t, spin=14.0, assemble=asm, n=6000, dot=0.22, opacity=s_op,
                           glow=1.0 + 0.6 * hit)
     if t_op > 0 and t > 4.8:
-        ui.orbit_ring(cv, cam, A['tags'], phase=(t - 4.8) * 0.045, center=tuple(C), radius=(360.0, 360.0),
+        ui.orbit_ring(cv, cam, A['tags'], phase=(t - 4.8) * 0.045, center=tuple(C), radius=(220.0, 220.0),
                       tilt=16.0, roll=-9.0, look=LOOK, mid=mid, enter=enter, opacity=t_op)
     else:
         mid(cv)
@@ -553,7 +553,7 @@ def tunnel_cards():
             ('NVDA', None, None), ('S&P 500', None, None), ('WTI OIL', None, None))
     for i, (lab, pr, ch) in enumerate(rows):
         f = card.face_at(sweep=(i * 0.17) % 1)
-        tg = OK.asset_tag(lab, pr, ch, look=LOOK, size=26, h=60, rim=0.0)
+        tg = OK.asset_tag(lab, pr, ch, look=LOOK, size=30, h=66, rim=0.0)
         card.put(f, tg.face, 18 - tg.pad, 16 - tg.pad)
         lc = OK.line_chart(400, 150, None, 1.0, LOOK, color=K.C['UP'] if (ch or 1) > 0 else K.C['DOWN'],
                            seed=3 + i, glow=0.8, width=3.0)
@@ -813,8 +813,8 @@ def draw_finale(t):
     for i, r in enumerate(A['risk']):
         rise(cv, r, t, 17.50 + 0.05 * i, 540, RISK_Y + 42 * i, dy=16, blur=5)
     cur = K.Track([(TC - 0.42, (840.0, 1640.0)), (TC - 0.04, (575.0, 1158.0)), (TC + 0.30, (575.0, 1158.0)),
-                   (TC + 0.62, (880.0, 1700.0))], ease='inout_cubic')
-    cop = K.ramp(t, TC - 0.42, TC - 0.26, 'inout_sine') * (1 - K.ramp(t, TC + 0.40, TC + 0.60, 'inout_sine'))
+                   (TC + 0.62, (1000.0, 980.0))], ease='inout_cubic')
+    cop = K.ramp(t, TC - 0.42, TC - 0.26, 'inout_sine') * (1 - K.ramp(t, TC + 0.32, TC + 0.46, 'inout_sine'))
     if cop > 1e-3:
         ui.draw_cursor(cv, *cur(t), 'hand', 84, press=K.impulse(t, TC, 9), click=t - TC if t >= TC else None,
                        look=LOOK, opacity=cop)
@@ -828,10 +828,10 @@ def draw_logo_post(cv, t):
     """Logo files composited after the bloom (BRAND: no bloom across the wordmark), dark pool drawn in draw()."""
     L = assets()['logo']
     # mid-reel wordmark on "Oktrum"
-    ow = K.ramp(t, W['oktrum'] - 0.10, W['oktrum'] + 0.02, 'inout_sine') * (1 - K.ramp(t, 14.95, 15.15, 'in_cubic'))
+    ow = K.ramp(t, W['oktrum'] - 0.10, W['oktrum'] + 0.02, 'inout_sine') * (1 - K.ramp(t, 14.78, 14.98, 'in_cubic'))
     if ow > 1e-3:
         s = K.lerp(0.94, 1.0, K.ramp(t, W['oktrum'] - 0.10, W['oktrum'] + 0.5, 'out_cubic'))
-        K.draw(cv, L['wm'], 540, 560 - 20 * K.ramp(t, 14.95, 15.15, 'in_cubic'), scale=s, opacity=ow,
+        K.draw(cv, L['wm'], 540, 560 - 20 * K.ramp(t, 14.78, 14.98, 'in_cubic'), scale=s, opacity=ow,
                blur=6 * (1 - K.ramp(t, W['oktrum'] - 0.10, W['oktrum'] + 0.04, 'out_cubic')))
     if t < 17.30:
         return cv
@@ -880,7 +880,7 @@ def draw(t):
         return draw_zero(t)
     cv = draw_finale(t)
     # dark pool behind the logo / wordmark (NAVY, not a glow of the logo's blue)
-    pa = max(K.ramp(t, W['oktrum'] - 0.2, W['oktrum'], 'inout_sine') * (1 - K.ramp(t, 15.0, 15.3, 'linear')),
+    pa = max(K.ramp(t, W['oktrum'] - 0.2, W['oktrum'], 'inout_sine') * (1 - K.ramp(t, 14.82, 15.06, 'linear')),
              K.ramp(t, E0 + 0.2, E0 + 0.7, 'inout_sine'))
     if pa > 0:
         y = 560 if t < 15.5 else LOGO_Y
