@@ -16,7 +16,7 @@ Shot list as built (t in s, beat n = n * 0.4839)
 | 8.42-9.05 | MetaTrader 8.95 | dolly zoom-through the sphere (zoom blur, 7 samples) into a glass MT5 dashboard window (candles + 3 site ticker rows) | continuous camera | reverse_swell -> 8.78, air_zoom 8.78 |
 | 8.95-10.20 | (on MetaTrader 5) | "Powered by MetaTrader 5" rises at 8.95, light sweep; window drifts, candles draw | camera pushes into the window, cut 10.20 inside a zoom blur | |
 | 10.20-12.52 | Spreads 10.44 / zero 11.0 / two 11.71 / pips 11.95 | card tunnel of market cards rushes and brakes on the counter card (11.05); "Spreads from" at 10.44; counter rolls 2.0 -> 0.2 (lands 11.71) + PIPS | whip down, cut 12.52 | whoosh_by 10.40, slot_tick (start) 11.0, check_ding 11.71 |
-| 12.52-14.03 | Zero 12.69 / hidden 13.0 / fees 13.40 | "0%" slams at 12.69 and shatters a glass fee tag; "Zero Hidden Fees" word by word | push-through + zoom blur, cut 14.03 (beat 29) | whip 12.52, impact_big + glitch_short 12.69 |
+| 12.52-14.03 | Zero 12.69 / hidden 13.0 / fees 13.40 | "0%" (y 705) slams at 12.69 and shatters a glass fee tag; "Zero Hidden Fees" word by word at y 1005 (clear of the like/share band) | push-through + zoom blur, cut 14.03 (beat 29) | whip 12.52, impact_big + glitch_short 12.69 |
 | 14.03-16.80 | Oktrum 14.24 / Trade 15.08 / markets 15.62 / precision 16.30 | the dot globe re-assembles big at the bottom; the Oktrum wordmark (logo file, dark pool, no bloom) at 14.24; "Trade the global / markets with / *precision.*" (serif accent) with a light sweep 16.35 | continuous | impact_soft 14.03, shimmer 14.24, shimmer 16.35, riser -> 16.85 |
 | 16.80-22.00 | Try 17.24 / demo 17.68 | type exits; the globe flies up and shrinks into the logo mark; okt_mark night_anim resolves (16.95-17.55) and cross-fades dot-for-dot into the flat logo (17.45-17.60, 760 px wide) as the wordmark wipes in; "Try Demo Free" button pops 17.24, cursor press 17.68; oktrum.com; risk line (30 px); settled 18.25-22.0 | hold | logo_sting 17.05, pop 17.24, ui_click + toggle_on 17.68 |
 
@@ -175,7 +175,7 @@ def assets():
     d['chips'] = [ui.chip(c, 0.0, look=LOOK, size=38, h=84) for c, _ in CHIPS]
     d['chips_sel'] = [ui.chip(c, 1.0, look=LOOK, size=38, h=84) for c, _ in CHIPS]
     d['glow'] = K.radial(512, (1, 1, 1), power=2.2)
-    d['pool'] = K.radial(1400, K.C['NAVY'] * 0.25, power=1.4)
+    d['pool'] = K.radial(1600, K.C['NAVY'] * 0.25, power=0.7)
     d['dust'] = K.Particles(90, seed=11, bright=0.45, colors=[K.C['CYAN'], K.C['HOT_PINK'], K.C['VIOLET']])
     d['win'] = ui.app_window(w=860, h=980, look=LOOK, title='MetaTrader 5', header='Integrated Multi-Asset Dashboard',
                              header_size=40, sidebar=False, icons=())
@@ -245,8 +245,9 @@ def slam_word(cv, ts, t, t0, x, y, out0=None):
     s *= 1 + 0.035 * K.ramp(t, t0, t0 + 1.2, 'linear')
     if out0 is not None:
         op *= 1 - K.ramp(t, out0, out0 + 0.07, 'linear')
+    sw = K.ramp(t, t0 + 0.12, t0 + 0.62, 'inout_sine')
     if op > 1e-3:
-        ts.draw(cv, x, y, scale=s, opacity=op, blur=b)
+        ts.draw(cv, x, y, scale=s, opacity=op, blur=b, sweep=sw if 0 < sw < 1 else None)
 
 
 def keep_mask(rects, soft=60.0):
@@ -340,7 +341,10 @@ def hook_obj(k, t):
 def hook_cam(k, t, ox):
     ts = HOOK[k]['ts']
     jx, jy = judder(t, ts, amp=18.0, seed=k)
-    return K.Cam(pos=(ox + jx, jy, -1500.0), aperture=26, focus_dist=1500.0)
+    life = t - ts
+    push = 110.0 * K.EASE['out_cubic'](K.clamp((life + 0.3) / 1.3))      # slow push-in over the hold
+    return K.Cam(pos=(ox + jx + 24.0 * math.sin(0.9 * life + k), jy - 30.0 * K.clamp(life + 0.3), -1500.0 + push),
+                 roll=1.2 * math.sin(0.7 * life + k), aperture=26, focus_dist=1500.0 - push)
 
 
 def draw_hook(t, k):
@@ -405,7 +409,7 @@ def globe_dist(t):
 
 def globe_cam(t):
     ox = whip_ox(t, WHIPS[3], None)
-    yaw = K.lerp(-26.0, 0.0, K.EASE['easy_ease'](K.ramp(t, WHIPS[3], ZS0, 'linear')))
+    yaw = K.lerp(-14.0, 0.0, K.EASE['easy_ease'](K.ramp(t, WHIPS[3], ZS0, 'linear')))
     pitch = K.lerp(9.0, 3.0, K.ramp(t, WHIPS[3], ZS0, 'inout_sine'))
     lift = 200.0 * K.ramp(t, 5.55, 6.25, 'inout_cubic')
     dist = globe_dist(t)
@@ -457,9 +461,9 @@ def draw_globe(t):
     if t < 4.55:
         for i, key in enumerate(('usd', 'gold', 'btc', 'chip')):
             ox_, oy_ = RING_OFF[i]
-            P = C + np.array([ox_ * (1 - pull), oy_ * (1 - pull), 120.0 * math.sin(i + t)])
+            P = C + np.array([ox_ * (1 - pull), oy_ * (1 - pull), 50.0 * math.sin(i + t)])
             spr, sq = obj_sprite(key, 40.0 * t + 70 * i if key in ('usd', 'btc') else 18 * math.sin(2 * t + i))
-            wdt = K.lerp(380.0, 40.0, pull)
+            wdt = K.lerp(520.0, 50.0, pull)
             K.draw_billboard(cv, spr, cam, P, wdt * sq, height=wdt, opacity=1 - K.ramp(t, 4.36, 4.52, 'linear'))
     glow_at(cv, cam, C, 1600.0, K.C['BLUE'] * 0.9, hit * 1.2 + 0.25 * K.ramp(t, 4.3, 5.0, 'linear'))
     # sphere + orbit tags (sphere drawn between back and front tags)
@@ -661,7 +665,7 @@ def draw_zero(t):
     cv = K.background(LOOK, t, cam, center=(0.5, 0.46), rim=0.0, intensity=BG_I + 0.2 * hit, boost=0.3 * hit)
     sy = -oy
     full, shards = A['fee']
-    tag_y = 880 + sy
+    tag_y = 740 + sy
     if t < ts:
         sw = 6.0 * math.sin(2 * math.pi * 0.9 * (t - T_ZERO))
         K.draw(cv, full, 540, tag_y, rot=sw, opacity=K.ramp(t, T_ZERO - 0.05, T_ZERO + 0.05, 'linear'))
@@ -684,7 +688,7 @@ def draw_zero(t):
         s = K.lerp(2.1, 1.0, K.spring(t - (ts - 0.11), freq=3.0, damping=0.5)) * sc
         op = K.ramp(t, ts - 0.11, ts - 0.01, 'linear') * op_all
         b = 8.0 * (1 - K.ramp(t, ts - 0.11, ts, 'out_cubic')) + 10 * push
-        A['zero'].draw(cv, 540 + jx * 0.5, 840 + sy + jy * 0.5, scale=s, opacity=op, blur=b,
+        A['zero'].draw(cv, 540 + jx * 0.5, 705 + sy + jy * 0.5, scale=s, opacity=op, blur=b,
                        sweep=K.ramp(t, 13.45, 13.95, 'inout_sine'))
     # "Zero Hidden Fees" word by word on one line
     ws = [T.measure(w, 'flat', px=100)[0] for w in ('Zero', 'Hidden', 'Fees')]
@@ -699,7 +703,7 @@ def draw_zero(t):
             if t >= t0 - 0.1:
                 u = K.ramp(t, t0 - 0.1, t0 + 0.3, 'out_cubic')
                 op = K.ramp(t, t0 - 0.1, t0 + 0.02, 'inout_sine') * op_all
-                ts_.draw(cv, 540 + (cx - 540) * sc, 1180 + sy + 40 * (1 - u) + 120 * push, scale=sc, opacity=op,
+                ts_.draw(cv, 540 + (cx - 540) * sc, 1005 + sy + 40 * (1 - u) + 120 * push, scale=sc, opacity=op,
                          blur=8 * (1 - u) + 10 * push)
     zb = 0.10 * push
     if zb > 0.003:
@@ -731,6 +735,15 @@ def logo_parts():
     return dict(full=full, wm=wm, mark=mark, word=word, mw=mw, mb=mb, h=full.shape[0])
 
 
+@functools.lru_cache(maxsize=1)
+def mark_fit():
+    """Sphere centre / radius (px) of okt_mark's last anim frame (== the logo pose), same alpha test as the logo."""
+    a = S3.get('okt_mark', 'night', mode='anim')
+    al = a.frame(a.n - 1)[..., 3] > 0.05
+    ys, xs = np.nonzero(al)
+    return (xs.min() + xs.max() + 1) / 2, (ys.min() + ys.max() + 1) / 2, (ys.max() + 1 - ys.min()) / 2
+
+
 def mark_screen():
     """Screen centre and radius of the logo's dot sphere on the end card."""
     L = assets()['logo']
@@ -750,7 +763,7 @@ def draw_finale(t):
     cam = end_cam(t)
     kick = K.impulse(t, T_GLOBE2, decay=5.0)
     endk = K.ramp(t, E0, E0 + 0.8, 'inout_sine')
-    cv = K.background(LOOK, t, cam, center=(0.5, 0.66 - 0.2 * endk), rim=0.0, intensity=K.lerp(BG_I + 0.04, BG_I - 0.06, endk),
+    cv = K.background(LOOK, t, cam, center=(0.5, 0.66 - 0.2 * endk), rim=0.0, intensity=K.lerp(BG_I + 0.04, BG_I - 0.14, endk),
                       boost=0.3 * kick)
     # globe: big at the bottom, then flies to the logo mark
     mx, my, mr = mark_screen()
@@ -768,15 +781,13 @@ def draw_finale(t):
         OK.dot_sphere(cv, cam, P, R, t, spin=18.0, assemble=asm, n=6000, dot=0.22, opacity=big_op,
                       glow=1.0 + 0.5 * kick)
     # okt_mark 3D (night_anim) resolving at the logo mark position, then the flat logo (drawn in post)
-    m_op = K.ramp(t, E0 + 0.12, E0 + 0.35, 'inout_sine') * (1 - K.ramp(t, 17.47, 17.62, 'inout_sine'))
+    m_op = K.ramp(t, E0 + 0.22, E0 + 0.42, 'inout_sine') * (1 - K.ramp(t, 17.47, 17.62, 'inout_sine'))
     if m_op > 0:
         if ready('mark'):
             a = S3.get('okt_mark', 'night', mode='anim')
-            fr = a.blend(K.clamp((t - (E0 + 0.12)) / (17.52 - (E0 + 0.12))) * (a.n - 1))
-            bx0, by0, bx1, by1 = a.bbox
-            sc = (2 * mr) / max(1.0, (by1 - by0))
-            K.draw(cv, fr, mx, my, scale=sc, opacity=m_op,
-                   anchor=(((bx0 + bx1) / 2) / fr.shape[1], ((by0 + by1) / 2) / fr.shape[0]))
+            fr = a.blend(K.clamp((t - (E0 + 0.05)) / (17.52 - (E0 + 0.05))) * (a.n - 1))
+            fx, fy, fr_r = mark_fit()
+            K.draw(cv, fr, mx, my, scale=mr / fr_r, opacity=m_op, anchor=(fx / fr.shape[1], fy / fr.shape[0]))
         else:
             OK.dot_sphere(cv, cam, mP, mR, t, rot=(-14.0, -50.0 * (1 - K.ramp(t, E0, 17.5, 'out_cubic')), -8.0),
                           spin=0.0, assemble=K.ramp(t, E0 + 0.1, 17.5, 'out_cubic'), n=2600, dot=0.30,
@@ -785,16 +796,18 @@ def draw_finale(t):
             ph.draw(cv, mx, my + mr + 30, opacity=m_op * 0.8)
     # copy
     out = E0 - 0.02
-    rise(cv, A['l1'], t, W['trade_g'], 540, 420, out0=out, sweep=K.ramp(t, 16.35, 16.85, 'inout_sine'))
-    rise(cv, A['l2'], t, W['markets'], 540, 552, out0=out + 0.04, sweep=K.ramp(t, 16.42, 16.92, 'inout_sine'))
-    rise(cv, A['prec'], t, W['precision'], 540, 712, out0=out + 0.08, dy=56,
+    rise(cv, A['l1'], t, W['trade_g'], 540, 420, out0=out, out_dur=0.2, sweep=K.ramp(t, 16.35, 16.85, 'inout_sine'))
+    rise(cv, A['l2'], t, W['markets'], 540, 552, out0=out + 0.03, out_dur=0.2,
+         sweep=K.ramp(t, 16.42, 16.92, 'inout_sine'))
+    rise(cv, A['prec'], t, W['precision'], 540, 712, out0=out + 0.06, out_dur=0.2, dy=56,
          sweep=K.ramp(t, 16.40, 16.95, 'inout_sine'))
     # end card UI
     if t > W['cta'] - 0.15:
         b = K.spring(t - (W['cta'] - 0.12), freq=2.6, damping=0.55)
-        hover = K.ramp(t, TC - 0.30, TC - 0.08, 'inout_sine')
+        hover = K.ramp(t, TC - 0.30, TC - 0.08, 'inout_sine') * (1 - K.ramp(t, TC + 0.40, TC + 0.70, 'inout_sine'))
         btn = ui.button('Try Demo Free', hover=hover, press=K.impulse(t, TC, 9), look=LOOK, h=120, size=44,
-                        ripple=(t - TC) if t >= TC else None)
+                        grad=('#8465F4', '#3A55E0'),   # VIOLET -> BLUE_DEEP: white label passes (BRAND 2)
+                        ripple=(t - TC) if TC <= t < TC + 0.9 else None)
         ui.place(cv, btn, 540, BTN_Y, scale=K.lerp(0.6, 1.0, b), opacity=K.clamp(1.6 * b))
     rise(cv, A['url'], t, 17.40, 540, URL_Y, dy=22, blur=6)
     for i, r in enumerate(A['risk']):
@@ -871,7 +884,7 @@ def draw(t):
              K.ramp(t, E0 + 0.2, E0 + 0.7, 'inout_sine'))
     if pa > 0:
         y = 560 if t < 15.5 else LOGO_Y
-        K.draw(cv, assets()['pool'], 540, y, opacity=0.85 * pa, scale=(0.75 if t < 15.5 else 1.0))
+        K.draw(cv, assets()['pool'], 540, y, opacity=0.92 * pa, scale=(0.75 if t < 15.5 else 1.0))
     return cv
 
 
