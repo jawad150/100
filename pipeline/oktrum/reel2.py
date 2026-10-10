@@ -630,32 +630,4 @@ def samples(t):
     return 3
 
 
-def cues():
-    return [
-        dict(t=0.02, name='heartbeat', params=dict(n=2, bpm=96), gain_db=-2),
-        dict(t=T_SWAP - 0.01, name='flash_hit', gain_db=-3),
-        dict(t=BL1 - 0.38, name='ui_tick', gain_db=-4),
-        dict(t=1.30, name='whoosh_slow', gain_db=-8),
-        dict(t=CUT_B, name='riser', params=dict(duration=1.4), gain_db=-6),
-        dict(t=CUT_B, name='sub_drop', params=dict(dur=2.0)),
-        dict(t=CUT_B, name='impact_soft', gain_db=-3),
-        dict(t=CUT_B + 0.18, name='whoosh_by', params=dict(dur=1.0, direction=1), pan=0.3, gain_db=-4),
-        dict(t=T_CHIP1, name='glass_tap', gain_db=-4),
-        dict(t=T_CHIP2, name='glass_tap', gain_db=-4),
-        dict(t=T_HOVER, name='ui_hover', gain_db=-8),
-        dict(t=T_PRESS, name='ui_click'),
-        dict(t=T_PRESS + 0.07, name='whoosh_fast', gain_db=-9, pan=0.4),
-        dict(t=T_TOAST, name='check_ding', gain_db=-2),
-        dict(t=T_TOAST + 0.05, name='toast_chime', gain_db=-6),
-        dict(t=T_MT5, name='glass_tap', gain_db=-5),
-        dict(t=CUT_D, name='sub_drop', params=dict(dur=1.4), gain_db=-6),
-        dict(t=T_LAG, name='impact_big'),
-        dict(t=T_LAG + 0.35, name='shimmer', gain_db=-8),
-        dict(t=T_SEIZE, name='swish_small', gain_db=-6),
-        dict(t=WHIP, name='whip', params=dict(direction=-1)),
-        dict(t=WHIP + 0.12, name='logo_sting'),
-        dict(t=T_CTA, name='pop', gain_db=-4),
-        dict(t=T_CLICK, name='ui_click'),
-        dict(t=T_CLICK + 0.02, name='toggle_on', gain_db=-3),
-        dict(t=16.0, name='shimmer', gain_db=-9),
-    ]
+from reel2_sfx import cues, BED, BED_GAIN_DB  # noqa: E402,F401  (sound designer owns the cue sheet)
