@@ -1,3 +1,23 @@
+# Bodyrade — three pre-workout reels
+
+Three vertical reels (1080×1920, 30 fps, -14 LUFS sound) in Bodyrade's yellow (#FDCF09) / black brand with the Jost font. The style is SaaS motion graphics with cinematic 3D, including Blender turntables of the three pouches, the 3D chevron and "5in1", and tumbling fruit and ice.
+
+| Reel | Length | Story |
+|---|---|---|
+| [`bodyrade_fresh.mp4`](reel/bodyrade/bodyrade_fresh.mp4) | 28.5 s | Hook montage "STOP PRE-MIXING." → freshness dashboard (air / moisture / light) → "ONLY MIX IT FRESH." → 4 steps (load, insert, add water, open & shake) → benefits → "LOCKED IN FRESH." |
+| [`bodyrade_five.mp4`](reel/bodyrade/bodyrade_five.mp4) | 26.5 s | 3D "5in1" hook "WHAT'S IN ONE SCOOP?" → 10 g gauge → five actives with mg counters filling a stacked serving bar → "9.4g of actives in every 10g scoop." → "5 IN 1 BLEND." |
+| [`bodyrade_flavour.mp4`](reel/bodyrade/bodyrade_flavour.mp4) | 25.0 s | Pouch/colour flicker hook "THREE FLAVOURS. WHICH ONE ARE YOU?" → Orange & Mango, Sour Raspberry and Sweet Pear, each in its own colour world with 3D fruit at depth → "PICK YOUR FLAVOUR." |
+
+Pipeline (`pipeline_br/`):
+- `prep_br.py` cuts out the pack shots.
+- `blender_br.py` renders the 3D assets and reuses `pipeline_of/blender_of.py`.
+- `reel_br.py` is the compositor (`REEL=fresh|five|flavour`) and reuses `pipeline/engine.py` plus the SaaS helpers in `pipeline_of/reel_of.py`.
+- `audio_br.py` synthesises a 120 BPM F-minor track with SFX locked to each reel.
+
+Rebuild: put pack shots, site images and Jost fonts into `workspace_br/src`, `site` and `fonts`. Then run `prep_br.py` and the Blender assets, and finally `python3 pipeline_br/render_br.py fresh five flavour`.
+
+---
+
 # Organic Fostering — "Day in the life" reel
 
 19-second vertical reel (1080×1920, 30 fps, -14 LUFS sound), cinematic AI footage + SaaS-style motion graphics in the Organic Fostering brand (plum / magenta / orange / green, Nunito).

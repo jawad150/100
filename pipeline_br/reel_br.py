@@ -167,6 +167,12 @@ def pouch(canvas, fl, cx, cy, height, angle=0.0, op=1.0, blur=0.0, shadow_op=0.5
     draw(canvas, f, cx, cy, scale=sc, opacity=op)
 
 
+def hero_angle(lt, spin_dur=0.8, amp=22, speed=1.3, spins=1):
+    """Fast hero spin on entry (360*spins -> 0 with ease-out), then a gentle sway around the front."""
+    k = e_out_cubic(prog(lt, 0, spin_dur))
+    return (1 - k) * 360 * spins + amp * math.sin(lt * speed) * k
+
+
 def pouch_flat(canvas, fl, cx, cy, height, rot=0.0, op=1.0):
     spr = img(f'{S}/src/cut_{fl}.png', True)
     sc = height / spr.shape[0]
@@ -473,7 +479,7 @@ def r1_benefits(t):
     t0 = F1['benefits']
     c = bg_black(t, accent=FL['orange'][0])
     lt = t - t0
-    ang = 330 + lt * 55
+    ang = hero_angle(lt)
     pouch(c, 'orange', W / 2, 880, 1000 * (0.9 + 0.1 * e_out_expo(prog(lt, 0, 0.6))), angle=ang)
     title(c, 'Fresh every time.', W / 2, 300, 96, t, t0 + 0.1, fname=H9, color=YEL, glow=YEL, glow_str=0.4,
           sweep_t=t0 + 0.8)
@@ -517,7 +523,7 @@ def r2_hook(t):
     # rapid flicker of the three pouches behind
     fl = ['orange', 'raspberry', 'pear'][int(t / 0.25) % 3]
     if t < 1.5:
-        pouch(c, fl, W / 2, 1150, 820, angle=(t * 400) % 360, op=0.35, blur=4, shadow_op=0)
+        pouch(c, fl, W / 2, 1150, 820, angle=25 * math.sin(t * 6), op=0.35, blur=4, shadow_op=0)
     k = prog(t, 0.1, 0.1 + 40 / 30)
     idx = min(39, int((t - 0.1) * 30)) if t > 0.1 else 0
     f = seq('text_5in1').frame(idx / 24.0)
@@ -552,7 +558,7 @@ def r2_serving(t):
     t0 = F2['serving']
     c = bg_black(t, accent=FL['raspberry'][0])
     lt = t - t0
-    pouch(c, 'raspberry', W / 2 + 230, 1180, 900, angle=340 + lt * 25, op=min(1, prog(lt, 0, 0.4) * 2))
+    pouch(c, 'raspberry', W / 2 + 230, 1180, 900, angle=hero_angle(lt, amp=18), op=min(1, prog(lt, 0, 0.4) * 2))
     k = e_out_cubic(prog(lt, 0.2, 1.6))
     gauge(c, W / 2 - 170, 760, 230, k, YEL, f'{10 * k:.0f}g', 'per serving')
     title(c, 'One 10g serving.', W / 2, 330, 84, t, t0 + 0.1, fname=H9)
@@ -570,7 +576,7 @@ def r2_actives(t):
     col = ACT_COL[i]
     # big counter
     pouch(c, ['raspberry', 'orange', 'pear', 'raspberry', 'orange'][i], W / 2, 1830, 760,
-          angle=330 + (t - t0) * 30, op=0.95, shadow_op=0.3)
+          angle=hero_angle(t - st, spin_dur=0.6, amp=16), op=0.95, shadow_op=0.3)
     kv = e_out_cubic(prog(lt, 0.05, 0.9))
     cs = counter_spr(val * kv, dec, unit, 300 if unit == 'g' else 250, WHT)
     glow_add(c, cs, W / 2, 640, col, sigma=36, strength=0.55)
@@ -612,7 +618,7 @@ def r2_total(t):
         kk = e_out_expo(prog(lt, 0.05 + 0.1 * j, 0.6 + 0.1 * j))
         x = W / 2 + (j - 1) * 330 * kk
         h = 760 if j == 1 else 640
-        pouch(c, fl, x, 1050 + (0 if j == 1 else 40), h, angle=(j - 1) * -20 + 360, op=min(1, kk * 2))
+        pouch(c, fl, x, 1050 + (0 if j == 1 else 40), h, angle=(j - 1) * -18 + 8 * math.sin(lt * 1.4 + j), op=min(1, kk * 2))
     title(c, '9.4g of actives', W / 2, 330, 96, t, t0 + 0.1, fname=H9, color=YEL, glow=YEL, glow_str=0.4,
           sweep_t=t0 + 0.8)
     title(c, 'in every 10g scoop.', W / 2, 440, 72, t, t0 + 0.4, fname=H8)
@@ -635,8 +641,7 @@ TR2 = [(F2['serving'], 'flash'), (F2['actives'], 'zoom')] + [(F2['actives'] + 3 
 F3 = dict(hook=0.0, orange=2.5, raspberry=8.5, pear=14.5, trio=20.5, dur=25.0)
 FRUITS = {'orange': ['orange_slice', 'mango_cube'], 'raspberry': ['raspberry'], 'pear': ['pear_cube']}
 TASTE = {'orange': 'Juicy orange. Ripe mango.', 'raspberry': 'Sharp, sour raspberry.', 'pear': 'Crisp, sweet pear.'}
-FRUIT_SYS = {k: Fruits(v + ['ice_cube'] if k != 'raspberry' else v + ['raspberry', 'ice_cube'], n=14, seed=i + 3)
-             for i, (k, v) in enumerate(FRUITS.items())}
+FRUIT_SYS = {k: Fruits(v, n=14, seed=i + 3) for i, (k, v) in enumerate(FRUITS.items())}
 
 
 def r3_hook(t):
@@ -645,12 +650,12 @@ def r3_hook(t):
     fl = order[i % 3]
     lt = t - i * 0.25
     c = bg_flavour(t, fl)
-    pouch(c, fl, W / 2, 1050, 1000 * (1.1 - 0.1 * e_out_expo(lt / 0.25)), angle=(i * 47) % 360)
+    pouch(c, fl, W / 2, 1050, 1000 * (1.1 - 0.1 * e_out_expo(lt / 0.25)), angle=[-28, 22, -12, 30][i % 4] * (1 - lt / 0.25))
     flash(c, lt, 0, 0.08, 0.35)
     k = prog(t, 1.4, 2.5)
     title(c, 'THREE FLAVOURS.', W / 2, 330, 110, t, 0.05, fname=I9, color=WHT, shadow_op=0.8, rise=70)
-    title(c, 'WHICH ONE ARE YOU?', W / 2, 460, 72, t, 0.6, fname=I9, color=BLK if fl == 'pear' else YEL,
-          shadow_op=0.0 if fl == 'pear' else 0.7, rise=50)
+    title(c, 'WHICH ONE ARE YOU?', W / 2, 460, 72, t, 0.6, fname=I9, color=WHT if fl == 'raspberry' else BLK,
+          shadow_op=0.7 if fl == 'raspberry' else 0.0, rise=50)
     return c
 
 
@@ -661,7 +666,7 @@ def r3_flavour(t, fl, t0, num):
     fs = FRUIT_SYS[fl]
     fs.draw(c, t, t0 - 1.0, layer='back', focus_z=0)
     k = e_out_expo(prog(lt, 0.0, 0.7))
-    ang = 300 + lt * 70
+    ang = hero_angle(lt, spin_dur=0.9, amp=24, speed=1.1)
     pouch(c, fl, W / 2, 1060 + 120 * (1 - k), 1080 * (0.85 + 0.15 * k), angle=ang, op=min(1, k * 2), shadow_op=0.45)
     fs.draw(c, t, t0 - 1.0, layer='front', focus_z=0)
     dark = fl == 'pear'
@@ -670,8 +675,9 @@ def r3_flavour(t, fl, t0, num):
          size=32, dot=c2)
     words = nice.upper().split(' ')
     title(c, words[0], W / 2, 330, 130, t, t0 + 0.15, fname=I9, color=tc, shadow_op=0.0 if dark else 0.7, rise=80)
-    title(c, ' '.join(words[1:]), W / 2, 470, 130, t, t0 + 0.4, fname=I9, color=YEL if not dark else BLK,
-          glow=YEL if not dark else None, glow_str=0.4, shadow_op=0.0 if dark else 0.7, rise=80, sweep_t=t0 + 1.1)
+    l2 = WHT if fl == 'raspberry' else BLK
+    title(c, ' '.join(words[1:]), W / 2, 470, 130, t, t0 + 0.4, fname=I9, color=l2,
+          shadow_op=0.7 if fl == 'raspberry' else 0.0, rise=80, sweep_t=t0 + 1.1)
     chip(c, TASTE[fl], W / 2, 1720, t, t0 + 0.9, fill=(0, 0, 0, 0.75), color=WHT, size=38)
     return c
 
