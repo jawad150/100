@@ -1,13 +1,14 @@
 """pencil_se_rewind_ui.py - UI / type layer of "Pencil Se Rewind" (Bijli series #1, @jawad_mp4), owner: UI/UX designer
 (caption-designer + brand-kit-builder roles). Look 'ember', 1080x1920, 30 fps, DUR 1024 f, grid 112.5 BPM (16 f / beat).
 
-Sources: brand_reels/design/reels/pencil_se_rewind/{SCRIPT.md, script.json, SHOTS.md (C) UI / TYPE}, BRAND.md.
+Sources: brand_reels/design/reels/pencil_se_rewind/{SCRIPT.md, script.json, SHOTS.md (C), VO_TIMING.md}, BRAND.md.
+VO-LED (LEAD_DECISIONS 3): the approved Vlad VO is final; every caption beat sits on its measured VO word.
 Every draw is a pure function of reel time t (s) on the house canvas (premultiplied linear float32 RGBA, K.new_canvas);
 static sprites are built once per process (lru_cache). Notes + deviations: brand_reels/design/reels/pencil_se_rewind/UI.md.
 
     import pencil_se_rewind_ui as UI
     UI.lockups(cv, t, hook='A')        every designed caption lockup (HA / HB, L5, L6, L7, L9, L12, L14 + L15)
-    UI.captions().draw(cv, t)          snake captions (L2 L3 L4 L8 L10 L11 L13) - 3 bands, avoid rects per shot
+    UI.captions(hook).draw(cv, t)      snake captions = the VO words of L2 L3 L4 L8 L10 L11 L13 (3 bands, avoid rects)
     UI.nle(cv, t, media=None)          S10-S13 glass NLE (f576-f909): pull-back into the viewer, timeline panel,
                                        scrubbing playhead, CUT marker, push into the payoff layout, line -> pencil
                                        morph, pencil snap + clip-edge glow.  media(src_t) -> R1 frame (1080x1920)
@@ -16,31 +17,32 @@ static sprites are built once per process (lru_cache). Notes + deviations: brand
     UI.cover(cv)                       cover overlay: HA lockup settled (underline drawn); UI.grid_crop(img) = 3:4
     UI.state(t)                        the NLE state dict (playhead x, src time, timecode, scale, morph ...) for QA
     UI.prewarm()                       builds every sprite (call from the reel's prewarm())
-    python3 pencil_se_rewind_ui.py selftest   -> workspace/jawad_reels/pencil_se_rewind/ui_selftest/*.png
+    UI.TM / UI.retime(KEY=frame, ...)  the timing table (frames); UI.derive_vo_timing() recomputes it from the VO words
+    UI.lockup_windows(hook)            {id: (f0, f1)} at the current timing (snake hide / QA 2-block rule)
+    UI.ink_scan() / UI.vo_alignment() / UI.block_check()      QA helpers (the selftest prints all three)
+    python3 pencil_se_rewind_ui.py selftest [lockups snake nle outro cover pencil]
+                                       -> workspace/jawad_reels/pencil_se_rewind/ui_selftest/*.png (+ sheet_*.png)
+    PSR_UI_TIMING=vo (default: derived from vo_final words) | static (TIMING_VO table) | script (text-led plan)
 
-LOCKUPS (frames inclusive, positions = text-box centres; SCRIPT.md 2 / SHOTS.md C)
-    HA  f0-63    'REWIND BUTTON?' jw_caps 86 (540, 400) house rise t0 -0.1 | 'Pencil.' jw_key 250 SLAM f16 (540, 580),
-                 hit flare | underline 640 px y 700 f24-f44 | exit f56-f63 (in_cubic, 8 px up, blur 0 -> 6)
-    HB  f0-63    'BATTERY' jw_caps 96 (540, 400) t0 -0.1 | 'khatam?' jw_key 240 SLAM f32 | underline 800 f40-f58 | exit
-    L5  f262-319 J.HouseTitle('SIRF', 'andaza.', 96, 220, no underline) at (540, 590): caps f262, per-glyph rise f268
-    L6  f320-383 'Play.' caps_bold 150 y 420 SLAM f320 | 'Galat!' jw_key 200 y 590 SLAM f328 + 'nope' shake, a flame
-                 strike draws through 'Play.' f329-f333 (Play dims to 0.55) | 'Phir se.' caps_bold 150 y 760 SLAM f336
-    L7  f384-419 'Mil gaya!' jw_key 220 y 520 SLAM f384 (+ hit flare); exit f414-f419
-    L9  f448-511 'CASSETTE' jw_caps 96 y 400 rises f448 | 'phans gayi!' jw_key 190 y 570 SLAM f464 with the D7 shock
-                 (6 px shake, decay 10) and a tape warble on the keyword (rows sway, 10 px -> 0 over 18 f); exit f504-f511
-    L12 f640-703 one word at a time at (540, 330), moving the way the playhead jumps: 'Peeche.' f640 (in from the
-                 right) / 'Aage.' f648 (from the left) / 'Peeche.' f656 / 'Yahan.' jw_key 220 SLAM f664; each word
-                 leaves in 3 f on the next 8th; 'Yahan.' exits f696-f703
-    L14 f768-895 J.HouseTitle('PEHLA EDITING TOOL?', 'Pencil.', 74, 260, underline drawn here) at (540, 560):
-                 caps f768, key rise f776, underline 720 px y 700 f784-f806; exit f880-f895
-    L15 f816-895 'Scrubbing toh' jw_body 56 y 772 (rise f816) / 'cassette' jw_key 96 inline + ' pe sikhi thi.' y 846
-                 (rise f820); exit with L14
-SNAKE (snake_captions): upper band (baseline y 410) L2 L3 L8 L10, lower (y 1380) L4, top (y 330, margin 14) L11 L13.
-    Word onsets are re-paced inside each line window so every chunk holds >= words / 3 s (SCRIPT's one word per 5 f
-    gave the first chunk 0.5 s); the last chunk is gone by the line's out frame. Clear: the drop-out f752-f767.
+TIMING (TM, frames inclusive; defaults derived from the measured VO at import - see TIMING_VO for the values and why)
+    HA   caps rise t0 -0.1 | 'Pencil.' SLAM HA_key = V1 'Pencil.' - 3 f (f43, with the SFX hit) | underline | exit
+         HA_out f62-f69 (across the f64 cut, gone before L2 f70)        HB: 'khatam?' SLAM HB_key (f32)
+    L5   'SIRF' rise L5_in (f240 'Sirf') / 'andaza.' glyph rise L5_key (f253)
+    L6   'Play.' f320 / 'Galat!' f347 (+ strike through Play) / 'Phir se.' f376; instant swap out at L7_in
+    L7   'Mil gaya!' SLAM f395        L9 'CASSETTE' f448 / 'phans gayi!' SLAM f464 + D7 (structure, never moves)
+    L12  'Peeche.' / 'Aage.' / 'Peeche.' / 'Yahan.' on the scrub jumps f648 / f656 / f664 / f672 (V9 not in the VO)
+    L14  caps f768 (payoff hit, structure) / 'Pencil.' key rise L14_key = V11 'Pencil.' (f832) = NLE pencil snap
+    L15  'Scrubbing toh' f852 / 'cassette pe sikhi thi.' f878 (V12 onsets); L14 + L15 leave f884-f895 (razor f896)
+LAYOUT (positions = text-box centres; SCRIPT.md 2 / SHOTS.md C)
+    HA / HB caps (540, 400), key (540, 580), underline y 700 | L5 (540, 590) | L6 y 420 / 590 / 760 | L7 y 520 |
+    L9 y 400 / 570 | L12 (540, 344) | L14 HouseTitle at (540, PAY_Y = 520), underline y 660, L15 y 728 / 800.
+    Slam peaks are capped so a wide keyword stays inside x 70-1010 (ink scan, every frame).
+SNAKE (snake_captions, VO words): upper band (baseline y 410) L2 L3 L8 L10, lower (y 1380) L4, top (y 330, margin 14)
+    L11 L13. Each band clears for the lockup windows, the drop-out f752-f767, the other bands' lines and (upper) the
+    f192 cut; splits instead of shrinks: 'Gaana' / 'dhoondna ho?', 'pencil se' / 'wapas'.
 NLE (f576-f909; native layout, then the payoff layout after the S12 push)
-    background NIGHT_1 -> NIGHT_0 + 40 px grid at 4 %; viewer glass 660 x 820 r 28 (540, 830), media 640 x 800 = R1 crop
-    (x 0-1080, y 510-1860), header 'cassette_rewind.mov' jw_mono 30 ASH / timecode jw_mono 34 IVORY, title-safe
+    background NIGHT_1 -> NIGHT_0 + 40 px grid at 4 %; viewer glass 580 x 720 r 28 (540, 838), media 560 x 700 = R1 crop
+    (x 0-1080, y 510-1860), header 'cassette_rewind.mov' jw_mono 24 ASH / timecode jw_mono 28 IVORY, title-safe
     corners, play icon + progress line; timeline glass x 70-1010 y 1260-1470: ruler 1270-1296 (ticks 1 s = 30 px,
     labels every 4 s jw_mono 28, in/out band), V2 1302-1338 (EMBER clips, keyframes), V1 1346-1396 (FLAME clips with
     filmstrip thumbnails), A1 1404-1458 (GOLD peak + RMS waveform, volume line); lane labels jw_mono 28 at x 103 +
@@ -48,14 +50,17 @@ NLE (f576-f909; native layout, then the payoff layout after the S12 push)
     time <-> x: x = X_ORIGIN + PXS * src_s (PXS 30 px / s, so the 1 px / f crawl is real time; f576 = x 520).
     Playhead: 4 px FLAME line + glow (3, 10, 28) and a 22 x 26 pentagon head with an AMBER core.
     f576-f597 pull-back (inout_sine 22 f): the frame shrinks into the viewer, the 9:16 mask tightens to 4:5;
-    f584-f600 panel + viewer header slide in; f576-f639 crawl 520 -> 584; scrub jumps (inout_expo 6 f + SNAP landing)
-    f640 -> 470, f648 -> 680, f656 -> 500, f664 -> 600 (= the cut: CUT chip POP + ruler flag + dashed AMBER line);
-    viewer shows the source time under the playhead at 12 Hz; f704-f727 viewer slides up and out; f704-f744 the
+    f584-f600 panel + viewer header slide in; 1 px / f crawl from x 520 until the first jump; scrub jumps (inout_expo
+    6 f + SNAP landing) at TM['L12'] (f648 / f656 / f664 / f672) -> x 470 / 680 / 500 / 600 (= the cut: CUT chip POP +
+    ruler flag + dashed AMBER line); viewer shows the source time under the playhead at 12 Hz; f704-f717 the viewer
+    lifts 70 px and fades (it never crosses the top caption band); f704-f744 the
     content zooms 1.0 -> 1.9 about x 600 and the panel grows into the payoff layout (panel y 872-1444, ruler 884-936,
     V2 952-1036, V1 1050-1200, A1 1214-1430); the playhead steps back to screen x 520 f728-f748; f752-f767 the line
     narrows 4 -> 0 px while the pencil (R5 pencil_top, 620 px long, eraser + ferrule in the ruler, eraser top y 876)
-    wipes in top -> bottom with a hot scan edge; f800 SNAP 520 -> 600 with a 2 deg wobble; edit-point brackets and
-    clip edges at x 600 glow FLAME f800-f816.
+    wipes in top -> bottom with a hot scan edge; NLE_snap (f832) SNAP 520 -> 600 with a 2 deg wobble; edit-point
+    brackets and clip edges at x 600 glow FLAME for 16 f.
+3D: final Blender renders (RWS/assets3d/<name>, meta.json) when present, else the Blender preview renders
+    (RWS/out/preview3d, upscaled; layout / selftest only), else the procedural stand-ins.
 """
 import functools
 import json
@@ -97,6 +102,130 @@ def F(f):
     return f / FPS
 
 
+# =================================================================================================== timing (VO-led)
+# Every caption / UI beat in reel frames (30 fps). Defaults = the measured Vlad VO (VO_TIMING.md section 3,
+# LEAD_DECISIONS 3: picture beats move to the VO). The motion designer retimes with UI.retime(KEY=frame, ...)
+# (or edits this table) and everything below - lockups, snake hide/clear windows, NLE scrub / snap - follows.
+# Pairs are (first frame, last frame) inclusive; an element is gone from last + 1.
+TIMING_SCRIPT = dict(                                    # the text-led plan (SCRIPT.md 2), kept for reference / A-B
+    HA_key=16, HA_ul=(24, 44), HA_out=(56, 63),
+    HB_key=32, HB_ul=(40, 58), HB_out=(56, 63),
+    L5_in=262, L5_key=268, L5_out=(312, 319),
+    L6_play=320, L6_galat=328, L6_phir=336, L6_out=(376, 383),
+    L7_in=384, L7_out=(414, 419),
+    L9_in=448, L9_key=464, L9_out=(504, 511),
+    L12=(640, 648, 656, 664), L12_out=(696, 703),
+    L14_in=768, L14_key=776, L14_ul=(784, 806), L14_out=(880, 895),
+    L15_l1=816, L15_l2=820, L15_out=(880, 895),
+    NLE_snap=800, NLE_chip_out=(700, 713),
+)
+TIMING_VO = dict(                                        # static fallback = VO assemble 2026-10-11 21:26 (stem A)
+    HA_key=43,            # V1 'Pencil.' 46.2 - 3 f: the hit lands 0.1 s before the word (SFX f43, VO keeps 8 LU)
+    HA_ul=(45, 57),
+    HA_out=(62, 69),      # lockup leaves across the f64 cut, gone before L2 'Walkman' f70
+    HB_key=32,            # V1B 'khatam?' 32.0
+    HB_ul=(36, 52),
+    HB_out=(58, 65),
+    L5_in=240,            # V3 'Sirf' 240.3
+    L5_key=253,           # V3 'andaza.' 253.1
+    L5_out=(312, 319),
+    L6_play=320,          # V4 'Play.' 320.0 (PLAY key)
+    L6_galat=347,         # V4 'Galat!' 347.3 (STOP key)
+    L6_phir=376,          # V4 'Phir' 376.1 (REW key + motor)
+    L6_out=(391, 394),    # instant swap into 'Mil gaya!' (2nd PLAY + cut to S7 f392)
+    L7_in=395,            # V5 'Mil' 395.0
+    L7_out=(423, 428),    # 'gaya!' ends 422.3; L8 'Aur' 430.7
+    L9_in=448,            # structure: the eat (stays)
+    L9_key=464,           # structure: re-hook slam + D7 (stays; V6 'Cassette' 466.6 follows the slam)
+    L9_out=(504, 511),
+    L12=(648, 656, 664, 672),   # scrub jumps one 8th later (V8 'hain.' ends 642); V9 not in the VO (ladder F4)
+    L12_out=(691, 697),   # gone before L13 'Bas' 698.3
+    L14_in=768,           # structure: the payoff hit (V11 'Pehla' 777.7 follows it)
+    L14_key=832,          # V11 'Pencil.' 832.6 = pencil snaps to the cut (SFX ui_tick f832)
+    L14_ul=(835, 855),
+    L14_out=(884, 895),
+    L15_l1=852,           # V12 'Scrubbing' 852.7
+    L15_l2=878,           # V12 'cassette' 878.4
+    L15_out=(884, 895),   # leaves with L14 at the D2 razor: the outro badge pops f899 at the tag's height (V12 tail
+                          # 'sikhi thi.' f896-f915 plays under the razor without text)
+    NLE_snap=832,         # = L14_key
+    NLE_chip_out=(704, 716),
+)
+
+
+def derive_vo_timing(words_a=None, words_b=None):
+    """TIMING_VO recomputed from the measured VO words (reel time). Rule (VO_TIMING 3): a designed word lands on the
+    floor of its VO onset frame (the visual leads by < 1 f); structural beats (f64 splice, f448 / f464 re-hook,
+    f576 reveal, f752 drop-out, f768 payoff, f896 razor) never move. Keys whose word is missing keep the static
+    value. Re-run after every VO assemble: UI.retime(**UI.derive_vo_timing())."""
+    tm = dict(TIMING_VO)
+    A = words_a if words_a is not None else (_vo_words('A') or [])
+    B = words_b if words_b is not None else (_vo_words('B') or [])
+
+    def w(ws, line, word, which='start'):
+        for d in ws:
+            if d.get('line') == line and d['word'] == word:
+                return float(d[which]) * FPS
+        return None
+
+    def last_end(ws, line):
+        e = [float(d['end']) * FPS for d in ws if d.get('line') == line]
+        return max(e) if e else None
+    fl = lambda v: int(math.floor(v + 1e-6))         # noqa: E731
+    v = w(A, 'V1', 'Pencil.')
+    if v is not None:
+        k = fl(v) - 3
+        tm.update(HA_key=k, HA_ul=(k + 2, k + 14), HA_out=(max(62, k + 18), max(69, k + 25)))
+    v = w(B, 'V1B', 'khatam?')
+    if v is not None:
+        k = fl(v)
+        tm.update(HB_key=k, HB_ul=(k + 4, k + 20), HB_out=(max(58, k + 26), max(65, k + 33)))
+    for key, line, word in (('L5_in', 'V3', 'Sirf'), ('L5_key', 'V3', 'andaza.'), ('L6_play', 'V4', 'Play.'),
+                            ('L6_galat', 'V4', 'Galat!'), ('L6_phir', 'V4', 'Phir'), ('L7_in', 'V5', 'Mil'),
+                            ('L14_key', 'V11', 'Pencil.'), ('L15_l1', 'V12', 'Scrubbing'),
+                            ('L15_l2', 'V12', 'cassette')):
+        v = w(A, line, word)
+        if v is not None:
+            tm[key] = fl(v)
+    tm['L6_out'] = (tm['L7_in'] - 4, tm['L7_in'] - 1)          # instant swap: Mil gaya! pops as Phir se. leaves
+    aur, gend = w(A, 'V5', 'Aur'), w(A, 'V5', 'gaya!', 'end')
+    if aur is not None and gend is not None:
+        e1 = min(fl(aur) - 2, int(math.ceil(gend)) + 6)
+        tm['L7_out'] = (e1 - 5, e1)
+    bas = w(A, 'V10', 'Bas')
+    if bas is not None:
+        tm['L12_out'] = (fl(bas) - 7, fl(bas) - 1)
+    k = tm['L14_key']
+    tm.update(L14_ul=(k + 3, k + 23), NLE_snap=k)
+    tm['L15_out'] = tm['L14_out']                               # the razor + outro badge (f899) end the tag
+    return tm
+
+
+TM = dict(TIMING_VO)                    # the live table; derive_vo_timing() refreshes it from the VO words at import
+VO_WORDS = {h: os.path.join(REPO, 'brand_reels', 'assets', SLUG, 'vo_final', 'pencil_se_rewind_vo_%s.words.json' % h)
+            for h in ('A', 'B')}
+
+
+def retime(**kw):
+    """Override timing keys (frames) - e.g. UI.retime(HA_key=44, L12=(648, 656, 664, 672)) - and drop the caches
+    that depend on them. UI.retime(**UI.TIMING_SCRIPT) restores the text-led plan. Returns the table."""
+    bad = [k for k in kw if k not in TIMING_VO]
+    if bad:
+        raise KeyError('unknown timing keys: %s' % bad)
+    TM.update(kw)
+    for fn in ('captions', '_snake_words'):
+        g = globals().get(fn)
+        if g is not None and hasattr(g, 'cache_clear'):
+            g.cache_clear()
+    return dict(TM)
+
+
+def tf(key, i=None):
+    """A timing value in seconds (i picks an element of a tuple)."""
+    v = TM[key]
+    return F(v if i is None else v[i])
+
+
 def ease(name, u):
     return K.EASE[name](min(1.0, max(0.0, u)))
 
@@ -117,8 +246,10 @@ def ro(a):
 
 def solid(mask, col):
     m = np.asarray(mask, np.float32)
+    c = np.asarray(col, np.float32)
+    c = c[:3] if c.ndim == 1 else c[..., :3]               # one colour, or a per-pixel (h, w, 3) colour
     out = np.zeros(m.shape + (4,), np.float32)
-    out[..., :3] = m[..., None] * np.asarray(col, np.float32)[:3]
+    out[..., :3] = m[..., None] * c
     out[..., 3] = m
     return out
 
@@ -168,6 +299,7 @@ def key_slam(cv, text, px, t, x, y, t0, op=1.0, s0=1.24, dur=0.30, blur=0.0, fla
     if tt < -HALF or op <= 1e-4:
         return
     g, st, halo = key_parts(text, px)
+    s0 = min(s0, max(1.04, 860.0 / max(1.0, st.w)))      # peak of a wide word stays inside x 70-1010 (ink scan)
     s = slam_scale(max(tt, 0.0), s0, dur)
     halo.draw(cv, x, y, scale=s, opacity=op * min(1.0, 0.55 + tt / 0.35), blur=blur)
     if tt < 0.55:
@@ -211,10 +343,11 @@ def ul_progress(t, f0, f1):
 
 # =================================================================================================== lockups
 def hook_a(cv, t, settled=False):
-    """HA f0-f63: REWIND BUTTON? / Pencil. (settled=True: the cover state)."""
-    if not settled and not live(t, 0, 63):
+    """HA f0 -> HA_out: REWIND BUTTON? / Pencil. (slam HA_key; settled=True: the cover state)."""
+    o0, o1 = TM['HA_out']
+    if not settled and not live(t, 0, o1):
         return
-    ex = 0.0 if settled else exit_u(t, 56, 63)
+    ex = 0.0 if settled else exit_u(t, o0, o1)
     tt = 3.0 if settled else t
     caps_rise(cv, tx('REWIND BUTTON?', 'jw_caps', 86), tt, 540.0, 400.0, -0.1, ex)
     op = 1.0 - ex
@@ -224,19 +357,20 @@ def hook_a(cv, t, settled=False):
         halo.draw(cv, 540.0, 580.0)
         st.draw(cv, 540.0, 580.0)
     else:
-        key_slam(cv, 'Pencil.', 250, t, 540.0, 580.0 + dy, F(16), op=op, blur=6.0 * ex)
-    underline(cv, 640, 540.0, 700.0 + dy, 1.0 if settled else ul_progress(t, 24, 44), op)
+        key_slam(cv, 'Pencil.', 250, t, 540.0, 580.0 + dy, tf('HA_key'), op=op, blur=6.0 * ex)
+    underline(cv, 640, 540.0, 700.0 + dy, 1.0 if settled else ul_progress(t, *TM['HA_ul']), op)
 
 
 def hook_b(cv, t):
-    """HB f0-f63 (trial reel): BATTERY / khatam?"""
-    if not live(t, 0, 63):
+    """HB (trial reel): BATTERY / khatam? (slam HB_key)."""
+    o0, o1 = TM['HB_out']
+    if not live(t, 0, o1):
         return
-    ex = exit_u(t, 56, 63)
+    ex = exit_u(t, o0, o1)
     caps_rise(cv, tx('BATTERY', 'jw_caps', 96), t, 540.0, 400.0, -0.1, ex)
     dy = -8.0 * ex
-    key_slam(cv, 'khatam?', 240, t, 540.0, 580.0 + dy, F(32), op=1.0 - ex, blur=6.0 * ex)
-    underline(cv, 800, 540.0, 690.0 + dy, ul_progress(t, 40, 58), 1.0 - ex)
+    key_slam(cv, 'khatam?', 240, t, 540.0, 580.0 + dy, tf('HB_key'), op=1.0 - ex, blur=6.0 * ex)
+    underline(cv, 800, 540.0, 690.0 + dy, ul_progress(t, *TM['HB_ul']), 1.0 - ex)
 
 
 @functools.lru_cache(maxsize=4)
@@ -245,48 +379,50 @@ def house(caps, key, caps_px, key_px):
 
 
 def sirf_andaza(cv, t):
-    """L5 f262-f319: SIRF / andaza. (caps rise f262, keyword per-glyph rise f268)."""
-    if not live(t, 262, 319):
+    """L5: SIRF (caps rise L5_in) / andaza. (per-glyph rise L5_key)."""
+    o0, o1 = TM['L5_out']
+    if not live(t, TM['L5_in'], o1):
         return
-    ex = exit_u(t, 312, 319)
-    house('SIRF', 'andaza.', 96, 220).draw(cv, t, 540.0, 590.0 - 8.0 * ex, t0=F(262), key_t=6 / 30, opacity=1.0 - ex)
+    ex = exit_u(t, o0, o1)
+    house('SIRF', 'andaza.', 96, 220).draw(cv, t, 540.0, 590.0 - 8.0 * ex, t0=tf('L5_in'),
+                                           key_t=tf('L5_key') - tf('L5_in'), opacity=1.0 - ex)
 
 
 def galat_stack(cv, t):
-    """L6 f320-f383: Play. / Galat! / Phir se. on the 8ths; Galat! shakes 'no' and strikes through Play."""
-    if not live(t, 320, 383):
+    """L6: Play. / Galat! / Phir se. on the VO; Galat! shakes 'no' and strikes through Play."""
+    f_play, f_gal, f_phir = TM['L6_play'], TM['L6_galat'], TM['L6_phir']
+    o0, o1 = TM['L6_out']
+    if not live(t, f_play, o1):
         return
-    ex = exit_u(t, 376, 383)
+    ex = exit_u(t, o0, o1)
     op = 1.0 - ex
     dy = -8.0 * ex
     bl = 6.0 * ex
-    strike = K.ramp(t, F(329), F(333), 'out_cubic')
-    caps_slam(cv, 'Play.', 'jw_caps_bold', 150, t, 540.0, 420.0 + dy, F(320), op=op * (1.0 - 0.45 * strike), blur=bl)
+    strike = K.ramp(t, F(f_gal + 1), F(f_gal + 5), 'out_cubic')
+    caps_slam(cv, 'Play.', 'jw_caps_bold', 150, t, 540.0, 420.0 + dy, F(f_play), op=op * (1.0 - 0.45 * strike), blur=bl)
     if strike > 0:
         w = T.measure('Play.', 'jw_caps_bold', px=150)[0]
         underline(cv, w + 50, 540.0, 420.0 + dy + 4.0, strike, op, thick=7.0)
-    if t >= F(328) - HALF:
-        tt = t - F(328)
+    if t >= F(f_gal) - HALF:
+        tt = t - F(f_gal)
         shake = 14.0 * math.sin(2 * math.pi * 7.0 * max(tt, 0)) * math.exp(-max(tt, 0) * 9.0) if tt > 0.06 else 0.0
-        key_slam(cv, 'Galat!', 200, t, 540.0 + shake, 590.0 + dy, F(328), op=op, blur=bl)
-    if t >= F(336) - HALF:
-        caps_slam(cv, 'Phir se.', 'jw_caps_bold', 150, t, 540.0, 760.0 + dy, F(336), op=op, blur=bl)
+        key_slam(cv, 'Galat!', 200, t, 540.0 + shake, 590.0 + dy, F(f_gal), op=op, blur=bl)
+    if t >= F(f_phir) - HALF:
+        caps_slam(cv, 'Phir se.', 'jw_caps_bold', 150, t, 540.0, 760.0 + dy, F(f_phir), op=op, blur=bl)
 
 
 def mil_gaya(cv, t):
-    """L7 f384-f419: Mil gaya! SLAM f384."""
-    if not live(t, 384, 419):
+    """L7: Mil gaya! SLAM L7_in."""
+    o0, o1 = TM['L7_out']
+    if not live(t, TM['L7_in'], o1):
         return
-    ex = exit_u(t, 414, 419)
-    key_slam(cv, 'Mil gaya!', 220, t, 540.0, 520.0 - 8.0 * ex, F(384), op=1.0 - ex, blur=6.0 * ex, flare=0.7)
+    ex = exit_u(t, o0, o1)
+    key_slam(cv, 'Mil gaya!', 220, t, 540.0, 520.0 - 8.0 * ex, tf('L7_in'), op=1.0 - ex, blur=6.0 * ex, flare=0.7)
 
 
-def _warble(spr_canvas_fn, amp, phase):
-    pass
-
-
-def shock(t, t0=F(464), amp=6.0, decay=10.0):
+def shock(t, t0=None, amp=6.0, decay=10.0):
     """D7 frame shock at the re-hook (SHOTS S8: 6 px, decay 10) -> (dx, dy)."""
+    t0 = tf('L9_key') if t0 is None else t0
     if t < t0:
         return 0.0, 0.0
     sx, sy, _ = K.shake(t, amp, 18.0, seed=464)
@@ -303,25 +439,27 @@ def _phans_box():
 
 
 def phans_gayi(cv, t):
-    """L9 f448-f511: CASSETTE rises f448 / phans gayi! SLAM f464 + D7 shock + tape warble."""
-    if not live(t, 448, 511):
+    """L9: CASSETTE rises L9_in / phans gayi! SLAM L9_key + D7 shock + tape warble."""
+    o0, o1 = TM['L9_out']
+    if not live(t, TM['L9_in'], o1):
         return
-    ex = exit_u(t, 504, 511)
+    ex = exit_u(t, o0, o1)
     sx, sy = shock(t)
-    caps_rise(cv, tx('CASSETTE', 'jw_caps', 96), t, 540.0 + sx, 400.0 + sy, F(448), ex)
-    if t < F(464) - HALF:
+    caps_rise(cv, tx('CASSETTE', 'jw_caps', 96), t, 540.0 + sx, 400.0 + sy, tf('L9_in'), ex)
+    t_key = tf('L9_key')
+    if t < t_key - HALF:
         return
-    tt = t - F(464)
+    tt = t - t_key
     amp = 10.0 * math.exp(-max(tt, 0) / 0.22) if tt < 0.62 else 0.0
     op = 1.0 - ex
     x, y = 540.0 + sx, 570.0 + sy - 8.0 * ex
     if amp < 0.4:
-        key_slam(cv, 'phans gayi!', 190, t, x, y, F(464), op=op, blur=6.0 * ex, flare=0.7)
+        key_slam(cv, 'phans gayi!', 190, t, x, y, t_key, op=op, blur=6.0 * ex, flare=0.7)
         return
     # draw into a local layer, then sway the rows like a stretched tape (warble)
     w, h, pad = _phans_box()
     lay = np.zeros((h, w, 4), np.float32)
-    key_slam(lay, 'phans gayi!', 190, t, w / 2.0, h / 2.0, F(464), op=1.0, flare=0.7)
+    key_slam(lay, 'phans gayi!', 190, t, w / 2.0, h / 2.0, t_key, op=1.0, flare=0.7)
     ys = np.arange(h, dtype=np.float32)
     dx = amp * np.sin(ys / 23.0 + tt * 38.0) * (0.6 + 0.4 * np.sin(ys / 61.0 - tt * 17.0))
     mx = np.tile(np.arange(w, dtype=np.float32)[None, :], (h, 1)) - dx[:, None]
@@ -330,23 +468,25 @@ def phans_gayi(cv, t):
     K.draw(cv, lay, x, y, opacity=op)
 
 
-L12_WORDS = ((640, 'Peeche.', -1), (648, 'Aage.', +1), (656, 'Peeche.', -1), (664, 'Yahan.', 0))
+L12_TEXT = (('Peeche.', -1), ('Aage.', +1), ('Peeche.', -1), ('Yahan.', 0))
 
 
 def yahan(cv, t):
-    """L12 f640-f703: Peeche. / Aage. / Peeche. / Yahan. replace each other on the 8ths at (540, 330)."""
-    if not live(t, 640, 703):
+    """L12: Peeche. / Aage. / Peeche. / Yahan. replace each other on the scrub jumps at (540, 330)."""
+    fr = TM['L12']
+    o0, o1 = TM['L12_out']
+    if not live(t, fr[0], o1):
         return
-    x0, y0 = 540.0, 330.0
-    for i, (f0, word, d) in enumerate(L12_WORDS):
+    x0, y0 = 540.0, 344.0                            # 330 + 14: the Yahan. slam peak keeps y >= 230
+    for i, ((word, d), f0) in enumerate(zip(L12_TEXT, fr)):
         t0 = F(f0)
-        nxt = F(L12_WORDS[i + 1][0]) if i + 1 < len(L12_WORDS) else None
+        nxt = F(fr[i + 1]) if i + 1 < len(fr) else None
         if t < t0 - HALF:
             continue
-        if nxt is not None and t >= nxt + F(3) - HALF:
+        if nxt is not None and t >= nxt - HALF:      # instant swap: the next word's slam is the transition
             continue
         if d == 0:                                   # Yahan.
-            ex = exit_u(t, 696, 703)
+            ex = exit_u(t, o0, o1)
             key_slam(cv, word, 220, t, x0, y0 - 8.0 * ex, t0, op=1.0 - ex, blur=6.0 * ex, flare=0.7)
             continue
         # travel: comes in moving the playhead's way (Peeche = leftwards, d=-1), leaves further along it
@@ -354,30 +494,30 @@ def yahan(cv, t):
         dx = -d * 70.0 * (1.0 - uin)
         op = 1.0
         bl = 5.0 * (1.0 - uin)
-        if nxt is not None and t >= nxt - HALF:
-            uo = ease('in_cubic', (t - nxt + HALF) / F(3))
-            dx += d * 60.0 * uo
-            op *= 1.0 - uo
-            bl += 8.0 * uo
         g, st = caps_glyphs(word, 'jw_caps_bold', 140)
         s = slam_scale(max(t - t0, 0.0), 1.12, 0.22)
         st.draw(cv, x0 + dx, y0, scale=s, opacity=op, blur=bl)
 
 
-PAYOFF_T0, PAYOFF_OUT = F(768), F(880)
+PAY_Y = 520.0          # L14 key centre (SHOTS: 560); caps at PAY_Y - 200, underline PAY_Y + 140, tag PAY_Y + 208 / + 280
 
 
 def payoff(cv, t):
-    """L14 f768-f895 (HouseTitle + underline f784-f806 at y 700) and L15 f816-f895 (two body lines)."""
-    if not live(t, 768, 895):
+    """L14 (HouseTitle: caps L14_in, key rise L14_key, underline L14_ul at y 700) and the L15 tag."""
+    o0, o1 = TM['L14_out']
+    q0, q1 = TM['L15_out']
+    if not live(t, TM['L14_in'], max(o1, q1)):
         return
-    ex = ease('in_cubic', (t - PAYOFF_OUT) / F(16))
-    op = 1.0 - ex
-    dy = -8.0 * ex
-    ht = house('PEHLA EDITING TOOL?', 'Pencil.', 74, 260)
-    ht.draw(cv, t, 540.0, 560.0 + dy, t0=PAYOFF_T0, key_t=8 / 30, opacity=op)
-    underline(cv, 720, 540.0, 700.0 + dy, ul_progress(t, 784, 806), op, thick=7.0)
-    tag(cv, t, op, dy)
+    if live(t, TM['L14_in'], o1):
+        ex = exit_u(t, o0, o1)
+        op = 1.0 - ex
+        dy = -8.0 * ex
+        ht = house('PEHLA EDITING TOOL?', 'Pencil.', 74, 260)
+        ht.draw(cv, t, 540.0, PAY_Y + dy, t0=tf('L14_in'), key_t=tf('L14_key') - tf('L14_in'), opacity=op)
+        underline(cv, 720, 540.0, PAY_Y + 140.0 + dy, ul_progress(t, *TM['L14_ul']), op, thick=7.0)
+    if live(t, TM['L15_l1'], q1):
+        ex = exit_u(t, q0, q1)
+        tag(cv, t, 1.0 - ex, -8.0 * ex)
 
 
 @functools.lru_cache(maxsize=1)
@@ -389,9 +529,9 @@ def _tag_line2():
 
 
 def tag(cv, t, op=1.0, dy=0.0):
-    """L15: 'Scrubbing toh' / 'cassette pe sikhi thi.' (keyword inline, shared baseline)."""
+    """L15: 'Scrubbing toh' (L15_l1) / 'cassette pe sikhi thi.' (L15_l2; keyword inline, shared baseline)."""
     l1 = tx('Scrubbing toh', 'jw_body', 56)
-    for i, (t0, y) in enumerate(((F(816), 772.0), (F(820), 846.0))):
+    for i, (t0, y) in enumerate(((tf('L15_l1'), PAY_Y + 208.0), (tf('L15_l2'), PAY_Y + 280.0))):
         if t < t0:
             continue
         a = ease('inout_sine', (t - t0) / 0.45) * op
@@ -401,24 +541,30 @@ def tag(cv, t, op=1.0, dy=0.0):
             l1.draw(cv, 540.0, yy, opacity=a, blur=bl)
             continue
         k, kh, b = _tag_line2()
-        wtot = k.w + b.w
+        gap = 0.30 * 56                             # a word space between the serif keyword and ' pe'
+        wtot = k.w + gap + b.w
         x0 = 540.0 - wtot / 2.0
         base = yy + b.h / 2.0                       # shared baseline (text boxes are cap-height boxes)
         kh.draw(cv, x0, base, anchor=(0.0, 1.0), opacity=a * 0.9, blur=bl)
         k.draw(cv, x0, base, anchor=(0.0, 1.0), opacity=a, blur=bl)
-        b.draw(cv, x0 + k.w, base, anchor=(0.0, 1.0), opacity=a, blur=bl)
+        b.draw(cv, x0 + k.w + gap, base, anchor=(0.0, 1.0), opacity=a, blur=bl)
 
 
-# lockup windows (frames) - hidden from the snake track; QA uses them for the 2-blocks rule
-LOCKUP_WINDOWS = {'HA': (0, 63), 'HB': (0, 63), 'L5': (262, 319), 'L6': (320, 383), 'L7': (384, 419),
-                  'L9': (448, 511), 'L12': (640, 703), 'L14': (768, 895), 'L15': (816, 895)}
+def lockup_windows(hook='A'):
+    """Lockup windows (first, last frame) at the current timing - hidden from the snake track, QA's 2-block rule."""
+    hk = 'HB' if str(hook).upper() == 'B' else 'HA'
+    return {hk: (0, TM[hk + '_out'][1]), 'L5': (TM['L5_in'], TM['L5_out'][1]),
+            'L6': (TM['L6_play'], TM['L6_out'][1]), 'L7': (TM['L7_in'], TM['L7_out'][1]),
+            'L9': (TM['L9_in'], TM['L9_out'][1]), 'L12': (TM['L12'][0], TM['L12_out'][1]),
+            'L14': (TM['L14_in'], TM['L14_out'][1]), 'L15': (TM['L15_l1'], TM['L15_out'][1])}
 
 
 def lockups(cv, t, hook='A'):
     """Every designed caption lockup active at t (pure in t)."""
-    if t < F(64):
-        (hook_b if str(hook).upper() == 'B' else hook_a)(cv, t)
-        return cv
+    if str(hook).upper() == 'B':
+        hook_b(cv, t)
+    else:
+        hook_a(cv, t)
     sirf_andaza(cv, t)
     galat_stack(cv, t)
     mil_gaya(cv, t)
@@ -429,10 +575,20 @@ def lockups(cv, t, hook='A'):
 
 
 # =================================================================================================== snake captions
-SNAKE_BANDS = (('upper', ('L2', 'L3', 'L8', 'L10'), 410.0, 28.0), ('lower', ('L4',), 1380.0, 28.0),
-               ('upper', ('L11', 'L13'), 330.0, 14.0))
+# VO-led: the snake words ARE the measured VO words (vo_final/pencil_se_rewind_vo_<hook>.words.json, reel time), so
+# every word lands on its voiced onset. Lines the lockups / the outro already show (V1, V1B, 'Sirf andaza.', V4,
+# 'Mil gaya!', V6, V11, V12, V13) are never snake text (two-layer rule). (snake id, VO line, word slice, band)
+SNAKE_LINES = (('L2', 'V2', 0, 5, 'upper'), ('L3', 'V2', 5, 10, 'upper'), ('L4', 'V3', 0, 3, 'lower'),
+               ('L8', 'V5', 2, 4, 'upper'), ('L10', 'V7', 0, 6, 'upper'), ('L11', 'V8', 0, 5, 'top'),
+               ('L13', 'V10', 0, 4, 'top'))
+BANDS = {'upper': ('upper', 410.0, 28.0), 'lower': ('lower', 1380.0, 28.0), 'top': ('upper', 330.0, 14.0)}
+SNAKE_KEY = {'L2': 'battery', 'L3': 'ghumate', 'L4': 'Gaana', 'L8': None, 'L10': 'pencil', 'L11': 'wahi',
+             'L13': 'badal'}                                       # SCRIPT.md keywords (one per line)
 SNAKE_PX = (64, 128)
-CLEAR = [(F(752), F(768))]                          # drop-out: nothing on screen
+SNAKE_BREAK_AFTER = {('L4', 'Gaana'), ('L10', 'se')}                            # split instead of shrinking (lower band is 820 px)
+DROPOUT = (752, 767)
+BAND_CUTS = {'upper': (192,)}                                      # upper text leaves by the S3 -> S4 cut (L4 is low)
+LEAD, HOLD = 0.05, 0.35
 
 
 def avoid_at(t):
@@ -445,7 +601,7 @@ def avoid_at(t):
     if 192 <= f < 256:
         return [(100, 520, 980, 1260)]                              # S4 label
     if 576 <= f < 768:
-        return [(220, 430, 860, 1230), (70, 1260, 1010, 1470)]      # S10-S12 viewer + timeline
+        return [(250, 470, 830, 1205), (70, 1260, 1010, 1470)]      # S10-S12 viewer + timeline
     return []
 
 
@@ -455,53 +611,89 @@ def script():
         return json.load(fh)
 
 
+def _vo_words(hook):
+    p = VO_WORDS['B' if str(hook).upper() == 'B' else 'A']
+    alt = os.path.join(RWS, 'vo', 'words%s.json' % ('_B' if str(hook).upper() == 'B' else ''))
+    for q in (alt, p):                                              # workspace stem (latest assemble) first
+        if os.path.exists(q):
+            with open(q, encoding='utf8') as fh:
+                d = json.load(fh)
+            return d['words'] if isinstance(d, dict) else d
+    return None
+
+
 def line_words(line_id, wpx=SNAKE_PX[0], kpx=SNAKE_PX[1]):
-    """Word timings of one snake line, re-paced so each chunk holds its share of the line window."""
+    """Fallback (no VO words on disk): script.json tokens, re-paced inside the text-led line window."""
     d = script()
     L = [l for l in d['lines'] if l['id'] == line_id][0]
     toks = [tk for tk in d['tokens'] if tk['line'] == line_id]
     f_in, f_out = L['in_f'], L['out_f']
     base = [dict(word=tk['roman'], start=tk['onset_f'] / FPS, end=(tk['end_f'] + 1) / FPS, keyword=tk['keyword'],
                  token=tk['roman']) for tk in toks]
-    words = SC.load_words(base)
-    chunks = SC.chunk_words(words, 3, 0.45, 1010 - 70 - 40, float(wpx), float(kpx))
+    chunks = SC.chunk_words(SC.load_words(base), 3, 0.45, 1010 - 70 - 40, float(wpx), float(kpx))
     sizes = [len(c) for c in chunks]
-    n = sum(sizes)
-    span = f_out + 1 - f_in
-    out, k = [], 0
-    starts = []
-    for j, sz in enumerate(sizes):
+    n, span, k, starts = sum(sizes), f_out + 1 - f_in, 0, []
+    for sz in sizes:
         starts.append(f_in + int(round(span * k / n)))
         k += sz
-    tok_i = 0
+    out, tok_i = [], 0
     for j, sz in enumerate(sizes):
-        s0 = starts[j]
         nxt = starts[j + 1] if j + 1 < len(sizes) else None
         for q in range(sz):
             tk = toks[tok_i]
             tok_i += 1
-            st = (s0 + 4 * q) / FPS
-            if q < sz - 1:
-                en = st + 4 / FPS
-            elif nxt is not None:
-                en = nxt / FPS                       # chunk exits as the next one enters
-            else:
-                en = max(st + 0.1, (f_out + 1) / FPS - 0.35 - 0.30)   # hold 0.35 + exit 0.30 end by out_f + 1
+            st = (starts[j] + 4 * q) / FPS
+            en = st + 4 / FPS if q < sz - 1 else (nxt / FPS if nxt is not None
+                                                  else max(st + 0.1, (f_out + 1) / FPS - 0.65))
             out.append(dict(word=tk['roman'], start=st, end=en, keyword=tk['keyword'], token=tk['roman']))
     return out
 
 
-class Snake:
-    """The reel's snake-caption track: one SC.Captions per band (lines never overlap in time)."""
+@functools.lru_cache(maxsize=2)
+def _snake_words(hook='A'):
+    """{snake id: [word dicts]} in reel time (VO words, keywords per SCRIPT.md; fallback: script.json)."""
+    vo = _vo_words(hook)
+    out = {}
+    for lid, vline, a, b, band in SNAKE_LINES:
+        if vo is None:
+            out[lid] = line_words(lid)
+            continue
+        ws = [w for w in vo if w.get('line') == vline]
+        ws = sorted(ws, key=lambda w: w.get('i', 0))[a:b]
+        out[lid] = [dict(word=w['word'], start=float(w['start']), end=float(w['end']),
+                         token=w['word'] + (',' if (lid, w['word']) in SNAKE_BREAK_AFTER else ''),
+                         keyword=bool(SNAKE_KEY[lid]) and w['word'].strip('.,?!').lower() == SNAKE_KEY[lid].lower())
+                    for w in ws]
+    return out
 
-    def __init__(self):
+
+def _span(ws):
+    """Time a line blocks the OTHER bands: from its first word's lead-in to just after its last word (the next line
+    wins over this line's hold, so a new VO line is never delayed by the previous caption)."""
+    return ws[0]['start'] - LEAD, ws[-1]['end'] + 0.10
+
+
+class Snake:
+    """The reel's snake-caption track: one SC.Captions per band. Each band clears for the lockups, the drop-out,
+    the other bands' lines and its cuts, so there is never more than one caption block from this track and never a
+    snake line under a lockup."""
+
+    def __init__(self, hook='A'):
+        words = _snake_words(hook)
+        lock = [(F(a) - 0.02, F(b + 1)) for a, b in lockup_windows(hook).values()]
         self.parts = []
-        for band, lines, y, margin in SNAKE_BANDS:
-            ws = []
-            for lid in lines:
-                ws += line_words(lid)
-            self.parts.append(SC.Captions(ws, band=band, y=y, avoid=avoid_at, white_px=SNAKE_PX[0],
-                                          key_px=SNAKE_PX[1], margin=margin, clear=CLEAR))
+        for band in ('upper', 'lower', 'top'):
+            lids = [l[0] for l in SNAKE_LINES if l[4] == band]
+            ws = [w for lid in lids for w in words[lid]]
+            if not ws:
+                continue
+            other = [_span(words[l[0]]) for l in SNAKE_LINES if l[4] != band and words[l[0]]]
+            clear = lock + other + [(F(DROPOUT[0]), F(DROPOUT[1] + 1))] + \
+                [(F(c), F(c) + 0.02) for c in BAND_CUTS.get(band, ())]
+            sc_band, y, margin = BANDS[band]
+            self.parts.append(SC.Captions(ws, band=sc_band, y=y, avoid=avoid_at, white_px=SNAKE_PX[0],
+                                          key_px=SNAKE_PX[1], margin=margin, clear=sorted(clear), lead=LEAD,
+                                          hold=HOLD))
 
     @property
     def chunks(self):
@@ -532,9 +724,9 @@ class Snake:
         return path
 
 
-@functools.lru_cache(maxsize=1)
-def captions():
-    return Snake()
+@functools.lru_cache(maxsize=2)
+def captions(hook='A'):
+    return Snake(hook)
 
 
 # =================================================================================================== outro + cover
@@ -557,9 +749,57 @@ def grid_crop(img):
 
 
 # =================================================================================================== 3D assets / stand-ins
+PREVIEW_ROOT = os.path.join(RWS, 'out', 'preview3d')
+# final render size (ASSETS.md) and the preview frames that match the final framing (hub_loop 0001 is an older camera)
+PREVIEW_SPEC = dict(hub_loop=((1080, 1920), (0,)), hub_cover=((1080, 1920), (0,)), hub_rescue=((810, 1440), None),
+                    label=((1080, 1920), None), walkman_loop=((1080, 1920), None), walkman_eat=((810, 1440), None),
+                    pencil_top=((600, 1700), None))
+PREVIEW_FEATURES = dict(pencil_top={'eraser_top': (300.0, 100.0), 'tip': (300.0, 1600.0)})
+
+
+class _Preview:
+    """Blender preview renders (assets3d ... --preview, low spp / res) upscaled to the final asset size: the fallback
+    while the GPU finals are not on this machine (selftest / layout only, never a delivery). Same API subset as
+    S3.Asset3D: n, frame(i), by_label(lab), features, preview=True."""
+    preview = True
+
+    def __init__(self, name):
+        size, keep = PREVIEW_SPEC[name]
+        src = 'hub_loop' if name == 'hub_cover' else name
+        d = os.path.join(PREVIEW_ROOT, src, 'passes')
+        fs = sorted(f for f in os.listdir(d) if f.endswith('.png') and f[:-4].isdigit())
+        if keep is not None:
+            fs = [f for f in fs if int(f[:-4]) in keep]
+        if not fs:
+            raise FileNotFoundError(d)
+        self.idx = [int(f[:-4]) for f in fs]
+        self.paths = [os.path.join(d, f) for f in fs]
+        self.size = size
+        self.n = max(self.idx) + 1
+        self.features = dict(PREVIEW_FEATURES.get(name, {}))
+        self._c = {}
+
+    def frame(self, i):
+        j = int(np.argmin(np.abs(np.asarray(self.idx) - int(i) % max(1, self.n))))
+        if j not in self._c:
+            im = S3.decode_png(self.paths[j])
+            self._c[j] = ro(cv2.resize(np.ascontiguousarray(im), self.size, interpolation=cv2.INTER_CUBIC))
+        return self._c[j]
+
+    def by_label(self, lab):
+        return self.frame({'key': 0, 'shadow': 1}.get(lab, 0))
+
+
+@functools.lru_cache(maxsize=16)
 def _asset(name):
+    """Final Blender render (RWS/assets3d/<name>, meta.json present), else its preview render, else None."""
+    if os.path.exists(os.path.join(RWS, 'assets3d', name, 'passes', 'meta.json')):
+        try:
+            return S3.Asset3D(name, 'passes', root=os.path.join(RWS, 'assets3d'))
+        except Exception:
+            pass
     try:
-        return S3.Asset3D(name, 'passes', root=os.path.join(RWS, 'assets3d'))
+        return _Preview(name)
     except Exception:
         return None
 
@@ -864,9 +1104,9 @@ def pencil_sprites():
 
 
 # =================================================================================================== NLE layout
-VIEW_C = (540.0, 830.0)
-VIEW_CARD = (660, 820)
-VIEW_MEDIA = (640, 800)
+VIEW_C = (540.0, 838.0)          # SHOTS: (540, 830) 660 x 820; smaller so the L12 slams (y 250-440) and the CUT chip
+VIEW_CARD = (580, 720)           # (y 1201-1257) both clear the card: top 478, bottom 1198
+VIEW_MEDIA = (560, 700)
 MEDIA_R = 20.0
 R1_CROP = (0.0, 510.0, 1080.0, 1860.0)
 S_VIEW = VIEW_MEDIA[0] / (R1_CROP[2] - R1_CROP[0])         # 0.5926
@@ -918,29 +1158,32 @@ def _lerp(a, b, u):
 
 
 # --------------------------------------------------------------------------------------------------- state
-SCRUB = ((640, 470.0), (648, 680.0), (656, 500.0), (664, CUT_X))
+SCRUB_X = (470.0, 680.0, 500.0, CUT_X)                  # back / forward / back / forward onto the cut (native px)
+
+
+def scrub():
+    """((frame, x), ...) of the four scrub jumps = the L12 word frames."""
+    return tuple(zip(TM['L12'], SCRUB_X))
 
 
 def _playhead_native(t):
     """Playhead x in native timeline px (before the zoom)."""
     f = t * FPS
-    if f < 640 - 0.5:
-        return 520.0 + (min(f, 639.99) - 576.0) * 1.0
-    x = 520.0 + 63.99
-    for f0, xb in SCRUB:
+    sc = scrub()
+    f_s = sc[0][0]
+    if f < f_s - 0.5:                                       # 1 px / f crawl from x 520 at f576
+        return 520.0 + (min(f, f_s - 0.01) - 576.0) * 1.0
+    x = 520.0 + (f_s - 0.01 - 576.0)
+    for f0, xb in sc:
         if f < f0 - 0.5:
             break
         u = (f - f0) / 6.0
-        e = ease('inout_expo', u)
         xa = x
-        x = xa + (xb - xa) * e
-        if u > 1:                                           # SNAP landing: a small decaying overshoot
+        if u <= 1:
+            x = xa + (xb - xa) * ease('inout_expo', u)
+        else:                                               # SNAP landing: a small decaying overshoot
             tl = (f - f0 - 6.0) / FPS
             x = xb + (xb - xa) * 0.05 * math.sin(2 * math.pi * 5.0 * tl) * math.exp(-tl * 16.0)
-        if f < f0 + 7.5 or f0 == SCRUB[-1][0]:
-            pass
-        x = x if u <= 1 else x
-        xa = xb
     if f >= 728 - 0.5:                                      # step back to just before the cut (screen x 520)
         xn = PIVOT_X + (PEN_X0 - PIVOT_X) / SCALE_P
         x = _lerp(CUT_X, xn, ease('inout_cubic', (f - 728) / 20.0))
@@ -950,13 +1193,15 @@ def _playhead_native(t):
 def state(t):
     """Everything the NLE draw needs at t (screen px unless noted)."""
     f = t * FPS
+    f_cut, f_snap = TM['L12'][-1], TM['NLE_snap']
+    c0, c1 = TM['NLE_chip_out']
     st = {}
     st['pull'] = ease('inout_sine', (f - 576) / 21.0)                       # 0 at f576, 1 at f597
     st['panel_in'] = ease('out_cubic', (f - 584) / 16.0)
     st['head_in'] = ease('inout_sine', (f - 584) / 16.0)
-    ve = ease('in_cubic', (f - 704) / 23.0)
-    st['view_dy'] = -1320.0 * ve
-    st['view_op'] = 1.0 - ease('in_cubic', (f - 716) / 11.0)
+    ve = ease('in_cubic', (f - 704) / 14.0)
+    st['view_dy'] = -70.0 * ve                                               # lifts + fades (gone f718); it never
+    st['view_op'] = 1.0 - ease('inout_sine', (f - 704) / 14.0)              # crosses the top caption band
     u12 = ease('inout_cubic', (f - 704) / 40.0)
     st['u12'] = u12
     st['S'] = _lerp(1.0, SCALE_P, u12)
@@ -964,25 +1209,25 @@ def state(t):
     st['x_native'] = xn
     st['x'] = PIVOT_X + (xn - PIVOT_X) * st['S']
     # source time shown in the viewer: real time while playing, the playhead's time (12 Hz) while scrubbing
-    if f < 640 - 0.5:
+    if f < TM['L12'][0] - 0.5:
         src = t
     else:
         tq = math.floor(t * 12.0 + 1e-6) / 12.0
-        src = src_of(_playhead_native(tq))
+        src = src_of(_playhead_native(max(tq, F(TM['L12'][0]))))
     st['src'] = src
     st['tc'] = timecode(src)
-    st['cut'] = f >= 664 - 0.5
-    st['cut_pop'] = 0.7 + 0.3 * X.spring(max(0.0, t - F(664)), 'POP') if st['cut'] else 0.0
-    st['chip_op'] = (K.ramp(t, F(664) - HALF, F(667), 'out_cubic') * (1.0 - ease('in_cubic', (f - 700) / 14.0))
-                     if st['cut'] else 0.0)
-    st['morph'] = ease('out_cubic', (f - 752) / 16.0)                       # line -> pencil
-    st['pencil'] = f >= 752 - 0.5
-    sn = X.spring(max(0.0, t - F(800)), 'SNAP') if f >= 800 - 0.5 else 0.0
+    st['cut'] = f >= f_cut - 0.5
+    st['cut_pop'] = 0.7 + 0.3 * X.spring(max(0.0, t - F(f_cut)), 'POP') if st['cut'] else 0.0
+    st['chip_op'] = (K.ramp(t, F(f_cut) - HALF, F(f_cut + 3), 'out_cubic') *
+                     (1.0 - ease('in_cubic', (f - c0) / float(c1 - c0 + 1))) if st['cut'] else 0.0)
+    st['morph'] = ease('out_cubic', (f - DROPOUT[0]) / 16.0)               # line -> pencil
+    st['pencil'] = f >= DROPOUT[0] - 0.5
+    sn = X.spring(max(0.0, t - F(f_snap)), 'SNAP') if f >= f_snap - 0.5 else 0.0
     st['pen_x'] = _lerp(PEN_X0, CUT_X, sn)
-    tt = t - F(800)
+    tt = t - F(f_snap)
     st['pen_rot'] = 2.0 * math.sin(2 * math.pi * 3.2 * tt) * math.exp(-tt * 6.0) if tt > 0 else 0.0
-    st['contact'] = (K.ramp(t, F(800) - HALF, F(802), 'out_cubic') * (1.0 - ease('inout_sine', (f - 806) / 10.0))
-                     if f >= 800 - 0.5 else 0.0)
+    st['contact'] = (K.ramp(t, F(f_snap) - HALF, F(f_snap + 2), 'out_cubic') *
+                     (1.0 - ease('inout_sine', (f - f_snap - 6) / 10.0)) if f >= f_snap - 0.5 else 0.0)
     return st
 
 
@@ -1134,9 +1379,9 @@ def viewer(cv, t, st, media):
         top = yc - VIEW_MEDIA[1] / 2.0 * k
         left, right = cx - VIEW_MEDIA[0] / 2.0 * k, cx + VIEW_MEDIA[0] / 2.0 * k
         hy = top + 34.0 * k + 6.0 * (1.0 - st['head_in'])
-        tx('cassette_rewind.mov', 'jw_mono', 30, fill='ASH').draw(cv, left + 26 * k, hy, anchor=(0.0, 0.5),
+        tx('cassette_rewind.mov', 'jw_mono', 24, fill='ASH').draw(cv, left + 22 * k, hy, anchor=(0.0, 0.5),
                                                                   scale=k, opacity=ho)
-        tx(st['tc'], 'jw_mono', 34).draw(cv, right - 26 * k, hy, anchor=(1.0, 0.5), scale=k, opacity=ho, snap=False)
+        tx(st['tc'], 'jw_mono', 28).draw(cv, right - 22 * k, hy, anchor=(1.0, 0.5), scale=k, opacity=ho, snap=False)
         # progress line (timeline position under the playhead)
         bot = yc + VIEW_MEDIA[1] / 2.0 * k
         by = bot - 36.0 * k
@@ -1386,7 +1631,7 @@ def lane_strip(name, k, h):
             pk = np.clip(a * 1.25, 0, 1)
             img = S.img
             ys = np.arange(h, dtype=np.float32)[:, None] + 0.5
-            for amp_arr, kcol, al in ((pk, col * 0.55, 0.55), (a * 0.62, col * 1.15, 0.95)):
+            for amp_arr, kcol, al in ((pk, col * 0.42, 0.40), (a * 0.62, col * 0.80, 0.85)):
                 hh = amp_arr[None, :] * amp_h
                 cov = np.clip(hh - np.abs(ys - cy) + 0.5, 0, 1) * al
                 X0 = int(xs[0]) if len(xs) else 0
@@ -1684,12 +1929,51 @@ def prewarm():
     pencil_sprites()
 
 
-def _canvas_plate(t):
-    """Selftest backdrop for the caption shots: the R1 plate (or stand-in), else the ember void."""
-    a = hub_asset()
-    if a is not None:
-        return np.array(a.frame(int(math.floor(t * FPS)) % 16), copy=True)
-    return np.array(standin_hub(int(math.floor(t * FPS)) % 16), copy=True)
+def _zoom(img, s, cx, cy):
+    M = np.float32([[s, 0, cx - s * cx], [0, s, cy - s * cy]])
+    return cv2.warpAffine(np.ascontiguousarray(img), M, (K.W, K.H), flags=cv2.INTER_LINEAR,
+                          borderMode=cv2.BORDER_REPLICATE)
+
+
+def _full(fr):
+    if fr.shape[:2] != (K.H, K.W):
+        fr = cv2.resize(np.ascontiguousarray(fr), (K.W, K.H), interpolation=cv2.INTER_CUBIC)
+    return np.array(fr, copy=True)
+
+
+def _canvas_plate(t, hook='A'):
+    """Selftest backdrop = the shot's Blender plate (final, else preview, else stand-in) with the SHOTS.md framing,
+    so every caption is judged over the picture it will sit on."""
+    f = int(math.floor(t * FPS + 1e-6))
+    hub = hub_asset()
+    if f < 64 and str(hook).upper() == 'B':
+        name, idx, z = 'walkman_loop', 0, (1.0, 540, 1180)
+    elif f < 64 or 256 <= f < 320 or f >= 896:
+        name, idx, z = 'hub_loop', f % 16, (1.0, 540, 960)
+    elif f < 128 or 320 <= f < 384:
+        name, idx, z = 'walkman_loop', f % 8, (1.0, 540, 960)
+    elif f < 192:
+        name, idx, z = 'hub_loop', f % 16, (1.43, 560, 1240)        # S3 crop on the pencil-hub contact
+    elif f < 256:
+        name, idx, z = 'label', 0, (1.05, 540, 900)
+    elif f < 448:
+        name, idx, z = 'walkman_loop', f % 8, (1.38, 495, 1110)     # S7 into the lid window
+    elif f < 512:
+        g = f - 448
+        idx = 0 if g < 4 else (g - 4 if g < 10 else min(31, g - 4))
+        name, z = 'walkman_eat', (1.0, 540, 960)
+    else:
+        name, idx, z = 'hub_rescue', (f - 512) // 2, (1.03, 540, 960)
+    a = _asset(name)
+    if a is None:
+        fr = standin_hub(f % 16) if hub is None else hub.frame(f % 16)
+    else:
+        fr = a.frame(idx)
+    img = _full(fr)
+    if z[0] != 1.0:
+        img = _zoom(img, *z)
+    img[..., 3] = 1.0
+    return img
 
 
 def _finish(cv, t):
@@ -1744,6 +2028,75 @@ def _sheet(paths_imgs, name, cols=4, w=360):
     return p
 
 
+SAFE = (70, 230, 1010, 1480)
+
+
+def ink_scan(step=1, thr=0.10):
+    """Every-frame ink bbox of the lockups alone (hook A over f0-f1023 + hook B over its window) on an empty canvas:
+    dict(bbox, max_x_in_1050_1700, violations=[frames]). Ink = premultiplied alpha > thr (halo cores included)."""
+    X0 = Y0 = 10 ** 6
+    X1 = Y1 = colx = -1
+    bad = []
+    jobs = [('A', f) for f in range(0, 1024, step)] + [('B', f) for f in range(0, TM['HB_out'][1] + 1, step)]
+    for hook, f in jobs:
+        cv = K.new_canvas()
+        lockups(cv, F(f), hook)
+        ys, xs = np.nonzero(cv[..., 3] > thr)
+        if not len(xs):
+            continue
+        x0, x1, y0, y1 = xs.min(), xs.max(), ys.min(), ys.max()
+        X0, X1, Y0, Y1 = min(X0, x0), max(X1, x1), min(Y0, y0), max(Y1, y1)
+        band = xs[(ys >= 1050) & (ys <= 1700)]
+        cx = band.max() if len(band) else -1
+        colx = max(colx, cx)
+        if x0 < SAFE[0] or x1 > SAFE[2] or y0 < SAFE[1] or y1 > SAFE[3] or cx > 930:
+            bad.append('%s f%d (%d-%d, %d-%d)' % (hook, f, x0, x1, y0, y1))
+    return dict(bbox=(int(X0), int(Y0), int(X1), int(Y1)), max_x_in_1050_1700=int(colx), violations=bad)
+
+
+VO_MAP = (('HA', 'Pencil.', 'V1', 'HA_key', False), ('HB', 'khatam?', 'V1B', 'HB_key', False),
+          ('L5', 'Sirf', 'V3', 'L5_in', False), ('L5', 'andaza.', 'V3', 'L5_key', False),
+          ('L6', 'Play.', 'V4', 'L6_play', False), ('L6', 'Galat!', 'V4', 'L6_galat', False),
+          ('L6', 'Phir', 'V4', 'L6_phir', False), ('L7', 'Mil', 'V5', 'L7_in', False),
+          ('L9', 'Cassette', 'V6', 'L9_in', True), ('L9', 'phans', 'V6', 'L9_key', True),
+          ('L14', 'Pehla', 'V11', 'L14_in', True), ('L14', 'Pencil.', 'V11', 'L14_key', False),
+          ('L15', 'Scrubbing', 'V12', 'L15_l1', False), ('L15', 'cassette', 'V12', 'L15_l2', False))
+
+
+def vo_alignment(hook=None):
+    """Rows (lockup, word, ui frame, VO onset frame, delta, verdict): a designed word must land 0-2 f before its VO
+    onset (or 1 f after), unless it is a structural beat that stays (the re-hook)."""
+    rows = []
+    for h in ((hook,) if hook else ('A', 'B')):
+        vo = _vo_words(h) or []
+        for lid, word, vline, key, structural in VO_MAP:
+            if (lid == 'HA' and h == 'B') or (lid == 'HB' and h == 'A'):
+                continue
+            ws = [w for w in vo if w.get('line') == vline and w['word'] == word]
+            if not ws:
+                continue
+            vf = ws[0]['start'] * FPS
+            d = TM[key] - vf
+            lead = -3.0 if lid == 'HA' else 0.0                # HA: the hit leads the word by 0.1 s (SOUND)
+            ok = 'structural (stays)' if structural else ('OK' if -2.5 <= d - lead <= 1.0 else 'CHECK')
+            rows.append((lid + h if lid in ('HA', 'HB') else lid, word, TM[key], vf, d, ok))
+    return rows
+
+
+def block_check(hook='A'):
+    """Snake chunks overlapping a lockup window or the drop-out (> 1 frame) -> list of strings (empty = OK)."""
+    issues = []
+    wins = dict(lockup_windows(hook))
+    wins['dropout'] = DROPOUT
+    for ch in captions(hook).chunks:
+        for k, (a, b) in wins.items():
+            ov = min(ch.t_exit1, F(b + 1)) - max(ch.t_in, F(a))
+            if ov > 1.0 / FPS + 1e-6:
+                issues.append('%r f%.0f-%.0f overlaps %s by %.0f f' % (ch.text, ch.t_in * FPS, ch.t_exit1 * FPS, k,
+                                                                    ov * FPS))
+    return issues
+
+
 def selftest(which=None):
     import time
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -1754,26 +2107,40 @@ def selftest(which=None):
     want = set(which or ['lockups', 'snake', 'nle', 'outro', 'cover', 'pencil'])
 
     if 'lockups' in want:
-        frames = [('HA', 'A', (2, 17, 30, 50, 60)), ('HB', 'B', (33, 50)), ('L5', 'A', (272, 300)),
-                  ('L6', 'A', (322, 331, 345, 378)), ('L7', 'A', (386, 400)), ('L9', 'A', (456, 465, 470, 490)),
-                  ('L12', 'A', (641, 649, 657, 666, 690)), ('L14', 'A', (776, 800, 850, 886))]
+        T_ = TM
+        frames = [('HA', 'A', (2, T_['HA_key'] + 1, T_['HA_key'] + 6, T_['HA_ul'][1] + 2, T_['HA_out'][0] + 3)),
+                  ('HB', 'B', (T_['HB_key'] + 1, T_['HB_ul'][1])),
+                  ('L5', 'A', (T_['L5_key'] - 4, T_['L5_key'] + 30)),
+                  ('L6', 'A', (T_['L6_play'] + 2, T_['L6_galat'] + 3, T_['L6_phir'] + 4, T_['L6_out'][0] + 1)),
+                  ('L7', 'A', (T_['L7_in'] + 2, T_['L7_in'] + 18)),
+                  ('L9', 'A', (T_['L9_in'] + 8, T_['L9_key'] + 1, T_['L9_key'] + 6, T_['L9_key'] + 26)),
+                  ('L12', 'A', tuple(f + 1 for f in T_['L12']) + (T_['L12'][-1] + 16,)),
+                  ('L14', 'A', (T_['L14_in'] + 8, T_['L14_key'] + 2, T_['L15_l2'] + 14, T_['L15_out'][0] - 2,
+                                T_['L15_out'][0] + 3))]
         sheet = []
         for lab, hook, fs in frames:
             for f in fs:
                 t = F(f)
-                cv = _canvas_plate(t) if f < 576 else np.array(nle_bg(), copy=True)
-                if f >= 576:
+                cv = _canvas_plate(t, hook) if f < 576 or f >= 896 else np.array(nle_bg(), copy=True)
+                if 576 <= f < 896:
                     nle(cv, t)
+                if f >= 896:
+                    outro().draw(cv, t, T_END)
                 lockups(cv, t, hook)
                 p, img = _save(cv, t, 'lockup_%s_f%03d' % (lab, f), guides=False)
                 sheet.append(('%s f%d' % (lab, f), img))
                 out.append(p)
         out.append(_sheet(sheet, 'sheet_lockups', cols=5))
+        print('ink scan (lockups, every frame):', ink_scan())
+        print('VO alignment:')
+        for row in vo_alignment():
+            print('  %-8s %-10s ui f%-4d vo f%6.1f  d %+5.1f f  %s' % row)
 
     if 'snake' in want:
         cap = captions()
         issues = cap.check()
         print('snake check:', issues or 'OK')
+        print('blocks check (snake vs lockups / outro text):', block_check() or 'OK')
         sheet = []
         for r in cap.report():
             t = r['t_in'] + 0.45 + 0.25 * max(0.0, r['t_exit0'] - r['t_in'] - 0.45)
@@ -1792,7 +2159,9 @@ def selftest(which=None):
 
     if 'nle' in want:
         sheet = []
-        for f in (580, 588, 600, 625, 643, 651, 666, 690, 712, 724, 740, 756, 762, 785, 803, 812, 840, 890):
+        L12, sn = TM['L12'], TM['NLE_snap']
+        for f in (580, 588, 600, 625, L12[0] + 3, L12[1] + 3, L12[3] + 2, 690, 712, 724, 740, 756, 762, 785,
+                  sn + 2, sn + 10, 860, 890):
             t = F(f)
             tm = time.perf_counter()
             cv = np.array(nle_bg(), copy=True)
@@ -1843,14 +2212,25 @@ def selftest(which=None):
         # macro crops at 3x: eraser + ferrule, dents + HB, cone
         for i, (y0, label) in enumerate(((0, 'eraser / ferrule'), (180, 'dents / HB'), (1280, 'cone'))):
             crop = key[max(0, int(top[1] + y0 - 10)):int(top[1] + y0 + 230)]
-            K.draw(cv, crop, 760, 160 + i * 560, scale=2.2, anchor=(0.5, 0.0))
-            tx(label, 'jw_mono', 28, fill='ASH').draw(cv, 760, 140 + i * 560)
+            K.draw(cv, crop, 760, 190 + i * 590, scale=2.0, anchor=(0.5, 0.0))
+            tx(label, 'jw_mono', 28, fill='ASH').draw(cv, 760, 160 + i * 590)
         p, img = _save(cv, 0.0, 'pencil')
         out.append(p)
 
     for p in out:
         print('->', p)
     return out
+
+
+# VO-led defaults: follow the latest measured VO (env PSR_UI_TIMING=script keeps the text-led plan, =static the table)
+_MODE = os.environ.get('PSR_UI_TIMING', 'vo')
+if _MODE == 'script':
+    TM.update(TIMING_SCRIPT)
+elif _MODE == 'vo':
+    try:
+        TM.update(derive_vo_timing())
+    except Exception as _e:                              # never break a render over the VO words: keep the table
+        print('pencil_se_rewind_ui: VO timing not derived (%s); static TIMING_VO' % _e, file=sys.stderr)
 
 
 if __name__ == '__main__':
