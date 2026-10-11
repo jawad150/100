@@ -14,6 +14,7 @@ import glob
 import os
 import shutil
 import subprocess
+import sys
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 A = os.path.join(REPO, 'brand_reels', 'assets')
@@ -46,13 +47,19 @@ def main():
         for have, alias in (('assets3d', 'props'), ('props', 'assets3d')):
             p, q = os.path.join(WJ, slug, have), os.path.join(WJ, slug, alias)
             if os.path.isdir(p) and not os.path.lexists(q):
-                os.symlink(have, q)
+                try:
+                    os.symlink(have, q)
+                except OSError:
+                    if os.name != 'nt':
+                        raise
+                    # Windows without Developer Mode cannot symlink: a directory junction needs no privilege
+                    subprocess.run(['cmd', '/c', 'mklink', '/J', q, p], check=True, stdout=subprocess.DEVNULL)
         print('%-24s vo %d wav, %d raw' % (slug, len(glob.glob(vo + '/*.wav')), len(glob.glob(vo + '/raw/*'))))
     copytree(os.path.join(A, 'charsheet', 'cutouts'), os.path.join(WB, 'charsheet', 'cutouts'))
     os.makedirs(os.path.join(WB, 'charsheet', 'tools'), exist_ok=True)
     shutil.copy2(os.path.join(A, 'charsheet', 'faces.py'), os.path.join(WB, 'charsheet', 'tools', 'faces.py'))
     print('charsheet: %d cut-out files' % len(os.listdir(os.path.join(WB, 'charsheet', 'cutouts'))))
-    subprocess.run(['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rebuild_crops.py')], check=True)
+    subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rebuild_crops.py')], check=True)
 
 
 if __name__ == '__main__':

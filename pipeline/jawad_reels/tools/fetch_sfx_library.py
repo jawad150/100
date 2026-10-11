@@ -843,7 +843,13 @@ def kit_links(lib):
             os.remove(link)
         elif os.path.exists(link):
             continue
-        os.symlink(target, link)
+        try:
+            os.symlink(target, link)
+        except OSError:
+            if os.name != 'nt':
+                raise
+            # Windows without Developer Mode cannot symlink: hard link (same volume, needs no privilege)
+            os.link(os.path.join(PIPE, m), link)
         made.append('%s -> %s' % (link, target))
     return made
 
