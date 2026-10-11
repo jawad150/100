@@ -1,8 +1,14 @@
 """assets3d_pencil_se_rewind.py - photoreal Blender props for Bijli series #1 "Pencil Se Rewind" (@jawad_mp4).
 
-Builds the render list of brand_reels/design/reels/pencil_se_rewind/SHOTS.md section A with bpy 5.2 / Cycles CPU
-(threads 2, adaptive sampling 0.02 + OpenImageDenoise with albedo/normal guides, fixed seed, view transform
-Standard, look None, gamma 1) as RGBA 8-bit straight-alpha sRGB PNGs in the shared 3D asset spec:
+Builds the render list of brand_reels/design/reels/pencil_se_rewind/SHOTS.md section A with bpy 5.2 / Cycles
+(adaptive sampling + OpenImageDenoise with albedo/normal guides, fixed seed, view transform Standard, look None,
+gamma 1) as RGBA 8-bit straight-alpha sRGB PNGs in the shared 3D asset spec:
+
+    Device: assets3d_gpu.set_device (called from reset()). CPU by default (here: tests / previews only, threads 2);
+    FOSTER_GPU=1 picks OPTIX > CUDA > HIP > METAL > ONEAPI (finals: RTX 4060 OptiX, 8 GB) and switches every asset to
+    its GPU sample count (gpu_spp, 256-1024, adaptive threshold 0.01, OIDN on the GPU). The device lands in the log
+    line "[assets3d] Cycles device: ..." and in meta.json "device". Never mix CPU and GPU frames in one folder.
+    All paths are os.path joins (Windows-safe); nothing here shells out. Final commands: RENDER_JOBS.md.
 
     RWS = workspace/jawad_reels/pencil_se_rewind
     RWS/assets3d/<name>/passes/0000.png ... + meta.json      (meta.json is written LAST)
@@ -50,15 +56,20 @@ CLI
 ---
     python3 assets3d_pencil_se_rewind.py <name> [<name> ...] [--preview] [--samples N] [--frames 0,8] [--scale K]
     python3 assets3d_pencil_se_rewind.py all [--preview]
-    python3 assets3d_pencil_se_rewind.py textures       # (re)build the procedural texture maps only
-    python3 assets3d_pencil_se_rewind.py cams           # solve the cameras and print the feature px (no render)
+    python3 assets3d_pencil_se_rewind.py textures       # regenerate the procedural texture maps (needs the fonts)
+    python3 assets3d_pencil_se_rewind.py savetex        # copy the maps to brand_reels/assets/pencil_se_rewind/tex3d
+    python3 assets3d_pencil_se_rewind.py cams [names]   # build the scenes, print + save the feature px (no render)
+    python3 assets3d_pencil_se_rewind.py restore        # rebuild the PNG folders from the committed pack
     python3 assets3d_pencil_se_rewind.py sheet          # contact sheet of the finals
     python3 assets3d_pencil_se_rewind.py previewsheet   # the same for the --preview renders
     python3 assets3d_pencil_se_rewind.py pack           # compressed copies into brand_reels/assets/pencil_se_rewind/assets3d
 
     --preview   16 spp, half resolution, written to RWS/out/preview3d/<name>/passes/ (finals untouched)
     --frames    render only these frame indices (tests; meta.json is not written)
-    env PSR_THREADS (default 2), PSR_OUT (default RWS/assets3d). Run every render through tools/heavy.sh.
+    env FOSTER_GPU=1 (GPU finals), FOSTER_GPU_TYPE=CUDA (force a backend), PSR_THREADS (CPU threads, default 2),
+    PSR_OUT (default RWS/assets3d), SKIP_EXISTING=1 (resume a folder on the same device). On the shared Linux box
+    every render goes through tools/heavy.sh; on the GPU PC run the python lines of RENDER_JOBS.md directly.
+    Textures missing from RWS/out/tex3d are restored from brand_reels/assets/pencil_se_rewind/tex3d first.
 
 No brand marks on any prop (generic symbols and handwriting only). Nothing from the toolkit's earlier-client prop
 sets is used; assets3d_hero / assets3d_bijli_chali_gayi are imported for engine helpers only (reset, mesher,
@@ -89,12 +100,14 @@ SHEETS = os.path.join(RWS, 'out', 'sheets3d')
 TEX = os.path.join(RWS, 'out', 'tex3d')
 CACHE = os.path.join(RWS, 'out', 'cache3d')
 PACK = os.path.join(REPO, 'brand_reels', 'assets', REEL, 'assets3d')
+TEX_PACK = os.path.join(REPO, 'brand_reels', 'assets', REEL, 'tex3d')
 THREADS = int(os.environ.get('PSR_THREADS', '2'))
 FONT_HAND = os.path.join(H.FONTS, 'Caveat-Bold.ttf')
 FONT_SANS = os.path.join(H.FONTS, 'Poppins-SemiBold.ttf')
 MM = 0.001
 S_PREVIEW = 16
 CROP_PAD = 24
+EXPOSURE = float(os.environ.get('PSR_EXPOSURE', '-0.8'))
 
 # ============================================================================= palette (sRGB hex; SHOTS.md §A)
 
@@ -429,7 +442,7 @@ def tex_desk(size=4096, seed=21):
         r = rng.lognormal(-9.3, 0.5)            # ~0.05-0.2 mm
         cv2.circle(dust, P(x, y), max(1, int(r * ppm * 4)), float(rng.uniform(0.3, 1.0)), -1,
                    lineType=cv2.LINE_AA, shift=2)
-    dust = np.maximum(dust, (_fbm(S, S, (600, 200), 4) > 0.72) * 0.25)
+    dust = np.maximum(dust, np.clip((_fbm(S, S, (600, 200, 60), 4) - 0.62) / 0.30, 0, 1) * 0.12)   # soft haze
     yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
     xm = xx / ppm - DESK_TEX_M / 2
     ym = DESK_TEX_M / 2 - yy / ppm
@@ -438,8 +451,8 @@ def tex_desk(size=4096, seed=21):
     ink = np.clip((0.034 - rr) / 0.012 + (blob - 0.5) * 1.6, 0, 1)
     ink = np.maximum(ink, np.clip((0.007 - np.hypot(xm - 0.188, ym + 0.082)) / 0.002 + (blob - 0.5), 0, 1))
     ink = cv2.GaussianBlur(ink, (0, 0), 3) * (0.75 + 0.25 * _fbm(S, S, (60, 20), 12))
-    worn = _fbm(S, S, (900, 300, 90), 13)
-    worn = np.clip((worn - 0.45) / 0.3, 0, 1)
+    worn = 0.6 * _fbm(S, S, (700, 240), 13) + 0.4 * _fbm(S, S, (90, 30), 14)     # broken-up, low-contrast wear
+    worn = np.clip((worn - 0.35) / 0.45, 0, 1) ** 1.5
     rgba = np.dstack([scr, dust, ink, worn])
     os.makedirs(TEX, exist_ok=True)
     Image.fromarray((np.clip(rgba, 0, 1) * 255 + 0.5).astype(np.uint8), 'RGBA').save(_tex_path('desk.png'))
@@ -517,8 +530,21 @@ def tex_keys():
                         'RGB').save(_tex_path(f'key_{nm}.png'))
 
 
+TEX_FILES = ['label_a.png', 'label_a_ink.png', 'label_b.png', 'wear.png', 'desk.png', 'hb.png', 'battery.png'] + \
+    [f'key_{k}.png' for k in W_KEYS]
+
+
 def build_textures(force=False):
+    """Texture maps into RWS/out/tex3d. A missing map is first restored from the committed copies in
+    brand_reels/assets/pencil_se_rewind/tex3d (same pixels on every machine, no fonts needed), else generated.
+    force=True regenerates everything (needs the Caveat / Poppins fonts in the workspace fonts folder)."""
+    import shutil
     os.makedirs(TEX, exist_ok=True)
+    if not force:
+        for fn in TEX_FILES:
+            src = os.path.join(TEX_PACK, fn)
+            if not os.path.exists(_tex_path(fn)) and os.path.exists(src):
+                shutil.copy2(src, _tex_path(fn))
     jobs = [('label_a.png', tex_label), ('wear.png', tex_wear), ('desk.png', tex_desk), ('hb.png', tex_hb),
             ('battery.png', tex_battery), ('key_rew.png', tex_keys)]
     for fn, job in jobs:
@@ -526,6 +552,16 @@ def build_textures(force=False):
             t0 = time.time()
             job()
             print(f'[tex] {fn} {time.time() - t0:.1f}s', flush=True)
+
+
+def save_textures():
+    """Copy the current texture maps into brand_reels/assets/pencil_se_rewind/tex3d (committed)."""
+    import shutil
+    build_textures()
+    os.makedirs(TEX_PACK, exist_ok=True)
+    for fn in TEX_FILES:
+        shutil.copy2(_tex_path(fn), os.path.join(TEX_PACK, fn))
+    print('saved', TEX_PACK)
 
 
 # ============================================================================= bpy helpers
@@ -540,12 +576,29 @@ def _bpy():
     return bpy
 
 
+DEVICE = 'CPU'
+
+
+def is_gpu():
+    return not DEVICE.startswith('CPU')
+
+
 def reset(res, samples):
+    """Empty Cycles scene (H.reset: factory settings, OIDN albedo+normal, Standard view, RGBA 8-bit PNG) with this
+    reel's settings. Device: assets3d_gpu.set_device -> CPU unless FOSTER_GPU=1 finds a GPU (OPTIX > CUDA > ...)."""
+    global DEVICE
+    import assets3d_gpu
     sc = H.reset(res, samples, 'night')
-    sc.render.threads_mode = 'FIXED'
-    sc.render.threads = THREADS
+    DEVICE = assets3d_gpu.set_device(bpy, sc)          # idempotent; H.reset already called it, this returns the name
+    if is_gpu():
+        sc.render.threads_mode = 'AUTO'                 # CPU only syncs the scene; let it use every core
+        if hasattr(sc.cycles, 'denoising_use_gpu'):
+            sc.cycles.denoising_use_gpu = True
+    else:
+        sc.render.threads_mode = 'FIXED'
+        sc.render.threads = THREADS
     sc.cycles.samples = samples
-    sc.cycles.adaptive_threshold = 0.02
+    sc.cycles.adaptive_threshold = 0.01 if is_gpu() else 0.02
     sc.cycles.adaptive_min_samples = 0
     sc.cycles.seed = 98
     sc.cycles.use_animated_seed = False
@@ -561,7 +614,7 @@ def reset(res, samples):
     sc.render.film_transparent = False
     sc.render.use_persistent_data = True
     sc.render.dither_intensity = 1.0
-    sc.view_settings.exposure = 0.0
+    sc.view_settings.exposure = EXPOSURE      # brightest lamp-pool diffuse (label paper) <= 0.85, SHOTS.md
     w = bpy.data.worlds.new('W_warm')
     sc.world = w
     bg = w.node_tree.nodes.get('Background')
@@ -720,6 +773,24 @@ def add_dust(g, b, base_sock, dust, amount=0.6, col='#8A7D70'):
     return k
 
 
+def shadow_tint(m, tint):
+    """Clear / smoked plastic and glass: shadow rays pass through tinted (Transparent BSDF) instead of being blocked
+    by the refractive BSDF, so the parts behind a window (cassette inside the walkman, hubs and tape packs inside the
+    shell) get the lamp's direct light without caustics. Camera / reflection rays still see the full glass shader."""
+    nt = m.node_tree
+    out = nt.nodes['Material Output']
+    src = out.inputs['Surface'].links[0].from_socket
+    lp = nt.nodes.new('ShaderNodeLightPath')
+    tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+    tr.inputs[0].default_value = tuple(tint) + (1.0,)
+    mx = nt.nodes.new('ShaderNodeMixShader')
+    nt.links.new(lp.outputs['Is Shadow Ray'], mx.inputs[0])
+    nt.links.new(src, mx.inputs[1])
+    nt.links.new(tr.outputs[0], mx.inputs[2])
+    nt.links.new(mx.outputs[0], out.inputs['Surface'])
+    return m
+
+
 # ============================================================================= materials
 
 MATS = {}
@@ -746,7 +817,7 @@ def m_shell():
     h = g.m('ADD', g.m('MULTIPLY', seam, -1.0), g.m('MULTIPLY', scr, -0.3))
     g.put(b.inputs['Normal'], g.bump(h, 0.25, 0.0001))
     add_dust(g, b, colour_node(g, mixl('SHELL', '#B07A4E', 0.55)), dust, 0.35)
-    return m
+    return shadow_tint(m, (0.62, 0.42, 0.26))
 
 
 def m_window():
@@ -760,7 +831,7 @@ def m_window():
     g.put(b.inputs['Transmission Weight'], g.m('MULTIPLY_ADD', k, -0.9, 0.96))
     g.put(b.inputs['Normal'], g.bump(g.m('MULTIPLY', scr, -1.0), 0.2, 0.00005))
     add_dust(g, b, colour_node(g, mixl('SHELL', '#F2DCC4', 0.75)), dust, 0.4)
-    return m
+    return shadow_tint(m, (0.90, 0.82, 0.72))
 
 
 def m_grip():
@@ -769,7 +840,7 @@ def m_grip():
     x, y, z = g.xyz(g.co('Object'))
     rib = g.m('SINE', g.m('MULTIPLY', y, 2 * math.pi / 0.0009))
     g.put(b.inputs['Normal'], g.bump(rib, 0.5, 0.00008))
-    return m
+    return shadow_tint(m, (0.45, 0.30, 0.19))
 
 
 def m_pom():
@@ -992,11 +1063,11 @@ def m_desk():
     col = g.mix(g.m('MULTIPLY', ink, 0.9), col, (0.020, 0.025, 0.070))
     col = g.mix(g.m('MULTIPLY', dust, 0.45), col, (0.30, 0.27, 0.24))
     g.put(b.inputs['Base Color'], col)
-    cr = g.m('MULTIPLY_ADD', worn, 0.35, 0.25)
+    cr = g.m('MULTIPLY_ADD', worn, 0.20, 0.24)
     cr = g.m('MAXIMUM', cr, g.m('MULTIPLY', scr, 0.7))
     cr = g.m('MAXIMUM', cr, g.m('MULTIPLY', dust, 0.9))
     g.put(b.inputs['Coat Roughness'], cr)
-    g.put(b.inputs['Coat Weight'], g.m('MULTIPLY_ADD', worn, -0.35, 1.0))
+    g.put(b.inputs['Coat Weight'], g.m('MULTIPLY_ADD', worn, -0.20, 1.0))
     g.put(b.inputs['Roughness'], g.m('MULTIPLY_ADD', dust, 0.4, 0.5))
     h = g.m('ADD', g.m('MULTIPLY', scr, -0.8), g.m('MULTIPLY', pores, -0.15))
     g.put(b.inputs['Normal'], g.bump(h, 0.35, 0.00015))
@@ -1054,10 +1125,12 @@ def m_alu_lid():
     brush = g.noise(g.comb(g.m('MULTIPLY', x, 0.02), g.m('MULTIPLY', y, 1.0), z), 9000.0, 2.0, 0.5)
     scr, fin, dust = wear_maps(g, 9.0, offset=(0.45, 0.15))
     # sticker residue (top-right corner of the lid): rough, dull, yellowish, ragged edge
-    sx = g.mr(x, 0.031, 0.034, 0.0, 1.0)
-    sy = g.mr(y, 0.0245, 0.0215, 0.0, 1.0)
-    rag = g.mr(g.noise(co, 900.0, 4.0, 0.6), 0.35, 0.65, 0.0, 1.0)
-    st = g.m('MULTIPLY', g.m('MULTIPLY', sx, sy), g.mr(rag, 0.0, 0.5, 0.4, 1.0), clamp=True)
+    # (lid object coords are hinge coords: x 0 .. L_LEN from the hinge, y as the body; corner = free edge, back)
+    edge_n = g.m('MULTIPLY', g.noise(co, 700.0, 4.0, 0.6), 0.0016)
+    sx = g.mr(g.m('ADD', x, edge_n), L_LEN - 0.0235, L_LEN - 0.0215, 0.0, 1.0)
+    sy = g.mr(g.m('ADD', y, edge_n), W_LID['y1'] - 0.0170, W_LID['y1'] - 0.0150, 0.0, 1.0)
+    rag = g.mr(g.noise(co, 260.0, 3.0, 0.5), 0.30, 0.70, 0.55, 1.0)
+    st = g.m('MULTIPLY', g.m('MULTIPLY', sx, sy), g.m('MULTIPLY', rag, 0.85), clamp=True)
     col = g.vscale(colour_node(g, 'ALU'), g.m('MULTIPLY_ADD', brush, 0.10, 0.93))
     col = g.mix(st, col, (0.42, 0.37, 0.28))
     add_dust(g, b, col, dust, 0.4, '#6E665E')
@@ -1074,12 +1147,12 @@ def m_alu_lid():
 
 
 def m_smoke_glass():
-    m, b, g = B.principled('lid_window', (0.30, 0.20, 0.13), rough=0.03, ior=1.52)
+    m, b, g = B.principled('lid_window', (0.58, 0.45, 0.33), rough=0.03, ior=1.52)
     b.inputs['Transmission Weight'].default_value = 0.92
     scr, fin, dust = wear_maps(g, 13.0, offset=(0.8, 0.5))
     r = g.m('MULTIPLY_ADD', scr, 0.10, 0.03)
     g.put(b.inputs['Roughness'], g.m('MULTIPLY_ADD', fin, 0.15, r))
-    return m
+    return shadow_tint(m, (0.62, 0.50, 0.38))
 
 
 def m_key(nm):
@@ -1620,7 +1693,7 @@ def motion_blur(on=True, shutter=0.5):
 # ============================================================================= scenes
 
 CASS_YAW_HUB = math.radians(18.0)
-CAM_HUB = dict(lens=100.0, elev=58.0, dist=0.31, az=-90.0, fstop=6.3, hub_px=(560, 1260))
+CAM_HUB = dict(lens=100.0, elev=73.0, dist=0.45, az=-90.0, fstop=5.6, hub_px=(560, 1260))
 
 
 def scene_hub(res, q, rescue=False):
@@ -1640,7 +1713,7 @@ def scene_hub(res, q, rescue=False):
     bpy.context.view_layer.update()
     hub_top = wpos(C['hubL'], (0, 0, C_T - 0.0012))
     cam_az = math.radians(CAM_HUB['az'])
-    lamp_rig((0.0, 0.0), cam_az)
+    lamp_rig((0.0, 0.0), cam_az, key=4.5, rim=2.2)
     focus = wpos(C['hubL'], (0, 0, C_T + 0.006))
     cam = make_cam(res, CAM_HUB['lens'], hub_top, math.radians(CAM_HUB['elev']), cam_az, CAM_HUB['dist'],
                    px=tuple(v * res[0] / 1080.0 for v in CAM_HUB['hub_px']), fstop=CAM_HUB['fstop'], focus=focus)
@@ -1668,15 +1741,1141 @@ def hub_features(S):
 
 # ============================================================================= quick camera solve (no render)
 
-def cams_report():
+def cams_report(names=None):
+    """Build every asset's scene at its final size (no render) and print / save the compositor features (px in the
+    asset's own frame; cropped assets also get frame_xy). Written to RWS/out/features_solve.json."""
+    global SPILL
     _bpy()
-    res = (1080, 1920)
-    reset(res, 16)
-    S = scene_hub(res, 0.5)
-    f = hub_features(S)
-    print('CAM_HUB', json.dumps(f))
+    build_textures()
+    out = {}
+    for nm in (names or list(ASSETS)):
+        A = ASSETS[nm]
+        res = tuple(A['size'])
+        MATS.clear()
+        SPILL = None
+        reset(res, 16)
+        S = A['build'](res, 0.5)
+        f = S['features']()
+        if S.get('border'):
+            b = S['border']
+            f = dict(crop_rect_in_full_frame=b, crop_size=[b[2] - b[0], b[3] - b[1]], features_full_frame=f)
+        out[nm] = dict(size=list(res), frames=A['n'], labels=A['labels'], features=f)
+        print(nm, json.dumps(out[nm]), flush=True)
+    os.makedirs(os.path.join(RWS, 'out'), exist_ok=True)
+    with open(os.path.join(RWS, 'out', 'features_solve.json'), 'w') as fh:
+        json.dump(out, fh, indent=1)
+    return out
+
+
+
+
+# ============================================================================= tubes + tape ribbons
+
+def _sstep(x):
+    x = np.clip(x, 0.0, 1.0)
+    return x * x * (3 - 2 * x)
+
+
+def resample(P, n=None, step=None):
+    """Arc-length resample a polyline (n points, or one point per `step` metres)."""
+    P = np.asarray(P, float)
+    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
+    s = np.concatenate([[0], np.cumsum(seg)])
+    if n is None:
+        n = max(2, int(math.ceil(s[-1] / step)) + 1)
+    ss = np.linspace(0, s[-1], n)
+    return np.stack([np.interp(ss, s, P[:, k]) for k in range(P.shape[1])], -1)
+
+
+def catmull(P, n_per=24):
+    """Centripetal-ish Catmull-Rom through control points P (k, d)."""
+    P = np.asarray(P, float)
+    Q = np.vstack([2 * P[0] - P[1], P, 2 * P[-1] - P[-2]])
+    out = []
+    for i in range(1, len(Q) - 2):
+        p0, p1, p2, p3 = Q[i - 1], Q[i], Q[i + 1], Q[i + 2]
+        for t in np.linspace(0, 1, n_per, endpoint=False):
+            t2, t3 = t * t, t * t * t
+            out.append(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+                              (-p0 + 3 * p1 - 3 * p2 + p3) * t3))
+    out.append(P[-1])
+    return np.asarray(out)
+
+
+def ptf_frames(P, up=(0, 0, 1)):
+    """Tangent + parallel-transport normal / binormal along P."""
+    P = np.asarray(P, float)
+    T = np.gradient(P, axis=0)
+    T /= np.maximum(np.linalg.norm(T, axis=1, keepdims=True), 1e-12)
+    up = np.asarray(up, float)
+    N = np.zeros_like(P)
+    n0 = up - T[0] * np.dot(up, T[0])
+    if np.linalg.norm(n0) < 1e-6:
+        n0 = np.array([1.0, 0, 0]) - T[0] * T[0][0]
+    N[0] = n0 / np.linalg.norm(n0)
+    for i in range(1, len(P)):
+        n = N[i - 1] - T[i] * np.dot(N[i - 1], T[i])
+        N[i] = n / max(np.linalg.norm(n), 1e-12)
+    Bn = np.cross(T, N)
+    return T, N, Bn
+
+
+def tube(name, P, r, mat_, seg=12, step=None):
+    """Round tube (cable) along P; r scalar or per-point array."""
+    P = resample(P, step=step or max(0.0004, r * 0.8))
+    T, N, Bn = ptf_frames(P)
+    a = np.linspace(0, 2 * np.pi, seg, endpoint=False)
+    rr = np.broadcast_to(np.asarray(r, float), (len(P),)) if np.ndim(r) == 0 else np.interp(
+        np.linspace(0, 1, len(P)), np.linspace(0, 1, len(r)), r)
+    V3 = P[:, None, :] + rr[:, None, None] * (np.cos(a)[None, :, None] * N[:, None, :] +
+                                              np.sin(a)[None, :, None] * Bn[:, None, :])
+    o, _, _ = grid_mesh(name, V3, mat=mat_, cap0=tuple(P[0]), cap1=tuple(P[-1]))
+    return o
+
+
+def path2d(L, A, h0, turn, n):
+    """2D path of length L from A with heading h0 + turn(u), u in [0, 1]."""
+    u = np.linspace(0, 1, n)
+    th = h0 + turn(u)
+    ds = L / max(1, n - 1)
+    d = np.stack([np.cos(th), np.sin(th)], -1)
+    xy = np.asarray(A, float) + np.vstack([[0, 0], np.cumsum((d[:-1] + d[1:]) / 2 * ds, 0)])
+    return u, xy, th
+
+
+def curl_turn(base, curls, wig=(0.0, 0.0)):
+    """Cumulative turning: base(u) + full 2 pi curls [(centre u, width u, sign)] + a gentle wiggle."""
+    def f(u):
+        t = base(u) + wig[0] * np.sin(2 * math.pi * 3.0 * u + wig[1])
+        for c, w, s in curls:
+            t = t + s * 2 * math.pi * _sstep((u - c + w / 2) / w)
+        return t
     return f
 
 
-if __name__ == '__main__' and len(sys.argv) > 1 and sys.argv[1] == '_cams':
-    cams_report()
+def tape_mesh(name, P, U, mats, width=0.00381, accordion=(), seed=0, phase=0.0, stretched=None, parent=None):
+    """Tape ribbon along centreline P (n, 3) with face normals U (n, 3). accordion = [(s0, s1, amp, period)] (metres
+    along the tape): one-sided zig-zag folds along U; small random kinks everywhere; stretched = (s0, s1) gets the
+    thinner, lighter material (index 2)."""
+    P = np.asarray(P, float)
+    U = np.asarray(U, float)
+    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
+    s = np.concatenate([[0], np.cumsum(seg)])
+    T = np.gradient(P, axis=0)
+    T /= np.maximum(np.linalg.norm(T, axis=1, keepdims=True), 1e-12)
+    U = U - T * (U * T).sum(1, keepdims=True)
+    U /= np.maximum(np.linalg.norm(U, axis=1, keepdims=True), 1e-12)
+    rng = np.random.default_rng(seed)
+    off = np.zeros(len(P))
+    for (s0, s1, amp, per) in accordion:
+        win = _sstep((s - s0) / 0.002) * _sstep((s1 - s) / 0.002)
+        tri = np.abs(((s - s0) / per + phase) % 1.0 - 0.5) * 2.0
+        jit = 1.0 + 0.35 * np.sin(s * 977.0 + seed)
+        off += amp * tri * win * jit
+    # kinks: sparse sharp bumps
+    nk = max(1, int(s[-1] / 0.012))
+    for _ in range(nk):
+        c = rng.uniform(0, s[-1])
+        off += rng.uniform(0.0002, 0.0006) * np.exp(-((s - c) / 0.0007) ** 2)
+    P = P + U * off[:, None]
+    Wd = np.cross(T, U)
+    wid = np.full(len(P), width)
+    mat_idx = None
+    if stretched is not None:
+        st = _sstep((s - stretched[0]) / 0.003) * _sstep((stretched[1] - s) / 0.003)
+        wid = width * (1.0 - 0.18 * st)
+        mat_idx = (st[:-1] + st[1:]) / 2 > 0.5
+    Pw = P
+    V = np.concatenate([Pw - Wd * wid[:, None] / 2, Pw + Wd * wid[:, None] / 2], 0)
+    n = len(P)
+    F = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+    uvs = np.stack([np.concatenate([s, s]) / max(s[-1], 1e-9), np.concatenate([np.zeros(n), np.ones(n)])], -1)
+    o = B.mesh_from(name, V, F, None, uv=uvs, smooth=True)
+    for m in mats:
+        o.data.materials.append(m)
+    if mat_idx is not None:
+        o.data.polygons.foreach_set('material_index', np.where(mat_idx, 2, 0).astype(np.int32))
+    sm = o.modifiers.new('solid', 'SOLIDIFY')
+    sm.thickness = 0.00005
+    sm.offset = 0.0
+    sm.material_offset = 1
+    sm.use_even_offset = True
+    if parent is not None:
+        o.parent = parent
+    return o
+
+
+def desk_tape(xy, th, phi, width=0.00381, lift=0.00004):
+    """2D desk path -> (P, U): phi = 0 tape on its edge, pi/2 lying flat (face up)."""
+    n2 = np.stack([-np.sin(th), np.cos(th), np.zeros_like(th)], -1)
+    z = np.array([0.0, 0.0, 1.0])
+    U = np.cos(phi)[:, None] * n2 + np.sin(phi)[:, None] * z
+    T = np.stack([np.cos(th), np.sin(th), np.zeros_like(th)], -1)
+    Wd = np.cross(T, U)
+    h = 0.5 * width * np.abs(Wd[:, 2]) + lift + 0.5 * 0.00005 * np.abs(U[:, 2])
+    P = np.column_stack([xy, h])
+    return P, U
+
+
+TAPE_MATS = ('tape_front', 'tape_back', 'tape_stretched', 'tape_back')
+
+# The pulled-out loop (R1b), cassette local, relative to the centre head opening (0, -C_HY, C_T / 2), metres at
+# scale 1: out of the opening on edge, it twists flat over the front edge and flops back onto the lower label in a
+# crinkled, springy loop (parts lifted off the paper), so CAM_HUB sees it dark against the lit label.
+RESCUE_A = np.array([-0.0034, 0.0030, 0.0])
+RESCUE_B = np.array([0.0034, 0.0030, 0.0])
+RESCUE_CTRL = np.array([(-0.0040, -0.0025, 0.0003), (-0.0070, -0.0050, 0.0035), (-0.0100, -0.0035, 0.0070),
+                        (-0.0140, 0.0040, 0.0072), (-0.0150, 0.0120, 0.0090), (-0.0090, 0.0190, 0.0082),
+                        (0.0000, 0.0210, 0.0098), (0.0090, 0.0180, 0.0076), (0.0140, 0.0100, 0.0071),
+                        (0.0120, 0.0030, 0.0076), (0.0080, -0.0035, 0.0068), (0.0050, -0.0045, 0.0030),
+                        (0.0040, -0.0025, 0.0003)])
+RESCUE_TOP = C_T / 2 + 0.00035          # lowest z of tape lying on the shell face, relative to the opening centre
+
+
+def _rescue_centreline(sc_):
+    """Loop centreline at scale sc_ (x, y scaled; heights kept; tape over the shell face kept above it)."""
+    O = np.array([0.0, -C_HY, C_T / 2])
+    C = RESCUE_CTRL.copy()
+    C[:, :2] *= sc_
+    C[:, 2] *= min(1.0, 0.35 + sc_)
+    P = catmull(np.vstack([RESCUE_A, C, RESCUE_B]), 24)
+    in_opening = (np.abs(P[:, 0]) < 0.0045) & (P[:, 1] < 0.0045)
+    over_face = (P[:, 1] > 0.0005) & ~in_opening
+    P[over_face, 2] = np.maximum(P[over_face, 2], RESCUE_TOP)
+    return P + O
+
+
+def rescue_tape(L, parent, frame=0):
+    """The crinkled tape loop out of the centre head opening (cassette local), length L (m); None when L ~ 0.
+    The loop's footprint is scaled so its arc length is L: it withdraws into the opening as the pencil rewinds."""
+    if L < 0.002:
+        return None
+    lo, hi = 0.0, 4.0
+    for _ in range(30):                         # bisection on the scale for arc length L
+        mid = (lo + hi) / 2
+        P = _rescue_centreline(mid)
+        Lm = np.linalg.norm(np.diff(P, axis=0), axis=1).sum()
+        lo, hi = (mid, hi) if Lm < L else (lo, mid)
+    P = resample(_rescue_centreline((lo + hi) / 2), step=0.00022)
+    s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
+    Ls = s[-1]
+    T = np.gradient(P, axis=0)
+    T /= np.maximum(np.linalg.norm(T, axis=1, keepdims=True), 1e-12)
+    # width: z (on edge) through the opening, horizontal (lying flat, face up) over the shell, a wandering twist
+    w = _sstep(s / 0.007) * _sstep((Ls - s) / 0.007)
+    flat = np.cross(np.array([0.0, 0.0, 1.0])[None, :], T)
+    flat /= np.maximum(np.linalg.norm(flat, axis=1, keepdims=True), 1e-9)
+    Wd = np.array([0.0, 0.0, 1.0])[None, :] * (1 - w)[:, None] + flat * w[:, None]
+    Wd = Wd - T * (Wd * T).sum(1, keepdims=True)
+    Wd /= np.maximum(np.linalg.norm(Wd, axis=1, keepdims=True), 1e-12)
+    lifted = np.clip((P[:, 2] - (C_T + 0.0012)) / 0.002, 0, 1)            # twist only where it is off the paper
+    tw = w * lifted * np.radians(50.0) * np.sin(2 * math.pi * (s / max(Ls, 1e-6)) * 2.0 + 0.7)
+    Nn = np.cross(T, Wd)
+    Wd = Wd * np.cos(tw)[:, None] + Nn * np.sin(tw)[:, None]
+    U = np.cross(Wd, T)
+    U = np.where((U[:, 2:3] < 0) & (w[:, None] > 0.5), -U, U)               # face normal up: crinkles lift
+    acc = [(Ls * 0.30, Ls * 0.30 + min(0.026, Ls * 0.22), 0.0010, 0.0013),
+           (Ls * 0.62, Ls * 0.62 + min(0.014, Ls * 0.12), 0.0007, 0.0011)]
+    return tape_mesh('rescue_tape', P, U, [mat(m) for m in TAPE_MATS], accordion=acc, seed=3, phase=0.0,
+                     stretched=(Ls * 0.50, Ls * 0.50 + min(0.012, Ls * 0.1)) if Ls > 0.03 else None, parent=parent)
+
+
+# ============================================================================= WALKMAN, HEADPHONES, BATTERIES
+
+W_ZT = W_T - W_LID['t']                       # body top (lid sits on it)
+W_COMP = dict(cy=W_CASS[1], hx=0.0512, hy=0.0329, z0=0.0140)
+W_JACK = (-W_HX, -0.020, 0.0120)
+W_WHEEL = (-W_HX + 0.0082, 0.022, 0.0140, 0.0110)   # centre x, y, z, radius
+
+
+def _walk_body_fn(P):
+    x, y, z = P[..., 0], P[..., 1], P[..., 2]
+    zt = W_ZT
+    r = 0.0009
+    outer = B.extrude(B.sd_rect(x, y, W_HX, W_HY, 0.0042) + r, np.abs(z - zt / 2) - zt / 2 + r) - r
+    cz0, cz1 = W_COMP['z0'], zt + 0.003
+    comp = B.extrude(B.sd_rect(x, y - W_COMP['cy'], W_COMP['hx'], W_COMP['hy'], 0.0030),
+                     np.abs(z - (cz0 + cz1) / 2) - (cz1 - cz0) / 2)
+    d = B.smax(outer, -comp, 0.0005)
+    for kx in W_KEY_X:
+        slot = B.extrude(B.sd_rect(x - kx, y - W_KEY_Y, W_KEY_W / 2 + 0.00035, W_KEY_D / 2 + 0.00035, 0.0011),
+                         np.abs(z - zt) - 0.0045)
+        d = B.smax(d, -slot, 0.0003)
+    led = B.extrude(np.hypot(x - W_LED[0], y - W_LED[1]) - 0.00125, np.abs(z - zt) - 0.0012)
+    d = B.smax(d, -led, 0.0002)
+    # shell seam groove all round (two-part housing)
+    cut = np.maximum(np.abs(z - 0.0100) - 0.00022, -outer - 0.0004)
+    d = np.maximum(d, -cut)
+    # headphone jack + volume-wheel slot on the left side
+    jack = np.maximum(np.hypot(y - W_JACK[1], z - W_JACK[2]) - 0.0019, np.abs(x - W_JACK[0]) - 0.007)
+    d = B.smax(d, -jack, 0.0003)
+    wx, wy, wz, wr = W_WHEEL
+    slot = np.maximum(np.maximum(np.abs(y - wy) - 0.0105, np.abs(z - wz) - 0.0029), np.abs(x + W_HX) - 0.0045)
+    d = B.smax(d, -slot, 0.0003)
+    # three short vent slots on the front face, right of centre
+    for vx in (0.006, 0.012, 0.018):
+        v = np.maximum(np.maximum(np.abs(x - vx) - 0.0006, np.abs(z - 0.0055) - 0.0026), np.abs(y + W_HY) - 0.0008)
+        d = B.smax(d, -v, 0.0002)
+    return d
+
+
+L_LEN = W_LID['x1'] - W_LID['x0']
+
+
+def _lid_fn(P):
+    """Lid in hinge coords: x 0 .. L_LEN from the hinge line, y world, z 0 .. t."""
+    x, y, z = P[..., 0], P[..., 1], P[..., 2]
+    t = W_LID['t']
+    cy = (W_LID['y0'] + W_LID['y1']) / 2
+    hy = (W_LID['y1'] - W_LID['y0']) / 2
+    r = 0.0005
+    plate = B.extrude(B.sd_rect(x - L_LEN / 2, y - cy, L_LEN / 2, hy, 0.0036) + r, np.abs(z - t / 2) - t / 2 + r) - r
+    wx = W_WIN[0] - W_LID['x0']
+    hole = B.sd_rect(x - wx, y - W_WIN[1], W_WIN[2], W_WIN[3], 0.0030)
+    chamfer = hole + (z - t) * 0.8           # widening towards the top face
+    d = B.smax(plate, -np.minimum(hole, chamfer), 0.0003)
+    # finger grip ribs near the free (right) edge
+    for k in range(4):
+        gx = L_LEN - 0.0045 - k * 0.0016
+        rib = B.extrude(B.sd_rect(x - gx, y - cy, 0.00035, 0.010, 0.0002), np.abs(z - t) - 0.00018)
+        d = np.maximum(d, -rib)
+    return d
+
+
+def _key_fn(P):
+    x, y, z = P[..., 0], P[..., 1], P[..., 2]
+    r = 0.0006
+    z0, z1 = -0.0045, W_KEY_UP
+    dish = 0.00018 * (1 - (x / (W_KEY_W / 2)) ** 2)
+    zz = z + np.where(z > 0, dish, 0)
+    return B.extrude(B.sd_rect(x, y, W_KEY_W / 2, W_KEY_D / 2, 0.0010) + r,
+                     np.abs(zz - (z0 + z1) / 2) - (z1 - z0) / 2 + r) - r
+
+
+def build_walkman(name='walk', q=1.0, lid_deg=0.0, keys_down=(), led_on=True):
+    root = empty(name)
+    st = 0.00020 if q >= 1 else 0.00034
+    body, V, Q = sdf_obj(f'{name}_body', _walk_body_fn, (-W_HX - 0.001, -W_HY - 0.001, -0.001),
+                         (W_HX + 0.001, W_HY + 0.001, W_ZT + 0.001), st, mat('abs'), 'walk_body1')
+    lid_root = empty(f'{name}_lidroot', loc=(W_LID['x0'], 0.0, W_ZT), parent=root)
+    lid_root.rotation_euler = (0, -math.radians(lid_deg), 0)
+    lid, _, _ = sdf_obj(f'{name}_lid', _lid_fn, (-0.001, W_LID['y0'] - 0.001, -0.001),
+                        (L_LEN + 0.001, W_LID['y1'] + 0.001, W_LID['t'] + 0.001),
+                        0.00012 if q >= 1 else 0.0002, mat('alu'), 'walk_lid1')
+    lid.parent = lid_root
+    glass = B.cube(f'{name}_glass', (W_WIN[0] - W_LID['x0'] - W_WIN[2] - 0.0008, W_WIN[1] - W_WIN[3] - 0.0008, 0.0002),
+                   (W_WIN[0] - W_LID['x0'] + W_WIN[2] + 0.0008, W_WIN[1] + W_WIN[3] + 0.0008, 0.0010),
+                   mat('smoke'), bevel=0.0003)
+    glass.parent = lid_root
+    hinge = B.cyl(f'{name}_hinge', (0.0, (W_LID['y0'] + W_LID['y1']) / 2, 0.0002), 0.0011,
+                  (W_LID['y1'] - W_LID['y0']) - 0.016, mat('chrome'), axis='Y', seg=24)
+    hinge.parent = lid_root
+    # cassette in the compartment, side A up, head edge to the front
+    C = build_cassette(f'{name}_cass', rL=0.0185, rR=0.0190, parent=root, q=q)
+    C['root'].location = W_CASS
+    # keys
+    kV, kQ, kN = H.mesh_field(H.FieldFn(_key_fn, (-W_KEY_W / 2 - 0.0005, -W_KEY_D / 2 - 0.0005, -0.0047),
+                                        (W_KEY_W / 2 + 0.0005, W_KEY_D / 2 + 0.0005, W_KEY_UP + 0.0003)),
+                              0.00007 if q >= 1 else 0.00011, cache_key=f'{REEL}:key1:{q >= 1}')
+    keys = {}
+    for nm, kx in zip(W_KEYS, W_KEY_X):
+        ko = H.add_mesh(f'{name}_key_{nm}', kV, kQ, kN, mat(f'key_{nm}'), icon_frame=False)
+        ko.location = (kx, W_KEY_Y, W_ZT - (0.0030 if nm in keys_down else 0.0))
+        ko.parent = root
+        keys[nm] = ko
+    led = B.lathe if False else None
+    lp = [(0.0, 0.00075), (0.0005, 0.00068), (0.0009, 0.0004), (0.00105, 0.0), (0.00105, -0.001), (0.0, -0.001)]
+    led = lathe_mesh(f'{name}_led', lp, 32, mat('led' if led_on else 'led_off'))
+    led.location = (W_LED[0], W_LED[1], W_ZT - 0.0002)
+    led.parent = root
+    # volume wheel (axis Z), ribbed rim protruding from the left side slot
+    wx, wy, wz, wr = W_WHEEL
+    wp = [(0.0, -0.0022), (wr - 0.0004, -0.0022), (wr, -0.0018), (wr, 0.0018), (wr - 0.0004, 0.0022), (0.0, 0.0022)]
+
+    def ribs(V3f, a):
+        rr = np.hypot(V3f[..., 0], V3f[..., 1])
+        k = 1.0 - 0.00028 / wr * (np.cos(a * 72.0)[None, :] > 0.2) * (rr > wr - 0.0005)
+        V3f[..., 0] *= k
+        V3f[..., 1] *= k
+        return V3f
+    wheel = lathe_mesh(f'{name}_wheel', wp, 288, mat('rubber'), disp=ribs, smooth=False)
+    wheel.location = (wx, wy, wz)
+    wheel.parent = root
+    # jack ring + headphone plug + strain relief
+    jr = lathe_mesh(f'{name}_jackring', [(0.0019, -0.0004), (0.0026, -0.0004), (0.0027, 0.0), (0.0026, 0.0004),
+                                         (0.0019, 0.0004)], 48, mat('nickel'))
+    jr.rotation_euler = (0, math.radians(-90), 0)
+    jr.location = (W_JACK[0] - 0.0002, W_JACK[1], W_JACK[2])
+    jr.parent = root
+    plug = lathe_mesh(f'{name}_plug', [(0.0, 0.0), (0.0017, 0.0), (0.0017, 0.0008), (0.0029, 0.0012),
+                                       (0.0030, 0.0090), (0.0024, 0.0115), (0.0017, 0.0170), (0.0012, 0.0180),
+                                       (0.0, 0.0182)], 40, mat('rubber'))
+    plug.rotation_euler = (0, math.radians(-90), 0)
+    plug.location = (W_JACK[0] - 0.0004, W_JACK[1], W_JACK[2])
+    plug.parent = root
+    parent_to([body], root)
+    return dict(root=root, lid_root=lid_root, C=C, keys=keys, led=led, body=body, lid=lid,
+                plug_end=(W_JACK[0] - 0.0004 - 0.0180, W_JACK[1], W_JACK[2]))
+
+
+def build_headphones(name, center, yaw, cable_to=None, q=1.0, seed=5):
+    """Lying on the desk pads up: semicircular chrome band (span 140 mm) on the desk, two cups (45 mm) with
+    orange foam pads (one torn), a tangled cable towards `cable_to` (world point)."""
+    root = empty(name, loc=(center[0], center[1], 0.0), rot=(0, 0, yaw))
+    R = 0.070
+    objs = []
+    # band: flat strip 3.2 x 0.8 mm on edge, lifted 6 mm at the crown
+    a = np.linspace(math.radians(8), math.radians(172), 120)
+    P = np.stack([R * np.cos(a), R * np.sin(a) * 0.82, 0.0045 + 0.004 * np.sin(a) ** 2], -1)
+    T = np.gradient(P, axis=0)
+    T /= np.linalg.norm(T, axis=1, keepdims=True)
+    nrm = np.cross(T, [0, 0, 1.0])
+    V3 = []
+    for (dx, dz) in ((-0.0004, -0.0016), (0.0004, -0.0016), (0.0004, 0.0016), (-0.0004, 0.0016)):
+        V3.append(P + nrm * dx + np.array([0, 0, dz]))
+    V3 = np.stack(V3, 1)
+    band, _, _ = grid_mesh(f'{name}_band', V3, mat=mat('chrome'), smooth=True)
+    sm = band.modifiers.new('bev', 'BEVEL')
+    sm.width = 0.0002
+    sm.segments = 2
+    objs.append(band)
+    # yoke sliders down to the cups
+    for side in (-1, 1):
+        cx = side * (R + 0.006)
+        cyl = B.cyl(f'{name}_slider{side}', (side * R * 0.99, 0.004, 0.0045), 0.0012, 0.016, mat('cup'), axis='Y',
+                    seg=16)
+        objs.append(cyl)
+        cup = lathe_mesh(f'{name}_cup{side}', [(0.0, 0.0002), (0.0200, 0.0002), (0.0222, 0.0012), (0.0225, 0.0080),
+                                               (0.0215, 0.0098), (0.0, 0.0098)], 96, mat('cup'))
+        cup.location = (cx, -0.012, 0.0)
+        objs.append(cup)
+        grill = B.cyl(f'{name}_grill{side}', (cx, -0.012, 0.0099), 0.0150, 0.0003, mat('chrome'), seg=64)
+        objs.append(grill)
+        torn = side > 0
+
+        def pad_disp(V3f, aa, torn=torn):
+            if torn:
+                rr = np.hypot(V3f[..., 0], V3f[..., 1])
+                cut = np.exp(-((aa[None, :] - 0.9) / 0.18) ** 2) * (rr > 0.019)
+                k = 1.0 - 0.10 * cut
+                V3f[..., 0] *= k
+                V3f[..., 1] *= k
+                V3f[..., 2] -= 0.0025 * cut
+            # hand-cut foam is never a perfect lathe: low-frequency lumps in the outline and the top
+            rr = np.hypot(V3f[..., 0], V3f[..., 1])
+            a2 = aa[None, :]
+            k = 1.0 + 0.012 * np.sin(2 * a2 + 1.3 * side) + 0.007 * np.sin(5 * a2 + 0.4)
+            V3f[..., 0] *= k
+            V3f[..., 1] *= k
+            V3f[..., 2] += 0.00045 * np.sin(3 * a2 + side) * np.clip(rr / 0.025, 0, 1) * (V3f[..., 2] > 0.012)
+            return V3f
+        # flat open-cell foam disc 50 x 10 mm over the driver (no hole), soft rolled edge, slightly sagging centre
+        pr = [(0.0, 0.0188), (0.0060, 0.0189), (0.0120, 0.0192), (0.0170, 0.0194), (0.0205, 0.0191),
+              (0.0230, 0.0181), (0.0246, 0.0163), (0.0251, 0.0140), (0.0248, 0.0115), (0.0236, 0.0100),
+              (0.0215, 0.0098)]
+        pad = lathe_mesh(f'{name}_pad{side}', pr, 128, mat('foam'), disp=pad_disp)
+        pad.location = (cx, -0.012, 0.0)
+        objs.append(pad)
+    parent_to(objs, root)
+    cab = None
+    if cable_to is not None:
+        bpy.context.view_layer.update()
+        start = wpos(root, (-(R + 0.006) - 0.020, -0.012, 0.004))
+        end = np.asarray(cable_to, float)
+        rng = np.random.default_rng(seed)
+        ctrl = [start]
+        k = 9
+        for i in range(1, k):
+            t = i / k
+            p = start * (1 - t) + end * t
+            p = p + np.array([rng.normal(0, 0.018), rng.normal(0, 0.018), 0.0])
+            p[2] = 0.0011 + (0.004 if i % 3 == 1 else 0.0)
+            ctrl.append(p)
+        ctrl.append(end)
+        Pc = catmull(np.asarray(ctrl), 30)
+        # a couple of loops (tangle)
+        loops = []
+        for li, (pos, rad) in enumerate(((0.35, 0.011), (0.62, 0.008))):
+            i0 = int(pos * len(Pc))
+            c0 = Pc[i0]
+            aa = np.linspace(0, 2 * np.pi, 60)
+            loops.append((i0, c0 + np.stack([rad * np.sin(aa), rad * (1 - np.cos(aa)), 0.0016 * np.sin(aa / 2)], -1)))
+        Pl = []
+        last = 0
+        for i0, lp in loops:
+            Pl.append(Pc[last:i0])
+            Pl.append(lp)
+            last = i0 + 1
+        Pl.append(Pc[last:])
+        Pc = np.vstack(Pl)
+        Pc[:, 2] = np.maximum(Pc[:, 2], 0.0010)
+        cab = tube(f'{name}_cable', Pc, 0.0010, mat('cable'), seg=10)
+    return dict(root=root, objs=objs, cable=cab)
+
+
+def build_battery(name, loc, yaw, roll=0.0, dented=False):
+    """AA cell lying on the desk: sleeve (UV unwrap of tex_battery), nickel + cap and - disc; dented: 3 tooth dents
+    mid-sleeve with a wrinkled sleeve."""
+    root = empty(name, loc=(loc[0], loc[1], 0.00725), rot=(0, math.radians(90), yaw))
+    Rb = 0.00725
+    L = 0.0493
+    prof = [(Rb - 0.0004, 0.0003), (Rb - 0.00005, 0.0005), (Rb, 0.0009)] + \
+           [(Rb, z) for z in np.linspace(0.0012, L - 0.0012, 90)] + [(Rb, L - 0.0009), (Rb - 0.00005, L - 0.0005),
+                                                                   (Rb - 0.0004, L - 0.0003)]
+
+    def dents(V3f, a):
+        if not dented:
+            return V3f
+        z = V3f[..., 2]
+        dep = np.zeros(z.shape)
+        for (ac, zc) in ((0.0, 0.024), (0.35, 0.0265), (-0.30, 0.0218)):
+            da = np.angle(np.exp(1j * (a[None, :] - ac)))
+            dep += 0.00042 * np.exp(-(da / 0.10) ** 2 - ((z - zc) / 0.0011) ** 2)
+            dep += 0.00006 * np.sin((z - zc) * 4200.0) * np.exp(-(da / 0.35) ** 2 - ((z - zc) / 0.004) ** 2)
+        k = (Rb - dep) / Rb
+        V3f[..., 0] *= k
+        V3f[..., 1] *= k
+        return V3f
+    sl = lathe_mesh(f'{name}_sleeve', prof, 128, mat('sleeve'), disp=dents, uv=True)
+    sl.rotation_euler = (0, 0, roll)
+    neg = lathe_mesh(f'{name}_neg', [(0.0, -0.00005), (0.0055, -0.00005), (Rb - 0.0004, 0.0003), (0.0, 0.0003)], 48,
+                     mat('nickel'))
+    pos = lathe_mesh(f'{name}_pos', [(0.0, L + 0.0012), (0.0024, L + 0.0012), (0.0027, L + 0.0009),
+                                     (0.0027, L - 0.0003), (Rb - 0.0004, L - 0.0003), (0.0, L - 0.0003)], 48,
+                     mat('nickel'))
+    for o in (sl, neg, pos):
+        o.location = (0, 0, -L / 2)
+    parent_to([sl, neg, pos], root)
+    return root
+
+
+# ============================================================================= walkman spill (R4b)
+
+# out of the centre head opening (cassette head edge faces the key strip), up over the compartment rim under the
+# raised free edge of the lid, across the front strip between the REW key and the LED, down the front face (towards
+# CAM_WALK) and onto the desk, where it curls in front of the player towards screen left (clear of the AA cells).
+SPILL_CTRL = np.array([(0.000, -0.0255, 0.0210), (0.006, -0.0262, 0.0238), (0.016, -0.0268, 0.0290),
+                       (0.0250, -0.0290, 0.0316), (0.0275, -0.0345, 0.0302), (0.0278, -0.0394, 0.0290),
+                       (0.0280, -0.0418, 0.0236), (0.0282, -0.0421, 0.0120), (0.0284, -0.0430, 0.0040),
+                       (0.0280, -0.0470, 0.0012)])
+SPILL_U = np.array([(0, -1, 0), (0, -1, 0.3), (0, -0.5, 1), (0, 0, 1), (0, -0.2, 1), (0, -1, 0.7), (0, -1, 0),
+                    (0, -1, 0.05), (0, -1, 0.3), (0, -0.3, 1)], float)
+SPILL_DESK_L = 0.175
+SPILL_TURN = curl_turn(lambda u: -1.45 * _sstep(u / 0.10) - 0.30 * u,
+                       [(0.22, 0.21, 1), (0.50, 0.19, -1), (0.80, 0.20, 1)], wig=(0.30, 0.4))
+
+
+def spill_path():
+    """Full spill centreline + face normals (walkman local, lid open): out of the head opening, over the lid lip /
+    front strip, down the front face, then three crinkled curls on the desk."""
+    P1 = catmull(SPILL_CTRL, 30)
+    U1 = catmull(SPILL_U, 30)
+    P1 = resample(P1, step=0.00025)
+    U1 = resample(U1 / np.linalg.norm(U1, axis=1, keepdims=True), n=len(P1))
+    n2 = max(300, int(SPILL_DESK_L / 0.00025))
+    h0 = math.atan2(SPILL_CTRL[-1][1] - SPILL_CTRL[-2][1], SPILL_CTRL[-1][0] - SPILL_CTRL[-2][0])
+    u, xy, th = path2d(SPILL_DESK_L, SPILL_CTRL[-1][:2], h0, SPILL_TURN, n2)
+    phi = np.radians(90.0) * (1 - _sstep(u / 0.12)) + np.radians(25.0) * _sstep(u / 0.12) * \
+        (1.0 + 0.6 * np.sin(u * 17.0)) + np.radians(50.0) * _sstep((u - 0.92) / 0.08)
+    P2, U2 = desk_tape(xy, th, phi)
+    P = np.vstack([P1, P2[1:]])
+    U = np.vstack([U1, U2[1:]])
+    s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
+    return P, U, s
+
+
+SPILL = None
+
+
+def spill_tape(frac, frame, parent):
+    """The first `frac` of the spill path (tip leading), crinkle animated with the frame."""
+    global SPILL
+    if SPILL is None:
+        SPILL = spill_path()
+    P, U, s = SPILL
+    Lv = frac * s[-1]
+    if Lv < 0.002:
+        return None
+    k = int(np.searchsorted(s, Lv)) + 1
+    P, U = P[:k].copy(), U[:k].copy()
+    L1 = len(resample(catmull(SPILL_CTRL, 30), step=0.00025)) * 0.00025
+    acc = [(L1 + 0.050, L1 + 0.082, 0.0012, 0.0014), (L1 + 0.120, L1 + 0.140, 0.0009, 0.0011)]
+    # the free tip still flutters while it moves
+    tip = _sstep((np.arange(k) - (k - 60)) / 60.0)
+    P[:, 2] += 0.0025 * tip * (1.0 - frac) * (0.6 + 0.4 * math.sin(frame * 1.7))
+    return tape_mesh('spill_tape', P, U, [mat(m) for m in TAPE_MATS], accordion=acc, seed=11, phase=0.04 * frame,
+                     stretched=(L1 + 0.022, L1 + 0.034), parent=parent)
+
+
+# ============================================================================= scenes (continued)
+
+CAM_LABEL = dict(lens=60.0, dist=0.33, fstop=5.6, yaw=6.0, label_px=(540, 900))
+CAM_WALK = dict(lens=50.0, elev=30.0, az=-122.0, dist=0.40, fstop=8.0, px=(540, 1180), width_px=760)
+WALK_YAW = math.radians(0.0)
+LID_OPEN = [0.0, 9.0, 19.0, 26.0, 24.0, 22.0]
+
+
+def lying_pencil(name, tip_xy, ang_deg, q):
+    """Pencil lying on the desk on a flat, HB facet up, tip at tip_xy, axis (tip -> eraser) at ang_deg."""
+    holder = empty(f'{name}_lie', loc=(tip_xy[0], tip_xy[1], 0.00372),
+                   rot=(-math.pi / 2, 0.0, math.radians(ang_deg - 90.0)))
+    Pn = build_pencil(name, parent=holder, q=q)
+    Pn['root'].rotation_euler = (0, 0, -math.pi / 2)
+    Pn['holder'] = holder
+    return Pn
+
+
+def scene_label(res, q):
+    C = build_cassette('cass', rL=0.017, rR=0.0204, q=q)
+    C['root'].rotation_euler = (0, 0, math.radians(CAM_LABEL['yaw']))
+    Pn = lying_pencil('pencil', (-0.030, -0.0405), -14.0, q)
+    build_desk(center=(0, 0), wall_dist=0.9, wall_dir=(0, 1), front=0.20)
+
+    def avoid(x, y):
+        return abs(x) < C_HX + 0.003 and abs(y) < C_HY + 0.003
+    build_crumbs(18 if q >= 1 else 8, (0.0, -0.01), 0.04, 0.07, 9, avoid=avoid, ang_range=(180, 360))
+    bpy.context.view_layer.update()
+    lamp_rig((0.0, 0.0), math.radians(-90), key=4.0, rim=1.6, key_side=0.18, key_back=-0.05, key_h=0.42)
+    lc = wpos(C['root'], ((LAB_X0 + LAB_X1) / 2, (LAB_Y0 + LAB_Y1) / 2, C_T))
+    cam = make_cam(res, CAM_LABEL['lens'], lc, math.radians(90), math.radians(-90), CAM_LABEL['dist'],
+                   px=tuple(v * res[0] / 1080.0 for v in CAM_LABEL['label_px']), fstop=CAM_LABEL['fstop'], focus=lc)
+    return dict(C=C, P=Pn, cam=cam)
+
+
+def label_features(S):
+    C, Pn = S['C'], S['P']
+    s = 1.0
+    q = [proj_px(wpos(C['root'], (x, y, C_T))) for x, y in ((LAB_X0, LAB_Y1), (LAB_X1, LAB_Y1), (LAB_X1, LAB_Y0),
+                                                            (LAB_X0, LAB_Y0))]
+    xs, ys = [p[0] for p in q], [p[1] for p in q]
+    f = dict(label_quad=q, label_rect=[min(xs), min(ys), max(xs), max(ys)],
+             cassette_quad=[proj_px(wpos(C['root'], (x * C_HX, y * C_HY, C_T))) for x, y in
+                            ((-1, 1), (1, 1), (1, -1), (-1, -1))],
+             pencil_tip=proj_px(wpos(Pn['root'], (0, 0, 0))), pencil_eraser=proj_px(wpos(Pn['root'], (0, 0, P_LEN))))
+    return {k: np.round(np.asarray(v, float) * s, 1).tolist() for k, v in f.items()}
+
+
+def desk_point(px, res, z=0.0):
+    """World point on the plane z = `z` seen at pixel px (x right, y down) of the scene camera."""
+    sc = bpy.context.scene
+    cam = sc.camera
+    fr = [cam.matrix_world @ v for v in cam.data.view_frame(scene=sc)]      # TR, BR, BL, TL (world)
+    tr, br, bl, tl = [np.asarray(v, float) for v in fr]
+    u, v = px[0] / res[0], px[1] / res[1]
+    p = tl + (tr - tl) * u + (bl - tl) * v
+    o = np.asarray(cam.matrix_world.translation, float)
+    if cam.data.type == 'ORTHO':
+        d = np.asarray(cam.matrix_world.to_3x3() @ Vector((0, 0, -1)), float)
+        o = p
+    else:
+        d = p - o
+    t = (z - o[2]) / d[2]
+    return o + d * t
+
+
+WALK_PADS_PX = (260, 1000)          # torn pad centre (SHOTS.md CAM_WALK), 1080-wide frame px
+WALK_AA_PX = (790, 1630)            # dented AA centre (SHOTS.md ~(820, 1500); moved down to clear the R4b spill)
+
+
+def scene_walk(res, q, lid_deg=0.0, keys_down=(), led_on=True):
+    Wk = build_walkman('walk', q=q, lid_deg=lid_deg, keys_down=keys_down, led_on=led_on)
+    Wk['root'].rotation_euler = (0, 0, WALK_YAW)
+    bpy.context.view_layer.update()
+    cam_az = math.radians(CAM_WALK['az'])
+    tgt = wpos(Wk['root'], (0.0, -0.004, W_T * 0.75))
+    k = res[0] / 1080.0
+    cam = make_cam(res, CAM_WALK['lens'], tgt, math.radians(CAM_WALK['elev']), cam_az, CAM_WALK['dist'],
+                   px=tuple(v * k for v in CAM_WALK['px']), fstop=CAM_WALK['fstop'],
+                   focus=wpos(Wk['root'], (0.0, -0.012, W_T)))
+    bpy.context.view_layer.update()
+    plug_end = wpos(Wk['root'], Wk['plug_end'])
+    # headphones: torn pad (cup +1) at WALK_PADS_PX, band arcing away from camera, the other cup off frame left
+    yaw_h = cam_az + math.pi / 2          # band (local +y) points away from the camera; cup +1 to screen right
+    pad = desk_point(tuple(v * k for v in WALK_PADS_PX), res)
+    off = np.array([math.cos(yaw_h) * 0.076 - math.sin(yaw_h) * -0.012, math.sin(yaw_h) * 0.076 + math.cos(yaw_h) * -0.012])
+    Hp = build_headphones('phones', tuple(pad[:2] - off), yaw_h, cable_to=plug_end, q=q)
+    aa = desk_point(tuple(v * k for v in WALK_AA_PX), res, z=0.00725)
+    build_battery('aa1', (aa[0], aa[1]), cam_az + math.radians(70.0), roll=math.pi, dented=True)
+    y1 = cam_az + math.radians(70.0)                    # dented cell axis; the second cell lies beside it,
+    side = np.array([math.cos(y1 - math.pi / 2), math.sin(y1 - math.pi / 2)])   # on the side away from the spill
+    a2 = aa[:2] + side * 0.0158 + np.array([math.cos(y1), math.sin(y1)]) * 0.009
+    build_battery('aa2', (a2[0], a2[1]), y1 + math.radians(7.0), roll=0.6, dented=False)
+    build_desk(center=(0, 0), wall_dist=0.9, wall_dir=(0, 1), front=0.25)
+
+    def avoid(x, y):
+        return (abs(x) < W_HX + 0.004 and abs(y) < W_HY + 0.004) or math.hypot(x - aa[0], y - aa[1]) < 0.04
+    build_crumbs(16 if q >= 1 else 8, (-0.02, -0.06), 0.01, 0.05, 12, avoid=avoid, ang_range=(190, 300))
+    bpy.context.view_layer.update()
+    lamp_rig((0.0, 0.0), cam_az, key=8.0, rim=1.4, bounce=0.7, key_side=0.22, key_back=0.06, key_h=0.45)
+    print('[walk] aa world', np.round(aa, 4).tolist(), 'pad world', np.round(pad, 4).tolist(), flush=True)
+    return dict(W=Wk, Hp=Hp, cam=cam, aa_xy=tuple(aa[:2]), pad_xy=tuple(pad[:2]))
+
+
+def walk_features(S):
+    Wk = S['W']
+    lr = Wk['lid_root']
+    wx = W_WIN[0] - W_LID['x0']
+    win = [proj_px(wpos(lr, (wx + sx * W_WIN[2], W_WIN[1] + sy * W_WIN[3], W_LID['t'])))
+           for sx, sy in ((-1, 1), (1, 1), (1, -1), (-1, -1))]
+    keys = {}
+    for nm, ko in Wk['keys'].items():
+        q = [proj_px(wpos(ko, (sx * W_KEY_W / 2, sy * W_KEY_D / 2, W_KEY_UP))) for sx, sy in
+             ((-1, 1), (1, 1), (1, -1), (-1, -1))]
+        keys[nm] = [min(p[0] for p in q), min(p[1] for p in q), max(p[0] for p in q), max(p[1] for p in q)]
+    xs, ys = [p[0] for p in win], [p[1] for p in win]
+    body = [proj_px(wpos(Wk['root'], (sx * W_HX, sy * W_HY, sz))) for sx in (-1, 1) for sy in (-1, 1)
+            for sz in (0.0, W_T)]
+    f = dict(window_quad=win, window_rect=[min(xs), min(ys), max(xs), max(ys)], key_rects=keys,
+             led_xy=proj_px(wpos(Wk['root'], (W_LED[0], W_LED[1], W_ZT + 0.0007))),
+             hub_l_xy=proj_px(wpos(Wk['C']['hubL'], (0, 0, C_T))), hub_r_xy=proj_px(wpos(Wk['C']['hubR'], (0, 0, C_T))),
+             walkman_bbox=[min(p[0] for p in body), min(p[1] for p in body), max(p[0] for p in body),
+                           max(p[1] for p in body)])
+    if 'aa_xy' in S:
+        f['battery_dented_xy'] = proj_px((S['aa_xy'][0], S['aa_xy'][1], 0.00725))
+        f['torn_pad_xy'] = proj_px((S['pad_xy'][0], S['pad_xy'][1], 0.019))
+
+    def rnd(v):
+        if isinstance(v, dict):
+            return {k: rnd(x) for k, x in v.items()}
+        return np.round(np.asarray(v, float), 1).tolist()
+    return rnd(f)
+
+
+def scene_pencil_top(res, q):
+    Pn = lying_pencil('pencil', (0.0, -P_LEN / 2), 90.0, q)
+    plane = B.cube('catcher', (-0.15, -0.15, -0.001), (0.15, 0.15, 0.0), None)
+    plane.is_shadow_catcher = True
+    bpy.context.view_layer.update()
+    rig = lamp_rig((0.0, 0.0), math.radians(-90), key=8.0, rim=1.2, bounce=0.5, key_side=0.16, key_back=-0.10,
+                   key_h=0.45)
+    rig['key'].data.spot_size = math.radians(110.0)      # even light along the whole 120 mm (no falloff in the shadow)
+    rig['key'].data.spot_blend = 0.1
+    rig['key'].data.color = mixl('LAMP', '#FFF1E0', 0.6)     # the cut-out sits on UI glass: keep the lacquer yellow
+    ortho = P_LEN * ASSETS['pencil_top']['size'][1] / 1500.0     # 1500 px per pencil at any render scale
+    cam = make_cam(res, 50.0, (0.0, 0.0, 0.0035), math.radians(90), math.radians(-90), 0.5, ortho=ortho)
+    return dict(P=Pn, plane=plane, cam=cam, rig=rig)
+
+
+def _keyframe_rot(obj, fn, f0, f1):
+    """Keyframe obj.rotation_euler = fn(f) on every integer frame f0..f1 (collinear keys = linear motion)."""
+    for f in range(f0, f1 + 1):
+        obj.rotation_euler = fn(f)
+        obj.keyframe_insert('rotation_euler', frame=f)
+
+
+def _remove(o):
+    if o is None:
+        return
+    me = o.data
+    bpy.data.objects.remove(o, do_unlink=True)
+    if me is not None and me.users == 0:
+        bpy.data.meshes.remove(me)
+
+
+# ============================================================================= render list
+
+ASSETS = {}
+
+
+def asset(name, size, spp, n, labels=None, notes='', mode='anim', loop=False, opaque=True, mb=True, gpu_spp=None):
+    """Register a render. spp = CPU final samples (SHOTS.md budget), gpu_spp = final samples on a GPU
+    (FOSTER_GPU=1, e.g. RTX 4060 OptiX); both with adaptive sampling + OIDN."""
+    def deco(fn):
+        ASSETS[name] = dict(name=name, size=size, spp=spp, n=n, labels=labels or [mode] * n, notes=notes, mode=mode,
+                            loop=loop, opaque=opaque, mb=mb, build=fn, gpu_spp=gpu_spp or max(256, spp * 4))
+        return fn
+    return deco
+
+
+def _spin_hubs(C, deg_per_frame, f0, f1, pencil_holder=None):
+    for ho in (C['hubL'], C['hubR']):
+        r0 = tuple(ho.rotation_euler)
+        _keyframe_rot(ho, lambda f, r0=r0: (r0[0], r0[1], r0[2] + math.radians(deg_per_frame * f)), f0, f1)
+
+
+@asset('hub_loop', (1080, 1920), 64, 16, notes='R1: pencil + both hubs turn clockwise (rewind, side A) 22.5 deg/f = '
+       '1 rev per beat (16 f); frame 16 == frame 0; idx = f mod 16', mode='loop', loop=True, gpu_spp=384)
+def build_hub_loop(res, q):
+    S = scene_hub(res, q)
+    _spin_hubs(S['C'], -22.5, -2, 18)
+    sc = bpy.context.scene
+
+    def update(i):
+        sc.frame_set(i)
+    return dict(update=update, features=lambda: hub_features(S))
+
+
+@asset('hub_cover', (1080, 1920), 192, 1, labels=['cover'], notes='still = hub_loop frame 0 at high spp',
+       mode='static', mb=False, gpu_spp=1024)
+def build_hub_cover(res, q):
+    S = scene_hub(res, q)
+    return dict(update=lambda i: bpy.context.scene.frame_set(0), features=lambda: hub_features(S))
+
+
+@asset('hub_rescue', (810, 1440), 48, 32, notes='R1b: 32 f, pencil + hubs 11.25 deg/f clockwise (frame 32 == '
+       'hub_loop f0); the crinkled loop out of the centre head opening is drawn back in, 120 mm -> 0 by frame 31; '
+       'shown 2-on (idx = (f - 512) // 2), comp upscales x1.333', mode='rescue', gpu_spp=256)
+def build_hub_rescue(res, q):
+    S = scene_hub(res, q, rescue=True)
+    _spin_hubs(S['C'], -11.25, -2, 34)
+    sc = bpy.context.scene
+    st = dict(tape=None)
+
+    def update(i):
+        sc.frame_set(i)
+        _remove(st['tape'])
+        st['tape'] = rescue_tape(0.120 * (1.0 - i / 31.0), S['C']['root'], frame=i)
+    return dict(update=update, features=lambda: hub_features(S))
+
+
+@asset('label', (1080, 1920), 128, 1, labels=['still'], notes='R3: top-down side-A label (Mix \'98 / Side A, '
+       'handwritten track list), pencil lying lower right', mode='static', mb=False, gpu_spp=512)
+def build_label(res, q):
+    S = scene_label(res, q)
+    return dict(update=lambda i: None, features=lambda: label_features(S))
+
+
+@asset('walkman_loop', (1080, 1920), 64, 8, notes='R4: keys up, LED on, spools in the lid window turn 7.5 deg/f '
+       '(play direction, CCW seen from above); 8 f = 60 deg = one tooth period, frame 8 == frame 0. Comp reverses '
+       '+ speeds it for REW', mode='loop', loop=True, gpu_spp=384)
+def build_walkman_loop(res, q):
+    S = scene_walk(res, q)
+    _spin_hubs(S['W']['C'], 7.5, -2, 10)
+    sc = bpy.context.scene
+    return dict(update=lambda i: sc.frame_set(i), features=lambda: walk_features(S))
+
+
+@asset('walkman_keys', (1080, 1920), 96, 4, labels=['play_down', 'rew_down', 'stop_down', 'led_off'],
+       notes='CAM_WALK stills cropped to the key-row bbox + 24 px; paste at frame_xy over walkman_loop',
+       mode='static', mb=False, gpu_spp=512)
+def build_walkman_keys(res, q):
+    S = scene_walk(res, q)
+    Wk = S['W']
+    states = {'play_down': ({'play'}, True), 'rew_down': ({'rew'}, True), 'stop_down': ({'stop'}, False),
+              'led_off': (set(), False)}
+
+    def update(i):
+        down, led = states[ASSETS['walkman_keys']['labels'][i]]
+        for nm, ko in Wk['keys'].items():
+            ko.location.z = W_ZT - (0.0030 if nm in down else 0.0)
+        Wk['led'].data.materials[0] = mat('led' if led else 'led_off')
+    bpy.context.view_layer.update()
+    pts = []
+    for ko in Wk['keys'].values():
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                for z in (-0.0035, W_KEY_UP + 0.0003):
+                    pts.append(proj_px(wpos(ko, (sx * (W_KEY_W / 2 + 0.0004), sy * (W_KEY_D / 2 + 0.0004), z))))
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            pts.append(proj_px(wpos(Wk['root'], (W_LED[0] + sx * 0.0015, W_LED[1] + sy * 0.0015, W_ZT + 0.001))))
+    pts = np.asarray(pts)
+    pad = CROP_PAD * res[0] / 1080.0
+    border = [max(0, int(pts[:, 0].min() - pad)), max(0, int(pts[:, 1].min() - pad)),
+              min(res[0], int(math.ceil(pts[:, 0].max() + pad))), min(res[1], int(math.ceil(pts[:, 1].max() + pad)))]
+    return dict(update=update, features=lambda: walk_features(S), border=border)
+
+
+@asset('walkman_eat', (810, 1440), 48, 32, notes='R4b: PLAY down, spools still; f0-f5 lid springs open 0 -> 26 -> 22 '
+       'deg, f6-f31 the ribbon spills from the head opening over the front lip in crinkled curls onto the desk; '
+       'frame 0 == walkman_loop frame 0 with PLAY down', mode='eat', gpu_spp=256)
+def build_walkman_eat(res, q):
+    S = scene_walk(res, q, keys_down=('play',))
+    Wk = S['W']
+    lr = Wk['lid_root']
+
+    def lid(f):
+        return LID_OPEN[f] if 0 <= f < len(LID_OPEN) else (0.0 if f < 0 else LID_OPEN[-1])
+    _keyframe_rot(lr, lambda f: (0.0, -math.radians(lid(f)), 0.0), -1, 33)
+    sc = bpy.context.scene
+    st = dict(tape=None)
+
+    def update(i):
+        sc.frame_set(i)
+        _remove(st['tape'])
+        t = (i - 5) / 26.0
+        frac = 0.0 if i < 6 else 1.0 - (1.0 - min(1.0, t)) ** 2.2
+        st['tape'] = spill_tape(frac, i, Wk['root'])
+    return dict(update=update, features=lambda: walk_features(S))
+
+
+@asset('pencil_top', (600, 1700), 96, 2, labels=['key', 'shadow'], notes='R5: orthographic top-down pencil, eraser '
+       'up, 1500 px long; key = pencil (RGBA), shadow = shadow-catcher pass (black, alpha = shadow)',
+       mode='static', opaque=False, mb=False, gpu_spp=512)
+def build_pencil_top(res, q):
+    S = scene_pencil_top(res, q)
+    objs = [o for o in bpy.data.objects if o.name.startswith('pencil') and o.type == 'MESH']
+
+    def update(i):
+        lab = ASSETS['pencil_top']['labels'][i]
+        S['plane'].hide_render = lab == 'key'
+        for o in objs:
+            o.visible_camera = lab == 'key'
+        for nm in ('rim', 'bounce'):                 # shadow pass = the key's contact shadow only (no soft veils)
+            S['rig'][nm].hide_render = lab == 'shadow'
+
+    def feats():
+        f = dict(eraser_top=proj_px(wpos(S['P']['root'], (0, 0, P_LEN))), tip=proj_px(wpos(S['P']['root'], (0, 0, 0))),
+                 ferrule=proj_px(wpos(S['P']['root'], (0, 0, P_FER_Z0 + P_FER / 2))))
+        return {k: np.round(np.asarray(v, float), 1).tolist() for k, v in f.items()}
+    return dict(update=update, features=feats)
+
+
+# ============================================================================= render engine
+
+def set_border(sc, rect, res):
+    W, Hh = res
+    x0, y0, x1, y1 = rect
+    sc.render.use_border = True
+    sc.render.use_crop_to_border = True
+    sc.render.border_min_x = (x0 + 0.25) / W
+    sc.render.border_max_x = (x1 + 0.25) / W
+    sc.render.border_min_y = (Hh - y1 + 0.25) / Hh
+    sc.render.border_max_y = (Hh - y0 + 0.25) / Hh
+
+
+def render_asset(name, preview=False, samples=None, frames=None, scale=None):
+    import cv2
+    _bpy()
+    A = ASSETS[name]
+    W, Hh = A['size']
+    k = scale if scale else (0.5 if preview else 1.0)
+    res = (int(round(W * k / 2)) * 2, int(round(Hh * k / 2)) * 2)
+    q = 0.5 if preview else 1.0
+    t0 = time.time()
+    build_textures()
+    MATS.clear()
+    global SPILL
+    SPILL = None
+    sc = reset(res, 16)
+    spp = samples or (S_PREVIEW if preview else (A['gpu_spp'] if is_gpu() else A['spp']))
+    sc.cycles.samples = spp
+    S = A['build'](res, q)
+    sc.render.film_transparent = not A['opaque']
+    motion_blur(A['mb'] and A['n'] > 1, 0.5)
+    border = S.get('border')
+    if border:
+        set_border(sc, border, res)
+    outdir = os.path.join(PREVIEW if (preview or scale) else OUT, name, 'passes')
+    os.makedirs(outdir, exist_ok=True)
+    skip = os.environ.get('SKIP_EXISTING') == '1'
+    if frames is None:
+        mp = os.path.join(outdir, 'meta.json')
+        if os.path.exists(mp):
+            os.remove(mp)
+        if not skip:
+            for f in os.listdir(outdir):
+                if f.endswith('.png'):
+                    os.remove(os.path.join(outdir, f))
+        idx = list(range(A['n']))
+    else:
+        idx = [i for i in frames if i < A['n']]
+    if preview and frames is None:
+        idx = sorted(set([0, A['n'] // 2, A['n'] - 1]))
+    print(f'[{name}] scene {time.time() - t0:.1f}s; {res[0]}x{res[1]} border {border}; {spp} spp; frames {idx}; '
+          f'device {DEVICE}' + ('' if is_gpu() else f' x{THREADS}'), flush=True)
+    times = {}
+    for i in idx:
+        p = os.path.join(outdir, f'{i:04d}.png')
+        if skip and os.path.exists(p):
+            continue
+        S['update'](i)
+        t1 = time.time()
+        sc.render.filepath = p
+        bpy.ops.render.render(write_still=True)
+        times[i] = round(time.time() - t1, 1)
+        print(f'  {name} {i:02d}/{A["n"]} {A["labels"][i]}: {times[i]}s', flush=True)
+    feats = S['features']()
+    if border:
+        def shift(v):
+            if isinstance(v, dict):
+                return {kk: shift(x) for kk, x in v.items()}
+            a = np.asarray(v, float)
+            if a.ndim == 1 and len(a) == 2:
+                return [round(a[0] - border[0], 1), round(a[1] - border[1], 1)]
+            if a.ndim == 1 and len(a) == 4:
+                return [round(a[0] - border[0], 1), round(a[1] - border[1], 1), round(a[2] - border[0], 1),
+                        round(a[3] - border[1], 1)]
+            return [shift(x) for x in a.tolist()]
+        feats = shift(feats)
+        feats['frame_xy'] = [float(border[0]), float(border[1])]
+    if frames is not None or (preview and A['n'] > 3):
+        print(f'  -> {outdir} (partial: no meta.json) {time.time() - t0:.0f}s', flush=True)
+        return None
+    im0 = cv2.imread(os.path.join(outdir, '0000.png'), cv2.IMREAD_UNCHANGED)
+    meta = dict(name=name, variant='passes', mode=A['mode'], frames=A['n'], fps_hint=30, size=[im0.shape[1], im0.shape[0]],
+                loop=A['loop'], labels=list(A['labels']), notes=A['notes'], features=feats, samples=spp,
+                preview=bool(preview), opaque=A['opaque'], motion_blur=bool(A['mb'] and A['n'] > 1),
+                render_seconds=times, device=DEVICE, threads=None if is_gpu() else THREADS, scale=k,
+                builder='pipeline/jawad_reels/assets3d_pencil_se_rewind.py')
+    if border:
+        meta['frame_xy'] = [int(border[0]), int(border[1])]
+        meta['crop_rect_frame'] = list(map(int, border))
+        meta['full_size'] = list(res)
+    H.write_meta(outdir, **meta)
+    print(f'  -> {outdir} {time.time() - t0:.0f}s total', flush=True)
+    return meta
+
+
+# ============================================================================= sheets, pack, restore
+
+def _tile(p, h, bg):
+    import cv2
+    im = cv2.imread(p, cv2.IMREAD_UNCHANGED)
+    if im.shape[2] == 4:
+        a = im[:, :, 3:4].astype(np.float32) / 255.0
+        im = (im[:, :, :3].astype(np.float32) * a + np.array(bg, np.float32) * (1 - a)).astype(np.uint8)
+    w = max(1, int(round(im.shape[1] * h / im.shape[0])))
+    return cv2.resize(im, (w, h), interpolation=cv2.INTER_AREA)
+
+
+def contact_sheet(root, tag, cell=480):
+    import cv2
+    rows = []
+    for nm, A in ASSETS.items():
+        d = os.path.join(root, nm, 'passes')
+        if not os.path.isdir(d):
+            continue
+        fs = sorted(f for f in os.listdir(d) if f.endswith('.png') and f[:-4].isdigit())
+        if not fs:
+            continue
+        pick = fs if len(fs) <= 4 else [fs[0], fs[len(fs) // 3], fs[2 * len(fs) // 3], fs[-1]]
+        tiles = []
+        for f in pick:
+            for bg in ((20, 16, 14),) + (((200, 200, 200),) if not A['opaque'] else ()):
+                t = _tile(os.path.join(d, f), cell, bg)
+                cv2.putText(t, f'{nm} {f[:-4]}', (6, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1,
+                            cv2.LINE_AA)
+                tiles.append(np.pad(t, ((0, 0), (0, 6), (0, 0)), constant_values=255))
+        rows.append(np.concatenate(tiles, 1))
+    if not rows:
+        return None
+    wmax = max(r.shape[1] for r in rows)
+    rows = [np.pad(r, ((0, 6), (0, wmax - r.shape[1]), (0, 0)), constant_values=255) for r in rows]
+    os.makedirs(SHEETS, exist_ok=True)
+    p = os.path.join(SHEETS, f'psr_{tag}_sheet.jpg')
+    cv2.imwrite(p, np.concatenate(rows, 0), [cv2.IMWRITE_JPEG_QUALITY, 88])
+    return p
+
+
+def pack(quality=93):
+    """Restore copies into brand_reels/assets/pencil_se_rewind/assets3d: opaque frames as JPEG q93 (alpha is 255),
+    RGBA passes as PNG (max compression), meta.json as is. `restore` rebuilds the PNG spec folders."""
+    import cv2
+    import shutil
+    if os.path.isdir(PACK):
+        shutil.rmtree(PACK)
+    total = 0
+    for nm in ASSETS:
+        src = os.path.join(OUT, nm, 'passes')
+        if not os.path.exists(os.path.join(src, 'meta.json')):
+            print('skip (no meta.json):', src)
+            continue
+        dst = os.path.join(PACK, nm, 'passes')
+        os.makedirs(dst, exist_ok=True)
+        for f in sorted(os.listdir(src)):
+            sp = os.path.join(src, f)
+            if f.endswith('.png'):
+                im = cv2.imread(sp, cv2.IMREAD_UNCHANGED)
+                if im.shape[2] == 4 and im[:, :, 3].min() == 255:
+                    dp = os.path.join(dst, f[:-4] + '.jpg')
+                    cv2.imwrite(dp, im[:, :, :3], [cv2.IMWRITE_JPEG_QUALITY, quality])
+                else:
+                    dp = os.path.join(dst, f)
+                    cv2.imwrite(dp, im, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+            else:
+                dp = os.path.join(dst, f)
+                shutil.copy2(sp, dp)
+            total += os.path.getsize(dp)
+    print(f'pack {PACK}: {total / 1e6:.1f} MB (JPEG q{quality})')
+    if total > 58e6 and quality > 70:              # BUILD_CONTRACT: the restore folder stays under 60 MB
+        return pack(quality - 8)
+    return total
+
+
+def restore():
+    """Rebuild RWS/assets3d/<name>/passes (RGBA 8-bit PNG + meta.json, meta written last) from the pack."""
+    import cv2
+    import shutil
+    for nm in sorted(os.listdir(PACK)):
+        src = os.path.join(PACK, nm, 'passes')
+        dst = os.path.join(OUT, nm, 'passes')
+        os.makedirs(dst, exist_ok=True)
+        for f in sorted(os.listdir(src)):
+            if f.endswith('.jpg'):
+                im = cv2.imread(os.path.join(src, f), cv2.IMREAD_COLOR)
+                im = np.dstack([im, np.full(im.shape[:2], 255, np.uint8)])
+                cv2.imwrite(os.path.join(dst, f[:-4] + '.png'), im)
+            elif f.endswith('.png'):
+                shutil.copy2(os.path.join(src, f), os.path.join(dst, f))
+        if os.path.exists(os.path.join(src, 'meta.json')):
+            shutil.copy2(os.path.join(src, 'meta.json'), os.path.join(dst, 'meta.json'))
+        print('restored', dst)
+
+
+def selftest():
+    import cv2
+    ok = True
+    for nm, A in ASSETS.items():
+        d = os.path.join(OUT, nm, 'passes')
+        mp = os.path.join(d, 'meta.json')
+        if not os.path.exists(mp):
+            print(f'{nm}: MISSING meta.json')
+            ok = False
+            continue
+        meta = json.load(open(mp))
+        fs = sorted(f for f in os.listdir(d) if f.endswith('.png') and f[:-4].isdigit())
+        im = cv2.imread(os.path.join(d, fs[0]), cv2.IMREAD_UNCHANGED)
+        good = len(fs) == meta['frames'] == A['n'] and im.dtype == np.uint8 and im.shape[2] == 4
+        ok &= good
+        print(f'{nm}: {len(fs)} frames, {im.shape[1]}x{im.shape[0]} {im.dtype} ch{im.shape[2]} -> {"ok" if good else "FAIL"}')
+    print('selftest', 'ok' if ok else 'FAIL')
+    return ok
+
+
+def main(argv):
+    if not argv:
+        print(__doc__)
+        return
+    preview = '--preview' in argv
+    samples = int(argv[argv.index('--samples') + 1]) if '--samples' in argv else None
+    scale = float(argv[argv.index('--scale') + 1]) if '--scale' in argv else None
+    frames = [int(x) for x in argv[argv.index('--frames') + 1].split(',')] if '--frames' in argv else None
+    skipv = set()
+    for flag in ('--samples', '--scale', '--frames'):
+        if flag in argv:
+            skipv.add(argv.index(flag) + 1)
+    names = [a for i, a in enumerate(argv) if not a.startswith('--') and i not in skipv]
+    if names == ['textures']:
+        build_textures(force=True)
+        return
+    if names == ['savetex']:
+        save_textures()
+        return
+    if names and names[0] == 'cams':
+        cams_report(names[1:] or None)
+        return
+    if names in (['sheet'], ['previewsheet']):
+        print(contact_sheet(PREVIEW if names == ['previewsheet'] else OUT,
+                            'preview' if names == ['previewsheet'] else 'finals'))
+        return
+    if names == ['pack']:
+        pack()
+        return
+    if names == ['restore']:
+        restore()
+        return
+    if names == ['selftest']:
+        selftest()
+        return
+    if names == ['all']:
+        names = list(ASSETS)
+    for nm in names:
+        if nm not in ASSETS:
+            raise SystemExit(f'unknown asset {nm!r}; have {list(ASSETS)}')
+    for nm in names:
+        render_asset(nm, preview=preview, samples=samples, frames=frames, scale=scale)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
