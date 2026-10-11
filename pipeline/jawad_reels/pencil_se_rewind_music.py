@@ -23,17 +23,17 @@ bass, detuned-saw pad; upgraded tone: EM.epiano + a plucked string, EM.clap on t
 REEL MAP (frames; song time in brackets; "tape" = the cassette-tone chain, see TONE)
     f0-f319     underscore = song bars 0-4 [0-f319]; lead hook A (bars 0-1), hook B (2-3), hook A RETROGRADE in 16ths at
                 bar 4 (the fast rewind, S5); cut dead on the PLAY key f320 (4 ms fade ending on f320)
-    f322-f335   walkman: a wrong spot, mid-phrase [song bar 2 beat 1.5], headphone-leak tone, 40 ms tape start, cut dead
-                on the STOP key f336 (the SHOTS list says f334; moved to the visible STOP press)
-    f336-f383   no music (REW motor whine is SFX)
-    f384-f463   walkman: the right spot = the top of the song [0-f79] ("Mil gaya!"); f420-f447 the tape low-pass closes
+    f322-f346   walkman: a wrong spot, mid-phrase [song bar 2 beat 1.5], headphone-leak tone, 40 ms tape start, cut dead
+                on the STOP key f347 (VO-led: STOP lands on "Galat!", VO_TIMING.md section 3)
+    f347-f391   no music (REW key + motor f376 are SFX)
+    f392-f463   walkman: the right spot = the top of the song [0-f71] ("Mil gaya!" f395); f430-f447 the tape low-pass closes
                 6 kHz -> 1.5 kHz + a sub swell (D2) rises; f448 wow 5 Hz +-6 % ramps in (the walkman eats it), tape stop
                 f452 -> halt by f462; f462-f463 silence
     f464-f511   low Bm drone (B1 F#2 B2, LP 340 Hz, beating), fades in 40 ms after the f464 slam (SFX owns the hit)
     f512-f575   hush: A9sus4 pad LP 700 Hz in tape tone + a felt heartbeat kick on the beats (low bus)
     f576-f1023  song bars 9-15 [f576-f1023]: bar 9 Bm reveal (pad, e-piano, half-time kick), the tape chain OPENS over
-                f576-f597 with the pull-back; bar 10 G bouncy groove + STUTTER EDITS on the 8ths (f640 back = reversed
-                previous 8th, f648 forward = the next 8th, f656 back, f664 continues onto the CUT); bar 11 A build with a
+                f576-f597 with the pull-back; bar 10 G bouncy groove + STUTTER EDITS on the 8ths (f648 back = reversed
+                previous 8th, f656 forward = the next 8th, f664 back, f672 continues onto the CUT); bar 11 A build with a
                 16th snare roll; DROP-OUT f752-f767 = digital silence (the gate edges lie outside: closes f751.88-f752,
                 opens exactly on f768); bar 12 PAYOFF f768: crash + sub kick + full band, hook A on e-piano + pluck,
                 bar 13 the hook RESOLVED (rises to a held D5); bars 14-15 outro, the tape chain CLOSES over f896-f927
@@ -45,8 +45,10 @@ TONE (tape chain on the tape bus; c(t) = 1 cassette, 0 upgraded; c = 1 on f0-f57
       0 -> 1 over f896-f927, 1 to the end; a raised-cosine ramp)
     wow 0.55 Hz 0.20 % + flutter 6.2 Hz 0.08 % + drift 0.13 Hz 0.06 % (peak rate deviation ~0.3 %) x c(t), read with a
     cubic fractional delay; tape saturation (sfx_jawad.shape drive 1.8) mixed in by c; time-varying STFT filter: HP
-    30 -> 120 Hz and LP 18 -> 6 kHz, both 18 dB/oct (log interpolation by c), the f420-f448 close, the VO POCKET (-3 dB 1-4 kHz inside
-    the optional VO windows of SCRIPT section 3, 80 ms ramps); width (M/S side gain) 1.15 upgraded -> 0.28 cassette.
+    30 -> 120 Hz and LP 18 -> 6 kHz, both 18 dB/oct (log interpolation by c), the f430-f448 close, the VO POCKET (-3 dB 1-4 kHz
+    inside the measured VO lines: <RWS>/vo/words.json, words joined across gaps < 0.35 s, 80 ms ramps; fallback = the
+    SCRIPT section 3 estimates); width (M/S side gain) 1.15 upgraded -> 0.28 cassette. The VO is approved and recorded:
+    the final mixes (pencil_se_rewind_sfx.py build) duck this bed 9 dB under the VO plus the 8 LU word floor.
     The low bus (drone, sub swell, heartbeat kick) skips the chain.
 
 BUS: stem reverbs (studio -18 dB, lead plate -15 dB) on the extended song timeline, fold, kick sidechain 2.5 dB on keys
@@ -120,11 +122,11 @@ def hz(m):
 
 
 # ---- reel events (frames; SHOTS section B)
-F_PLAY1, F_SNIP0, F_STOP, F_PLAY2 = 320, 322, 336, 384
+F_PLAY1, F_SNIP0, F_STOP, F_PLAY2 = 320, 322, 347, 392   # VO-led (VO_TIMING 3): STOP on "Galat!", PLAY2 f392
 SNIP_SONG_T = T(2, 1.5)                         # the wrong spot: song bar 2, beat 1.5 (mid-phrase, hook B)
-F_CLOSE0, F_EAT, F_TSTOP, F_HALT, F_SLAM = 420, 448, 452, 462, 464
+F_CLOSE0, F_EAT, F_TSTOP, F_HALT, F_SLAM = 430, 448, 452, 462, 464   # close on "Aur phir..." f430
 F_HUSH, F_REVEAL, F_OPEN1 = 512, 576, 597
-STUTTER = ((640, 'back'), (648, 'fwd'), (656, 'back'))   # 8th slots; f664 lands on the CUT and plays on
+STUTTER = ((648, 'back'), (656, 'fwd'), (664, 'back'))   # 8th slots (one 8th after SHOTS: V8 ends f648); f672 = CUT
 F_DROP0, F_DROP1 = 752, 768                     # drop-out f752-f767 (digital silence), payoff on f768
 F_CLOSE_T0, F_CLOSE_T1 = 896, 927               # tape chain closes with the D2 razor
 F_HOOKB_HALT = 44                               # hook B: tape stop f0 -> halt f44, splice f64
@@ -495,9 +497,21 @@ def tone_curve():
     return c
 
 
-def vo_windows():
-    """Optional VO windows (SCRIPT section 3): (t0, t1) s from start_f and an estimated 2.7 words/s + 0.25 s tail;
-    V1B (hook B) is excluded (its window equals V1's). Read from script.json; built-in fallback."""
+def vo_windows(join=0.35, pad=0.06):
+    """VO windows (t0, t1) s for the 1-4 kHz pocket: the measured VO words (<RWS>/vo/words.json, written by
+    pencil_se_rewind_vo.py), joined across gaps < `join` s and padded by `pad`. Fallback (no VO yet): SCRIPT section 3
+    start_f + 2.7 words/s + 0.25 s, V1B excluded."""
+    wp = os.path.join(RWS, 'vo', 'words.json')
+    if os.path.exists(wp):
+        ws = sorted(json.load(open(wp, encoding='utf8')), key=lambda w: w['start'])
+        out = []
+        for w in ws:
+            a, b = w['start'] - pad, w['end'] + pad
+            if out and a - out[-1][1] < join:
+                out[-1][1] = max(out[-1][1], b)
+            else:
+                out.append([a, b])
+        return [(round(max(a, 0.0), 4), round(min(b, DUR), 4)) for a, b in out]
     try:
         lines = json.load(open(SCRIPT_JSON))['vo']['lines']
         rows = [(int(l['start_f']), int(l['words'])) for l in lines if l['id'] != 'V1B']
@@ -581,11 +595,11 @@ def tone_chain(x, c, close=None):
 
 # ============================================================================================ reel music
 def low_layers():
-    """Low bus (skips the tape chain): sub swell f420-f462 (dives with the tape stop), Bm drone f464-f511, heartbeat
+    """Low bus (skips the tape chain): sub swell f430-f462 (dives with the tape stop), Bm drone f464-f511, heartbeat
     kick on the beats of bar 8."""
     r = A._rng(SEED, 'low')
     low = np.zeros((N, 2))
-    # sub swell: D2 + its octave, crescendo f420 -> f452, pitch follows the tape stop f452 -> f462
+    # sub swell: D2 + its octave, crescendo f430 -> f452, pitch follows the tape stop f452 -> f462
     i0, i1, i2 = F_CLOSE0 * SPF, F_TSTOP * SPF, F_HALT * SPF
     n = i2 - i0
     t = np.arange(n) / SR
@@ -663,7 +677,7 @@ def render(hook='A', seed=SEED):
     gate[g0:g1] = 0.0
     r6 *= gate[:, None]
     _place(tape, r6, F_REVEAL)
-    # close curve f420 -> f448: 6 kHz -> 1.5 kHz (log), then held until the halt
+    # close curve f430 -> f448: 6 kHz -> 1.5 kHz (log), then held until the halt
     fr = np.arange(N) / SPF
     u = np.clip((fr - F_CLOSE0) / (F_EAT - F_CLOSE0), 0, 1)
     close = np.where((fr >= F_CLOSE0) & (fr < F_SLAM), np.exp(np.log(6000.0) * (1 - u) + np.log(1500.0) * u), 1e9)
@@ -824,10 +838,16 @@ def chroma(seg, lo=60.0, hi=1200.0):
 
 
 def chord_check(x):
-    """Per heard bar: the strongest pitch class in 25-200 Hz must be the chord root (the bass), and the chord's triad
-    (sus4 for bar 8) must hold >= 40 % of the 60-1200 Hz chroma (the 9ths / 7ths / melody take the rest)."""
+    """Per heard bar: (1) the chord's triad (sus4 for bar 8) holds >= 40 % of the 60-1200 Hz chroma of the reel mix
+    (the 9ths / 7ths / melody take the rest); (2) the bass root: the strongest pitch class (25-400 Hz) of the song's
+    own bass stem in the song bar the reel plays there (reel bar 6 = song bar 0, the walkman's right spot; bar 8 is the
+    bass-less hush pad: no bass check). The bass is read from the stem because the reel mix hides it: the tape-tone HP
+    (120 Hz) removes the G1 / A1 / B1 fundamentals and the upgraded bars' kick body (~49 Hz) outweighs them."""
     plan = {0: 'D', 1: 'Bm', 2: 'G', 3: 'A', 4: 'D', 6: 'D', 8: 'Asus', 9: 'Bm', 10: 'G', 11: 'A', 12: 'D', 13: 'Bm',
             14: 'G', 15: 'A'}
+    song_bar = {6: 0}
+    stems, _ = render_song()
+    bass = stems['bass']
     rows, ok = {}, True
     for bar, ch in plan.items():
         a, b = _n(T(bar) + 0.05), _n(T(bar + 1) - 0.05)
@@ -838,11 +858,11 @@ def chord_check(x):
         pc = chroma(x[a:b])
         share = float(sum(pc[i] for i in CHORD_PC[ch]))
         top = [PCN[i] for i in np.argsort(pc)[::-1][:3]]
-        lo = chroma(x[a:b], 25.0, 200.0)
-        root = PCN[int(np.argmax(lo))]
-        rows['bar %d (%s)' % (bar, ch)] = dict(triad_share=round(share, 3), top3=top, bass_root=root,
-                                               root_ok=root == PCN[CHORD_PC[ch][0]])
-        ok &= root == PCN[CHORD_PC[ch][0]] and share >= 0.4
+        sb = song_bar.get(bar, bar)
+        root = None if bar == 8 else PCN[int(np.argmax(chroma(bass[_n(T(sb) + 0.02):_n(T(sb + 1) - 0.02)], 25.0, 400.0)))]
+        r_ok = root is None or root == PCN[CHORD_PC[ch][0]]
+        rows['bar %d (%s)' % (bar, ch)] = dict(triad_share=round(share, 3), top3=top, bass_root=root, root_ok=r_ok)
+        ok &= r_ok and share >= 0.4
     rows['ok'] = bool(ok)
     return rows
 
@@ -861,12 +881,12 @@ def verify():
     rep['deterministic'] = dict(int24_samples_differing=int(np.count_nonzero(q != np.round(x * 8388608.0))))
     rep['deterministic']['ok'] = rep['deterministic']['int24_samples_differing'] == 0
     fseg = lambda a, b: x[a * SPF:b * SPF]  # noqa: E731
-    rep['silences'] = dict(drop_out_f752_f767=rms_db(fseg(F_DROP0, F_DROP1)), gap_f336_f383=rms_db(fseg(F_STOP, F_PLAY2)),
+    rep['silences'] = dict(drop_out_f752_f767=rms_db(fseg(F_DROP0, F_DROP1)), gap_f347_f391=rms_db(fseg(F_STOP, F_PLAY2)),
                            halt_f462_f463=rms_db(fseg(F_HALT, F_SLAM)),
                            ok=not np.any(fseg(F_DROP0, F_DROP1)) and not np.any(fseg(F_STOP, F_PLAY2)))
     e = env_db(x, 0.010)
-    keyf = dict(hook_f0=0, slam_f16=16, play_f320=320, snip_f322=322, play_f384=384, eat_f448=448, slam_f464=464,
-                hush_f512=512, reveal_f576=576, scrub_f640=640, cut_f664=664, drop_f752=752, payoff_f768=768,
+    keyf = dict(hook_f0=0, slam_f46=46, play_f320=320, snip_f322=322, stop_f347=347, play_f392=392, eat_f448=448,
+                slam_f464=464, hush_f512=512, reveal_f576=576, scrub_f648=648, cut_f672=672, drop_f752=752, payoff_f768=768,
                 razor_f896=896, seam_f1023=1023)
     rep['rms10ms_db_at_frames'] = {k: dict((('f%+d' % d), round(float(e[((v + d) * SPF + SPF // 2) % N]), 1))
                                            for d in (-1, 0, 1)) for k, v in keyf.items()}
@@ -904,8 +924,8 @@ def verify():
     rep['chords'] = chord_check(x)
     rep['ok'] = all(rep[k]['ok'] for k in ('loudness', 'deterministic', 'silences', 'seam', 'chords'))
     gold, cyan, red, ivory = (255, 181, 71), (80, 230, 255), (242, 49, 43), (255, 243, 230)
-    marks = [(F(320), 'f320 PLAY cut', gold), (F(384), 'f384 PLAY', gold), (F(448), 'f448 eaten', red),
-             (F(464), 'f464 re-hook', red), (F(576), 'f576 reveal', cyan), (F(640), 'f640 scrub', cyan),
+    marks = [(F(320), 'f320 PLAY cut', gold), (F(392), 'f392 PLAY', gold), (F(448), 'f448 eaten', red),
+             (F(464), 'f464 re-hook', red), (F(576), 'f576 reveal', cyan), (F(648), 'f648 scrub', cyan),
              (F(768), 'f768 PAYOFF', ivory), (F(896), 'f896 razor', gold)]
     rep['png'] = [
         spec_png(x, 0, DUR, os.path.join(QA, 'music_full.png'), 'Pencil Se Rewind · music bed (Mix \'98) · 34.133 s',
@@ -913,9 +933,9 @@ def verify():
                  marks=marks, shade=[(F(752), F(768))]),
         spec_png(x, F(300), F(600), os.path.join(QA, 'music_zoom_walkman.png'), 'f300-f600: PLAY cut, wrong spot, REW gap, '
                  'right spot, eaten, drone, hush', 'ticks = beats (16 f)', w=1600,
-                 marks=[(F(f), 'f%d' % f, gold) for f in (320, 322, 336, 384, 420, 448, 452, 462, 464, 512, 576)]),
+                 marks=[(F(f), 'f%d' % f, gold) for f in (320, 322, 347, 376, 392, 430, 448, 452, 462, 464, 512, 576)]),
         spec_png(x, F(620), F(800), os.path.join(QA, 'music_zoom_scrub_payoff.png'), 'f620-f800: stutters, build, drop-out, '
-                 'payoff', 'blue = drop-out', w=1600, marks=[(F(f), 'f%d' % f, cyan) for f in (640, 648, 656, 664, 704, 752, 768)],
+                 'payoff', 'blue = drop-out', w=1600, marks=[(F(f), 'f%d' % f, cyan) for f in (648, 656, 664, 672, 704, 752, 768)],
                  shade=[(F(752), F(768))]),
         spec_png(x, DUR - 2.0, DUR + 2.0, os.path.join(QA, 'music_zoom_seam.png'), 'loop seam: last 2 s -> first 2 s (circular)',
                  'the seam is at the centre (f1023 -> f0)', w=1400, marks=[(DUR, 'seam f1024 = f0', ivory)])]

@@ -1,0 +1,349 @@
+{
+ "placement": {
+  "V1": {
+   "take": "V01_t2.mp3",
+   "speed": 1.08,
+   "start": 0.1,
+   "end": 2.06,
+   "start_f": 3.0,
+   "end_f": 61.8,
+   "planned_f": 3,
+   "cer": 0.0,
+   "heard": "रीवाईद बाटन पेन्सल",
+   "matched": "3/3",
+   "pauses": [
+    {
+     "at": 1.12,
+     "was": 0.51,
+     "now": 0.51,
+     "dramatic": true
+    }
+   ],
+   "why": "hook A, ends before the f64 splice"
+  },
+  "V2": {
+   "take": "V02_t1.mp3",
+   "speed": 1.06,
+   "start": 2.333,
+   "end": 6.203,
+   "start_f": 70.0,
+   "end_f": 186.1,
+   "planned_f": 70,
+   "cer": 0.0,
+   "heard": "वोख में की बाट्री बचानी ती तो पेंसल से गूमाते ते",
+   "matched": "10/10",
+   "pauses": [],
+   "why": "S2/S3 walkman + pencil (L2+L3)"
+  },
+  "V3": {
+   "take": "V03_t1.mp3",
+   "speed": 1.06,
+   "start": 6.6,
+   "end": 9.09,
+   "start_f": 198.0,
+   "end_f": 272.7,
+   "planned_f": 198,
+   "cer": 0.167,
+   "heard": "गाना दून्ना हो, सिर्फ अंदाजा?",
+   "matched": "5/5",
+   "pauses": [],
+   "why": "S4 label + S5 fast rewind (L4+L5)"
+  },
+  "V4": {
+   "take": "V04_t1.mp3",
+   "speed": 1.1,
+   "start": 10.667,
+   "end": 13.037,
+   "start_f": 320.0,
+   "end_f": 391.1,
+   "planned_f": 320,
+   "cer": 0.125,
+   "heard": "प्ले गलत पिर्से",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "S6 keys: \"Play.\" on the PLAY key f320 (L6)"
+  },
+  "V5": {
+   "take": "V05_t1.mp3",
+   "speed": 1.06,
+   "start": 13.167,
+   "end": 15.187,
+   "start_f": 395.0,
+   "end_f": 455.6,
+   "planned_f": 386,
+   "cer": 0.0,
+   "heard": "मिल्गा और पिर",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "S7 \"Mil gaya!\" right after the 2nd PLAY key (L7+L8)"
+  },
+  "V6": {
+   "take": "V06_t1.mp3",
+   "speed": 1.08,
+   "start": 15.533,
+   "end": 16.843,
+   "start_f": 466.0,
+   "end_f": 505.3,
+   "planned_f": 466,
+   "cer": 0.0,
+   "heard": "के सेट फ़स गयी",
+   "matched": "3/3",
+   "pauses": [],
+   "why": "S8 re-hook, after the f464 slam transient (L9)"
+  },
+  "V7": {
+   "take": "V07_t1.mp3",
+   "speed": 1.1,
+   "start": 16.967,
+   "end": 19.677,
+   "start_f": 509.0,
+   "end_f": 590.3,
+   "planned_f": 516,
+   "cer": 0.167,
+   "heard": "सास रोके पेंसल से वाबस",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "S9 rescue, whispered (L10); runs into the f576 pull-back"
+  },
+  "V8": {
+   "take": "V08_t1.mp3",
+   "speed": 1.06,
+   "start": 19.8,
+   "end": 21.6,
+   "start_f": 594.0,
+   "end_f": 648.0,
+   "planned_f": 590,
+   "cer": 0.0,
+   "heard": "आज भी वही करते हैं",
+   "matched": "5/5",
+   "pauses": [],
+   "why": "S10 reveal, NLE panels landed (L11)"
+  },
+  "V10": {
+   "take": "V10_t1.mp3",
+   "speed": 1.08,
+   "start": 23.267,
+   "end": 24.997,
+   "start_f": 698.0,
+   "end_f": 749.9,
+   "planned_f": 708,
+   "cer": 0.0,
+   "heard": "बस तूल बदल गया",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "S12, ends before the f752 drop-out (L13)"
+  },
+  "V11": {
+   "take": "V11_t1.mp3",
+   "speed": 1.1,
+   "start": 25.933,
+   "end": 28.283,
+   "start_f": 778.0,
+   "end_f": 848.5,
+   "planned_f": 770,
+   "cer": 0.25,
+   "heard": "वहला एदिटिंक तूल, वेन्सल",
+   "matched": "4/4",
+   "pauses": [
+    {
+     "at": 1.59,
+     "was": 0.47,
+     "now": 0.47,
+     "dramatic": true
+    }
+   ],
+   "why": "S13 payoff: 10 f (0.33 s) after the f768 hit, so the hit owns its 400 ms (the payoff is the loudest moment) (L14)"
+  },
+  "V12": {
+   "take": "V12_t1.mp3",
+   "speed": 1.06,
+   "start": 28.403,
+   "end": 30.553,
+   "start_f": 852.1,
+   "end_f": 916.6,
+   "planned_f": 818,
+   "cer": 0.0,
+   "heard": "श्क्रोबिंग तो क्यासेट पे सीखी ती",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "S13 tag (L15); its tail crosses the f896 D2 razor (L-cut)"
+  },
+  "V13": {
+   "take": "V13_t1.mp3",
+   "speed": 1.06,
+   "start": 31.0,
+   "end": 33.15,
+   "start_f": 930.0,
+   "end_f": 994.5,
+   "planned_f": 930,
+   "cer": 0.0,
+   "heard": "अपकी बहली कसेट कोन सी ती",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "S14 outro question, ends <= f1005"
+  },
+  "V1B": {
+   "take": "V01B_t1.mp3",
+   "speed": 1.06,
+   "start": 0.484,
+   "end": 1.744,
+   "start_f": 14.5,
+   "end_f": 52.3,
+   "planned_f": 3,
+   "cer": 0.167,
+   "heard": "बाटरी हतन?",
+   "matched": "2/2",
+   "pauses": [],
+   "why": "hook B: \"khatam?\" on the planned f32 slam"
+  }
+ },
+ "notes": [
+  "V11: runs 0.003 s into the next line's planned start; V12 moves later",
+  "ladder F4: V9 dropped from the VO (S11 scrub (L12): DROPPED, ladder F4 (captions + scrub SFX carry it)); best take `V09_t1.mp3` processed and kept in proc/"
+ ],
+ "scores": {
+  "V1B": {
+   "V01B_t1.mp3": [
+    0.167,
+    1.24
+   ]
+  },
+  "V1": {
+   "V01_t1.mp3": [
+    0.1,
+    1.97
+   ],
+   "V01_t2.mp3": [
+    0.067,
+    1.96
+   ]
+  },
+  "V2": {
+   "V02_t1.mp3": [
+    0.0,
+    3.8
+   ],
+   "V02_t2.mp3": [
+    0.032,
+    3.82
+   ]
+  },
+  "V3": {
+   "V03_t1.mp3": [
+    0.139,
+    2.45
+   ]
+  },
+  "V4": {
+   "V04_t1.mp3": [
+    0.167,
+    2.41
+   ]
+  },
+  "V5": {
+   "V05_t1.mp3": [
+    0.042,
+    1.98
+   ]
+  },
+  "V6": {
+   "V06_t1.mp3": [
+    0.0,
+    1.31
+   ]
+  },
+  "V7": {
+   "V07_t1.mp3": [
+    0.083,
+    2.76
+   ]
+  },
+  "V8": {
+   "V08_t1.mp3": [
+    0.0,
+    1.76
+   ]
+  },
+  "V9": {
+   "V09_t1.mp3": [
+    0.167,
+    2.67
+   ]
+  },
+  "V10": {
+   "V10_t1.mp3": [
+    0.0,
+    1.73
+   ]
+  },
+  "V11": {
+   "V11_t1.mp3": [
+    0.139,
+    2.4
+   ]
+  },
+  "V12": {
+   "V12_t1.mp3": [
+    0.077,
+    2.11
+   ]
+  },
+  "V13": {
+   "V13_t1.mp3": [
+    0.0,
+    2.11
+   ]
+  }
+ },
+ "stems": {
+  "A": {
+   "path": "/home/user/100/workspace/jawad_reels/pencil_se_rewind/vo/vo_stem.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/pencil_se_rewind/vo/words.json",
+   "master": {
+    "pre": {
+     "lufs": -17.6,
+     "lra": 4.3,
+     "tp": -2.3
+    },
+    "gain_db": 1.6,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 4.3,
+     "tp": -2.2
+    }
+   },
+   "voice": [
+    0.09,
+    33.17
+   ],
+   "voiced_s": 24.02,
+   "on_voice": 1.0
+  },
+  "B": {
+   "path": "/home/user/100/workspace/jawad_reels/pencil_se_rewind/vo/vo_stem_B.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/pencil_se_rewind/vo/words_B.json",
+   "master": {
+    "pre": {
+     "lufs": -17.5,
+     "lra": 4.4,
+     "tp": -2.3
+    },
+    "gain_db": 1.5,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 4.3,
+     "tp": -2.2
+    }
+   },
+   "voice": [
+    0.48,
+    33.17
+   ],
+   "voiced_s": 23.75,
+   "on_voice": 1.0
+  }
+ },
+ "min_gap": 0.12
+}
