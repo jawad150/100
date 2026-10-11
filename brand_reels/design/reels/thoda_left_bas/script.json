@@ -1,0 +1,1514 @@
+{
+ "reel": "thoda_left_bas",
+ "title": "Thoda Left... Bas Bas!",
+ "series": "Bijli series #2",
+ "look": "gold_hour",
+ "version": "r1 2026-10-11 (pre-production)",
+ "author": "script writer (hinglish-scriptwriter + script-hook-writer)",
+ "status": "text-led: captions are the story; VO optional (not approved, not generated); timings frame-locked",
+ "grid": {
+  "bpm": 100,
+  "fps": 30,
+  "frames_per_beat": 18,
+  "frames_per_bar": 72,
+  "dur_frames": 1008,
+  "dur_s": 33.6,
+  "splice_frame": 72,
+  "rehook_frame": 468,
+  "payoff_frame": 756,
+  "outro_frame": 882,
+  "dropout": [
+   738,
+   755
+  ]
+ },
+ "keyword_rule": "one serif-italic keyword (jw_key) per line, delimited *...*; house spelling bari / bohat / nahi / hai",
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "mechanism": "relatable callout (the shout) + pattern interrupt (the lock)",
+   "on_screen": [
+    "THODA *left...*",
+    "THODA *right...*",
+    "BAS BAS!",
+    "AB *theek hai!*"
+   ],
+   "frame0": "snowy CRT macro, ghost picture sliding left, THODA / left... mid-rise",
+   "muted": "reads without sound: snow -> lock on BAS BAS! by f36 (1.2 s)"
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "mechanism": "result-first / relatable editor pain (Trial Reel, differs only f0-f71)",
+   "on_screen": [
+    "YEH FEEDBACK / *suna suna* / lagta hai?"
+   ],
+   "frame0": "glass viewer, client bubble \"thoda left...\" mid-pop, title nudging 540 -> 538 with \"-2 px\"",
+   "muted": "reads without sound; f62-f71 a snow tear wipes the UI into the roof (splice f72)"
+  }
+ ],
+ "hook_reserves": [
+  "POV: aap neeche TV ke saamne ho (POV callout)",
+  "\"Kiska left?\" (curiosity, cold open on R4)"
+ ],
+ "captions": [
+  {
+   "id": "H1",
+   "f": [
+    0,
+    17
+   ],
+   "shot": "S1",
+   "voice": "near (downstairs, at the TV)",
+   "roman": "THODA *left...*",
+   "parts": [
+    [
+     "THODA",
+     "jw_caps",
+     96,
+     540,
+     360,
+     "360x67"
+    ],
+    [
+     "left...",
+     "jw_key",
+     240,
+     540,
+     535,
+     "417x173"
+    ]
+   ],
+   "anim": "J.HouseTitle(\"THODA\", \"left...\", caps_px=96, key_px=240, underline=False) t0=-0.1 (mid-rise on f0); keyword carries the signal ghost-double (offset = 40 px * sig, opacity 0.35)",
+   "f_in": 0,
+   "f_out": 17,
+   "t_in": 0.0,
+   "t_out": 0.6
+  },
+  {
+   "id": "H1b",
+   "f": [
+    18,
+    35
+   ],
+   "shot": "S1",
+   "voice": "near",
+   "roman": "THODA *right...*",
+   "parts": [
+    [
+     "THODA",
+     "jw_caps",
+     96,
+     540,
+     360,
+     "360x67"
+    ],
+    [
+     "right...",
+     "jw_key",
+     240,
+     540,
+     535,
+     "579x173"
+    ]
+   ],
+   "anim": "caps stay; keyword swap: \"left...\" slides 60 px right + fades (f16-f20, in_cubic), \"right...\" enters from 60 px left (f18-f24, out_cubic), same direction as the TV picture slide",
+   "f_in": 18,
+   "f_out": 35,
+   "t_in": 0.6,
+   "t_out": 1.2
+  },
+  {
+   "id": "H2",
+   "f": [
+    36,
+    53
+   ],
+   "shot": "S1",
+   "voice": "near",
+   "roman": "BAS BAS!",
+   "parts": [
+    [
+     "BAS BAS!",
+     "jw_caps_bold",
+     170,
+     540,
+     470,
+     "846x120"
+    ]
+   ],
+   "anim": "H1b out f33-f37 (in_cubic, 8 px up); T.Glyphs(\"BAS BAS!\", \"jw_caps_bold\", px=170).slam(t0=36/30); ghost-double gone (sig = 0): the picture locks on the same frame",
+   "f_in": 36,
+   "f_out": 53,
+   "t_in": 1.2,
+   "t_out": 1.8
+  },
+  {
+   "id": "H3",
+   "f": [
+    54,
+    71
+   ],
+   "shot": "S1",
+   "voice": "near",
+   "roman": "AB *theek hai!*",
+   "parts": [
+    [
+     "AB",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "136x67"
+    ],
+    [
+     "theek hai!",
+     "jw_key",
+     220,
+     540,
+     500,
+     "779x158"
+    ]
+   ],
+   "anim": "HouseTitle(\"AB\", \"theek hai!\", underline=False) t0=54/30; f63-f71 tears out with the signal: horizontal slice offset +-40 px, ghost-double back, opacity 1 -> 0 (in_cubic)",
+   "f_in": 54,
+   "f_out": 71,
+   "t_in": 1.8,
+   "t_out": 2.4
+  },
+  {
+   "id": "HB1",
+   "f": [
+    0,
+    71
+   ],
+   "shot": "S1B",
+   "voice": "narrator (hook B only)",
+   "roman": "YEH FEEDBACK / *suna suna* / lagta hai?",
+   "parts": [
+    [
+     "YEH FEEDBACK",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "757x67"
+    ],
+    [
+     "suna suna",
+     "jw_key",
+     200,
+     540,
+     495,
+     "751x144"
+    ],
+    [
+     "lagta hai?",
+     "jw_body",
+     72,
+     540,
+     650,
+     "367x50"
+    ]
+   ],
+   "anim": "HouseTitle t0=-0.1, underline=False; body rises at t0 0.6 s; all exit f62-f71 (in_cubic) as the snow tear wipes the UI",
+   "f_in": 0,
+   "f_out": 71,
+   "t_in": 0.0,
+   "t_out": 2.4
+  },
+  {
+   "id": "R1",
+   "f": [
+    72,
+    98
+   ],
+   "shot": "S2",
+   "voice": "near (roof)",
+   "roman": "*Aaya?*",
+   "parts": [
+    [
+     "Aaya?",
+     "jw_key",
+     230,
+     540,
+     470,
+     "510x166"
+    ]
+   ],
+   "anim": "per-glyph rise (HouseTitle with caps=None), out f94-f98",
+   "f_in": 72,
+   "f_out": 98,
+   "t_in": 2.4,
+   "t_out": 3.3
+  },
+  {
+   "id": "R2",
+   "f": [
+    99,
+    134
+   ],
+   "shot": "S2",
+   "voice": "far (downstairs)",
+   "roman": "NAHI! THODA LEFT...",
+   "parts": [
+    [
+     "NAHI! THODA LEFT...",
+     "jw_caps",
+     64,
+     540,
+     1420,
+     "704x45"
+    ]
+   ],
+   "anim": "FAR voice: rises from y 1480 to 1420 (out_cubic 10 f), ASH, two echo copies (+10 / +20 f, -14 px up, opacity 0.35 / 0.15), out in_cubic 5 f",
+   "f_in": 99,
+   "f_out": 134,
+   "t_in": 3.3,
+   "t_out": 4.5
+  },
+  {
+   "id": "R3",
+   "f": [
+    135,
+    161
+   ],
+   "shot": "S2",
+   "voice": "far",
+   "roman": "ULTA! DOOSRA LEFT!",
+   "parts": [
+    [
+     "ULTA! DOOSRA LEFT!",
+     "jw_caps",
+     64,
+     540,
+     1420,
+     "704x45"
+    ]
+   ],
+   "anim": "as R2",
+   "f_in": 135,
+   "f_out": 161,
+   "t_in": 4.5,
+   "t_out": 5.4
+  },
+  {
+   "id": "R4",
+   "f": [
+    162,
+    197
+   ],
+   "shot": "S2",
+   "voice": "near (roof)",
+   "roman": "*kiska* left?!",
+   "parts": [
+    [
+     "kiska",
+     "jw_key",
+     230,
+     450,
+     480,
+     "446x166"
+    ],
+    [
+     "left?!",
+     "jw_body",
+     72,
+     790,
+     520,
+     "181x50"
+    ]
+   ],
+   "anim": "keyword slams (SLAM spring, 0.4 s), body pops on f168; the antenna freezes mid-turn f162",
+   "f_in": 162,
+   "f_out": 197,
+   "t_in": 5.4,
+   "t_out": 6.6
+  },
+  {
+   "id": "C5",
+   "f": [
+    198,
+    224
+   ],
+   "shot": "S3",
+   "voice": "near (downstairs)",
+   "roman": "thoda *aur...*",
+   "parts": [
+    [
+     "THODA",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "360x67"
+    ],
+    [
+     "aur...",
+     "jw_key",
+     230,
+     540,
+     500,
+     "445x166"
+    ]
+   ],
+   "anim": "HouseTitle(\"THODA\", \"aur...\", underline=False) t0=198/30; ghost-double follows sig",
+   "f_in": 198,
+   "f_out": 224,
+   "t_in": 6.6,
+   "t_out": 7.5
+  },
+  {
+   "id": "C6",
+   "f": [
+    225,
+    251
+   ],
+   "shot": "S3",
+   "voice": "near",
+   "roman": "NAHI NAHI, *wapas!*",
+   "parts": [
+    [
+     "NAHI NAHI,",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "569x67"
+    ],
+    [
+     "wapas!",
+     "jw_key",
+     240,
+     540,
+     505,
+     "617x173"
+    ]
+   ],
+   "anim": "HouseTitle t0=225/30 with a 1-frame jolt (x +-12 px) on f225; out f247-f251",
+   "f_in": 225,
+   "f_out": 251,
+   "t_in": 7.5,
+   "t_out": 8.4
+  },
+  {
+   "id": "C7",
+   "f": [
+    252,
+    287
+   ],
+   "shot": "S4",
+   "voice": "far (downstairs)",
+   "roman": "HAAN... HAAN...",
+   "parts": [
+    [
+     "HAAN... HAAN...",
+     "jw_caps",
+     64,
+     540,
+     1420,
+     "538x45"
+    ]
+   ],
+   "anim": "FAR voice; first \"HAAN...\" on f252, second word group types on f270 (each on a clamp tick)",
+   "f_in": 252,
+   "f_out": 287,
+   "t_in": 8.4,
+   "t_out": 9.6
+  },
+  {
+   "id": "C8",
+   "f": [
+    288,
+    305
+   ],
+   "shot": "S4",
+   "voice": "far, shouting",
+   "roman": "BAS! BAS!",
+   "parts": [
+    [
+     "BAS! BAS!",
+     "jw_caps_bold",
+     110,
+     540,
+     1390,
+     "596x78"
+    ]
+   ],
+   "anim": "rises from y 1480 with the SLAM spring; IVORY (louder = brighter than the ASH far voice)",
+   "f_in": 288,
+   "f_out": 305,
+   "t_in": 9.6,
+   "t_out": 10.2
+  },
+  {
+   "id": "C9",
+   "f": [
+    306,
+    341
+   ],
+   "shot": "S5",
+   "voice": "near (downstairs)",
+   "roman": "AB *theek hai!*",
+   "parts": [
+    [
+     "AB",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "136x67"
+    ],
+    [
+     "theek hai!",
+     "jw_key",
+     220,
+     540,
+     500,
+     "779x158"
+    ]
+   ],
+   "anim": "HouseTitle t0=306/30 (crisp, sig = 0); out f338-f342",
+   "f_in": 306,
+   "f_out": 341,
+   "t_in": 10.2,
+   "t_out": 11.4
+  },
+  {
+   "id": "C10",
+   "f": [
+    351,
+    377
+   ],
+   "shot": "S5",
+   "voice": "near",
+   "roman": "ARRE, *phir se?!*",
+   "parts": [
+    [
+     "ARRE,",
+     "jw_caps",
+     96,
+     540,
+     330,
+     "260x67"
+    ],
+    [
+     "phir se?!",
+     "jw_key",
+     230,
+     540,
+     500,
+     "712x166"
+    ]
+   ],
+   "anim": "HouseTitle t0=351/30, ghost-double at full sig; out f373-f377",
+   "f_in": 351,
+   "f_out": 377,
+   "t_in": 11.7,
+   "t_out": 12.6
+  },
+  {
+   "id": "C11",
+   "f": [
+    378,
+    431
+   ],
+   "shot": "S6",
+   "voice": "narrator",
+   "roman": "YEH SCENE / *khatam* / nahi hua...",
+   "parts": [
+    [
+     "YEH SCENE",
+     "jw_caps",
+     96,
+     540,
+     380,
+     "555x67"
+    ],
+    [
+     "khatam",
+     "jw_key",
+     240,
+     540,
+     550,
+     "684x173"
+    ],
+    [
+     "nahi hua...",
+     "jw_body",
+     72,
+     540,
+     705,
+     "381x50"
+    ]
+   ],
+   "anim": "HouseTitle t0=378/30 + body rise t0 396/30; exit f414-f431 rides the M3 track (slides left with the antenna swing, motion blur 7 samples)",
+   "f_in": 378,
+   "f_out": 431,
+   "t_in": 12.6,
+   "t_out": 14.4
+  },
+  {
+   "id": "C12",
+   "f": [
+    432,
+    467
+   ],
+   "shot": "S7",
+   "voice": "narrator",
+   "roman": "20 SAAL BAAD",
+   "parts": [
+    [
+     "20 SAAL BAAD",
+     "jw_caps",
+     96,
+     540,
+     300,
+     "734x67"
+    ]
+   ],
+   "anim": "caps rise (0.42 s) at f436 after the M3 settles; out f462-f467",
+   "f_in": 432,
+   "f_out": 467,
+   "t_in": 14.4,
+   "t_out": 15.6
+  },
+  {
+   "id": "C13",
+   "f": [
+    540,
+    575
+   ],
+   "shot": "S9",
+   "voice": "narrator",
+   "roman": "DIALOGUE / *wahi* hai.",
+   "parts": [
+    [
+     "DIALOGUE",
+     "jw_caps",
+     96,
+     540,
+     300,
+     "516x67"
+    ],
+    [
+     "wahi",
+     "jw_key",
+     250,
+     480,
+     470,
+     "458x180"
+    ],
+    [
+     "hai.",
+     "jw_body",
+     72,
+     790,
+     505,
+     "135x50"
+    ]
+   ],
+   "anim": "HouseTitle(\"DIALOGUE\", \"wahi\") t0=540/30 + body pop f552; the keyword overlaps the viewer top edge (y 480): SMOKE scrim behind the lockup",
+   "f_in": 540,
+   "f_out": 575,
+   "t_in": 18.0,
+   "t_out": 19.2
+  },
+  {
+   "id": "C14",
+   "f": [
+    648,
+    683
+   ],
+   "shot": "S11",
+   "voice": "near (the client, the one house-type exception: the rhyme)",
+   "roman": "BAS BAS!",
+   "parts": [
+    [
+     "BAS BAS!",
+     "jw_caps_bold",
+     170,
+     540,
+     420,
+     "846x120"
+    ]
+   ],
+   "anim": "identical to H2 (slam t0=648/30); the viewer title locks crisp on the same frame",
+   "f_in": 648,
+   "f_out": 683,
+   "t_in": 21.6,
+   "t_out": 22.8
+  },
+  {
+   "id": "C15",
+   "f": [
+    684,
+    719
+   ],
+   "shot": "S11",
+   "voice": "narrator",
+   "roman": "27 / *revision* / baad...",
+   "parts": [
+    [
+     "27",
+     "jw_caps",
+     96,
+     540,
+     300,
+     "113x67"
+    ],
+    [
+     "revision",
+     "jw_key",
+     220,
+     540,
+     460,
+     "635x158"
+    ],
+    [
+     "baad...",
+     "jw_body",
+     72,
+     540,
+     600,
+     "251x50"
+    ]
+   ],
+   "anim": "HouseTitle(\"27\", \"revision\") t0=684/30 + body t0 696/30; out f712-f719 (in_cubic); SMOKE scrim over the viewer",
+   "f_in": 684,
+   "f_out": 719,
+   "t_in": 22.8,
+   "t_out": 24.0
+  },
+  {
+   "id": "P1",
+   "f": [
+    756,
+    863
+   ],
+   "shot": "S12",
+   "voice": "narrator (PAYOFF)",
+   "roman": "HUM AAJ BHI / *antenna* / ghuma rahe hain.",
+   "parts": [
+    [
+     "HUM AAJ BHI",
+     "jw_caps",
+     96,
+     540,
+     380,
+     "675x67"
+    ],
+    [
+     "antenna",
+     "jw_key",
+     250,
+     540,
+     560,
+     "774x180"
+    ],
+    [
+     "ghuma rahe hain.",
+     "jw_body",
+     72,
+     540,
+     770,
+     "655x50"
+    ]
+   ],
+   "anim": "J.HouseTitle(\"HUM AAJ BHI\", \"antenna\", caps_px=96, key_px=250, underline=True).draw(cv, t, 540, 560, t0=756/30, out_t0=846/30); body rises t0 780/30; underline 1 of 2 in the reel (+ cover)",
+   "f_in": 756,
+   "f_out": 863,
+   "t_in": 25.2,
+   "t_out": 28.8
+  }
+ ],
+ "ui_copy": [
+  {
+   "id": "B0",
+   "f_in": 63,
+   "f_out": 71,
+   "where": "S1 anachronism bubble (790, 300)",
+   "text": "Client: thoda left..."
+  },
+  {
+   "id": "B0b",
+   "f_in": 0,
+   "f_out": 71,
+   "where": "S1B chat bubble (hook B), viewer nudge 540 -> 538",
+   "text": "Client: thoda left..."
+  },
+  {
+   "id": "T1",
+   "f_in": 468,
+   "f_out": 485,
+   "where": "S7 toast (top of UI, y 640)",
+   "text": "Client / thoda left..."
+  },
+  {
+   "id": "X1",
+   "f_in": 477,
+   "f_out": 485,
+   "where": "S7 viewer readout",
+   "text": "X 540 -> 538 · \"-2 px\" · chip v2"
+  },
+  {
+   "id": "P1b",
+   "f_in": 490,
+   "f_out": 521,
+   "where": "S8 phone bubble 2",
+   "text": "thoda right..."
+  },
+  {
+   "id": "P1c",
+   "f_in": 504,
+   "f_out": 521,
+   "where": "S8 phone bubble 3",
+   "text": "nahi, pehle wala"
+  },
+  {
+   "id": "L1",
+   "f_in": 522,
+   "f_out": 575,
+   "where": "S9 revision list rows on 8ths",
+   "text": "trailer_v3.mp4 ... trailer_v26_final_final.mp4"
+  },
+  {
+   "id": "S1",
+   "f_in": 576,
+   "f_out": 593,
+   "where": "S10 split, both halves",
+   "text": "thoda left..."
+  },
+  {
+   "id": "S2",
+   "f_in": 594,
+   "f_out": 611,
+   "where": "S10 split",
+   "text": "thoda right..."
+  },
+  {
+   "id": "S3",
+   "f_in": 612,
+   "f_out": 629,
+   "where": "S10 split",
+   "text": "nahi, pehle wala!"
+  },
+  {
+   "id": "S4",
+   "f_in": 630,
+   "f_out": 647,
+   "where": "S10 split",
+   "text": "thoda sa..."
+  },
+  {
+   "id": "T2",
+   "f_in": 648,
+   "f_out": 683,
+   "where": "S11 client bubble",
+   "text": "BAS BAS! ab theek hai!"
+  },
+  {
+   "id": "E1",
+   "f_in": 684,
+   "f_out": 719,
+   "where": "S11 export dialog",
+   "text": "Exporting v27_final_FINAL.mp4 · 0 -> 100 %"
+  },
+  {
+   "id": "B1",
+   "f_in": 990,
+   "f_out": 1007,
+   "where": "S13 bubble (790, 300) = B0, exits with the outro",
+   "text": "Client: thoda left..."
+  }
+ ],
+ "outro": {
+  "module": "profile_outro.ProfileOutro",
+  "question": "Aap ke ghar antenna kaun ghumata tha?",
+  "key": "Papa, bhai ya aap?",
+  "dur": 4.2,
+  "t_end_frame": 882,
+  "draft": "Ghar mein antenna kaun ghumata tha? (improved: personal \"aap ke ghar\" + a 3-way choice key)"
+ },
+ "vo": {
+  "optional": true,
+  "note": "Not in the delivered cut. If approved: one voice reads both sides; shouts at the same frames as the captions; keep under 3.0 w/s; lines may slip +-0.25 s.",
+  "lines": [
+   {
+    "id": "V1",
+    "f_in": 3,
+    "f_out": 34,
+    "t_in": 0.1,
+    "t_out": 1.133,
+    "roman": "Thoda *left...* thoda right...",
+    "dev": "थोड़ा लेफ़्ट... थोड़ा राइट...",
+    "captions": "H1/H1b",
+    "emotion": "shout, playful"
+   },
+   {
+    "id": "V2",
+    "f_in": 38,
+    "f_out": 62,
+    "t_in": 1.267,
+    "t_out": 2.067,
+    "roman": "Bas bas! Ab *theek* hai!",
+    "dev": "बस बस! अब ठीक है!",
+    "captions": "H2/H3",
+    "emotion": "relief, loud"
+   },
+   {
+    "id": "V3",
+    "f_in": 74,
+    "f_out": 132,
+    "t_in": 2.467,
+    "t_out": 4.4,
+    "roman": "*Aaya?* Nahi! Thoda left...",
+    "dev": "आया? नहीं! थोड़ा लेफ़्ट...",
+    "captions": "R1/R2",
+    "emotion": "roof call, answer from far"
+   },
+   {
+    "id": "V4",
+    "f_in": 163,
+    "f_out": 190,
+    "t_in": 5.433,
+    "t_out": 6.333,
+    "roman": "*Kiska* left?!",
+    "dev": "किसका लेफ़्ट?!",
+    "captions": "R4",
+    "emotion": "indignant"
+   },
+   {
+    "id": "V5",
+    "f_in": 200,
+    "f_out": 248,
+    "t_in": 6.667,
+    "t_out": 8.267,
+    "roman": "Thoda *aur...* nahi nahi, wapas!",
+    "dev": "थोड़ा और... नहीं नहीं, वापस!",
+    "captions": "C5/C6",
+    "emotion": "urgent"
+   },
+   {
+    "id": "V6",
+    "f_in": 254,
+    "f_out": 300,
+    "t_in": 8.467,
+    "t_out": 10.0,
+    "roman": "Haan... haan... *bas!*",
+    "dev": "हाँ... हाँ... बस!",
+    "captions": "C7/C8",
+    "emotion": "building"
+   },
+   {
+    "id": "V7",
+    "f_in": 308,
+    "f_out": 374,
+    "t_in": 10.267,
+    "t_out": 12.467,
+    "roman": "Ab *theek* hai!... Arre, phir se?!",
+    "dev": "अब ठीक है!... अरे, फिर से?!",
+    "captions": "C9/C10",
+    "emotion": "joy then despair"
+   },
+   {
+    "id": "V8",
+    "f_in": 380,
+    "f_out": 440,
+    "t_in": 12.667,
+    "t_out": 14.667,
+    "roman": "Yeh scene kabhi *khatam* nahi hua.",
+    "dev": "ये सीन कभी ख़त्म नहीं हुआ।",
+    "captions": "C11",
+    "emotion": "warm, knowing"
+   },
+   {
+    "id": "V9",
+    "f_in": 438,
+    "f_out": 464,
+    "t_in": 14.6,
+    "t_out": 15.467,
+    "roman": "Bees saal *baad...*",
+    "dev": "बीस साल बाद...",
+    "captions": "C12",
+    "emotion": "calm"
+   },
+   {
+    "id": "V10",
+    "f_in": 470,
+    "f_out": 535,
+    "t_in": 15.667,
+    "t_out": 17.833,
+    "roman": "Thoda left... thoda right... *nahi,* pehle wala.",
+    "dev": "थोड़ा लेफ़्ट... थोड़ा राइट... नहीं, पहले वाला।",
+    "captions": "T1/P1b/P1c",
+    "emotion": "reading the client, dry"
+   },
+   {
+    "id": "V11",
+    "f_in": 542,
+    "f_out": 572,
+    "t_in": 18.067,
+    "t_out": 19.067,
+    "roman": "Dialogue *wahi* hai.",
+    "dev": "डायलॉग वही है।",
+    "captions": "C13",
+    "emotion": "deadpan"
+   },
+   {
+    "id": "V12",
+    "f_in": 650,
+    "f_out": 680,
+    "t_in": 21.667,
+    "t_out": 22.667,
+    "roman": "Bas bas! Ab *theek* hai!",
+    "dev": "बस बस! अब ठीक है!",
+    "captions": "C14/T2",
+    "emotion": "same melody as V2"
+   },
+   {
+    "id": "V13",
+    "f_in": 686,
+    "f_out": 716,
+    "t_in": 22.867,
+    "t_out": 23.867,
+    "roman": "Sattaees *revision* baad...",
+    "dev": "सत्ताईस रिविज़न बाद...",
+    "captions": "C15",
+    "emotion": "tired smile"
+   },
+   {
+    "id": "V14",
+    "f_in": 758,
+    "f_out": 835,
+    "t_in": 25.267,
+    "t_out": 27.833,
+    "roman": "Hum aaj bhi *antenna* ghuma rahe hain.",
+    "dev": "हम आज भी एंटीना घुमा रहे हैं।",
+    "captions": "P1",
+    "emotion": "payoff, slow"
+   },
+   {
+    "id": "V15",
+    "f_in": 905,
+    "f_out": 975,
+    "t_in": 30.167,
+    "t_out": 32.5,
+    "roman": "Aap ke ghar *antenna* kaun ghumata tha?",
+    "dev": "आप के घर एंटीना कौन घुमाता था?",
+    "captions": "outro",
+    "emotion": "question, rising"
+   }
+  ],
+  "tokens": [
+   {
+    "line": "V1",
+    "i": 0,
+    "roman": "Thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V1",
+    "i": 1,
+    "roman": "left...",
+    "dev": "लेफ़्ट...",
+    "keyword": true
+   },
+   {
+    "line": "V1",
+    "i": 2,
+    "roman": "thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V1",
+    "i": 3,
+    "roman": "right...",
+    "dev": "राइट...",
+    "keyword": false
+   },
+   {
+    "line": "V2",
+    "i": 0,
+    "roman": "Bas",
+    "dev": "बस",
+    "keyword": false
+   },
+   {
+    "line": "V2",
+    "i": 1,
+    "roman": "bas!",
+    "dev": "बस!",
+    "keyword": false
+   },
+   {
+    "line": "V2",
+    "i": 2,
+    "roman": "Ab",
+    "dev": "अब",
+    "keyword": false
+   },
+   {
+    "line": "V2",
+    "i": 3,
+    "roman": "theek",
+    "dev": "ठीक",
+    "keyword": true
+   },
+   {
+    "line": "V2",
+    "i": 4,
+    "roman": "hai!",
+    "dev": "है!",
+    "keyword": false
+   },
+   {
+    "line": "V3",
+    "i": 0,
+    "roman": "Aaya?",
+    "dev": "आया?",
+    "keyword": true
+   },
+   {
+    "line": "V3",
+    "i": 1,
+    "roman": "Nahi!",
+    "dev": "नहीं!",
+    "keyword": false
+   },
+   {
+    "line": "V3",
+    "i": 2,
+    "roman": "Thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V3",
+    "i": 3,
+    "roman": "left...",
+    "dev": "लेफ़्ट...",
+    "keyword": false
+   },
+   {
+    "line": "V4",
+    "i": 0,
+    "roman": "Kiska",
+    "dev": "किसका",
+    "keyword": true
+   },
+   {
+    "line": "V4",
+    "i": 1,
+    "roman": "left?!",
+    "dev": "लेफ़्ट?!",
+    "keyword": false
+   },
+   {
+    "line": "V5",
+    "i": 0,
+    "roman": "Thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V5",
+    "i": 1,
+    "roman": "aur...",
+    "dev": "और...",
+    "keyword": true
+   },
+   {
+    "line": "V5",
+    "i": 2,
+    "roman": "nahi",
+    "dev": "नहीं",
+    "keyword": false
+   },
+   {
+    "line": "V5",
+    "i": 3,
+    "roman": "nahi,",
+    "dev": "नहीं,",
+    "keyword": false
+   },
+   {
+    "line": "V5",
+    "i": 4,
+    "roman": "wapas!",
+    "dev": "वापस!",
+    "keyword": false
+   },
+   {
+    "line": "V6",
+    "i": 0,
+    "roman": "Haan...",
+    "dev": "हाँ...",
+    "keyword": false
+   },
+   {
+    "line": "V6",
+    "i": 1,
+    "roman": "haan...",
+    "dev": "हाँ...",
+    "keyword": false
+   },
+   {
+    "line": "V6",
+    "i": 2,
+    "roman": "bas!",
+    "dev": "बस!",
+    "keyword": true
+   },
+   {
+    "line": "V7",
+    "i": 0,
+    "roman": "Ab",
+    "dev": "अब",
+    "keyword": false
+   },
+   {
+    "line": "V7",
+    "i": 1,
+    "roman": "theek",
+    "dev": "ठीक",
+    "keyword": true
+   },
+   {
+    "line": "V7",
+    "i": 2,
+    "roman": "hai!...",
+    "dev": "है!...",
+    "keyword": false
+   },
+   {
+    "line": "V7",
+    "i": 3,
+    "roman": "Arre,",
+    "dev": "अरे,",
+    "keyword": false
+   },
+   {
+    "line": "V7",
+    "i": 4,
+    "roman": "phir",
+    "dev": "फिर",
+    "keyword": false
+   },
+   {
+    "line": "V7",
+    "i": 5,
+    "roman": "se?!",
+    "dev": "से?!",
+    "keyword": false
+   },
+   {
+    "line": "V8",
+    "i": 0,
+    "roman": "Yeh",
+    "dev": "ये",
+    "keyword": false
+   },
+   {
+    "line": "V8",
+    "i": 1,
+    "roman": "scene",
+    "dev": "सीन",
+    "keyword": false
+   },
+   {
+    "line": "V8",
+    "i": 2,
+    "roman": "kabhi",
+    "dev": "कभी",
+    "keyword": false
+   },
+   {
+    "line": "V8",
+    "i": 3,
+    "roman": "khatam",
+    "dev": "ख़त्म",
+    "keyword": true
+   },
+   {
+    "line": "V8",
+    "i": 4,
+    "roman": "nahi",
+    "dev": "नहीं",
+    "keyword": false
+   },
+   {
+    "line": "V8",
+    "i": 5,
+    "roman": "hua.",
+    "dev": "हुआ।",
+    "keyword": false
+   },
+   {
+    "line": "V9",
+    "i": 0,
+    "roman": "Bees",
+    "dev": "बीस",
+    "keyword": false
+   },
+   {
+    "line": "V9",
+    "i": 1,
+    "roman": "saal",
+    "dev": "साल",
+    "keyword": false
+   },
+   {
+    "line": "V9",
+    "i": 2,
+    "roman": "baad...",
+    "dev": "बाद...",
+    "keyword": true
+   },
+   {
+    "line": "V10",
+    "i": 0,
+    "roman": "Thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V10",
+    "i": 1,
+    "roman": "left...",
+    "dev": "लेफ़्ट...",
+    "keyword": false
+   },
+   {
+    "line": "V10",
+    "i": 2,
+    "roman": "thoda",
+    "dev": "थोड़ा",
+    "keyword": false
+   },
+   {
+    "line": "V10",
+    "i": 3,
+    "roman": "right...",
+    "dev": "राइट...",
+    "keyword": false
+   },
+   {
+    "line": "V10",
+    "i": 4,
+    "roman": "nahi,",
+    "dev": "नहीं,",
+    "keyword": true
+   },
+   {
+    "line": "V10",
+    "i": 5,
+    "roman": "pehle",
+    "dev": "पहले",
+    "keyword": false
+   },
+   {
+    "line": "V10",
+    "i": 6,
+    "roman": "wala.",
+    "dev": "वाला।",
+    "keyword": false
+   },
+   {
+    "line": "V11",
+    "i": 0,
+    "roman": "Dialogue",
+    "dev": "डायलॉग",
+    "keyword": false
+   },
+   {
+    "line": "V11",
+    "i": 1,
+    "roman": "wahi",
+    "dev": "वही",
+    "keyword": true
+   },
+   {
+    "line": "V11",
+    "i": 2,
+    "roman": "hai.",
+    "dev": "है।",
+    "keyword": false
+   },
+   {
+    "line": "V12",
+    "i": 0,
+    "roman": "Bas",
+    "dev": "बस",
+    "keyword": false
+   },
+   {
+    "line": "V12",
+    "i": 1,
+    "roman": "bas!",
+    "dev": "बस!",
+    "keyword": false
+   },
+   {
+    "line": "V12",
+    "i": 2,
+    "roman": "Ab",
+    "dev": "अब",
+    "keyword": false
+   },
+   {
+    "line": "V12",
+    "i": 3,
+    "roman": "theek",
+    "dev": "ठीक",
+    "keyword": true
+   },
+   {
+    "line": "V12",
+    "i": 4,
+    "roman": "hai!",
+    "dev": "है!",
+    "keyword": false
+   },
+   {
+    "line": "V13",
+    "i": 0,
+    "roman": "Sattaees",
+    "dev": "सत्ताईस",
+    "keyword": false
+   },
+   {
+    "line": "V13",
+    "i": 1,
+    "roman": "revision",
+    "dev": "रिविज़न",
+    "keyword": true
+   },
+   {
+    "line": "V13",
+    "i": 2,
+    "roman": "baad...",
+    "dev": "बाद...",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 0,
+    "roman": "Hum",
+    "dev": "हम",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 1,
+    "roman": "aaj",
+    "dev": "आज",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 2,
+    "roman": "bhi",
+    "dev": "भी",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 3,
+    "roman": "antenna",
+    "dev": "एंटीना",
+    "keyword": true
+   },
+   {
+    "line": "V14",
+    "i": 4,
+    "roman": "ghuma",
+    "dev": "घुमा",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 5,
+    "roman": "rahe",
+    "dev": "रहे",
+    "keyword": false
+   },
+   {
+    "line": "V14",
+    "i": 6,
+    "roman": "hain.",
+    "dev": "हैं।",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 0,
+    "roman": "Aap",
+    "dev": "आप",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 1,
+    "roman": "ke",
+    "dev": "के",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 2,
+    "roman": "ghar",
+    "dev": "घर",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 3,
+    "roman": "antenna",
+    "dev": "एंटीना",
+    "keyword": true
+   },
+   {
+    "line": "V15",
+    "i": 4,
+    "roman": "kaun",
+    "dev": "कौन",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 5,
+    "roman": "ghumata",
+    "dev": "घुमाता",
+    "keyword": false
+   },
+   {
+    "line": "V15",
+    "i": 6,
+    "roman": "tha?",
+    "dev": "था?",
+    "keyword": false
+   }
+  ],
+  "words": 70
+ },
+ "post_caption": {
+  "first_line": "Thoda left... thoda right... BAS BAS! Bachpan mein antenna, ab client. Video editing life.",
+  "context": "Har editor ka client wahi neeche wala hai jo TV ke saamne khara hota tha.",
+  "pinned": "Usse tag karo jo chhat pe jaata tha.",
+  "hashtags": [
+   "#videoediting",
+   "#editorlife",
+   "#90skids",
+   "#desinostalgia",
+   "#motiongraphics"
+  ]
+ },
+ "verify": [],
+ "open_questions": [
+  "Lead OK on the \"nahi, pehle wala\" bubble given the earlier pehle_wala reel (BRIEF 7.1)."
+ ]
+}

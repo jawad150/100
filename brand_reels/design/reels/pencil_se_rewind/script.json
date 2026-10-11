@@ -1,0 +1,1418 @@
+{
+ "reel": "pencil_se_rewind",
+ "title": "Pencil Se Rewind",
+ "series": "Bijli series #1 (BIJLI_SERIES.md)",
+ "look": "ember",
+ "version": "script v1 2026-10-11",
+ "author": "pre-production (hinglish-scriptwriter + script-hook-writer roles)",
+ "status": "text-led: captions carry the story; VO optional (not approved); timings designed, not measured",
+ "grid": {
+  "bpm": 112.5,
+  "fps": 30,
+  "frames_per_beat": 16,
+  "frames_per_bar": 64,
+  "dur_frames": 1024,
+  "dur_s": 34.133,
+  "splice_frame": 64,
+  "rehook_frame": 464,
+  "payoff_frame": 768,
+  "outro_frame": 896,
+  "dropout": [
+   752,
+   767
+  ]
+ },
+ "caption_rules": "house spelling (sentence case, hai / nahi / mein / bohat / bari; long vowel doubled only in a long stressed first syllable: Gaana, Peeche, Aage, Saans); one *keyword per line -> jw_key; snake lines via snake_captions.SC.Captions(words) with words built from tokens (start = onset_f / 30, end = (end_f + 1) / 30); lockups via J.HouseTitle / T.render / T.Glyphs (hide those windows from the snake track)",
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "mechanism": "pattern interrupt + callback (object answer)",
+   "on_screen": "REWIND BUTTON? / *Pencil.*",
+   "frame0": "macro: hex pencil already spinning in the cassette hub, lamp-lit",
+   "muted": "reads alone: the picture is the answer",
+   "lines": [
+    "HA"
+   ]
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "mechanism": "stakes / sound memory (dying-battery slowdown)",
+   "on_screen": "BATTERY / *khatam?*",
+   "frame0": "walkman with REW held down, amber LED, motor whining down",
+   "muted": "reads alone with the REW key down",
+   "lines": [
+    "HB"
+   ],
+   "splice_frame": 64
+  },
+  {
+   "id": "R1",
+   "rank": 3,
+   "status": "reserve, not built",
+   "on_screen": "90s ka *scrub tool*",
+   "note": "gives the twist away"
+  },
+  {
+   "id": "R2",
+   "rank": 4,
+   "status": "reserve, not built",
+   "on_screen": "CASSETTE *phans gayi?*",
+   "note": "spends the re-hook"
+  }
+ ],
+ "lines": [
+  {
+   "id": "HA",
+   "part": "hook A",
+   "shot": "S1",
+   "kind": "lockup",
+   "in_f": 0,
+   "out_f": 63,
+   "in_s": 0.0,
+   "out_s": 2.133,
+   "beat": 0.0,
+   "roman": "Rewind button? *Pencil.",
+   "dev": "रिवाइंड बटन? पेंसिल।",
+   "keyword": "Pencil.",
+   "words": 3,
+   "hold_s": 2.13,
+   "need_s": null,
+   "layout": {
+    "caps": [
+     "REWIND BUTTON?",
+     "jw_caps",
+     86,
+     [
+      540,
+      400
+     ],
+     "t0 -0.1 (mid-rise at f0)"
+    ],
+    "key": [
+     "Pencil.",
+     "jw_key",
+     250,
+     [
+      540,
+      580
+     ],
+     "slam f16 (beat 1)"
+    ],
+    "underline": "f24-f44, y 700, 640 px",
+    "exit": "f56-f63 in_cubic, 8 px up, blur 0->6"
+   },
+   "note": "versions A"
+  },
+  {
+   "id": "HB",
+   "part": "hook B (trial)",
+   "shot": "S1B",
+   "kind": "lockup",
+   "in_f": 0,
+   "out_f": 63,
+   "in_s": 0.0,
+   "out_s": 2.133,
+   "beat": 0.0,
+   "roman": "Battery *khatam?",
+   "dev": "बैटरी ख़त्म?",
+   "keyword": "khatam?",
+   "words": 2,
+   "hold_s": 2.13,
+   "need_s": null,
+   "layout": {
+    "caps": [
+     "BATTERY",
+     "jw_caps",
+     96,
+     [
+      540,
+      400
+     ],
+     "t0 -0.1"
+    ],
+    "key": [
+     "khatam?",
+     "jw_key",
+     240,
+     [
+      540,
+      580
+     ],
+     "slam f32 (beat 2)"
+    ],
+    "underline": "f40-f58",
+    "exit": "f56-f63"
+   },
+   "note": "versions B"
+  },
+  {
+   "id": "L2",
+   "part": "turn",
+   "shot": "S2",
+   "kind": "snake",
+   "in_f": 70,
+   "out_f": 124,
+   "in_s": 2.333,
+   "out_s": 4.167,
+   "beat": 4.38,
+   "roman": "Walkman ki *battery bachani thi,",
+   "dev": "वॉकमैन की बैटरी बचानी थी,",
+   "keyword": "battery",
+   "words": 5,
+   "hold_s": 1.83,
+   "need_s": 1.67,
+   "layout": {
+    "band": "upper (centre y ~390)"
+   },
+   "note": ""
+  },
+  {
+   "id": "L3",
+   "part": "turn",
+   "shot": "S3",
+   "kind": "snake",
+   "in_f": 134,
+   "out_f": 188,
+   "in_s": 4.467,
+   "out_s": 6.3,
+   "beat": 8.38,
+   "roman": "toh pencil se *ghumate the.",
+   "dev": "तो पेंसिल से घुमाते थे।",
+   "keyword": "ghumate",
+   "words": 5,
+   "hold_s": 1.83,
+   "need_s": 1.67,
+   "layout": {
+    "band": "upper"
+   },
+   "note": ""
+  },
+  {
+   "id": "L4",
+   "part": "turn",
+   "shot": "S4",
+   "kind": "snake",
+   "in_f": 198,
+   "out_f": 252,
+   "in_s": 6.6,
+   "out_s": 8.433,
+   "beat": 12.38,
+   "roman": "*Gaana dhoondna ho?",
+   "dev": "गाना ढूँढना हो?",
+   "keyword": "Gaana",
+   "words": 3,
+   "hold_s": 1.83,
+   "need_s": 1.0,
+   "layout": {
+    "band": "lower (centre y ~1380)"
+   },
+   "note": ""
+  },
+  {
+   "id": "L5",
+   "part": "escalation",
+   "shot": "S5",
+   "kind": "lockup",
+   "in_f": 262,
+   "out_f": 319,
+   "in_s": 8.733,
+   "out_s": 10.667,
+   "beat": 16.38,
+   "roman": "Sirf *andaza.",
+   "dev": "सिर्फ़ अंदाज़ा।",
+   "keyword": "andaza.",
+   "words": 2,
+   "hold_s": 1.93,
+   "need_s": null,
+   "layout": {
+    "caps": [
+     "SIRF",
+     "jw_caps",
+     96,
+     [
+      540,
+      420
+     ],
+     "rise f262"
+    ],
+    "key": [
+     "andaza.",
+     "jw_key",
+     220,
+     [
+      540,
+      590
+     ],
+     "per-glyph rise from f268"
+    ],
+    "underline": null,
+    "exit": "f312-f319"
+   },
+   "note": ""
+  },
+  {
+   "id": "L6",
+   "part": "escalation",
+   "shot": "S6",
+   "kind": "stack",
+   "in_f": 320,
+   "out_f": 383,
+   "in_s": 10.667,
+   "out_s": 12.8,
+   "beat": 20.0,
+   "roman": "Play. *Galat! Phir se.",
+   "dev": "प्ले। ग़लत! फिर से।",
+   "keyword": "Galat!",
+   "words": 4,
+   "hold_s": 2.13,
+   "need_s": null,
+   "layout": {
+    "items": [
+     [
+      "Play.",
+      "jw_caps_bold",
+      150,
+      [
+       540,
+       420
+      ],
+      "slam f320"
+     ],
+     [
+      "Galat!",
+      "jw_key",
+      200,
+      [
+       540,
+       590
+      ],
+      "slam f328"
+     ],
+     [
+      "Phir se.",
+      "jw_caps_bold",
+      150,
+      [
+       540,
+       760
+      ],
+      "slam f336"
+     ]
+    ],
+    "exit": "all f376-f383"
+   },
+   "note": ""
+  },
+  {
+   "id": "L7",
+   "part": "escalation",
+   "shot": "S7",
+   "kind": "slam",
+   "in_f": 384,
+   "out_f": 419,
+   "in_s": 12.8,
+   "out_s": 14.0,
+   "beat": 24.0,
+   "roman": "*Mil gaya!",
+   "dev": "मिल गया!",
+   "keyword": "Mil",
+   "words": 2,
+   "hold_s": 1.2,
+   "need_s": null,
+   "layout": {
+    "key": [
+     "Mil gaya!",
+     "jw_key",
+     220,
+     [
+      540,
+      520
+     ],
+     "SLAM spring f384"
+    ],
+    "exit": "f414-f419"
+   },
+   "note": ""
+  },
+  {
+   "id": "L8",
+   "part": "tease",
+   "shot": "S7",
+   "kind": "snake",
+   "in_f": 420,
+   "out_f": 446,
+   "in_s": 14.0,
+   "out_s": 14.9,
+   "beat": 26.25,
+   "roman": "Aur phir...",
+   "dev": "और फिर...",
+   "keyword": null,
+   "words": 2,
+   "hold_s": 0.9,
+   "need_s": 0.8,
+   "layout": {
+    "band": "upper",
+    "note": "no keyword: the ellipsis is the open loop"
+   },
+   "note": ""
+  },
+  {
+   "id": "L9",
+   "part": "RE-HOOK",
+   "shot": "S8",
+   "kind": "lockup",
+   "in_f": 448,
+   "out_f": 511,
+   "in_s": 14.933,
+   "out_s": 17.067,
+   "beat": 28.0,
+   "roman": "Cassette *phans gayi!",
+   "dev": "कैसेट फँस गई!",
+   "keyword": "phans",
+   "words": 3,
+   "hold_s": 2.13,
+   "need_s": null,
+   "layout": {
+    "caps": [
+     "CASSETTE",
+     "jw_caps",
+     96,
+     [
+      540,
+      400
+     ],
+     "rise f448 (with the PLAY clack)"
+    ],
+    "key": [
+     "phans gayi!",
+     "jw_key",
+     190,
+     [
+      540,
+      570
+     ],
+     "SLAM f464 with D7 shock (45.3 %)"
+    ],
+    "underline": null,
+    "exit": "f504-f511"
+   },
+   "note": "keyword spans 2 tokens"
+  },
+  {
+   "id": "L10",
+   "part": "rescue",
+   "shot": "S9",
+   "kind": "snake",
+   "in_f": 514,
+   "out_f": 574,
+   "in_s": 17.133,
+   "out_s": 19.167,
+   "beat": 32.12,
+   "roman": "Saans rok ke, *pencil se wapas.",
+   "dev": "साँस रोक के, पेंसिल से वापस।",
+   "keyword": "pencil",
+   "words": 6,
+   "hold_s": 2.03,
+   "need_s": 2.0,
+   "layout": {
+    "band": "upper"
+   },
+   "note": ""
+  },
+  {
+   "id": "L11",
+   "part": "reveal",
+   "shot": "S10",
+   "kind": "snake",
+   "in_f": 588,
+   "out_f": 638,
+   "in_s": 19.6,
+   "out_s": 21.3,
+   "beat": 36.75,
+   "roman": "Aaj bhi *wahi karte hain.",
+   "dev": "आज भी वही करते हैं।",
+   "keyword": "wahi",
+   "words": 5,
+   "hold_s": 1.7,
+   "need_s": 1.67,
+   "layout": {
+    "band": "top (centre y ~330, above the NLE viewer)"
+   },
+   "note": ""
+  },
+  {
+   "id": "L12",
+   "part": "scrub build",
+   "shot": "S11",
+   "kind": "slams",
+   "in_f": 640,
+   "out_f": 703,
+   "in_s": 21.333,
+   "out_s": 23.467,
+   "beat": 40.0,
+   "roman": "Peeche. Aage. Peeche. *Yahan.",
+   "dev": "पीछे। आगे। पीछे। यहाँ।",
+   "keyword": "Yahan.",
+   "words": 4,
+   "hold_s": 2.13,
+   "need_s": null,
+   "layout": {
+    "items": [
+     [
+      "Peeche.",
+      "jw_caps_bold",
+      140,
+      [
+       540,
+       330
+      ],
+      "f640-f647"
+     ],
+     [
+      "Aage.",
+      "jw_caps_bold",
+      140,
+      [
+       540,
+       330
+      ],
+      "f648-f655"
+     ],
+     [
+      "Peeche.",
+      "jw_caps_bold",
+      140,
+      [
+       540,
+       330
+      ],
+      "f656-f663"
+     ],
+     [
+      "Yahan.",
+      "jw_key",
+      220,
+      [
+       540,
+       330
+      ],
+      "f664-f700"
+     ]
+    ],
+    "exit": "replace each on the 8th (4 f cross-cut); Yahan exits f696-f703"
+   },
+   "note": ""
+  },
+  {
+   "id": "L13",
+   "part": "turn to payoff",
+   "shot": "S12",
+   "kind": "snake",
+   "in_f": 706,
+   "out_f": 751,
+   "in_s": 23.533,
+   "out_s": 25.067,
+   "beat": 44.12,
+   "roman": "Bas tool *badal gaya.",
+   "dev": "बस टूल बदल गया।",
+   "keyword": "badal",
+   "words": 4,
+   "hold_s": 1.53,
+   "need_s": 1.33,
+   "layout": {
+    "band": "top"
+   },
+   "note": ""
+  },
+  {
+   "id": "L14",
+   "part": "PAYOFF",
+   "shot": "S13",
+   "kind": "lockup",
+   "in_f": 768,
+   "out_f": 895,
+   "in_s": 25.6,
+   "out_s": 29.867,
+   "beat": 48.0,
+   "roman": "Pehla editing tool? *Pencil.",
+   "dev": "पहला एडिटिंग टूल? पेंसिल।",
+   "keyword": "Pencil.",
+   "words": 4,
+   "hold_s": 4.27,
+   "need_s": null,
+   "layout": {
+    "caps": [
+     "PEHLA EDITING TOOL?",
+     "jw_caps",
+     74,
+     [
+      540,
+      360
+     ],
+     "rise f768"
+    ],
+    "key": [
+     "Pencil.",
+     "jw_key",
+     260,
+     [
+      540,
+      560
+     ],
+     "per-glyph rise from f776"
+    ],
+    "underline": "f784-f806, y 700",
+    "exit": "f880-f895"
+   },
+   "note": "J.HouseTitle('PEHLA EDITING TOOL?', 'Pencil.', caps_px=74, key_px=260)"
+  },
+  {
+   "id": "L15",
+   "part": "tag",
+   "shot": "S13",
+   "kind": "body2",
+   "in_f": 816,
+   "out_f": 895,
+   "in_s": 27.2,
+   "out_s": 29.867,
+   "beat": 51.0,
+   "roman": "Scrubbing toh *cassette pe sikhi thi.",
+   "dev": "स्क्रबिंग तो कैसेट पे सीखी थी।",
+   "keyword": "cassette",
+   "words": 6,
+   "hold_s": 2.67,
+   "need_s": 2.0,
+   "layout": {
+    "lines": [
+     [
+      "Scrubbing toh",
+      "jw_body",
+      56,
+      [
+       540,
+       772
+      ]
+     ],
+     [
+      "*cassette* pe sikhi thi.",
+      "jw_body 56 + jw_key 96 inline",
+      56,
+      [
+       540,
+       846
+      ]
+     ]
+    ],
+    "exit": "f880-f895 with L14"
+   },
+   "note": ""
+  },
+  {
+   "id": "L16",
+   "part": "CTA (outro)",
+   "shot": "S14",
+   "kind": "outro",
+   "in_f": 896,
+   "out_f": 1023,
+   "in_s": 29.867,
+   "out_s": 34.133,
+   "beat": 56.0,
+   "roman": "Aap ki pehli *cassette kaunsi thi?",
+   "dev": "आप की पहली कैसेट कौनसी थी?",
+   "keyword": "cassette",
+   "words": 6,
+   "hold_s": 4.27,
+   "need_s": null,
+   "layout": {
+    "card": "PO.ProfileOutro question (jw_body, auto-wrapped to 2 lines at 860 px)"
+   },
+   "note": ""
+  },
+  {
+   "id": "L16k",
+   "part": "CTA key (outro)",
+   "shot": "S14",
+   "kind": "outro",
+   "in_f": 896,
+   "out_f": 1023,
+   "in_s": 29.867,
+   "out_s": 34.133,
+   "beat": 56.0,
+   "roman": "*Pencil ya pen?",
+   "dev": "पेंसिल या पेन?",
+   "keyword": "Pencil",
+   "words": 3,
+   "hold_s": 4.27,
+   "need_s": null,
+   "layout": {
+    "card": "PO key= line (jw_key_core 124 px)"
+   },
+   "note": ""
+  }
+ ],
+ "tokens": [
+  {
+   "line": "HA",
+   "i": 0,
+   "roman": "Rewind",
+   "dev": "रिवाइंड",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "HA",
+   "i": 1,
+   "roman": "button?",
+   "dev": "बटन?",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "HA",
+   "i": 2,
+   "roman": "Pencil.",
+   "dev": "पेंसिल।",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "HB",
+   "i": 0,
+   "roman": "Battery",
+   "dev": "बैटरी",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "HB",
+   "i": 1,
+   "roman": "khatam?",
+   "dev": "ख़त्म?",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L2",
+   "i": 0,
+   "roman": "Walkman",
+   "dev": "वॉकमैन",
+   "keyword": false,
+   "onset_f": 70,
+   "end_f": 124
+  },
+  {
+   "line": "L2",
+   "i": 1,
+   "roman": "ki",
+   "dev": "की",
+   "keyword": false,
+   "onset_f": 75,
+   "end_f": 124
+  },
+  {
+   "line": "L2",
+   "i": 2,
+   "roman": "battery",
+   "dev": "बैटरी",
+   "keyword": true,
+   "onset_f": 80,
+   "end_f": 124
+  },
+  {
+   "line": "L2",
+   "i": 3,
+   "roman": "bachani",
+   "dev": "बचानी",
+   "keyword": false,
+   "onset_f": 85,
+   "end_f": 124
+  },
+  {
+   "line": "L2",
+   "i": 4,
+   "roman": "thi,",
+   "dev": "थी,",
+   "keyword": false,
+   "onset_f": 90,
+   "end_f": 124
+  },
+  {
+   "line": "L3",
+   "i": 0,
+   "roman": "toh",
+   "dev": "तो",
+   "keyword": false,
+   "onset_f": 134,
+   "end_f": 188
+  },
+  {
+   "line": "L3",
+   "i": 1,
+   "roman": "pencil",
+   "dev": "पेंसिल",
+   "keyword": false,
+   "onset_f": 139,
+   "end_f": 188
+  },
+  {
+   "line": "L3",
+   "i": 2,
+   "roman": "se",
+   "dev": "से",
+   "keyword": false,
+   "onset_f": 144,
+   "end_f": 188
+  },
+  {
+   "line": "L3",
+   "i": 3,
+   "roman": "ghumate",
+   "dev": "घुमाते",
+   "keyword": true,
+   "onset_f": 149,
+   "end_f": 188
+  },
+  {
+   "line": "L3",
+   "i": 4,
+   "roman": "the.",
+   "dev": "थे।",
+   "keyword": false,
+   "onset_f": 154,
+   "end_f": 188
+  },
+  {
+   "line": "L4",
+   "i": 0,
+   "roman": "Gaana",
+   "dev": "गाना",
+   "keyword": true,
+   "onset_f": 198,
+   "end_f": 252
+  },
+  {
+   "line": "L4",
+   "i": 1,
+   "roman": "dhoondna",
+   "dev": "ढूँढना",
+   "keyword": false,
+   "onset_f": 203,
+   "end_f": 252
+  },
+  {
+   "line": "L4",
+   "i": 2,
+   "roman": "ho?",
+   "dev": "हो?",
+   "keyword": false,
+   "onset_f": 208,
+   "end_f": 252
+  },
+  {
+   "line": "L5",
+   "i": 0,
+   "roman": "Sirf",
+   "dev": "सिर्फ़",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L5",
+   "i": 1,
+   "roman": "andaza.",
+   "dev": "अंदाज़ा।",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L6",
+   "i": 0,
+   "roman": "Play.",
+   "dev": "प्ले।",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L6",
+   "i": 1,
+   "roman": "Galat!",
+   "dev": "ग़लत!",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L6",
+   "i": 2,
+   "roman": "Phir",
+   "dev": "फिर",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L6",
+   "i": 3,
+   "roman": "se.",
+   "dev": "से।",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L7",
+   "i": 0,
+   "roman": "Mil",
+   "dev": "मिल",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L7",
+   "i": 1,
+   "roman": "gaya!",
+   "dev": "गया!",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L8",
+   "i": 0,
+   "roman": "Aur",
+   "dev": "और",
+   "keyword": false,
+   "onset_f": 420,
+   "end_f": 446
+  },
+  {
+   "line": "L8",
+   "i": 1,
+   "roman": "phir...",
+   "dev": "फिर...",
+   "keyword": false,
+   "onset_f": 425,
+   "end_f": 446
+  },
+  {
+   "line": "L9",
+   "i": 0,
+   "roman": "Cassette",
+   "dev": "कैसेट",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L9",
+   "i": 1,
+   "roman": "phans",
+   "dev": "फँस",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L9",
+   "i": 2,
+   "roman": "gayi!",
+   "dev": "गई!",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L10",
+   "i": 0,
+   "roman": "Saans",
+   "dev": "साँस",
+   "keyword": false,
+   "onset_f": 514,
+   "end_f": 574
+  },
+  {
+   "line": "L10",
+   "i": 1,
+   "roman": "rok",
+   "dev": "रोक",
+   "keyword": false,
+   "onset_f": 519,
+   "end_f": 574
+  },
+  {
+   "line": "L10",
+   "i": 2,
+   "roman": "ke,",
+   "dev": "के,",
+   "keyword": false,
+   "onset_f": 524,
+   "end_f": 574
+  },
+  {
+   "line": "L10",
+   "i": 3,
+   "roman": "pencil",
+   "dev": "पेंसिल",
+   "keyword": true,
+   "onset_f": 529,
+   "end_f": 574
+  },
+  {
+   "line": "L10",
+   "i": 4,
+   "roman": "se",
+   "dev": "से",
+   "keyword": false,
+   "onset_f": 534,
+   "end_f": 574
+  },
+  {
+   "line": "L10",
+   "i": 5,
+   "roman": "wapas.",
+   "dev": "वापस।",
+   "keyword": false,
+   "onset_f": 539,
+   "end_f": 574
+  },
+  {
+   "line": "L11",
+   "i": 0,
+   "roman": "Aaj",
+   "dev": "आज",
+   "keyword": false,
+   "onset_f": 588,
+   "end_f": 638
+  },
+  {
+   "line": "L11",
+   "i": 1,
+   "roman": "bhi",
+   "dev": "भी",
+   "keyword": false,
+   "onset_f": 593,
+   "end_f": 638
+  },
+  {
+   "line": "L11",
+   "i": 2,
+   "roman": "wahi",
+   "dev": "वही",
+   "keyword": true,
+   "onset_f": 598,
+   "end_f": 638
+  },
+  {
+   "line": "L11",
+   "i": 3,
+   "roman": "karte",
+   "dev": "करते",
+   "keyword": false,
+   "onset_f": 603,
+   "end_f": 638
+  },
+  {
+   "line": "L11",
+   "i": 4,
+   "roman": "hain.",
+   "dev": "हैं।",
+   "keyword": false,
+   "onset_f": 608,
+   "end_f": 638
+  },
+  {
+   "line": "L12",
+   "i": 0,
+   "roman": "Peeche.",
+   "dev": "पीछे।",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L12",
+   "i": 1,
+   "roman": "Aage.",
+   "dev": "आगे।",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L12",
+   "i": 2,
+   "roman": "Peeche.",
+   "dev": "पीछे।",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L12",
+   "i": 3,
+   "roman": "Yahan.",
+   "dev": "यहाँ।",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L13",
+   "i": 0,
+   "roman": "Bas",
+   "dev": "बस",
+   "keyword": false,
+   "onset_f": 706,
+   "end_f": 751
+  },
+  {
+   "line": "L13",
+   "i": 1,
+   "roman": "tool",
+   "dev": "टूल",
+   "keyword": false,
+   "onset_f": 711,
+   "end_f": 751
+  },
+  {
+   "line": "L13",
+   "i": 2,
+   "roman": "badal",
+   "dev": "बदल",
+   "keyword": true,
+   "onset_f": 716,
+   "end_f": 751
+  },
+  {
+   "line": "L13",
+   "i": 3,
+   "roman": "gaya.",
+   "dev": "गया।",
+   "keyword": false,
+   "onset_f": 721,
+   "end_f": 751
+  },
+  {
+   "line": "L14",
+   "i": 0,
+   "roman": "Pehla",
+   "dev": "पहला",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L14",
+   "i": 1,
+   "roman": "editing",
+   "dev": "एडिटिंग",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L14",
+   "i": 2,
+   "roman": "tool?",
+   "dev": "टूल?",
+   "keyword": false,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L14",
+   "i": 3,
+   "roman": "Pencil.",
+   "dev": "पेंसिल।",
+   "keyword": true,
+   "onset_f": null,
+   "end_f": null
+  },
+  {
+   "line": "L15",
+   "i": 0,
+   "roman": "Scrubbing",
+   "dev": "स्क्रबिंग",
+   "keyword": false,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L15",
+   "i": 1,
+   "roman": "toh",
+   "dev": "तो",
+   "keyword": false,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L15",
+   "i": 2,
+   "roman": "cassette",
+   "dev": "कैसेट",
+   "keyword": true,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L15",
+   "i": 3,
+   "roman": "pe",
+   "dev": "पे",
+   "keyword": false,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L15",
+   "i": 4,
+   "roman": "sikhi",
+   "dev": "सीखी",
+   "keyword": false,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L15",
+   "i": 5,
+   "roman": "thi.",
+   "dev": "थी।",
+   "keyword": false,
+   "onset_f": 816,
+   "end_f": 895
+  },
+  {
+   "line": "L16",
+   "i": 0,
+   "roman": "Aap",
+   "dev": "आप",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16",
+   "i": 1,
+   "roman": "ki",
+   "dev": "की",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16",
+   "i": 2,
+   "roman": "pehli",
+   "dev": "पहली",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16",
+   "i": 3,
+   "roman": "cassette",
+   "dev": "कैसेट",
+   "keyword": true,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16",
+   "i": 4,
+   "roman": "kaunsi",
+   "dev": "कौनसी",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16",
+   "i": 5,
+   "roman": "thi?",
+   "dev": "थी?",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16k",
+   "i": 0,
+   "roman": "Pencil",
+   "dev": "पेंसिल",
+   "keyword": true,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16k",
+   "i": 1,
+   "roman": "ya",
+   "dev": "या",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  },
+  {
+   "line": "L16k",
+   "i": 2,
+   "roman": "pen?",
+   "dev": "पेन?",
+   "keyword": false,
+   "onset_f": 896,
+   "end_f": 1023
+  }
+ ],
+ "vo": {
+  "status": "optional layer; not approved (BIJLI_SERIES voice rule)",
+  "rate_note": "estimate 2.7 w/s; leave room in the mix 1-4 kHz",
+  "lines": [
+   {
+    "id": "V1",
+    "captions": "HA",
+    "start_f": 3,
+    "roman": "Rewind button? Pencil.",
+    "dev": "रिवाइंड बटन? पेंसिल।",
+    "delivery": "dry question, beat, deadpan answer",
+    "words": 3
+   },
+   {
+    "id": "V1B",
+    "captions": "HB",
+    "start_f": 3,
+    "roman": "Battery khatam?",
+    "dev": "बैटरी ख़त्म?",
+    "delivery": "alarmed, quick",
+    "words": 2
+   },
+   {
+    "id": "V2",
+    "captions": "L2+L3",
+    "start_f": 70,
+    "roman": "Walkman ki battery bachani thi, toh pencil se ghumate the.",
+    "dev": "वॉकमैन की बैटरी बचानी थी, तो पेंसिल से घुमाते थे।",
+    "delivery": "warm, remembering, comma lift",
+    "words": 10
+   },
+   {
+    "id": "V3",
+    "captions": "L4+L5",
+    "start_f": 198,
+    "roman": "Gaana dhoondna ho? Sirf andaza.",
+    "dev": "गाना ढूँढना हो? सिर्फ़ अंदाज़ा।",
+    "delivery": "playful",
+    "words": 5
+   },
+   {
+    "id": "V4",
+    "captions": "L6",
+    "start_f": 320,
+    "roman": "Play. Galat! Phir se.",
+    "dev": "प्ले। ग़लत! फिर से।",
+    "delivery": "clipped, on the 8ths",
+    "words": 4
+   },
+   {
+    "id": "V5",
+    "captions": "L7+L8",
+    "start_f": 386,
+    "roman": "Mil gaya! Aur phir...",
+    "dev": "मिल गया! और फिर...",
+    "delivery": "relief, then ominous",
+    "words": 4
+   },
+   {
+    "id": "V6",
+    "captions": "L9",
+    "start_f": 466,
+    "roman": "Cassette phans gayi!",
+    "dev": "कैसेट फँस गई!",
+    "delivery": "panic (after the slam transient)",
+    "words": 3
+   },
+   {
+    "id": "V7",
+    "captions": "L10",
+    "start_f": 516,
+    "roman": "Saans rok ke, pencil se wapas.",
+    "dev": "साँस रोक के, पेंसिल से वापस।",
+    "delivery": "whispered, careful",
+    "words": 6
+   },
+   {
+    "id": "V8",
+    "captions": "L11",
+    "start_f": 590,
+    "roman": "Aaj bhi wahi karte hain.",
+    "dev": "आज भी वही करते हैं।",
+    "delivery": "plain, a smile",
+    "words": 5
+   },
+   {
+    "id": "V9",
+    "captions": "L12",
+    "start_f": 640,
+    "roman": "Peeche. Aage. Yahan.",
+    "dev": "पीछे। आगे। यहाँ।",
+    "delivery": "the VO skips the 2nd Peeche; tight",
+    "words": 3
+   },
+   {
+    "id": "V10",
+    "captions": "L13",
+    "start_f": 708,
+    "roman": "Bas tool badal gaya.",
+    "dev": "बस टूल बदल गया।",
+    "delivery": "dry; ends before f752 (drop-out)",
+    "words": 4
+   },
+   {
+    "id": "V11",
+    "captions": "L14",
+    "start_f": 770,
+    "roman": "Pehla editing tool? Pencil.",
+    "dev": "पहला एडिटिंग टूल? पेंसिल।",
+    "delivery": "the payoff: pause before Pencil, warm",
+    "words": 4
+   },
+   {
+    "id": "V12",
+    "captions": "L15",
+    "start_f": 818,
+    "roman": "Scrubbing toh cassette pe sikhi thi.",
+    "dev": "स्क्रबिंग तो कैसेट पे सीखी थी।",
+    "delivery": "proud, light",
+    "words": 6
+   },
+   {
+    "id": "V13",
+    "captions": "L16",
+    "start_f": 930,
+    "roman": "Aap ki pehli cassette kaunsi thi?",
+    "dev": "आप की पहली कैसेट कौनसी थी?",
+    "delivery": "inviting, rising, no breath at the end; ends <= f1005",
+    "words": 6
+   }
+  ]
+ },
+ "totals": {
+  "on_screen_words": 67,
+  "vo_words_A": 63
+ },
+ "open_questions": [
+  "Outro key line 'Pencil ya pen?' (lead OK)",
+  "VO voice + AI-info toggle if a VO is approved later"
+ ]
+}
