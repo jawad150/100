@@ -2,7 +2,7 @@
 
 A 41-second vertical reel (1080×1920, 23.976 fps). It adds the following to the supplied P.S. Med Spa edit:
 
-- two-line motion-graphic captions in brand red and grey, with some words masked behind her
+- two-line motion-graphic captions in brand red and black, with some words masked behind her
 - before/after photo cards with shadows
 - transitions at every cut
 - a color grade

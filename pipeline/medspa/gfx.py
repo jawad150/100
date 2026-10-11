@@ -43,6 +43,8 @@ RED = E.hexc(common.RED)[:3]
 # neutral grey (the brand charcoal leans blue, and the brief asks for grey, not blue)
 GREY_STOPS = [(-0.80, (0.75, 0.745, 0.74)), (-0.35, (0.53, 0.525, 0.52)), (0.05, (0.25, 0.248, 0.245))]
 DARK_STOPS = [(-0.80, (0.50, 0.495, 0.49)), (-0.35, (0.33, 0.328, 0.325)), (0.05, (0.15, 0.149, 0.148))]
+# client feedback: grey didn't stand out enough -> near-black with a faint top sheen for depth
+BLACK_STOPS = [(-0.80, (0.17, 0.17, 0.17)), (-0.35, (0.07, 0.07, 0.07)), (0.05, (0.015, 0.015, 0.015))]
 RED_STOPS = [(-0.80, (1.00, 0.36, 0.38)), (-0.35, E.hexc(common.RED)[:3]), (0.05, (0.66, 0.05, 0.09))]
 
 
@@ -195,7 +197,9 @@ def hero_l2(layer, t, text, t0, t_end, cx, base_y, size, color='grey', out_dur=0
     """Big Fraunces word (goes BEHIND the subject: draw on the behind layer)."""
     if t < t0 or t > t_end + out_dur:
         return
-    stops = {'grey': GREY_STOPS, 'dark': DARK_STOPS}.get(color, RED_STOPS)
+    stops = {'grey': BLACK_STOPS, 'dark': BLACK_STOPS}.get(color, RED_STOPS)
+    if color in ('grey', 'dark'):
+        opacity = 1.0
     wdt = text_width(text, SERIF, size)
     # slow drift (scale about center) for life
     life = E.prog(t, t0, t_end + out_dur)

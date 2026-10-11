@@ -7,9 +7,9 @@ A 41.1 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-
 ## Look
 
 - **Brand colors:** red `#EA1D25` and charcoal `#333740`.
-- **Two-line captions** follow the "using / SEO" style, with grey in place of blue:
+- **Two-line captions** follow the "using / SEO" style, with black in place of blue (first cut used grey; switched to black on client feedback for more punch):
   - a lead-in in light italic grotesk, white
-  - a big serif word in a silver-grey to charcoal gradient (or brand red), placed **behind** her
+  - a big serif word in near-black (or brand red), placed **behind** her
   - sometimes a white italic serif line in front
 - **Small word-by-word captions** in the light italic grotesk, white with a soft shadow.
 - **Fonts.** Founders Grotesk Light Italic and Freight Display Pro Semibold are commercial fonts, so free stand-ins are used:
