@@ -1,8 +1,15 @@
 """assets3d_thoda_left_bas.py - photoreal Blender props for Bijli series #2 "Thoda Left... Bas Bas!" (@jawad_mp4).
 
-Builds the asset folders of SHOTS §a (brand_reels/design/reels/thoda_left_bas/SHOTS.md) with bpy 5.2 / Cycles CPU
-(threads 2, adaptive threshold 0.02, OpenImageDenoise with albedo + normal guides, fixed seed, view transform
-Standard, look None) as RGBA 8-bit straight-alpha sRGB PNGs in the shared 3D asset spec. STMaps are 16-bit RGBA PNGs
+Builds the asset folders of SHOTS §a (brand_reels/design/reels/thoda_left_bas/SHOTS.md) with bpy 5.2 / Cycles
+(OpenImageDenoise with albedo + normal guides, fixed seed, view transform Standard, look None) as RGBA 8-bit
+straight-alpha sRGB PNGs in the shared 3D asset spec.
+
+    Device: assets3d_gpu.set_device (called from reset()). CPU by default (the shared Linux box: tests / previews
+    only, threads 2, adaptive 0.02); FOSTER_GPU=1 picks OPTIX > CUDA > HIP > METAL > ONEAPI (finals: RTX 4060 OptiX,
+    8 GB) and switches every pass to its GPU sample count (gpu_spp in the @asset table, 256-512, adaptive 0.01, OIDN
+    on the GPU). The device lands in the log line "[assets3d] Cycles device: ..." and in meta.json "device". Never
+    mix CPU and GPU frames in one folder. SKIP_EXISTING=1 resumes an interrupted folder (raw frames are kept until
+    the folder is complete; the crop + meta.json happen at the end). Paths are built with os.path (Windows-safe). STMaps are 16-bit RGBA PNGs
 written with the 'Raw' view transform (linear values, no denoise). Notes for the compositor: ASSETS.md next to SHOTS.
 
     RWS = workspace/jawad_reels/thoda_left_bas
@@ -43,8 +50,10 @@ CLI
     python3 assets3d_thoda_left_bas.py restore                # archive -> RWS/assets3d (fresh container, no re-render)
     python3 assets3d_thoda_left_bas.py selftest
 
-    --preview  16 spp, half resolution, into RWS/out/preview3d/ (finals untouched). env TLB_THREADS (default 2).
-    Run every render through pipeline/jawad_reels/tools/heavy.sh.
+    --preview  16 spp, half resolution, into RWS/out/preview3d/ (finals untouched). env TLB_THREADS (default 2),
+    TLB_OUT (default RWS/assets3d), FOSTER_GPU=1 (GPU finals), FOSTER_GPU_TYPE=CUDA, SKIP_EXISTING=1.
+    On the shared Linux box every render goes through pipeline/jawad_reels/tools/heavy.sh; on the GPU PC run the
+    python lines of brand_reels/design/reels/thoda_left_bas/RENDER_JOBS.md directly.
 
 No text, logo or brand mark on any prop: the only marks are the hand-painted white index marks on the pipe and the
 strap and blank faded stickers. Real-world dimensions in metres. The Bijli builder is imported for engine helpers
@@ -99,13 +108,35 @@ def C(h):
 
 # ============================================================================= scene / render engine
 
+DEVICE = 'CPU'
+
+
+def is_gpu():
+    """True when assets3d_gpu picked a GPU backend for this process (FOSTER_GPU=1 on the RTX PC)."""
+    return not DEVICE.startswith('CPU')
+
+
 def reset(res, samples, transparent=True):
+    """Empty Cycles scene (B.reset -> H.reset: factory settings, OIDN albedo + normal, RGBA 8-bit PNG) with this
+    reel's settings. Device: assets3d_gpu.set_device -> CPU unless FOSTER_GPU=1 finds a GPU (OPTIX > CUDA > ...);
+    on the GPU the CPU only syncs the scene (threads AUTO) and OIDN runs on the GPU."""
+    global DEVICE
+    import assets3d_gpu
     sc = B.reset(res, samples, transparent)
-    sc.render.threads_mode = 'FIXED'
-    sc.render.threads = THREADS
+    DEVICE = assets3d_gpu.set_device(bpy, sc)      # idempotent (H.reset already set it); returns the device name
+    if is_gpu():
+        sc.render.threads_mode = 'AUTO'
+        if hasattr(sc.cycles, 'denoising_use_gpu'):
+            sc.cycles.denoising_use_gpu = True
+    else:
+        sc.render.threads_mode = 'FIXED'
+        sc.render.threads = THREADS
     sc.cycles.seed = 7
     sc.cycles.use_animated_seed = False
-    sc.cycles.adaptive_threshold = 0.02
+    sc.cycles.adaptive_threshold = 0.01 if is_gpu() else 0.02
+    sc.cycles.denoiser = 'OPENIMAGEDENOISE'
+    sc.cycles.denoising_input_passes = 'RGB_ALBEDO_NORMAL'
+    sc.cycles.denoising_prefilter = 'ACCURATE'
     sc.cycles.diffuse_bounces = 3
     sc.cycles.glossy_bounces = 4
     sc.cycles.transmission_bounces = 8
@@ -537,10 +568,13 @@ def mat_gi_pipe(name='gi_pipe', contacts=(), top=None, mark=None, rust=1.0):
     x, y, z = g.xyz(co)
     cell = vor(g, co, 260.0, out='Color')
     cr, _, _ = g.xyz(cell)
-    spg_r = g.m('MULTIPLY_ADD', cr, 0.16, 0.26)
-    spg_c = g.mix(cr, C('#8E8E89'), C('#A6A6A0'))
+    spg_r = g.m('MULTIPLY_ADD', cr, 0.07, 0.40)
+    spg_c = g.mix(cr, C('#8C8C87'), C('#9A9A94'))
     dull = g.mr(g.noise(co, 5.0, 3.0, 0.6), 0.35, 0.7, 0.0, 1.0)
-    spg_c = g.mix(g.m('MULTIPLY', dull, 0.5), spg_c, C('#7E7C76'))
+    spg_c = g.mix(g.m('MULTIPLY', dull, 0.6), spg_c, C('#76746E'))
+    wrust = g.mr(g.noise(co, 22.0, 4.0, 0.65), 0.55, 0.72, 0.0, 0.7, smooth=True)     # white rust (zinc oxide) film
+    spg_c = g.mix(wrust, spg_c, C('#B4B0A6'))
+    spg_r = g.m('ADD', spg_r, g.m('MULTIPLY', wrust, 0.35))
     rmask = g.m('MULTIPLY', g.mr(g.noise(co, 9.0, 4.0, 0.65), 0.60, 0.74, 0.0, 1.0, smooth=True), 0.6)
     drip = streaks(g, co, 140.0, 3.0, 1.0, 0.52, 0.72)
     for zc in contacts:
@@ -560,7 +594,7 @@ def mat_gi_pipe(name='gi_pipe', contacts=(), top=None, mark=None, rust=1.0):
     rust_c = g.mix(g.mr(rn, 0.35, 0.7, 0.0, 1.0), C('#5E3219'), C('#A0522D'))
     rust_c = g.mix(g.mr(g.noise(co, 30.0, 3.0, 0.6), 0.5, 0.8, 0.0, 1.0), rust_c, C('#3E2414'))
     base = g.mix(rmask, spg_c, rust_c)
-    metal = g.m('SUBTRACT', 1.0, rmask)
+    metal = g.m('MAXIMUM', g.m('SUBTRACT', g.m('SUBTRACT', 1.0, rmask), g.m('MULTIPLY', wrust, 0.6)), 0.0)
     rough = g.m('ADD', g.m('MULTIPLY', rmask, g.m('SUBTRACT', 0.9, spg_r)), spg_r)
     if mark is not None:
         ang, z0, z1, wid = mark
@@ -574,7 +608,7 @@ def mat_gi_pipe(name='gi_pipe', contacts=(), top=None, mark=None, rust=1.0):
         mk = g.m('MULTIPLY', mk, g.m('MULTIPLY', g.mr(zz, z0 - 0.001, z0 + 0.001, 0.0, 1.0), g.mr(zz, z1 + 0.002, z1 - 0.002, 0.0, 1.0)))
         chip = g.mr(g.noise(co, 1400.0, 2.0, 0.7), 0.62, 0.66, 1.0, 0.0)
         mk = g.m('MULTIPLY', mk, chip)
-        paint = g.mix(g.mr(g.noise(co, 300.0, 2.0, 0.6), 0.3, 0.8, 0.0, 1.0), C('#E8E2D2'), C('#D6CDB8'))
+        paint = g.mix(g.mr(g.noise(co, 300.0, 2.0, 0.6), 0.3, 0.8, 0.0, 1.0), C('#CBC2AC'), C('#A99E86'))
         base = g.mix(mk, base, paint)
         metal = g.m('MULTIPLY', metal, g.m('SUBTRACT', 1.0, mk))
         rough = g.m('ADD', g.m('MULTIPLY', mk, g.m('SUBTRACT', 0.5, rough)), rough)
@@ -597,9 +631,10 @@ def mat_strap(name='steel_strap', mark=None):
     rn = g.noise(co, 220.0, 5.0, 0.65)
     big = g.noise(co, 30.0, 3.0, 0.6)
     rust_c = g.mix(g.mr(rn, 0.3, 0.7, 0.0, 1.0), C('#4A2412'), C('#8B4513'))
-    rust_c = g.mix(g.mr(big, 0.55, 0.75, 0.0, 1.0), rust_c, C('#A35A26'))
+    rust_c = g.mix(g.mr(big, 0.62, 0.8, 0.0, 0.6), rust_c, C('#8E5128'))
+    rust_c = g.mix(g.mr(g.noise(co, 70.0, 4.0, 0.7), 0.5, 0.75, 0.0, 0.8), rust_c, C('#2E1A10'))
     pn = g.noise(co, 55.0, 5.0, 0.7, dist=0.4)
-    paint = g.mr(pn, 0.54, 0.565, 0.0, 1.0)
+    paint = g.mr(pn, 0.56, 0.585, 0.0, 1.0)
     paint_c = g.mix(g.mr(g.noise(co, 140.0, 2.0, 0.6), 0.3, 0.7, 0.0, 1.0), C('#5F6B5C'), C('#6E786A'))
     base = g.mix(paint, rust_c, paint_c)
     rough = g.m('ADD', g.m('MULTIPLY', paint, -0.3), 0.9)
@@ -608,12 +643,12 @@ def mat_strap(name='steel_strap', mark=None):
         c, hs = mark
         jit = g.n('ShaderNodeVectorMath', operation='ADD')
         g.put(jit.inputs[0], co)
-        g.put(jit.inputs[1], vsc(g, g.noise(co, 500.0, 2.0, 0.6, color=True), 0.0012))
+        g.put(jit.inputs[1], vsc(g, g.m('SUBTRACT', g.noise(co, 260.0, 3.0, 0.7), 0.5), 0.004))
         mk = box_falloff(g, jit.outputs[0], c, hs, 0.0008)
-        chip = g.mr(g.noise(co, 1100.0, 2.0, 0.7), 0.64, 0.67, 1.0, 0.0)
+        chip = g.mr(g.noise(co, 700.0, 3.0, 0.7), 0.60, 0.64, 1.0, 0.0)
         mk = g.m('MULTIPLY', mk, chip)
-        base = g.mix(mk, base, C('#E5DECD'))
-        rough = g.m('ADD', g.m('MULTIPLY', mk, -0.4), rough)
+        base = g.mix(mk, base, g.mix(g.mr(g.noise(co, 400.0, 3.0, 0.6), 0.3, 0.8, 0.0, 1.0), C('#CFC6B0'), C('#A89C84')))
+        rough = g.m('ADD', g.m('MULTIPLY', mk, -0.3), rough)
         h = g.m('ADD', h, g.m('MULTIPLY', mk, 0.4))
     g.put(b.inputs['Base Color'], base)
     g.put(b.inputs['Roughness'], rough)
@@ -1374,11 +1409,24 @@ ORDER = ['crt/macro', 'antenna/day_yaw', 'roof/day', 'clamp/macro', 'clamp/pipe_
          'antenna/sunset_yaw', 'roof/sunset']
 
 
-def asset(key, mode, labels=None, yaws=None, crop=False, notes=''):
+def asset(key, mode, labels=None, yaws=None, crop=False, notes='', gpu_spp=None):
+    """Register an asset folder. The builder's setup(label) returns (kind, CPU spp); gpu_spp (int, or a dict
+    label -> spp; 'yaw' for yaw folders) replaces that count when the GPU renders the finals (FOSTER_GPU=1)."""
     def deco(fn):
-        ASSETS[key] = dict(key=key, mode=mode, labels=labels, yaws=yaws, crop=crop, notes=notes, build=fn)
+        ASSETS[key] = dict(key=key, mode=mode, labels=labels, yaws=yaws, crop=crop, notes=notes, build=fn,
+                           gpu_spp=gpu_spp)
         return fn
     return deco
+
+
+def final_spp(key, label, cpu_spp):
+    """Final sample count for one pass: the GPU table on a GPU, the builder's CPU count otherwise."""
+    g = ASSETS[key].get('gpu_spp')
+    if not is_gpu() or g is None:
+        return cpu_spp
+    if isinstance(g, dict):
+        return g.get(label, g.get('*', cpu_spp))
+    return g
 
 
 def _alpha_bbox(paths, thr=2):
@@ -1414,8 +1462,11 @@ def render_folder(key, preview=False, samples=None, frames=None):
     bpy.context.view_layer.update()
     outdir = os.path.join(PREVIEW if preview else OUT, name, variant)
     os.makedirs(outdir, exist_ok=True)
+    skip = os.environ.get('SKIP_EXISTING') == '1' and not preview and not frames
+    if os.path.exists(os.path.join(outdir, 'meta.json')):
+        os.remove(os.path.join(outdir, 'meta.json'))          # meta.json is written last, never stale
     for f in os.listdir(outdir):
-        if f.endswith('.png') or f == 'meta.json':
+        if f.endswith('.png') and not (skip and f.startswith('_raw_')):
             os.remove(os.path.join(outdir, f))
     if spec['mode'] == 'yaw':
         items = [('yaw', y) for y in spec['yaws']]
@@ -1438,9 +1489,9 @@ def render_folder(key, preview=False, samples=None, frames=None):
                   min(res[1], int(math.ceil(bb[3])) + mg)]
         B.set_border(sc, border, res)
     print(f'[{key}] scene built in {time.time() - t0:.1f}s; {res[0]}x{res[1]}; border {border}; '
-          f'{len(idx)} frames', flush=True)
+          f'{len(idx)} frames; device {DEVICE}' + ('' if is_gpu() else f' x{THREADS} threads'), flush=True)
     raws, times, fpf = [], {}, {}
-    kinds = {}
+    kinds, spp_used = {}, {}
     for i in idx:
         typ, val = items[i]
         if typ == 'yaw':
@@ -1451,13 +1502,18 @@ def render_folder(key, preview=False, samples=None, frames=None):
             kind, spp = S['setup'](val)
             label = val
         kinds[label] = kind
+        spp = final_spp(key, 'yaw' if typ == 'yaw' else label, spp)
+        spp_used[label] = S_FLAT if kind == 'flat' else (S_PREVIEW if preview else (samples or spp))
         settings(sc, kind, S_PREVIEW if preview and kind != 'flat' else (samples if (samples and kind != 'flat') else spp))
         bpy.context.view_layer.update()
         p = os.path.join(outdir, f'_raw_{i:04d}.png')
-        t1 = time.time()
-        B.render_to(sc, p)
-        times[label] = round(time.time() - t1, 1)
-        print(f'  {key}/{label}: {times[label]}s ({kind}, {sc.cycles.samples} spp)', flush=True)
+        if skip and os.path.exists(p):
+            print(f'  {key}/{label}: kept (SKIP_EXISTING)', flush=True)
+        else:
+            t1 = time.time()
+            B.render_to(sc, p)
+            times[label] = round(time.time() - t1, 1)
+            print(f'  {key}/{label}: {times[label]}s ({kind}, {sc.cycles.samples} spp)', flush=True)
         raws.append((i, p))
         if typ == 'yaw':
             for fk, fp in S['feats']().items():
@@ -1497,7 +1553,8 @@ def render_folder(key, preview=False, samples=None, frames=None):
                      round(v[1] - frame_xy[1], 1)]
     features = {k: rel(v) for k, v in feats_static.items()}
     meta = dict(name=name, variant=variant, mode=spec['mode'], frames=len(items), fps_hint=30,
-                loop=False, notes=spec['notes'], preview=bool(preview), device='CPU', threads=THREADS,
+                loop=False, notes=spec['notes'], preview=bool(preview), device=DEVICE,
+                threads=None if is_gpu() else THREADS,
                 render_seconds=times, builder=BUILDER, scale_to_final=round(1.0 / sk, 3))
     if spec['mode'] == 'yaw':
         meta['yaw_range'] = [spec['yaws'][0], spec['yaws'][-1]]
@@ -1524,8 +1581,7 @@ def render_folder(key, preview=False, samples=None, frames=None):
     if 'pivot' in features:
         meta['pivot'] = features['pivot']
     meta['camera'] = S.get('camera_meta', {})
-    meta['samples'] = {k: (S_FLAT if v == 'flat' else (S_PREVIEW if preview else (samples or S.get('spp', {}).get(k, 0))))
-                       for k, v in kinds.items()} if spec['mode'] != 'yaw' else (S_PREVIEW if preview else (samples or S.get('spp_yaw')))
+    meta['samples'] = dict(spp_used) if spec['mode'] != 'yaw' else (next(iter(spp_used.values())) if spp_used else None)
     meta.update(meta_extra)
     sz = cv2.imread(os.path.join(outdir, f'{idx[0]:04d}.png'), cv2.IMREAD_UNCHANGED).shape
     meta['size'] = [int(sz[1]), int(sz[0])]
@@ -1580,13 +1636,13 @@ def _antenna_asset(variant, q, preview):
                 extra=dict(layer='over roof/%s bg, under roof/%s fg_clamp' % (variant, variant), yaw0_world_azimuth=YAW0))
 
 
-@asset('antenna/day_yaw', 'yaw', yaws=[float(v) for v in np.linspace(-45, 15, 61)], crop=True,
+@asset('antenna/day_yaw', 'yaw', yaws=[float(v) for v in np.linspace(-45, 15, 61)], crop=True, gpu_spp={'yaw': 256},
        notes='Yagi on the GI mast, golden-hour sun back-left (el 14), RGBA over the sky; mast + coax turn with yaw')
 def _a1(q, preview):
     return _antenna_asset('day', q, preview)
 
 
-@asset('antenna/sunset_yaw', 'yaw', yaws=[float(v) for v in np.linspace(-3, 3, 7)], crop=True,
+@asset('antenna/sunset_yaw', 'yaw', yaws=[float(v) for v in np.linspace(-3, 3, 7)], crop=True, gpu_spp={'yaw': 384},
        notes='the antenna backlit by the low sun (el 3) at sunset: dark silhouette, hot rim lines; RGBA')
 def _a2(q, preview):
     return _antenna_asset('sunset', q, preview)
@@ -1614,16 +1670,1191 @@ def _roof_plate(variant, q, preview):
                 extra=dict(layers='bg (opaque) -> antenna/%s_yaw -> fg_clamp (RGBA)' % variant))
 
 
-@asset('roof/day', 'static', labels=['bg', 'fg_clamp'],
+@asset('roof/day', 'static', labels=['bg', 'fg_clamp'], gpu_spp={'bg': 512, 'fg_clamp': 256},
        notes='rooftop plate, golden hour: parapet, clamps, tank, clothesline, hazed rooftops; pipe NOT in the plate')
 def _a3d(q, preview):
     return _roof_plate('day', q, preview)
 
 
-@asset('roof/sunset', 'static', labels=['bg', 'fg_clamp'],
+@asset('roof/sunset', 'static', labels=['bg', 'fg_clamp'], gpu_spp={'bg': 512, 'fg_clamp': 256},
        notes='rooftop plate at sunset (sun disc el 3 right of the mast); pipe NOT in the plate')
 def _a3s(q, preview):
     return _roof_plate('sunset', q, preview)
+
+
+# ============================================================================= A4 clamp macro
+
+SUN['clamp'] = dict(az=203.0, el=14.0, color='#FFD7A0', strength=4.2, angle=0.6,
+                    zenith='#6F8CB0', mid='#C9C3B4', horizon='#F3CF9C', glow='#FFD9A0', ground='#6A5E52',
+                    glow_k=(1.4, 0.55), sky_k=0.9, disc=0.0)
+CLAMP_YAWS = [float(v) for v in np.linspace(-6.0, 2.0, 17)]
+
+
+def cam_clamp(feats):
+    """CAM_CLAMP: 100 mm at 0.5 m from the strap mark, 10 deg down, the frame centre a little right of the mark so the
+    right ear + bolt read; f/2.8 focused on the strap mark (the pipe mark sits at the same depth at yaw 0)."""
+    mk = np.asarray(feats['strap_mark'], float)
+    a = math.radians(MARK_ANG)
+    d = np.array([math.cos(a), math.sin(a), 0.0])           # outward from the pipe axis through the mark
+    right = np.cross(-d, np.array([0.0, 0.0, 1.0]))
+    right /= np.linalg.norm(right)
+    dist, down = 0.50, math.radians(10.0)
+    loc = mk + d * dist * math.cos(down) + np.array([0, 0, dist * math.sin(down)]) + right * 0.012
+    tgt = mk + right * 0.024 + np.array([0, 0, 0.012])
+    return camera('CAM_CLAMP', tuple(loc), tuple(tgt), 100.0, fstop=2.8, focus=tuple(mk))
+
+
+def _clamp_scene(q):
+    world_sky('clamp')
+    sun_lamp('clamp')
+    objs = []
+    clamps = [(MAST[0], z, 0.0) for z in CLAMP_Z]
+    wall_m = mat_plaster('plaster_wall_macro', top=PARA_H, clamps=clamps, chip=None)
+    cop_m = mat_plaster('plaster_coping_macro', top=TOP + 0.02, clamps=(), chip=None, base='#948A7E')
+    o = B.cube('parapet', (-1.5, 0.0, 0.0), (1.5, PARA_T, PARA_H), wall_m, role='env')
+    bevel_mod(o, 0.006, 2)
+    objs.append(o)
+    o = B.cube('coping', (-1.5, -0.03, PARA_H), (1.5, PARA_T + 0.03, TOP), cop_m, role='env')
+    bevel_mod(o, 0.008, 3)
+    objs.append(o)
+    objs.append(B.cube('floor', (-1.5, -2.0, -0.15), (1.5, 0.0, 0.0), mat_concrete(), role='env'))
+    # warm bounce from the sunlit roof floor below (soft card, not seen by the camera)
+    B.light('BOUNCE_floor', 'AREA', (MAST[0], -0.45, 0.25), 6.0, '#FFC890', target=(MAST[0], -0.05, 0.72),
+            size=(0.8, 0.5), group='bounce')
+    steel = mat_rusty_steel('rusty_bolts', 0.85)
+    feats = {}
+    for k, z in enumerate(CLAMP_Z):
+        parts, f = strap_clamp(f'strap{k}', z, strap_material(z, k == 0), steel, mark=(k == 0))
+        for p_ in parts:
+            p_['role'] = 'clamp'
+        objs += parts
+        if k == 0:
+            feats.update(f)
+    # the mast alone (same material + paint mark as the antenna asset), rotating about its axis
+    root = empty('PIPE_ROOT', (MAST[0], MAST[1], 0.0))
+    pipe_m = mat_gi_pipe('gi_pipe_mast', contacts=CLAMP_Z + (BOOM_Z + 0.04, BOOM_Z - 0.04), top=MAST_TOP,
+                         mark=pipe_mark())
+    seg = max(32, int(128 * q))
+    mast = lathe_obj('mast', [(PIPE_R, 0.0), (PIPE_R, 1.6)], pipe_m, seg=seg, sharp=50)
+    mast.parent = root
+    mast['role'] = 'mast'
+    # coax down the wall side of the mast with a tape wrap just under the upper clamp (turns with the pipe)
+    a = math.radians(COAX_ANG)
+    rr = PIPE_R + 0.0036
+    cx_ = tube('coax', [(rr * math.cos(a), rr * math.sin(a), z_) for z_ in (1.6, 1.2, 0.9, 0.5, 0.1)], 0.0035,
+               mat_coax(), res=3, order=2, parent=root)
+    cx_['role'] = 'mast'
+    objs += [mast, cx_]
+    return objs, feats, root
+
+
+def _clamp_asset(q, preview, which):
+    objs, feats, root = _clamp_scene(q)
+    cam = cam_clamp(feats)
+    allo = all_objs()
+
+    def set_yaw(y):
+        root.rotation_euler = (0.0, 0.0, math.radians(YAW0 + y))
+
+    set_yaw(0.0)
+
+    def feat_pipe():
+        bpy.context.view_layer.update()
+        pm = pipe_mark()
+        ang = math.radians(pm[0])
+        zc = (pm[1] + pm[2]) / 2
+        p = root.matrix_world @ Vector(((PIPE_R + 0.0002) * math.cos(ang), (PIPE_R + 0.0002) * math.sin(ang), zc))
+        return {'pipe_mark': tuple(p), 'pipe_axis': tuple(root.matrix_world @ Vector((0, 0, CLAMP_Z[0])))}
+
+    if which == 'macro':
+        def setup(label):
+            sc = bpy.context.scene
+            set_yaw(0.0)
+            if label == 'bg':
+                sc.render.film_transparent = False
+                set_roles(allo, {'mast': 'cam_off'})
+                return 'beauty', 128
+            sc.render.film_transparent = True
+            set_roles(allo, {'env': 'cam_off', 'mast': 'holdout', 'clamp': 'normal'})
+            return 'beauty', 128
+        sf = dict(strap_mark=feats['strap_mark'], bolt_l=feats['bolt_l'], bolt_r=feats['bolt_r'])
+        sf.update(feat_pipe())
+        return dict(setup=setup, static_feats=sf, camera_meta=cam_meta(cam),
+                    extra=dict(layers='bg (opaque, no pipe) -> clamp/pipe_yaw at_yaw(yaw) at its frame_xy -> fg (RGBA)'))
+
+    def setup(label):
+        bpy.context.scene.render.film_transparent = True
+        set_roles(allo, {'env': 'cam_off', 'clamp': 'cam_off', 'mast': 'normal'})
+        return 'beauty', 96
+    return dict(set_yaw=set_yaw, setup=setup, feats=feat_pipe, crop_objs=[o for o in allo if o.get('role') == 'mast'],
+                frame_yaws=[CLAMP_YAWS[0], CLAMP_YAWS[-1]], camera_meta=cam_meta(cam),
+                extra=dict(layer='over clamp/macro bg, under clamp/macro fg', yaw0_world_azimuth=YAW0,
+                           mark_note='pipe mark aligned with the strap mark at yaw 0 (S4 f288)'))
+
+
+@asset('clamp/macro', 'static', labels=['bg', 'fg'], gpu_spp={'bg': 512, 'fg': 384},
+       notes='upper strap clamp macro, raking sun: bg = plaster + clamp (pipe invisible, its shadow kept); '
+             'fg = strap + bolts only (pipe holdout)')
+def _a4m(q, preview):
+    return _clamp_asset(q, preview, 'macro')
+
+
+@asset('clamp/pipe_yaw', 'yaw', yaws=CLAMP_YAWS, crop=True, gpu_spp={'yaw': 256},
+       notes='the GI pipe with its hand-painted mark turning in the clamp, 0.5 deg steps; RGBA strip, clamp shadows on it')
+def _a4p(q, preview):
+    return _clamp_asset(q, preview, 'pipe')
+
+
+# ============================================================================= A5 / A6 CRT TV in the 90s room
+
+def loft2(name, loops, mat, k=6, cap0=False, cap1=False, sharp=36.0, role='prop', parent=None, smooth=True):
+    """Like loft() but every loop carries its own centre: loops = [(cx, cz, hx, hz, r, y), ...] (rounded rects in
+    the XZ plane, depth along world y). Bezels, frames and tapered backs whose opening is off-centre."""
+    V, F = [], []
+    n = 4 * k
+    for (cx, cz, hx, hz, r, y) in loops:
+        for (a, b) in rrect_loop(hx, hz, r, k):
+            V.append((cx + a, y, cz + b))
+    for i in range(len(loops) - 1):
+        for j in range(n):
+            a0 = i * n + j
+            b0 = i * n + (j + 1) % n
+            F.append((a0, b0, b0 + n, a0 + n))
+    if cap0:
+        F.append(tuple(range(n - 1, -1, -1)))
+    if cap1:
+        base = (len(loops) - 1) * n
+        F.append(tuple(base + j for j in range(n)))
+    o = _mesh(name, np.array(V), F, mat, smooth=smooth, role=role, parent=parent)
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(o.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(o.data)
+    bm.free()
+    if sharp is not None:
+        o.data.set_sharp_from_angle(angle=math.radians(sharp))
+    return o
+
+
+def rrect_mask(g, u, v, w, h, r, soft=0.0006):
+    """1 inside a rounded rectangle w x h (metres, corner r) centred on (0, 0) of the (u, v) metre coordinates."""
+    dx = g.m('SUBTRACT', g.m('ABSOLUTE', u), w / 2 - r)
+    dy = g.m('SUBTRACT', g.m('ABSOLUTE', v), h / 2 - r)
+    ox = g.m('MAXIMUM', dx, 0.0)
+    oy = g.m('MAXIMUM', dy, 0.0)
+    outer = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', ox, ox), g.m('MULTIPLY', oy, oy)))
+    inner = g.m('MINIMUM', g.m('MAXIMUM', dx, dy), 0.0)
+    d = g.m('SUBTRACT', g.m('ADD', outer, inner), r)
+    return g.mr(d, soft, -soft, 0.0, 1.0)
+
+
+def _shader_mat(name):
+    m = bpy.data.materials.new(name)
+    nt = m.node_tree
+    for nn in list(nt.nodes):
+        nt.nodes.remove(nn)
+    return m, B.G(nt)
+
+
+def mat_screen_uv(name, w, h, r, axes='xz', holes=()):
+    """STMap material for a screen object whose object origin is the picture centre: emission (u, v, 0) with
+    u = x / w + 0.5, v = (z or y) / h + 0.5 (linear, written with the Raw view), holdout outside the rounded picture
+    (and inside `holes` = [(cx, cy, radius)], e.g. a punch-hole camera)."""
+    m, g = _shader_mat(name)
+    x, y, z = g.xyz(g.co('Object'))
+    vv = z if axes == 'xz' else y
+    u = g.m('ADD', g.m('DIVIDE', x, w), 0.5)
+    v = g.m('ADD', g.m('DIVIDE', vv, h), 0.5)
+    mask = rrect_mask(g, x, vv, w, h, r, soft=0.00025)
+    for (hx_, hy_, hr) in holes:
+        dx = g.m('SUBTRACT', x, hx_)
+        dy = g.m('SUBTRACT', vv, hy_)
+        dd = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', dx, dx), g.m('MULTIPLY', dy, dy)))
+        mask = g.m('MULTIPLY', mask, g.mr(dd, hr - 0.0002, hr + 0.0002, 0.0, 1.0))
+    e = g.n('ShaderNodeEmission')
+    g.put(e.inputs['Color'], g.comb(u, v, 0.0))
+    e.inputs['Strength'].default_value = 1.0
+    hd = g.n('ShaderNodeHoldout')
+    mx = g.n('ShaderNodeMixShader')
+    g.put(mx.inputs[0], mask)
+    g.nt.links.new(hd.outputs[0], mx.inputs[1])
+    g.nt.links.new(e.outputs[0], mx.inputs[2])
+    out = g.n('ShaderNodeOutputMaterial')
+    g.nt.links.new(mx.outputs[0], out.inputs[0])
+    m.cycles.emission_sampling = 'NONE'
+    return m
+
+
+def mat_screen_spill(name, w, h, r, axes='xz', color='#EFE6D6', strength=2.0, base='#0B0D0C'):
+    """'spill' pass screen: a uniform IVORY emitter over the picture (the screen lighting the set), dark glass around."""
+    m, b, g = B.principled(name, base, rough=0.05, spec=0.5, coat=1.0, coat_rough=0.03)
+    x, y, z = g.xyz(g.co('Object'))
+    mask = rrect_mask(g, x, z if axes == 'xz' else y, w, h, r)
+    g.put(b.inputs['Emission Color'], rgb(g, color))
+    g.put(b.inputs['Emission Strength'], g.m('MULTIPLY', mask, strength))
+    m.cycles.emission_sampling = 'FRONT'
+    return m
+
+
+def cam_holdout_wrap(exclude):
+    """Make every material except `exclude` a holdout for CAMERA rays only (still seen by reflections, still lit
+    and casting light): the 'refl' pass keeps only what the glass reflects. Returns an undo function."""
+    undo = []
+    for m in bpy.data.materials:
+        if m in exclude or not m.use_nodes:
+            continue
+        nt = m.node_tree
+        out = next((n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL' and n.is_active_output), None)
+        if out is None or not out.inputs['Surface'].links:
+            continue
+        src = out.inputs['Surface'].links[0].from_socket
+        lp = nt.nodes.new('ShaderNodeLightPath')
+        hd = nt.nodes.new('ShaderNodeHoldout')
+        mx = nt.nodes.new('ShaderNodeMixShader')
+        nt.links.new(lp.outputs['Is Camera Ray'], mx.inputs[0])
+        nt.links.new(src, mx.inputs[1])
+        nt.links.new(hd.outputs[0], mx.inputs[2])
+        nt.links.new(mx.outputs[0], out.inputs['Surface'])
+        undo.append((nt, out, src, (lp, hd, mx)))
+
+    def restore():
+        for nt, out, src, nodes in undo:
+            nt.links.new(src, out.inputs['Surface'])
+            for nn in nodes:
+                nt.nodes.remove(nn)
+    return restore
+
+
+@mat_cache
+def mat_wood_vinyl(name='wood_vinyl'):
+    """90s TV cabinet wood-grain vinyl: printed walnut-ish grain #5B3A22 -> #7A5232 (object x along the grain),
+    satin print with a slight coat, scuffs, edge wear to the pale substrate on corners (pointiness), dust on top."""
+    m, b, g = B.principled(name, '#6A4529', rough=0.42, spec=0.5, coat=0.25, coat_rough=0.25)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    gc = g.comb(g.m('MULTIPLY', x, 0.15), g.m('MULTIPLY', y, 1.0), g.m('MULTIPLY', z, 1.0))
+    grain = g.wave(gc, 7.0, 9.0, 4.0, bands='Y')
+    fine = g.noise(g.comb(g.m('MULTIPLY', x, 0.05), g.m('MULTIPLY', y, 4.0), g.m('MULTIPLY', z, 4.0)), 90.0, 3.0, 0.6)
+    t = g.m('ADD', g.m('MULTIPLY', g.mr(grain, 0.0, 1.0, 0.0, 1.0), 0.7), g.m('MULTIPLY', fine, 0.3))
+    c = g.mix(t, C('#5B3A22'), C('#7A5232'))
+    c = g.mix(g.mr(g.noise(co, 2.5, 3.0, 0.6), 0.4, 0.7, 0.0, 0.35), c, C('#4A2E1B'))      # sun-faded patches
+    pt = g.n('ShaderNodeNewGeometry').outputs['Pointiness']
+    wear = g.m('MULTIPLY', g.mr(pt, 0.52, 0.60, 0.0, 1.0, smooth=True), g.mr(g.noise(co, 60.0, 3.0, 0.6), 0.35, 0.6, 0.0, 1.0))
+    c = g.mix(wear, c, C('#B9A68A'))
+    up = up_mask(g, 0.2, 0.95)
+    dust = g.m('MULTIPLY', up, g.mr(g.noise(co, 25.0, 4.0, 0.6), 0.45, 0.75, 0.15, 0.45))
+    c = g.mix(dust, c, C('#9A8E7C'))
+    scr = g.mr(g.noise(stretch(g, co, 1800.0, 60.0, 60.0), 1.0, 2.0, 0.5), 0.74, 0.8, 0.0, 1.0)
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('ADD', g.m('MULTIPLY', dust, 0.4), g.m('MULTIPLY', wear, 0.3)), 0.40))
+    g.put(b.inputs['Coat Weight'], g.m('SUBTRACT', 0.25, g.m('MULTIPLY', dust, 0.25)))
+    add_bumps(g, b, (fine, 0.05, 0.0003), (scr, 0.08, 0.0001), (g.noise(co, 900.0, 2.0, 0.6), 0.04, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_bezel(name='bezel_plastic', base='#2B2927', worn=None):
+    """Dark grey textured (stippled) plastic: fine stipple bump, dust in cavities, shiny worn patch round the
+    controls `worn` = (x, z, radius) in object coordinates."""
+    m, b, g = B.principled(name, base, rough=0.55, spec=0.5)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    stip = vor(g, co, 2200.0, out='Distance')
+    c = vsc(g, rgb(g, base), g.m('MULTIPLY_ADD', g.noise(co, 30.0, 3.0, 0.6), 0.25, 0.88))
+    cav = g.m('MULTIPLY', g.mr(ao(g, 0.006), 0.4, 0.95, 1.0, 0.0), 0.8)
+    up = up_mask(g, 0.3, 0.95)
+    dust = g.m('MAXIMUM', cav, g.m('MULTIPLY', up, g.mr(g.noise(co, 40.0, 3.0, 0.6), 0.4, 0.75, 0.2, 0.7)))
+    c = g.mix(dust, c, C('#6C6458'))
+    rough = g.m('ADD', g.m('MULTIPLY', dust, 0.3), 0.55)
+    if worn is not None:
+        wx, wz, wr = worn
+        dx = g.m('SUBTRACT', x, wx)
+        dz = g.m('SUBTRACT', z, wz)
+        dd = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', dx, dx), g.m('MULTIPLY', dz, dz)))
+        wm = g.m('MULTIPLY', g.mr(dd, wr, wr * 0.3, 0.0, 1.0, smooth=True), g.mr(g.noise(co, 80.0, 3.0, 0.6), 0.3, 0.6, 0.4, 1.0))
+        rough = g.m('SUBTRACT', rough, g.m('MULTIPLY', wm, 0.3))
+        stip = g.m('MULTIPLY', stip, g.m('SUBTRACT', 1.0, g.m('MULTIPLY', wm, 0.7)))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], rough)
+    add_bumps(g, b, (stip, 0.25, 0.0002), (g.noise(co, 1500.0, 2.0, 0.6), 0.05, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_knob(name='knob_worn'):
+    """ABS knob #1A1817, grip ridges come from the mesh; fingertip shine on the rim, dust in the ridges."""
+    m, b, g = B.principled(name, '#1A1817', rough=0.45, spec=0.5)
+    co = g.co('Object')
+    cav = g.mr(ao(g, 0.003), 0.4, 0.95, 1.0, 0.0)
+    c = g.mix(g.m('MULTIPLY', cav, 0.7), C('#1A1817'), C('#5E574E'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', cav, 0.35), 0.32))
+    add_bumps(g, b, (g.noise(co, 1200.0, 2.0, 0.6), 0.06, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_chrome_insert(name='chrome_insert'):
+    """Brushed chrome cap #C9C7C2 with concentric brushing and a white index line worn half off (object +y = line)."""
+    m, b, g = B.principled(name, '#C9C7C2', rough=0.25, metal=1.0)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    rr = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', x, x), g.m('MULTIPLY', y, y)))
+    brush = g.noise(g.comb(g.m('MULTIPLY', rr, 4000.0), g.m('ARCTAN2', y, x), 0.0), 1.0, 2.0, 0.5)
+    line = g.m('MULTIPLY', g.mr(g.m('ABSOLUTE', x), 0.0007, 0.0004, 0.0, 1.0), g.mr(y, 0.0015, 0.0025, 0.0, 1.0))
+    line = g.m('MULTIPLY', line, g.mr(g.noise(co, 900.0, 2.0, 0.7), 0.45, 0.55, 0.0, 1.0))
+    c = g.mix(line, C('#C9C7C2'), C('#E8E4DA'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Metallic'], g.m('SUBTRACT', 1.0, line))
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', brush, 0.12), g.m('ADD', 0.18, g.m('MULTIPLY', line, 0.3))))
+    add_bumps(g, b, (brush, 0.15, 0.00005))
+    return m
+
+
+@mat_cache
+def mat_crt_glass(name='crt_glass', w=0.406, h=0.305, base='#161A17', phosphor=True):
+    """CRT faceplate: glossy dielectric IOR 1.52, coat 1, dark grey-green phosphor (screen off); fingerprint smudges
+    (roughness +0.1 noise) and a thin dust film towards the bezel. Object origin = the picture centre (x, z)."""
+    m, b, g = B.principled(name, base if phosphor else '#000000', rough=0.04, spec=0.5, ior=1.52, coat=1.0,
+                           coat_rough=0.02)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    smudge = g.mr(g.noise(co, 18.0, 4.0, 0.65, dist=0.6), 0.55, 0.75, 0.0, 1.0, smooth=True)
+    prints = g.mr(vor(g, stretch(g, co, 1.0, 1.0, 1.4), 60.0, out='Distance'), 0.0, 0.25, 1.0, 0.0)
+    prints = g.m('MULTIPLY', prints, g.mr(g.noise(co, 6.0, 2.0, 0.5), 0.55, 0.7, 0.0, 1.0))
+    edge = g.m('SUBTRACT', 1.0, rrect_mask(g, x, z, w * 0.93, h * 0.90, 0.05, soft=0.03))
+    dust = g.m('MAXIMUM', g.m('MULTIPLY', edge, g.mr(g.noise(co, 400.0, 3.0, 0.6), 0.3, 0.7, 0.15, 0.4)),
+               g.m('MULTIPLY', g.mr(g.noise(co, 9.0, 3.0, 0.6), 0.55, 0.8, 0.0, 1.0), 0.12))
+    g.put(b.inputs['Coat Roughness'], g.m('ADD', g.m('ADD', g.m('MULTIPLY', smudge, 0.10), g.m('MULTIPLY', prints, 0.08)),
+                                         g.m('ADD', 0.02, g.m('MULTIPLY', dust, 0.25))))
+    g.put(b.inputs['Roughness'], g.m('ADD', 0.05, g.m('MULTIPLY', dust, 0.4)))
+    if phosphor:
+        c = g.mix(g.m('MULTIPLY', dust, 0.35), C(base), C('#4A463E'))
+        g.put(b.inputs['Base Color'], c)
+    else:
+        g.put(b.inputs['Base Color'], vsc(g, rgb(g, '#4A463E'), g.m('MULTIPLY', dust, 0.25)))
+    return m
+
+
+@mat_cache
+def mat_grille(name='grille'):
+    """Speaker grille plate: the bezel plastic with an 8 x 10 grid of 2.6 mm holes (dark, bumped in)."""
+    m, b, g = B.principled(name, '#262422', rough=0.55, spec=0.5)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    px, pz = 0.0065, 0.0072
+    fx = g.m('SUBTRACT', g.m('FRACT', g.m('DIVIDE', g.m('ADD', x, px * 4), px)), 0.5)
+    fz = g.m('SUBTRACT', g.m('FRACT', g.m('DIVIDE', g.m('ADD', z, pz * 5), pz)), 0.5)
+    dd = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', g.m('MULTIPLY', fx, px), g.m('MULTIPLY', fx, px)),
+                         g.m('MULTIPLY', g.m('MULTIPLY', fz, pz), g.m('MULTIPLY', fz, pz))))
+    inside = g.m('MULTIPLY', g.mr(g.m('ABSOLUTE', x), px * 4, px * 4 - 0.0005, 0.0, 1.0),
+                 g.mr(g.m('ABSOLUTE', z), pz * 5, pz * 5 - 0.0005, 0.0, 1.0))
+    hole = g.m('MULTIPLY', g.mr(dd, 0.0014, 0.0011, 0.0, 1.0), inside)
+    dust = g.mr(ao(g, 0.004), 0.4, 0.95, 0.6, 0.0)
+    c = g.mix(hole, g.mix(dust, C('#262422'), C('#5E574E')), C('#030303'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', hole, 0.4), 0.55))
+    add_bumps(g, b, (g.m('SUBTRACT', 1.0, hole), 0.6, 0.0012), (vor(g, co, 2200.0), 0.2, 0.0002))
+    return m
+
+
+@mat_cache
+def mat_led(name='led_off'):
+    m, b, g = B.principled(name, '#3A0705', rough=0.12, spec=0.6, coat=1.0, coat_rough=0.05)
+    return m
+
+
+@mat_cache
+def mat_lace(name='lace_doily', mode='polar', r_px=1.0):
+    """Crocheted cotton, aged and yellowed #E9DFC8: alpha-cut lace from UV (polar: u = radius 0..1, v = angle 0..1;
+    rect: u, v metres), thread bump, sheen 0.3, a faint tea / dust stain."""
+    m, b, g = B.principled(name, '#E3D7BC', rough=0.85, spec=0.3, sheen=0.3)
+    uv = g.uv()
+    u, v, _ = g.xyz(uv)
+    co = g.co('Object')
+    if mode == 'polar':
+        th = g.m('MULTIPLY', v, 2 * math.pi)
+        rings = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', g.m('FRACT', g.m('MULTIPLY', u, 9.0)), 0.5)), 0.42, 0.34, 0.0, 1.0)
+        spk = g.mr(g.m('ABSOLUTE', g.m('SINE', g.m('MULTIPLY', th, 24.0))), 0.18, 0.08, 0.0, 1.0)
+        petal_r = g.m('ADD', 0.30, g.m('MULTIPLY', g.m('ABSOLUTE', g.m('SINE', g.m('MULTIPLY', th, 4.0))), 0.12))
+        petal = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', u, petal_r)), 0.035, 0.02, 0.0, 1.0)
+        mesh_ = g.mr(g.m('MULTIPLY', g.m('SINE', g.m('MULTIPLY', u, 120.0)), g.m('SINE', g.m('MULTIPLY', th, 90.0))), 0.15, 0.35, 0.0, 1.0)
+        centre = g.mr(u, 0.10, 0.09, 0.0, 1.0)
+        solid = g.m('MAXIMUM', g.m('MAXIMUM', rings, spk), g.m('MAXIMUM', petal, centre))
+        solid = g.m('MAXIMUM', solid, g.m('MULTIPLY', mesh_, g.mr(u, 0.55, 0.6, 0.0, 1.0)))
+        scallop = g.m('SUBTRACT', 0.965, g.m('MULTIPLY', g.m('ABSOLUTE', g.m('SINE', g.m('MULTIPLY', th, 18.0))), 0.05))
+        solid = g.m('MAXIMUM', solid, g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', u, g.m('SUBTRACT', scallop, 0.015))), 0.012, 0.006, 0.0, 1.0))
+        alpha = g.m('MULTIPLY', solid, g.mr(g.m('SUBTRACT', scallop, u), 0.0, 0.004, 0.0, 1.0))
+    else:
+        sx = g.m('MULTIPLY', u, 1.0 / 0.006)
+        sy = g.m('MULTIPLY', v, 1.0 / 0.006)
+        cell = g.m('MAXIMUM', g.m('ABSOLUTE', g.m('SUBTRACT', g.m('FRACT', sx), 0.5)),
+                   g.m('ABSOLUTE', g.m('SUBTRACT', g.m('FRACT', sy), 0.5)))
+        grid = g.mr(cell, 0.36, 0.44, 0.0, 1.0)
+        dia = g.mr(g.m('ABSOLUTE', g.m('SINE', g.m('MULTIPLY', g.m('ADD', sx, sy), math.pi / 2))), 0.12, 0.05, 0.0, 1.0)
+        flower = g.mr(g.m('SQRT', g.m('ADD', g.m('MULTIPLY', g.m('SUBTRACT', g.m('FRACT', g.m('MULTIPLY', sx, 0.25)), 0.5),
+                                                          g.m('SUBTRACT', g.m('FRACT', g.m('MULTIPLY', sx, 0.25)), 0.5)),
+                                              g.m('MULTIPLY', g.m('SUBTRACT', g.m('FRACT', g.m('MULTIPLY', sy, 0.25)), 0.5),
+                                                  g.m('SUBTRACT', g.m('FRACT', g.m('MULTIPLY', sy, 0.25)), 0.5)))), 0.22, 0.18, 0.0, 1.0)
+        ring = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', flower, 0.5)), 0.5, 0.3, 0.0, 1.0)
+        alpha = g.m('MAXIMUM', g.m('MULTIPLY', g.m('MAXIMUM', grid, dia), 0.9), ring)
+    fibre = g.noise(co, 2500.0, 2.0, 0.6)
+    alpha = g.m('MULTIPLY', alpha, g.mr(fibre, 0.2, 0.3, 0.6, 1.0))
+    c = g.mix(g.mr(g.noise(co, 8.0, 3.0, 0.6), 0.45, 0.75, 0.0, 0.6), C('#ECE3CE'), C('#CDBB94'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Alpha'], alpha)
+    add_bumps(g, b, (fibre, 0.4, 0.0003))
+    return m
+
+
+@mat_cache
+def mat_distemper(name='distemper_wall', smudge_z=(0.85, 1.35)):
+    """90s distemper wall #C8B48E: blotchy, chalky (rough 0.95), a darker hand-height smudge band, faint seepage."""
+    m, b, g = B.principled(name, '#C8B48E', rough=0.95, spec=0.3)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    k = g.m('MULTIPLY_ADD', g.m('SUBTRACT', g.noise(co, 1.4, 5.0, 0.62), 0.5), 0.22, 1.0)
+    k = g.m('MULTIPLY', k, g.m('MULTIPLY_ADD', g.noise(co, 40.0, 3.0, 0.6), 0.10, 0.95))
+    band = g.m('MULTIPLY', g.m('MULTIPLY', g.mr(z, smudge_z[0] - 0.1, smudge_z[0] + 0.05, 0.0, 1.0, smooth=True),
+                                   g.mr(z, smudge_z[1] + 0.1, smudge_z[1] - 0.05, 0.0, 1.0, smooth=True)),
+               g.mr(g.noise(co, 5.0, 4.0, 0.6), 0.35, 0.7, 0.2, 1.0))
+    k = g.m('MULTIPLY', k, g.m('MULTIPLY_ADD', band, -0.16, 1.0))
+    seep = g.m('MULTIPLY', streaks(g, co, 7.0, 0.8, 1.0, 0.5, 0.72), g.mr(z, 2.1, 2.7, 0.0, 1.0, smooth=True))
+    k = g.m('MULTIPLY', k, g.m('MULTIPLY_ADD', seep, -0.25, 1.0))
+    g.put(b.inputs['Base Color'], vsc(g, rgb(g, '#C8B48E'), k))
+    add_bumps(g, b, (g.noise(co, 180.0, 4.0, 0.6), 0.3, 0.0015))
+    return m
+
+
+@mat_cache
+def mat_teak_table(name='teak_table', rings=()):
+    """Teak / sheesham side table: grain along object x, polish (coat), wear, cup rings at `rings` [(x, y, r)]."""
+    m, b, g = B.principled(name, '#5E3A1F', rough=0.35, spec=0.5, coat=0.5, coat_rough=0.15)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    grain = g.wave(g.comb(g.m('MULTIPLY', x, 0.12), y, z), 9.0, 7.0, 3.0, bands='Y')
+    fine = g.noise(g.comb(g.m('MULTIPLY', x, 0.08), g.m('MULTIPLY', y, 3.0), z), 120.0, 2.0, 0.6)
+    k = g.m('MULTIPLY', g.mr(grain, 0.0, 1.0, 0.70, 1.18), g.m('MULTIPLY_ADD', fine, 0.25, 0.88))
+    ring_k = None
+    for (rx, ry, R) in rings:
+        ddx = g.m('SUBTRACT', x, rx)
+        ddy = g.m('SUBTRACT', y, ry)
+        d = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', ddx, ddx), g.m('MULTIPLY', ddy, ddy)))
+        ring = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', d, R)), 0.0035, 0.0006, 0.0, 1.0, smooth=True)
+        ring_k = ring if ring_k is None else g.m('MAXIMUM', ring_k, ring)
+    scr = g.mr(g.noise(stretch(g, co, 30.0, 1500.0, 1500.0), 1.0, 2.0, 0.5), 0.74, 0.8, 0.0, 1.0)
+    if ring_k is not None:
+        k = g.m('MULTIPLY', k, g.m('MULTIPLY_ADD', ring_k, -0.35, 1.0))
+    g.put(b.inputs['Base Color'], vsc(g, rgb(g, '#5E3A1F'), k))
+    cr = g.m('ADD', g.m('MULTIPLY', scr, 0.25), 0.14)
+    if ring_k is not None:
+        cr = g.m('ADD', cr, g.m('MULTIPLY', ring_k, 0.3))
+    g.put(b.inputs['Coat Roughness'], cr)
+    add_bumps(g, b, (fine, 0.08, 0.0005), (scr, 0.1, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_cream_plastic(name='switch_plastic', base='#E6DCC4'):
+    """Yellowed cream switchboard plastic (glossy-ish), grime round the switches."""
+    m, b, g = B.principled(name, base, rough=0.3, spec=0.5)
+    co = g.co('Object')
+    cav = g.mr(ao(g, 0.006), 0.4, 0.95, 1.0, 0.0)
+    c = g.mix(g.mr(g.noise(co, 20.0, 3.0, 0.6), 0.3, 0.7, 0.0, 0.5), C(base), C('#D2C29C'))
+    c = g.mix(g.m('MULTIPLY', cav, 0.8), c, C('#7C6F58'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', cav, 0.4), 0.28))
+    add_bumps(g, b, (g.noise(co, 900.0, 2.0, 0.6), 0.05, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_terrazzo(name='terrazzo'):
+    """Grey terrazzo floor tiles (30 cm) with marble chips, worn polish."""
+    m, b, g = B.principled(name, '#8E8A82', rough=0.3, spec=0.5)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    chips = vor(g, co, 140.0, out='Color')
+    cr, cg, _ = g.xyz(chips)
+    chipm = g.mr(vor(g, co, 140.0, out='Distance'), 0.25, 0.18, 0.0, 1.0)
+    c = g.mix(chipm, C('#8A867E'), g.mix(cr, C('#E6E0D2'), g.mix(cg, C('#3E3A36'), C('#A67A5A'))))
+    gx = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', g.m('FRACT', g.m('DIVIDE', x, 0.3)), 0.5)), 0.497, 0.490, 0.0, 1.0)
+    gy = g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', g.m('FRACT', g.m('DIVIDE', y, 0.3)), 0.5)), 0.497, 0.490, 0.0, 1.0)
+    grout = g.m('MAXIMUM', gx, gy)
+    c = g.mix(grout, c, C('#4A4640'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', g.noise(co, 3.0, 3.0, 0.6), 0.3), 0.18))
+    add_bumps(g, b, (g.m('SUBTRACT', 1.0, grout), 0.3, 0.001))
+    return m
+
+
+@mat_cache
+def mat_window_paint(name='window_paint', base='#3F5E52'):
+    """Old oil-painted wooden window frame (desi blue-green), chipped to grey wood at the edges."""
+    m, b, g = B.principled(name, base, rough=0.45, spec=0.5)
+    co = g.co('Object')
+    pt = g.n('ShaderNodeNewGeometry').outputs['Pointiness']
+    chip = g.m('MULTIPLY', g.mr(pt, 0.52, 0.58, 0.0, 1.0), g.mr(g.noise(co, 50.0, 4.0, 0.7), 0.5, 0.6, 0.0, 1.0))
+    c = g.mix(chip, C(base), C('#8C8170'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', chip, 0.4), 0.42))
+    add_bumps(g, b, (g.noise(co, 300.0, 3.0, 0.6), 0.15, 0.0003))
+    return m
+
+
+TV = dict(T0=0.65, X=0.0, YF=-0.24, W=0.56, H=0.47, D=0.48, SX=-0.050, SZ=0.912, PW=0.406, PH=0.305, PR=0.030,
+          SAG=0.018)
+TV['Z0'] = TV['T0'] + 0.012
+TV['Z1'] = TV['Z0'] + TV['H']
+TV['ZC'] = (TV['Z0'] + TV['Z1']) / 2
+CRT_R = (0.254 ** 2 + TV['SAG'] ** 2) / (2 * TV['SAG'])        # faceplate sphere radius (~1.8 m)
+GLASS_APEX = TV['YF'] + 0.010                                  # glass apex 10 mm behind the bezel front face
+CTRL_X = 0.236                                                 # right column: speaker grille
+CTRL_Z = 0.6965                                                # bottom strip under the picture: knobs, LED, keys
+KNOB_CH = (0.150, TV['YF'], CTRL_Z)
+KNOB_VOL = (0.100, TV['YF'], CTRL_Z)
+LED_XZ = (0.058, CTRL_Z + 0.004)
+WIN = dict(x=-1.6, y0=-1.75, y1=-0.55, z0=0.85, z1=2.05)
+ROOM = dict(x0=-1.6, x1=1.8, y0=-3.3, y1=0.42, zc=2.9)
+
+
+def glass_y(x, z):
+    """Faceplate surface y at picture-local (x, z) (spherical bulge towards the camera)."""
+    r2 = x * x + z * z
+    return GLASS_APEX + (CRT_R - math.sqrt(CRT_R * CRT_R - r2))
+
+
+def build_crt(q=1.0):
+    """21-inch CRT TV: wood-grain vinyl shell, stippled dark bezel (off-centre opening with a sloped inner lip),
+    spherical faceplate (sagitta 18 mm) with a black inner mask, right column: perforated speaker grille; bottom strip
+    under the picture (so the knobs read bottom-right in CAM_TV_MACRO): channel + volume knobs (ridged, chrome
+    inserts), 4 push buttons, red standby LED (off); tapered back cover, rubber feet."""
+    T = TV
+    objs = []
+    E = lambda o, role='tv': (o.__setitem__('role', role), objs.append(o), o)[2]  # noqa: E731
+    k = max(5, int(8 * q))
+    vinyl = mat_wood_vinyl()
+    bez = mat_bezel('bezel_plastic', worn=(0.125, CTRL_Z, 0.06))
+    hx, hz = T['W'] / 2, T['H'] / 2
+    # wood shell (front 15 mm behind the bezel face, to the start of the back taper)
+    E(rbox('tv_shell', (0.0, -0.0425, T['ZC']), (hx - 0.002, 0.1475, hz - 0.002), 0.010, 0.006, vinyl, axis='Y', k=k))
+    # back cover: black plastic taper
+    E(loft2('tv_back', [(0.0, T['ZC'], hx - 0.012, hz - 0.012, 0.012, 0.10), (0.0, T['ZC'] - 0.01, 0.20, 0.17, 0.03, 0.24),
+                        (0.0, T['ZC'] - 0.02, 0.15, 0.13, 0.03, 0.30)], mat_bezel('back_plastic', '#1E1C1B'), k=k,
+              cap1=True))
+    # bezel: outer edge (cabinet centred) -> front face -> opening (picture centred) -> sloped lip over the glass
+    sx, sz = T['SX'], T['SZ']
+    yf = T['YF']
+    loops = [(0.0, T['ZC'], hx + 0.001, hz + 0.001, 0.016, yf + 0.060),
+             (0.0, T['ZC'], hx + 0.001, hz + 0.001, 0.016, yf + 0.008),
+             (0.0, T['ZC'], hx - 0.002, hz - 0.002, 0.013, yf + 0.0015),
+             (0.0, T['ZC'], hx - 0.006, hz - 0.006, 0.010, yf),
+             (sx, sz, 0.233, 0.182, 0.040, yf),
+             (sx, sz, 0.228, 0.177, 0.037, yf + 0.0025),
+             (sx, sz, 0.214, 0.164, 0.031, yf + 0.016),
+             (sx, sz, 0.2115, 0.1615, 0.030, yf + 0.019),
+             (sx, sz, 0.2115, 0.1615, 0.030, yf + 0.040)]
+    E(loft2('tv_bezel', loops, bez, k=k))
+    # faceplate glass (object origin = picture centre) + the black mask band behind its edge
+    n = max(24, int(64 * q))
+    gw, gh = 0.436, 0.338
+    V, F = [], []
+    for i in range(n + 1):
+        for j in range(n + 1):
+            x = -gw / 2 + gw * i / n
+            z = -gh / 2 + gh * j / n
+            V.append((x, glass_y(x, z) - yf - 0.0, z))
+    for i in range(n):
+        for j in range(n):
+            a = i * (n + 1) + j
+            F.append((a, a + 1, a + n + 2, a + n + 1))
+    glass = _mesh('crt_glass', V, F, mat_crt_glass(), smooth=True, role='glass')
+    glass.location = (sx, yf, sz)
+    import bmesh
+    bm = bmesh.new()
+    bm.from_mesh(glass.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    for f_ in bm.faces:                 # normals towards the camera (-y)
+        if f_.normal.y > 0:
+            f_.normal_flip()
+    bm.to_mesh(glass.data)
+    bm.free()
+    E(glass, 'glass')
+    # glass thickness edge + tube behind (dark), so grazing rays never see through
+    E(B.cube('tube_dark', (sx - 0.22, yf + 0.032, sz - 0.17), (sx + 0.22, yf + 0.10, sz + 0.17), mat_bezel('tube_black', '#050505'),
+             role='tv'))
+    # right column: grille, knobs, buttons, LED
+    cx = CTRL_X
+    gr = rbox('tv_grille', (cx, yf - 0.0008, 0.93), (0.031, 0.0012, 0.078), 0.004, 0.0008, mat_grille(), axis='Y', k=4)
+    E(gr)
+    kn_m, ch_m = mat_knob(), mat_chrome_insert()
+    feats = {}
+    for nm, (kx, ky, kz), rot in (('knob_ch', KNOB_CH, 23.0), ('knob_vol', KNOB_VOL, -61.0)):
+        def ripple(th, z_):
+            r_ = np.clip(np.cos(th * 12.0), 0.0, 1.0) ** 3
+            return 1.0 + 0.045 * r_ * ((z_ > 0.003) & (z_ < 0.0165))
+        prof = [(0.0158, 0.0), (0.0158, 0.0022), (0.0142, 0.0030), (0.0140, 0.0040), (0.0136, 0.0150), (0.0131, 0.0170),
+                (0.0122, 0.0180), (0.0100, 0.0181), (1e-5, 0.0181)]
+        kb = lathe_obj(nm, prof, kn_m, seg=max(48, int(96 * q)), ripple=ripple, sharp=60)
+        kb.rotation_euler = (math.radians(90), 0.0, math.radians(rot))
+        kb.location = (kx, ky, kz)
+        E(kb)
+        ins = lathe_obj(nm + '_insert', [(1e-5, 0.0018), (0.0085, 0.0016), (0.0094, 0.0008), (0.0095, 0.0)], ch_m, seg=48)
+        ins.parent = kb
+        ins.location = (0, 0, 0.0177)
+        E(ins)
+        feats[nm] = (kx, ky - 0.019, kz)
+    bt_m = mat_bezel('button_plastic', '#1C1B1A')
+    for i in range(4):
+        E(rbox(f'tv_btn{i}', (-0.040 + i * 0.016, yf - 0.0025, CTRL_Z), (0.0052, 0.003, 0.0034), 0.0012, 0.001, bt_m,
+               axis='Y', k=4))
+    led = lathe_obj('tv_led', [(1e-5, 0.0022), (0.0016, 0.0019), (0.0024, 0.001), (0.0026, 0.0)], mat_led(), seg=24)
+    led.rotation_euler = (math.radians(90), 0, 0)
+    led.location = (LED_XZ[0], yf, LED_XZ[1])
+    E(led)
+    feats['led_xy'] = (LED_XZ[0], yf - 0.002, LED_XZ[1])
+    feats['knob_ch'] = feats.pop('knob_ch')
+    feats.pop('knob_vol', None)
+    feats['knob_vol'] = (KNOB_VOL[0], KNOB_VOL[1] - 0.019, KNOB_VOL[2])
+    # rubber feet
+    for i, (fx, fy) in enumerate(((-0.24, -0.20), (0.24, -0.20), (-0.24, 0.06), (0.24, 0.06))):
+        E(B.cyl(f'tv_foot{i}', (fx, fy, T['T0'] + 0.006), 0.012, 0.012, mat_abs('rubber', '#111010', '#2A2826', 0.8), seg=20))
+    # picture corners on the curved glass, TL TR BR BL (world)
+    pw, ph = T['PW'], T['PH']
+    quad = []
+    for (qx, qz) in ((-pw / 2, ph / 2), (pw / 2, ph / 2), (pw / 2, -ph / 2), (-pw / 2, -ph / 2)):
+        quad.append((sx + qx, glass_y(qx, qz), sz + qz))
+    return objs, feats, quad, glass
+
+
+def build_doily(q=1.0):
+    """Oval crocheted doily on the cabinet top, its front 4 cm hanging over the bezel edge (draped analytically)."""
+    T = TV
+    nu, nv = max(24, int(48 * q)), max(64, int(160 * q))
+    rx, ry, cy = 0.20, 0.155, -0.115
+    top = T['Z1'] + 0.0012
+    edge = T['YF'] - 0.0005
+
+    def fn(u, v):
+        th = 2 * math.pi * v
+        x = rx * u * math.cos(th) + 0.02
+        y = cy + ry * u * math.sin(th)
+        sag = 0.0012 * math.sin(7 * th) * u
+        if y >= edge + 0.004:
+            return (x, y, top + sag)
+        d = (edge + 0.004) - y
+        R = 0.004
+        if d < R * math.pi / 2:
+            a = d / R
+            return (x, edge + 0.004 - R * math.sin(a) - 0.0006, top - R * (1 - math.cos(a)))
+        return (x, edge - 0.0006 - 0.0004 * (d - R * math.pi / 2) / 0.04, top - R - (d - R * math.pi / 2))
+    o = grid_mesh('doily', fn, nu, nv, mat_lace('lace_doily', 'polar'), role='tv')
+    o.data.polygons.foreach_set('use_smooth', np.ones(len(o.data.polygons), bool))
+    sol = o.modifiers.new('solid', 'SOLIDIFY')
+    sol.thickness = 0.0008
+    return o
+
+
+def build_room(q=1.0):
+    """The 90s room: distemper walls, terrazzo floor, ceiling; teak side table with a lace runner; window with
+    iron bars (blue-green frame) in the left wall and the bright afternoon outside; coax from a hole high on the
+    wall, nail-clipped down to the TV; cream switchboard (2 rockers + socket). Roles: 'room', 'sky', 'tv'."""
+    R = ROOM
+    W = WIN
+    objs = []
+    E = lambda o, role='room': (o.__setitem__('role', role), objs.append(o), o)[2]  # noqa: E731
+    wall = mat_distemper()
+    th = 0.12
+    E(B.cube('wall_back', (R['x0'] - th, R['y1'], -0.05), (R['x1'] + th, R['y1'] + th, R['zc'])
+             , wall))
+    E(B.cube('wall_right', (R['x1'], R['y0'], -0.05), (R['x1'] + th, R['y1'], R['zc']), wall))
+    E(B.cube('wall_front', (R['x0'] - th, R['y0'] - th, -0.05), (R['x1'] + th, R['y0'], R['zc']), wall))
+    # left wall with the window opening (4 boxes round it)
+    x0 = R['x0'] - th
+    E(B.cube('wall_left_a', (x0, R['y0'], -0.05), (R['x0'], W['y0'], R['zc']), wall))
+    E(B.cube('wall_left_b', (x0, W['y1'], -0.05), (R['x0'], R['y1'], R['zc']), wall))
+    E(B.cube('wall_left_c', (x0, W['y0'], -0.05), (R['x0'], W['y1'], W['z0']), wall))
+    E(B.cube('wall_left_d', (x0, W['y0'], W['z1']), (R['x0'], W['y1'], R['zc']), wall))
+    E(B.cube('floor', (R['x0'] - th, R['y0'] - th, -0.05), (R['x1'] + th, R['y1'] + th, 0.0), mat_terrazzo()))
+    E(B.cube('ceiling', (R['x0'] - th, R['y0'] - th, R['zc']), (R['x1'] + th, R['y1'] + th, R['zc'] + 0.1),
+             mat_distemper('ceiling_white', (5.0, 5.1))))
+    # skirting band of darker paint
+    E(B.cube('skirting', (R['x0'], R['y1'] - 0.004, 0.0), (R['x1'], R['y1'], 0.10), mat_window_paint('skirting', '#6E5A44')))
+    # window frame + bars + sill
+    wp = mat_window_paint()
+    fw = 0.05
+    xf = W['x'] - 0.02
+    for nm, c0, c1 in (('win_top', (xf - 0.04, W['y0'], W['z1'] - fw), (xf + 0.04, W['y1'], W['z1'])),
+                       ('win_bot', (xf - 0.04, W['y0'], W['z0']), (xf + 0.04, W['y1'], W['z0'] + fw)),
+                       ('win_l', (xf - 0.04, W['y0'], W['z0']), (xf + 0.04, W['y0'] + fw, W['z1'])),
+                       ('win_r', (xf - 0.04, W['y1'] - fw, W['z0']), (xf + 0.04, W['y1'], W['z1'])),
+                       ('win_mid', (xf - 0.03, (W['y0'] + W['y1']) / 2 - 0.02, W['z0']), (xf + 0.03, (W['y0'] + W['y1']) / 2 + 0.02, W['z1']))):
+        o = E(B.cube(nm, c0, c1, wp))
+        bevel_mod(o, 0.004, 2)
+    o = E(B.cube('win_sill', (W['x'] - 0.06, W['y0'] - 0.05, W['z0'] - 0.03), (W['x'] + 0.08, W['y1'] + 0.05, W['z0']),
+                 mat_plaster('sill_plaster', top=W['z0'], base='#A89C88')))
+    bevel_mod(o, 0.006, 2)
+    bar_m = mat_paint_steel('window_bars', '#2C3A34')
+    for i in range(7):
+        y_ = W['y0'] + 0.10 + i * (W['y1'] - W['y0'] - 0.2) / 6
+        E(rod(f'win_bar{i}', (W['x'] - 0.07, y_, W['z0']), (W['x'] - 0.07, y_, W['z1']), 0.006, bar_m, seg=12, cap='flat'))
+    # the bright afternoon outside (emissive, seen through the window and in the glass; plausible daylight source)
+    out_m = B.m_emit('outside_day', '#FFEBD2', 2.0, light=True)
+    o = B.cube('outside', (W['x'] - 2.6, W['y0'] - 2.5, -1.0), (W['x'] - 2.5, W['y1'] + 2.5, 4.0), out_m, role='sky')
+    E(o, 'sky')
+    # teak side table 0.65 m with a lace runner
+    tt = mat_teak_table('teak_table', rings=((0.30, -0.27, 0.032),))
+    o = E(B.cube('table_top', (-0.40, -0.33, TV['T0'] - 0.03), (0.40, 0.30, TV['T0']), tt))
+    bevel_mod(o, 0.004, 3)
+    for i, (lx, ly) in enumerate(((-0.36, -0.29), (0.36, -0.29), (-0.36, 0.26), (0.36, 0.26))):
+        o = E(B.cube(f'table_leg{i}', (lx - 0.022, ly - 0.022, 0.0), (lx + 0.022, ly + 0.022, TV['T0'] - 0.03), tt))
+        bevel_mod(o, 0.003, 2)
+    o = E(B.cube('table_apron', (-0.38, -0.31, TV['T0'] - 0.11), (0.38, -0.29, TV['T0'] - 0.03), tt))
+    bevel_mod(o, 0.003, 2)
+    o = E(B.cube('table_shelf', (-0.36, -0.29, 0.16), (0.36, 0.26, 0.18), tt))
+    bevel_mod(o, 0.003, 2)
+
+    def runner(u, v):
+        x = -0.36 + 0.72 * u
+        yy = 0.20 - 0.62 * v          # back -> front, then hangs over the front edge (y = -0.33)
+        top = TV['T0'] + 0.0008
+        if yy >= -0.326:
+            return (x, yy, top)
+        d = -0.326 - yy
+        R_ = 0.006
+        if d < R_ * math.pi / 2:
+            a = d / R_
+            return (x, -0.326 - R_ * math.sin(a), top - R_ * (1 - math.cos(a)))
+        fold = 0.004 * math.sin(x * 70.0) * min(1.0, (d - R_ * math.pi / 2) / 0.05)
+        return (x, -0.326 - R_ - 0.0005 - fold, top - R_ - (d - R_ * math.pi / 2))
+    o = grid_mesh('lace_runner', runner, 120, 64, mat_lace('lace_runner', 'rect'), role='room')
+    uv = o.data.uv_layers[0]
+    uvs = np.zeros(len(uv.data) * 2, np.float32)
+    uv.data.foreach_get('uv', uvs)
+    uvs = uvs.reshape(-1, 2)
+    uvs[:, 0] *= 0.72
+    uvs[:, 1] *= 0.62
+    uv.data.foreach_set('uv', uvs.ravel())
+    o.modifiers.new('solid', 'SOLIDIFY').thickness = 0.0008
+    E(o)
+    # coax: from a hole high on the back wall, nail-clipped down, then behind the TV
+    hole = (0.52, R['y1'], 2.05)
+    o = E(B.cyl('coax_hole', (hole[0], R['y1'] - 0.001, hole[2]), 0.012, 0.004, mat_bezel('hole_dark', '#0A0807'), axis='Y', seg=24))
+    pts = [(hole[0], R['y1'] + 0.02, hole[2]), (hole[0], R['y1'] - 0.004, hole[2]), (hole[0] + 0.01, R['y1'] - 0.006, 1.85),
+           (hole[0] + 0.005, R['y1'] - 0.006, 1.55), (hole[0], R['y1'] - 0.006, 1.25), (hole[0] - 0.02, R['y1'] - 0.008, 1.02),
+           (0.30, R['y1'] - 0.05, 0.86), (0.12, 0.33, 0.80), (0.0, 0.31, 0.82)]
+    E(tube('coax_wall', pts, 0.0035, mat_coax('coax_wall'), res=3, order=3))
+    clip_m = mat_abs('nail_clip_room', base='#D8D2C4', faded='#E8E2D6', rough=0.4)
+    for i, z_ in enumerate((1.92, 1.68, 1.42, 1.16)):
+        E(rbox(f'coax_clip{i}', (hole[0] + 0.006 - 0.002 * i, R['y1'] - 0.006, z_), (0.0045, 0.006, 0.007), 0.002, 0.0012,
+               clip_m))
+    # switchboard (cream, yellowed): plate, 2 rockers, 3-pin socket
+    sb = (0.86, R['y1'], 1.22)
+    cp = mat_cream_plastic()
+    E(rbox('switchboard', (sb[0], sb[1] - 0.008, sb[2]), (0.11, 0.008, 0.065), 0.006, 0.003, cp, axis='Y', k=5))
+    for i in range(2):
+        r_ = rbox(f'rocker{i}', (sb[0] - 0.075 + i * 0.035, sb[1] - 0.018, sb[2] + 0.01), (0.011, 0.004, 0.018), 0.003, 0.0015,
+                  mat_cream_plastic('rocker_plastic', '#EDE5D0'), axis='Y', k=4)
+        r_.rotation_euler = (math.radians(7 if i == 0 else -7), 0, 0)
+        E(r_)
+    for i, (dx, dz, rr) in enumerate(((0.045, 0.022, 0.004), (0.035, -0.012, 0.0028), (0.055, -0.012, 0.0028))):
+        E(B.cyl(f'socket_hole{i}', (sb[0] + dx, sb[1] - 0.0165, sb[2] + dz), rr, 0.002, mat_bezel('socket_dark', '#0C0B0A'),
+                axis='Y', seg=16))
+    return objs
+
+
+def _crt_lights():
+    """Afternoon sun through the window (sun lamp, the iron bars and frame cast the patch), the bright outside as
+    an emissive plane (fill), a faint warm floor bounce card."""
+    W = WIN
+    patch = np.array([-0.42, ROOM['y1'], 1.25])      # where the window's sun patch lands: the wall left of the TV
+    win_c = np.array([W['x'], (W['y0'] + W['y1']) / 2, (W['z0'] + W['z1']) / 2])
+    d = win_c - patch
+    d /= np.linalg.norm(d)
+    ld = bpy.data.lights.new('SUN_window', 'SUN')
+    ld.energy = 5.5
+    ld.color = hue('#FFD9A8')
+    ld.angle = math.radians(0.8)
+    o = B.link(bpy.data.objects.new('SUN_window', ld))
+    o.rotation_euler = Vector(tuple(-d)).to_track_quat('-Z', 'Y').to_euler()
+    o['group'] = 'sun'
+    B.light('BOUNCE_floor', 'AREA', (-0.4, -0.9, 0.05), 25.0, '#E8C49A', target=(-0.1, -0.2, 0.9), size=(1.0, 0.6),
+            group='bounce', glossy=False)
+    # the window itself as a soft 1.2 x 1.0 m area source (sky light through the opening), warm
+    B.light('WINDOW_area', 'AREA', (W['x'] + 0.02, (W['y0'] + W['y1']) / 2, (W['z0'] + W['z1']) / 2), 70.0, '#FFE2C0',
+            target=(0.0, -0.25, 0.85), size=(1.2, 1.0), group='sun')
+    w = bpy.data.worlds.new('W_room')
+    bpy.context.scene.world = w
+    bg = w.node_tree.nodes.get('Background')
+    bg.inputs['Color'].default_value = tuple(C('#3A3026')) + (1,)
+    bg.inputs['Strength'].default_value = 0.2
+
+
+def cam_tv_macro():
+    """CAM_TV_MACRO: 50 mm, 8 deg below the picture centre, framed so the picture spans x 110-970 / y 640-1330
+    (SHOTS layout); f/4 on the glass."""
+    T = TV
+    dist = 1.27
+    a = math.radians(8.0)
+    tgt = np.array([T['SX'] + 0.0, GLASS_APEX, T['SZ'] + 0.010])
+    loc = (T['SX'], GLASS_APEX - dist * math.cos(a), T['SZ'] - dist * math.sin(a))
+    return camera('CAM_TV_MACRO', loc, tuple(tgt), 50.0, fstop=4.0, focus=(T['SX'], GLASS_APEX, T['SZ']))
+
+
+def cam_tv_room():
+    """CAM_TV_ROOM: 35 mm, 2.3 m from the TV front, 1.0 m high, the TV centred at y ~1050; f/5.6."""
+    T = TV
+    loc = (T['X'] - 0.12, T['YF'] - 2.3, 1.0)
+    tgt = (T['X'] - 0.10, T['YF'], T['ZC'] + 0.12)
+    return camera('CAM_TV_ROOM', loc, tgt, 35.0, fstop=5.6, focus=(T['X'], T['YF'], T['ZC']))
+
+
+def _crt_asset(q, preview, which):
+    tv_objs, feats, quad, glass = build_crt(q)
+    doily = build_doily(q)
+    doily['role'] = 'tv'
+    build_room(q)
+    _crt_lights()
+    cam = cam_tv_macro() if which == 'macro' else cam_tv_room()
+    allo = all_objs()
+    T = TV
+    beauty_m = glass.data.materials[0]
+    refl_m = mat_crt_glass('crt_glass_refl', phosphor=False)
+    uv_m = mat_screen_uv('crt_stmap', T['PW'], T['PH'], T['PR'], 'xz')
+    spill_m = mat_screen_spill('crt_spill', T['PW'], T['PH'], T['PR'], 'xz')
+    state = {'undo': None}
+
+    def glass_mat(m):
+        glass.data.materials[0] = m
+
+    def setup(label):
+        sc = bpy.context.scene
+        if state['undo']:
+            state['undo']()
+            state['undo'] = None
+        lights_on(('sun', 'bounce'))
+        world_strength(0.2)
+        set_roles(allo, {})
+        if label == 'room':
+            glass_mat(beauty_m)
+            sc.render.film_transparent = False
+            return 'beauty', 128
+        if label == 'refl':
+            glass_mat(refl_m)
+            sc.render.film_transparent = True
+            state['undo'] = cam_holdout_wrap({refl_m})
+            return 'beauty', 96
+        if label == 'spill':
+            glass_mat(spill_m)
+            lights_on(())
+            world_strength(0.0)
+            set_roles(allo, {'sky': 'hidden'})
+            sc.render.film_transparent = False
+            return 'beauty', 96
+        glass_mat(uv_m)                       # stmap
+        set_roles(allo, {'room': 'holdout', 'tv': 'holdout', 'sky': 'hidden'})
+        sc.render.film_transparent = True
+        return 'flat', S_FLAT
+    sf = dict(feats)
+    sf['screen_centre'] = (T['SX'], GLASS_APEX, T['SZ'])
+    return dict(setup=setup, static_feats=sf, camera_meta=cam_meta(cam),
+                extra=dict(quad=quad, picture_mm=[406, 305], picture_corner_r_mm=30,
+                           passes='room = beauty, screen off (opaque); refl = glass reflections only, ADD (RGBA); '
+                                  'spill = screen as uniform ivory emitter strength 2, other lights off (opaque, '
+                                  'multiply by the picture mean luma and ADD); stmap = 16-bit linear R=u G=v A=mask'))
+
+
+@asset('crt/macro', 'static', labels=['room', 'refl', 'spill', 'stmap'],
+       gpu_spp={'room': 512, 'refl': 256, 'spill': 256}, notes='21-inch CRT close-up (S1, S5, S13): screen off in room; '
+       'snow / picture comped through stmap; refl added on top; spill for the screen light on bezel + doily')
+def _a5(q, preview):
+    return _crt_asset(q, preview, 'macro')
+
+
+@asset('crt/room', 'static', labels=['room', 'refl', 'spill', 'stmap'],
+       gpu_spp={'room': 512, 'refl': 256, 'spill': 256}, notes='the CRT on the teak table in the 90s room (S3): window '
+       'light, coax down the wall from the ceiling hole, switchboard; same passes as crt/macro')
+def _a6(q, preview):
+    return _crt_asset(q, preview, 'room')
+
+
+# ============================================================================= A7 phone on the desk
+
+PH = dict(W=0.075, L=0.162, T=0.0083, R=0.0105, SW=0.0702, SL=0.1562, SR=0.0085, YAW=-12.0, X=0.0, Y=0.0)
+DESK_Z = 0.75
+TEA = (-0.088, 0.118)          # tea glass position (desk xy), top-left of frame, out of focus
+KB = (0.035, 0.128)            # keyboard corner (front-left corner of the keyboard)
+
+
+@mat_cache
+def mat_walnut(name='walnut_desk', rings=()):
+    """Walnut veneer desk: grain along x (wave + fine pores), satin lacquer rough 0.35-0.5, light scratches, a tea
+    ring stain at each `rings` (x, y, r) (object = world coords)."""
+    m, b, g = B.principled(name, '#4E3221', rough=0.4, spec=0.5, coat=0.35, coat_rough=0.22)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    warp = g.noise(g.comb(g.m('MULTIPLY', x, 0.5), g.m('MULTIPLY', y, 6.0), z), 3.0, 3.0, 0.6)
+    gy = g.m('ADD', y, g.m('MULTIPLY', warp, 0.02))
+    grain = g.mr(g.noise(g.comb(g.m('MULTIPLY', x, 0.04), g.m('MULTIPLY', gy, 1.0), z), 140.0, 6.0, 0.62), 0.3, 0.7, 0.0, 1.0)
+    figure = g.noise(g.comb(g.m('MULTIPLY', x, 0.3), g.m('MULTIPLY', y, 8.0), z), 4.0, 5.0, 0.7)
+    grain = g.m('ADD', g.m('MULTIPLY', grain, 0.6), g.m('MULTIPLY', figure, 0.4))
+    pores = g.noise(g.comb(g.m('MULTIPLY', x, 0.04), g.m('MULTIPLY', y, 2.5), z), 300.0, 2.0, 0.6)
+    t = g.m('ADD', g.m('MULTIPLY', g.mr(grain, 0.0, 1.0, 0.0, 1.0), 0.75), g.m('MULTIPLY', pores, 0.25))
+    c = g.mix(t, C('#3A2316'), C('#6B4A32'))
+    c = g.mix(g.mr(g.noise(co, 1.5, 3.0, 0.6), 0.35, 0.7, 0.0, 0.3), c, C('#7A5A40'))
+    scr = g.m('MAXIMUM', g.mr(g.noise(stretch(g, co, 25.0, 1800.0, 25.0), 1.0, 2.0, 0.5), 0.76, 0.81, 0.0, 1.0),
+              g.mr(g.noise(stretch(g, g.co('Object'), 1500.0, 40.0, 25.0), 1.0, 2.0, 0.5), 0.78, 0.82, 0.0, 0.7))
+    rough = g.m('ADD', g.m('MULTIPLY', g.noise(co, 6.0, 3.0, 0.6), 0.15), 0.33)
+    ring_k = None
+    for (rx, ry, R) in rings:
+        dx = g.m('SUBTRACT', x, rx)
+        dy = g.m('SUBTRACT', y, ry)
+        d = g.m('SQRT', g.m('ADD', g.m('MULTIPLY', dx, dx), g.m('MULTIPLY', dy, dy)))
+        d = g.m('ADD', d, g.m('MULTIPLY', g.m('SUBTRACT', g.noise(co, 90.0, 3.0, 0.6), 0.5), 0.003))
+        ring = g.m('MAXIMUM', g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', d, R)), 0.0022, 0.0004, 0.0, 1.0, smooth=True),
+                   g.m('MULTIPLY', g.mr(d, R, R - 0.004, 0.0, 0.25), g.mr(g.noise(co, 40.0, 3.0, 0.6), 0.4, 0.7, 0.3, 1.0)))
+        ring_k = ring if ring_k is None else g.m('MAXIMUM', ring_k, ring)
+    if ring_k is not None:
+        c = g.mix(g.m('MULTIPLY', ring_k, 0.7), c, C('#2A170C'))
+        rough = g.m('ADD', rough, g.m('MULTIPLY', ring_k, 0.2))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Roughness'], rough)
+    g.put(b.inputs['Coat Roughness'], g.m('ADD', g.m('MULTIPLY', scr, 0.35), 0.2))
+    add_bumps(g, b, (pores, 0.12, 0.0003), (scr, 0.12, 0.0001))
+    return m
+
+
+@mat_cache
+def mat_phone_glass(name='phone_glass', w=0.0702, l=0.1562):
+    """Black cover glass IOR 1.5 rough 0.02 over an off OLED (#040506); fingerprints + a thumb smear (roughness
+    noise) concentrated on the lower half, a few hairline scratches. Object origin = the picture centre (x, y)."""
+    m, b, g = B.principled(name, '#040506', rough=0.02, spec=0.5, ior=1.5, coat=1.0, coat_rough=0.015)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    prints = g.mr(vor(g, stretch(g, co, 1.0, 1.3, 1.0), 220.0, out='Distance'), 0.0, 0.3, 1.0, 0.0)
+    prints = g.m('MULTIPLY', prints, g.mr(g.noise(co, 30.0, 2.0, 0.5), 0.5, 0.68, 0.0, 1.0))
+    lower = g.mr(y, 0.02, -0.06, 0.2, 1.0, smooth=True)
+    smear = g.m('MULTIPLY', g.mr(g.noise(stretch(g, co, 0.6, 1.6, 1.0), 40.0, 3.0, 0.6, dist=0.8), 0.55, 0.7, 0.0, 1.0), lower)
+    scr = g.mr(g.noise(stretch(g, co, 3000.0, 30.0, 30.0), 1.0, 2.0, 0.5), 0.8, 0.83, 0.0, 1.0)
+    cr = g.m('ADD', g.m('ADD', g.m('MULTIPLY', g.m('MULTIPLY', prints, lower), 0.18), g.m('MULTIPLY', smear, 0.12)), 0.012)
+    g.put(b.inputs['Coat Roughness'], cr)
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', smear, 0.1), 0.03))
+    add_bumps(g, b, (scr, 0.05, 0.00003))
+    return m
+
+
+@mat_cache
+def mat_phone_alu(name='phone_alu', base='#3A3A3C'):
+    """Bead-blasted anodised aluminium frame: fine isotropic grain, rough 0.35, edge chamfers polished (pointiness),
+    two plastic antenna lines across the frame."""
+    m, b, g = B.principled(name, base, rough=0.35, metal=1.0)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    pt = g.n('ShaderNodeNewGeometry').outputs['Pointiness']
+    shine = g.mr(pt, 0.52, 0.58, 0.0, 1.0)
+    band = g.m('MAXIMUM', g.mr(g.m('ABSOLUTE', g.m('SUBTRACT', y, 0.068)), 0.0007, 0.0005, 0.0, 1.0),
+               g.mr(g.m('ABSOLUTE', g.m('ADD', y, 0.068)), 0.0007, 0.0005, 0.0, 1.0))
+    c = g.mix(band, C(base), C('#2C2C2E'))
+    g.put(b.inputs['Base Color'], c)
+    g.put(b.inputs['Metallic'], g.m('SUBTRACT', 1.0, band))
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('SUBTRACT', 0.36, g.m('MULTIPLY', shine, 0.2)), g.m('MULTIPLY', band, 0.1)))
+    add_bumps(g, b, (g.noise(co, 4000.0, 2.0, 0.6), 0.08, 0.00003))
+    return m
+
+
+@mat_cache
+def mat_sapphire(name='lens_cover'):
+    m, b, g = B.principled(name, '#05070A', rough=0.01, spec=0.6, ior=1.77, coat=1.0, coat_rough=0.01)
+    return m
+
+
+@mat_cache
+def mat_tea_glass(name='tea_glass'):
+    m, b, g = B.principled(name, '#FFFFFF', rough=0.02, spec=0.5, ior=1.5)
+    b.inputs['Transmission Weight'].default_value = 1.0
+    co = g.co('Object')
+    g.put(b.inputs['Roughness'], g.m('ADD', g.m('MULTIPLY', g.mr(g.noise(co, 60.0, 3.0, 0.6), 0.55, 0.8, 0.0, 1.0), 0.12), 0.01))
+    return m
+
+
+@mat_cache
+def mat_chai(name='chai'):
+    """Milky chai: warm brown, strong subsurface (milk), a slightly darker skin on top."""
+    m, b, g = B.principled(name, '#7A4A22', rough=0.12, spec=0.5, sss=0.35, sss_radius=(1.0, 0.5, 0.25), sss_scale=0.002)
+    return m
+
+
+@mat_cache
+def mat_tea_film(name='tea_film'):
+    """Dried tea residue on the inner wall above the tea line (#7A4A1E, alpha 0.6 at the line fading upward)."""
+    m, b, g = B.principled(name, '#7A4A1E', rough=0.4, spec=0.4)
+    co = g.co('Object')
+    x, y, z = g.xyz(co)
+    a = g.m('MULTIPLY', g.mr(z, 0.056, 0.075, 0.6, 0.0), g.mr(g.noise(co, 120.0, 3.0, 0.6), 0.35, 0.7, 0.2, 1.0))
+    g.put(b.inputs['Alpha'], a)
+    return m
+
+
+@mat_cache
+def mat_keycap(name='keycap'):
+    m, b, g = B.principled(name, '#1F1F21', rough=0.5, spec=0.5)
+    co = g.co('Object')
+    up = up_mask(g, 0.5, 0.98)
+    g.put(b.inputs['Roughness'], g.m('SUBTRACT', 0.52, g.m('MULTIPLY', up, g.mr(g.noise(co, 80.0, 2.0, 0.6), 0.4, 0.7, 0.0, 0.2))))
+    add_bumps(g, b, (g.noise(co, 2500.0, 2.0, 0.6), 0.08, 0.00005))
+    return m
+
+
+def build_phone(q=1.0):
+    """Modern phone 162 x 75 x 8.3 mm face up: alu frame with rounded edges, side keys, cover glass (picture area
+    156.2 x 70.2 mm, corner r 8.5 mm, punch-hole camera), back glass with a 3-lens camera bump (no logo)."""
+    P = PH
+    k = max(6, int(10 * q))
+    root = empty('PHONE_ROOT', (P['X'], P['Y'], DESK_Z))
+    root.rotation_euler = (0, 0, math.radians(P['YAW']))
+    objs = []
+    hx, hy = P['W'] / 2, P['L'] / 2
+    alu = mat_phone_alu()
+    # frame: rounded slab, flat sides, 1.2 mm edge rounds
+    fr = loft('phone_frame', round_box_loops(hx, hy, P['R'], 0.0004, P['T'] - 0.0006, 0.0012, n=4), alu, k=k, axis='Z',
+              cap0=True, cap1=True, sharp=50, parent=root)
+    objs.append(fr)
+    # cover glass: slightly proud, 2.5D edge
+    gl = loft('phone_glass', round_box_loops(hx - 0.0004, hy - 0.0004, P['R'] - 0.0004, -0.0006, 0.0, 0.0005, n=3),
+              mat_phone_glass(), k=k, axis='Z', cap0=True, cap1=True, sharp=50, parent=root)
+    gl.location = (0, 0, P['T'])
+    gl['role'] = 'glass'
+    objs.append(gl)
+    # thin black display border under the glass edge is part of the off-display colour; speaker slot
+    slot = rbox('phone_speaker', (0.0, hy - 0.0016, P['T'] + 0.00005), (0.006, 0.00028, 0.00006), 0.00027, 0.00002,
+                mat_bezel('speaker_slot', '#020202'), parent=root)
+    objs.append(slot)
+    # side keys (right side: power + volume rocker)
+    for nm, y0, L in (('key_power', 0.020, 0.012), ('key_vol', 0.045, 0.024)):
+        kk = rbox(nm, (hx + 0.0004, y0, P['T'] / 2), (0.0006, L / 2, 0.0013), 0.0005, 0.0004, alu, parent=root)
+        objs.append(kk)
+    # back: camera bump with 3 sapphire lens covers (underside, faces the desk)
+    bump = rbox('cam_bump', (-hx + 0.019, hy - 0.020, -0.0006), (0.015, 0.015, 0.0012), 0.006, 0.0008, alu, parent=root)
+    objs.append(bump)
+    for i, (dx, dy) in enumerate(((-0.006, 0.006), (0.006, 0.006), (-0.006, -0.006))):
+        ln = lathe_obj(f'lens{i}', [(1e-5, -0.0006), (0.0042, -0.0006), (0.0046, 0.0)], mat_sapphire(), seg=32)
+        ln.parent = root
+        ln.location = (-hx + 0.019 + dx, hy - 0.020 + dy, -0.0018)
+        objs.append(ln)
+    for o in objs:
+        if o.get('role') in (None, 'prop'):
+            o['role'] = 'phone'
+    # picture corners (world): TL TR BR BL; picture centre = glass origin
+    bpy.context.view_layer.update()
+    M = gl.matrix_world
+    sw, sl = P['SW'] / 2, P['SL'] / 2
+    quad = [tuple(M @ Vector(p)) for p in ((-sw, sl, 0.00001), (sw, sl, 0.00001), (sw, -sl, 0.00001), (-sw, -sl, 0.00001))]
+    feats = {'punch_hole': tuple(M @ Vector((0.0, sl - 0.0052, 0.0))), 'phone_centre': tuple(M @ Vector((0, 0, 0)))}
+    return root, objs, gl, quad, feats
+
+
+def build_desk(q=1.0):
+    objs = []
+    E = lambda o, role='desk': (o.__setitem__('role', role), objs.append(o), o)[2]  # noqa: E731
+    o = E(B.cube('desk', (-1.2, -0.6, DESK_Z - 0.03), (1.2, 0.7, DESK_Z), mat_walnut('walnut_desk', rings=((TEA[0], TEA[1], 0.0255),
+                                                                                                         (0.16, -0.05, 0.03)))))
+    bevel_mod(o, 0.003, 3)
+    # keyboard corner: dark aluminium tray + keycaps, no legends
+    kx, ky = KB
+    tray = rbox('kb_tray', (kx + 0.20, ky + 0.07, DESK_Z + 0.006), (0.20, 0.07, 0.006), 0.008, 0.004,
+                mat_phone_alu('kb_alu', '#2A2A2C'))
+    E(tray)
+    kc = mat_keycap()
+    for r_ in range(6):
+        for c_ in range(10):
+            x_ = kx + 0.014 + c_ * 0.019 + (0.005 if r_ == 1 else 0.0)
+            y_ = ky + 0.012 + r_ * 0.019
+            E(rbox(f'key{r_}_{c_}', (x_, y_, DESK_Z + 0.0145), (0.0075, 0.0075, 0.0035), 0.0022, 0.0016, kc, k=4))
+    # tea glass, chai, residue film
+    tx, ty = TEA
+    def flutes(th, z_):
+        return 1.0 + 0.07 * (np.abs(np.cos(th * 6.0)) ** 0.5) * ((z_ > 0.012) & (z_ < 0.074))
+    wall_o = [(0.0245 + (0.0310 - 0.0245) * t, 0.008 + 0.075 * t) for t in np.linspace(0, 1, 16)]
+    wall_i = [(0.0292 - (0.0292 - 0.0228) * t, 0.0835 - 0.0735 * t) for t in np.linspace(0, 1, 16)]
+    outer = [(1e-5, 0.0), (0.0225, 0.0), (0.0240, 0.002)] + wall_o + [(0.0318, 0.0855), (0.0305, 0.0858)] + wall_i + \
+        [(0.0200, 0.0075), (1e-5, 0.0072)]
+    gl = lathe_obj('tea_glass', outer, mat_tea_glass(), seg=max(48, int(96 * q)), ripple=flutes, sharp=70)
+    gl.location = (tx, ty, DESK_Z)
+    E(gl)
+    lvl = 0.057
+    ch = lathe_obj('chai', [(1e-5, 0.0074), (0.0199, 0.0076), (0.0226, 0.010), (0.0226 + (0.0291 - 0.0228) * (lvl - 0.010) / 0.0735, lvl),
+                            (1e-5, lvl)], mat_chai(), seg=64)
+    ch.location = (tx, ty, DESK_Z)
+    E(ch)
+    film = lathe_obj('tea_film', [(0.0226 + 0.0063 * (lvl - 0.010) / 0.0735 - 0.0002, lvl),
+                                  (0.0228 + 0.0063 * (0.078 - 0.010) / 0.0735 - 0.0002, 0.078)], mat_tea_film(), seg=64)
+    film.location = (tx, ty, DESK_Z)
+    E(film)
+    return objs
+
+
+def cam_phone(quad):
+    """CAM_PHONE: 100 mm, ~0.55 m, 30 deg off the top-down view (from the front), the phone diagonal, the picture
+    filling x 220-860 / y 520-1500; f/2.0 focused on the glass."""
+    c = np.mean(np.asarray(quad), 0)
+    tilt = math.radians(30.0)
+    dist = 0.84
+    loc = c + np.array([0.0, -dist * math.sin(tilt), dist * math.cos(tilt)])
+    return camera('CAM_PHONE', tuple(loc), tuple(c + np.array([0.0, 0.004, 0.0])), 100.0, fstop=2.0, focus=tuple(c))
+
+
+def _phone_lights():
+    """Warm desk lamp (0.3 m area, top-left), cool-neutral monitor fill from behind-top (dim), dim warm room world."""
+    B.light('LAMP_desk', 'AREA', (-0.32, 0.30, DESK_Z + 0.42), 20.0, '#FFC88A', target=(0.0, 0.0, DESK_Z), size=(0.3, 0.3),
+            group='lamp')
+    B.light('FILL_monitor', 'AREA', (0.05, 0.48, DESK_Z + 0.62), 3.0, '#E8E4DC', target=(0.0, 0.0, DESK_Z),
+            size=(0.5, 0.06), group='lamp')
+    w = bpy.data.worlds.new('W_desk')
+    bpy.context.scene.world = w
+    bg = w.node_tree.nodes.get('Background')
+    bg.inputs['Color'].default_value = tuple(C('#2A231C')) + (1,)
+    bg.inputs['Strength'].default_value = 0.35
+
+
+@asset('phone/desk', 'static', labels=['lit', 'spill', 'stmap'], gpu_spp={'lit': 512, 'spill': 256},
+       notes='phone face up on the walnut desk (S8): lit = screen off; spill = the screen as an ivory emitter; '
+             'stmap = picture UV + mask (punch hole excluded); keyboard corner + cutting-chai glass out of focus')
+def _a7(q, preview):
+    root, pobjs, gl, quad, feats = build_phone(q)
+    build_desk(q)
+    _phone_lights()
+    cam = cam_phone(quad)
+    allo = all_objs()
+    P = PH
+    beauty_m = gl.data.materials[0]
+    hole = [(0.0, P['SL'] / 2 - 0.0052, 0.0016)]
+    uv_m = mat_screen_uv('phone_stmap', P['SW'], P['SL'], P['SR'], 'xy', holes=hole)
+    spill_m = mat_screen_spill('phone_spill', P['SW'], P['SL'], P['SR'], 'xy', strength=2.0, base='#040506')
+
+    def setup(label):
+        sc = bpy.context.scene
+        lights_on(('lamp',))
+        world_strength(0.35)
+        set_roles(allo, {})
+        if label == 'lit':
+            gl.data.materials[0] = beauty_m
+            sc.render.film_transparent = False
+            return 'beauty', 128
+        if label == 'spill':
+            gl.data.materials[0] = spill_m
+            lights_on(())
+            world_strength(0.0)
+            sc.render.film_transparent = False
+            return 'beauty', 64
+        gl.data.materials[0] = uv_m
+        set_roles(allo, {'desk': 'holdout', 'phone': 'holdout'})
+        sc.render.film_transparent = True
+        return 'flat', S_FLAT
+    return dict(setup=setup, static_feats=feats, camera_meta=cam_meta(cam),
+                extra=dict(quad=quad, picture_mm=[70.2, 156.2], picture_corner_r_mm=8.5,
+                           passes='lit = beauty, screen off (opaque); spill = screen as ivory emitter, lamps off '
+                                  '(opaque, multiply by the UI mean luma and ADD); stmap = 16-bit linear R=u G=v A=mask'))
 
 
 # ============================================================================= layout check (no render)
@@ -1639,7 +2870,8 @@ def targets_report():
     _bpy()
     _late()
     rep = {}
-    for variant in ('day', 'sunset'):
+    only = [a for a in sys.argv[2:] if not a.startswith('--')]
+    for variant in (('day', 'sunset') if not only else ()):
         reset((W_PX, H_PX), 16)
         env, rf, (root, objs, ff), cam = _roof_scene(variant, 0.5)
         rows = []
@@ -1663,13 +2895,42 @@ def targets_report():
             sv = sun_vec(SUN['sunset']['az'], SUN['sunset']['el'])
             print(f'   sun disc at {[round(v) for v in proj_px([tuple(np.asarray(cam.location) + 300 * np.asarray(sv))])[0]]}')
         rep[variant] = dict(union=union, rows=rows)
-    for key in ('clamp/macro', 'crt/macro', 'crt/room', 'phone/desk'):
+    for key in (only or ('clamp/macro', 'crt/macro', 'crt/room', 'phone/desk')):
         if key in LAYOUT:
             print(LAYOUT[key]())
     return rep
 
 
-LAYOUT = {}
+def layout_static(key):
+    """Build a static asset's scene at the final resolution (no render) and report its camera, screen quad and
+    feature points in frame px against the SHOTS targets."""
+    _bpy()
+    _late()
+    reset((W_PX, H_PX), 16)
+    S = ASSETS[key]['build'](0.5, True)
+    bpy.context.view_layer.update()
+    lines = [f'== {key}  camera {S.get("camera_meta", {}).get("name")}  lens {S.get("camera_meta", {}).get("lens_mm")} mm '
+             f'loc {S.get("camera_meta", {}).get("location")}']
+    q = (S.get('extra') or {}).get('quad')
+    if q is not None:
+        qp = proj_px(q)
+        bb = [round(float(qp[:, 0].min())), round(float(qp[:, 1].min())), round(float(qp[:, 0].max())),
+              round(float(qp[:, 1].max()))]
+        lines.append(f'   screen quad TL,TR,BR,BL {[[round(float(a)), round(float(b))] for a, b in qp]}  bbox {bb}')
+        t = TARGETS.get(key, {}).get('screen')
+        if t:
+            lines.append(f'   target x {t[0]}-{t[2]} / y {t[1]}-{t[3]}')
+    for k, v in S.get('static_feats', {}).items():
+        lines.append(f'   {k}: {[round(float(x)) for x in proj_px([v])[0]]}')
+    if 'set_yaw' in S:
+        for y in (CLAMP_YAWS[0], 0.0, CLAMP_YAWS[-1]):
+            S['set_yaw'](y)
+            f = S['feats']()
+            lines.append(f'   yaw {y:+.1f}: ' + ', '.join(f'{k} {[round(float(x)) for x in proj_px([v])[0]]}' for k, v in f.items()))
+    return '\n'.join(lines)
+
+
+LAYOUT = {k: (lambda k=k: layout_static(k)) for k in ('clamp/macro', 'crt/macro', 'crt/room', 'phone/desk')}
 
 
 # ============================================================================= sheets / archive / CLI
@@ -1808,62 +3069,81 @@ def yaw_sheet(root, tag, key, n=6):
     return p
 
 
-def archive():
-    """Optimised copies into brand_reels/assets/thoda_left_bas/assets3d (git, < 60 MB): opaque 8-bit plates as
-    high-quality JPG (+ the PNG name recorded in archive.json), RGBA PNGs re-compressed, 16-bit STMaps kept as PNG."""
+def archive(quality=92):
+    """Compressed restore copies into brand_reels/assets/thoda_left_bas/assets3d (git, kept < 58 MB): opaque 8-bit
+    frames as JPEG (alpha 255), 8-bit RGBA frames as a JPEG colour plate + a PNG alpha plate ('<n>.a.png'), 16-bit
+    STMaps as max-compressed PNG, meta.json as is. Lowers the JPEG quality by itself if the folder would pass 58 MB.
+    `restore` rebuilds the PNG spec folders (meta.json last)."""
     import cv2
-    os.makedirs(ARCHIVE, exist_ok=True)
+    if os.path.isdir(ARCHIVE):
+        shutil.rmtree(ARCHIVE)
+    os.makedirs(ARCHIVE)
     index = {}
     for name in sorted(os.listdir(OUT)):
+        if not os.path.isdir(os.path.join(OUT, name)):
+            continue
         for variant in sorted(os.listdir(os.path.join(OUT, name))):
             d = os.path.join(OUT, name, variant)
             if not os.path.exists(os.path.join(d, 'meta.json')):
                 print('  skip (no meta.json):', d)
                 continue
             od = os.path.join(ARCHIVE, name, variant)
-            if os.path.isdir(od):
-                shutil.rmtree(od)
             os.makedirs(od)
             for f in sorted(os.listdir(d)):
                 src = os.path.join(d, f)
                 if f == 'meta.json':
                     shutil.copy2(src, od)
                     continue
-                if not f.endswith('.png'):
+                if not (f.endswith('.png') and f[:-4].isdigit()):
                     continue
                 im = cv2.imread(src, cv2.IMREAD_UNCHANGED)
-                if im.dtype == np.uint8 and im.shape[2] == 4 and im[:, :, 3].min() == 255:
-                    cv2.imwrite(os.path.join(od, f[:-4] + '.jpg'), im[:, :, :3], [cv2.IMWRITE_JPEG_QUALITY, 93])
-                    index[f'{name}/{variant}/{f}'] = 'jpg'
-                else:
+                key = f'{name}/{variant}/{f}'
+                if im.dtype != np.uint8:
                     cv2.imwrite(os.path.join(od, f), im, [cv2.IMWRITE_PNG_COMPRESSION, 9])
-                    index[f'{name}/{variant}/{f}'] = 'png'
+                    index[key] = 'png'
+                elif im.shape[2] == 4 and im[:, :, 3].min() == 255:
+                    cv2.imwrite(os.path.join(od, f[:-4] + '.jpg'), im[:, :, :3], [cv2.IMWRITE_JPEG_QUALITY, quality])
+                    index[key] = 'jpg'
+                else:
+                    a = im[:, :, 3]
+                    rgb_ = im[:, :, :3].copy()
+                    if a.max() > 0:      # bleed colour into transparent pixels so JPEG blocks do not darken edges
+                        m = (a > 0).astype(np.uint8)
+                        dil = cv2.dilate(rgb_, np.ones((5, 5), np.uint8))
+                        rgb_ = np.where(m[..., None] > 0, rgb_, dil)
+                    cv2.imwrite(os.path.join(od, f[:-4] + '.jpg'), rgb_, [cv2.IMWRITE_JPEG_QUALITY, quality])
+                    cv2.imwrite(os.path.join(od, f[:-4] + '.a.png'), a, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+                    index[key] = 'jpg+a'
     with open(os.path.join(ARCHIVE, 'archive.json'), 'w') as fh:
-        json.dump(dict(note='restore with: python3 pipeline/jawad_reels/assets3d_thoda_left_bas.py restore', files=index), fh,
-                  indent=1)
+        json.dump(dict(note='restore with: python pipeline/jawad_reels/assets3d_thoda_left_bas.py restore',
+                       jpeg_quality=quality, files=index), fh, indent=1)
     tot = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(ARCHIVE) for f in fs)
-    print(f'  archive {ARCHIVE}: {tot / 1e6:.1f} MB')
+    print(f'  archive {ARCHIVE}: {tot / 1e6:.1f} MB (JPEG q{quality})')
+    if tot > 58e6 and quality > 70:
+        return archive(quality - 6)
     return tot
 
 
 def restore():
+    """Rebuild RWS/assets3d/<name>/<variant>/ from the archive (frames first, meta.json last per folder)."""
     import cv2
     idx = json.load(open(os.path.join(ARCHIVE, 'archive.json')))['files']
+    folders = set()
     for rel, kind in idx.items():
-        dst = os.path.join(OUT, rel)
+        dst = os.path.join(OUT, *rel.split('/'))
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        src = os.path.join(ARCHIVE, rel if kind == 'png' else rel[:-4] + '.jpg')
-        if kind == 'jpg':
-            im = cv2.imread(src, cv2.IMREAD_COLOR)
-            im = np.dstack([im, np.full(im.shape[:2], 255, np.uint8)])
-            cv2.imwrite(dst, im)
-        else:
-            shutil.copy2(src, dst)
-    for dp, _, fs in os.walk(ARCHIVE):
-        for f in fs:
-            if f == 'meta.json':
-                rel = os.path.relpath(os.path.join(dp, f), ARCHIVE)
-                shutil.copy2(os.path.join(dp, f), os.path.join(OUT, rel))
+        folders.add(os.path.dirname(rel))
+        base = os.path.join(ARCHIVE, *rel.split('/'))[:-4]
+        if kind == 'png':
+            shutil.copy2(base + '.png', dst)
+            continue
+        im = cv2.imread(base + '.jpg', cv2.IMREAD_COLOR)
+        a = cv2.imread(base + '.a.png', cv2.IMREAD_UNCHANGED) if kind == 'jpg+a' else np.full(im.shape[:2], 255, np.uint8)
+        cv2.imwrite(dst, np.dstack([im, a]))
+    for rel in sorted(folders):
+        src = os.path.join(ARCHIVE, *rel.split('/'), 'meta.json')
+        if os.path.exists(src):
+            shutil.copy2(src, os.path.join(OUT, *rel.split('/'), 'meta.json'))
     print('  restored into', OUT)
 
 
