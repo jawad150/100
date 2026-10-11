@@ -1,0 +1,663 @@
+{
+ "reel": "sirf_36_shots",
+ "title": "Sirf 36 Shots",
+ "series": "Bijli series #3 (BIJLI_SERIES.md)",
+ "version": "v1 2026-10-11",
+ "authors": "hinglish-scriptwriter + script-hook-writer (pre-production)",
+ "look": "noir_ember",
+ "mode": "text-led: captions carry the story; vo = optional layer, not recorded",
+ "grid": {
+  "bpm": 120,
+  "fps": 30,
+  "frames_per_beat": 15,
+  "frames_per_bar": 60,
+  "dur_frames": 1080,
+  "dur_s": 36.0,
+  "re_hook_f": 480,
+  "payoff_f": 810,
+  "outro_f": 960,
+  "splice_f": 60
+ },
+ "house_spelling": "hai nahi mein bohat bari sirf phir sab; '*word*' = jw_key keyword",
+ "hooks": [
+  {
+   "id": "A",
+   "rank": 1,
+   "status": "public",
+   "mechanism": "stakes + number",
+   "lines": [
+    "C1",
+    "C2"
+   ],
+   "frame0": "counter macro mid-tick 35->36, wheel turning, flash charging"
+  },
+  {
+   "id": "B",
+   "rank": 2,
+   "status": "Trial Reel (bonus, LEAD #6)",
+   "mechanism": "relatable callout",
+   "frames": [
+    0,
+    59
+   ],
+   "lines": [
+    {
+     "id": "HB1",
+     "f_in": 0,
+     "f_out": 25,
+     "lockup": [
+      {
+       "style": "jw_caps",
+       "px": 96,
+       "text": "HILNA"
+      },
+      {
+       "style": "jw_key",
+       "px": 260,
+       "text": "mat!"
+      }
+     ],
+     "roman": "Hilna *mat!*",
+     "vo": {
+      "roman": "Hilna mat!",
+      "dev": "हिलना मत!"
+     }
+    },
+    {
+     "id": "HB2",
+     "f_in": 27,
+     "f_out": 70,
+     "lockup": [
+      {
+       "style": "jw_caps",
+       "px": 96,
+       "text": "AANKH MAT"
+      },
+      {
+       "style": "jw_key",
+       "px": 220,
+       "text": "jhapkana."
+      }
+     ],
+     "roman": "Aankh mat *jhapkana*.",
+     "vo": {
+      "roman": "Aankh mat jhapkana.",
+      "dev": "आँख मत झपकाना।"
+     }
+    }
+   ],
+   "frame0": "3/4 camera hero plate, flash window glowing as it charges"
+  }
+ ],
+ "lines": [
+  {
+   "id": "C1",
+   "f_in": 0,
+   "f_out": 44,
+   "t_in": 0.0,
+   "t_out": 1.5,
+   "beat": 0.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "SIRF"
+    },
+    {
+     "style": "jw_key",
+     "px": 240,
+     "text": "ek"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "PHOTO BACHI."
+    }
+   ],
+   "keyword": "ek",
+   "roman": "Sirf *ek* photo bachi.",
+   "words": 4,
+   "hold_s": 1.5,
+   "need_s": 1.33,
+   "vo": {
+    "roman": "Sirf ek photo bachi hai.",
+    "dev": "सिर्फ़ एक फ़ोटो बची है।",
+    "f_in": 3,
+    "f_out": 40
+   },
+   "note": "hook A; enters mid-rise at f0 (t0 -0.1 s)"
+  },
+  {
+   "id": "C2",
+   "f_in": 45,
+   "f_out": 89,
+   "t_in": 1.5,
+   "t_out": 3.0,
+   "beat": 3.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "SAB"
+    },
+    {
+     "style": "jw_key",
+     "px": 240,
+     "text": "ready"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "HO JAO!"
+    }
+   ],
+   "keyword": "ready",
+   "roman": "Sab *ready* ho jao!",
+   "words": 4,
+   "hold_s": 1.5,
+   "need_s": 1.33,
+   "vo": {
+    "roman": "Sab ready ho jao!",
+    "dev": "सब रेडी हो जाओ!",
+    "f_in": 46,
+    "f_out": 72
+   },
+   "note": "holds through the flash pop f60"
+  },
+  {
+   "id": "C3",
+   "f_in": 75,
+   "f_out": 141,
+   "t_in": 2.5,
+   "t_out": 4.733,
+   "beat": 5.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "HAR"
+    },
+    {
+     "style": "jw_key",
+     "px": 240,
+     "text": "click"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "GINTI MEIN THA."
+    }
+   ],
+   "keyword": "click",
+   "roman": "Har *click* ginti mein tha.",
+   "words": 5,
+   "hold_s": 2.23,
+   "need_s": 1.67,
+   "vo": {
+    "roman": "Har click ginti mein hota tha.",
+    "dev": "हर क्लिक गिनती में होता था।",
+    "f_in": 78,
+    "f_out": 130
+   },
+   "note": "clear before C1 whip window f146-f154"
+  },
+  {
+   "id": "C4",
+   "f_in": 165,
+   "f_out": 236,
+   "t_in": 5.5,
+   "t_out": 7.9,
+   "beat": 11.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "PHIR ROLL"
+    },
+    {
+     "style": "jw_key",
+     "px": 220,
+     "text": "studio"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "JAATA THA..."
+    }
+   ],
+   "keyword": "studio",
+   "roman": "Phir roll *studio* jaata tha...",
+   "words": 5,
+   "hold_s": 2.4,
+   "need_s": 1.67,
+   "vo": {
+    "roman": "Phir roll studio jaata tha...",
+    "dev": "फिर रोल स्टूडियो जाता था...",
+    "f_in": 166,
+    "f_out": 215
+   },
+   "note": ""
+  },
+  {
+   "id": "C6",
+   "f_in": 243,
+   "f_out": 290,
+   "t_in": 8.1,
+   "t_out": 9.7,
+   "beat": 16.2,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "3 DIN KA"
+    },
+    {
+     "style": "jw_key",
+     "px": 220,
+     "text": "intezaar."
+    }
+   ],
+   "keyword": "intezaar",
+   "roman": "3 din ka *intezaar*.",
+   "words": 4,
+   "hold_s": 1.6,
+   "need_s": 1.33,
+   "vo": {
+    "roman": "Teen din ka intezaar.",
+    "dev": "तीन दिन का इंतज़ार।",
+    "f_in": 245,
+    "f_out": 290
+   },
+   "note": "exit f286-f290 (C6 rack-focus window f291-f309)"
+  },
+  {
+   "id": "C7",
+   "f_in": 315,
+   "f_out": 369,
+   "t_in": 10.5,
+   "t_out": 12.333,
+   "beat": 21.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "AADHI MEIN"
+    },
+    {
+     "style": "jw_key",
+     "px": 220,
+     "text": "aankhein"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "BAND,"
+    }
+   ],
+   "keyword": "aankhein",
+   "roman": "Aadhi mein *aankhein* band,",
+   "words": 4,
+   "hold_s": 1.83,
+   "need_s": 1.33,
+   "vo": {
+    "roman": "Aadhi mein aankhein band,",
+    "dev": "आधी में आँखें बंद,",
+    "f_in": 316,
+    "f_out": 358
+   },
+   "note": ""
+  },
+  {
+   "id": "C8",
+   "f_in": 375,
+   "f_out": 417,
+   "t_in": 12.5,
+   "t_out": 13.933,
+   "beat": 25.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "AADHI MEIN"
+    },
+    {
+     "style": "jw_key",
+     "px": 230,
+     "text": "thumb."
+    }
+   ],
+   "keyword": "thumb",
+   "roman": "aadhi mein *thumb*.",
+   "words": 3,
+   "hold_s": 1.43,
+   "need_s": 1.0,
+   "vo": {
+    "roman": "aadhi mein thumb.",
+    "dev": "आधी में थंब।",
+    "f_in": 376,
+    "f_out": 410
+   },
+   "note": "slams with the thumb print f375"
+  },
+  {
+   "id": "C9",
+   "f_in": 420,
+   "f_out": 475,
+   "t_in": 14.0,
+   "t_out": 15.867,
+   "beat": 28.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 72,
+     "text": "PHIR BHI HAR PHOTO"
+    },
+    {
+     "style": "jw_key",
+     "px": 200,
+     "text": "sambhaali."
+    }
+   ],
+   "keyword": "sambhaali",
+   "roman": "Phir bhi har photo *sambhaali*.",
+   "words": 5,
+   "hold_s": 1.87,
+   "need_s": 1.67,
+   "vo": {
+    "roman": "Phir bhi har photo sambhaali.",
+    "dev": "फिर भी हर फ़ोटो संभाली।",
+    "f_in": 421,
+    "f_out": 466
+   },
+   "note": "clear before C8 snap window f476-f486"
+  },
+  {
+   "id": "C10",
+   "f_in": 486,
+   "f_out": 536,
+   "t_in": 16.2,
+   "t_out": 17.9,
+   "beat": 32.4,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "AUR"
+    },
+    {
+     "style": "jw_key",
+     "px": 260,
+     "text": "aaj?"
+    }
+   ],
+   "keyword": "aaj?",
+   "roman": "Aur *aaj?*",
+   "words": 2,
+   "hold_s": 1.7,
+   "need_s": 0.8,
+   "vo": {
+    "roman": "Aur aaj?",
+    "dev": "और आज?",
+    "f_in": 486,
+    "f_out": 505
+   },
+   "note": "re-hook 44 %"
+  },
+  {
+   "id": "C11",
+   "f_in": 540,
+   "f_out": 569,
+   "t_in": 18.0,
+   "t_out": 19.0,
+   "beat": 36.0,
+   "lockup": [
+    {
+     "style": "jw_key",
+     "px": 240,
+     "text": "2 TB"
+    },
+    {
+     "style": "jw_caps_bold",
+     "px": 110,
+     "text": "FOOTAGE,"
+    }
+   ],
+   "keyword": "2 TB",
+   "roman": "*2 TB* footage,",
+   "words": 3,
+   "hold_s": 1.0,
+   "need_s": 1.0,
+   "vo": {
+    "roman": "Do TB footage,",
+    "dev": "दो टी-बी फ़ुटेज,",
+    "f_in": 541,
+    "f_out": 566
+   },
+   "note": "slam"
+  },
+  {
+   "id": "C12",
+   "f_in": 570,
+   "f_out": 599,
+   "t_in": 19.0,
+   "t_out": 20.0,
+   "beat": 38.0,
+   "lockup": [
+    {
+     "style": "jw_key",
+     "px": 280,
+     "text": "4"
+    },
+    {
+     "style": "jw_caps_bold",
+     "px": 110,
+     "text": "CAMERAS,"
+    }
+   ],
+   "keyword": "4",
+   "roman": "*4* cameras,",
+   "words": 2,
+   "hold_s": 1.0,
+   "need_s": 0.8,
+   "vo": {
+    "roman": "chaar camera,",
+    "dev": "चार कैमरे,",
+    "f_in": 571,
+    "f_out": 592
+   },
+   "note": "slam"
+  },
+  {
+   "id": "C13",
+   "f_in": 600,
+   "f_out": 652,
+   "t_in": 20.0,
+   "t_out": 21.767,
+   "beat": 40.0,
+   "lockup": [
+    {
+     "style": "jw_key",
+     "px": 250,
+     "text": "3,000"
+    },
+    {
+     "style": "jw_caps_bold",
+     "px": 110,
+     "text": "TAKES."
+    }
+   ],
+   "keyword": "3,000",
+   "roman": "*3,000* takes.",
+   "words": 2,
+   "hold_s": 1.77,
+   "need_s": 0.8,
+   "vo": {
+    "roman": "teen hazaar takes.",
+    "dev": "तीन हज़ार टेक्स।",
+    "f_in": 601,
+    "f_out": 640
+   },
+   "note": "slam"
+  },
+  {
+   "id": "C14",
+   "f_in": 675,
+   "f_out": 727,
+   "t_in": 22.5,
+   "t_out": 24.267,
+   "beat": 45.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "HAR TAKE"
+    },
+    {
+     "style": "jw_key",
+     "px": 240,
+     "text": "dekha."
+    }
+   ],
+   "keyword": "dekha",
+   "roman": "Har take *dekha*.",
+   "words": 3,
+   "hold_s": 1.77,
+   "need_s": 1.0,
+   "vo": {
+    "roman": "Har take dekha...",
+    "dev": "हर टेक देखा...",
+    "f_in": 676,
+    "f_out": 716
+   },
+   "note": ""
+  },
+  {
+   "id": "C15",
+   "f_in": 735,
+   "f_out": 777,
+   "t_in": 24.5,
+   "t_out": 25.933,
+   "beat": 49.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "DISK"
+    },
+    {
+     "style": "jw_key",
+     "px": 260,
+     "text": "full."
+    }
+   ],
+   "keyword": "full",
+   "roman": "Disk *full*.",
+   "words": 2,
+   "hold_s": 1.43,
+   "need_s": 0.8,
+   "vo": {
+    "roman": "disk full.",
+    "dev": "डिस्क फ़ुल।",
+    "f_in": 736,
+    "f_out": 762
+   },
+   "note": "exit before the drop-out f780"
+  },
+  {
+   "id": "P",
+   "f_in": 810,
+   "f_out": 875,
+   "t_in": 27.0,
+   "t_out": 29.2,
+   "beat": 54.0,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 86,
+     "text": "“EK ACHHA SHOT"
+    },
+    {
+     "style": "jw_key",
+     "px": 230,
+     "text": "nahi hai.”"
+    }
+   ],
+   "keyword": "nahi hai.",
+   "roman": "\"Ek achha shot *nahi hai*.\"",
+   "words": 5,
+   "hold_s": 2.2,
+   "need_s": 1.67,
+   "vo": {
+    "roman": "Bhai... ek achha shot nahi hai.",
+    "dev": "भाई... एक अच्छा शॉट नहीं है।",
+    "f_in": 812,
+    "f_out": 868
+   },
+   "note": "PAYOFF 75 %; J.HouseTitle t0=27.0 out_t0=28.8 (exit done by f875; C3 window opens f876); optional VO in a second 'client' voice"
+  },
+  {
+   "id": "C16",
+   "f_in": 909,
+   "f_out": 957,
+   "t_in": 30.3,
+   "t_out": 31.933,
+   "beat": 60.6,
+   "lockup": [
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "TAB"
+    },
+    {
+     "style": "jw_key",
+     "px": 260,
+     "text": "36"
+    },
+    {
+     "style": "jw_caps",
+     "px": 96,
+     "text": "KAAFI THE."
+    }
+   ],
+   "keyword": "36",
+   "roman": "Tab *36* kaafi the.",
+   "words": 4,
+   "hold_s": 1.63,
+   "need_s": 1.33,
+   "vo": {
+    "roman": "Tab chhattees kaafi the.",
+    "dev": "तब छत्तीस काफ़ी थे।",
+    "f_in": 913,
+    "f_out": 950
+   },
+   "note": "closer, loop bridge"
+  }
+ ],
+ "outro": {
+  "f_in": 960,
+  "f_out": 1079,
+  "call": "PO.ProfileOutro('Ghar ka pehla camera kaunsa tha?', key='Roll wala ya digital?', dur=4.0)",
+  "question": "Ghar ka pehla camera kaunsa tha?",
+  "key": "Roll wala ya digital?",
+  "vo": {
+   "roman": "Ghar ka pehla camera kaunsa tha?",
+   "dev": "घर का पहला कैमरा कौनसा था?",
+   "f_in": 1000,
+   "f_out": 1050
+  },
+  "draft": "Aap ki pehli camera kaunsi thi? (camera is masculine: pehla / kaunsa; 'ghar ka' widens it; key line = one-tap choice)"
+ },
+ "post": {
+  "caption_line1": "Sirf 36 shots, 3 din ka intezaar. Aaj 2 TB footage aur phir bhi \"ek achha shot nahi hai\"",
+  "hashtags": [
+   "#videoediting",
+   "#editorlife",
+   "#filmcamera",
+   "#nostalgia",
+   "#jawadmp4"
+  ],
+  "pinned": "Album ki sab se funny photo kaunsi thi? Thumb wali ya aankhein band wali?",
+  "ai_info": "ON (LEAD_DECISIONS #5)"
+ },
+ "tts_notes": "nuktas सिर्फ़ फ़ोटो इंतज़ार फ़ुटेज हज़ार काफ़ी फ़ुल; numbers as words; TB = टी-बी; test छत्तीस संभाली झपकाना first"
+}
