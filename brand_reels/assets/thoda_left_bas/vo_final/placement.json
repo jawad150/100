@@ -1,0 +1,495 @@
+{
+ "placement": {
+  "V1": {
+   "take": "V01_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.12,
+    0.18
+   ],
+   "start": 0.067,
+   "end": 2.877,
+   "start_f": 2.0,
+   "end_f": 86.3,
+   "planned_f": 3,
+   "planned_out_f": 34,
+   "cer": 0.2,
+   "heard": "तोड़ा लेफ्ट, तोड़ा रइट",
+   "heard_medium": "तोड़ा लेफ्ट, तोड़ा राइट",
+   "matched": "4/4",
+   "pauses": [
+    {
+     "at": 1.66,
+     "was": 0.33,
+     "now": 0.18,
+     "dramatic": true
+    }
+   ],
+   "why": "hook: \"Thoda left... thoda right...\" over the snowy CRT (H1 / H1b)"
+  },
+  "V2": {
+   "take": "V02_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.12,
+    0.18
+   ],
+   "start": 2.997,
+   "end": 5.067,
+   "start_f": 89.9,
+   "end_f": 152.0,
+   "planned_f": 38,
+   "planned_out_f": 62,
+   "cer": 0.111,
+   "heard": "बस बस अप फीक है",
+   "heard_medium": "बस, बस, अब फीक है।",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 1.27,
+     "was": 0.22,
+     "now": 0.12,
+     "dramatic": false
+    }
+   ],
+   "why": "\"Bas bas!\" on the LOCK f90 (H2 slam + tv_lock); \"hai!\" may cross the f144 splice (L-cut)"
+  },
+  "V3": {
+   "take": "V03_t1.mp3",
+   "speed": 1.08,
+   "caps": [
+    0.3,
+    0.4
+   ],
+   "start": 5.187,
+   "end": 7.647,
+   "start_f": 155.6,
+   "end_f": 229.4,
+   "planned_f": 146,
+   "planned_out_f": 204,
+   "cer": 0.0,
+   "heard": "आया? नहीं, तोड़ लेफ्ट.",
+   "heard_medium": "आया नहीं थोड़ा लेफ्ट",
+   "matched": "4/4",
+   "pauses": [
+    {
+     "at": 1.44,
+     "was": 0.34,
+     "now": 0.3,
+     "dramatic": false
+    }
+   ],
+   "why": "S2 roof: \"Aaya?\" (R1) / far \"Nahi! Thoda left...\" (R2)"
+  },
+  "V4": {
+   "take": "V04_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 7.8,
+   "end": 8.73,
+   "start_f": 234.0,
+   "end_f": 261.9,
+   "planned_f": 235,
+   "planned_out_f": 262,
+   "cer": 0.0,
+   "heard": "किस्का लेफ्ट?",
+   "heard_medium": "किसका लेफ्ट",
+   "matched": "2/2",
+   "pauses": [],
+   "why": "\"Kiska left?!\" on the R4 slam + tape stop f234"
+  },
+  "V5": {
+   "take": "V05_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.25,
+    0.3
+   ],
+   "start": 9.02,
+   "end": 12.4,
+   "start_f": 270.6,
+   "end_f": 372.0,
+   "planned_f": 272,
+   "planned_out_f": 320,
+   "cer": 0.0,
+   "heard": "तोड़ा और नहीं नहीं वापस",
+   "heard_medium": "थोड़ा और नहीं नहीं वापस",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 2.81,
+     "was": 0.32,
+     "now": 0.25,
+     "dramatic": false
+    }
+   ],
+   "why": "S3 CRT room: \"Thoda aur...\" (C5) / \"nahi nahi, wapas!\" (C6), tail over the clamp"
+  },
+  "V7": {
+   "take": "V07_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.3,
+    0.45
+   ],
+   "start": 12.7,
+   "end": 15.54,
+   "start_f": 381.0,
+   "end_f": 466.2,
+   "planned_f": 380,
+   "planned_out_f": 446,
+   "cer": 0.1,
+   "heard": "अब थीक है, औरे फिर से",
+   "heard_medium": "अब तीक है, अरे फिर से?",
+   "matched": "6/6",
+   "pauses": [
+    {
+     "at": 1.39,
+     "was": 0.5,
+     "now": 0.45,
+     "dramatic": true
+    },
+    {
+     "at": 2.16,
+     "was": 0.32,
+     "now": 0.3,
+     "dramatic": false
+    }
+   ],
+   "why": "\"Ab theek hai!\" 0.1 s after the f378 LOCK transient (C9), \"Arre, phir se?!\" on the slip (C10)"
+  },
+  "V8": {
+   "take": "V08_t2.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 15.667,
+   "end": 17.887,
+   "start_f": 470.0,
+   "end_f": 536.6,
+   "planned_f": 452,
+   "planned_out_f": 512,
+   "cer": 0.083,
+   "heard": "ये सीं कभी खदन नहीं हूँ",
+   "heard_medium": "ये सीन कभी खतन नहीं हुआ",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "S6 roof wind: \"Yeh scene kabhi khatam nahi hua.\" (C11), L-cut across M3 f504"
+  },
+  "V10": {
+   "take": "V10_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.2,
+    0.25
+   ],
+   "start": 18.007,
+   "end": 22.087,
+   "start_f": 540.2,
+   "end_f": 662.6,
+   "planned_f": 542,
+   "planned_out_f": 607,
+   "cer": 0.118,
+   "heard": "तोडा लेफ्ट, तोडा रहीट, नहीं बहलेवाला",
+   "heard_medium": "तोड़ा लेफ्ट, तोड़ा राइट, नहीं पहले वाला.",
+   "matched": "7/7",
+   "pauses": [
+    {
+     "at": 2.96,
+     "was": 0.47,
+     "now": 0.25,
+     "dramatic": true
+    },
+    {
+     "at": 3.81,
+     "was": 0.36,
+     "now": 0.2,
+     "dramatic": false
+    }
+   ],
+   "why": "T1 toast f540 / phone bubbles: the client's words, read dry"
+  },
+  "V11": {
+   "take": "V11_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 22.267,
+   "end": 23.627,
+   "start_f": 668.0,
+   "end_f": 708.8,
+   "planned_f": 614,
+   "planned_out_f": 644,
+   "cer": 0.143,
+   "heard": "डालोग वही है",
+   "heard_medium": "दायलोग वही है।",
+   "matched": "3/3",
+   "pauses": [],
+   "why": "\"Dialogue wahi hai.\" (C13) over the TAB / AB split, ends before the f720 lock"
+  },
+  "V12": {
+   "take": "V12_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.12,
+    0.18
+   ],
+   "start": 24.0,
+   "end": 26.11,
+   "start_f": 720.0,
+   "end_f": 783.3,
+   "planned_f": 722,
+   "planned_out_f": 752,
+   "cer": 0.111,
+   "heard": "बस बस अप फीख है",
+   "heard_medium": "बस बस अब टीक है।",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 1.22,
+     "was": 0.33,
+     "now": 0.12,
+     "dramatic": false
+    }
+   ],
+   "why": "client \"Bas bas!\" on the f720 lock (C14 / T2 = the rhyme with V2)"
+  },
+  "V14": {
+   "take": "V14_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 27.733,
+   "end": 30.043,
+   "start_f": 832.0,
+   "end_f": 901.3,
+   "planned_f": 830,
+   "planned_out_f": 907,
+   "cer": 0.154,
+   "heard": "हम आज भी अंटीना गूमा रहे हैं",
+   "heard_medium": "हम आज भी अन्टीना गुमा रहे हैं।",
+   "matched": "7/7",
+   "pauses": [],
+   "why": "PAYOFF P1 (the f828 hit owns its first 0.1 s)"
+  },
+  "V15": {
+   "take": "V15_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 32.567,
+   "end": 35.107,
+   "start_f": 977.0,
+   "end_f": 1053.2,
+   "planned_f": 977,
+   "planned_out_f": 1047,
+   "cer": 0.286,
+   "heard": "आपके गर अंटीना कों गूमाता ता?",
+   "heard_medium": "आपके गर अन्टीना कौन गोमाता था?",
+   "matched": "7/7",
+   "pauses": [],
+   "why": "outro question (profile outro from f954), ends <= f1076"
+  }
+ },
+ "notes": [
+  "V2: runs 0.120 s into the next line's planned start; V3 moves later",
+  "V5: start pulled 0.047 s earlier to end by its hard limit 12.400 s (f372.0)",
+  "V8: runs 0.007 s into the next line's planned start; V10 moves later",
+  "ladder F4: V6 dropped from the VO; best take `V06_t2.mp3` processed and kept in proc/",
+  "ladder F4: V9 dropped from the VO; best take `V09_t2.mp3` processed and kept in proc/",
+  "ladder F4: V13 dropped from the VO; best take `V13_t1.mp3` processed and kept in proc/"
+ ],
+ "scores": {
+  "V1": {
+   "V01_t1.mp3": [
+    0.2,
+    2.86
+   ]
+  },
+  "V2": {
+   "V02_t1.mp3": [
+    0.111,
+    2.1
+   ]
+  },
+  "V3": {
+   "V03_t1.mp3": [
+    0.0,
+    2.46
+   ]
+  },
+  "V4": {
+   "V04_t1.mp3": [
+    0.0,
+    0.9
+   ]
+  },
+  "V5": {
+   "V05_t1.mp3": [
+    0.0,
+    3.45
+   ]
+  },
+  "V6": {
+   "V06_t1.mp3": [
+    0.0,
+    2.83
+   ],
+   "V06_t2.mp3": [
+    0.0,
+    2.56
+   ]
+  },
+  "V7": {
+   "V07_t1.mp3": [
+    0.1,
+    2.79
+   ]
+  },
+  "V8": {
+   "V08_t1.mp3": [
+    0.195,
+    2.27
+   ],
+   "V08_t2.mp3": [
+    0.083,
+    2.26
+   ]
+  },
+  "V9": {
+   "V09_t1.mp3": [
+    0.111,
+    1.31
+   ],
+   "V09_t2.mp3": [
+    0.0,
+    1.48
+   ]
+  },
+  "V10": {
+   "V10_t1.mp3": [
+    0.039,
+    4.16
+   ]
+  },
+  "V11": {
+   "V11_t1.mp3": [
+    0.095,
+    1.34
+   ]
+  },
+  "V12": {
+   "V12_t1.mp3": [
+    0.074,
+    2.07
+   ]
+  },
+  "V13": {
+   "V13_t1.mp3": [
+    0.121,
+    2.46
+   ]
+  },
+  "V14": {
+   "V14_t1.mp3": [
+    0.154,
+    2.27
+   ]
+  },
+  "V15": {
+   "V15_t1.mp3": [
+    0.214,
+    2.49
+   ]
+  }
+ },
+ "stems": {
+  "A": {
+   "path": "/home/user/100/workspace/jawad_reels/thoda_left_bas/vo/vo_stem.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/thoda_left_bas/vo/words.json",
+   "master": {
+    "pre": {
+     "lufs": -16.9,
+     "lra": 4.4,
+     "tp": -2.3
+    },
+    "gain_db": 0.9,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 4.4,
+     "tp": -2.1
+    }
+   },
+   "voice": [
+    0.07,
+    35.13
+   ],
+   "voiced_s": 26.93,
+   "on_voice": 1.0,
+   "order": [
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V7",
+    "V8",
+    "V10",
+    "V11",
+    "V12",
+    "V14",
+    "V15"
+   ]
+  },
+  "B": {
+   "path": "/home/user/100/workspace/jawad_reels/thoda_left_bas/vo/vo_stem_B.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/thoda_left_bas/vo/words_B.json",
+   "master": {
+    "pre": {
+     "lufs": -17.0,
+     "lra": 5.6,
+     "tp": -2.3
+    },
+    "gain_db": 1.0,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 5.5,
+     "tp": -2.1
+    }
+   },
+   "voice": [
+    0.07,
+    35.13
+   ],
+   "voiced_s": 24.96,
+   "on_voice": 1.0,
+   "order": [
+    "V1",
+    "V3",
+    "V4",
+    "V5",
+    "V7",
+    "V8",
+    "V10",
+    "V11",
+    "V12",
+    "V14",
+    "V15"
+   ]
+  }
+ },
+ "min_gap": 0.12
+}
