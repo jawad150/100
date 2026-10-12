@@ -6,7 +6,9 @@ measurements: brand_reels/design/reels/sirf_36_shots/SOUND.md. Music: sirf_36_sh
 (workspace/jawad_reels/sirf_36_shots/vo/vo_stem.wav + words.json).
 
 36.000 s = 1,080 f at 30 fps, 120 BPM (beat 15 f, bar 60 f), key D minor. VO-LED GRID: C1 + C2 need 3.25 s, so the
-FLASH POP moves f60 -> f100 and the C1 whip f150 -> f166; the other beats follow the VO word onsets (SOUND.md section 2).
+FLASH POP moves f60 -> f100 and the C1 whip f150 -> f166; the other beats follow the VO word onsets (VO_TIMING.md
+section 3: f405 album cut, f582 4 CAMERAS, f615 3,000 TAKES; SOUND.md section 2). VO >= 8 LU over the bed on EVERY
+word (one-syllable words included: WORD_LU).
 Nobody on the team can listen: every claim in SOUND.md is a measurement or a rendered image.
 
 RETIMING: edit CUE_TABLE / BED_TABLE below (frames), then `python3 sirf_36_shots_sfx.py build`. Every cue is placed on
@@ -105,11 +107,13 @@ FIT_DEPTH_DB = -3.0                            # fit_under_vo level step (carvin
 # music rides for the VO mixes: (f0, f1, dB, release ramp s, attack ramp s). The payoff band keeps the music's peak.
 MUSIC_RIDE = [(810, 840, 3.0, 0.5, 0.04)]
 MUSIC_GAIN_DB = -3.0                           # music 3 dB under the spec's -18 LUFS: the VO gaps stay open
-VO_RIDE = {'P': 1.0, 'P:0': -3.5, 'C16': -1.5, 'Q': -1.5}   # VO ride (dB) for the mixes per line ('C16') or word
+VO_RIDE = {'P': 1.0, 'P:0': -3.5, 'C16': -2.5, 'Q': -2.5}   # VO ride (dB) for the mixes per line ('C16') or word
 # ('P:0' = P word 0: the drawn-out "Bhaaai..." alone in the drop-out, net -2.5 dB; rides add up); ramps 40 ms in the gaps.
-# P +1 keeps the payoff the loudest moment; the soft closer + outro question -1.5 widen the LRA (LEAD_DECISIONS 1).
+# P +1 keeps the payoff the loudest moment; the soft closer + outro question -2.5 widen the LRA (LEAD_DECISIONS 1:
+# 2-9 LU; at -1.5 mix_A measured 1.91 LU).
 VO_CREST = 10.0                                # vo_mix.wav: true peak <= integrated + 10 dB
 VO_PEAK = {}
+WORD_LU = 8.0                                  # VO over the bed (music + SFX) on EVERY word, one-syllable words too
 MUSIC_DUCK_SFX_DB = 1.5                        # music under the SFX in the mixes (spec 3 dB)
 SFX_VO_CREST = 14.0                            # sfx_vo.wav: true peak <= integrated + 14 dB (transient cap)
 SFX_GR_MAX = 3.0                               # stem limiter cap: the stem's loudness follows (see SOUND.md)
@@ -175,11 +179,11 @@ CUE_TABLE = [
     (586, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (3 / 12), 4)), pan=-0.05), 'CAM B (F7)'),
     (590, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (7 / 12), 4)), pan=0.05), 'CAM C (A7)'),
     (594, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (10 / 12), 4)), pan=0.15), 'CAM D (C8)'),
-    # S8 media bin (f614-f779): VO C13 f615-f655, C14 f676-f715, C15 f736-f766
-    (614, 'jd_hit_soft', -2.0, {}, '3,000 TAKES slam + hard cut on the VO "teen" (f600 -> f614, L3)'),
-    (614, 'whoosh_slow', -18.0, dict(align='start'), 'thumbnails start scrolling (speed rises)'),
-    (614, 'slot_tick', -12.0, dict(align='start', params=dict(n=23, dur=round(44 / FPS, 4), ease='linear')),
-     'take counter rolls 0001 -> 3,000 f614-f658 (lands before the f660 zoom)'),
+    # S8 media bin (f615-f779): VO C13 f615-f655, C14 f676-f715, C15 f736-f766
+    (615, 'jd_hit_soft', -2.0, {}, '3,000 TAKES slam + hard cut on the VO "teen" (f600 -> f615, VO_TIMING 3, L3)'),
+    (615, 'whoosh_slow', -18.0, dict(align='start'), 'thumbnails start scrolling (speed rises)'),
+    (615, 'slot_tick', -12.0, dict(align='start', params=dict(n=23, dur=round(44 / FPS, 4), ease='linear')),
+     'take counter rolls 0001 -> 3,000 f615-f659 (lands before the f660 zoom)'),
     (660, 'whoosh_fast', -8.0, {}, 'in-scene snap zoom x1.5 (out_expo: fastest on f660)'),
     (735, 's36_error', -6.0, {}, 'DISK FULL: bar turns red, chip pops (VO "disk" f736)'),
     (735, 'glitch_short', -12.0, {}, 'DISK FULL: 2-frame rgb glitch'),
@@ -613,17 +617,16 @@ def _klufs(x, a, b):
 
 
 def word_floor_curve(bus, vo, words, keep=(), target=WORD_FLOOR_LU, max_db=WORD_FLOOR_MAX_DB, ramp=0.03, pad=0.02):
-    """Gain curve (dB, per sample) that keeps the VO >= target LU over `bus` on every word (one-syllable words 1 LU
-    less), K-weighted over the word span: cut = deficit (<= max_db), raised-cosine ramps of `ramp` s around the padded
+    """Gain curve (dB, per sample) that keeps the VO >= target LU over `bus` on every word (one-syllable words too:
+    the task rule is VO >= 8 LU over the bed on EVERY word, no 7 LU one-syllable tolerance), K-weighted over the word span: cut = deficit (<= max_db), raised-cosine ramps of `ramp` s around the padded
     word; inside `keep` windows (hero transients) the curve stays 0 dB. -> (curve dB, rows)."""
     g = np.zeros(N)
     t = np.arange(N) / SR
     rows = []
     for w in words:
         a, b = w['start'] - pad, w['end'] + pad
-        one = len(re.findall(r'[aeiou]+', w['word'].lower())) <= 1
         m = _klufs(vo, w['start'], w['end']) - _klufs(bus, w['start'], w['end'])
-        need = (target - (1.0 if one else 0.0)) - m
+        need = target - m
         if need <= 0:
             continue
         cut = min(need, max_db)
@@ -731,7 +734,8 @@ def _music_stale():
 
 
 PROTECT = [(F(PAYOFF) - 0.02, F(PAYOFF) + 0.6), (F(480) - 0.05, F(480) + 0.3), (F(FLASH) - 0.02, F(FLASH) + 0.25)]
-HERO_F = (FLASH, 375, 480, 810)
+HERO_F = (FLASH, 375, 480, 615, 810)            # f615: the 3,000 TAKES slam lands with the VO "teen" and a present
+#                                                 kick (beat 41): 3.2 dB GR for 7 ms there is a hero-window event
 
 
 def vo_ride():
@@ -786,7 +790,7 @@ def mix(spec=None):
     work = os.path.join(AUD, '_mixwork')
     os.makedirs(work, exist_ok=True)
     lv = json.load(open(os.path.join(AUD, 'sfx_cues.json')))['sfx_vo']['mix_lufs']
-    sp = dict(sfx_lufs=lv, music_duck_sfx_db=MUSIC_DUCK_SFX_DB)
+    sp = dict(sfx_lufs=lv, music_duck_sfx_db=MUSIC_DUCK_SFX_DB, check_word_one_syllable_lu=WORD_LU)
     sp.update(spec or {})
     music_ride()
     rep = EX.mix_reel(MODULE, DUR, vo=os.path.join(VOD, 'vo_mix.wav'), music=os.path.join(AUD, 'music_mix.wav'),
@@ -834,12 +838,16 @@ def build():
         import sirf_36_shots_music as MU
         MU.build(AUD)
     spec = None
-    for attempt in range(3):
+    # The ffmpeg 6.1 native AAC encoder (320k) can overshoot chaotically on ONE frame (measured on this mix: +4.2
+    # dBTP after AAC from a -2.3 dBTP wav; the same wav 0.1 dB lower encodes to -2.4). It is an encoder event, not a
+    # mix property, so the retry moves the limiter ceiling by 0.1 dB steps (the mix changes by sub-LSB amounts on
+    # most samples) instead of taking 0.5 dB steps of extra limiting off every VO peak.
+    for attempt in range(6):
         mrep = mix(spec)
         aac = {k: _aac_ebur(os.path.join(AUD, 'mix_%s.wav' % k)) for k in 'AB'}
         if max(v['TP'] for v in aac.values()) <= -1.6:
             break
-        c = -2.3 - 0.5 * (attempt + 1)
+        c = round(-2.3 - 0.1 * (attempt + 1), 2)
         spec = dict(limiter_ceiling_dbfs=c, tp_max_dbtp=c + 0.3)
         print('AAC true peak %.2f dBTP > -1.6: re-mastering with the limiter at %.1f dBFS' % (
             max(v['TP'] for v in aac.values()), c))
@@ -894,7 +902,7 @@ def _mom(x, t, win=0.4):
 
 
 HEROES = {0: 'hook f0 transient + ratchet click', 15: 'detent: dial lands 36', FLASH: 'flash pop', 240: 'tin land',
-          375: 'thumb slap', 479: 're-hook bounce: its whip layer (designed 1 f before the f480 impact)', 540: '2 TB', 614: '3,000 takes', 810: 'payoff', 900: 'portal lands',
+          375: 'thumb slap', 479: 're-hook bounce: its whip layer (designed 1 f before the f480 impact)', 540: '2 TB', 615: '3,000 takes', 810: 'payoff', 900: 'portal lands',
           1076: 'ratchet click across the seam'}
 
 
@@ -1030,8 +1038,7 @@ def verify():
         v = lk(sv, w['start'], w['end'])
         wm.append(dict(word=w['word'], line=w['line'], t=w['start'], over_bed_A=round(v - lk(sm + ss, w['start'], w['end']), 1),
                        over_music=round(v - lk(sm, w['start'], w['end']), 1)))
-    one = lambda s_: len(re.findall(r'[aeiou]+', s_.lower())) <= 1  # noqa: E731
-    bad = [m for m in wm if m['over_bed_A'] < (7.0 if one(m['word']) else 8.0)]
+    bad = [m for m in wm if m['over_bed_A'] < WORD_LU]
     rep['vo_words'] = dict(n=len(wm), min_over_bed_A=min(m['over_bed_A'] for m in wm) if wm else None,
                            median_over_bed_A=float(np.median([m['over_bed_A'] for m in wm])) if wm else None,
                            min_over_music_A=min(m['over_music'] for m in wm) if wm else None,
