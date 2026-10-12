@@ -1,0 +1,694 @@
+{
+ "placement": {
+  "C1": {
+   "unit": "C1",
+   "take": "C01_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.25,
+    0.3
+   ],
+   "start": 0.033,
+   "end": 2.023,
+   "start_f": 1.0,
+   "end_f": 60.7,
+   "planned_f": 3,
+   "planned_out_f": 40,
+   "caption_f": [
+    0,
+    44
+   ],
+   "cer": 0.0,
+   "heard": "सर्फ एक फोटो बची है",
+   "heard_medium": "सिर्फ एक फोटो बची है।",
+   "matched": "5/5",
+   "pauses": [],
+   "why": "hook: \"Sirf ek photo bachi hai.\" over the ticking counter (C1 mid-rise f0)",
+   "voice_note": false,
+   "level_ride_db": 2.28
+  },
+  "C2": {
+   "unit": "C2",
+   "take": "C02_t1.mp3",
+   "speed": 1.08,
+   "caps": [
+    0.2,
+    0.25
+   ],
+   "start": 2.143,
+   "end": 3.293,
+   "start_f": 64.3,
+   "end_f": 98.8,
+   "planned_f": 46,
+   "planned_out_f": 72,
+   "caption_f": [
+    45,
+    89
+   ],
+   "cer": 0.091,
+   "heard": "सब रेडी हुजाो",
+   "heard_medium": "सब रेडि हो जाओ",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "\"Sab ready ho jao!\" (C2), ends before the FLASH POP f100",
+   "voice_note": false,
+   "level_ride_db": 0.16
+  },
+  "C3": {
+   "unit": "C3",
+   "take": "C03_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 3.467,
+   "end": 5.467,
+   "start_f": 104.0,
+   "end_f": 164.0,
+   "planned_f": 78,
+   "planned_out_f": 130,
+   "caption_f": [
+    75,
+    141
+   ],
+   "cer": 0.048,
+   "heard": "और क्लिक गिन्ती में हुता ता",
+   "heard_medium": "हर क्लिक गिन्ती में होता था।",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "S2 flash: \"Har click ginti mein hota tha.\" after the pop (C3), ends before the C1 whip f167",
+   "voice_note": false,
+   "level_ride_db": -0.19
+  },
+  "C4": {
+   "unit": "C4",
+   "take": "C04_t1.mp3",
+   "speed": 1.08,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 5.667,
+   "end": 7.547,
+   "start_f": 170.0,
+   "end_f": 226.4,
+   "planned_f": 166,
+   "planned_out_f": 215,
+   "caption_f": [
+    165,
+    236
+   ],
+   "cer": 0.0,
+   "heard": "फिर रोल स्टुड्यो जाता ता",
+   "heard_medium": "फिर रोल स्टूडियो जाता था।",
+   "matched": "5/5",
+   "pauses": [],
+   "why": "S3 canister: \"Phir roll studio jaata tha...\" (C4) after the whip, ends by the fall (f225 -> f228)",
+   "voice_note": false,
+   "level_ride_db": -0.1
+  },
+  "C6": {
+   "unit": "C6",
+   "take": "C06_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 8.167,
+   "end": 9.837,
+   "start_f": 245.0,
+   "end_f": 295.1,
+   "planned_f": 245,
+   "planned_out_f": 290,
+   "caption_f": [
+    243,
+    290
+   ],
+   "cer": 0.143,
+   "heard": "तीन दिनका इन्तजार",
+   "heard_medium": "3 दिन का इंतजार",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "S4 counter: \"Teen din ka intezaar.\" (C6) over DIN 1/2/3, ends before the C6 rack f300",
+   "voice_note": false,
+   "level_ride_db": 0.11
+  },
+  "C7": {
+   "unit": "C7C8",
+   "take": "C07C08_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 10.033,
+   "end": 11.583,
+   "start_f": 301.0,
+   "end_f": 347.5,
+   "planned_f": 316,
+   "planned_out_f": 358,
+   "caption_f": [
+    315,
+    369
+   ],
+   "cer": 0.174,
+   "heard": "आदी में आखे बन्द, आदी में तंब",
+   "heard_medium": "आधि में आखें बंद, आधि में तंब।",
+   "matched": "7/7",
+   "pauses": [],
+   "why": "S5 prints: \"Aadhi mein aankhein band,\" (C7) from the C6 rack f300, \"aankhein\" on the P2 eyes-shut print; leaves C8 room to put \"thumb\" on f375",
+   "voice_note": false,
+   "level_ride_db": -0.76
+  },
+  "C8": {
+   "unit": "C7C8",
+   "take": "C07C08_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 11.703,
+   "end": 13.113,
+   "start_f": 351.1,
+   "end_f": 393.4,
+   "planned_f": 376,
+   "planned_out_f": 410,
+   "caption_f": [
+    375,
+    417
+   ],
+   "cer": 0.174,
+   "heard": "आदी में आखे बन्द, आदी में तंब",
+   "heard_medium": "आधि में आखें बंद, आधि में तंब।",
+   "matched": "7/7",
+   "pauses": [],
+   "why": "\"aadhi mein thumb.\" with \"thumb\" on the thumb-print SLAP f375 (music stop)",
+   "voice_note": false,
+   "level_ride_db": 0.32
+  },
+  "C9": {
+   "unit": "C9",
+   "take": "C09_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.3,
+    0.35
+   ],
+   "start": 13.5,
+   "end": 15.93,
+   "start_f": 405.0,
+   "end_f": 477.9,
+   "planned_f": 421,
+   "planned_out_f": 466,
+   "caption_f": [
+    420,
+    475
+   ],
+   "cer": 0.0,
+   "heard": "फिर भी हर फोटो संभाली",
+   "heard_medium": "फिर भी हर फोटो संभाली।",
+   "matched": "5/5",
+   "pauses": [],
+   "why": "S6 album: \"Phir bhi har photo sambhaali.\" (C9) on the album cut (f420 -> f405, a beat after \"thumb.\"), ends before the re-hook f480",
+   "voice_note": false,
+   "level_ride_db": 1.07
+  },
+  "C10": {
+   "unit": "C10",
+   "take": "C10_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 16.2,
+   "end": 17.21,
+   "start_f": 486.0,
+   "end_f": 516.3,
+   "planned_f": 486,
+   "planned_out_f": 505,
+   "caption_f": [
+    486,
+    536
+   ],
+   "cer": 0.0,
+   "heard": "और आज",
+   "heard_medium": "और आज?",
+   "matched": "2/2",
+   "pauses": [],
+   "why": "RE-HOOK: \"Aur aaj?\" (C10) after the f480 snap",
+   "voice_note": false,
+   "level_ride_db": 0.15
+  },
+  "C11": {
+   "unit": "C11C13",
+   "take": "C11C13_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 18.033,
+   "end": 19.303,
+   "start_f": 541.0,
+   "end_f": 579.1,
+   "planned_f": 541,
+   "planned_out_f": 566,
+   "caption_f": [
+    540,
+    569
+   ],
+   "cer": 0.161,
+   "heard": "तो तीबी फुटछ, चार कम्रे, तीन हसार टेक्स",
+   "heard_medium": "दो टीबी फूटटज, चार कैम्रे, तीन हासार टेक्स",
+   "matched": "7/8",
+   "pauses": [],
+   "why": "\"Do TB footage,\" on the 2 TB slam (C11)",
+   "voice_note": false,
+   "level_ride_db": -0.33
+  },
+  "C12": {
+   "unit": "C11C13",
+   "take": "C11C13_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 19.423,
+   "end": 20.373,
+   "start_f": 582.7,
+   "end_f": 611.2,
+   "planned_f": 571,
+   "planned_out_f": 592,
+   "caption_f": [
+    570,
+    599
+   ],
+   "cer": 0.161,
+   "heard": "तो तीबी फुटछ, चार कम्रे, तीन हसार टेक्स",
+   "heard_medium": "दो टीबी फूटटज, चार कैम्रे, तीन हासार टेक्स",
+   "matched": "7/8",
+   "pauses": [],
+   "why": "\"chaar camera,\" on the 4 CAMERAS slam (C12; slam frame = the onset)",
+   "voice_note": false,
+   "level_ride_db": -0.64
+  },
+  "C13": {
+   "unit": "C11C13",
+   "take": "C11C13_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 20.493,
+   "end": 21.843,
+   "start_f": 614.8,
+   "end_f": 655.3,
+   "planned_f": 601,
+   "planned_out_f": 640,
+   "caption_f": [
+    600,
+    652
+   ],
+   "cer": 0.161,
+   "heard": "तो तीबी फुटछ, चार कम्रे, तीन हसार टेक्स",
+   "heard_medium": "दो टीबी फूटटज, चार कैम्रे, तीन हासार टेक्स",
+   "matched": "7/8",
+   "pauses": [],
+   "why": "\"teen hazaar takes.\" on the 3,000 TAKES slam (C13; slam = the onset)",
+   "voice_note": false,
+   "level_ride_db": -1.24
+  },
+  "C14": {
+   "unit": "C14C15",
+   "take": "C14C15_t2.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 22.533,
+   "end": 23.833,
+   "start_f": 676.0,
+   "end_f": 715.0,
+   "planned_f": 676,
+   "planned_out_f": 716,
+   "caption_f": [
+    675,
+    727
+   ],
+   "cer": 0.118,
+   "heard": "हर टेख देखा दिस्क फोल",
+   "heard_medium": "हर टेक देखा दिस्क फूल।",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 1.41,
+     "was": 0.32,
+     "now": 0.32,
+     "dramatic": true
+    }
+   ],
+   "why": "S8 bin: \"Har take dekha...\" (C14)",
+   "voice_note": false,
+   "level_ride_db": 4.31
+  },
+  "C15": {
+   "unit": "C14C15",
+   "take": "C14C15_t2.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 24.533,
+   "end": 25.543,
+   "start_f": 736.0,
+   "end_f": 766.3,
+   "planned_f": 736,
+   "planned_out_f": 762,
+   "caption_f": [
+    735,
+    777
+   ],
+   "cer": 0.118,
+   "heard": "हर टेख देखा दिस्क फोल",
+   "heard_medium": "हर टेक देखा दिस्क फूल।",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 1.41,
+     "was": 0.32,
+     "now": 0.32,
+     "dramatic": true
+    }
+   ],
+   "why": "\"disk full.\" on the DISK FULL error f735 (C15), ends before the freeze",
+   "voice_note": false,
+   "level_ride_db": 4.5
+  },
+  "P": {
+   "unit": "P",
+   "take": "P_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.55
+   ],
+   "start": 26.067,
+   "end": 29.167,
+   "start_f": 782.0,
+   "end_f": 875.0,
+   "planned_f": 812,
+   "planned_out_f": 868,
+   "caption_f": [
+    810,
+    875
+   ],
+   "cer": 0.158,
+   "heard": "बाई एक अच्छा शोर्ट नहीं है",
+   "heard_medium": "बाई, एक अच्छा शॉर्ट नहीं है।",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "PAYOFF (client voice note): the drawn-out \"Bhaaai...\" fills the drop-out, \"ek\" 8 f after the f810 hit (the hit owns 0.27 s)",
+   "voice_note": true,
+   "level_ride_db": -0.13
+  },
+  "C16": {
+   "unit": "C16",
+   "take": "C16_t1.mp3",
+   "speed": 1.1,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 30.12,
+   "end": 32.0,
+   "start_f": 903.6,
+   "end_f": 960.0,
+   "planned_f": 913,
+   "planned_out_f": 950,
+   "caption_f": [
+    909,
+    957
+   ],
+   "cer": 0.0,
+   "heard": "तब 36 काफी थे",
+   "heard_medium": "तब 36 काफी थे।",
+   "matched": "4/4",
+   "pauses": [],
+   "why": "S10 closer: \"Tab chhattees kaafi the.\" after the C3 portal (C16), ends by the outro f960",
+   "voice_note": false,
+   "level_ride_db": -0.02
+  },
+  "Q": {
+   "unit": "Q",
+   "take": "Q_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.45,
+    0.6
+   ],
+   "start": 33.333,
+   "end": 35.783,
+   "start_f": 1000.0,
+   "end_f": 1073.5,
+   "planned_f": 1000,
+   "planned_out_f": 1050,
+   "caption_f": [
+    999,
+    1065
+   ],
+   "cer": 0.1,
+   "heard": "गर का पहला केम्रा कोंसा ता?",
+   "heard_medium": "गर का पहला कैम्रा कौनसा था?",
+   "matched": "6/6",
+   "pauses": [],
+   "why": "outro question (profile outro from f960, question lands f999), ends <= f1074",
+   "voice_note": false,
+   "level_ride_db": 0.04
+  },
+  "HB": {
+   "unit": "HB",
+   "take": "HB_t1.mp3",
+   "speed": 1.06,
+   "caps": [
+    0.3,
+    0.35
+   ],
+   "start": 0.033,
+   "end": 2.533,
+   "start_f": 1.0,
+   "end_f": 76.0,
+   "planned_f": 0,
+   "planned_out_f": 70,
+   "caption_f": [
+    0,
+    70
+   ],
+   "cer": 0.167,
+   "heard": "हिलना मत, आख मत जबकाना",
+   "heard_medium": "हिलना मत आक मत जपकाना",
+   "matched": "5/5",
+   "pauses": [
+    {
+     "at": 0.94,
+     "was": 0.44,
+     "now": 0.3,
+     "dramatic": false
+    }
+   ],
+   "why": "hook B: \"Hilna mat! Aankh mat jhapkana.\" before the flash",
+   "voice_note": false,
+   "level_ride_db": 0.35
+  }
+ },
+ "notes": [
+  "C16: start pulled 0.113 s earlier to end by its hard limit 32.000 s (f960.0)"
+ ],
+ "flash_f": 100,
+ "whip_f": 167,
+ "scores": {
+  "C1": {
+   "C01_t1.mp3": [
+    0.0,
+    2.03
+   ]
+  },
+  "C2": {
+   "C02_t1.mp3": [
+    0.091,
+    1.15
+   ]
+  },
+  "C3": {
+   "C03_t1.mp3": [
+    0.064,
+    2.04
+   ]
+  },
+  "C4": {
+   "C04_t1.mp3": [
+    0.0,
+    1.88
+   ]
+  },
+  "C6": {
+   "C06_t1.mp3": [
+    0.095,
+    1.63
+   ]
+  },
+  "C7C8": {
+   "C07C08_t1.mp3": [
+    0.188,
+    3.29
+   ]
+  },
+  "C9": {
+   "C09_t1.mp3": [
+    0.0,
+    2.38
+   ]
+  },
+  "C10": {
+   "C10_t1.mp3": [
+    0.0,
+    0.98
+   ]
+  },
+  "C11C13": {
+   "C11C13_t1.mp3": [
+    0.097,
+    4.13
+   ]
+  },
+  "C14C15": {
+   "C14C15_t1.mp3": [
+    0.176,
+    2.54
+   ],
+   "C14C15_t2.mp3": [
+    0.118,
+    2.56
+   ]
+  },
+  "P": {
+   "P_t1.mp3": [
+    0.158,
+    3.06
+   ]
+  },
+  "C16": {
+   "C16_t1.mp3": [
+    0.0,
+    1.91
+   ]
+  },
+  "Q": {
+   "Q_t1.mp3": [
+    0.1,
+    2.41
+   ]
+  },
+  "HB": {
+   "HB_t1.mp3": [
+    0.167,
+    2.45
+   ]
+  }
+ },
+ "stems": {
+  "A": {
+   "path": "/home/user/100/workspace/jawad_reels/sirf_36_shots/vo/vo_stem.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/sirf_36_shots/vo/words.json",
+   "master": {
+    "pre": {
+     "lufs": -24.8,
+     "lra": 2.1,
+     "tp": -6.0
+    },
+    "gain_db": 8.8,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 2.2,
+     "tp": -2.3
+    }
+   },
+   "voice": [
+    0.03,
+    35.79
+   ],
+   "voiced_s": 27.73,
+   "on_voice": 1.0,
+   "order": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C6",
+    "C7",
+    "C8",
+    "C9",
+    "C10",
+    "C11",
+    "C12",
+    "C13",
+    "C14",
+    "C15",
+    "P",
+    "C16",
+    "Q"
+   ]
+  },
+  "B": {
+   "path": "/home/user/100/workspace/jawad_reels/sirf_36_shots/vo/vo_stem_B.wav",
+   "words_path": "/home/user/100/workspace/jawad_reels/sirf_36_shots/vo/words_B.json",
+   "master": {
+    "pre": {
+     "lufs": -24.8,
+     "lra": 2.1,
+     "tp": -6.0
+    },
+    "gain_db": 8.8,
+    "limiter": true,
+    "post": {
+     "lufs": -16.0,
+     "lra": 2.2,
+     "tp": -2.3
+    }
+   },
+   "voice": [
+    0.03,
+    35.79
+   ],
+   "voiced_s": 26.97,
+   "on_voice": 1.0,
+   "order": [
+    "HB",
+    "C3",
+    "C4",
+    "C6",
+    "C7",
+    "C8",
+    "C9",
+    "C10",
+    "C11",
+    "C12",
+    "C13",
+    "C14",
+    "C15",
+    "P",
+    "C16",
+    "Q"
+   ]
+  }
+ },
+ "min_gap": 0.12
+}

@@ -10,10 +10,12 @@ any song, no AI model, no trending audio. Licence: original work made for @jawad
 Grid: 120 BPM = 15 frames per beat at 30 fps, bar = 60 f = 2.0 s, 18 bars = 36.000 s = 1,080 f = 1,728,000 samples.
 Key D minor. Chords per bar (repeating): Dm9 - Bbmaj7 - F/A - C (bar n -> PROG[n % 4]).
 
-    f0-59     bar 0      HOOK: felt piano motif D4 F4 A4 C5 on the four beats, tape wow 0.3 %, crackle; nothing else
-    f60-479   bars 1-7   PAST (half-time, 60 BPM feel): soft kick on 1 (+ ghost on 2&), brushed snare on 3, upright bass,
+    f0-99     bar 0-1    HOOK (VO-led: C1 + C2 need 3.25 s, VO_TIMING.md): felt piano motif D4 F4 A4 C5 on the four
+                         beats, then Bb2 + F3 under the ringing C5 on f60 (Bbmaj7(9) colour), tape wow, crackle;
+                         f100 FLASH: piano Bbmaj7 + bass + santoor stinger (no kit), brush pickup into bar 2
+    f120-479  bars 2-7   PAST (half-time, 60 BPM feel): soft kick on 1 (+ ghost on 2&), brushed snare on 3, upright bass,
                          piano chords (1, 2&, 3&), santoor shimmer on every bar start, crackle. The kit enters on the
-                         flash (f60). STOP f375-f389 (exact digital silence: one beat for the thumb joke), back on f390
+                         bar-2 downbeat f120 (the flash f100 gets the stinger). STOP f375-f389 (exact digital silence: one beat for the thumb joke), back on f390
     f480-779  bars 8-12  PRESENT (full time): same chords re-voiced cold, synth pulse on 8ths whose low-pass opens
                          350 Hz -> 4.2 kHz over the 5 bars, kick on every beat, closed hats on 8ths (open on 4&), soft
                          clap on 2 and 4, sub bass on quarters (sidechained to the kick). Build f750-f779: snare roll
@@ -75,7 +77,7 @@ TAIL = 6.0                                      # extended render past DUR, fold
 PAYOFF_PIANO_DB, PAYOFF_SUB_DB = -8.3, -9.5           # payoff balance (verify: music max at f810, limiter GR small)
 CRACKLE_LU = -24.0                              # crackle loudness relative to the music (-40 LUFS at -16)
 
-F_FLASH, F_STOP, F_REHOOK, F_BUILD = 60, (375, 390), 480, 750
+F_FLASH, F_STOP, F_REHOOK, F_BUILD = 100, (375, 390), 480, 750  # flash f60 -> f100 (VO-led hook, VO_TIMING.md)
 F_TAPE, F_DROP, F_PAYOFF, F_CLOSER, F_OUTRO = (772, 780), (780, 810), 810, 900, 960
 
 
@@ -303,10 +305,22 @@ def compose(seed=36):
         s.piano(T(bar), root + 7, 1.9, vel * 0.5)
     s.event(T(15), 'closer: motif returns soft (C - Dm9 - Bbmaj7), rings across the seam into the f0 motif')
     # ---- past (bars 1-7): half-time lo-fi
+    # bar 1 first half (f60-f89) still belongs to the hook: the harmony moves to Bb under the ringing C5, no kit
+    s.piano(T(1), 34 + 12, 1.6, 0.30)
+    s.piano(T(1), 41 + 12, 1.6, 0.24)
     for bar in range(1, 8):
         name = chord(bar)
         root, up, _ = CHORDS[name]
         t0 = T(bar)
+        if bar == 1 and F_FLASH > 60:                                  # VO-led hook: the flash fires at f100 (after
+            tf = F(F_FLASH)                                            # "jao!"): a piano + santoor stinger on it, the
+            s.put('bass', upright_bass(root, 0.6, 0.85, r), tf)        # kit enters clean on the bar-2 downbeat f120
+            s.piano(tf, root + 12, 0.8, 0.44)
+            s.piano_chord(tf, up, 0.8, 0.44)
+            for i, m in enumerate((up[-1] + 12, up[-2] + 24, up[-1] + 24)):
+                s.put('keys', santoor(m, 0.5 - 0.1 * i, r), tf + i * BEAT / 4, -12, pan=0.45 * (-1) ** i)
+            s.put('drums', brush_swish(0.3, 0.7, r), T(2) - 0.3, -8)  # brush pickup into bar 2
+            continue
         s.kick(t0, 0.2, -2.0, lpf=3000)
         s.kick(t0 + 1.5 * BEAT, 0.15, -9.0, lpf=2500)                  # ghost on 2&
         s.put('drums', brush_swish(0.18, 0.8, r), t0 + 2 * BEAT - 0.18, -6)
@@ -327,7 +341,7 @@ def compose(seed=36):
             s.piano(t0 + 3.5 * BEAT, 69, 0.45, 0.28)
         for i, m in enumerate((up[-1] + 12, up[-2] + 24, up[-1] + 24)):  # santoor shimmer on the bar start
             s.put('keys', santoor(m, 0.5 - 0.1 * i, r), t0 + i * BEAT / 4, -12, pan=0.45 * (-1) ** i)
-    s.event(F(F_FLASH), 'kit enters on the flash pop (half-time: kick 1, brushed snare 3)')
+    s.event(F(F_FLASH), 'flash pop: piano + bass + santoor stinger'); s.event(T(2), 'kit enters (half-time: kick 1, brushed snare 3)')
     # ---- present (bars 8-12): full time, cold
     for bar in range(8, 13):
         name = chord(bar)

