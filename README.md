@@ -1,3 +1,48 @@
+# Hulk Marketing: "Marketing with muscle" (15 s brand reel)
+
+**Final video:** [`reel/hulk_marketing_reel.mp4`](reel/hulk_marketing_reel.mp4) is 1080×1920, 60 fps, 15.0 s, H.264 + AAC, mastered to −14 LUFS. The poster frame is [`reel/hulk_marketing_reel_poster.png`](reel/hulk_marketing_reel_poster.png), and [`reel/hulk_marketing_reel_contact.png`](reel/hulk_marketing_reel_contact.png) is the contact sheet (one frame per beat).
+
+It's SaaS-style flat motion graphics in the style of the reference reel: one small shape leads the whole film, the background flips on the beat, a circle wipes the frame, and the logo is drawn by the shape. Everything uses Hulk's own brand:
+- **Colours:** forest `#111A16`, cream `#F4F2E9`, and the logo's green `#9DEF69`.
+- **Fonts:** the site's own faces, Inter Tight and Hanken Grotesk.
+- **Logo:** vector-traced from the site's logo PNG, so it stays sharp at any size.
+- **Copy:** the site's own lines.
+
+**The idea.** Most brands are grey dots that blend in. Hulk's green dot breaks out of the crowd, bounces through what the agency does, flexes and "Hulks out" into a full-screen green wipe on the music drop, lands on real client work, climbs the brand's promise, draws the H icon, and ends as the full stop of "Anything but ordinary."
+
+| Time | Beats | Scene |
+|---|---|---|
+| 0.0–1.9 s | 0–4 | **Hook.** "Most brands blend in." The camera pulls back from a grid of grey dots marching in lockstep. One dot turns green and crouches. |
+| 1.9–3.8 s | 4–8 | The dot leaps out and bounces as the full stop of STRATEGY. CREATIVE. DIGITAL. AI. The field flips forest/cream on every bounce. |
+| 3.8–5.6 s | 8–12 | **The flex.** Three pumps ("REP 1/2/3") with shockwave rings, a squeeze, then a burst into a full-frame green circle wipe. |
+| 5.6–7.5 s | 12–16 | **Drop.** "Marketing / with / MUSCLE." slams in one word per beat, with camera shake and a bicep "flex" on MUSCLE. |
+| 7.5–9.4 s | 16–20 | The green field collapses into a card that becomes real work from the site: Habibi Manchester, Bodyrade and POS Jaquar, under "Different worlds. Same restless ambition." |
+| 9.4–11.3 s | 20–24 | "Brands people…" The dot climbs three bars (NOTICE. CHOOSE. COME BACK.) and rides the site's ↗ arrow out. |
+| 11.3–13.1 s | 24–28 | The dot falls in and draws the H icon's border like a pen. The icon floods green, the H slams in, and the HULK MARKETING wordmark wipes on. |
+| 13.1–15.0 s | 28–32 | **End card.** "Anything but ordinary." (the dot lands as the full stop, and a ✳ spins in), the "Let's make your next move ↗" pill, and hulkmarketing.co.uk. |
+
+**Sound.** The score is synthesized in code (`hulk-reel/audio/score.py`, F minor, 128 bpm):
+- a tight hook groove;
+- a clap-roll build with a half-beat of silence;
+- a driven "muscle" bass drop on beat 12;
+- one held chord under the end card.
+
+There are 39 SFX hits, generated from the film's own hit list so sound and picture can't drift. They include tuned tok notes on each bounce, rising boings on the pumps, a riser into an impact on the drop, whooshes on the cards, blips up the stairs, a pen tick, and a bell on the ®.
+
+**Rebuild** (from the repo root, with the `motion-reel` skill at `$SKILL`):
+
+```bash
+npm i                                                      # playwright
+node $SKILL/scripts/gather.mjs https://hulkmarketing.co.uk/ hulk-reel   # screenshots (ignored in git)
+MOTION_REEL_SKILL=$SKILL uv run hulk-reel/audio/score.py   # music.wav + beats.json
+node $SKILL/scripts/render.mjs --film hulk-reel --format 9x16 --video-only
+node $SKILL/scripts/sfx.mjs hulk-reel && node $SKILL/scripts/mix.mjs hulk-reel   # -> out/hulk-reel/final.mp4
+```
+
+`hulk-reel/film.js` is the film. Every frame is a pure function of time. `hulk-reel/docs/` holds the style guide (from the reference), the shot list and the three-round critique log. `hulk-reel/tools/trace_logo.py` vectorises the logo.
+
+---
+
 # Gold market reel — black × gold motion graphics (Rida)
 
 **Final video:** [`reel/gold_reel_4k.mp4`](reel/gold_reel_4k.mp4) is the native 4K master (2160×3840, 29.97 fps, 79.4 s, 34 Mbps, 340 MB, stored with Git LFS). [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4) is the 1080p copy (87 MB). The synced Roman Urdu captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).

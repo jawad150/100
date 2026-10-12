@@ -1,0 +1,23 @@
+{
+  "name": "100",
+  "version": "1.0.0",
+  "description": "**Final video:** [`reel/gold_reel_4k.mp4`](reel/gold_reel_4k.mp4) is the native 4K master (2160×3840, 29.97 fps, 79.4 s, 34 Mbps, 340 MB, stored with Git LFS). [`reel/gold_reel_1080p.mp4`](reel/gold_reel_1080p.mp4) is the 1080p copy (87 MB). The synced Roman Urdu captions as SRT are at [`reel/captions_roman_urdu.srt`](reel/captions_roman_urdu.srt).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jawad150/100.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jawad150/100/issues"
+  },
+  "homepage": "https://github.com/jawad150/100#readme",
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

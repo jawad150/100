@@ -1,0 +1,170 @@
+{
+ "url": "https://hulkmarketing.co.uk/",
+ "title": "UK Digital Marketing Agency | Hulk Marketing",
+ "description": "UK digital marketing agency for SEO, paid media, social, branding and bespoke websites. Explore our work and meet the team behind your next move.",
+ "themeColor": [
+  "#F3F5F0"
+ ],
+ "text_colors": [
+  [
+   "#20392e",
+   63
+  ],
+  [
+   "#576054",
+   52
+  ],
+  [
+   "#131712",
+   31
+  ],
+  [
+   "#5d685e",
+   31
+  ],
+  [
+   "#f4f2e9",
+   23
+  ],
+  [
+   "#646f60",
+   17
+  ],
+  [
+   "#302d42",
+   11
+  ],
+  [
+   "#676477",
+   8
+  ],
+  [
+   "#c6fa61",
+   5
+  ],
+  [
+   "#f4f5f0",
+   4
+  ]
+ ],
+ "background_colors": [
+  [
+   "#e9ecdf",
+   60
+  ],
+  [
+   "#111a16",
+   40
+  ],
+  [
+   "#f4f2e9",
+   33
+  ],
+  [
+   "#e4e9ec",
+   20
+  ],
+  [
+   "#243c30",
+   20
+  ],
+  [
+   "#e8e6ef",
+   20
+  ],
+  [
+   "#c6fa61",
+   20
+  ],
+  [
+   "#eceee2",
+   20
+  ],
+  [
+   "#f9f8f3",
+   5
+  ],
+  [
+   "#ffffff",
+   5
+  ]
+ ],
+ "font_families": [
+  [
+   "hanken",
+   220
+  ],
+  [
+   "headline",
+   30
+  ],
+  [
+   "Georgia",
+   12
+  ]
+ ],
+ "font_weights": [
+  [
+   "hanken 400",
+   182
+  ],
+  [
+   "hanken 500",
+   32
+  ],
+  [
+   "headline 500",
+   16
+  ],
+  [
+   "Georgia 400",
+   11
+  ],
+  [
+   "headline 400",
+   8
+  ],
+  [
+   "hanken 600",
+   3
+  ],
+  [
+   "headline 550",
+   3
+  ],
+  [
+   "headline 450",
+   3
+  ],
+  [
+   "hanken 300",
+   3
+  ],
+  [
+   "Georgia 550",
+   1
+  ]
+ ],
+ "css_vars": {
+  "--font-mono": "ui-monospace",
+  "--canvas": "10 11 10",
+  "--canvas-deep": "0 0 0",
+  "--canvas-raised": "18 20 18",
+  "--canvas-raised2": "27 30 27",
+  "--canvas-line": "34 38 31",
+  "--ink": "242 246 238",
+  "--ink-muted": "154 163 152",
+  "--ink-dim": "142 151 137",
+  "--ink-faint": "61 66 61",
+  "--brand": "157 239 105",
+  "--brand-glow": "120 233 48",
+  "--brand-deep": "77 171 18"
+ },
+ "wordmark": {
+  "text": "",
+  "font": "hanken, \"hanken Fallback\", \"Hanken Grotesk\", system-ui, sans-serif",
+  "weight": "400",
+  "tracking": "normal",
+  "html": "<img src=\"/hulk-marketing-logo.png\" width=\"190\" height=\"40\" alt=\"Hulk Marketing\">"
+ }
+}

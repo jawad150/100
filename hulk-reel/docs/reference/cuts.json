@@ -1,0 +1,23 @@
+{
+ "source": "/root/.claude/uploads/59ac5c5f-8326-5b37-b17d-80ee56c2a0c7/66650b45-SnapInsta.to_AQMqvQVZzTiVlhTMLfr5bUo4mn_HPCdOFLzGD9JYx_k7N1NBJhU1p-nhMsswzp0_7lcgyZKJBbHOSLd7iitq9x5y_ixhpKwlHDpMvzg.mp4",
+ "duration": 9.308,
+ "threshold": 0.25,
+ "note": "hard cuts only; seamless transitions (match cuts, morphs, irises) are not counted",
+ "cuts": [
+  0.4,
+  0.8,
+  1.233,
+  1.7
+ ],
+ "shots": [
+  0.4,
+  0.4,
+  0.433,
+  0.467,
+  7.608
+ ],
+ "shot_count": 5,
+ "mean_shot_s": 1.862,
+ "median_shot_s": 0.433,
+ "cuts_per_10s": 4.3
+}

@@ -2,3 +2,7 @@ workspace/
 __pycache__/
 *.pyc
 workspace2/
+node_modules/
+out/
+hulk-reel/assets/shots/
+hulk-reel/audio/*.wav

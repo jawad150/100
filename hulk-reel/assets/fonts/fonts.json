@@ -1,0 +1,20 @@
+[
+ {
+  "family": "headline",
+  "weight": "100 900",
+  "style": "normal",
+  "subset": "all",
+  "range": "",
+  "file": "headline-100-900-normal-all-0.woff2",
+  "src": "https://hulkmarketing.co.uk/_next/static/media/103fc5fac08dcb15-s.p.woff2"
+ },
+ {
+  "family": "hanken",
+  "weight": "100 900",
+  "style": "normal",
+  "subset": "all",
+  "range": "",
+  "file": "hanken-100-900-normal-all-1.woff2",
+  "src": "https://hulkmarketing.co.uk/_next/static/media/313510e2713fb214-s.p.woff2"
+ }
+]
