@@ -38,11 +38,26 @@ SMALL PIECES
     split_ui(cv, t)                    S10 TAB / AB: divider, chips, far words top, mini viewer + bubble bottom
 OUTRO / COVER
     OUTRO, T_END, outro()              PO.ProfileOutro('Aap ke ghar antenna kaun ghumata tha?',
-                                       key='Papa, bhai ya aap?', dur=4.2) at T_END = 882 / 30
+                                       key='Papa, bhai ya aap?', dur=4.2) at T_END = TM['T_END'] / 30
+                                       (script f882; VO grid f954)
     cover(cv)                          lockup + underline, BAS BAS!, bubble, signature over the cover CRT frame
     cover_picture()                    the half-snow / half-locked TV picture for the cover     GRID_CROP (y 240-1680)
 
-    python3 thoda_left_bas_ui.py selftest   -> workspace/jawad_reels/thoda_left_bas/ui_selftest/*.png
+TIMING (VO-led, UI.md 1): every beat is a parameter in reel frames. TM = live table (derived at import from the
+measured VO words, workspace/jawad_reels/thoda_left_bas/vo/words.json or vo_final/), TIMING_SCRIPT = SCRIPT r1 plan,
+TIMING_GRID = the plan on the live grid. GRID / set_grid(splice): 72-f hook (1008 f) or the VO cut's 144-f hook
+(1080 f, body +72); R(f) maps an r1 frame. NF, DUR, SPLICE, T_END follow the grid.
+    retime(C9=310) / retime(C9=(310, 345)) / retime(T1=(540, 555), SPLIT=None, T_END=954)   (unknown keys raise)
+    derive_vo_timing(words) -> dict for retime;  vo_report() -> lockup vs VO onset;  lockup_windows(hook)
+    env TLB_UI_TIMING=script (text-led plan), TLB_UI_SPLICE=72|144 (force the grid)
+    A dropped caption (no slot in the VO cut) has TM[cid] = None and draws nothing; retime(cid=(a, b)) restores it.
+LEGIBILITY: bed(cv, layer, x0, y0) = adaptive ink bed under every lockup / far line (plate-luminance driven), plus the
+adaptive box scrim and a plate-aware keyword halo (plate_halo). Captions must be drawn after the world, before the
+finish (GRADE.md 1); keep gold_hour rays <= 0.12 while a lockup is up (UI.md 6).
+SRT: srt_cues(hook) / save_srt(path, hook) (sentence mode from the VO words, else the lockups).
+
+    python3 thoda_left_bas_ui.py selftest [stills] [ink] [srt]
+        -> workspace/jawad_reels/thoda_left_bas/ui_selftest/*.png, thoda_left_bas_{A,B}.srt, ink scan report
 """
 import functools
 import json
@@ -67,7 +82,7 @@ LOOK = 'gold_hour'
 FPS = K.FPS
 HALF = 0.5 / FPS
 W, H = K.W, K.H
-DUR = 1008 / 30
+DUR = 1008 / 30                          # live: NF / FPS (set_grid)
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 RWS = os.path.join(K.WS, 'thoda_left_bas')
 SELF_DIR = os.path.join(RWS, 'ui_selftest')
@@ -196,10 +211,26 @@ def soft_scrim(w, h, feather=80):
     return ro(solid(a, hexl('#120806')))
 
 
-def scrim(cv, cx, cy, w, h, amount=0.55, feather=80):
+SCRIM_TARGET = 0.10      # linear luminance the box scrim aims for (the bed does the rest under the glyphs)
+SCRIM_MAX = 0.55
+
+
+def scrim(cv, cx, cy, w, h, amount=0.55, feather=80, adaptive=True):
+    """Soft SMOKE box scrim. adaptive: the amount rises with the plate luminance under the box (bright sky /
+    cream wall -> up to 0.85 x the fade factor), never below `amount` on dark worlds."""
     if amount <= 1e-3:
         return
-    K.draw(cv, soft_scrim(int(w), int(h), int(feather)), cx, cy, opacity=amount)
+    if adaptive:
+        x0, x1 = int(max(0, cx - w / 2)), int(min(W, cx + w / 2))
+        y0, y1 = int(max(0, cy - h / 2)), int(min(H, cy + h / 2))
+        if x1 > x0 and y1 > y0:
+            reg = cv[y0:y1:4, x0:x1:4, :3]
+            lm = float((reg * np.float32([0.2126, 0.7152, 0.0722])).sum(2).mean())
+            if lm > SCRIM_TARGET:
+                need = min(SCRIM_MAX, 1.0 - SCRIM_TARGET / lm)
+                amount = max(amount, need * min(1.0, amount / 0.5))
+                feather = int(feather * 1.6)          # a wider, softer falloff on bright plates (no smudge edge)
+    K.draw(cv, soft_scrim(int(w), int(h), int(feather)), cx, cy, opacity=min(1.0, amount))
 
 
 # ============================================================================================== signal grammar
@@ -216,8 +247,9 @@ WOBBLE = [(-1e9, 5.99, 1.5, 1.3), (66, 107, 1.0, 1.3), (342, 413, 3.0, 0.8)]    
 
 
 def _yaw_f(f):
-    if f >= 864 or f < 0:                                 # loop tail: frame 0's past (the pre-roll state)
-        return YAW0 + 1.5 * math.sin(2 * math.pi * 1.3 * ((f - 1008 if f >= 864 else f) / FPS))
+    s13 = TM['T_END'] - 18                                # S13 (script f864): the loop tail = frame 0's past
+    if f >= s13 or f < 0:
+        return YAW0 + 1.5 * math.sin(2 * math.pi * 1.3 * ((f - NF if f >= s13 else f) / FPS))
     v = YAW0
     for f0, f1, tgt, e in YAW_SEGS:
         if f < f0:
@@ -272,13 +304,15 @@ def client(t):
             dirn = 1.0 if xx > prev_x else -1.0
         if vv is not None:
             ver = vv
-    if 522 <= f < 576:
-        ver = min(22, 5 + int((f - 522) // 3))
+    s9 = TM['S9']
+    s10 = TM['SPLIT'][0] if TM['SPLIT'] else TM['T2'][0]
+    if s9 <= f < s10:
+        ver = min(22 if TM['SPLIT'] else 26, 5 + int((f - s9) // 3))
     return xv, ver, dirn
 
 
 def sig_c(t):
-    return 1.0 if F(468) - HALF <= t < F(648) - HALF else 0.0
+    return 1.0 if F(TM['T1'][0]) - HALF <= t < F(TM['T2'][0]) - HALF else 0.0
 
 
 # version names for the revision list (L1) and the export (E1)
@@ -320,9 +354,9 @@ SPEED = {   # caps rise (y_dur, op_dur, dist) | keyword (delay, glyph dur, stagg
 # part = (kind, text, style, px, x, y, t0 offset s) ; kind caps | key | body | slam
 CAPS = {
     'H1': dict(f=(0, 17), t0=F(0) - 0.25, speed='hook', ghost=True, out=None,
-               parts=[('caps', 'THODA', 'jw_caps', 96, 540, 360, 0.0), ('key', 'left...', 'jw_key', 240, 540, 535, 0.0)]),
+               parts=[('caps', 'THODA', 'jw_caps', 96, 540, 330, 0.0), ('key', 'left...', 'jw_key', 240, 540, 505, 0.0)]),
     'H2': dict(f=(36, 53), t0=F(36), speed='hook', out=(50, 54),
-               parts=[('slam', 'BAS BAS!', 'jw_caps_bold', 170, 540, 470, 0.0)]),
+               parts=[('slam', 'BAS BAS!', 'jw_caps_bold', 170, 540, 440, 0.0)]),
     'H3': dict(f=(54, 71), t0=F(54), speed='hook', ghost=True, out=(63, 72), tear=True,
                parts=[('caps', 'AB', 'jw_caps', 96, 540, 330, 0.0), ('key', 'theek hai!', 'jw_key', 220, 540, 500, 0.0)]),
     'HB1': dict(f=(0, 71), t0=-0.45, speed='std', out=(62, 72), tear=True,
@@ -354,9 +388,9 @@ CAPS = {
                        ('pop', 'hai.', 'jw_body', 72, 790, 505, F(12))]),
     'C14': dict(f=(648, 683), t0=F(648), speed='hook', out=(679, 684), scrim=(540, 420, 960, 220),
                 parts=[('slam', 'BAS BAS!', 'jw_caps_bold', 170, 540, 420, 0.0)]),
-    'C15': dict(f=(684, 719), t0=F(684), speed='fast', out=(712, 720), scrim=(540, 450, 860, 420),
-                parts=[('caps', '27', 'jw_caps', 96, 540, 300, 0.0), ('key', 'revision', 'jw_key', 220, 540, 460, 0.0),
-                       ('body', 'baad...', 'jw_body', 72, 540, 600, F(12))]),
+    'C15': dict(f=(684, 719), t0=F(684), speed='fast', out=(712, 720), scrim=(540, 430, 860, 400),
+                parts=[('caps', '27', 'jw_caps', 96, 540, 285, 0.0), ('key', 'revision', 'jw_key', 220, 540, 440, 0.0),
+                       ('body', 'baad...', 'jw_body', 72, 540, 578, F(12))]),
     'P1': dict(f=(756, 863), t0=F(756), speed='std', out=(846, 857), underline=True,
                parts=[('caps', 'HUM AAJ BHI', 'jw_caps', 96, 540, 380, 0.0), ('key', 'antenna', 'jw_key', 250, 540, 560, 0.0),
                       ('body', 'ghuma rahe hain.', 'jw_body', 72, 540, 770, F(24))]),
@@ -371,6 +405,293 @@ FAR = {
                words=[('HAAN...', 252), ('HAAN...', 270)]),
     'C8': dict(text='BAS! BAS!', style='jw_caps_bold', px=110, y=1390, fill='IVORY', f=(288, 305), slam=True),
 }
+
+
+# ============================================================================================== timing (VO-led)
+# Every caption / UI beat is a parameter in reel frames (30 fps). TIMING_SCRIPT = the text-led plan of SCRIPT.md 3
+# (= script.json). At import the live table TM is re-derived from the measured Vlad VO words (derive_vo_timing(),
+# LEAD_DECISIONS 3: picture beats move to the VO). The motion designer overrides with
+#     UI.retime(C9=310)              # move a lockup: in-frame, hold kept (t0, exit, jolt, M3 exit all follow)
+#     UI.retime(C9=(310, 345))       # in-frame and last frame (exit ends on last + 1)
+#     UI.retime(T1=(468, 483), P1b=492, SPLIT=(576, 594, 612, 630), T_END=882)
+#     UI.retime(**UI.TIMING_SCRIPT)  # back to the text-led plan;  UI.retime(**UI.derive_vo_timing()) back to the VO
+# Env TLB_UI_TIMING=script keeps the text-led plan at import. Unknown keys raise.
+SPLICE = 72                                           # hook -> body splice (live value: set_grid)
+NF = 1008
+CAPS_BASE = json.loads(json.dumps(CAPS))              # frozen script plan (lists instead of tuples, fine)
+FAR_BASE = json.loads(json.dumps(FAR))
+UI_BASE = dict(
+    H1b=(18, 35),          # hook chant: 'right...' swap frame, chant exit ends on last + 2
+    B0=63,                 # S1 anachronism client bubble pops (hook A)
+    T1=(468, 483),         # S7 toast in / leaves (the re-hook, 46 %)
+    X1=477,                # S7 cursor click + X 540 -> 538 nudge + '-2 px' flash (client clock entry follows)
+    P1b=490, P1c=504,      # S8 phone bubbles 'thoda right...' / 'nahi, pehle wala'
+    TYPING=510,            # S8 typing dots
+    S7=432, S8=486, S9=522,       # edit-world shot starts: UI timeline (C12 / T1), phone (A7), revision avalanche
+    SPLIT=(576, 594, 612, 630),   # S10 the four TAB / AB moves (far word + bubble + antenna + version together);
+                                  # None = no S10 (no room in the VO cut): split_ui draws nothing, v23-v26 stack in S9
+    T2=(648, 680),         # S11 client bubble 'BAS BAS! ab theek hai!' in / exit start
+    E1=(684, 716),         # S11 export dialog in / 100 %
+    B1=990,                # S13 bubble over the outro (loop bridge)
+    T_END=882,             # profile outro start
+)
+TIMING_SCRIPT = {cid: tuple(c['f']) for cid, c in CAPS_BASE.items()}
+TIMING_SCRIPT.update({cid: tuple(d['f']) for cid, d in FAR_BASE.items()})
+TIMING_SCRIPT.update(UI_BASE)
+
+# GRID: SCRIPT.md r1 is a 1008-f reel with a 72-f hook. The VO-led cut may need a longer hook (VO_TIMING 2026-10-11:
+# 144-f hook, 1080 f, everything after the hook +72). set_grid(splice) maps the script plan onto the reel grid:
+# hook frames scale by splice / 72, body frames shift by splice - 72. TIMING_GRID = the plan on the live grid (the
+# fallback when a VO word is missing); TM = the live table (reel frames). R(f) maps any r1 body frame to the grid.
+HOOK_KEYS = ('H1', 'H2', 'H3', 'HB1', 'H1b', 'B0')
+GRID = dict(splice=72, shift=0, nf=1008)
+TIMING_GRID = dict(TIMING_SCRIPT)
+TM = dict(TIMING_SCRIPT)
+T_END = UI_BASE['T_END'] / 30
+
+
+def R(f):
+    """r1 script frame -> live grid frame (hook frames scale, body frames shift)."""
+    if f < 72:
+        return int(round(f * GRID['splice'] / 72.0))
+    return f + GRID['shift']
+
+
+def _map_plan(k, v):
+    if k in HOOK_KEYS:
+        if k == 'HB1':
+            return (0, GRID['splice'] - 1)
+        if k == 'H3':                                  # H3 keeps its 18-f hold and tears into the splice
+            return (GRID['splice'] - 18, GRID['splice'] - 1)
+        if k == 'B0':
+            return GRID['splice'] - 9
+        return tuple(R(x) for x in v) if isinstance(v, tuple) else R(v)
+    if isinstance(v, tuple):
+        return tuple(R(x) for x in v)
+    return R(v)
+
+
+def set_grid(splice=72):
+    """Switch the reel grid (72 = SCRIPT r1, 1008 f; 144 = the VO-led 1080-f cut). Resets TM to the mapped plan."""
+    global SPLICE, NF, DUR
+    GRID.update(splice=int(splice), shift=int(splice) - 72, nf=1008 + int(splice) - 72)
+    SPLICE, NF = GRID['splice'], GRID['nf']
+    DUR = NF / FPS
+    TIMING_GRID.clear()
+    TIMING_GRID.update({k: _map_plan(k, v) for k, v in TIMING_SCRIPT.items()})
+    TM.clear()
+    TM.update(TIMING_GRID)
+
+
+def _apply_timing():
+    """Rebuild CAPS / FAR (and the picture-synced UI tables) from TM. Shift rule per lockup: d_in = new in - script
+    in moves t0 + the jolt; d_out = new last - script last moves the exit window and the C11 M3 exit."""
+    global T_END
+    for cid, b in CAPS_BASE.items():
+        c = CAPS[cid]
+        if TM.get(cid) is None:                       # dropped (no slot in the VO cut)
+            c['f'] = (-100, -101)
+            c['out'] = (-100, -99)
+            continue
+        a, z = TM[cid]
+        a0, z0 = b['f']
+        c['f'] = (int(a), int(z))
+        c['t0'] = b['t0'] + (a - a0) / FPS
+        if b.get('out'):
+            c['out'] = (b['out'][0] + (z - z0), b['out'][1] + (z - z0))
+        if b.get('jolt') is not None:
+            c['jolt'] = b['jolt'] + (a - a0)
+        if b.get('m3'):
+            c['m3_f'] = 414 + (z - z0)
+    for cid, b in FAR_BASE.items():
+        d = FAR[cid]
+        if TM.get(cid) is None:                       # dropped (no slot in the VO cut)
+            d['f'] = (-100, -101)
+            continue
+        a, z = TM[cid]
+        d['f'] = (int(a), int(z))
+        if b.get('words'):
+            w2 = TM.get('_C7_w2', b['words'][1][1] + (a - b['f'][0])) if cid == 'C7' else None
+            d['words'] = [(b['words'][0][0], int(a))] + [(w, int(w2 if w2 is not None else fw + a - b['f'][0]))
+                                                        for w, fw in b['words'][1:]]
+    T_END = TM['T_END'] / FPS
+    _apply_picture_sync()
+    for fn in ('_auto_scrim',):
+        g = globals().get(fn)
+        if g is not None and hasattr(g, 'cache_clear'):
+            g.cache_clear()
+
+
+def retime(**kw):
+    """Override timing keys (frames). Lockups / far lines: an int moves the in-frame and keeps the hold, a pair sets
+    (in, last). UI keys take their own shape (see UI_BASE). Returns the live table."""
+    bad = [k for k in kw if k not in TIMING_SCRIPT and k != '_C7_w2']
+    if bad:
+        raise KeyError('unknown timing keys: %s' % bad)
+    for k, v in kw.items():
+        if k == 'SPLIT' and v is not None:
+            v = tuple(int(x) for x in v)
+        if (k in CAPS_BASE or k in FAR_BASE) and v is not None:
+            if np.isscalar(v):
+                a, z = TM[k]
+                v = (int(v), int(v) + (z - a))
+            v = (int(v[0]), int(v[1]))
+            if v[1] < v[0]:
+                raise ValueError('%s: last frame %d before in-frame %d' % (k, v[1], v[0]))
+        TM[k] = v
+    _apply_timing()
+    return dict(TM)
+
+
+def tf(key, i=None):
+    """A timing value in seconds (i picks an element of a pair / tuple)."""
+    v = TM[key]
+    return F(v if i is None else v[i])
+
+
+# VO anchors: lockup -> (VO line, token index of the word the lockup lands on, token span the lockup shows)
+VO_ANCHOR = {
+    'H2': ('V2', 0, (0, 1)), 'H3': ('V2', 2, (2, 4)), 'R1': ('V3', 0, (0, 0)), 'R2': ('V3', 1, (1, 3)),
+    'R4': ('V4', 0, (0, 1)), 'C5': ('V5', 0, (0, 1)), 'C6': ('V5', 2, (2, 4)), 'C7': ('V6', 0, (0, 1)),
+    'C8': ('V6', 2, (2, 2)), 'C9': ('V7', 0, (0, 2)), 'C10': ('V7', 3, (3, 5)), 'C11': ('V8', 0, (0, 5)),
+    'C12': ('V9', 0, (0, 2)), 'C13': ('V11', 0, (0, 2)), 'C14': ('V12', 0, (0, 1)), 'C15': ('V13', 0, (0, 2)),
+    'P1': ('V14', 0, (0, 6)),
+}
+SLAMS = ('H2', 'C8', 'C14', 'R4')      # the hit itself lands on the onset frame (no lead)
+LEAD_TOL = 2                           # a lockup keeps its grid frame when it leads its word by <= 2 f (VO_TIMING 3)
+STAYS = {'H2': 12, 'R4': 12, 'C9': 12, 'C14': 12, 'P1': 12}   # structural frames (lock / slam / payoff hit) kept
+                                                               # while the VO word follows within this many frames
+MIN_HOLD = 14                          # frames
+NON_VO = ('R3', 'C7', 'C8', 'C12', 'C15')   # captions whose VO line is not in the cut (V6 / V9 / V13 dropped, R3 none)
+VO_WORDS = [os.path.join(K.WS, 'thoda_left_bas', 'vo', 'words.json'),
+            os.path.join(REPO, 'brand_reels', 'assets', 'thoda_left_bas', 'vo_final', 'thoda_left_bas_vo_A.words.json')]
+
+
+def vo_words(path=None):
+    """The measured VO words of stem A (reel time; snake_captions format + line / i), or None."""
+    for p in ([path] if path else VO_WORDS):
+        if p and os.path.exists(p):
+            try:
+                return json.load(open(p, encoding='utf8'))
+            except ValueError:
+                return None
+    return None
+
+
+def derive_vo_timing(words=None):
+    """TM recomputed from the VO words. Rules: a lockup's in-frame = floor(onset of its anchor word) - 1 (slams: the
+    onset frame); if that is 0..LEAD_TOL f after the script in-frame the script frame stays (type may lead the word
+    slightly; cuts keep their frame). The hold is kept, extended to cover the last shown word + 6 f, and cut to the
+    next lockup's in - 1 (instant swap), never below MIN_HOLD. H1 (f0, loop seam), HB1 and the f72 splice never move.
+    UI beats follow their words (T1 / P1b / P1c on V10, X1 = T1 + 9, T2 = C14, E1 = C15). Keys whose word is missing
+    keep their current value. Returns a dict for retime(**...)."""
+    ws = words if words is not None else vo_words()
+    tm = dict(TIMING_GRID)
+    if not ws:
+        return tm
+
+    def on(line, i, which='start'):
+        for w in ws:
+            if w.get('line') == line and int(w.get('i', -1)) == i:
+                return float(w[which]) * FPS
+        return None
+    fl = lambda v: int(math.floor(v + 1e-6))          # noqa: E731
+    cand = {}
+    for cid, (line, i, span) in VO_ANCHOR.items():
+        o = on(line, i)
+        if o is None:
+            continue
+        a0, z0 = TIMING_GRID[cid]
+        a = fl(o) - (0 if cid in SLAMS else 1)
+        if 0 <= a - a0 <= max(LEAD_TOL, STAYS.get(cid, 0)):
+            a = a0
+        e = on(line, span[1], 'end')
+        z = a + (z0 - a0)
+        if e is not None:
+            z = max(z, int(math.ceil(e)) + 6)
+        cand[cid] = [a, z]
+    # H1b swap on 'right...'
+    o = on('V1', 3)
+    if o is not None:
+        s = fl(o) - 1
+        h2 = cand['H2'][0] if 'H2' in cand else TIMING_GRID['H2'][0]
+        tm['H1b'] = (s, max(s + 8, h2 - 2))          # the chant leaves over 4 f into the H2 slam
+    # C7 second 'HAAN...'
+    o = on('V6', 1)
+    if o is not None:
+        tm['_C7_w2'] = fl(o) - 1
+    # instant swaps: never two body lockups at once (time order, hooks excluded)
+    seq = sorted(cand.items(), key=lambda kv: kv[1][0])
+    for k in range(len(seq) - 1):
+        cid, v = seq[k]
+        nxt = seq[k + 1][1][0]
+        v[1] = max(v[0] + 6, min(v[1], nxt - 1))
+    # lockups without a VO line (R3, C7, C8, C12, C15): the next free slot after the previous lockup, hold kept,
+    # cut at the next VO lockup; dropped (None) when less than MIN_HOLD is left. C12 may share its window with the
+    # T1 toast (glass UI in another band).
+    for cid in sorted(NON_VO, key=lambda k: TIMING_GRID[k][0]):
+        a0, z0 = TIMING_GRID[cid]
+        prev = [v[1] for k, v in cand.items() if v[0] <= a0 and k not in ('H2', 'H3')]
+        a = max([a0] + [p_ + 1 for p_ in prev])
+        nxt = min([v[0] for v in cand.values() if v[0] > a0] + [10 ** 6])
+        z = min(a + (z0 - a0), nxt - 1)
+        if z - a + 1 < MIN_HOLD:
+            tm[cid] = None
+            continue
+        cand[cid] = [a, z]
+        if cid == 'C7' and '_C7_w2' not in tm:
+            tm['_C7_w2'] = a + 18
+    for cid, v in cand.items():
+        if cid == 'H3':
+            v[1] = SPLICE - 1                         # the hook tears out into the f72 splice (structure)
+            v[0] = min(v[0], SPLICE - 1 - MIN_HOLD)
+        if cid == 'P1':
+            v[1] = min(v[1], TIMING_GRID['P1'][1])    # the payoff leaves before the outro razor
+        tm[cid] = (int(v[0]), int(v[1]))
+    # UI beats
+    o = on('V10', 0)
+    if o is not None:
+        t1 = fl(o) - 1
+        if 0 <= t1 - TIMING_GRID['T1'][0] <= LEAD_TOL:
+            t1 = TIMING_GRID['T1'][0]
+        tm['T1'] = (t1, t1 + 15)
+        tm['X1'] = t1 + 9
+    for key, (line, i) in (('P1b', ('V10', 2)), ('P1c', ('V10', 4))):
+        o = on(line, i)
+        if o is not None:
+            tm[key] = fl(o) - 1
+    tm['TYPING'] = tm['P1c'] + 6
+    tm['B0'] = tm['H3'][0] + 9                        # the slip + bubble 9 f after 'AB theek hai!' (script f54 -> f63)
+    tm['T2'] = (tm['C14'][0], tm['C14'][1] - 3)
+    if tm.get('C15'):
+        tm['E1'] = (tm['C15'][0], min(tm['C15'][0] + 32, tm['C15'][1] - 3))
+    # edit-world shots follow their beats (script: S7 = C12, S8 = X1 + 9, S9 = P1c + 18, S10 = after C13)
+    c12 = tm.get('C12')
+    tm['S7'] = min(tm['T1'][0], c12[0] if c12 else 10 ** 6)
+    tm['S8'] = tm['X1'] + 9
+    tm['S9'] = tm['P1c'] + 18
+    c13_end = tm['C13'][1] if tm.get('C13') else tm['S9'] + 54
+    room = tm['T2'][0] - (c13_end + 1)
+    if room >= 4 * 9:
+        st = min(18, room // 4)
+        tm['SPLIT'] = tuple(c13_end + 1 + st * k for k in range(4))
+    else:
+        tm['SPLIT'] = None
+    return tm
+
+
+def vo_report(words=None):
+    """[(key, frame, VO word, onset f, delta)] for the anchored lockups (selftest prints it)."""
+    ws = words if words is not None else vo_words()
+    rows = []
+    if not ws:
+        return rows
+    for cid, (line, i, span) in VO_ANCHOR.items():
+        w = [x for x in ws if x.get('line') == line and int(x.get('i', -1)) == i]
+        if w:
+            o = float(w[0]['start']) * FPS
+            rows.append((cid, TM[cid][0], '%s %s' % (line, w[0]['word']), round(o, 1), round(TM[cid][0] - o, 1)))
+    return rows
 
 
 @functools.lru_cache(maxsize=64)
@@ -409,7 +730,7 @@ def _draw_part(L, t, part, t0, sp, oy, crisp):
         if t < tk - HALF:
             return
         hk = ease('inout_sine', (t - tk) / (sp['kd'] + 0.03 * len(s)))
-        tx(s, 'jw_key_halo', px).draw(L, x, y, opacity=hk)
+        tx(s, 'jw_key_halo', px).draw(L, x, y, opacity=hk * _HALO[0])
         settle = tk + sp['ks'] * len(s) + sp['kd'] + 0.05
         if crisp is False and t < settle:
             glyphs(s, 'jw_key_core', px).rise(L, t, x, y, t0=tk, stagger=sp['ks'], dur=sp['kd'], dist=sp['kdist'],
@@ -417,12 +738,13 @@ def _draw_part(L, t, part, t0, sp, oy, crisp):
         else:
             tx(s, 'jw_key_core', px).draw(L, x, y)
     elif kind == 'slam':
-        if t < ts + 0.5:
-            glyphs(s, style, px).slam(L, t, x, y, t0=ts - HALF, fade=0, s0=1.14, dur=0.25, smear=False)
+        if t < ts + 0.5:                              # peak capped: the overshoot stays inside x 70-1010 (<= 900 px)
+            s0 = min(1.14, 900.0 / max(1.0, _part_box(kind, s, style, px)[0]))
+            glyphs(s, style, px).slam(L, t, x, y, t0=ts - HALF, fade=0, s0=s0, dur=0.25, smear=False)
         else:
             tx(s, style, px).draw(L, x, y)
     elif kind == 'slamkey':
-        tx(s, 'jw_key_halo', px).draw(L, x, y, opacity=ease('out_cubic', (t - ts) / 0.25))
+        tx(s, 'jw_key_halo', px).draw(L, x, y, opacity=ease('out_cubic', (t - ts) / 0.25) * _HALO[0])
         if t < ts + 0.5:
             glyphs(s, 'jw_key_core', px).slam(L, t, x, y, t0=ts - HALF, fade=0, s0=1.18, dur=0.4, smear=False)
         else:
@@ -461,6 +783,58 @@ def _bands_shift(L, f, n, hgt, amp, salt=0, rows=None):
                 L[y:y + h, dx:] = 0
 
 
+BED_TARGET = 0.03         # linear luminance at the glyph edges after the bed (white >= 7:1, FLAME key >= 3:1 pre-grade)
+BED_MIN, BED_MAX = 0.30, 0.95
+_HALO = [1.0]             # keyword halo opacity for the lockup being drawn (set from the plate by plate_halo())
+
+
+def plate_lum(cv, x0, y0, x1, y1):
+    """Mean linear luminance of the canvas in a box (sub-sampled)."""
+    x0, x1, y0, y1 = int(max(0, x0)), int(min(W, x1)), int(max(0, y0)), int(min(H, y1))
+    if x1 <= x0 or y1 <= y0:
+        return 0.0
+    reg = cv[y0:y1:4, x0:x1:4, :3]
+    return float((reg * np.float32([0.2126, 0.7152, 0.0722])).sum(2).mean())
+
+
+def plate_halo(cv, y0, y1):
+    """Keyword halo strength for a band: full on dark worlds, down to 0.2 on a bright sky / wall (the additive
+    halo only lifts the plate around the glyphs there and eats the edge contrast)."""
+    lm = plate_lum(cv, 90, y0, 990, y1)
+    _HALO[0] = float(np.clip(1.0 - (lm - 0.08) / 0.30, 0.2, 1.0))
+    return _HALO[0]
+
+
+def bed(cv, L, x0, y0, opacity=1.0, k=1.0):
+    """Adaptive ink bed under a type layer L (premultiplied, drawn with its top-left at (x0, y0)): a tight + a wide
+    soft shadow from L's own alpha, darkened just enough that the plate under the glyphs reaches BED_TARGET
+    (bright sky / cream wall -> up to 0.92, dark worlds -> a 0.30 grounding shadow). Call before drawing L."""
+    if opacity <= 1e-3:
+        return
+    h, w = L.shape[:2]
+    xi, yi = int(round(x0)), int(round(y0))
+    X0, Y0, X1, Y1 = max(0, xi), max(0, yi), min(W, xi + w), min(H, yi + h)
+    if X1 <= X0 or Y1 <= Y0:
+        return
+    a = np.ascontiguousarray(L[Y0 - yi:Y1 - yi, X0 - xi:X1 - xi, 3])
+    a = np.clip((a - 0.3) * 2.5, 0.0, 1.0)            # glyph cores only: glow halos must not inflate the bed
+    if a.max() < 1e-3:
+        return
+    sm = cv2.resize(a, (max(1, a.shape[1] // 4), max(1, a.shape[0] // 4)), interpolation=cv2.INTER_AREA)
+    dl = cv2.dilate(sm, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11)))    # ~20 px full-dark edge zone
+    m = np.maximum(cv2.GaussianBlur(dl, (0, 0), 2.2), cv2.GaussianBlur(sm, (0, 0), 9.0) * 1.3)
+    m = np.clip(cv2.resize(m, (a.shape[1], a.shape[0]), interpolation=cv2.INTER_LINEAR), 0, 1)
+    reg = cv[Y0:Y1, X0:X1]
+    if float(m.max()) < 1e-3:
+        return
+    lum = reg[::4, ::4, 0] * 0.2126 + reg[::4, ::4, 1] * 0.7152 + reg[::4, ::4, 2] * 0.0722
+    lum = cv2.GaussianBlur(np.ascontiguousarray(lum, np.float32), (0, 0), 6.0)       # per-pixel, smooth (no edges)
+    lum = cv2.resize(lum, (m.shape[1], m.shape[0]), interpolation=cv2.INTER_LINEAR)
+    amt = np.clip(1.0 - BED_TARGET / np.maximum(lum, 1e-4), BED_MIN, BED_MAX)
+    d = (m * amt * np.float32(opacity * k))[..., None]
+    reg[..., :3] = reg[..., :3] * (1.0 - d) + d * hexl('#120806', 0.6)
+
+
 @functools.lru_cache(maxsize=64)
 def _auto_scrim(cid):
     """Soft SMOKE scrim rect (cx, cy, w, h) behind a lockup: the type stays >= 4.5:1 over a bright sky, the CRT
@@ -473,7 +847,7 @@ def _auto_scrim(cid):
     return ((x0 + x1) / 2, (y0 + y1) / 2, min(1000, x1 - x0 + 120), y1 - y0 + 40)
 
 
-def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5):
+def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5, bed_k=1.0):
     """Draw near / narrator lockup `cid` at t (nothing outside its frames)."""
     c = CAPS[cid]
     f = t * FPS
@@ -485,6 +859,7 @@ def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5):
     sp = SPEED[c['speed']]
     parts = c['parts']
     y0, y1 = _band(parts)
+    plate_halo(cv, y0, y1)
     L = np.zeros((y1 - y0, W, 4), np.float32)
     Lk = np.zeros_like(L) if c.get('ghost') else L
     crisp = bool(c.get('crisp'))
@@ -524,7 +899,7 @@ def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5):
         jx = 12.0
     mdx = 0.0
     if c.get('m3'):
-        mdx = -760.0 * ease('in_expo', (f - 414) / 17.0)
+        mdx = -760.0 * ease('in_expo', (f - c.get('m3_f', 414)) / 17.0)
     oy = -8.0 * ex if not c.get('tear') else 0.0
     op = opacity * (1.0 - ex)
     if op <= 1e-3:
@@ -535,6 +910,8 @@ def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5):
     blur = 6.0 * ex if not c.get('tear') else 0.0
     if c.get('m3') and mdx < -1:
         blur = min(14.0, abs(mdx) / 40.0)
+    if bed_k > 0:
+        bed(cv, L, dx + mdx + jx, y0 + oy, op, bed_k)
     if blur > 0.3 or abs(dx + mdx + jx) > 1e-3 or abs(oy) > 1e-3 or op < 1:
         K.draw(cv, L, dx + mdx + jx, y0 + oy, anchor=(0, 0), opacity=op, blur=blur)
     else:
@@ -544,37 +921,45 @@ def near(cv, t, cid, sig_v=0.0, gdir_v=1.0, dx=0.0, opacity=1.0, scrim_k=0.5):
 def hook_chant(cv, t, sig_v, gdir_v):
     """H1 -> H1b (f0-f37): THODA stays; 'left...' slides out right, 'right...' enters from the left (SCRIPT anim)."""
     f = t * FPS
-    if f >= 37.5:
+    sw, se = TM['H1b']
+    ex0 = se - 2                                       # chant exit f33-f37 (script)
+    if f >= ex0 + 4.5:
         return
     c = CAPS['H1']
     sp = SPEED['hook']
-    y0, y1 = _band(c['parts'] + [('key', 'right...', 'jw_key', 240, 540, 535, 0.0)])
+    ky = c['parts'][1][5]
+    y0, y1 = _band(c['parts'] + [('key', 'right...', 'jw_key', 240, 540, ky, 0.0)])
     L = np.zeros((y1 - y0, W, 4), np.float32)
     Lk = np.zeros_like(L)
-    ex = ease('in_cubic', (f - 33) / 4.0)              # out f33-f37
+    hk = plate_halo(cv, y0, y1)
+    ex = ease('in_cubic', (f - ex0) / 4.0)             # out f33-f37 (script)
     _draw_part(L, t, c['parts'][0], c['t0'], sp, y0, False)
-    # keyword A: 'left...' until f20 (slides 60 px right + fades f16-f20)
-    if f < 20.5:
-        u = ease('in_cubic', (f - 16) / 4.0)
+    # keyword A: 'left...' until swap + 2 (slides 60 px right + fades f16-f20 in the script plan)
+    if f < sw + 2.5:
+        u = ease('in_cubic', (f - (sw - 2)) / 4.0)
         tmp = np.zeros_like(L)
         _draw_part(tmp, t, c['parts'][1], c['t0'], sp, y0, False)
         over(Lk, np.roll(tmp, int(round(60 * u)), axis=1) * np.float32(1.0 - u))
-    if f >= 17.5:
-        u = ease('out_cubic', (f - 18 + 0.5) / 6.0)
+    if f >= sw - 0.5:
+        u = ease('out_cubic', (f - sw + 0.5) / 6.0)
         tmp = np.zeros_like(L)
-        tx('right...', 'jw_key_halo', 240).draw(tmp, 540 - 60 * (1 - u), 535 - y0, opacity=u)
-        tx('right...', 'jw_key_core', 240).draw(tmp, 540 - 60 * (1 - u), 535 - y0, opacity=u, blur=5 * (1 - u))
+        tx('right...', 'jw_key_halo', 240).draw(tmp, 540 - 60 * (1 - u), ky - y0, opacity=u * hk)
+        tx('right...', 'jw_key_core', 240).draw(tmp, 540 - 60 * (1 - u), ky - y0, opacity=u, blur=5 * (1 - u))
         over(Lk, tmp)
     if sig_v > 0.5:
         kw, kh = _part_box('key', 'right...', 'jw_key', 240)
-        _bands_shift(Lk, f // 1, 3, 12, 9.0 * sig_v, salt=3, rows=(int(535 - y0 - kh / 2), int(535 - y0 + kh / 2)))
+        _bands_shift(Lk, f // 1, 3, 12, 9.0 * sig_v, salt=3, rows=(int(ky - y0 - kh / 2), int(ky - y0 + kh / 2)))
     if sig_v > 0.02:
         over(L, np.roll(Lk, int(round(40.0 * sig_v * gdir_v)), axis=1) * np.float32(0.35 * sig_v))
     over(L, Lk)
+    bed(cv, L, 0, y0 - 8 * ex, 1.0 - ex)
     K.draw(cv, L, 0, y0 - 8 * ex, anchor=(0, 0), opacity=1.0 - ex, blur=6 * ex)
 
 
-def _far_line(cv, t, spr, x, y_end, t0, f_out, slam=False, anchor=(0.5, 0.5), echo=True, fill_k=1.0):
+FAR_RISE = 30.0           # far voice rises 30 px into its line (SCRIPT: "rising from y 1480"; 1480 is now the glyph floor)
+
+
+def _far_line(cv, t, spr, x, y_end, t0, f_out, slam=False, anchor=(0.5, 0.5), echo=True, fill_k=1.0, oy=0.0):
     """A far-voice piece (+ two echoes: +10 f / +20 f, 14 px higher each, 0.35 / 0.15)."""
     ex = ease('in_cubic', (t * FPS - (f_out - 4)) / 5.0)
     if ex >= 1:
@@ -586,19 +971,21 @@ def _far_line(cv, t, spr, x, y_end, t0, f_out, slam=False, anchor=(0.5, 0.5), ec
         tt = t - t0 - dl
         if tt < -HALF:
             continue
+        y_st = y_end + FAR_RISE                       # rise start (glyph bottoms stay above y 1480)
         if slam:
-            y = 1480.0 + (y_end - 1480.0) * X.spring(max(0.0, tt), 'SLAM')
+            y = y_st + (y_end - y_st) * X.spring(max(0.0, tt), 'SLAM')
             op = ease('out_cubic', (tt + HALF) / F(3))
         else:
             u = ease('out_cubic', (tt + HALF) / F(10))
-            y = 1480.0 + (y_end - 1480.0) * u
+            y = y_st + (y_end - y_st) * u
             op = ease('inout_sine', (tt + HALF) / F(5))
         o = op * a * (1.0 - ex) * fill_k
         if o > 1e-3:
-            spr.draw(cv, x, y + dy - 6 * ex, anchor=anchor, opacity=o, blur=(1.5 if dl else 0.0) + 4 * ex, snap=False)
+            spr.draw(cv, x, y + dy - 6 * ex + oy, anchor=anchor, opacity=o, blur=(1.5 if dl else 0.0) + 4 * ex,
+                     snap=False)
 
 
-def far(cv, t, cid, scrim_k=0.5):
+def far(cv, t, cid, scrim_k=0.5, bed_k=1.0):
     d = FAR[cid]
     f = t * FPS
     f_in, f_out = d['f']
@@ -607,14 +994,26 @@ def far(cv, t, cid, scrim_k=0.5):
     spr = tx(d['text'], d['style'], d['px'], d['fill'])
     ex = ease('in_cubic', (f - (f_out - 4)) / 5.0)
     scrim(cv, 540, d['y'] - 10, spr.w + 140, spr.h + 70, scrim_k * (1 - ex) * ease('out_cubic', (f - f_in + 1) / 6))
+    if bed_k > 0:                                     # type into a band layer, ink bed, then over
+        y0 = int(d['y'] - 60 - d['px'])
+        Lb = np.zeros((int(1500 - y0 + d['px']), W, 4), np.float32)
+        _far_draw(Lb, t, d, spr, f_out, -y0)
+        bed(cv, Lb, 0, y0, 1.0, bed_k)
+        ui.paste(cv, Lb, 0, y0)
+        return
+    _far_draw(cv, t, d, spr, f_out, 0)
+
+
+def _far_draw(cv, t, d, spr, f_out, oy):
+    f_in = d['f'][0]
     if d.get('words'):
         x0 = 540 - spr.w / 2
         sp_w = spr.w - T.measure(d['words'][-1][0], d['style'], px=d['px'])[0]
         for k, (w_, fw) in enumerate(d['words']):
             ws = tx(w_, d['style'], d['px'], d['fill'])
-            _far_line(cv, t, ws, x0 + k * sp_w, d['y'], F(fw), f_out, anchor=(0.0, 0.5))
+            _far_line(cv, t, ws, x0 + k * sp_w, d['y'], F(fw), f_out, anchor=(0.0, 0.5), oy=oy)
         return
-    _far_line(cv, t, spr, 540, d['y'], F(f_in), f_out, slam=d.get('slam', False))
+    _far_line(cv, t, spr, 540, d['y'], F(f_in), f_out, slam=d.get('slam', False), oy=oy)
 
 
 def captions(cv, t, sig_v=None, gdir_v=None, hook='A', scrim_k=0.5):
@@ -622,12 +1021,13 @@ def captions(cv, t, sig_v=None, gdir_v=None, hook='A', scrim_k=0.5):
     s = sig(t) if sig_v is None else sig_v
     g = gdir(t) if gdir_v is None else gdir_v
     f = t * FPS
-    if f < 72:
+    if f < SPLICE:
         if hook == 'B':
             near(cv, t, 'HB1', scrim_k=scrim_k)
         else:
-            if f < 37.5 and scrim_k > 0:
-                scrim(cv, *_auto_scrim('H1'), amount=scrim_k * (1 - ease('in_cubic', (f - 33) / 4.0)))
+            ex0 = TM['H1b'][1] - 2
+            if f < ex0 + 4.5 and scrim_k > 0:
+                scrim(cv, *_auto_scrim('H1'), amount=scrim_k * (1 - ease('in_cubic', (f - ex0) / 4.0)))
             hook_chant(cv, t, s, g)
             near(cv, t, 'H2', scrim_k=scrim_k)
             near(cv, t, 'H3', s, g, scrim_k=scrim_k)
@@ -638,7 +1038,7 @@ def captions(cv, t, sig_v=None, gdir_v=None, hook='A', scrim_k=0.5):
         if a - 1 <= f <= (out[1] if out else b + 1):
             near(cv, t, cid, s if CAPS[cid].get('ghost') else 0.0, g, scrim_k=scrim_k)
     for cid in FAR:
-        far(cv, t, cid)
+        far(cv, t, cid, scrim_k=scrim_k)
 
 
 # ============================================================================================== CRT picture
@@ -786,10 +1186,10 @@ def tv_picture(t, sig_v, gdir_v=1.0, roll=None, shimmer=None, split=None):
 
 def tv_picture_at(t):
     """Reference driver: picture state from the yaw clock (shimmer after the f36 / f306 / f648 locks)."""
-    tt = t - DUR if t >= F(864) else t
+    tt = t - DUR if t >= F(TM['T_END'] - 18) else t
     s = sig(tt)
     sh = None
-    for fl in (36, 306):
+    for fl in (TM['H2'][0], TM['C9'][0]):
         u = (tt - F(fl)) / 1.0
         if 0 < u < 1:
             sh = u
@@ -875,11 +1275,18 @@ def crt_mock(cv, pic, glow=1.0):
 
 
 # ============================================================================================== edit world glass UI
-VIEW_C = (540.0, 780.0)
+# Layout (UI.md 4): the glass stack sits under the caption band (lockups y 236-600) and inside x 156-924 so nothing
+# reaches the like / share column (x > 930, y 1050-1700). Card px are authored at scale 1 and drawn at *_S.
+VIEW_C = (540.0, 870.0)                 # SHOTS c: (540, 780) at scale 1 -> collided with every S7-S11 lockup
 VIEW_W, VIEW_H = 960, 600
+VIEW_S = 0.78                           # drawn 749 x 468: y 636-1104, x 166-914 (glass glow <= x 925)
 SLOT = (24, 60, 912, 513)               # media slot in card px
 TL_C = (540.0, 1290.0)
 TL_W, TL_H = 960, 360
+TL_S = 0.78                             # drawn 749 x 281: y 1150-1430
+HB_VIEW = (540.0, 1150.0, 0.78)         # hook B viewer (cx, cy, scale)
+SPLIT_VIEW = (540.0, 1372.0, 0.72)      # S10 mini viewer (cx, cy, scale): y 1156-1588, x 194-886
+T2_Y = 1330.0                           # S11 client bubble centre y
 
 
 def _roof_plate():
@@ -1010,20 +1417,21 @@ def ver_chip(v, sel=1.0):
 
 @functools.lru_cache(maxsize=1)
 def readout_glass():
-    return glass(170, 46, 23.0, rim=0.5, glow=0.3, shadow=0.4)
+    return glass(188, 54, 27.0, rim=0.5, glow=0.3, shadow=0.4)
 
 
 @functools.lru_cache(maxsize=64)
 def readout_txt(xv):
-    return T.render('X %d' % xv, 'jw_mono', px=30)
+    return T.render('X %d' % xv, 'jw_mono', px=36)
 
 
-def viewer(cv, t, xv, ver, ghost=0.0, gdir_v=-1.0, dy=0.0, cx=None, cy=None, scale=1.0, delta=None,
+def viewer(cv, t, xv, ver, ghost=0.0, gdir_v=-1.0, dy=0.0, cx=None, cy=None, scale=None, delta=None,
            readout_flash=0.0, opacity=1.0, handles=True):
     """Glass viewer at (cx, cy) (default VIEW_C): trailer frame, title at X (ghost-double while ghost > 0),
     version chip, X readout chip (+ delta flash text), scrub bar."""
     cx = VIEW_C[0] if cx is None else cx
     cy = (VIEW_C[1] if cy is None else cy) + dy
+    scale = VIEW_S if scale is None else scale
     base = viewer_base()
     base.draw(cv, cx, cy, scale=scale, opacity=opacity)
     x0 = cx - VIEW_W / 2 * scale
@@ -1047,17 +1455,17 @@ def viewer(cv, t, xv, ver, ghost=0.0, gdir_v=-1.0, dy=0.0, cx=None, cy=None, sca
     chx, chy = P(90, 31)
     if ver:
         K.draw(cv, ver_chip(ver), chx, chy, scale=scale, opacity=opacity)
-    rx, ry = P(VIEW_W - 130, 31)
+    rx, ry = P(VIEW_W - 138, 31)
     readout_glass().draw(cv, rx, ry, scale=scale, opacity=opacity)
     if readout_flash > 0:
         g = J.underline(150)
-        K.draw(cv, solid(K.rrect_alpha(170, 46, 23.0, 0), C('FLAME', 0.35)), rx, ry, scale=scale,
+        K.draw(cv, solid(K.rrect_alpha(188, 54, 27.0, 0), C('FLAME', 0.35)), rx, ry, scale=scale,
                opacity=readout_flash * opacity, mode='add')
     readout_txt(int(round(xv))).draw(cv, rx, ry, scale=scale, opacity=opacity, snap=False)
     if delta:
         s_, a = delta
         if a > 1e-3:
-            tx(s_, 'jw_mono', 30, ('FLAME', 1.4)).draw(cv, rx - 100 * scale, ry, anchor=(1.0, 0.5), scale=scale,
+            tx(s_, 'jw_mono', 36, ('FLAME', 1.4)).draw(cv, rx - 112 * scale, ry, anchor=(1.0, 0.5), scale=scale,
                                                        opacity=a * opacity, snap=False)
 
 
@@ -1135,16 +1543,17 @@ def timeline_panel():
     return ui.derive_panel(p, f), X0 - pd
 
 
-def timeline(cv, t, dy=0.0, opacity=1.0, scale=1.0):
+def timeline(cv, t, dy=0.0, opacity=1.0, scale=None):
+    scale = TL_S if scale is None else scale
     panel, tx0 = timeline_panel()
     cx, cy = TL_C[0], TL_C[1] + dy
     panel.draw(cv, cx, cy, scale=scale, opacity=opacity)
     # playhead (IVORY 3 px + flame head), parked over the title clip
-    x0 = cx - TL_W / 2
-    ph = x0 + tx0 + 392
-    y_top, y_bot = cy - TL_H / 2 + 14, cy + TL_H / 2 - 14
-    aa_line(cv, (ph, y_top + 14), (ph, y_bot), 3.0, C('IVORY'), 0.95 * opacity)
-    K.draw(cv, _playhead_head(), ph, y_top + 10, opacity=opacity)
+    x0 = cx - TL_W / 2 * scale
+    ph = x0 + (tx0 + 392) * scale
+    y_top, y_bot = cy - (TL_H / 2 - 14) * scale, cy + (TL_H / 2 - 14) * scale
+    aa_line(cv, (ph, y_top + 14 * scale), (ph, y_bot), 3.0 * scale, C('IVORY'), 0.95 * opacity)
+    K.draw(cv, _playhead_head(), ph, y_top + 10 * scale, scale=scale, opacity=opacity)
 
 
 @functools.lru_cache(maxsize=1)
@@ -1180,13 +1589,15 @@ def toast_panel():
     return ui.derive_panel(p, f)
 
 
-def toast(cv, t, f0=468, f1=483, x=540.0):
-    """T1: drops y 300 -> 420 with the POP spring on f0, leaves up (in_cubic 3 f) from f1."""
+def toast(cv, t, f0=None, f1=None, x=540.0):
+    """T1 (TM['T1'] = (in, leave)): drops y 300 -> 420 with the POP spring on f0, leaves up (in_cubic 3 f) from f1."""
+    f0 = TM['T1'][0] if f0 is None else f0
+    f1 = TM['T1'][1] if f1 is None else f1
     f = t * FPS
     if f < f0 - 0.5 or f >= f1 + 3.5:
         return
     u = X.spring(max(0.0, t - F(f0) + HALF), 'POP')
-    y = 300.0 + 120.0 * u
+    y = 380.0 + 125.0 * u                             # lands y 505: under C12 (y 236-340), above the viewer (y 636)
     op = ease('out_cubic', (f - f0 + 1) / 3.0)
     ex = ease('in_cubic', (f - f1) / 3.0)
     toast_panel().draw(cv, x, y - 40 * ex, scale=0.94 + 0.06 * min(1.0, u), opacity=op * (1 - ex))
@@ -1196,10 +1607,12 @@ def toast(cv, t, f0=468, f1=483, x=540.0):
 def cursor(cv, t):
     """Arrow cursor glides to the X readout and clicks it on f477 (then drifts off by f485)."""
     f = t * FPS
+    c = TM['X1']                                      # click frame (script f477)
+    f = f - (c - 477)                                 # the gesture below is authored around f477
     if f < 466 or f >= 486:
         return
-    rx, ry = VIEW_C[0] + VIEW_W / 2 - 130 - 52, VIEW_C[1] - VIEW_H / 2 + 40
-    p0, p1, p2 = (760.0, 980.0), (rx, ry), (rx + 70, ry + 160)
+    rx, ry = VIEW_C[0] + (VIEW_W / 2 - 130 - 40) * VIEW_S, VIEW_C[1] - (VIEW_H / 2 - 44) * VIEW_S
+    p0, p1, p2 = (760.0, VIEW_C[1] + 200.0), (rx, ry), (rx + 70, ry + 160)
     if f < 476:
         u = ease('inout_cubic', (f - 466) / 10.0)
         x, y = p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u - 30 * math.sin(math.pi * u)
@@ -1208,14 +1621,15 @@ def cursor(cv, t):
     else:
         u = ease('in_cubic', (f - 480) / 6.0)
         x, y = p1[0] + (p2[0] - p1[0]) * u, p1[1] + (p2[1] - p1[1]) * u
-    press = K.impulse(t, F(477), 9)
+    press = K.impulse(t, F(c), 9)
     op = ease('out_cubic', (f - 466) / 3.0) * (1 - ease('in_cubic', (f - 482) / 4.0))
-    ui.draw_cursor(cv, x, y, 'arrow', 64, press=press, click=(t - F(477)) if f >= 477 else None, opacity=op,
+    ui.draw_cursor(cv, x, y, 'arrow', 64, press=press, click=(t - F(c)) if f >= 477 else None, opacity=op,
                    look=LOOK)
 
 
 # ---------------------------------------------------------------------------------------------- revision list (L1)
-ROW_W, ROW_H, ROW_PITCH, ROW_TOP = 780, 60, 70, 1140
+ROW_W, ROW_H, ROW_PITCH, ROW_TOP = 780, 60, 64, 1150
+ROW_S = 0.90                            # rows drawn 702 x 54: x 189-891, 5 rows y 1150-1460
 
 
 @functools.lru_cache(maxsize=2)
@@ -1240,9 +1654,15 @@ def revisions(cv, t, alpha=1.0, light27=0.0):
     older rows dim to 0.6, max 5 visible. From f576 the list holds (v23-v26 arrive with the split) and v27 lands
     on f648 lit (light27)."""
     f = t * FPS
-    if f < 521.5:
+    r0, t2 = TM['S9'], TM['T2'][0]
+    if f < r0 - 0.5:
         return
-    arrivals = [(522 + 3 * (v - 5), v) for v in range(5, 23)] + [(576, 23), (594, 24), (612, 25), (630, 26), (648, 27)]
+    sp = TM['SPLIT']
+    if sp:
+        arrivals = [(r0 + 3 * (v - 5), v) for v in range(5, 23)] + [(sp[0], 23), (sp[1], 24), (sp[2], 25),
+                                                                   (sp[3], 26), (t2, 27)]
+    else:
+        arrivals = [(r0 + 3 * (v - 5), v) for v in range(5, 27)] + [(t2, 27)]
     shown = [(fa, v) for fa, v in arrivals if f >= fa - 0.5]
     if not shown:
         return
@@ -1256,14 +1676,14 @@ def revisions(cv, t, alpha=1.0, light27=0.0):
         y = ROW_TOP + ROW_H / 2 + ROW_PITCH * slot
         if k == 0:
             op = pu
-            sc = 0.96 + 0.04 * pu
+            sc = (0.96 + 0.04 * pu) * ROW_S
         else:
             op = 0.6 if k > 1 else 0.6 + 0.4 * (1 - pu)
-            sc = 1.0
+            sc = ROW_S
         if k >= 5:
             op *= (1 - pu)
-        if k >= 1 and f >= 647.5:                    # T2 + v27: the older rows step back
-            op *= 1.0 - 0.75 * ease('out_cubic', (f - 647.5) / 6.0)
+        if k >= 1 and f >= t2 - 0.5:                 # T2 + v27: the older rows step back
+            op *= 1.0 - 0.75 * ease('out_cubic', (f - t2 + 0.5) / 6.0)
         if k == 0 and v == 27:
             op = max(op, 0.0)
         hot = k == 0
@@ -1272,7 +1692,7 @@ def revisions(cv, t, alpha=1.0, light27=0.0):
             _row(cv, 540.0, y, v, op * alpha, hot, sweep, sc)
     if light27 > 0 and shown[0][1] == 27:
         y = ROW_TOP + ROW_H / 2
-        K.draw(cv, _row_glow(), 540.0, y, opacity=light27 * alpha, mode='add')
+        K.draw(cv, _row_glow(), 540.0, y, scale=ROW_S, opacity=light27 * alpha, mode='add')
 
 
 @functools.lru_cache(maxsize=1)
@@ -1359,14 +1779,16 @@ def bubble(cv, msg, w, h, cx, cy, t, t0, t1=None, body_px=38, name='Client', exi
 
 
 def client_bubble(cv, t):
-    """T2 (f648-f683): 'BAS BAS! ab theek hai!' (centre y 1330: clear of the lit v27 row)."""
+    """T2 (TM['T2'] = (in, exit start), script f648 / f680): 'BAS BAS! ab theek hai!' over the stepped-back rows."""
     f = t * FPS
-    if 647.5 <= f < 684.5:
-        bubble(cv, 'BAS BAS! ab theek hai!', 620, 124, 548, 1340, t, F(648), F(680))
+    a, b = TM['T2']
+    if a - 0.5 <= f < b + 4.5:
+        bubble(cv, 'BAS BAS! ab theek hai!', 620, 124, 548, T2_Y, t, F(a), F(b))
 
 
 # ---------------------------------------------------------------------------------------------- export dialog (E1)
-EXP_C = (540.0, 1250.0)
+EXP_C = (540.0, 1280.0)                 # y 1155-1405, x 175-905 at EXP_S
+EXP_S = 0.96
 
 
 @functools.lru_cache(maxsize=1)
@@ -1394,11 +1816,14 @@ def _bar_full():
     return ro(lay)
 
 
-def export_dialog(cv, t, f0=684, f_done=716, f_out=None):
+def export_dialog(cv, t, f0=None, f_done=None, f_out=None):
+    """E1 (TM['E1'] = (in, 100 %)): glass export card, bar 0 -> 100 %, tick on done."""
+    f0 = TM['E1'][0] if f0 is None else f0
+    f_done = TM['E1'][1] if f_done is None else f_done
     f = t * FPS
     if f < f0 - 0.5 or (f_out is not None and f >= f_out + 4.5):
         return
-    k = 0.9 + 0.1 * X.spring(max(0.0, t - F(f0) + HALF), 'POP')
+    k = (0.9 + 0.1 * X.spring(max(0.0, t - F(f0) + HALF), 'POP')) * EXP_S
     op = ease('out_cubic', (f - f0 + 1) / 3.0)
     if f_out is not None:
         op *= 1 - ease('in_cubic', (f - f_out) / 4.0)
@@ -1436,25 +1861,30 @@ def edit_ui(cv, t, title_in=None):
     f = t * FPS
     xv, ver, dirn = client(t)
     gh = sig_c(t)
-    if 431.5 <= f < 486 or 521.5 <= f < 576 or 647.5 <= f < 720:
-        # timeline: in S7 and slides out (down) f522-f528
-        if f < 529:
-            dy = 0.0 if f < 522 else 420.0 * ease('in_cubic', (f - 522) / 6.0)
-            op = 1.0 if f < 522 else 1.0 - ease('in_cubic', (f - 522) / 6.0)
+    s7, s8, s9, s11 = TM['S7'], TM['S8'], TM['S9'], TM['T2'][0]
+    s10 = TM['SPLIT'][0] if TM['SPLIT'] else s11
+    s12 = (TM['C15'][1] + 1) if TM.get('C15') else R(720)
+    if s7 - 0.5 <= f < s8 or s9 - 0.5 <= f < s10 or s11 - 0.5 <= f < s12:
+        # timeline: in S7 and slides out (down) over S9's first 6 f
+        if f < s9 + 7:
+            dy = 0.0 if f < s9 else 420.0 * ease('in_cubic', (f - s9) / 6.0)
+            op = 1.0 if f < s9 else 1.0 - ease('in_cubic', (f - s9) / 6.0)
             timeline(cv, t, dy=dy, opacity=op)
         delta = None
         flash = 0.0
-        if 476.5 <= f < 483:
-            delta = ('-2 px', 1.0 - ease('in_cubic', (f - 480) / 3.0))
-            flash = 1.0 - ease('out_cubic', (f - 477) / 6.0)
-        if f >= 647.5:
-            flash = max(flash, 1.0 - ease('out_cubic', (f - 648) / 8.0))
+        x1 = TM['X1']
+        if x1 - 0.5 <= f < x1 + 6:
+            delta = ('-2 px', 1.0 - ease('in_cubic', (f - x1 - 3) / 3.0))
+            flash = 1.0 - ease('out_cubic', (f - x1) / 6.0)
+        if f >= s11 - 0.5:
+            flash = max(flash, 1.0 - ease('out_cubic', (f - s11) / 8.0))
         viewer(cv, t, xv, ver, ghost=gh, gdir_v=-dirn, delta=delta, readout_flash=flash)
-        if f >= 521.5:
+        if f >= s9 - 0.5:
             a = 1.0
-            if f >= 683.5:
-                a = 1.0 - ease('in_cubic', (f - 684) / 5.0)
-            revisions(cv, t, alpha=a, light27=(1.0 - ease('inout_sine', (f - 652) / 30.0)) if f >= 648 else 0.0)
+            e1 = TM['E1'][0]
+            if f >= e1 - 0.5:
+                a = 1.0 - ease('in_cubic', (f - e1) / 5.0)
+            revisions(cv, t, alpha=a, light27=(1.0 - ease('inout_sine', (f - s11 - 4) / 30.0)) if f >= s11 else 0.0)
         toast(cv, t)
         cursor(cv, t)
         client_bubble(cv, t)
@@ -1485,7 +1915,13 @@ PH_W, PH_H = 720, 1560
 # thread: (side, text, time, pop frame or None)
 THREAD = [('in', 'thoda left...', '4:09', None), ('out', 'done', '4:10', None),
           ('in', 'thoda right...', '4:12', 490), ('in', 'nahi, pehle wala', '4:12', 504)]
-TYPING_F = 510
+TYPING_F = 510                          # script value; live = TM['TYPING']
+
+
+def _thread():
+    """THREAD with the live pop frames (TM P1b / P1c)."""
+    return [(s_, m_, tm_, (TM['P1b'] if k == 2 else TM['P1c'] if k == 3 else pf)) for k, (s_, m_, tm_, pf)
+            in enumerate(THREAD)]
 BODY_PX = 50
 BUB_H = 108
 
@@ -1659,16 +2095,17 @@ def phone_screen(t):
     img[..., 3] = 1.0
     bottom = PH_H - 176
     items = []
-    for side, msg, tm, pf in THREAD:
+    for side, msg, tm, pf in _thread():
         if pf is not None and f < pf - 0.5:
             continue
         items.append((side, msg, tm, pf))
-    typing = f >= TYPING_F - 0.5
+    typing_f = TM['TYPING']
+    typing = f >= typing_f - 0.5
     gap = 14
     y = bottom
     rows = []
     if typing:
-        u = ease('out_cubic', (f - TYPING_F + 1) / 5.0)
+        u = ease('out_cubic', (f - typing_f + 1) / 5.0)
         rows.append(('typing', None, None, u, y))
         y -= (BUB_H + gap) * u
     for side, msg, tm, pf in reversed(items):
@@ -1792,7 +2229,8 @@ def phone_mock(cv, t, cx=540.0, cy=980.0, scale=0.78, rot=-8.0, screen=None):
 
 
 # ============================================================================================== small pieces
-B0_C = (790.0, 300.0)
+B0_C = (330.0, 1440.0)                  # S1: lower left on the CRT's control strip (top right crowded 'AB')
+B1_C = (790.0, 300.0)                   # S13: top right over the outro card
 
 
 @functools.lru_cache(maxsize=1)
@@ -1812,9 +2250,10 @@ def anach_spr():
     return ui.derive_panel(p, f)
 
 
-def anachronism(cv, t, f0, f1=None, fade=None, cx=None, cy=None):
+def anachronism(cv, t, f0=None, f1=None, fade=None, cx=None, cy=None):
     """Pop the B0 / B1 bubble at f0 (POP spring from the right side), exit in_cubic 3 f from f1;
     fade = extra opacity factor (B1 rides the outro exit)."""
+    f0 = TM['B0'] if f0 is None else f0
     f = t * FPS
     if f < f0 - 0.5:
         return
@@ -1836,13 +2275,16 @@ def hook_b(cv, t):
     f = t * FPS
     xv = 540.0 - 2.0 * ease('out_cubic', (f - 9 + 0.5) / 3.0)
     delta = ('-2 px', 1.0 - ease('in_cubic', (f - 15) / 4.0)) if 9 <= f < 19 else None
-    viewer(cv, t, xv, 2 if f >= 9 else 1, ghost=1.0, gdir_v=1.0, cx=540, cy=1180, delta=delta,
+    viewer(cv, t, xv, 2 if f >= 9 else 1, ghost=1.0, gdir_v=1.0, cx=HB_VIEW[0], cy=HB_VIEW[1], scale=HB_VIEW[2],
+           delta=delta,
            readout_flash=(1.0 - ease('out_cubic', (f - 9) / 6.0)) if f >= 9 else 0.0)
     bubble(cv, 'thoda left...', 470, 120, 520, 800, t, -0.10, None, body_px=40)
 
 
-def snow_tear(cv, t, f0=62, f1=72):
+def snow_tear(cv, t, f0=None, f1=None):
     """2D snow tear wipe (hook B f62-f71): a widening band of warm snow + displaced rows sweeping top -> bottom."""
+    f0 = SPLICE - 10 if f0 is None else f0          # script f62-f72: the last 10 f of the hook
+    f1 = SPLICE if f1 is None else f1
     f = t * FPS
     if f < f0 - 0.5 or f >= f1:
         return
@@ -1887,11 +2329,12 @@ def split_ui(cv, t, xv=None):
     at y 860 with an echo), the mini viewer (centre 540, 1330; title X from the client clock) and the client
     bubble (centre 590, 1040) saying the same words on the same frame."""
     f = t * FPS
-    if f < 575.5 or f >= 648:
+    if not TM['SPLIT'] or f < TM['SPLIT'][0] - 0.5 or f >= TM['T2'][0]:
         return
     xv_, ver, dirn = client(t)
     xv = xv_ if xv is None else xv
-    viewer(cv, t, xv, ver, ghost=1.0, gdir_v=-dirn, cx=540, cy=1330, scale=840 / VIEW_W, handles=True)
+    viewer(cv, t, xv, ver, ghost=1.0, gdir_v=-dirn, cx=SPLIT_VIEW[0], cy=SPLIT_VIEW[1], scale=SPLIT_VIEW[2],
+           handles=True)
     K.draw(cv, divider_spr(), 540, SPLIT_Y)
     ui.place(cv, era_chip('TAB'), 150, 290)
     ui.place(cv, era_chip('AB'), 150, 1010)
@@ -1903,17 +2346,21 @@ def split_ui(cv, t, xv=None):
     # top: the far voice from the roof's downstairs (rise 900 -> 860, echo)
     spr = tx(caps, 'jw_caps', 56, 'ASH')
     scrim(cv, 540, 858, spr.w + 120, spr.h + 60, 0.5)
+    Lb = np.zeros((200, W, 4), np.float32)           # band y 760-960
     for dl, dy, a in ((F(6), -12.0, 0.3), (0.0, 0.0, 1.0)):
         u = ease('out_cubic', (tt - dl + HALF) / F(6))
         if u > 0:
-            spr.draw(cv, 540, 900 - 40 * u + dy, opacity=a * ease('inout_sine', (tt - dl + HALF) / F(3)), snap=False)
+            spr.draw(Lb, 540, 900 - 40 * u + dy - 760, opacity=a * ease('inout_sine', (tt - dl + HALF) / F(3)),
+                     snap=False)
+    bed(cv, Lb, 0, 760)
+    ui.paste(cv, Lb, 0, 760)
     # bottom: the same words in the client's bubble
-    bubble(cv, low, 520, 104, 590, 1040, t, F(fw), None, body_px=40)
+    bubble(cv, low, 520, 104, 590, 1052, t, F(fw), None, body_px=40)
 
 
 # ============================================================================================== outro + cover
 OUTRO = dict(question='Aap ke ghar antenna kaun ghumata tha?', key='Papa, bhai ya aap?', dur=4.2)
-T_END = 882 / 30
+# T_END (outro start, s) lives in the timing table: TM['T_END'] frames (script f882); UI.T_END follows retime().
 
 
 @functools.lru_cache(maxsize=1)
@@ -1925,11 +2372,53 @@ def outro_layer(cv, t):
     """Outro card (f882-f1007) + B1 bubble (f990, exits with the card)."""
     card = outro()
     card.draw(cv, t, T_END)
-    if t >= F(990) - HALF:
+    if t >= F(TM['B1']) - HALF:
         t_last = T_END + card.dur - 1.0 / FPS
         exf = 1.0 - ease('in_cubic', (t - (T_END + card.dur - card.exit_dur)) / (t_last - (T_END + card.dur
                                                                                           - card.exit_dur)))
-        anachronism(cv, t, 990, None, fade=exf)
+        anachronism(cv, t, TM['B1'], None, fade=exf, cx=B1_C[0], cy=B1_C[1])
+
+
+# ---------------------------------------------------------------------------------------------- picture sync
+YAW_SEGS_BASE = list(YAW_SEGS)
+WOBBLE_BASE = list(WOBBLE)
+CLIENT_BASE = list(CLIENT)
+SPLIT_WORDS_BASE = list(SPLIT_WORDS)
+
+
+def _apply_picture_sync():
+    """The picture-synced tables follow the live grid + UI beats. Hook yaw: the swing right lands 2 f before the
+    H1b flip, the LOCK on H2, the slip on B0. Body: R() of the script frame, then local offsets: the f342-f413 gust /
+    slip block rides with C10, the f414 big swing with C11's M3 exit, the X1 nudge moves its client-clock entry,
+    each SPLIT move shifts its yaw segment, client entry, revision row and far word / bubble together."""
+    sb = [R(x) for x in UI_BASE['SPLIT']]
+    sn = TM['SPLIT'] or (None,) * 4
+    d10 = TM['C10'][0] - R(351)
+    d11 = CAPS['C11'].get('m3_f', 414 + GRID['shift']) - R(414)
+
+    def mv(f0):                                       # r1 body frame -> live frame
+        f = R(f0)
+        if 342 <= f0 < 414:
+            return f + d10
+        if 414 <= f0 < 432:
+            return f + d11
+        for a_, b_ in zip(sb, sn):
+            if a_ <= f < a_ + 18:
+                return None if b_ is None else f + (b_ - a_)
+        if R(432) <= f < R(576) and f0 != 477:        # S7-S9 client clock rides with S7 / S9
+            return f + ((TM['S9'] - R(522)) if f0 >= 522 else (TM['S7'] - R(432)))
+        return f
+    sw, h2, b0 = TM['H1b'][0], TM['H2'][0], TM['B0']
+    hook = [(sw - 12, sw - 2, 9.0, 'inout_cubic'), (h2 - 8, h2, 0.0, 'out_back'), (b0 - 3, b0 + 3, -18.0, 'in_cubic')]
+    YAW_SEGS[:] = hook + [(mv(f0), mv(f0) + (f1 - f0), tg, e) for f0, f1, tg, e in YAW_SEGS_BASE
+                          if f0 >= 72 and mv(f0) is not None]
+    WOBBLE[:] = [(-1e9, sw - 12 - 0.01, 1.5, 1.3), (b0 + 3, mv(107), 1.0, 1.3), (mv(342), mv(413), 3.0, 0.8)]
+    CLIENT[:] = [((TM['X1'] if f0 == 477 else mv(f0)), xx, vv) for f0, xx, vv in CLIENT_BASE
+                 if f0 == 477 or mv(f0) is not None]
+    if f0_t2 := TM['T2'][0]:                          # v27 lock entry (script f648) = T2
+        CLIENT[:] = [(f0_t2 if xx == 538 and vv == 27 else f0, xx, vv) for f0, xx, vv in CLIENT]
+    CLIENT.sort(key=lambda e: e[0])
+    SPLIT_WORDS[:] = [(mv(f0), a_, b_) for f0, a_, b_ in SPLIT_WORDS_BASE if mv(f0) is not None]
 
 
 GRID_CROP = (0, 240, 1080, 1680)         # 3:4 grid crop (x0, y0, x1, y1)
@@ -1946,22 +2435,28 @@ def _cover_parts():
                 halo=T.render('left...', 'jw_key_halo', px=250), bas=T.render('BAS BAS!', 'jw_caps_bold', px=150))
 
 
+COVER_BUBBLE = (700.0, 850.0)            # the client pill over the snow half of the screen (the "no signal" part)
+
+
 def cover(cv):
-    """Cover overlay (SHOTS 5 / c): THODA (caps 96, y 390) + left... (key 250, y 565) + underline, BAS BAS!
-    (caps_bold 150, y 1500), the client bubble (790, 296), @jawad_mp4 at y 1590; SMOKE scrims where the type
-    meets the CRT glass. Everything inside GRID_CROP."""
+    """Cover overlay (SHOTS 5 / c) = frame 0's lockup: THODA (caps 96, y 330) + left... (key 250, y 505) + underline,
+    the client pill over the snow half (COVER_BUBBLE), BAS BAS! (caps_bold 150, y 1490) and @jawad_mp4 (y 1580), all
+    on an ink bed + adaptive scrims. Everything inside GRID_CROP (3:4, y 240-1680) and the caption safe zone."""
     P = _cover_parts()
-    scrim(cv, 540, 470, 900, 360, 0.5)
-    scrim(cv, 540, 1505, 900, 200, 0.6)
-    P['caps'].draw(cv, 540, 390)
-    P['halo'].draw(cv, 540, 565)
-    P['key'].draw(cv, 540, 565)
+    scrim(cv, 540, 430, 900, 360, 0.5)
+    scrim(cv, 540, 1515, 900, 230, 0.6)
+    L = np.zeros((H, W, 4), np.float32)
+    P['caps'].draw(L, 540, 330)
+    P['halo'].draw(L, 540, 505)
+    P['key'].draw(L, 540, 505)
     kw = P['key'].w
     uln = int(min(980, kw * 1.08 + 40))
-    J.underline(uln, thick=6.5).draw(cv, 540 - uln / 2, 565 + P['key'].h / 2 + 250 * 0.13, u=1.0)
-    P['bas'].draw(cv, 540, 1500)
-    anach_spr().draw(cv, 790, 296, scale=0.96)
-    J.signature(cv, 540, 1595)
+    J.underline(uln, thick=6.5).draw(L, 540 - uln / 2, 505 + P['key'].h / 2 + 250 * 0.13, u=1.0)
+    P['bas'].draw(L, 540, 1490)
+    J.signature(L, 540, 1580)
+    bed(cv, L, 0, 0)
+    over(cv, L)
+    anach_spr().draw(cv, COVER_BUBBLE[0], COVER_BUBBLE[1], scale=1.0)
 
 
 def grid_crop(img):
@@ -1969,11 +2464,111 @@ def grid_crop(img):
     return img[y0:y1, x0:x1]
 
 
+# ============================================================================================== 3D plates (selftest)
+PREV3D = os.path.join(RWS, 'out', 'preview3d')
+
+
+def _meta(d):
+    for m in ('meta.json', 'meta_partial.json'):
+        p = os.path.join(d, m)
+        if os.path.exists(p):
+            try:
+                return json.load(open(p))
+            except ValueError:
+                pass
+    return {}
+
+
+@functools.lru_cache(maxsize=24)
+def plate3d(name, variant, idx=0):
+    """(linear premultiplied RGBA sprite at final px, (x, y) frame top-left, meta) of a Blender render: the GPU final
+    (RWS/assets3d/<name>/<variant>/ with meta.json) when present, else the half-res preview (RWS/out/preview3d,
+    upscaled by scale_to_final), else None. The nearest existing frame index is used. Selftest / layout only: the
+    motion designer composites the real passes (stmap, refl, spill) in the world module."""
+    for root, prev in ((ASSETS3D, False), (PREV3D, True)):
+        d = os.path.join(root, name, variant)
+        if not os.path.isdir(d) or (not prev and not os.path.exists(os.path.join(d, 'meta.json'))):
+            continue
+        fs = sorted(int(f[:-4]) for f in os.listdir(d) if f.endswith('.png') and f[:-4].isdigit())
+        if not fs:
+            continue
+        j = min(fs, key=lambda v: abs(v - idx))
+        im = cv2.imread(os.path.join(d, '%04d.png' % j), cv2.IMREAD_UNCHANGED)
+        if im is None:
+            continue
+        meta = _meta(d)
+        sc = float(meta.get('scale_to_final', 2.0)) if prev else 1.0
+        fxy = meta.get('frame_xy', [0, 0])
+        if im.dtype == np.uint16:
+            im = (im / 257.0).astype(np.uint8)
+        rgb = K.to_lin(im[..., 2::-1].astype(np.float32) / 255.0) if hasattr(K, 'to_lin') else \
+            (im[..., 2::-1].astype(np.float32) / 255.0) ** 2.2
+        a = im[..., 3].astype(np.float32) / 255.0 if im.shape[2] == 4 else np.ones(im.shape[:2], np.float32)
+        spr = np.dstack([rgb * a[..., None], a]).astype(np.float32)
+        if abs(sc - 1.0) > 1e-3:
+            spr = cv2.resize(spr, (int(round(spr.shape[1] * sc)), int(round(spr.shape[0] * sc))),
+                             interpolation=cv2.INTER_CUBIC)
+            spr[..., 3] = np.clip(spr[..., 3], 0, 1)
+        q = meta.get('screen_quad')
+        if q:
+            meta = dict(meta, screen_quad=[[x * sc, y * sc] for x, y in q])
+        return ro(spr), (float(fxy[0]) * sc, float(fxy[1]) * sc), meta
+    return None
+
+
+def _place(cv, P):
+    spr, (x, y), _m = P
+    K.draw(cv, spr, x, y, anchor=(0, 0))
+
+
+def _quad_in(cv, pic, quad, r=24.0):
+    """Homography of an opaque picture (h, w, 4) into a screen quad (TL TR BR BL frame px), rounded-corner mask."""
+    h, w = pic.shape[:2]
+    src = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+    M = cv2.getPerspectiveTransform(src, np.float32(quad))
+    m = K.rrect_alpha(w, h, r * w / 400.0, 0).astype(np.float32)
+    p = np.array(pic, np.float32)
+    p[..., :3] *= m[..., None]
+    p[..., 3] = m
+    out = cv2.warpPerspective(p, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+    over(cv, out)
+
+
 # ============================================================================================== selftest
 def _bg(t, kind='void'):
-    """Selftest backdrops only (the real worlds are the motion designer's)."""
-    cv = K.background(LOOK, t, bokeh=0.5)
+    """Selftest backdrops only (the real worlds are the motion designer's). 'roof' / 'sunset' / 'clamp' / 'phone'
+    use the Blender plates (finals, else previews) when present."""
+    if kind in ('roof', 'sunset'):
+        v = 'day' if kind == 'roof' else 'sunset'
+        bg, fg = plate3d('roof', v, 0), plate3d('roof', v, 1)
+        ant = plate3d('antenna', v + '_yaw', 30 if v == 'day' else 3)
+        if bg is not None:
+            cv = np.zeros((H, W, 4), np.float32)
+            _place(cv, bg)
+            if ant is not None:
+                _place(cv, ant)
+            if fg is not None:
+                _place(cv, fg)
+            return cv
+    if kind == 'clamp':
+        bg, pipe, fg = plate3d('clamp', 'macro', 0), plate3d('clamp', 'pipe_yaw', 12), plate3d('clamp', 'macro', 1)
+        if bg is not None:
+            cv = np.zeros((H, W, 4), np.float32)
+            for P in (bg, pipe, fg):
+                if P is not None:
+                    _place(cv, P)
+            return cv
+    if kind == 'phone':
+        P = plate3d('phone', 'desk', 0)
+        if P is not None and P[2].get('screen_quad'):
+            cv = np.zeros((H, W, 4), np.float32)
+            _place(cv, P)
+            _quad_in(cv, phone_screen(t), P[2]['screen_quad'], r=60.0)
+            return cv
     if kind == 'roof':
+        kind = 'roof_mock'
+    cv = K.background(LOOK, t, bokeh=0.5)
+    if kind == 'roof_mock':
         yy = np.arange(H, dtype=np.float32)[:, None, None]
         v = np.clip(yy / 1300, 0, 1)
         sky = hexl('#2A1408', 0.7) * (1 - v) + hexl('#D88232', 0.42) * v ** 1.4
@@ -1990,9 +2585,13 @@ def _bg(t, kind='void'):
     return cv
 
 
-def _finish(cv, t, rays=0.0):
-    G.finish(cv, LOOK, t, rays=rays)
+def _finish(cv, t, rays=0.0, **kw):
+    G.finish(cv, LOOK, t, rays=rays, **kw)
     return K.to_srgb8(cv, t)
+
+
+PLATE_POST = dict(footage=1)              # selftest grade of the bright Blender plates (GRADE.md 1: full-bleed plates)
+PLATE_RAYS = 0.12                         # god rays while a lockup is up (UI.md 6: the default 0.26 veils the type)
 
 
 def _save(name, u8):
@@ -2002,16 +2601,28 @@ def _save(name, u8):
     return p
 
 
-def _crt_frame(t, pic=None, dim=1.0):
-    cv = _bg(t, 'dark')
-    crt_mock(cv, tv_picture_at(t) if pic is None else pic)
+def _crt_frame(t, pic=None, dim=1.0, variant='macro'):
+    """CRT world for the selftest: the Blender CRT plate (A5 macro / A6 room) with the picture homographed into
+    its screen quad, else the 2D mock."""
+    pic = tv_picture_at(t) if pic is None else pic
+    P = plate3d('crt', variant, 0)
+    if P is not None and P[2].get('screen_quad'):
+        cv = np.zeros((H, W, 4), np.float32)
+        _place(cv, P)
+        _quad_in(cv, pic, P[2]['screen_quad'])
+        g = np.array(pic[..., :3]).mean() * 0.5     # cheap screen spill
+        cv[..., :3] += cv[..., :3] * np.float32(g)
+    else:
+        cv = _bg(t, 'dark')
+        crt_mock(cv, pic)
     if dim < 1:
         cv[..., :3] *= dim
     return cv
 
 
 def check_script():
-    """Every caption / UI / outro string here must match script.json (words are the script writer's)."""
+    """Every caption / UI / outro string here must match script.json (words are the script writer's); the script
+    plan frames (TIMING_SCRIPT) must match script.json too. Live frames (TM) may differ: they follow the VO."""
     d = json.load(open(SCRIPT_JSON))
     bad = []
     for c in d['captions']:
@@ -2020,6 +2631,8 @@ def check_script():
         if cid == 'H1b':
             if 'right...' not in texts:
                 bad.append(cid)
+            if tuple(c['f']) != tuple(UI_BASE['H1b']):
+                bad.append('H1b frames %r' % (c['f'],))
             continue
         if cid in CAPS:
             mine = [p[1] for p in CAPS[cid]['parts']]
@@ -2030,41 +2643,226 @@ def check_script():
             continue
         if mine != texts:
             bad.append('%s: %r != %r' % (cid, mine, texts))
-        if tuple(c['f']) != tuple(CAPS[cid]['f'] if cid in CAPS else FAR[cid]['f']):
+        if tuple(c['f']) != tuple(TIMING_SCRIPT[cid]):
             bad.append('%s frames %r' % (cid, c['f']))
     o = d['outro']
     if o['question'] != OUTRO['question'] or o['key'] != OUTRO['key'] or abs(o['dur'] - OUTRO['dur']) > 1e-6:
         bad.append('outro')
-    if o['t_end_frame'] != 882:
+    if o['t_end_frame'] != UI_BASE['T_END']:
         bad.append('outro t_end')
     return bad
 
 
-def selftest():
+def lockup_windows(hook='A'):
+    """{id: (first frame, last frame drawn)} of every caption under the live timing (exit included)."""
+    out = {}
+    for cid, c in CAPS.items():
+        if (cid == 'HB1') != (hook == 'B') and cid in ('HB1', 'H1', 'H2', 'H3'):
+            continue
+        a, b = c['f']
+        if b < a:
+            continue
+        e = c['out'][1] - 1 if c.get('out') else b
+        out[cid] = (a, e) if cid != 'H1' else (0, TM['H1b'][1] + 2)
+    for cid, d in FAR.items():
+        if d['f'][1] >= d['f'][0]:
+            out[cid] = (d['f'][0], d['f'][1] + 1)
+    return out
+
+
+# ---------------------------------------------------------------------------------------------- SRT (sentence mode)
+def _wrap2(txt, n=42):
+    """<= 2 balanced lines of <= n chars (split at the word boundary nearest the middle; never an orphan word)."""
+    if len(txt) <= n:
+        return [txt]
+    words = txt.split()
+    best = None
+    for k in range(1, len(words)):
+        a, b = ' '.join(words[:k]), ' '.join(words[k:])
+        if len(a) <= n and len(b) <= n:
+            sc = abs(len(a) - len(b)) + (0 if a[-1] in '.,!?' else 12)    # prefer a phrase break
+            if best is None or sc < best[0]:
+                best = (sc, [a, b])
+    return best[1] if best else [txt[:n], txt[n:]]
+
+
+def srt_cues(hook='A'):
+    """[(t0, t1, text)] in reel time. From the measured VO words (one cue per VO line, house spelling, <= 2 lines
+    of <= 42 chars, 1-6 s; long lines split at a word boundary) when they exist; otherwise the on-screen lockups."""
+    path = VO_WORDS[0] if hook == 'A' else VO_WORDS[0].replace('words.json', 'words_B.json')
+    ws = vo_words(path if os.path.exists(path) else (None if hook == 'A' else 'missing'))
+    cues = []
+    if ws:
+        lines = {}
+        for w in ws:
+            lines.setdefault(w['line'], []).append(w)
+        for lid in sorted(lines, key=lambda k: lines[k][0]['start']):
+            L = sorted(lines[lid], key=lambda w: w['start'])
+            chunks, cur = [], []
+            for w in L:
+                txt = ' '.join(x['word'] for x in cur + [w])
+                if cur and (len(txt) > 84 or w['end'] - cur[0]['start'] > 6.0):
+                    chunks.append(cur)
+                    cur = [w]
+                else:
+                    cur.append(w)
+            if cur:
+                chunks.append(cur)
+            for ch in chunks:
+                t0, t1 = ch[0]['start'], max(ch[-1]['end'], ch[0]['start'] + 1.0)
+                cues.append([t0, t1, '\n'.join(_wrap2(' '.join(x['word'] for x in ch)))])
+    else:
+        for cid, (a, e) in sorted(lockup_windows(hook).items(), key=lambda kv: kv[1][0]):
+            if cid in CAPS:
+                txt = ' '.join(p[1] for p in CAPS[cid]['parts'])
+            else:
+                txt = FAR[cid]['text']
+            if cid == 'H1':
+                txt = 'THODA left... right...'
+            cues.append([F(a), max(F(e + 1), F(a) + 1.0), '\n'.join(_wrap2(txt))])
+        cues.append([T_END + 0.4, T_END + 3.6, '\n'.join(_wrap2(OUTRO['question'] + ' ' + OUTRO['key']))])
+    cues.sort(key=lambda c: c[0])
+    for k in range(len(cues) - 1):                    # no overlaps: a cue ends where the next starts
+        cues[k][1] = min(cues[k][1], cues[k + 1][0] - 0.001)
+    return [tuple(c) for c in cues]
+
+
+def save_srt(path, hook='A'):
+    def ts(x):
+        ms = int(round(max(0.0, x) * 1000))
+        return '%02d:%02d:%02d,%03d' % (ms // 3600000, ms // 60000 % 60, ms // 1000 % 60, ms % 1000)
+    with open(path, 'w', encoding='utf8') as fh:
+        for i, (a, b, txt) in enumerate(srt_cues(hook), 1):
+            fh.write('%d\n%s --> %s\n%s\n\n' % (i, ts(a), ts(b), txt))
+    return path
+
+
+# ---------------------------------------------------------------------------------------------- ink scan
+SAFE = dict(x0=70, x1=1010, y0=230, y1=1480, col_x=930, col_y=(1050, 1700))
+
+
+def _ink(cv, thr=0.1):
+    a = cv[..., 3]
+    ys, xs = np.nonzero(a > thr)
+    if not len(xs):
+        return None
+    col = xs[(ys >= SAFE['col_y'][0]) & (ys <= SAFE['col_y'][1])]
+    return int(xs.min()), int(xs.max()), int(ys.min()), int(ys.max()), (int(col.max()) if len(col) else -1)
+
+
+def ink_scan(step=1, ui_layers=True):
+    """Every frame (step) of the captions alone on a transparent canvas, hooks A and B (alpha > 0.1, glow cores
+    included, scrims excluded) + the glass UI layers: union boxes, violations of the caption safe zone and of the
+    like / share column (x > 930 in y 1050-1700), and the max number of text blocks at once."""
+    rep = dict(caps=None, ui=None, viol=[], ui_viol=[], max_blocks=0, exempt=[])
+
+    def upd(key, b):
+        if b is None:
+            return
+        r = rep[key]
+        rep[key] = b if r is None else (min(r[0], b[0]), max(r[1], b[1]), min(r[2], b[2]), max(r[3], b[3]),
+                                         max(r[4], b[4]))
+    for hook in ('A', 'B'):
+        fr = range(0, SPLICE, step) if hook == 'B' else range(0, int(TM['T_END']), step)
+        for f in fr:
+            t = F(f)
+            cv = np.zeros((H, W, 4), np.float32)
+            captions(cv, t, hook=hook, scrim_k=0.0)
+            b = _ink(cv)
+            c11 = CAPS['C11']
+            if not (b and c11['f'][1] >= c11['f'][0] and c11.get('m3_f', 1e9) <= f <= c11['f'][1] + 1):
+                upd('caps', b)
+            if b and (b[0] < SAFE['x0'] or b[1] > SAFE['x1'] or b[2] < SAFE['y0'] or b[3] > SAFE['y1']
+                      or b[4] > SAFE['col_x']):
+                c11 = CAPS['C11']
+                if c11['f'][1] >= c11['f'][0] and c11.get('m3_f', 1e9) <= f <= c11['f'][1] + 1:
+                    rep['exempt'].append((hook, f, b))     # C11 leaves frame left on the M3 track (designed)
+                else:
+                    rep['viol'].append((hook, f, b))
+            n = sum(1 for cid, (a, e) in lockup_windows(hook).items() if a <= f <= e)
+            rep['max_blocks'] = max(rep['max_blocks'], n)
+    if ui_layers:
+        for f in list(range(0, SPLICE, 3)) + list(range(R(432), R(720), 3)) + [TM['B0'] + 4, TM['B1'] + 6]:
+            t = F(f)
+            cv = np.zeros((H, W, 4), np.float32)
+            if f < SPLICE:
+                hook_b(cv, t)
+                anachronism(cv, t)
+            elif f >= TM['T_END']:
+                anachronism(cv, t, TM['B1'], cx=B1_C[0], cy=B1_C[1])
+            else:
+                edit_ui(cv, t)
+                split_ui(cv, t)
+            b = _ink(cv, 0.25)
+            upd('ui', b)
+            if b and b[4] > SAFE['col_x']:
+                rep['ui_viol'].append((f, b))
+    return rep
+
+
+# ---------------------------------------------------------------------------------------------- selftest
+def selftest(which=None):
+    """python3 thoda_left_bas_ui.py selftest [stills] [ink] [srt]   (default: all three)"""
     import time
+    which = set(which or ('stills', 'ink', 'srt'))
     os.makedirs(SELF_DIR, exist_ok=True)
     bad = check_script()
     print('script.json check:', 'OK' if not bad else bad)
+    ws = vo_words()
+    print('timing mode: %s, VO words: %s' % (_MODE, ('%d words' % len(ws)) if ws else 'not found (script plan)'))
+    moved = {k: (TIMING_SCRIPT[k], TM[k]) for k in TIMING_SCRIPT if TM.get(k) != TIMING_SCRIPT[k]}
+    for k, (a, b) in moved.items():
+        print('  retimed %-6s %s -> %s' % (k, a, b))
+    for row in vo_report(ws):
+        print('  VO %-4s in f%-4d  %-14s onset f%-6.1f  lead %+.1f f' % row)
+    if 'srt' in which:
+        for hk in ('A', 'B'):
+            p = save_srt(os.path.join(SELF_DIR, 'thoda_left_bas_%s.srt' % hk), hk)
+            print('SRT', hk, '->', p, '(%d cues, %s)' % (len(srt_cues(hk)), 'VO words' if ws else 'lockups'))
+    if 'ink' in which:
+        t0 = time.perf_counter()
+        r = ink_scan()
+        c = r['caps']
+        print('INK captions: x %d-%d  y %d-%d | max x in y 1050-1700: %d | violations: %d | max blocks at once: %d'
+              % (c[0], c[1], c[2], c[3], c[4], len(r['viol']), r['max_blocks']))
+        for v in r['viol'][:12]:
+            print('   VIOL', v)
+        if r['exempt']:
+            print('   exempt: C11 M3 exit (slides out of frame left by design) f%d-f%d'
+                  % (r['exempt'][0][1], r['exempt'][-1][1]))
+        u = r['ui']
+        if u:
+            print('INK glass UI: x %d-%d  y %d-%d | max x in y 1050-1700: %d | column violations: %d'
+                  % (u[0], u[1], u[2], u[3], u[4], len(r['ui_viol'])))
+            for v in r['ui_viol'][:8]:
+                print('   UI-COL', v)
+        print('ink scan %.0f s' % (time.perf_counter() - t0))
+        bad = bad + (['ink'] if r['viol'] else [])
+    if 'stills' not in which:
+        return bad
     shots = []
     tm = {}
 
-    def run(name, fn, f, rays=0.0):
+    def run(name, fn, f, rays=0.0, plate=True):
         t = F(f)
         t0 = time.perf_counter()
         cv = fn(t)
         tm[name] = round((time.perf_counter() - t0) * 1e3)
-        shots.append((name, _save(name, _finish(cv, t, rays))))
+        kw = PLATE_POST if plate else {}
+        shots.append((name, _save(name, _finish(cv, t, min(rays, PLATE_RAYS) if plate else rays, **kw))))
+
+    W0 = lambda k: TM[k][0]                          # noqa: E731  live in-frame of a caption
 
     def crt_caps(hook='A'):
         def fn(t):
             cv = _crt_frame(t)
             captions(cv, t, hook=hook)
-            if 63 <= t * FPS < 72:
-                anachronism(cv, t, 63)
+            if TM['B0'] <= t * FPS < SPLICE:
+                anachronism(cv, t)
             return cv
         return fn
-
-    for f in (0, 8, 22, 40, 58, 66):
+    sw = TM['H1b'][0]
+    for f in (0, 8, sw + 4, W0('H2') + 4, W0('H3') + 4, TM['B0'] + 3):
         run('s1_hookA_f%03d' % f, crt_caps(), f)
 
     def hb(t):
@@ -2073,33 +2871,43 @@ def selftest():
         captions(cv, t, hook='B')
         snow_tear(cv, t)
         return cv
-    for f in (0, 12, 66):
-        run('s1B_hookB_f%03d' % f, hb, f)
+    for f in (0, 12, SPLICE - 6):
+        run('s1B_hookB_f%03d' % f, hb, f, plate=False)
 
     def roof(t):
         cv = _bg(t, 'roof')
         captions(cv, t)
         return cv
-    for f in (85, 115, 150, 175):
-        run('s2_roof_f%03d' % f, roof, f, rays=0.26)
+    for k in [k for k in ('R1', 'R2', 'R3', 'R4') if TM.get(k)]:
+        run('s2_roof_%s_f%03d' % (k, W0(k) + 12), roof, W0(k) + 12, rays=0.26)
 
     def crt_room(t):
+        cv = _crt_frame(t, variant='room')
+        captions(cv, t)
+        return cv
+    for k in ('C5', 'C6'):
+        run('s3_crt_%s_f%03d' % (k, W0(k) + 10), crt_room, W0(k) + 10)
+
+    def clamp(t):
+        cv = _bg(t, 'clamp')
+        captions(cv, t)
+        return cv
+    if TM.get('C7'):
+        run('s4_clamp_C7_f%03d' % (W0('C7') + 24), clamp, W0('C7') + 24)
+    if TM.get('C8'):
+        run('s4_clamp_C8_f%03d' % (W0('C8') + 6), clamp, W0('C8') + 6)
+    if not (TM.get('C7') or TM.get('C8')):          # S4 without its lines: C6's tail over the clamp
+        run('s4_clamp_C6tail_f%03d' % (TM['C6'][1] - 4), clamp, TM['C6'][1] - 4)
+
+    def crt_lock(t):
         cv = _crt_frame(t)
         captions(cv, t)
         return cv
-    for f in (210, 232):
-        run('s3_crt_f%03d' % f, crt_room, f)
-
-    def clamp(t):
-        cv = _bg(t, 'dark')
-        captions(cv, t)
-        return cv
-    for f in (275, 292):
-        run('s4_clamp_f%03d' % f, clamp, f)
-    for f in (320, 362):
-        run('s5_lock_f%03d' % f, crt_room, f)
-    run('s6_roofwind_f400', roof, 400, rays=0.26)
-    run('s6_roofwind_f424', roof, 424, rays=0.26)
+    for k in ('C9', 'C10'):
+        run('s5_lock_%s_f%03d' % (k, W0(k) + 12), crt_lock, W0(k) + 12)
+    run('s6_roofwind_C11_f%03d' % (W0('C11') + 22), roof, W0('C11') + 22, rays=0.26)
+    run('s6_roofwind_C11exit_f%03d' % (CAPS['C11'].get('m3_f', 414) + 10), roof, CAPS['C11'].get('m3_f', 414) + 10,
+        rays=0.26)
 
     def edit(t, tilt=True):
         cv = _bg(t, 'void')
@@ -2110,16 +2918,19 @@ def selftest():
         over(cv, lay)
         captions(cv, t)
         return cv
-    for f in (450, 472, 479, 560, 574, 660, 700, 717):
-        run('s7_edit_f%03d' % f, edit, f)
+    for f in ([W0('C12') + 14] if TM.get('C12') else []) + [TM['T1'][0] + 4, TM['X1'] + 2, W0('C13') + 20,
+                                                           TM['S9'] + 30, W0('C14') + 12, W0('C15') + 16,
+                                                           TM['E1'][1] + 1]:
+        run('s7_edit_f%03d' % f, edit, f, plate=False)
 
     def phone(t):
-        cv = _bg(t, 'dark')
-        phone_mock(cv, t)
+        cv = _bg(t, 'phone')
+        if plate3d('phone', 'desk', 0) is None:
+            phone_mock(cv, t)
         return cv
-    for f in (500, 515):
+    for f in (TM['P1b'] + 4, TM['TYPING'] + 5):
         run('s8_phone_f%03d' % f, phone, f)
-    sc = phone_screen(F(515))
+    sc = phone_screen(F(TM['TYPING'] + 5))
     shots.append(('s8_phone_screen_raw', _save('s8_phone_screen_raw', K.to_srgb8(sc.copy(), 0.0, dither=False))))
 
     def split(t):
@@ -2128,40 +2939,43 @@ def selftest():
         cv[:SPLIT_Y] = top[:SPLIT_Y]
         split_ui(cv, t)
         return cv
-    for f in (580, 615):
+    for f in ((TM['SPLIT'][0] + 4, TM['SPLIT'][2] + 3) if TM['SPLIT'] else ()):
         run('s10_split_f%03d' % f, split, f)
 
     def sunset(t):
-        cv = _bg(t, 'roof')
-        cv[..., :3] *= np.float32([1.0, 0.75, 0.55])
+        cv = _bg(t, 'sunset')
         captions(cv, t)
         return cv
-    for f in (770, 800, 850):
+    for f in (W0('P1') + 14, W0('P1') + 44, W0('P1') + 94):
         run('s12_payoff_f%03d' % f, sunset, f, rays=0.26)
 
     def loop(t):
         cv = _crt_frame(t)
         outro_layer(cv, t)
         return cv
-    for f in (930, 995, 1004):
+    for f in (TM['T_END'] + 48, TM['B1'] + 5, NF - 4):
         run('s13_outro_f%04d' % f, loop, f)
 
-    # TV picture states (raw 4:3)
     for s_ in (0.0, 0.5, 1.0):
         pic = tv_picture(F(100), s_, 1.0, shimmer=0.5 if s_ == 0 else None)
         shots.append(('tv_sig%.1f' % s_, _save('tv_sig%.1f' % s_, K.to_srgb8(pic.copy(), 0.0))))
-    # cover + grid crop
-    cv = _bg(0.0, 'dark')
-    crt_mock(cv, cover_picture())
+    # cover + grid crop (+ guides)
+    cv = _crt_frame(0.0, pic=cover_picture())
     cover(cv)
     u8 = _finish(cv, 0.0)
     shots.append(('cover', _save('cover', u8)))
+    gd = u8.copy()
+    x0, y0, x1, y1 = GRID_CROP
+    cv2.rectangle(gd, (x0 + 2, y0), (x1 - 3, y1), (255, 200, 0), 3)
+    cv2.rectangle(gd, (SAFE['x0'], SAFE['y0']), (SAFE['x1'], SAFE['y1']), (0, 255, 120), 2)
+    cv2.rectangle(gd, (SAFE['col_x'], SAFE['col_y'][0]), (1079, SAFE['col_y'][1]), (255, 60, 60), 2)
+    shots.append(('cover_guides', _save('cover_guides', gd)))
     g = grid_crop(u8)
     shots.append(('cover_grid_3x4', _save('cover_grid_3x4', np.ascontiguousarray(g))))
     small = cv2.resize(g, (210, 280), interpolation=cv2.INTER_AREA)
     shots.append(('cover_grid_210px', _save('cover_grid_210px', small)))
     # phone-size contact sheet (360 px wide frames)
-    frames = [p for n, p in shots if not n.startswith(('tv_', 'cover_grid', 's8_phone_screen'))]
+    frames = [p for n, p in shots if not n.startswith(('tv_', 'cover_grid', 's8_phone_screen', 'cover_guides'))]
     cols = 6
     tw_, th_ = 360, 640
     rows = int(math.ceil(len(frames) / cols))
@@ -2179,9 +2993,38 @@ def selftest():
     return bad
 
 
+# VO-led defaults: follow the latest measured VO (env TLB_UI_TIMING=script keeps the text-led plan)
+_MODE = os.environ.get('TLB_UI_TIMING', 'vo')
+
+
+def vo_grid(words=None):
+    """Hook length of the VO-led cut: 144 when the measured V3 'Aaya?' starts after f120 (the 1080-f grid of
+    VO_TIMING), else 72. Env TLB_UI_SPLICE overrides."""
+    if os.environ.get('TLB_UI_SPLICE'):
+        return int(os.environ['TLB_UI_SPLICE'])
+    ws = words if words is not None else vo_words()
+    for w in ws or []:
+        if w.get('line') == 'V3' and int(w.get('i', -1)) == 0:
+            return 144 if float(w['start']) * FPS > 120 else 72
+    return 72
+
+
+try:
+    if _MODE == 'vo':
+        set_grid(vo_grid())
+        TM.update(derive_vo_timing())
+    else:
+        set_grid(int(os.environ.get('TLB_UI_SPLICE', 72)))
+    _apply_timing()
+except Exception as _e:                                  # never break a render over the VO words: keep the plan
+    print('thoda_left_bas_ui: VO timing not derived (%s); script timing' % _e, file=sys.stderr)
+    set_grid(72)
+    _apply_timing()
+
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in ('selftest', '--selftest'):
-        b = selftest()
+        b = selftest(sys.argv[2:] or None)
         sys.exit(1 if b else 0)
     else:
         print(__doc__)
