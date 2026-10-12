@@ -8,19 +8,19 @@ THE SIGNAL CLOCK (import this in the picture so picture and sound never drift)
 =====================================================================================================================
     import thoda_left_bas_music as TM
     TM.yaw(f)        antenna yaw in degrees at frame f (float or array; SHOTS section 0 table, eases, wind wobble;
-                     f >= 864 runs on the f - 1008 clock = the snowy pre-roll, so f1007 -> f0 is continuous)
+                     f >= 936 runs on the f - 1080 clock = the snowy pre-roll, so f1079 -> f0 is continuous)
     TM.sig(f)        0 = locked .. 1 = no signal: clamp(|yaw| / 12), 0 inside the |yaw| < 0.75 dead zone, smoothed by
                      a centred 3-frame box. Drives the CRT snow / ghost / roll and the tv_static bed gain (SFX).
-    TM.sig_c(f)      the client clock: 1 on f468-f647 (viewer title ghost-double), else 0.
+    TM.sig_c(f)      the client clock: 1 on f540-f719 (viewer title ghost-double), else 0.
     TM.lofi(f, hook) THE MUSIC FILTER AMOUNT m (0 = full range, 1 = TV speaker). Built from sig / sig_c:
                        m = w_shot(f) * sig(f)            w_shot = 1.0 on CRT shots (S1, S3, S5, S13), 0.6 on roof shots
                                                          (S2, S4, S6, S12: we are outdoors, the music is "mid-fi")
-                       m = max(m, 0.33) on f240-f305     not yet locked: the clamp macro steps the mark in but the
+                       m = max(m, 0.33) on f330-f377     not yet locked: the clamp macro steps the mark in but the
                                                          music only opens on the lock frame
-                       m = 0.45 * sig_c(f) on f432-f719  edit world: the client's mood (4-frame ramps)
-                       locks f36, f306, f648: m ramps linearly to 0 over the 4 frames before the lock frame, so the
+                       m = 0.45 * sig_c(f) on f504-f791  edit world: the client's mood (4-frame ramps)
+                       locks f90, f378, f720: m ramps linearly to 0 over the 4 frames before the lock frame, so the
                        lock frame itself (the picture snapping clean + tv_lock + the music downbeat) is full range
-                       hook B: m = 0 on f0-f61, ramps to the roof value by f72 (with the static swell into the splice)
+                       hook B: m = 0 on f0-f133, ramps to the roof value by f144 (with the static swell into the splice)
     TM.filter_hz(m)  -> (hp_hz, lp_hz): log interpolation 20 Hz / 20 kHz (m = 0, bypassed) ... 300 Hz / 2.5 kHz (m = 1),
                      4th-order Butterworth magnitudes, + a +2.5 dB x m TV-speaker bump at 1.1 kHz
                      with m also: wow +-8 cents x m (0.536 Hz = 18 cycles per loop), stereo width 1 - 0.75 m (the TV
@@ -34,19 +34,25 @@ THE SIGNAL CLOCK (import this in the picture so picture and sound never drift)
 =====================================================================================================================
 THE MUSIC (original, procedural, numpy; licence: original work for @jawad_mp4; no samples of songs, no AI model)
 =====================================================================================================================
-100 BPM, 4/4, 18 f / beat, 72 f / bar, 14 bars = 1008 f = 33.600 s. Key D minor (bars 0-9, 12-13), F major on the
-payoff (f756-f863). A 90s-Sunday-TV lo-fi: dholak kaharwa + light tabla, a detuned Casio-style keyboard riff (2 bars,
-"thoda left... / thoda right..."), sitar answers, harmonium pads; the edit world (bars 6-9) plays the SAME riff on
-clean Rhodes over an 808 + kick / clap / tight hats (same melody = same dialogue); the split (bar 8) plays both.
-    riff A (even bars)  A4 D5 F5- E5 D5 C5-     riff B (odd bars)  A4 D5 G5- F5 E5 D5-     (8ths, "-" = quarter)
-    chords bars 0-9: Dm C Bb Am (repeat) · bar 10 C7sus4 pad · payoff F (f756) F | C · bars 12-13 Dm C -> bar 0 Dm
-Events: f36 kick + tabla dha (lock A); f162 tape stop (music halts f162-f179, restarts on a dha f180); f288 dha;
-f306 lock: kick + dha + harmonium swell + sitar run; f396-f432 dholak roll into M3; f432 edit world; f648 lock
-downbeat; f684-f716 clap roll with the export bar; f720 sunset pad; DROP-OUT f738-f755 (music digital silence);
-f756 payoff: harmonium F major + dholak dha + F bass + sitar answers (the reverse cymbal / sub / dhol are SFX, so the
-song-ready mix B keeps the hit); bars 12-13 riff band-limited under the outro (-4 dB f882-f996, back to 0 dB by f1007),
-tails folded onto f0: the f1007 -> f0 seam is continuous. VO pocket: -3 dB bell at 2 kHz (1-4 kHz) on the music during
-every optional VO line window (script.json vo.lines), 4-frame ramps.
+100 BPM, 4/4, 18 f / beat, 72 f / bar, 15 bars = 1080 f = 36.000 s (VO-LED GRID, VO_TIMING.md: the r1 plan was 14 bars /
+1008 f; the measured Vlad VO needs a 2-bar hook, so one bar is inserted at f72 and every r1 frame >= 72 moves +72, except
+the clamp ticks, which compress to f342 / f351 with the marks aligning on the bar-5 downbeat f360). Key D minor (bars 0-10,
+13-14), F major on the payoff (f828-f935). A 90s-Sunday-TV lo-fi: dholak kaharwa + light tabla, a detuned Casio-style
+keyboard riff (2 bars, "thoda left... / thoda right..."), sitar answers, harmonium pads; the edit world (bars 7-10) plays
+the SAME riff on clean Rhodes over an 808 + kick / clap / tight hats (same melody = same dialogue); the split (bar 9)
+plays both.
+    riff A (r1 even bars)  A4 D5 F5- E5 D5 C5-     riff B (r1 odd bars, and the inserted bar 1)  A4 D5 G5- F5 E5 D5-
+    chords bars 0-1: Dm Dm · bars 2-10: C Bb Am Dm C Bb Am Dm C · bar 11 C7sus4 pad · payoff F (f828) F | C ·
+    bars 13-14 Dm C -> bar 0 Dm
+Events: f90 kick + tabla dha (lock A, on V2 "Bas"); f234 tape stop (music halts f234-f251, restarts on a dha f252);
+f360 dha (marks align); f378 lock: kick + dha + harmonium swell + sitar run f387; f468-f504 dholak roll into M3; f504
+edit world; f720 lock downbeat; f756-f788 clap roll with the export bar; f792 sunset pad; DROP-OUT f810-f827 (music
+digital silence); f828 payoff: harmonium F major + dholak dha + F bass + sitar answers (the reverse cymbal / sub / dhol
+are SFX, so the song-ready mix B keeps the hit); bars 13-14 riff band-limited under the outro (-4 dB f954-f1068, back to
+0 dB by f1079), tails folded onto f0: the f1079 -> f0 seam is continuous. VO pocket: -3 dB bell at 2 kHz (1-4 kHz) on the
+music during every MEASURED VO line (<RW>/vo/words.json from thoda_left_bas_vo.py; words joined across gaps < 0.35 s),
+4-frame ramps. The VO is approved and recorded (Vlad): the final mixes (thoda_left_bas_sfx.py build) duck this bed 9 dB
+under the VO plus the 8 LU per-word floor (LEAD_DECISIONS 1).
 
 Bus: per stem (drums, bass, harmony, lead, fx) -> kick sidechain 4 dB (bass / harmony / lead) -> circular studio room
 -> chorus (lead, sig_c) -> wow -> STFT lo-fi mask (m, pocket) -> width -> crackle (fx) -> outro gain -> one gain +
@@ -87,18 +93,18 @@ from audio import SR, undb, db, _n  # noqa: E402
 
 # ============================================================================================ constants
 MODULE = 'thoda_left_bas'
-FPS, BPM, NF = 30, 100.0, 1008
-DUR = NF / FPS                                  # 33.600 s
+FPS, BPM, NF = 30, 100.0, 1080                  # VO-led (VO_TIMING.md): 1008 -> 1080 f, one bar more in the hook
+DUR = NF / FPS                                  # 36.000 s
 BEAT = 60.0 / BPM                               # 0.6 s = 18 frames
 BAR = 4 * BEAT                                  # 2.4 s = 72 frames
 N = _n(DUR)
 SPF = SR // FPS                                 # 1,600 samples per frame
-assert N == NF * SPF == 1612800
+assert N == NF * SPF == 1728000
 RW = os.path.join(REPO, 'workspace', 'jawad_reels', MODULE)
 AUD = os.path.join(RW, 'audio')
 SCRIPT_JSON = os.path.join(REPO, 'brand_reels', 'design', 'reels', MODULE, 'script.json')
 TARGET_LUFS, TP_CEILING = -16.0, -3.0           # music alone (music-supervisor kit); the final mix is epic_mix's
-KEY = 'D minor (bars 0-9, 12-13), F major payoff f756-f863'
+KEY = 'D minor (bars 0-10, 13-14), F major payoff f828-f935'
 STEMS = ('drums', 'bass', 'harmony', 'lead', 'fx')
 STEM_DB = dict(drums=0.0, bass=0.5, harmony=1.0, lead=-1.0, fx=-2.0)
 
@@ -114,48 +120,47 @@ def T(bar, beat=0.0):
 
 
 # ============================================================================================ the signal clock
-PRE_YAW = -14.0                                 # pre-roll state (f <= 5, and the loop tail f864-f1007 on f - 1008)
-LOOP_TAIL = 864
+PRE_YAW = -14.0                                 # pre-roll state (f <= 55, and the loop tail f936-f1079 on f - 1080)
+LOOP_TAIL = 936
 # (f0, f1, yaw reached at f1, ease); the yaw holds between moves (SHOTS section 0)
-YAW_MOVES = (
-    (6, 16, 9.0, 'inout_cubic'),                # "right..."
-    (28, 36, 0.0, 'out_back'),                  # LOCK f36 (out_back s 0.6: overshoots through 0, settles on f36)
-    (60, 66, -18.0, 'in_cubic'),                # slip (wind)
-    (108, 113, -25.0, 'inout_cubic'),           # wrong way
-    (118, 126, -32.0, 'inout_cubic'),           # after the regrip pause f114-f117
-    (180, 197, -14.0, 'inout_cubic'),
-    (198, 213, 6.0, 'inout_cubic'),             # passes 0 (picture improves), overshoots to +6 = snow at f214
-    (225, 240, -4.0, 'inout_cubic'),
-    (252, 256, -3.0, 'out_cubic'),              # clamp clicks on the 8ths
-    (261, 265, -2.0, 'out_cubic'),
-    (270, 274, -1.0, 'out_cubic'),
-    (279, 283, -0.5, 'out_cubic'),
-    (288, 292, 0.0, 'out_cubic'),               # chalk marks align
-    (346, 358, 11.0, 'in_cubic'),               # gust f342 -> slip
-    (414, 431, -40.0, 'in_expo'),               # the swing that carries M3
-    (432, 432, -12.0, 'step'),                  # edit world f432-f575: antenna unseen (value unused by the picture)
-    (576, 582, -6.0, 'inout_cubic'),            # split S10: moves on f576 / 594 / 612 / 630 (6 f each)
-    (594, 600, 4.0, 'inout_cubic'),
-    (612, 618, -6.0, 'inout_cubic'),
-    (630, 636, -1.0, 'inout_cubic'),
-    (720, 720, 0.0, 'step'),                    # sunset: locked
-    (828, 833, 2.0, 'out_cubic'),               # the 2-degree nudge by itself (easter egg)
+YAW_MOVES = (     # 1080-f grid, VO-led (VO_TIMING.md section 3); r1 frame + 72 after the hook unless noted
+    (56, 66, 9.0, 'inout_cubic'),               # "right..." lands on the V1 word (f66; r1 f6-f16)
+    (82, 90, 0.0, 'out_back'),                  # LOCK f90 on V2 "Bas" (out_back s 0.6: overshoots through 0, settles)
+    (130, 136, -18.0, 'in_cubic'),              # slip during "theek hai!" (r1 f60-f66)
+    (180, 185, -25.0, 'inout_cubic'),           # wrong way, on V3 "Nahi!"
+    (190, 198, -32.0, 'inout_cubic'),           # after the regrip pause f186-f189
+    (252, 269, -14.0, 'inout_cubic'),
+    (288, 303, 6.0, 'inout_cubic'),             # passes 0 under "thoda aur...", overshoots to +6 = snow at f304
+    (315, 330, -4.0, 'inout_cubic'),            # "nahi nahi, wapas!"
+    (342, 346, -2.0, 'out_cubic'),              # clamp clicks on the 8ths (S4 from f342)
+    (351, 355, -1.0, 'out_cubic'),
+    (360, 364, 0.0, 'out_cubic'),               # chalk marks align on the bar-5 downbeat f360
+    (418, 430, 11.0, 'in_cubic'),               # gust f414 -> slip
+    (486, 503, -40.0, 'in_expo'),               # the swing that carries M3 f504
+    (504, 504, -12.0, 'step'),                  # edit world f504-f647: antenna unseen (value unused by the picture)
+    (648, 654, -6.0, 'inout_cubic'),            # split S10: moves on f648 / 666 / 684 / 702 (6 f each)
+    (666, 672, 4.0, 'inout_cubic'),
+    (684, 690, -6.0, 'inout_cubic'),
+    (702, 708, -1.0, 'inout_cubic'),
+    (792, 792, 0.0, 'step'),                    # sunset: locked
+    (900, 905, 2.0, 'out_cubic'),               # the 2-degree nudge by itself (easter egg)
 )
 # wind wobble a * sin(2 pi hz t): (f0, f1, amp deg, hz); 3-frame raised-cosine ramps inside each window
-WOBBLE = ((-10 ** 6, 8, 1.5, 1.3), (66, 107, 1.0, 1.3), (346, 413, 3.0, 0.8))
+WOBBLE = ((-10 ** 6, 56, 1.5, 1.3), (136, 179, 1.0, 1.3), (418, 485, 3.0, 0.8))
 SIG_FULL_DEG, SIG_DEAD_DEG = 12.0, 0.75
-LOCKS = (36, 306, 648)
-SIG_C_ON = (468, 648)                           # client clock: sig_c = 1 on f468-f647
+LOCKS = (90, 378, 720)
+SIG_C_ON = (540, 720)                           # client clock: sig_c = 1 on f540-f719
+EDIT = (504, 792)                               # edit world (S7-S11)
 # shots: (f0, f1, name, w_shot for the music filter)
-SHOTS = ((0, 72, 'S1 CRT hook', 1.0), (72, 198, 'S2 roof day', 0.6), (198, 252, 'S3 CRT room', 1.0),
-         (252, 306, 'S4 clamp macro (roof)', 0.6), (306, 378, 'S5 CRT lock', 1.0), (378, 432, 'S6 roof wind', 0.6),
-         (432, 720, 'S7-S11 edit world', None), (720, 864, 'S12 roof sunset', 0.6), (864, 1008, 'S13 CRT loop', 1.0))
-FLOOR = ((240, 306, 0.33),)                     # music not yet "locked" (see the docstring)
+SHOTS = ((0, 144, 'S1 CRT hook', 1.0), (144, 270, 'S2 roof day', 0.6), (270, 342, 'S3 CRT room', 1.0),
+         (342, 378, 'S4 clamp macro (roof)', 0.6), (378, 450, 'S5 CRT lock', 1.0), (450, 504, 'S6 roof wind', 0.6),
+         (504, 792, 'S7-S11 edit world', None), (792, 936, 'S12 roof sunset', 0.6), (936, 1080, 'S13 CRT loop', 1.0))
+FLOOR = ((330, 378, 0.33),)                     # music not yet "locked" (see the docstring)
 EDIT_M = 0.45                                   # m in the edit world while sig_c = 1
-HOOKB_RAMP = (62, 72)
-OUTRO_GAIN = ((882, 888, -4.0), (996, 1007, 0.0))   # (ramp start, ramp end, dB reached): -4 dB under the card
-GAPS = ((162, 180, 'tape stop: music halts for one beat'), (738, 756, 'drop-out: music digital silence'))
-WOW_HZ = 18 / DUR                               # 0.5357 Hz: a whole number of cycles per loop
+HOOKB_RAMP = (134, 144)
+OUTRO_GAIN = ((954, 960, -4.0), (1068, 1079, 0.0))   # (ramp start, ramp end, dB reached): -4 dB under the card
+GAPS = ((234, 252, 'tape stop: music halts for one beat'), (810, 828, 'drop-out: music digital silence'))
+WOW_HZ = 18 / DUR                               # 0.5 Hz: a whole number of cycles per loop
 WOW_CENTS = 8.0
 
 
@@ -203,13 +208,13 @@ def _wobble(f):
 
 
 def _clock(f):
-    """Reel frame -> yaw clock frame (f >= 864 runs on f - 1008)."""
+    """Reel frame -> yaw clock frame (f >= LOOP_TAIL runs on f - NF)."""
     f = np.asarray(f, dtype=np.float64)
     return np.where(f >= LOOP_TAIL, f - NF, f)
 
 
 def yaw(f):
-    """Antenna yaw (deg) at frame f (scalar or array; floats allowed). f >= 864 -> the f - 1008 clock (pre-roll)."""
+    """Antenna yaw (deg) at frame f (scalar or array; floats allowed). f >= 936 -> the f - 1080 clock (pre-roll)."""
     g = _clock(f)
     y = _yaw_base(g) + _wobble(g)
     return float(y) if y.ndim == 0 else y
@@ -222,7 +227,7 @@ def _sig_raw_g(g):
 
 def sig(f):
     """Signal loss 0 (locked) .. 1 (no signal) at frame f: clamp(|yaw| / 12), dead zone |yaw| < 0.75, centred 3-frame
-    box smoothing on the yaw clock (so the M3 cut at f864 does not smear the sunset into the loop world). The picture
+    box smoothing on the yaw clock (so the M3 cut at f936 does not smear the sunset into the loop world). The picture
     reads the same function."""
     g = _clock(f)
     s = (_sig_raw_g(g - 1) + _sig_raw_g(g) + _sig_raw_g(g + 1)) / 3.0
@@ -230,7 +235,7 @@ def sig(f):
 
 
 def sig_c(f):
-    """Client clock: 1 on f468-f647, else 0."""
+    """Client clock: 1 on SIG_C_ON (f540-f719), else 0."""
     f = np.asarray(f, dtype=np.float64)
     s = ((f >= SIG_C_ON[0]) & (f < SIG_C_ON[1])).astype(float)
     return float(s) if s.ndim == 0 else s
@@ -250,10 +255,10 @@ def lofi(f, hook='A'):
     m = _shot_w(fi) * sig(fi)
     for f0, f1, fl in FLOOR:
         m = np.where((fi >= f0) & (fi < f1), np.maximum(m, fl), m)
-    # edit world: EDIT_M x sig_c with 4-frame ramps (in at f468, the lock at f648 handled below)
+    # edit world: EDIT_M x sig_c with 4-frame ramps (in at f540, the lock at f720 handled below)
     a, b = SIG_C_ON
     ed = EDIT_M * np.clip((fi - a + 1) / 4.0, 0, 1) * (fi < b)
-    m = np.where((fi >= 432) & (fi < 720), ed, m)
+    m = np.where((fi >= EDIT[0]) & (fi < EDIT[1]), ed, m)
     # locks: linear ramp to 0 over the 4 frames before the lock frame
     for L in LOCKS:
         mL = float(lofi_pre(L - 4, hook))
@@ -274,7 +279,7 @@ def lofi_pre(f, hook='A'):
     m = _shot_w(f) * sig(f)
     for f0, f1, fl in FLOOR:
         m = np.where((f >= f0) & (f < f1), np.maximum(m, fl), m)
-    if 432 <= float(f) < 720:
+    if EDIT[0] <= float(f) < EDIT[1]:
         m = EDIT_M * sig_c(f)
     return m
 
@@ -286,7 +291,7 @@ def filter_hz(m):
 
 
 def music_gain_db(f):
-    """Bus gain automation (dB) at frame f: -4 dB under the outro card, back to 0 by f1007 (loop)."""
+    """Bus gain automation (dB) at frame f: -4 dB under the outro card, back to 0 by f1079 (loop)."""
     f = np.asarray(f, dtype=np.float64)
     g = np.zeros(f.shape)
     (a0, a1, ga), (b0, b1, gb) = OUTRO_GAIN
@@ -295,8 +300,22 @@ def music_gain_db(f):
     return g
 
 
-def vo_windows():
-    """Optional VO line windows (frames) from script.json (the 1-4 kHz pocket); fallback = the r1 values."""
+def vo_windows(join=0.35, pad=0.06):
+    """VO windows (f0, f1, line) in frames for the 1-4 kHz pocket: the MEASURED VO words (<RW>/vo/words.json, written
+    by thoda_left_bas_vo.py), joined across gaps < `join` s and padded by `pad` s. Fallback (no VO yet): the script.json
+    estimates, then the r1 values."""
+    wp = os.path.join(RW, 'vo', 'words.json')
+    if os.path.exists(wp):
+        ws = sorted(json.load(open(wp, encoding='utf8')), key=lambda w: w['start'])
+        out = []
+        for w in ws:
+            a, b = w['start'] - pad, w['end'] + pad
+            if out and a - out[-1][1] < join:
+                out[-1][1] = max(out[-1][1], b)
+                out[-1][2] = out[-1][2] if w['line'] in out[-1][2] else out[-1][2] + '+' + w['line']
+            else:
+                out.append([a, b, w['line']])
+        return [(round(max(a, 0.0) * FPS, 2), round(min(b, DUR) * FPS, 2), ln) for a, b, ln in out]
     try:
         d = json.load(open(SCRIPT_JSON))
         return [(int(l['f_in']), int(l['f_out']), l['id']) for l in d['vo']['lines']]
@@ -466,16 +485,30 @@ TABLA_LIGHT = ((0.0, 'dha', -6.0), (1.0, 'tin', -11.0), (1.5, 'na', -13.0), (2.0
                (3.5, 'na', -13.0))
 
 
+def _r1(bar):
+    """NEW bar (1080-f grid) -> the r1 bar it replays: bar 1 is the inserted hook bar (replays bar 0's harmony, riff B),
+    bars >= 2 are r1 bars 1-13."""
+    return bar - 1 if bar >= 1 else 0
+
+
 def chord_of(bar):
-    if bar <= 9:
-        return PROG[bar % 4]
-    return {12: 'Dm', 13: 'C'}.get(bar, 'F')
+    if bar <= 1:
+        return 'Dm'
+    ob = bar - 1
+    if ob <= 9:
+        return PROG[ob % 4]
+    return {12: 'Dm', 13: 'C'}.get(ob, 'F')
+
+
+def part_of(bar):
+    """Riff part of NEW bar: the r1 parity (A on even r1 bars), bar 1 = B: ... B(14) -> A(0) keeps the loop seam."""
+    return 'B' if bar == 1 else ('A' if (bar - 1 if bar >= 2 else bar) % 2 == 0 else 'B')
 
 
 class Score:
     """Bar grid -> per-segment raw stems. The music has two hard cuts (GAPS): events whose time falls inside a gap are
-    dropped; segment 0 (before f162) is tape-stopped at f162, segment 1 (f180-f737) is gated to silence on f738,
-    segment 2 (f756 on) plays out. Buffers run from -PRE to DUR + POST and are folded circularly onto the loop."""
+    dropped; segment 0 (before f234) is tape-stopped at f234, segment 1 (f252-f809) is gated to silence on f810,
+    segment 2 (f828 on) plays out. Buffers run from -PRE to DUR + POST and are folded circularly onto the loop."""
     PRE, POST = 1.0, 6.0
 
     def __init__(self, hook='A', seed=0):
@@ -522,7 +555,7 @@ class Score:
 
     # ---- phrases
     def riff(self, bar, voice, gain, part=None, octave=0, pan=0.0, beat0=0.0):
-        part = part or ('A' if bar % 2 == 0 else 'B')
+        part = part or part_of(bar)
         for slot, m, ln in RIFF[part]:
             t = T(bar, beat0 + slot * 0.5)
             d = ln * 0.5 * BEAT * 0.9
@@ -574,99 +607,103 @@ class Score:
 
 
 def arrange(s):
-    """The score (see the module docstring). s: Score."""
+    """The score (see the module docstring), on the VO-led 1080-f grid: 2-bar hook (lock f90), then the r1 bars + 1.
+    s: Score."""
     hook = s.hook
-    # ---------------------------------------------------------------- bar 0: hook
+    # ---------------------------------------------------------------- bars 0-1: hook (lock f90 = bar 1 beat 1)
     if hook == 'A':
-        s.riff(0, 'casio', -2.0)
-        s.pad(0, 'Dm', -11.0)
-        s.tabla_light(0, -1.0, accent=2.0)
-        s.kick(F(36), 0.65, -1.0, what='LOCK f36: kick')
-        s.sound('drums', 'tabla_hit', F(36), -2.0, 0.0, stroke='dha', seed=1, what='LOCK f36: tabla dha')
+        for bar in (0, 1):
+            s.riff(bar, 'casio', -2.0)
+            s.pad(bar, 'Dm', -11.0)
+        s.tabla_light(0, -1.0)
+        s.tabla_light(1, -1.0, accent=1.0)
+        s.kick(F(90), 0.65, -1.0, what='LOCK f90: kick')
+        s.sound('drums', 'tabla_hit', F(90), -2.0, 0.0, stroke='dha', seed=1, what='LOCK f90: tabla dha')
     else:                                       # hook B: the modern client world first (clean Rhodes + 808)
-        s.riff(0, 'rhodes', -1.0)
-        s.rhodes_comp(0, 'Dm', -12.0)
-        s.bass(0, 'Dm', -5.0, soft=False, beats=((0.0, 3.8),))
-        s.kick(T(0), 0.5, -4.0, what='hook B downbeat')
-        s.kick(T(0, 2.5), 0.4, -7.0)
-        s.hats(0, -15.0)
-    # ---------------------------------------------------------------- bars 1-2: roof (tape stop f162-f179)
-    for bar in (1, 2):
+        for bar in (0, 1):
+            s.riff(bar, 'rhodes', -1.0)
+            s.rhodes_comp(bar, 'Dm', -12.0)
+            s.bass(bar, 'Dm', -5.0, soft=False, beats=((0.0, 3.8),))
+            s.kick(T(bar), 0.5, -4.0, what='hook B downbeat' if bar == 0 else '')
+            s.kick(T(bar, 2.5), 0.4, -7.0)
+            s.hats(bar, -15.0)
+    # ---------------------------------------------------------------- bars 2-3: roof (tape stop f234-f251)
+    for bar in (2, 3):
         ch = chord_of(bar)
         s.riff(bar, 'casio', -2.0)
         s.pad(bar, ch, -12.0)
         s.kaharwa(bar, -3.0)
         s.bass(bar, ch, -6.0)
-    s.kick(T(1), 0.45, -6.0, lp=1800.0, what='roof downbeat')
-    s.kick(F(180), 0.5, -4.0, lp=1800.0, what='music restarts f180 (after the tape stop)')
-    s.put('drums', dholak('dha', s.r), F(180), 0.0, what='restart dha f180')
-    # ---------------------------------------------------------------- bar 3: CRT room -> clamp macro, groove builds
-    s.riff(3, 'casio', -2.0)
-    s.pad(3, chord_of(3), -12.0)
-    s.kaharwa(3, -2.5)
-    s.bass(3, chord_of(3), -6.0)
-    for i in range(8):                          # tabla tin 16ths from beat 2 (f252, the first clamp click), crescendo
-        s.sound('drums', 'tabla_hit', T(3, 2.0 + i * 0.25), -17.0 + 1.2 * i, -0.15, stroke='tin' if i % 2 else 'na',
-                seed=i % 4)
-    # ---------------------------------------------------------------- bar 4: f288 marks align, f306 LOCK, f342 gust
-    s.put('drums', dholak('dha', s.r), F(288), 1.0, what='f288 marks align: dha')
-    s.kick(F(288), 0.5, -4.0, lp=2200.0)
-    s.kick(F(306), 0.75, 0.0, what='LOCK f306: kick')
-    s.put('drums', dholak('dha', s.r), F(306), 1.0, what='LOCK f306: dha')
-    s.pad(4, 'Dm', -5.0, beats=3.0, beat0=1.0, attack=0.5)       # the harmonium swell of "the film starts"
+    s.kick(T(2), 0.45, -6.0, lp=1800.0, what='roof downbeat')
+    s.kick(F(252), 0.5, -4.0, lp=1800.0, what='music restarts f252 (after the tape stop)')
+    s.put('drums', dholak('dha', s.r), F(252), 0.0, what='restart dha f252')
+    # ---------------------------------------------------------------- bar 4: CRT room -> clamp macro (f342), builds
     s.riff(4, 'casio', -2.0)
-    s.kaharwa(4, -2.0, skip=(0, 2))
-    s.bass(4, 'Dm', -5.0, beats=((1.0, 1.4), (2.5, 1.4)))
-    for k, m in enumerate((74, 76, 77, 79)):    # sitar run on 16ths from f315, landing A5 on f333
-        s.sound('lead', 'sitar_pluck', F(315) + k * BEAT / 4, -7.0, 0.2, align='start', note=m, dur=0.8, seed=k,
-                what='sitar run f315' if k == 0 else '')
-    s.sound('lead', 'sitar_pluck', F(333), -5.0, 0.2, align='start', note=81, dur=2.0, seed=3, what='sitar A5 f333')
-    # ---------------------------------------------------------------- bar 5: band-limited again, roll into M3
+    s.pad(4, chord_of(4), -12.0)
+    s.kaharwa(4, -2.5)
+    s.bass(4, chord_of(4), -6.0)
+    for i in range(4):                          # tabla 16ths from beat 3 (f342, the first clamp click), crescendo
+        s.sound('drums', 'tabla_hit', T(4, 3.0 + i * 0.25), -15.0 + 1.5 * i, -0.15, stroke='tin' if i % 2 else 'na',
+                seed=i % 4)
+    # ---------------------------------------------------------------- bar 5: f360 marks align, f378 LOCK, f414 gust
+    s.put('drums', dholak('dha', s.r), F(360), 1.0, what='f360 marks align: dha')
+    s.kick(F(360), 0.5, -4.0, lp=2200.0)
+    s.kick(F(378), 0.75, 0.0, what='LOCK f378: kick')
+    s.put('drums', dholak('dha', s.r), F(378), 1.0, what='LOCK f378: dha')
+    s.pad(5, 'Dm', -5.0, beats=3.0, beat0=1.0, attack=0.5)       # the harmonium swell of "the film starts"
     s.riff(5, 'casio', -2.0)
-    s.pad(5, chord_of(5), -11.0)
-    s.kaharwa(5, -2.5, skip=(6, 7))
-    s.bass(5, chord_of(5), -6.0)
-    s.sound('drums', 'dholak_roll', F(432), -2.0, 0.0, n=8, bpm=BPM, what='dholak roll f396 -> dha on f432 (M3)')
-    # ---------------------------------------------------------------- bars 6-9: the edit world (same riff, Rhodes)
-    for bar in (6, 7, 8, 9):
+    s.kaharwa(5, -2.0, skip=(0, 2))
+    s.bass(5, 'Dm', -5.0, beats=((1.0, 1.4), (2.5, 1.4)))
+    for k, m in enumerate((74, 76, 77, 79)):    # sitar run on 16ths from f387, landing A5 on f405
+        s.sound('lead', 'sitar_pluck', F(387) + k * BEAT / 4, -7.0, 0.2, align='start', note=m, dur=0.8, seed=k,
+                what='sitar run f387' if k == 0 else '')
+    s.sound('lead', 'sitar_pluck', F(405), -5.0, 0.2, align='start', note=81, dur=2.0, seed=3, what='sitar A5 f405')
+    # ---------------------------------------------------------------- bar 6: band-limited again, roll into M3 f504
+    s.riff(6, 'casio', -2.0)
+    s.pad(6, chord_of(6), -11.0)
+    s.kaharwa(6, -2.5, skip=(6, 7))
+    s.bass(6, chord_of(6), -6.0)
+    s.sound('drums', 'dholak_roll', F(504), -2.0, 0.0, n=8, bpm=BPM, what='dholak roll f468 -> dha on f504 (M3)')
+    # ---------------------------------------------------------------- bars 7-10: the edit world (same riff, Rhodes)
+    for bar in (7, 8, 9, 10):
         ch = chord_of(bar)
         s.riff(bar, 'rhodes', -1.0)
         s.rhodes_comp(bar, ch, -12.0)
-        s.bass(bar, ch, -3.0, soft=False, beats=((0.0, 3.8),), glide=(ROOT[chord_of(bar + 1)] if bar == 7 else None))
-        if bar != 9:
+        s.bass(bar, ch, -3.0, soft=False, beats=((0.0, 3.8),), glide=(ROOT[chord_of(bar + 1)] if bar == 8 else None))
+        if bar != 10:
             s.kick(T(bar), 0.6, -1.0, what='edit world bar %d' % bar)
             s.kick(T(bar, 2.5), 0.45, -4.0)
             s.put('drums', EM.clap(s.r), T(bar, 2), -5.0)
-            s.hats(bar, -13.0, open_on=3.5 if bar % 2 else None)
-    s.put('drums', dholak('dha', s.r), F(432), -3.0)
-    s.riff(8, 'casio', -9.0, octave=1, pan=-0.2)                  # TAB / AB split: both eras play the dialogue
-    s.kaharwa(8, -9.0)
-    # bar 9: LOCK f648 downbeat, then the export build f684-f716
-    s.kick(F(648), 0.8, 0.0, what='LOCK f648: kick')
-    s.put('drums', EM.clap(s.r), F(648), -3.0)
-    s.kick(T(9, 2), 0.55, -3.0)
-    s.hats(9, -13.0, step=0.25)
-    for i, b in enumerate((2.0, 2.5, 3.0, 3.25, 3.5, 3.75)):     # clap roll f684 -> last 16th f715.5
-        s.put('drums', A.lp(EM.clap(s.r), 6000.0, 2), T(9, b), -14.0 + 2.0 * i, 0.15 * (-1) ** i,
-              what='export roll f684' if i == 0 else '')
-    # ---------------------------------------------------------------- bar 10: sunset pad, drop-out, PAYOFF f756
-    s.pad(10, 'C7sus4', -7.0, beats=1.0, attack=0.12)            # f720-f737 (gated to silence on f738)
-    s.put('harmony', harmonium(CHORDS['F'], 2.2, s.r, attack=0.015, release=0.5), F(756), -1.0,
-          what='PAYOFF f756: harmonium F major')
-    s.put('drums', dholak('dha', s.r), F(756), 1.0, what='PAYOFF f756: dholak dha')
-    s.put('bass', soft_bass([(0.0, 2.0, ROOT['F'], None)], _n(2.2)), F(756), -3.0, what='PAYOFF f756: F bass')
-    for k, (b, m) in enumerate(((43.0, 69), (43.5, 72), (44.0, 77))):   # sitar answers A4 C5 F5 (f774, f783, f792)
+            s.hats(bar, -13.0, open_on=3.5 if (bar - 1) % 2 else None)
+    s.put('drums', dholak('dha', s.r), F(504), -3.0)
+    s.riff(9, 'casio', -9.0, octave=1, pan=-0.2)                  # TAB / AB split: both eras play the dialogue
+    s.kaharwa(9, -9.0)
+    # bar 10: LOCK f720 downbeat, then the export build f756-f788
+    s.kick(F(720), 0.8, 0.0, what='LOCK f720: kick')
+    s.put('drums', EM.clap(s.r), F(720), -3.0)
+    s.kick(T(10, 2), 0.55, -3.0)
+    s.hats(10, -13.0, step=0.25)
+    for i, b in enumerate((2.0, 2.5, 3.0, 3.25, 3.5, 3.75)):     # clap roll f756 -> last 16th f787.5
+        s.put('drums', A.lp(EM.clap(s.r), 6000.0, 2), T(10, b), -14.0 + 2.0 * i, 0.15 * (-1) ** i,
+              what='export roll f756' if i == 0 else '')
+    # ---------------------------------------------------------------- bar 11: sunset pad, drop-out, PAYOFF f828
+    s.pad(11, 'C7sus4', -7.0, beats=1.0, attack=0.12)            # f792-f809 (gated to silence on f810)
+    s.put('harmony', harmonium(CHORDS['F'], 2.2, s.r, attack=0.015, release=0.5), F(828), -1.0,
+          what='PAYOFF f828: harmonium F major')
+    s.put('drums', dholak('dha', s.r), F(828), 1.0, what='PAYOFF f828: dholak dha')
+    s.put('bass', soft_bass([(0.0, 2.0, ROOT['F'], None)], _n(2.2)), F(828), -3.0, what='PAYOFF f828: F bass')
+    for k, (b, m) in enumerate(((47.0, 69), (47.5, 72), (48.0, 77))):   # sitar answers A4 C5 F5 (f846, f855, f864)
         s.sound('lead', 'sitar_pluck', b * BEAT, -7.0, 0.25, align='start', note=m, dur=1.6, seed=k)
-    # bar 11: the riff returns warm and full range (F | C)
-    s.riff(11, 'rhodes', -2.0)
-    s.riff(11, 'casio', -9.0)
-    s.pad(11, 'F', -10.0, beats=2.0)
-    s.pad(11, 'C', -10.0, beats=2.0, beat0=2.0)
-    s.kaharwa(11, -6.0)
-    s.bass(11, 'F', -6.0, beats=((0.0, 1.8),))
-    s.bass(11, 'C', -6.0, beats=((2.0, 1.8),))
-    # ---------------------------------------------------------------- bars 12-13: CRT loop under the outro -> bar 0
-    for bar in (12, 13):
+    # bar 12: the riff returns warm and full range (F | C)
+    s.riff(12, 'rhodes', -2.0)
+    s.riff(12, 'casio', -9.0)
+    s.pad(12, 'F', -10.0, beats=2.0)
+    s.pad(12, 'C', -10.0, beats=2.0, beat0=2.0)
+    s.kaharwa(12, -6.0)
+    s.bass(12, 'F', -6.0, beats=((0.0, 1.8),))
+    s.bass(12, 'C', -6.0, beats=((2.0, 1.8),))
+    # ---------------------------------------------------------------- bars 13-14: CRT loop under the outro -> bar 0
+    for bar in (13, 14):
         s.riff(bar, 'casio', -2.0)
         s.pad(bar, chord_of(bar), -11.0)
         s.tabla_light(bar, -1.0)
@@ -767,8 +804,8 @@ def chorus(x, amount):
 
 def gap_gate():
     """Final gate (N,): exact zeros inside the gaps after every process that could leak into them (room tails, STFT,
-    wow): f162 + 0.36 s .. f180 (after the tape stop has halted) and f738 .. f756 (the drop-out; the 30 ms fade-out
-    before f738 is already in the score). Opens hard on f180 / f756, where the restart / payoff attacks start."""
+    wow): f234 + 0.36 s .. f252 (after the tape stop has halted) and f810 .. f828 (the drop-out; the 30 ms fade-out
+    before f810 is already in the score). Opens hard on f252 / f828, where the restart / payoff attacks start."""
     g = np.ones(N)
     g[_n(F(GAPS[0][0]) + 0.36):GAPS[0][1] * SPF] = 0.0
     g[GAPS[1][0] * SPF:GAPS[1][1] * SPF] = 0.0
@@ -843,11 +880,11 @@ def build(hook='A'):
     os.makedirs(p['stems'], exist_ok=True)
     for k, v in st.items():
         A._write_wav(os.path.join(p['stems'], '%s.wav' % k), v, 24)
-    bg = EM.beatgrid(y[_n(T(6)):_n(T(10))], BPM)            # the drum-led edit world, bars 6-9
+    bg = EM.beatgrid(y[_n(T(7)):_n(T(11))], BPM)            # the drum-led edit world, bars 7-10
     meta = dict(module=MODULE, hook=hook, file=p['wav'], dur=DUR, frames=NF, samples=N, sr=SR, bits=24, bpm=BPM,
                 key=KEY, source='procedural numpy (this file + epic_music / epic_sfx / audio.py instruments); original, '
                 'no samples of songs, no AI model', licence='original work for @jawad_mp4',
-                gaps=[dict(f0=a, f1=b, why=w) for a, b, w in GAPS], render=info, beatgrid_bars6_9=bg,
+                gaps=[dict(f0=a, f1=b, why=w) for a, b, w in GAPS], render=info, beatgrid_bars7_10=bg,
                 vo_windows=vo_windows(), events=s.events, dropped_in_gaps=s.dropped,
                 calibration_db={k: round(v, 2) for k, v in _CAL.items()}, seconds=round(time.time() - t0, 1),
                 sha256=_sha(p['wav']))
@@ -885,16 +922,16 @@ def verify(hook='A'):
     rep = dict(file=p['wav'], ebur128=ebur128(p['wav']), toolkit_lufs=round(A.loudness(x), 2),
                toolkit_tp_circular=round(A.true_peak(np.concatenate([x[-2400:], x, x[:2400]])), 2))
     rep['loudness_ok'] = abs(rep['ebur128']['I'] - TARGET_LUFS) <= 0.3 and rep['ebur128']['TP'] <= TP_CEILING + 0.05
-    bg = EM.beatgrid(x[_n(T(6)):_n(T(10))], BPM)
-    rep['beatgrid_bars6_9'] = dict(bg, ok=abs(bg['tempo'] - BPM) <= 0.2 and abs(bg['phase_s']) <= 0.015
+    bg = EM.beatgrid(x[_n(T(7)):_n(T(11))], BPM)
+    rep['beatgrid_bars7_10'] = dict(bg, ok=abs(bg['tempo'] - BPM) <= 0.2 and abs(bg['phase_s']) <= 0.015
                                    and bg['strength'] > 2)
-    bgr = EM.beatgrid(x[_n(T(1)):_n(F(162))], BPM)
-    rep['beatgrid_roof_bars1_2'] = bgr
+    bgr = EM.beatgrid(x[_n(T(2)):_n(F(234))], BPM)
+    rep['beatgrid_roof_bars2_3'] = bgr
     m = lofi(np.arange(NF), hook)
-    win = [('hook snow', 20, 30), ('lock f36', 37, 47), ('slip f63+', 66, 72), ('roof', 80, 100),
-           ('clamp floor', 270, 300), ('lock f306', 307, 320), ('edit clean f432', 440, 465),
-           ('edit client f468+', 480, 500), ('lock f648', 650, 670), ('payoff f756', 760, 790),
-           ('outro CRT', 900, 930)]
+    win = [('hook snow', 20, 40), ('lock f90', 91, 101), ('slip f136+', 138, 144), ('roof', 152, 172),
+           ('clamp floor', 342, 358), ('lock f378', 379, 392), ('edit clean f504', 512, 537),
+           ('edit client f540+', 552, 572), ('lock f720', 722, 742), ('payoff f828', 832, 862),
+           ('outro CRT', 972, 1002)]
     rep['filter_check'] = [dict(label=l, frames=[a, b], lofi_mean=round(float(m[a:b].mean()), 3),
                                 expected_hp_lp=[round(float(v), 0) for v in filter_hz(float(m[a:b].mean()))],
                                 **band_edges(x, a, b)) for l, a, b in win]
@@ -929,13 +966,13 @@ def overview(x, path, title, hook='A', extra=None):
     dr.text((4, 2), 'lofi m (top = 1)', fill=(255, 140, 40))
     for a, b, _ in GAPS:
         dr.rectangle([X(F(a)), 64, X(F(b)), H], fill=(25, 40, 80))
-    for bar in range(15):
+    for bar in range(16):
         dr.line([(X(T(bar)), 64), (X(T(bar)), H)], fill=(70, 60, 90))
         dr.text((X(T(bar)) + 2, H - 12), str(bar), fill=(120, 110, 140))
     tt, lc = A.loudness_curve(np.asarray(x, dtype=np.float64))
     yv = lambda v: int(np.interp(v, [-60, -6], [H - 14, 66]))  # noqa: E731
     dr.line([(X(a), yv(b)) for a, b in zip(tt, lc)], fill=(240, 240, 240), width=1)
-    for L in LOCKS + (756,):
+    for L in LOCKS + (828,):
         dr.line([(X(F(L)), 0), (X(F(L)), H)], fill=(255, 60, 60))
     out = Image.new('RGB', (w, 420 + H), (6, 4, 8))
     out.paste(im, (0, 0))
