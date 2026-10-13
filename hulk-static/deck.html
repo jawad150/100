@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hulk Marketing: Static Post Concept</title>
+<style>
+  @font-face { font-family: Display; src: url(fonts/display.woff2) format('woff2'); font-weight: 100 900; }
+  @font-face { font-family: UI; src: url(fonts/ui.woff2) format('woff2'); font-weight: 100 900; }
+  @page { size: 1920px 1080px; margin: 0; }
+  :root { --forest: #111A16; --forest2: #18241F; --ink: #20392E; --cream: #F4F2E9; --paper: #EAE8DC; --green: #9DEF69; --grey: #2C3B33; --muted: #9AA398; --muted-d: #5D685E; --rule: #2A3730; --rule-l: #D8D6C9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: UI, sans-serif; color: var(--cream); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { position: relative; width: 1920px; height: 1080px; overflow: hidden; page-break-after: always; break-after: page; background: var(--forest); padding: 96px 120px; }
+  .page.light { background: var(--cream); color: var(--ink); }
+  .page:last-child { page-break-after: auto; }
+  .hdr { position: absolute; left: 120px; right: 120px; top: 52px; display: flex; justify-content: space-between; font: 600 18px/1 UI; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .light .hdr { color: var(--muted-d); }
+  .hdr b { color: var(--green); font-weight: 600; }
+  .light .hdr b { color: var(--ink); }
+  .ftr { position: absolute; left: 120px; right: 120px; bottom: 44px; display: flex; justify-content: space-between; font: 500 16px/1 UI; color: var(--muted); letter-spacing: .04em; }
+  .light .ftr { color: var(--muted-d); }
+  .ftr img { height: 20px; }
+  .eyebrow { font: 600 20px/1 UI; letter-spacing: .2em; text-transform: uppercase; color: var(--green); margin: 0 0 28px; }
+  .light .eyebrow { color: var(--ink); }
+  h1, h2, h3 { font-family: Display; margin: 0; letter-spacing: -0.04em; }
+  h1 { font-weight: 900; font-size: 150px; line-height: .9; }
+  h2 { font-weight: 900; font-size: 92px; line-height: .95; }
+  h3 { font-weight: 800; font-size: 38px; line-height: 1.05; letter-spacing: -0.02em; }
+  em { font-style: italic; font-weight: 300; }
+  p { font: 400 26px/1.45 UI; margin: 0; color: var(--muted); }
+  .light p { color: var(--muted-d); }
+  p.lead { font-size: 32px; line-height: 1.4; color: var(--cream); }
+  .light p.lead { color: var(--ink); }
+  .g { color: var(--green); }
+  .dot { display: inline-block; width: .32em; height: .32em; border-radius: 50%; background: var(--green); vertical-align: baseline; margin-left: .04em; }
+  .row { display: flex; gap: 64px; }
+  .col { flex: 1; }
+  .card { background: var(--forest2); border: 1px solid var(--rule); border-radius: 28px; padding: 40px; }
+  .light .card { background: var(--paper); border-color: var(--rule-l); }
+  .num { font: 800 22px/1 Display; color: var(--green); letter-spacing: 0; margin-bottom: 18px; }
+  .light .num { color: var(--ink); }
+  .chip { display: inline-block; font: 600 18px/1 UI; letter-spacing: .12em; text-transform: uppercase; padding: 12px 18px; border-radius: 999px; border: 1.5px solid currentColor; }
+  .post-shadow { box-shadow: 0 40px 90px rgba(0,0,0,.45); border-radius: 6px; }
+  .light .post-shadow { box-shadow: 0 30px 70px rgba(17,26,22,.22); }
+  ul.clean { list-style: none; margin: 0; padding: 0; }
+  ul.clean li { font: 400 24px/1.45 UI; color: var(--muted); padding: 14px 0; border-top: 1px solid var(--rule); }
+  .light ul.clean li { color: var(--muted-d); border-color: var(--rule-l); }
+  ul.clean li b { color: var(--cream); font-weight: 600; }
+  .light ul.clean li b { color: var(--ink); }
+  .copy { font: 400 22px/1.5 UI; color: var(--ink); white-space: pre-line; }
+  .label { font: 600 16px/1 UI; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-d); margin-bottom: 16px; }
+  .swatch { height: 150px; border-radius: 20px; display: flex; align-items: flex-end; padding: 18px; font: 600 18px/1.3 UI; }
+  /* annotated post */
+  .anno { position: absolute; width: 46px; height: 46px; border-radius: 50%; background: var(--green); color: var(--forest); font: 800 22px/46px Display; text-align: center; letter-spacing: 0; box-shadow: 0 0 0 6px var(--forest); }
+  /* mini series mocks */
+  .mini { width: 400px; height: 500px; background: var(--forest); border-radius: 10px; position: relative; padding: 30px; color: var(--cream); overflow: hidden; }
+  .mini h4 { font: 900 40px/.95 Display; letter-spacing: -0.04em; margin: 14px 0 0; }
+  .mini h4 em { font-weight: 300; }
+  .mini .lg { height: 12px; }
+  .mini .foot { position: absolute; left: 30px; right: 30px; bottom: 26px; font: 800 20px/1.1 Display; letter-spacing: -0.02em; }
+  .mini .cta { display: inline-block; margin-top: 12px; background: var(--green); color: var(--forest); font: 600 12px/1 UI; padding: 9px 13px; border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- 1 COVER -->
+<section class="page">
+  <div class="hdr"><span><b>Hulk Marketing</b> · Static post concept</span><span>October 2026</span></div>
+  <div style="position:absolute; left:120px; top:190px; width:880px;">
+    <p class="eyebrow">Concept 01 · The Spot Test</p>
+    <h1 style="font-size:128px;">Find the brand people <em>remember</em><span class="dot"></span></h1>
+    <p class="lead" style="margin-top:56px; max-width:860px;">A single static post for Instagram, LinkedIn and Facebook that doesn’t tell people Hulk makes brands stand out. It makes them feel it, in under a second.</p>
+    <div style="margin-top:56px; display:flex; gap:16px; color:var(--muted);"><span class="chip">Brand awareness</span><span class="chip">4:5 feed · 1:1 · 9:16</span><span class="chip">Pairs with the reel</span></div>
+  </div>
+  <img src="out/post_4x5_dark.png" class="post-shadow" style="position:absolute; right:150px; top:110px; height:860px;">
+  <div class="ftr"><img src="logo.svg"><span>hulkmarketing.co.uk</span></div>
+</section>
+
+<!-- 2 BRIEF -->
+<section class="page light">
+  <div class="hdr"><span><b>01</b> · The brief</span><span>Hulk Marketing · Static post concept</span></div>
+  <div class="row" style="margin-top:80px;">
+    <div class="col" style="flex:1.1;">
+      <p class="eyebrow">What we’re making</p>
+      <h2>One post that proves the promise.</h2>
+      <p class="lead" style="margin-top:40px;">Hulk’s site says it plainly: <b style="font-weight:600">“We turn ambitious businesses into brands people notice, choose and come back to.”</b> The post should demonstrate the first word, <i>notice</i>, instead of claiming it.</p>
+    </div>
+    <div class="col">
+      <ul class="clean" style="margin-top:8px;">
+        <li><b>Objective.</b> Brand awareness and recall: saves, shares and profile visits from business owners who see it.</li>
+        <li><b>Audience.</b> Founders and marketing leads at ambitious UK businesses who feel their brand looks like everyone else’s.</li>
+        <li><b>Single-minded message.</b> Standing out is the job, and Hulk does it.</li>
+        <li><b>Tone.</b> Confident, warm, a little cheeky. “Anything but ordinary,” never shouty.</li>
+        <li><b>Mandatories.</b> Real logo, brand colours (forest, cream, green), the site’s fonts, CTA “Let’s make your next move ↗”, URL.</li>
+        <li><b>Platforms.</b> Instagram and Facebook feed (4:5), LinkedIn (1:1 or 4:5), Stories (9:16).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ftr"><span>Source copy: hulkmarketing.co.uk</span><span>02</span></div>
+</section>
+
+<!-- 3 RESEARCH -->
+<section class="page">
+  <div class="hdr"><span><b>02</b> · What agencies are posting (Pinterest scan)</span><span>Hulk Marketing · Static post concept</span></div>
+  <p class="eyebrow" style="margin-top:50px;">We scanned Pinterest boards of agency posts and feeds</p>
+  <h2 style="max-width:1600px; font-size:76px;">The category all looks the same, which is exactly the problem Hulk solves.</h2>
+  <div class="row" style="margin-top:44px; gap:32px;">
+    <div class="card col"><div class="num">01</div><h3>The stock metaphor</h3><p style="margin-top:16px;">Lightbulbs, megaphones, rockets, a T-rex next to a phone, a man with a TV for a head. Clever once, now wallpaper.</p></div>
+    <div class="card col"><div class="num">02</div><h3>Everything, everywhere</h3><p style="margin-top:16px;">Six services, eight icons, a phone number, three URLs and a “Book now” on one square. Nothing is read.</p></div>
+    <div class="card col"><div class="num">03</div><h3>Shouted claims</h3><p style="margin-top:16px;">“We don’t just post. We grow businesses.” “Don’t blend in. Stand out.” The words say different; the design says same.</p></div>
+    <div class="card col"><div class="num">04</div><h3>Black + lime feeds</h3><p style="margin-top:16px;">Dark feeds with a neon-lime accent are already a trend, so the colours alone won’t set Hulk apart. The idea has to.</p></div>
+  </div>
+  <div class="row" style="margin-top:36px; align-items:flex-start;">
+    <div class="col"><p class="lead" style="font-size:28px;"><span class="g">The gap:</span> almost nobody makes the viewer <i>do</i> something. Posts tell people an agency is different; few let them experience it.</p></div>
+    <div class="col"><p style="font-size:18px; line-height:1.6;">Boards reviewed: “Digital marketing agency post”, “Branding agency Instagram feed”, “Social media agency creative ads”, “Marketing agency Instagram feed” (pinterest.com/ideas). Observations are summarised; no third-party designs are reproduced here.</p></div>
+  </div>
+  <div class="ftr"><img src="logo.svg"><span>03</span></div>
+</section>
+
+<!-- 4 INSIGHT + IDEA -->
+<section class="page light">
+  <div class="hdr"><span><b>03</b> · Insight → idea</span><span>Hulk Marketing · Static post concept</span></div>
+  <div class="row" style="margin-top:90px; gap:100px;">
+    <div class="col">
+      <p class="eyebrow">The insight</p>
+      <h2>People don’t remember what you claim. They remember what they <em>notice</em>.</h2>
+      <p class="lead" style="margin-top:44px;">Most businesses don’t have a visibility problem; they have a <b style="font-weight:600">sameness</b> problem. Same templates, same promises, same look as the rest of their category.</p>
+    </div>
+    <div class="col">
+      <p class="eyebrow">The idea: The Spot Test</p>
+      <h2>Let the viewer prove it to themselves.</h2>
+      <ul class="clean" style="margin-top:44px;">
+        <li><b>1 · They see a grid.</b> Rows of identical grey dots: every brand that blends in.</li>
+        <li><b>2 · They find the green one instantly.</b> No thinking required. That’s the point.</li>
+        <li><b>3 · The payoff lands.</b> “Found it? Of course you did. That’s what standing out looks like.”</li>
+        <li><b>4 · Hulk owns the moment.</b> The green dot <i>is</i> Hulk’s green: the same character as the brand reel, so post and reel read as one campaign.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ftr"><span>Why it works: participation beats persuasion; one action, one message, one colour</span><span>04</span></div>
+</section>
+
+<!-- 5 HERO POST -->
+<section class="page" style="background:#0B110E;">
+  <div class="hdr"><span><b>04</b> · The post · 4:5 feed (1080 × 1350)</span><span>Hulk Marketing · Static post concept</span></div>
+  <img src="out/post_4x5_dark.png" class="post-shadow" style="position:absolute; left:120px; top:110px; height:880px;">
+  <div style="position:absolute; left:900px; top:200px; width:880px;">
+    <p class="eyebrow">Primary execution</p>
+    <h2>Quiet in a loud feed.</h2>
+    <p class="lead" style="margin-top:40px;">Forest field, one block of type, forty-two grey dots and a single green one. In a feed of busy agency posts, restraint is the thing that stops the thumb.</p>
+    <ul class="clean" style="margin-top:44px;">
+      <li><b>First read (0–1 s):</b> the green dot, then the headline.</li>
+      <li><b>Second read (1–3 s):</b> “Found it? Of course you did.” The penny drops.</li>
+      <li><b>Third read:</b> the line in Hulk’s own words, then the CTA and URL.</li>
+    </ul>
+  </div>
+  <div class="ftr"><img src="logo.svg"><span>05</span></div>
+</section>
+
+<!-- 6 ANATOMY -->
+<section class="page light">
+  <div class="hdr"><span><b>05</b> · Anatomy of the post</span><span>Hulk Marketing · Static post concept</span></div>
+  <div style="position:absolute; left:120px; top:120px; width:680px; height:850px;">
+    <img src="out/post_4x5_dark.png" class="post-shadow" style="width:680px; height:850px;">
+    <span class="anno" style="left:-23px; top:22px;">1</span>
+    <span class="anno" style="left:-23px; top:120px;">2</span>
+    <span class="anno" style="left:-23px; top:330px;">3</span>
+    <span class="anno" style="left:420px; top:320px;">4</span>
+    <span class="anno" style="left:-23px; top:612px;">5</span>
+    <span class="anno" style="left:-23px; top:672px;">6</span>
+    <span class="anno" style="left:-23px; top:768px;">7</span>
+  </div>
+  <div style="position:absolute; left:900px; top:120px; width:900px;">
+    <ul class="clean">
+      <li><b>1 · Logo + tag.</b> The real HULK MARKETING wordmark (vector-traced from the site), 250 px wide. Tag “Anything but ordinary” in Hanken Grotesk 22 px, tracked 0.18em.</li>
+      <li><b>2 · Headline.</b> Inter Tight 900, 112 px, −0.045em. “remember.” in Inter Tight 300 italic: the site’s bold/italic pairing.</li>
+      <li><b>3 · The grid.</b> 9 × 5 dots, 60 px diameter on a 104 px pitch, colour #2C3B33: a dark step of the forest so they recede.</li>
+      <li><b>4 · The green dot + callout.</b> Hulk green #9DEF69, the only accent. A 3 px rule runs to “THAT ONE”; the grey dots under the rule are removed so it reads cleanly.</li>
+      <li><b>5 · Payoff.</b> Inter Tight 800, 54 px: “Found it? Of course you did.”</li>
+      <li><b>6 · Proof line.</b> Hanken Grotesk 28 px in muted sage #9AA398, the site’s own positioning line.</li>
+      <li><b>7 · Action bar.</b> Green pill “Let’s make your next move ↗” (Hanken 600, 28 px) and the URL, above a hairline rule.</li>
+    </ul>
+  </div>
+  <div class="ftr"><span>Margins 72 px · every element left-aligned to one edge except the centred grid</span><span>06</span></div>
+</section>
+
+<!-- 7 SYSTEM -->
+<section class="page">
+  <div class="hdr"><span><b>06</b> · Colour + type</span><span>Hulk Marketing · Static post concept</span></div>
+  <p class="eyebrow" style="margin-top:70px;">Straight from hulkmarketing.co.uk</p>
+  <h2>One accent. Two faces. No exceptions.</h2>
+  <div class="row" style="margin-top:60px; gap:24px;">
+    <div class="col"><div class="swatch" style="background:#111A16; border:1px solid var(--rule); color:var(--cream);">Forest<br>#111A16 · field</div></div>
+    <div class="col"><div class="swatch" style="background:#20392E; color:var(--cream);">Ink<br>#20392E · type on cream</div></div>
+    <div class="col"><div class="swatch" style="background:#F4F2E9; color:#20392E;">Cream<br>#F4F2E9 · type / light field</div></div>
+    <div class="col"><div class="swatch" style="background:#9DEF69; color:#111A16;">Hulk green<br>#9DEF69 · the one accent</div></div>
+    <div class="col"><div class="swatch" style="background:#2C3B33; color:var(--cream);">Grey dot<br>#2C3B33 · the crowd</div></div>
+  </div>
+  <div class="row" style="margin-top:56px;">
+    <div class="col card">
+      <div class="label" style="color:var(--muted)">Display · Inter Tight</div>
+      <div style="font:900 96px/1 Display; letter-spacing:-0.045em;">Find the brand <em style="font-weight:300">remember.</em></div>
+      <p style="margin-top:18px;">Weights 900 (headline), 800 (payoff), 300 italic (the emphasis word). Tight tracking, tight leading.</p>
+    </div>
+    <div class="col card">
+      <div class="label" style="color:var(--muted)">UI · Hanken Grotesk</div>
+      <div style="font:400 40px/1.3 UI; color:var(--cream);">We turn ambitious businesses into brands people notice, choose and come back to.</div>
+      <p style="margin-top:18px;">Weights 400 (body), 600 (CTA, labels). Labels in caps, tracked 0.16–0.18em.</p>
+    </div>
+  </div>
+  <div class="ftr"><img src="logo.svg"><span>07</span></div>
+</section>
+
+<!-- 8 COPY -->
+<section class="page light">
+  <div class="hdr"><span><b>07</b> · Copy deck</span><span>Hulk Marketing · Static post concept</span></div>
+  <div class="row" style="margin-top:60px; gap:40px;">
+    <div class="col card">
+      <div class="label">On-post copy</div>
+      <div class="copy"><b>Tag</b>  Anything but ordinary
+<b>Headline</b>  Find the brand people remember.
+<b>Callout</b>  That one
+<b>Payoff</b>  Found it? Of course you did.
+<b>Body</b>  That’s what standing out looks like. We turn ambitious businesses into brands people notice, choose and come back to.
+<b>CTA</b>  Let’s make your next move ↗
+<b>URL</b>  hulkmarketing.co.uk</div>
+      <div class="label" style="margin-top:30px;">Alt text</div>
+      <div class="copy" style="font-size:19px;">Dark green post. Headline: “Find the brand people remember.” Below it, a grid of identical grey dots with one bright green dot labelled “That one”. Text: “Found it? Of course you did. That’s what standing out looks like.” Button: “Let’s make your next move”. Hulk Marketing logo and hulkmarketing.co.uk.</div>
+    </div>
+    <div class="col card">
+      <div class="label">Instagram / Facebook caption</div>
+      <div class="copy" style="font-size:20px;">Found it? Of course you did. 🟢
+
+That’s the whole job. In a feed full of grey, the brand people remember is the one that doesn’t look, sound or act like everyone else.
+
+At Hulk Marketing, strategy, creative, digital and AI all pull in the same direction, turning ambitious businesses into brands people notice, choose and come back to.
+
+So, be honest: is your brand the green dot or one of the grey ones? 👇
+
+Let’s make your next move ↗ Link in bio.
+
+#HulkMarketing #AnythingButOrdinary #MarketingWithMuscle #BrandStrategy #CreativeAgency #DigitalMarketingUK</div>
+    </div>
+    <div class="col card">
+      <div class="label">LinkedIn caption</div>
+      <div class="copy" style="font-size:20px;">Quick test: how long did it take you to find the green dot?
+
+Under a second, probably. Nobody had to explain it. It simply didn’t look like everything around it.
+
+That’s the standard we hold brands to. Most businesses don’t have a visibility problem; they have a sameness problem: the same templates, the same claims and the same look as the rest of their category.
+
+At Hulk Marketing, strategy, creative, digital and AI pull in the same direction so your brand is the one people notice, choose and come back to.
+
+If yours is blending in, let’s make your next move: hulkmarketing.co.uk</div>
+      <div class="label" style="margin-top:24px;">First comment (Instagram)</div>
+      <div class="copy" style="font-size:20px;">Free audit → hulkmarketing.co.uk ↗</div>
+    </div>
+  </div>
+  <div class="ftr"><span>British English · claims limited to the brand’s own published positioning</span><span>08</span></div>
+</section>
+
+<!-- 9 FORMATS -->
+<section class="page" style="background:#0B110E;">
+  <div class="hdr"><span><b>08</b> · Formats + light version</span><span>Hulk Marketing · Static post concept</span></div>
+  <div style="position:absolute; left:120px; top:130px; display:flex; gap:56px; align-items:flex-start;">
+    <div style="width:528px;"><img src="out/post_4x5_light.png" class="post-shadow" style="height:660px;"><p style="margin-top:22px;"><b style="color:var(--cream)">4:5 light</b> · for a cream-led grid or LinkedIn. The green dot gets an ink ring so it holds on cream.</p></div>
+    <div style="width:528px;"><img src="out/post_1x1_dark.png" class="post-shadow" style="height:528px;"><p style="margin-top:22px;"><b style="color:var(--cream)">1:1</b> · LinkedIn and Facebook. Body line dropped; grid 9 × 4.</p></div>
+    <div style="width:383px;"><img src="out/post_9x16_dark.png" class="post-shadow" style="height:680px;"><p style="margin-top:22px;"><b style="color:var(--cream)">9:16 Story</b> · kept inside the safe zone; add a link sticker under the pill.</p></div>
+  </div>
+  <div class="ftr"><img src="logo.svg"><span>09</span></div>
+</section>
+
+<!-- 10 SERIES -->
+<section class="page light">
+  <div class="hdr"><span><b>09</b> · Grow it into a series</span><span>Hulk Marketing · Static post concept</span></div>
+  <p class="eyebrow" style="margin-top:60px;">One system, many tests</p>
+  <h2>The Spot Test becomes a recurring format.</h2>
+  <div style="display:flex; gap:48px; margin-top:56px; align-items:flex-start;">
+    <div>
+      <div class="mini post-shadow">
+        <img class="lg" src="logo.svg">
+        <h4>Find the brand people <em>remember.</em></h4>
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:14px; margin-top:28px;">
+          <script>for (let i = 0; i < 28; i++) document.write(`<i style="display:block; aspect-ratio:1; border-radius:50%; background:${i === 12 ? '#9DEF69' : '#2C3B33'}"></i>`)</script>
+        </div>
+        <div class="foot">Found it? Of course you did.<br><span class="cta">Let’s make your next move ↗</span></div>
+      </div>
+      <p style="margin-top:20px; width:400px;"><b style="color:var(--ink)">01 · Notice.</b> This post.</p>
+    </div>
+    <div>
+      <div class="mini post-shadow">
+        <img class="lg" src="logo.svg">
+        <h4>Spot the button people <em>click.</em></h4>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:28px;">
+          <script>for (let i = 0; i < 12; i++) document.write(`<span style="display:block; text-align:center; font:600 11px/30px UI; border-radius:99px; ${i === 7 ? 'background:#9DEF69;color:#111A16' : 'background:#2C3B33;color:#6E7A70'}">${i === 7 ? 'Let’s talk ↗' : 'Learn more'}</span>`)</script>
+        </div>
+        <div class="foot">Same offer. Different result.<br><span class="cta">Let’s make your next move ↗</span></div>
+      </div>
+      <p style="margin-top:20px; width:400px;"><b style="color:var(--ink)">02 · Choose.</b> Conversion: websites, PPC, CRO.</p>
+    </div>
+    <div>
+      <div class="mini post-shadow">
+        <img class="lg" src="logo.svg">
+        <h4>Pick the post people <em>save.</em></h4>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:28px;">
+          <script>for (let i = 0; i < 6; i++) document.write(`<span style="display:block; aspect-ratio:1; border-radius:6px; ${i === 4 ? 'background:#9DEF69' : 'background:#2C3B33'}"></span>`)</script>
+        </div>
+        <div class="foot">The one worth keeping.<br><span class="cta">Let’s make your next move ↗</span></div>
+      </div>
+      <p style="margin-top:20px; width:400px;"><b style="color:var(--ink)">03 · Come back.</b> Social and content.</p>
+    </div>
+    <div style="flex:1; padding-top:10px;">
+      <ul class="clean">
+        <li><b>Notice → choose → come back</b> maps the series onto Hulk’s own promise, one post per word.</li>
+        <li><b>Same grid, same green, new object</b> each time: dots, buttons, posts, search results, reviews.</li>
+        <li><b>Builds recognition:</b> by post three, the format itself is the brand.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ftr"><span>Series sketches are layout concepts, not final artwork</span><span>10</span></div>
+</section>
+
+<!-- 11 SPECS -->
+<section class="page">
+  <div class="hdr"><span><b>10</b> · Specs + publishing checklist</span><span>Hulk Marketing · Static post concept</span></div>
+  <div class="row" style="margin-top:80px; gap:80px;">
+    <div class="col">
+      <p class="eyebrow">Deliverables</p>
+      <ul class="clean">
+        <li><b>Instagram / Facebook feed</b> · 1080 × 1350 px (4:5) PNG, dark and light</li>
+        <li><b>LinkedIn / Facebook</b> · 1080 × 1080 px (1:1) PNG</li>
+        <li><b>Stories</b> · 1080 × 1920 px (9:16) PNG, safe zones respected</li>
+        <li><b>Colour</b> · sRGB · export PNG (flat colour stays crisp; avoid JPEG banding on the forest)</li>
+        <li><b>Source</b> · built in code (HTML/CSS); every size re-renders from one file</li>
+      </ul>
+    </div>
+    <div class="col">
+      <p class="eyebrow">Before it goes live</p>
+      <ul class="clean">
+        <li><b>Pair it with the reel</b> · post the static a few days after the brand reel so the green dot is already familiar</li>
+        <li><b>Pin it</b> to the top of the Instagram grid alongside the reel</li>
+        <li><b>Alt text + caption</b> from the copy deck; reply to every “I’m a grey dot” comment</li>
+        <li><b>Measure</b> saves, shares, profile visits and link clicks against your own recent posts in native analytics</li>
+        <li><b>Check</b> the logo’s ® and the URL at phone size before posting</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ftr"><img src="logo.svg"><span>11</span></div>
+</section>
+
+<!-- 12 CLOSE -->
+<section class="page">
+  <div style="position:absolute; left:0; right:0; top:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+    <img src="logo.svg" style="width:640px;">
+    <h2 style="margin-top:70px; font-size:110px;">Anything but <em>ordinary</em><span class="dot"></span></h2>
+    <p class="lead" style="margin-top:40px; color:var(--muted);">hulkmarketing.co.uk</p>
+  </div>
+</section>
+
+</body>
+</html>
