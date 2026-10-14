@@ -532,7 +532,8 @@ def post_init(seed=7):
     r = np.sqrt(((xs - CX) / (W * 0.62)) ** 2 + ((ys - CY) / (H * 0.62)) ** 2)
     _post['vig'] = np.clip(1 - 0.42 * r ** 2.4, 0.35, 1)[..., None].astype(np.float32)
 
-def post(canvas, frame_idx, bloom=0.55, grain=0.022, ca=0.0, flash=0.0, flash_color=(1, 0.55, 0.2), fade=0.0):
+def post(canvas, frame_idx, bloom=0.55, grain=0.022, ca=0.0, flash=0.0, flash_color=(1, 0.55, 0.2), fade=0.0,
+         vig=1.0):
     if not _post:
         post_init()
     img = canvas
@@ -555,7 +556,7 @@ def post(canvas, frame_idx, bloom=0.55, grain=0.022, ca=0.0, flash=0.0, flash_co
         img = img + np.array(flash_color, np.float32) * flash
     # soft shoulder
     img = np.where(img > 0.82, 0.82 + 0.18 * np.tanh((img - 0.82) / 0.18), img)
-    img = img * _post['vig']
+    img = img * _post['vig'] if vig >= 1.0 else img * (1 - vig * (1 - _post['vig']))
     # warm lift in the blacks
     img = img * 0.985 + np.array([0.012, 0.008, 0.006], np.float32)
     if grain > 0:

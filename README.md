@@ -1,3 +1,31 @@
+# Organic Fostering — "The Fostering Flow"
+
+A 33 s vertical reel (1080×1920, 30 fps, -14 LUFS) built from the "Fostering Flow" animation concept. It shows becoming a foster carer as an app onboarding flow: five steps and one progress bar, from "Start" to "Approved". The voiceover is the warm British female read from the concept.
+
+The visual style is deliberately different from the earlier glassy OF reels. It uses bold colour-blocked SaaS design: cream cards with thick plum outlines and hard offset shadows, extruded 3D Poppins titles with light sweeps, and one flat brand colour per step. The colours run plum → berry → magenta → orange → peach → cream, so the journey goes from dark to light. 3D clay icons rendered in Blender sit on every step.
+
+**Final:** [`reel/organic_fostering/organic_fostering_fostering_flow.mp4`](reel/organic_fostering/organic_fostering_fostering_flow.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_fostering_flow_share.mp4)
+
+| Time | Scene |
+|---|---|
+| 0–4 s | Hook: fast montage from the "Day in the life" footage ("Thinking about fostering?"), then a cursor clicks "Start your fostering journey" |
+| 4–6.5 s | The app window opens: 5 steps, 0% |
+| 6.5–21.5 s | Steps 1–4: informal chat bubbles; house drop, calendar flips to "Booked" and a pin lands on Manchester; the form fills itself and training cards tick off; the profile card builds with four tags. A persistent stepper fills 20% per tick, each on the beat |
+| 21.5–25 s | Panel: the ring fills to 100%, the OF emblem appears with a leaf burst, and an "Approved foster carer" toast slides in with small print about the final decision |
+| 25–28 s | Colour-blocked bento of support, including the allowance from £447.60 a week* |
+| 28–33 s | CTA: "Start your enquiry" click, logo, phone number, website, Ofsted rating and small print |
+
+Pipeline (`pipeline_ff/`):
+- `vo_ff.py` generates the voiceover with Kokoro.
+- `blender_ff.py` renders the clay icons and reuses `pipeline_of/blender_of.py`.
+- `reel_ff.py` is the compositor.
+- `audio_ff.py` builds a 120 BPM bed with SFX and ducking.
+- `render_ff.py` renders and encodes.
+
+Rebuild: put Poppins into `workspace_ff/fonts` and `logo_full.png` / `emblem.png` into `workspace_ff/src`. Then link `workspace_of/frames` and the OF leaf/coin assets, and run `python3 pipeline_ff/render_ff.py`.
+
+---
+
 # Bodyrade — three pre-workout reels
 
 Three vertical reels (1080×1920, 30 fps, -14 LUFS sound) in Bodyrade's yellow (#FDCF09) / black brand with the Jost font. The style is SaaS motion graphics with cinematic 3D, including Blender turntables of the three pouches, the 3D chevron and "5in1", and tumbling fruit and ice.
