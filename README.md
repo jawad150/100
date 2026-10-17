@@ -1,21 +1,21 @@
 # Organic Fostering — "Support Update Available"
 
-A 20 s vertical reel (1080×1920, 30 fps, -14 LUFS) for foster carers who are already approved elsewhere. It follows the "Support Update Available" concept and its 14-panel storyboard, condensed from 30 s to 20 s. A phone notification ("Fostering Support: update available") becomes a system check of six support questions. The release notes show it's all included, a chat raises continuity of care, and "Install" turns into "Explore a transfer". The look is night neon: plum, magenta-edged glass, orange buttons, green checks and Poppins.
+A 30 s vertical reel (1080×1920, 30 fps, -14 LUFS) for foster carers who are already approved elsewhere. It follows the "Support Update Available" concept script, its timing and its 14-panel storyboard, read by a warm British female voiceover. A phone notification ("Fostering Support: update available") becomes a system check of six support questions. The release notes show it's all included, a chat raises continuity of care, and "Install" turns into "Explore a transfer". The look is night neon: plum, magenta-edged glass, orange buttons, green checks and Poppins.
 
 **Final:** [`reel/organic_fostering/organic_fostering_support_update.mp4`](reel/organic_fostering/organic_fostering_support_update.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_support_update_share.mp4)
 
 | Time | Scene |
 |---|---|
 | 0–1 s | Glitch-cut montage from the OF footage: "Already a foster carer?" |
-| 1–4 s | 3D phone arcs in: lock screen 9:14, buzz, notification drop, cursor tap, "Checking your support…" |
-| 4–7.5 s | System check: six questions as glass cards with 3D clay icons and spinners |
-| 7.5–11 s | Release notes: loaders turn into green checks on the beat, the Ofsted badge pins in, then "All included." |
-| 11–14.5 s | Hands-and-seedling footage with the chat: "But what about the children I look after?" / "We focus on continuity of care for them." |
-| 14.5–17.25 s | The Install button flips to "Explore a transfer", then tap, progress and the toast "Conversation requested · No immediate commitment." |
-| 17.25–20 s | Leafy ivory end card: logo, "Already fostering? Let's talk.", phone, web and the Ofsted rating |
+| 1–4.25 s | 3D phone arcs in: lock screen 9:14, buzz, notification drop ("This one's for you."), cursor tap, "Checking your support…" |
+| 4.25–10.25 s | System check: one question per beat-pair as glass cards with 3D clay icons and spinners, with the newest one spotlit |
+| 10.25–16.5 s | Release notes: loaders turn into green checks on the beat, the Ofsted badge pins in, "All included.", then "Independent agency · Rated Good by Ofsted" |
+| 16.5–22.5 s | Night-bedroom shot, then hands-and-seedling shot, with the chat: "But what about the children I look after?" / "We focus on continuity of care for them." and "Thinking of moving? Start with a conversation." |
+| 22.5–26.5 s | The Install button flips to "Explore a transfer", then tap, progress and the toast "Conversation requested · No immediate commitment." |
+| 26.5–30 s | Leafy ivory end card: logo, "Already fostering? Let's talk.", phone, web and the Ofsted rating |
 
 Pipeline (`pipeline_su/`):
-- `vo_su.py` generates the condensed voiceover with Kokoro.
+- `vo_su.py` generates the voiceover with Kokoro.
 - `blender_su.py` renders the clock, book, group and update-arrow clay icons on top of the `pipeline_ff` toolkit.
 - `reel_su.py` is the compositor.
 - `audio_su.py` builds the bed, phone buzz and UI SFX, with ducking.

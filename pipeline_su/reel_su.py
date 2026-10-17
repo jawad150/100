@@ -1,4 +1,4 @@
-"""Organic Fostering — "Support Update Available" (9:16, 20 s): a software-update metaphor for existing foster carers.
+"""Organic Fostering — "Support Update Available" (9:16, 30 s): a software-update metaphor for existing foster carers.
 
 Montage hook -> 3D phone lock screen with "Fostering Support: update available" -> system check (six questions,
 3D clay icons, spinners) -> release notes (checks cascade, Ofsted badge, "All included.") -> "the children I look
@@ -7,7 +7,7 @@ Look: night-neon glass (plum, magenta edge glow, orange buttons, green checks, P
 
 Usage:
   python3 reel_su.py still 1.0,5.0
-  python3 reel_su.py range 0 600
+  python3 reel_su.py range 0 900
 """
 import os, sys, math, functools
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -34,17 +34,18 @@ PB, PX, PK, PS, PM, PR, PL = ('Poppins-Bold', 'Poppins-ExtraBold', 'Poppins-Blac
                               'Poppins-Medium', 'Poppins-Regular', 'Poppins-Light')
 
 # ------------------------------------------------------------------ timeline (120 BPM grid)
-T = dict(hook=0.0, lock=1.0, tap=3.0, check=4.0, notes=7.5, care=11.0, install=14.5, cta=17.25)
-DUR = 20.0
+T = dict(hook=0.0, lock=1.0, tap=3.5, check=4.25, notes=10.25, care=16.5, install=22.5, cta=26.5)
+DUR = 30.0
 NF = int(DUR * FPS)
-VO = {'hook': 0.2, 'check': 4.1, 'included': 7.7, 'care': 11.4, 'install': 14.9, 'cta': 17.95}
+VO = {'hook': 0.2, 'check': 4.5, 'included': 10.5, 'care': 16.9, 'install': 22.8, 'cta': 27.0}
 NOTIF = 1.3
-Q_T = [4.25 + 0.5 * i for i in range(6)]
-CHK_T = [8.0 + 0.25 * i for i in range(6)]
-OFSTED_T = 9.5
-ALL_T = 9.75
-TAP_INSTALL = 15.5
-TOAST_T = 16.3
+Q_T = [4.5 + 0.9 * i for i in range(6)]           # one question per beat-pair, as in the storyboard
+CHK_T = [11.25 + 0.25 * i for i in range(6)]
+OFSTED_T = 13.0
+ALL_T = 13.5
+CARE_CUT = T['care'] + 2.75                          # night bedroom -> hands and seedling
+TAP_INSTALL = 24.0
+TOAST_T = 25.0
 QUESTIONS = [(('A supervising social worker', 'who knows your family?'), 'person'),
              (('Advice outside', 'normal hours?'), 'clock'),
              (('Ongoing learning', 'and training?'), 'book'),
@@ -428,7 +429,8 @@ def sc_check(t):
             continue
         e = e_out_back(k, 1.5)
         y = 500 + i * 200 + 140 * (1 - e)
-        neon_card(c, W / 2, y, 920, 172, r=36, op=min(1, k * 2.5))
+        newest = i == 5 or t < Q_T[min(i + 1, 5)]
+        neon_card(c, W / 2, y, 920, 172, r=36, op=min(1, k * 2.5), glow_a=0.95 if newest else 0.35)
         icon3d(c, ic, t + i * 0.4, 165, y, 132, Q_T[i] + 0.08)
         txt(c, l1, 260, y - 24, 37, INK, PB, min(1, k * 2), ax=0.0)
         txt(c, l2, 260, y + 26, 37, INK, PB, min(1, k * 2), ax=0.0)
@@ -498,13 +500,25 @@ def sc_notes(t):
             py = cy + ch / 2 - 115
             draw(c, p, W / 2, py, scale=e_out_back(ka, 2.4), opacity=min(1, ka * 3))
             sparks(c, W / 2 + p.shape[1] / 2 - 30, py - 30, t, ALL_T + 0.15, hexc('#7CC223'))
-    # Ofsted badge pins to the corner
+    # Ofsted badge pins to the corner (and pulses as the voice says "Ofsted-rated Good")
     ko = prog(t, OFSTED_T, OFSTED_T + 0.4)
     if ko > 0:
         b = ofsted_spr()
         bx, by = W - 165, top + 30
-        glow_add(c, b, bx, by, GREEN, sigma=20, strength=0.6 * ko)
-        draw(c, b, bx, by, scale=1.6 - 0.6 * e_out_back(ko, 2.0), rot=-12 * (1 - ko) + 6, opacity=min(1, ko * 3))
+        pulse = 1 + 0.06 * math.sin(math.pi * prog(t, 14.2, 14.7))
+        glow_add(c, b, bx, by, GREEN, sigma=20, strength=(0.6 + 0.4 * math.sin(math.pi * prog(t, 14.2, 14.9))) * ko)
+        draw(c, b, bx, by, scale=(1.6 - 0.6 * e_out_back(ko, 2.0)) * pulse, rot=-12 * (1 - ko) + 6,
+             opacity=min(1, ko * 3))
+    ki = prog(t, 14.2, 14.6)
+    if ki > 0:
+        p = pill('Independent agency · Rated Good by Ofsted', PB, 30, pad_x=30, pad_y=14, fill=(1, 1, 1, 0.12),
+                 border=(1, 1, 1, 0.6), text_color=WHITE_, dot=hexc('#7CC223'))
+        draw(c, p, W / 2, 1760, scale=e_out_back(ki, 2.0), opacity=min(1, ki * 3))
+    # slow push while the release notes hold
+    z = 1 + 0.035 * e_inout_cubic(prog(t, t0 + 0.6, T['care']))
+    if z > 1.001:
+        M = np.float32([[z, 0, W / 2 - z * W / 2], [0, z, 1000 - z * 1000]])
+        c = cv2.warpAffine(c, M, (W, H), borderMode=cv2.BORDER_REFLECT)
     return c
 
 
@@ -537,29 +551,34 @@ def chat(canvas, cx, cy, lines, t, t0, side, bold_idx=None, avatar=None):
 def sc_care(t):
     t0 = T['care']
     lt = t - t0
-    z = 1.06 + 0.10 * e_inout_cubic(prog(t, t0, T['install']))
-    c = grade(clip_frame(7, 0.4 + lt * 0.9, zoom=z, cy=H * 0.55), warm=0.3)
-    c = c * 0.72 + np.array([0.05, 0.0, 0.04], np.float32)
+    if t < CARE_CUT:   # shot 1: night bedroom, slow push
+        z = 1.05 + 0.08 * e_inout_cubic(prog(t, t0, CARE_CUT))
+        c = grade(clip_frame(6, 0.3 + lt * 0.8, zoom=z, cy=H * 0.5), warm=0.2, night=0.4)
+        c = c * 0.85 + np.array([0.04, 0.0, 0.04], np.float32)
+    else:              # shot 2: hands and seedling
+        z = 1.06 + 0.10 * e_inout_cubic(prog(t, CARE_CUT, T['install']))
+        c = grade(clip_frame(7, 0.4 + (t - CARE_CUT) * 0.9, zoom=z, cy=H * 0.55), warm=0.3)
+        c = c * 0.72 + np.array([0.05, 0.0, 0.04], np.float32)
     scrim(c, top=0.75, bottom=0.92, top_h=0.55, bot_h=0.5)
     light_leak(c, prog(t, t0, t0 + 1.2) * 0.35, (1.0, 0.5, 0.35), side=1)
     chat(c, 820, 470, ['But what about the', 'children I look after?'], t, t0 + 0.3, 'right', avatar='person')
-    ty = t0 + 0.95
-    if ty <= t < ty + 0.5:
+    ty = CARE_CUT - 1.0
+    if ty <= t < ty + 1.1:
         k = prog(t, ty, ty + 0.2)
         glass(c, 330, 760, 180 * e_out_back(k), 90, r=45, tint_c=(1, 1, 1), tint_a=0.9, opacity=min(1, k * 3), blur=18)
         for i in range(3):
             ph = (t * 3.2 - i * 0.28) % 1.0
             dot = solid(sdf_fill(rrect_alpha(18, 18, 9, 2)), MUTEDC)
             draw(c, dot, 296 + i * 34, 760 - 9 * max(0, math.sin(ph * math.pi)))
-    r = chat(c, 250, 790, ['We focus on', 'continuity of care', 'for them.'], t, ty + 0.5, 'left', bold_idx=1,
+    r = chat(c, 250, 790, ['We focus on', 'continuity of care', 'for them.'], t, CARE_CUT + 0.1, 'left', bold_idx=1,
              avatar='emblem')
     if r is not None:
         bx, w, h = r
-        icon3d(c, 'heart', t, bx + w / 2 - 30, 790 + h / 2 - 20, 110, ty + 0.85, glow=MAGENTA)
-    title(c, 'Thinking of moving?', W / 2, 1560, 64, t, t0 + 1.9, glow=MAGENTA, fname=PX, shadow_op=0.85)
-    title(c, 'Start with a conversation.', W / 2, 1650, 58, t, t0 + 2.2, color=hexc('#FFE3F2'), glow=ORANGE_B,
-          fname=PX, sweep_t=t0 + 2.8, shadow_op=0.85)
-    kb = prog(t, t0 + 2.5, t0 + 2.9)
+        icon3d(c, 'heart', t, bx + w / 2 - 30, 790 + h / 2 - 20, 110, CARE_CUT + 0.45, glow=MAGENTA)
+    title(c, 'Thinking of moving?', W / 2, 1560, 64, t, t0 + 0.5, glow=MAGENTA, fname=PX, shadow_op=0.85)
+    title(c, 'Start with a conversation.', W / 2, 1650, 58, t, CARE_CUT + 0.9, color=hexc('#FFE3F2'), glow=ORANGE_B,
+          fname=PX, sweep_t=CARE_CUT + 1.6, shadow_op=0.85)
+    kb = prog(t, CARE_CUT + 1.3, CARE_CUT + 1.7)
     if kb > 0:
         bar = rrect_spr(max(4, 260 * e_out_cubic(kb)), 10, 5, None, grad=(MAGENTA, ORANGE_B))
         draw(c, bar, W / 2, 1730)
@@ -720,7 +739,7 @@ SCENES = [(T['hook'], T['lock'], sc_hook), (T['lock'], T['check'], sc_lock), (T[
           (T['notes'], T['care'], sc_notes), (T['care'], T['install'], sc_care), (T['install'], T['cta'], sc_install),
           (T['cta'], 99, sc_cta)]
 TRANS = [(0.25, 'cut'), (0.5, 'cut'), (0.75, 'cut'), (T['lock'], 'flash'), (T['check'], 'zoom'), (T['notes'], 'whip'),
-         (T['care'], 'flash'), (T['install'], 'whip'), (T['cta'], 'flashw')]
+         (T['care'], 'flash'), (CARE_CUT, 'flash'), (T['install'], 'whip'), (T['cta'], 'flashw')]
 
 
 def scene_at(t):

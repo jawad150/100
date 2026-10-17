@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(HERE, '..', 'workspace_su')))
 JOBS = int(os.environ.get('JOBS', '4'))
-NF = 600   # 20 s at 30 fps
+NF = 900   # 30 s at 30 fps
 
 
 def run(a, b):
@@ -30,7 +30,7 @@ if __name__ == '__main__':
                     '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-shortest', out],
                    check=True)
     share = out.replace('.mp4', '_share.mp4')
-    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', out, '-c:v', 'libx264', '-preset', 'slow', '-b:v', '9M',
-                    '-maxrate', '11M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
+    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', out, '-c:v', 'libx264', '-preset', 'slow', '-b:v', '7M',
+                    '-maxrate', '8.5M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
                     '-c:a', 'copy', share], check=True)
     print('wrote', out, share, flush=True)

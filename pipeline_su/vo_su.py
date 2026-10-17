@@ -10,14 +10,14 @@ from kokoro_onnx import Kokoro
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace_su')))
 T = f'{S}/tts'
 
-# Condensed from the concept script to fit a 20 s cut: calm, warm, friendly.
+# The concept script (about 70 words): calm, warm, friendly.
 LINES = [
     ('hook', 'Already a foster carer? Is your support up to date?'),
     ('check', 'Quick check. Do you have all of this?'),
-    ('included', "At Organic Fostering, it's all included."),
-    ('care', 'We focus on continuity of care for the children you look after.'),
+    ('included', "At Organic Fostering, it's all included, from an Ofsted-rated Good independent agency."),
+    ('care', 'Thinking of moving? We focus on continuity of care for the children you look after.'),
     ('install', 'Explore a transfer, with no immediate commitment.'),
-    ('cta', "Already fostering? Let's talk."),
+    ('cta', "Already fostering? Let's talk. Organic Fostering."),
 ]
 
 if __name__ == '__main__':
