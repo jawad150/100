@@ -1,6 +1,10 @@
-"""Voiceover lines for "Support Update Available" (Kokoro, British female voice), with durations.
+"""Voiceover for "Support Update Available": a calm, conversational read with natural pauses (Kokoro, local).
 
-Usage: python3 vo_ff.py [voice] [speed]
+Each line is built from short phrases joined by hand-set pauses, so the rhythm breathes instead of running on.
+Every phrase keeps its natural decay (low-threshold trim, generous tail) and gets a soft fade so no word is cut.
+Voice: a blend of af_heart (warm, gentle) and bf_emma (British), phonemised as en-gb, slightly slower than default.
+
+Usage: python3 vo_su.py [speed]
 """
 import os, sys, json
 import numpy as np
@@ -9,31 +13,49 @@ from kokoro_onnx import Kokoro
 
 S = os.environ.get('REEL_WORKDIR', os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace_su')))
 T = f'{S}/tts'
+BLEND = (('af_heart', 0.6), ('bf_emma', 0.4))
 
-# The concept script (about 70 words): calm, warm, friendly.
-LINES = [
-    ('hook', 'Already a foster carer? Is your support up to date?'),
-    ('check', 'Quick check. Do you have all of this?'),
-    ('included', "At Organic Fostering, it's all included, from an Ofsted-rated Good independent agency."),
-    ('care', 'Thinking of moving? We focus on continuity of care for the children you look after.'),
-    ('install', 'Explore a transfer, with no immediate commitment.'),
-    ('cta', "Already fostering? Let's talk. Organic Fostering."),
-]
+# (phrase, pause after it in seconds). Concept script, phrased for the ear.
+LINES = {
+    'hook': [('Already a foster carer?', 0.38), ('Is your support up to date?', 0.0)],
+    'check': [("Here's a quick check.", 0.32), ('Do you have all of this?', 0.0)],
+    'included': [('At Organic Fostering,', 0.18), ("it's all included.", 0.42),
+                 ('From an Ofsted-rated Good, independent agency.', 0.0)],
+    'care': [('Thinking of moving?', 0.45), ('We focus on continuity of care,', 0.16),
+             ('for the children you look after.', 0.0)],
+    'install': [('Explore a transfer,', 0.2), ('with no immediate commitment.', 0.0)],
+    'cta': [('Already fostering?', 0.42), ("Let's talk.", 0.0)],
+}
+
+
+def tidy(a, sr):
+    """Trim only true silence (keeps breaths and word decays), then fade the edges softly."""
+    env = np.convolve(np.abs(a), np.ones(int(0.01 * sr)) / int(0.01 * sr), mode='same')
+    nz = np.where(env > 0.004 * env.max())[0]
+    a = a[max(0, nz[0] - int(0.03 * sr)): min(len(a), nz[-1] + int(0.22 * sr))]
+    fi, fo = int(0.012 * sr), int(0.14 * sr)
+    a[:fi] *= np.linspace(0, 1, fi)
+    a[-fo:] *= np.linspace(1, 0, fo) ** 1.5
+    return a
+
 
 if __name__ == '__main__':
-    voice = sys.argv[1] if len(sys.argv) > 1 else 'bf_emma'
-    speed = float(sys.argv[2]) if len(sys.argv) > 2 else 1.0
+    speed = float(sys.argv[1]) if len(sys.argv) > 1 else 0.95
     k = Kokoro(f'{T}/kokoro-v1.0.onnx', f'{T}/voices-v1.0.bin')
+    style = sum(k.get_voice_style(v) * w for v, w in BLEND).astype(np.float32)
     os.makedirs(f'{T}/lines', exist_ok=True)
     info = {}
-    for name, text in LINES:
-        audio, sr = k.create(text, voice=voice, speed=speed, lang='en-gb')
-        audio = np.asarray(audio, np.float32)
-        thr = 0.01 * np.abs(audio).max()
-        nz = np.where(np.abs(audio) > thr)[0]
-        audio = audio[max(0, nz[0] - int(0.02 * sr)): nz[-1] + int(0.08 * sr)]
-        sf.write(f'{T}/lines/{name}.wav', audio, sr)
-        info[name] = round(len(audio) / sr, 3)
-        print(f'{name:8s} {info[name]:5.2f}s  {text}')
-    json.dump({'voice': voice, 'speed': speed, 'sr': sr, 'dur': info}, open(f'{T}/lines/info.json', 'w'), indent=1)
-    print('total speech', round(sum(info.values()), 2))
+    for name, phrases in LINES.items():
+        parts = []
+        for text, pause in phrases:
+            a, sr = k.create(text, voice=style, speed=speed, lang='en-gb', trim=False)
+            parts.append(tidy(np.asarray(a, np.float32), sr))
+            if pause:
+                parts.append(np.zeros(int(pause * sr), np.float32))
+        line = np.concatenate(parts)
+        line = line / max(1e-6, np.abs(line).max()) * 0.9
+        sf.write(f'{T}/lines/{name}.wav', line, sr)
+        info[name] = round(len(line) / sr, 3)
+        print(f'{name:9s} {info[name]:5.2f}s  ' + ' / '.join(p for p, _ in phrases))
+    json.dump({'blend': BLEND, 'speed': speed, 'sr': sr, 'dur': info}, open(f'{T}/lines/info.json', 'w'), indent=1)
+    print('total', round(sum(info.values()), 2))

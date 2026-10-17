@@ -34,18 +34,22 @@ PB, PX, PK, PS, PM, PR, PL = ('Poppins-Bold', 'Poppins-ExtraBold', 'Poppins-Blac
                               'Poppins-Medium', 'Poppins-Regular', 'Poppins-Light')
 
 # ------------------------------------------------------------------ timeline (120 BPM grid)
-T = dict(hook=0.0, lock=1.0, tap=3.5, check=4.25, notes=10.25, care=16.5, install=22.5, cta=26.5)
+T = dict(hook=0.0, lock=1.0, tap=3.5, check=4.25, notes=8.0, care=15.0, install=21.5, cta=25.4)
 DUR = 30.0
 NF = int(DUR * FPS)
-VO = {'hook': 0.2, 'check': 4.5, 'included': 10.5, 'care': 16.9, 'install': 22.8, 'cta': 27.0}
+# VO starts; visuals below are synced to the phrase onsets inside each line (see vo_su.py)
+VO = {'hook': 0.15, 'check': 4.4, 'included': 8.2, 'care': 15.15, 'install': 21.7, 'cta': 25.65}
 NOTIF = 1.3
-Q_T = [4.5 + 0.9 * i for i in range(6)]           # one question per beat-pair, as in the storyboard
-CHK_T = [11.25 + 0.25 * i for i in range(6)]
-OFSTED_T = 13.0
-ALL_T = 13.5
-CARE_CUT = T['care'] + 2.75                          # night bedroom -> hands and seedling
-TAP_INSTALL = 24.0
-TOAST_T = 25.0
+Q_T = [4.5 + 0.6 * i for i in range(6)]
+CHK_T = [8.9 + 0.2 * i for i in range(6)]
+ALL_T = VO['included'] + 1.75                        # "...it's all included."
+OFSTED_T = VO['included'] + 3.45                     # "From an Ofsted-rated Good..."
+IND_T = VO['included'] + 5.1                         # "...independent agency."
+CARE_CUT = VO['care'] + 1.85                         # cut to the hands as she says "We focus on..."
+TAP_INSTALL = 22.6
+TOAST_T = VO['install'] + 1.7                        # "...with no immediate commitment."
+CTA_TALK = VO['cta'] + 1.82                          # "Let's talk."
+FADE = 1.3                                           # gentle fade-out at the very end
 QUESTIONS = [(('A supervising social worker', 'who knows your family?'), 'person'),
              (('Advice outside', 'normal hours?'), 'clock'),
              (('Ongoing learning', 'and training?'), 'book'),
@@ -505,11 +509,11 @@ def sc_notes(t):
     if ko > 0:
         b = ofsted_spr()
         bx, by = W - 165, top + 30
-        pulse = 1 + 0.06 * math.sin(math.pi * prog(t, 14.2, 14.7))
-        glow_add(c, b, bx, by, GREEN, sigma=20, strength=(0.6 + 0.4 * math.sin(math.pi * prog(t, 14.2, 14.9))) * ko)
+        pulse = 1 + 0.06 * math.sin(math.pi * prog(t, IND_T, IND_T + 0.5))
+        glow_add(c, b, bx, by, GREEN, sigma=20, strength=(0.6 + 0.4 * math.sin(math.pi * prog(t, IND_T, IND_T + 0.7))) * ko)
         draw(c, b, bx, by, scale=(1.6 - 0.6 * e_out_back(ko, 2.0)) * pulse, rot=-12 * (1 - ko) + 6,
              opacity=min(1, ko * 3))
-    ki = prog(t, 14.2, 14.6)
+    ki = prog(t, IND_T, IND_T + 0.4)
     if ki > 0:
         p = pill('Independent agency · Rated Good by Ofsted', PB, 30, pad_x=30, pad_y=14, fill=(1, 1, 1, 0.12),
                  border=(1, 1, 1, 0.6), text_color=WHITE_, dot=hexc('#7CC223'))
@@ -575,7 +579,7 @@ def sc_care(t):
     if r is not None:
         bx, w, h = r
         icon3d(c, 'heart', t, bx + w / 2 - 30, 790 + h / 2 - 20, 110, CARE_CUT + 0.45, glow=MAGENTA)
-    title(c, 'Thinking of moving?', W / 2, 1560, 64, t, t0 + 0.5, glow=MAGENTA, fname=PX, shadow_op=0.85)
+    title(c, 'Thinking of moving?', W / 2, 1560, 64, t, VO['care'] + 0.05, glow=MAGENTA, fname=PX, shadow_op=0.85)
     title(c, 'Start with a conversation.', W / 2, 1650, 58, t, CARE_CUT + 0.9, color=hexc('#FFE3F2'), glow=ORANGE_B,
           fname=PX, sweep_t=CARE_CUT + 1.6, shadow_op=0.85)
     kb = prog(t, CARE_CUT + 1.3, CARE_CUT + 1.7)
@@ -693,12 +697,12 @@ def sc_cta(t):
         if t0 + 0.6 < t < t0 + 1.5:
             p = (t - t0 - 0.6) / 0.8 * 1.6 - 0.3
             draw(c, sweep(lg, p, strength=0.5), W / 2, 720, opacity=0.6)
-    title(c, 'Already fostering?', W / 2, 1060, 80, t, t0 + 0.35, color=INK, glow=None, fname=PK, shadow_op=0.0,
+    title(c, 'Already fostering?', W / 2, 1060, 80, t, VO['cta'], color=INK, glow=None, fname=PK, shadow_op=0.0,
           depth=4, ext=hexc('#F3C6DE'))
-    title(c, "Let's talk.", W / 2, 1170, 96, t, t0 + 0.6, color=MAGENTA, glow=None, fname=PK, shadow_op=0.0,
-          depth=5, ext=hexc('#F9C9A8'), sweep_t=t0 + 1.2)
+    title(c, "Let's talk.", W / 2, 1170, 96, t, CTA_TALK - 0.08, color=MAGENTA, glow=None, fname=PK, shadow_op=0.0,
+          depth=5, ext=hexc('#F9C9A8'), sweep_t=CTA_TALK + 0.5)
     for j, (label, icon) in enumerate([('0161 241 1332', 'phone'), ('organicfostering.co.uk', 'web')]):
-        kk = prog(t, t0 + 0.95 + j * 0.15, t0 + 1.3 + j * 0.15)
+        kk = prog(t, CTA_TALK + 0.45 + j * 0.15, CTA_TALK + 0.8 + j * 0.15)
         if kk <= 0:
             continue
         y = 1370 + j * 110
@@ -708,7 +712,7 @@ def sc_cta(t):
         x0 = W / 2 - total / 2
         draw(c, ic, x0 + ic.shape[1] / 2, y, scale=e_out_back(kk, 2.4), opacity=min(1, kk * 3))
         draw(c, ts, x0 + ic.shape[1] + 24 + ts.shape[1] / 2, y + 2, opacity=min(1, kk * 3))
-    ko = prog(t, t0 + 1.4, t0 + 1.8)
+    ko = prog(t, CTA_TALK + 0.9, CTA_TALK + 1.3)
     if ko > 0:
         p = pill('Rated Good by Ofsted · May 2025', PB, 28, pad_x=30, pad_y=14, fill=hexc('#3F8F0B'), border=None,
                  text_color=WHITE_, dot=GOLD)
@@ -768,8 +772,8 @@ def render_raw(t):
         dy += sy
     if abs(dx) + abs(dy) > 0.5:
         c = cv2.warpAffine(c, np.float32([[1, 0, dx], [0, 1, dy]]), (W, H), borderMode=cv2.BORDER_REFLECT)
-    if t > DUR - 0.3:
-        c *= 1 - 0.9 * prog(t, DUR - 0.3, DUR)
+    if t > DUR - FADE:
+        c *= 1 - 0.85 * e_inout_cubic(prog(t, DUR - FADE, DUR))
     return c
 
 

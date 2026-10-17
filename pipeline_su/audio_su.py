@@ -113,8 +113,8 @@ for j, c in enumerate(RS.CHK_T):                     # satisfying check cascade 
     add(sfx, c + 0.02, chime(77 + 2 * j, 0.26, 1.2), pan=-0.3 + 0.12 * j)
 add(sfx, RS.OFSTED_T, boom(0.45))
 add(sfx, RS.OFSTED_T, shimmer(0.7, 0.24, 86))
-add(sfx, 14.2, shimmer(0.6, 0.16, 88))
-add(sfx, 14.2, pop(0.2, 900))
+add(sfx, RS.IND_T, shimmer(0.6, 0.16, 88))
+add(sfx, RS.IND_T, pop(0.2, 900))
 add(sfx, RS.ALL_T, pop(0.4, 520))
 add(sfx, RS.ALL_T + 0.05, chime(84, 0.3, 1.6))
 add(sfx, RS.ALL_T + 0.05, chime(89, 0.16, 1.4))
@@ -153,11 +153,12 @@ def vo_chain(x, sr):
     if sr != SR:
         x = signal.resample_poly(x, SR, sr)
     x = hp(x, 85, 2)
-    x = x + 0.35 * bp(x, 2500, 5500, 2)
-    x = x - 0.12 * bp(x, 250, 450, 2)
-    env = np.sqrt(lp(x ** 2, 25, 1).clip(1e-9))
-    thr = 0.12 * env.max()
-    gain = np.where(env > thr, (thr + (env - thr) / 4) / np.maximum(env, 1e-9), 1.0)
+    x = x + 0.2 * bp(x, 2500, 5500, 2)               # gentle presence, keeps it soft
+    x = x - 0.1 * bp(x, 250, 450, 2)
+    x = lp(x, 11000, 2)                               # tame sibilance
+    env = np.sqrt(lp(x ** 2, 12, 1).clip(1e-9))       # slow detector -> no pumping
+    thr = 0.2 * env.max()
+    gain = np.where(env > thr, (thr + (env - thr) / 2.5) / np.maximum(env, 1e-9), 1.0)
     x = x * gain
     return x / max(1e-6, np.abs(x).max()) * 0.9
 
@@ -168,14 +169,15 @@ for name, t0 in VO.items():
 vo = reverb(vo, wet=0.06, length=0.8, key='vo_room')
 
 env = np.abs(vo).max(axis=1)
-rel = int(0.25 * SR)
+rel = int(0.4 * SR)
 smooth = signal.lfilter([1.0 / rel], [1, -(1 - 1.0 / rel)], env)
 lvl = np.clip(smooth / (smooth.max() + 1e-9) * 4.0, 0, 1)
 bed = music * 0.85 * (1 - 0.72 * lvl)[:, None] + sfx * 0.9 * (1 - 0.5 * lvl)[:, None]
 mix = bed + vo * 1.5
 mix = np.tanh(mix * 1.05) / 1.05
 fade = np.ones(N)
-fade[-int(0.3 * SR):] = np.linspace(1, 0, int(0.3 * SR))
+nf = int(RS.FADE * SR)
+fade[-nf:] = np.cos(np.linspace(0, np.pi / 2, nf)) ** 2      # smooth equal-power style fade-out
 mix *= fade[:, None]
 mix /= max(1e-6, np.abs(mix).max()) / 0.89
 os.makedirs(f'{RS.S}/audio', exist_ok=True)
