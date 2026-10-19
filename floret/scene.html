@@ -1,0 +1,403 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Floret MT5 Phone</title>
+<style>
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #1a1734; }
+  body { font-family: "Inter", "DejaVu Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+  #bg { position: absolute; inset: 0; }
+  #glow { position: absolute; inset: 0; pointer-events: none; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 85% 70% at 50% 48%, rgba(0,0,0,0) 55%, rgba(6,4,20,.55) 100%); }
+  #stage { position: absolute; inset: 0; perspective: 2300px; perspective-origin: 50% 42%; }
+  .rig { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+
+  /* ---------- phone ---------- */
+  .phone { position: absolute; width: 820px; height: 1700px; left: -410px; top: -850px; transform-style: preserve-3d; }
+  .edge { position: absolute; inset: 0; border-radius: 124px; background: #0d0d12; }
+  .frame { position: absolute; inset: 0; border-radius: 124px;
+    background: linear-gradient(135deg, #8d8f99 0%, #2b2c33 18%, #15161b 45%, #3a3c45 70%, #9a9ca6 100%);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.18), inset 0 0 0 9px #0b0b0f; }
+  .screen { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 104px;
+    overflow: hidden; background: #0c0c11; }
+  .glare { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 104px;
+    pointer-events: none; transform: translateZ(1px); }
+
+  /* status bar */
+  .status { position: absolute; left: 0; top: 0; width: 100%; height: 90px; }
+  .clock { position: absolute; left: 92px; top: 34px; color: #fff; font-weight: 600; font-size: 30px; letter-spacing: .3px; }
+  .island { position: absolute; left: 288px; top: 26px; width: 200px; height: 56px; border-radius: 30px; background: #000; }
+  .sig { position: absolute; right: 150px; top: 40px; display: flex; gap: 4px; align-items: flex-end; }
+  .sig i { display: block; width: 6px; background: #fff; border-radius: 2px; }
+  .batt { position: absolute; right: 78px; top: 38px; width: 46px; height: 22px; border-radius: 7px; border: 2px solid rgba(255,255,255,.55); box-sizing: border-box; }
+  .batt::after { content: ""; position: absolute; left: 3px; top: 3px; width: 30px; height: 12px; border-radius: 3px; background: #fff; }
+  .wifi { position: absolute; right: 112px; top: 38px; width: 28px; height: 22px; }
+
+  .tabs { position: absolute; left: 40px; top: 108px; width: 696px; height: 52px; border-radius: 26px; background: #1b1b23; display: flex; }
+  .tabs div { flex: 1; color: #8a8a99; font-size: 21px; font-weight: 600; display: flex; align-items: center; justify-content: center; border-radius: 26px; }
+  .tabs div.on { background: #2d2d38; color: #fff; }
+
+  .slot { position: absolute; left: 24px; width: 728px; height: 140px; border-radius: 30px; background: #15151c; }
+  .cshadow { position: absolute; left: 24px; width: 820px; height: 140px; border-radius: 34px; background: rgba(0,0,0,.85); filter: blur(22px); }
+
+  /* chart area */
+  .chartwrap { position: absolute; left: 20px; top: 1000px; width: 736px; height: 600px; border-radius: 30px; background: #101016; overflow: hidden; }
+  .tf { position: absolute; left: 18px; top: 16px; display: flex; gap: 8px; }
+  .tf span { font-size: 18px; font-weight: 600; color: #7d7d8c; padding: 7px 14px; border-radius: 14px; }
+  .tf span.on { background: #2a2a36; color: #fff; }
+  .chartwrap canvas { position: absolute; left: 0; top: 60px; width: 736px; height: 540px; }
+  .homebar { position: absolute; left: 268px; bottom: 18px; width: 240px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.7); }
+
+  /* ---------- floating quote cards ---------- */
+  .cards { position: absolute; left: 22px; top: 22px; width: 0; height: 0; transform-style: preserve-3d; }
+  .card { position: absolute; left: 24px; top: 0; width: 860px; height: 140px; border-radius: 34px; box-sizing: border-box;
+    background: linear-gradient(180deg, #26262f 0%, #18181f 100%);
+    border: 2px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.10), 0 0 0 1px rgba(0,0,0,.6);
+    transform-origin: 50% 50%; backface-visibility: hidden; }
+  .card .ico { position: absolute; left: 24px; top: 20px; width: 40px; height: 40px; border-radius: 50%; }
+  .card .sym { position: absolute; left: 76px; top: 18px; color: #fff; font-size: 27px; font-weight: 700; letter-spacing: .2px; }
+  .card .desc { position: absolute; top: 25px; color: #7d7d8e; font-size: 17px; font-weight: 500; white-space: nowrap; }
+  .card .chg { position: absolute; left: 300px; top: 64px; font-size: 19px; font-weight: 600; }
+  .card canvas.spark { position: absolute; left: 392px; top: 56px; width: 190px; height: 64px; }
+  .box { position: absolute; width: 236px; height: 70px; border-radius: 16px; overflow: hidden; }
+  .box .lbl { position: absolute; left: 0; right: 0; top: 7px; text-align: center; font-size: 15px; font-weight: 600; color: rgba(255,255,255,.72); }
+  .box .px { position: absolute; left: 0; right: 0; top: 26px; text-align: center; font-size: 31px; font-weight: 700; color: #fff; letter-spacing: .3px; font-variant-numeric: tabular-nums; }
+  .box .px small { font-size: 22px; }
+  .box .flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  .sell { left: 24px; top: 58px; background: linear-gradient(180deg, #ff4a57 0%, #d81f30 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+  .buy  { left: 600px; top: 22px; background: linear-gradient(180deg, #3d7bff 0%, #1442e0 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+
+  /* commodity icons */
+  .i-gold { background: radial-gradient(circle at 35% 30%, #fff3b0, #f2c230 45%, #a77a06 100%); }
+  .i-silver { background: radial-gradient(circle at 35% 30%, #ffffff, #c9ccd6 45%, #6d717e 100%); }
+  .i-oil { background: radial-gradient(circle at 35% 30%, #5a5a66, #1d1d24 60%, #000 100%); box-shadow: inset 0 0 0 2px #444; }
+  .i-brent { background: radial-gradient(circle at 35% 30%, #6e5a3a, #2a2114 60%, #000 100%); box-shadow: inset 0 0 0 2px #4a3d28; }
+  .i-gas { background: radial-gradient(circle at 35% 30%, #9fd8ff, #2f8be0 50%, #0b3f86 100%); }
+  .i-copper { background: radial-gradient(circle at 35% 30%, #ffd2b0, #d47a3c 45%, #7a3410 100%); }
+  .i-plat { background: radial-gradient(circle at 35% 30%, #ffffff, #b8c6d6 45%, #56677a 100%); }
+
+  /* back phone */
+  .backchart { position: absolute; left: 0; top: 0; width: 776px; height: 1656px; }
+  .dim { position: absolute; inset: 0; background: #0b0a1c; }
+</style>
+</head>
+<body>
+<canvas id="bg" width="1080" height="1920"></canvas>
+<div id="glow"></div>
+<div id="stage">
+  <div class="rig" id="rigBack">
+    <div class="phone" id="phoneBack">
+      <div id="edgesBack"></div>
+      <div class="frame"></div>
+      <div class="screen">
+        <canvas class="backchart" id="backChart" width="776" height="1656"></canvas>
+        <div class="dim" id="backDim"></div>
+      </div>
+    </div>
+  </div>
+  <div class="rig" id="rig">
+    <div class="phone" id="phone">
+      <div id="edges"></div>
+      <div class="frame"></div>
+      <div class="screen" id="screen">
+        <div class="status">
+          <div class="clock">9:41</div>
+          <div class="island"></div>
+          <div class="sig"><i style="height:8px"></i><i style="height:12px"></i><i style="height:16px"></i><i style="height:20px"></i></div>
+          <svg class="wifi" viewBox="0 0 28 22"><path d="M14 20l4-4.6a6 6 0 0 0-8 0z M14 4C9 4 4.8 6 1.6 9.2l2.6 3A13.6 13.6 0 0 1 14 8c3.8 0 7.3 1.5 9.8 4.2l2.6-3C23.2 6 19 4 14 4z" fill="#fff"/></svg>
+          <div class="batt"></div>
+        </div>
+        <div class="tabs"><div class="on">Quotes</div><div>Chart</div><div>Trade</div><div>History</div></div>
+        <div id="slots"></div>
+        <div class="chartwrap">
+          <div class="tf"><span>M1</span><span>M5</span><span class="on">M15</span><span>H1</span><span>H4</span><span>D1</span></div>
+          <canvas id="chart" width="1472" height="1080"></canvas>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="glare" id="glare"></div>
+      <div class="cards" id="cards"></div>
+    </div>
+  </div>
+</div>
+<div id="vignette"></div>
+
+<script>
+// ---------------------------------------------------------------- utils
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const easeOutCubic = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeInOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOutBack = x => { x = clamp(x); const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const fmt = (v, d) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+// ---------------------------------------------------------------- background (navy with fine texture)
+(function drawBg() {
+  const c = document.getElementById('bg'), g = c.getContext('2d');
+  const grd = g.createLinearGradient(0, 0, 0, 1920);
+  grd.addColorStop(0, '#191632'); grd.addColorStop(.6, '#1a1734'); grd.addColorStop(1, '#1d1a39');
+  g.fillStyle = grd; g.fillRect(0, 0, 1080, 1920);
+  const img = g.getImageData(0, 0, 1080, 1920), d = img.data, r = mulberry32(7);
+  for (let y = 0; y < 1920; y++) for (let x = 0; x < 1080; x++) {
+    const i = (y * 1080 + x) * 4;
+    // fine diagonal weave + grain, like the reference swatch
+    const weave = ((x + y) % 4 === 0 ? 1.6 : 0) + ((x - y + 4000) % 6 === 0 ? -1.2 : 0);
+    const n = (r() - .5) * 5 + weave;
+    d[i] += n; d[i + 1] += n; d[i + 2] += n * 1.3;
+  }
+  g.putImageData(img, 0, 0);
+})();
+
+// ---------------------------------------------------------------- phone thickness layers
+function buildEdges(id) {
+  const host = document.getElementById(id);
+  for (let k = 1; k <= 9; k++) {
+    const e = document.createElement('div');
+    e.className = 'edge';
+    const s = 22 + k * 3;
+    e.style.background = `rgb(${s},${s},${s + 6})`;
+    e.style.transform = `translateZ(${-k * 3}px)`;
+    host.appendChild(e);
+  }
+}
+buildEdges('edges'); buildEdges('edgesBack');
+
+// ---------------------------------------------------------------- instruments
+const INSTR = [
+  { sym: 'GOLD',      desc: 'Spot Gold vs US Dollar',   ico: 'i-gold',   base: 4616.27, d: 2, vol: 0.55,  spread: 0.35,  open: 4607.10 },
+  { sym: 'SILVER',    desc: 'Spot Silver vs US Dollar', ico: 'i-silver', base: 52.384,  d: 3, vol: 0.012, spread: 0.030, open: 51.902 },
+  { sym: 'CRUDE OIL', desc: 'WTI Crude Oil',            ico: 'i-oil',    base: 61.42,   d: 2, vol: 0.025, spread: 0.03,  open: 61.78 },
+  { sym: 'BRENT',     desc: 'Brent Crude Oil',          ico: 'i-brent',  base: 65.18,   d: 2, vol: 0.025, spread: 0.03,  open: 64.71 },
+  { sym: 'NATGAS',    desc: 'Natural Gas',              ico: 'i-gas',    base: 3.412,   d: 3, vol: 0.004, spread: 0.006, open: 3.448 },
+  { sym: 'COPPER',    desc: 'Copper vs US Dollar',      ico: 'i-copper', base: 5.0315,  d: 4, vol: 0.0016,spread: 0.0030,open: 4.9980 },
+  { sym: 'PLATINUM',  desc: 'Spot Platinum',            ico: 'i-plat',   base: 1642.80, d: 2, vol: 0.45,  spread: 0.90,  open: 1631.40 },
+];
+INSTR.forEach((ins, k) => {
+  const r = mulberry32(100 + k);
+  ins.period = 0.32 + r() * 0.28;
+  ins.phase = r() * ins.period;
+  ins.ticks = [];
+  let p = ins.base, drift = (ins.base - ins.open) / ins.open > 0 ? 1 : -1;
+  for (let n = 0; n < 400; n++) { p += (r() - .5 + drift * 0.04) * ins.vol * 2; ins.ticks.push(p); }
+  // pre-history for sparkline
+  ins.hist = [];
+  let q = ins.open;
+  for (let n = 0; n < 40; n++) { q += (ins.base - ins.open) / 40 + (r() - .5) * ins.vol * 3; ins.hist.push(q); }
+  ins.hist[39] = ins.base;
+});
+function tickIndex(ins, t) { return Math.max(0, Math.floor((t - ins.phase) / ins.period)); }
+function priceAt(ins, t) { return ins.ticks[tickIndex(ins, t)]; }
+
+// ---------------------------------------------------------------- build cards + slots + shadows
+const cardsEl = document.getElementById('cards'), slotsEl = document.getElementById('slots');
+const CARD_TOP = 178, CARD_STEP = 160;
+const cards = INSTR.map((ins, k) => {
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `
+    <div class="ico ${ins.ico}"></div>
+    <div class="sym">${ins.sym}</div>
+    <div class="desc"></div>
+    <div class="box sell"><div class="lbl">Sell</div><div class="px"></div><div class="flash"></div></div>
+    <div class="chg"></div>
+    <canvas class="spark" width="380" height="128"></canvas>
+    <div class="box buy"><div class="lbl">Buy</div><div class="px"></div><div class="flash"></div></div>`;
+  cardsEl.appendChild(c);
+  const sh = document.createElement('div'); sh.className = 'cshadow'; slotsEl.appendChild(sh);
+  const sl = document.createElement('div'); sl.className = 'slot'; slotsEl.appendChild(sl);
+  const q = s => c.querySelector(s);
+  return { el: c, sh, sl, ins, sym: q('.sym'), desc: q('.desc'), sellPx: q('.sell .px'), buyPx: q('.buy .px'),
+           sellFl: q('.sell .flash'), buyFl: q('.buy .flash'), chg: q('.chg'), spark: q('.spark'), sparkG: q('.spark').getContext('2d') };
+});
+// place description right after the symbol
+requestAnimationFrame(() => cards.forEach(c => { c.desc.style.left = (76 + c.sym.offsetWidth + 12) + 'px'; }));
+
+function pxHTML(v, d) {
+  // big last digits like MT5 ("4,616.<b>27</b>")
+  const s = fmt(v, d);
+  const cut = s.length - 2;
+  return `<small>${s.slice(0, cut)}</small>${s.slice(cut)}`;
+}
+
+function drawSpark(c, t) {
+  const g = c.sparkG, W = 380, H = 128, ins = c.ins;
+  g.clearRect(0, 0, W, H);
+  const n = tickIndex(ins, t);
+  const pts = ins.hist.slice(Math.min(40, n + 1)).concat(ins.ticks.slice(Math.max(0, n - 39), n + 1)).slice(-40);
+  let mn = Math.min(...pts), mx = Math.max(...pts); if (mx - mn < 1e-9) mx = mn + 1;
+  const up = pts[pts.length - 1] >= ins.open;
+  const col = up ? '#2fd07f' : '#ff4a57';
+  const X = i => 4 + i * (W - 8) / (pts.length - 1), Y = v => H - 10 - (v - mn) / (mx - mn) * (H - 24);
+  const grd = g.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, up ? 'rgba(47,208,127,.35)' : 'rgba(255,74,87,.35)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+  g.beginPath(); pts.forEach((v, i) => i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)));
+  g.lineTo(X(pts.length - 1), H); g.lineTo(X(0), H); g.closePath(); g.fillStyle = grd; g.fill();
+  g.beginPath(); pts.forEach((v, i) => i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)));
+  g.strokeStyle = col; g.lineWidth = 3.5; g.lineJoin = 'round'; g.stroke();
+}
+
+// ---------------------------------------------------------------- candle charts
+function makeCandles(seed, n, start, vol, bias) {
+  const r = mulberry32(seed), out = [];
+  let p = start, trend = bias;
+  for (let i = 0; i < n; i++) {
+    if (i % 9 === 0) trend = bias + (r() - .5) * vol * 0.9;
+    const path = [p];
+    for (let k = 1; k <= 24; k++) path.push(path[k - 1] + trend / 24 + (r() - .5) * vol * 0.55);
+    const close = path[24];
+    out.push({ open: p, close, path, high: Math.max(...path) + r() * vol * .25, low: Math.min(...path) - r() * vol * .25 });
+    p = close + (r() - .5) * vol * .1;
+  }
+  return out;
+}
+const MAIN = makeCandles(11, 140, 4560, 3.2, 0.55);
+const BACK = makeCandles(23, 160, 4480, 3.0, 0.45);
+const CANDLE_SEC = 1.35;
+
+function candleAt(arr, j, frac) {
+  const c = arr[j];
+  if (frac >= 1) return c;
+  const m = Math.max(1, Math.round(frac * 24));
+  const p = c.path.slice(0, m + 1);
+  return { open: c.open, close: p[p.length - 1], high: Math.max(...p), low: Math.min(...p) };
+}
+
+function drawCandles(g, W, H, arr, cf, visible, opts) {
+  g.clearRect(0, 0, W, H);
+  const padR = opts.axis ? 150 : 30, padT = 40, padB = 60;
+  const cw = (W - padR - 20) / visible;
+  const jNow = Math.floor(cf), frac = cf - jNow;
+  // smoothed range over recent windows
+  let mn = 0, mx = 0, S = 8;
+  for (let s = 0; s < S; s++) {
+    const c2 = cf - s * 0.18, j0 = Math.max(0, Math.floor(c2) - visible), j1 = Math.floor(c2);
+    let a = Infinity, b = -Infinity;
+    for (let j = j0; j <= j1; j++) { const c = arr[j]; a = Math.min(a, c.low); b = Math.max(b, c.high); }
+    mn += a / S; mx += b / S;
+  }
+  const pad = (mx - mn) * 0.12; mn -= pad; mx += pad;
+  const Y = v => padT + (1 - (v - mn) / (mx - mn)) * (H - padT - padB);
+  // grid
+  g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 2; g.setLineDash([6, 8]);
+  for (let k = 1; k < 6; k++) { const y = padT + k * (H - padT - padB) / 6; g.beginPath(); g.moveTo(0, y); g.lineTo(W - padR + 10, y); g.stroke(); }
+  for (let k = 1; k < 6; k++) { const x = k * (W - padR) / 6; g.beginPath(); g.moveTo(x, padT); g.lineTo(x, H - padB); g.stroke(); }
+  g.setLineDash([]);
+  if (opts.axis) {
+    g.fillStyle = 'rgba(200,200,215,.55)'; g.font = '600 24px Inter'; g.textAlign = 'left';
+    for (let k = 0; k <= 6; k++) { const y = padT + k * (H - padT - padB) / 6; const v = mn + (1 - k / 6) * (mx - mn); g.fillText(fmt(v, 2), W - padR + 18, y + 8); }
+  }
+  // candles (scroll so the live candle sits near the right edge)
+  const right = W - padR - cw * 1.2;
+  let last = null;
+  for (let j = Math.max(0, jNow - visible - 1); j <= jNow; j++) {
+    const c = j === jNow ? candleAt(arr, j, frac) : arr[j];
+    const x = right - (cf - j) * cw;
+    if (x < -cw) continue;
+    const up = c.close >= c.open;
+    const col = up ? '#22c983' : '#f23d4f';
+    g.strokeStyle = col; g.lineWidth = Math.max(2, cw * 0.12);
+    g.beginPath(); g.moveTo(x, Y(c.high)); g.lineTo(x, Y(c.low)); g.stroke();
+    const y0 = Y(Math.max(c.open, c.close)), y1 = Y(Math.min(c.open, c.close));
+    const bw = cw * 0.66;
+    const grd = g.createLinearGradient(0, y0, 0, Math.max(y1, y0 + 2));
+    grd.addColorStop(0, up ? '#3ee39d' : '#ff5a69'); grd.addColorStop(1, up ? '#14a568' : '#d0202f');
+    g.fillStyle = grd;
+    g.shadowColor = up ? 'rgba(34,201,131,.45)' : 'rgba(242,61,79,.45)'; g.shadowBlur = opts.glow || 0;
+    g.fillRect(x - bw / 2, y0, bw, Math.max(3, y1 - y0));
+    g.shadowBlur = 0;
+    last = c;
+  }
+  // live bid line + price tag
+  if (last && opts.axis) {
+    const up = last.close >= last.open, y = Y(last.close), col = up ? '#22c983' : '#f23d4f';
+    g.strokeStyle = col; g.lineWidth = 2; g.setLineDash([10, 8]);
+    g.beginPath(); g.moveTo(0, y); g.lineTo(W - padR + 6, y); g.stroke(); g.setLineDash([]);
+    g.fillStyle = col; const tw = padR - 8;
+    g.beginPath(); g.roundRect(W - padR + 4, y - 22, tw, 44, 10); g.fill();
+    g.fillStyle = '#fff'; g.font = '700 24px Inter'; g.fillText(fmt(last.close, 2), W - padR + 16, y + 9);
+  }
+}
+const chartG = document.getElementById('chart').getContext('2d');
+const backG = document.getElementById('backChart').getContext('2d');
+
+// ---------------------------------------------------------------- per-frame render
+const $ = id => document.getElementById(id);
+const rig = $('rig'), rigBack = $('rigBack'), glare = $('glare'), glow = $('glow');
+
+function render(t) {
+  // ---- camera / phone motion
+  const intro = easeOutCubic(t / 1.6);
+  const drift = t / 12;
+  const rz = lerp(-58, -33, intro) + Math.sin(t * 0.45) * 1.6 + drift * 3;
+  const rx = lerp(62, 44, intro) + Math.sin(t * 0.35 + 1) * 1.5;
+  const ry = lerp(-14, -6, intro) + Math.sin(t * 0.3) * 2;
+  const tx = lerp(420, 40, intro) - drift * 40;
+  const ty = lerp(1300, -140, intro) + drift * 20;
+  const sc = lerp(0.9, 1.0, intro) + drift * 0.08;
+  rig.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${sc})`;
+
+  const ib = easeOutCubic((t - 0.25) / 1.8);
+  rigBack.style.transform = `translate3d(${lerp(-900, -470, ib) - drift * 30}px, ${lerp(1500, 260, ib) + drift * 10}px, -520px) rotateX(${rx - 2}deg) rotateY(${ry}deg) rotateZ(${rz + 1}deg) scale(${sc})`;
+  $('backDim').style.opacity = 0.38;
+
+  // ambient glow behind phone
+  glow.style.background = `radial-gradient(ellipse 60% 45% at ${50 + Math.sin(t * .4) * 4}% ${48 + Math.cos(t * .3) * 3}%, rgba(78,64,190,${0.22 * intro}), rgba(26,23,52,0) 70%)`;
+  // glass reflection sweep
+  const gx = -60 + ((t * 9) % 220);
+  glare.style.background = `linear-gradient(115deg, rgba(255,255,255,0) ${gx}%, rgba(255,255,255,.06) ${gx + 10}%, rgba(255,255,255,0) ${gx + 22}%)`;
+
+  // ---- list scroll (two scrolls, like the reference)
+  const s = easeInOut((t - 5.0) / 0.9) + easeInOut((t - 8.6) / 0.9);
+  cards.forEach((c, i) => {
+    const slot = i - s;
+    // pop-in stagger
+    const pop = easeOutBack((t - 0.9 - i * 0.16) / 0.75);
+    let y = CARD_TOP + slot * CARD_STEP, z = 72 * pop, sc2 = 1, op = clamp(pop * 1.4);
+    let rot = (1 - clamp(pop)) * -28;
+    if (slot < 0) { // card leaving at the top: compress into the stack and fade
+      y = CARD_TOP + slot * 70; z = 72 + slot * 40; sc2 = 1 + slot * 0.1; op *= clamp(1 + slot * 1.3);
+    }
+    if (slot > 4) { // card entering from below the visible list
+      const k = clamp(5 - slot); op *= k; z *= k; y = CARD_TOP + 4 * CARD_STEP + (slot - 4) * 60;
+    }
+    // highlighted card lifts higher (the one the "user" is watching)
+    const lift = Math.exp(-Math.pow((t - (2.9 + i * 1.25)) / 0.45, 2)) * (i < 5 ? 1 : 0);
+    z += lift * 30;
+    const vis = op > 0.003;
+    c.el.style.display = vis ? 'block' : 'none';
+    c.el.style.opacity = op;
+    c.el.style.transform = `translate3d(0, ${y}px, ${z}px) rotateX(${rot}deg) scale(${sc2})`;
+    // contact shadow + slot on screen plane
+    c.sh.style.top = (y + 22 + z * 0.35) + 'px';
+    c.sh.style.left = (24 + z * 0.25) + 'px';
+    c.sh.style.opacity = vis ? clamp(op) * clamp(z / 70) * 0.9 : 0;
+    c.sl.style.top = y + 'px';
+    c.sl.style.opacity = vis && slot >= -0.6 && slot <= 4.4 ? 1 : 0;
+    if (!vis) return;
+
+    // prices
+    const ins = c.ins, p = priceAt(ins, t), n = tickIndex(ins, t);
+    const sinceTick = t - (ins.phase + n * ins.period);
+    const prev = ins.ticks[Math.max(0, n - 1)];
+    c.sellPx.innerHTML = pxHTML(p, ins.d);
+    c.buyPx.innerHTML = pxHTML(p + ins.spread, ins.d);
+    const fl = n > 0 ? clamp(1 - sinceTick / 0.22) * 0.28 : 0;
+    c.sellFl.style.opacity = p < prev ? fl : fl * 0.4;
+    c.buyFl.style.opacity = p > prev ? fl : fl * 0.4;
+    const ch = (p - ins.open) / ins.open * 100;
+    c.chg.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%';
+    c.chg.style.color = ch >= 0 ? '#2fd07f' : '#ff4a57';
+    drawSpark(c, t);
+  });
+
+  // ---- charts
+  const cf = 70 + t / CANDLE_SEC;
+  drawCandles(chartG, 1472, 1080, MAIN, cf, 26, { axis: true, glow: 10 });
+  drawCandles(backG, 776, 1656, BACK, 90 + t / (CANDLE_SEC * 1.2), 22, { axis: false, glow: 0 });
+}
+window.render = render;
+window.ready = document.fonts.ready.then(() => { render(0); return true; });
+</script>
+</body>
+</html>
