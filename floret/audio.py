@@ -38,46 +38,36 @@ def note(f):
 
 chord = [110.0, 130.81, 164.81, 196.0, 246.94]  # A2 C3 E3 G3 B3
 pad = sum(note(f) * (1 + 0.15 * np.sin(2 * np.pi * (0.13 + k * 0.05) * t)) for k, f in enumerate(chord))
-pad *= np.clip(t / 2.5, 0, 1) * np.clip((DUR - t) / 1.2, 0, 1) * 0.045
+pad *= np.clip(t / 1.5, 0, 1) * np.clip((DUR - t) / 1.2, 0, 1) * 0.045
 
 # ---- soft pulse (sub kick every beat at 96 bpm, starting after the intro)
 beat = 60 / 96
 pulse = np.zeros(N)
-for b in np.arange(1.6, DUR - 0.5, beat):
+for b in np.arange(0.8, DUR - 0.5, beat):
     e = env(b, 0.002, 0.35)
     pulse += np.sin(2 * np.pi * (48 + 40 * e) * t) * e
-pulse *= 0.16
+pulse *= 0.16 * np.clip(t / 2.0, 0, 1)
 
 # ---- airy shimmer arpeggio
 arp = np.zeros(N)
 notes = [440.0, 523.25, 659.25, 783.99, 987.77, 783.99, 659.25, 523.25]
-for k, s in enumerate(np.arange(1.6, DUR - 0.8, beat / 2)):
+for k, s in enumerate(np.arange(0.8, DUR - 0.8, beat / 2)):
     f = notes[k % len(notes)]
     e = env(s, 0.004, 0.5)
     arp += np.sin(2 * np.pi * f * t) * e * (0.6 + 0.4 * np.sin(k))
-arp *= 0.018
+arp *= 0.018 * np.clip(t / 2.5, 0, 1) * np.clip((DUR - t) / 1.0, 0, 1)
 
-# ---- whoosh for the phone fly-in and swishes for the list scrolls
+# ---- one soft air swell under the fade-in; the shot itself is a continuous glide
 noise = rng.standard_normal(N)
-def whoosh(start, length, gain, cutoff):
-    e = np.zeros(N)
-    i0, i1 = int(start * SR), min(N, int((start + length) * SR))
-    x = np.linspace(0, 1, i1 - i0)
-    e[i0:i1] = np.sin(np.pi * x) ** 2
-    return lowpass(noise * e, cutoff) * gain
-
-fx = whoosh(0.0, 1.7, 0.55, 900) + whoosh(4.85, 1.1, 0.30, 1400) + whoosh(8.45, 1.1, 0.30, 1400)
-
-# ---- soft pops as the quote cards rise off the screen
-for i in range(7):
-    s = 0.9 + i * 0.16 + 0.12
-    e = env(s, 0.001, 0.09)
-    fx += np.sin(2 * np.pi * (660 + i * 70) * t) * e * 0.10
+swell = np.zeros(N)
+i1 = int(2.4 * SR)
+swell[:i1] = np.sin(np.pi * np.linspace(0, 1, i1)) ** 2
+fx = lowpass(noise * swell, 700) * 0.22
 
 # ---- faint price ticks
-for s in np.arange(2.0, DUR - 0.4, 0.37):
+for s in np.arange(1.0, DUR - 0.4, 0.61):
     e = env(s + rng.uniform(-0.05, 0.05), 0.0005, 0.02)
-    fx += np.sin(2 * np.pi * 2400 * t) * e * 0.02
+    fx += np.sin(2 * np.pi * 2400 * t) * e * 0.014
 
 music = pad + pulse + arp
 

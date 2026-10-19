@@ -15,26 +15,32 @@
 
   /* ---------- phone ---------- */
   .phone { position: absolute; width: 820px; height: 1700px; left: -410px; top: -850px; transform-style: preserve-3d; }
-  .edge { position: absolute; inset: 0; border-radius: 124px; background: #0d0d12; }
-  .frame { position: absolute; inset: 0; border-radius: 124px;
-    background: linear-gradient(135deg, #8d8f99 0%, #2b2c33 18%, #15161b 45%, #3a3c45 70%, #9a9ca6 100%);
-    box-shadow: inset 0 0 0 2px rgba(255,255,255,.18), inset 0 0 0 9px #0b0b0f; }
-  .screen { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 104px;
+  /* iPhone Pro proportions: titanium rim, thin black border, 4 side buttons */
+  .edge { position: absolute; inset: 0; border-radius: 142px; }
+  .btn { position: absolute; border-radius: 6px; }
+  .frame { position: absolute; inset: 0; border-radius: 142px;
+    background: linear-gradient(140deg, #d9dbe1 0%, #6f727b 9%, #3a3c43 30%, #55585f 52%, #2f3137 74%, #8c8f98 92%, #e3e5ea 100%);
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+  .bezel { position: absolute; inset: 7px; border-radius: 135px; background: #030304;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+  .screen { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 121px;
     overflow: hidden; background: #0c0c11; }
-  .glare { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 104px;
+  .glare { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 121px;
     pointer-events: none; transform: translateZ(1px); }
 
   /* status bar */
   .status { position: absolute; left: 0; top: 0; width: 100%; height: 90px; }
-  .clock { position: absolute; left: 92px; top: 34px; color: #fff; font-weight: 600; font-size: 30px; letter-spacing: .3px; }
-  .island { position: absolute; left: 288px; top: 26px; width: 200px; height: 56px; border-radius: 30px; background: #000; }
-  .sig { position: absolute; right: 150px; top: 40px; display: flex; gap: 4px; align-items: flex-end; }
+  .clock { position: absolute; left: 104px; top: 38px; color: #fff; font-weight: 600; font-size: 33px; letter-spacing: .3px; }
+  .island { position: absolute; left: 264px; top: 22px; width: 248px; height: 72px; border-radius: 36px; background: #000; }
+  .island::after { content: ""; position: absolute; right: 26px; top: 24px; width: 24px; height: 24px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #2a3350, #07080d 60%); }
+  .sig { position: absolute; right: 158px; top: 44px; display: flex; gap: 4px; align-items: flex-end; }
   .sig i { display: block; width: 6px; background: #fff; border-radius: 2px; }
-  .batt { position: absolute; right: 78px; top: 38px; width: 46px; height: 22px; border-radius: 7px; border: 2px solid rgba(255,255,255,.55); box-sizing: border-box; }
+  .batt { position: absolute; right: 84px; top: 43px; width: 46px; height: 22px; border-radius: 7px; border: 2px solid rgba(255,255,255,.55); box-sizing: border-box; }
   .batt::after { content: ""; position: absolute; left: 3px; top: 3px; width: 30px; height: 12px; border-radius: 3px; background: #fff; }
-  .wifi { position: absolute; right: 112px; top: 38px; width: 28px; height: 22px; }
+  .wifi { position: absolute; right: 120px; top: 43px; width: 28px; height: 22px; }
 
-  .tabs { position: absolute; left: 40px; top: 108px; width: 696px; height: 52px; border-radius: 26px; background: #1b1b23; display: flex; }
+  .tabs { position: absolute; left: 40px; top: 122px; width: 696px; height: 52px; border-radius: 26px; background: #1b1b23; display: flex; }
   .tabs div { flex: 1; color: #8a8a99; font-size: 21px; font-weight: 600; display: flex; align-items: center; justify-content: center; border-radius: 26px; }
   .tabs div.on { background: #2d2d38; color: #fff; }
 
@@ -42,11 +48,11 @@
   .cshadow { position: absolute; left: 24px; width: 820px; height: 140px; border-radius: 34px; background: rgba(0,0,0,.85); filter: blur(22px); }
 
   /* chart area */
-  .chartwrap { position: absolute; left: 20px; top: 1000px; width: 736px; height: 600px; border-radius: 30px; background: #101016; overflow: hidden; }
+  .chartwrap { position: absolute; left: 20px; top: 1062px; width: 736px; height: 540px; border-radius: 30px; background: #101016; overflow: hidden; }
   .tf { position: absolute; left: 18px; top: 16px; display: flex; gap: 8px; }
   .tf span { font-size: 18px; font-weight: 600; color: #7d7d8c; padding: 7px 14px; border-radius: 14px; }
   .tf span.on { background: #2a2a36; color: #fff; }
-  .chartwrap canvas { position: absolute; left: 0; top: 60px; width: 736px; height: 540px; }
+  .chartwrap canvas { position: absolute; left: 0; top: 60px; width: 736px; height: 480px; }
   .homebar { position: absolute; left: 268px; bottom: 18px; width: 240px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.7); }
 
   /* ---------- floating quote cards ---------- */
@@ -91,6 +97,7 @@
     <div class="phone" id="phoneBack">
       <div id="edgesBack"></div>
       <div class="frame"></div>
+      <div class="bezel"></div>
       <div class="screen">
         <canvas class="backchart" id="backChart" width="776" height="1656"></canvas>
         <div class="dim" id="backDim"></div>
@@ -101,6 +108,7 @@
     <div class="phone" id="phone">
       <div id="edges"></div>
       <div class="frame"></div>
+      <div class="bezel"></div>
       <div class="screen" id="screen">
         <div class="status">
           <div class="clock">9:41</div>
@@ -113,7 +121,7 @@
         <div id="slots"></div>
         <div class="chartwrap">
           <div class="tf"><span>M1</span><span>M5</span><span class="on">M15</span><span>H1</span><span>H4</span><span>D1</span></div>
-          <canvas id="chart" width="1472" height="1080"></canvas>
+          <canvas id="chart" width="1472" height="960"></canvas>
         </div>
         <div class="homebar"></div>
       </div>
@@ -123,6 +131,7 @@
   </div>
 </div>
 <div id="vignette"></div>
+<div id="fade" style="position:absolute;inset:0;background:#1a1734;pointer-events:none"></div>
 
 <script>
 // ---------------------------------------------------------------- utils
@@ -153,13 +162,23 @@ const fmt = (v, d) => v.toLocaleString('en-US', { minimumFractionDigits: d, maxi
 
 // ---------------------------------------------------------------- phone thickness layers
 function buildEdges(id) {
+  // stacked slices form the phone's side; brightness peaks mid-band like brushed titanium
   const host = document.getElementById(id);
-  for (let k = 1; k <= 9; k++) {
+  const L = 14, STEP = 3.6;
+  const buttons = [ // [side, top, height]
+    ['l', 300, 64], ['l', 420, 118], ['l', 568, 118], ['r', 470, 190]];
+  for (let k = 1; k <= L; k++) {
     const e = document.createElement('div');
     e.className = 'edge';
-    const s = 22 + k * 3;
-    e.style.background = `rgb(${s},${s},${s + 6})`;
-    e.style.transform = `translateZ(${-k * 3}px)`;
+    const u = k / L, b = 58 + 110 * Math.exp(-Math.pow((u - 0.45) / 0.22, 2));
+    e.style.background = `linear-gradient(140deg, rgb(${b + 40},${b + 42},${b + 48}), rgb(${b - 12},${b - 10},${b - 4}) 40%, rgb(${b + 18},${b + 20},${b + 26}))`;
+    e.style.transform = `translateZ(${-k * STEP}px)`;
+    if (k >= 3 && k <= L - 2) buttons.forEach(([side, top, h]) => {
+      const bt = document.createElement('div');
+      bt.className = 'btn';
+      bt.style.cssText = `top:${top}px;height:${h}px;width:14px;${side === 'l' ? 'left:-7px' : 'right:-7px'};background:rgb(${b + 25},${b + 27},${b + 33});`;
+      e.appendChild(bt);
+    });
     host.appendChild(e);
   }
 }
@@ -177,7 +196,7 @@ const INSTR = [
 ];
 INSTR.forEach((ins, k) => {
   const r = mulberry32(100 + k);
-  ins.period = 0.32 + r() * 0.28;
+  ins.period = 0.55 + r() * 0.5;
   ins.phase = r() * ins.period;
   ins.ticks = [];
   let p = ins.base, drift = (ins.base - ins.open) / ins.open > 0 ? 1 : -1;
@@ -193,7 +212,7 @@ function priceAt(ins, t) { return ins.ticks[tickIndex(ins, t)]; }
 
 // ---------------------------------------------------------------- build cards + slots + shadows
 const cardsEl = document.getElementById('cards'), slotsEl = document.getElementById('slots');
-const CARD_TOP = 178, CARD_STEP = 160;
+const CARD_TOP = 206, CARD_STEP = 160;
 const cards = INSTR.map((ins, k) => {
   const c = document.createElement('div'); c.className = 'card';
   c.innerHTML = `
@@ -325,64 +344,54 @@ const backG = document.getElementById('backChart').getContext('2d');
 const $ = id => document.getElementById(id);
 const rig = $('rig'), rigBack = $('rigBack'), glare = $('glare'), glow = $('glow');
 
+const easeInOutSine = x => -(Math.cos(Math.PI * clamp(x)) - 1) / 2;
+const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const softplus = (x, w) => w * Math.log(1 + Math.exp(x / w));
+const DUR = 12;
+
 function render(t) {
-  // ---- camera / phone motion
-  const intro = easeOutCubic(t / 1.6);
-  const drift = t / 12;
-  const rz = lerp(-58, -33, intro) + Math.sin(t * 0.45) * 1.6 + drift * 3;
-  const rx = lerp(62, 44, intro) + Math.sin(t * 0.35 + 1) * 1.5;
-  const ry = lerp(-14, -6, intro) + Math.sin(t * 0.3) * 2;
-  const tx = lerp(420, 40, intro) - drift * 40;
-  const ty = lerp(1300, -140, intro) + drift * 20;
-  const sc = lerp(0.9, 1.0, intro) + drift * 0.08;
+  // ---- camera: one slow, continuous dolly for the whole shot (no fly-in), like the reference
+  const k = easeInOutSine(t / DUR);
+  const rz = lerp(-35, -30.5, k), rx = lerp(46, 42.5, k), ry = lerp(-7.5, -4.5, k);
+  const tx = lerp(90, 25, k), ty = lerp(-190, -245, k), sc = lerp(1.02, 1.11, k);
   rig.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${sc})`;
-
-  const ib = easeOutCubic((t - 0.25) / 1.8);
-  rigBack.style.transform = `translate3d(${lerp(-900, -470, ib) - drift * 30}px, ${lerp(1500, 260, ib) + drift * 10}px, -520px) rotateX(${rx - 2}deg) rotateY(${ry}deg) rotateZ(${rz + 1}deg) scale(${sc})`;
+  rigBack.style.transform = `translate3d(${lerp(-480, -520, k)}px, ${lerp(230, 180, k)}px, -520px) rotateX(${rx - 2}deg) rotateY(${ry}deg) rotateZ(${rz + 1}deg) scale(${sc})`;
   $('backDim').style.opacity = 0.38;
+  $('fade').style.opacity = 1 - smooth(t / 0.8);
 
-  // ambient glow behind phone
-  glow.style.background = `radial-gradient(ellipse 60% 45% at ${50 + Math.sin(t * .4) * 4}% ${48 + Math.cos(t * .3) * 3}%, rgba(78,64,190,${0.22 * intro}), rgba(26,23,52,0) 70%)`;
-  // glass reflection sweep
-  const gx = -60 + ((t * 9) % 220);
-  glare.style.background = `linear-gradient(115deg, rgba(255,255,255,0) ${gx}%, rgba(255,255,255,.06) ${gx + 10}%, rgba(255,255,255,0) ${gx + 22}%)`;
+  glow.style.background = `radial-gradient(ellipse 60% 45% at ${50 + Math.sin(t * .25) * 3}% ${48 + Math.cos(t * .2) * 2}%, rgba(78,64,190,.22), rgba(26,23,52,0) 70%)`;
+  const gx = -60 + t * 15;
+  glare.style.background = `linear-gradient(115deg, rgba(255,255,255,0) ${gx}%, rgba(255,255,255,.06) ${gx + 12}%, rgba(255,255,255,0) ${gx + 26}%)`;
 
-  // ---- list scroll (two scrolls, like the reference)
-  const s = easeInOut((t - 5.0) / 0.9) + easeInOut((t - 8.6) / 0.9);
+  // ---- quote list scrolls slowly and continuously; cards leaving the top fold into a deck
+  const s = 2.3 * easeInOutSine(clamp((t - 0.2) / (DUR - 0.2)));
+  const W = 0.35, sp0 = softplus(0, W);
   cards.forEach((c, i) => {
     const slot = i - s;
-    // pop-in stagger
-    const pop = easeOutBack((t - 0.9 - i * 0.16) / 0.75);
-    let y = CARD_TOP + slot * CARD_STEP, z = 72 * pop, sc2 = 1, op = clamp(pop * 1.4);
-    let rot = (1 - clamp(pop)) * -28;
-    if (slot < 0) { // card leaving at the top: compress into the stack and fade
-      y = CARD_TOP + slot * 70; z = 72 + slot * 40; sc2 = 1 + slot * 0.1; op *= clamp(1 + slot * 1.3);
-    }
-    if (slot > 4) { // card entering from below the visible list
-      const k = clamp(5 - slot); op *= k; z *= k; y = CARD_TOP + 4 * CARD_STEP + (slot - 4) * 60;
-    }
-    // highlighted card lifts higher (the one the "user" is watching)
-    const lift = Math.exp(-Math.pow((t - (2.9 + i * 1.25)) / 0.45, 2)) * (i < 5 ? 1 : 0);
-    z += lift * 30;
+    const y = CARD_TOP + 38 * slot + (CARD_STEP - 38) * (softplus(slot, W) - sp0);
+    const d = softplus(-slot, W);                 // ~0 while in the list, grows in the deck
+    const enter = smooth((4.85 - slot) / 0.75);               // rises off the screen as it scrolls in from below
+    const z = (72 - 16 * d) * enter;
+    const sc2 = 1 - 0.045 * d;
+    const op = clamp(1.12 - 0.32 * d) * enter;
     const vis = op > 0.003;
     c.el.style.display = vis ? 'block' : 'none';
     c.el.style.opacity = op;
-    c.el.style.transform = `translate3d(0, ${y}px, ${z}px) rotateX(${rot}deg) scale(${sc2})`;
-    // contact shadow + slot on screen plane
+    c.el.style.transform = `translate3d(0, ${y}px, ${z}px) scale(${sc2})`;
     c.sh.style.top = (y + 22 + z * 0.35) + 'px';
     c.sh.style.left = (24 + z * 0.25) + 'px';
     c.sh.style.opacity = vis ? clamp(op) * clamp(z / 70) * 0.9 : 0;
     c.sl.style.top = y + 'px';
-    c.sl.style.opacity = vis && slot >= -0.6 && slot <= 4.4 ? 1 : 0;
+    c.sl.style.opacity = smooth(1 + slot * 2) * smooth((4.6 - slot) * 2);
     if (!vis) return;
 
-    // prices
+  // prices
     const ins = c.ins, p = priceAt(ins, t), n = tickIndex(ins, t);
     const sinceTick = t - (ins.phase + n * ins.period);
     const prev = ins.ticks[Math.max(0, n - 1)];
     c.sellPx.innerHTML = pxHTML(p, ins.d);
     c.buyPx.innerHTML = pxHTML(p + ins.spread, ins.d);
-    const fl = n > 0 ? clamp(1 - sinceTick / 0.22) * 0.28 : 0;
+    const fl = n > 0 ? Math.pow(clamp(1 - sinceTick / 0.35), 2) * 0.16 : 0;
     c.sellFl.style.opacity = p < prev ? fl : fl * 0.4;
     c.buyFl.style.opacity = p > prev ? fl : fl * 0.4;
     const ch = (p - ins.open) / ins.open * 100;
@@ -393,7 +402,7 @@ function render(t) {
 
   // ---- charts
   const cf = 70 + t / CANDLE_SEC;
-  drawCandles(chartG, 1472, 1080, MAIN, cf, 26, { axis: true, glow: 10 });
+  drawCandles(chartG, 1472, 960, MAIN, cf, 26, { axis: true, glow: 10 });
   drawCandles(backG, 776, 1656, BACK, 90 + t / (CANDLE_SEC * 1.2), 22, { axis: false, glow: 0 });
 }
 window.render = render;
