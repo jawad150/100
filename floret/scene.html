@@ -23,9 +23,9 @@
     box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
   .bezel { position: absolute; inset: 7px; border-radius: 135px; background: #030304;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
-  .screen { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 121px;
+  .screen { position: absolute; left: 22px; top: 22px; width: 776px; height: 1688px; border-radius: 106px;
     overflow: hidden; background: #0c0c11; }
-  .glare { position: absolute; left: 22px; top: 22px; width: 776px; height: 1656px; border-radius: 121px;
+  .glare { position: absolute; left: 22px; top: 22px; width: 776px; height: 1688px; border-radius: 106px;
     pointer-events: none; transform: translateZ(1px); }
 
   /* status bar */
@@ -48,11 +48,11 @@
   .cshadow { position: absolute; left: 24px; width: 820px; height: 140px; border-radius: 34px; background: rgba(0,0,0,.85); filter: blur(22px); }
 
   /* chart area */
-  .chartwrap { position: absolute; left: 20px; top: 1062px; width: 736px; height: 540px; border-radius: 30px; background: #101016; overflow: hidden; }
+  .chartwrap { position: absolute; left: 20px; top: 1062px; width: 736px; height: 572px; border-radius: 30px; background: #101016; overflow: hidden; }
   .tf { position: absolute; left: 18px; top: 16px; display: flex; gap: 8px; }
   .tf span { font-size: 18px; font-weight: 600; color: #7d7d8c; padding: 7px 14px; border-radius: 14px; }
   .tf span.on { background: #2a2a36; color: #fff; }
-  .chartwrap canvas { position: absolute; left: 0; top: 60px; width: 736px; height: 480px; }
+  .chartwrap canvas { position: absolute; left: 0; top: 60px; width: 736px; height: 512px; }
   .homebar { position: absolute; left: 268px; bottom: 18px; width: 240px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.7); }
 
   /* ---------- floating quote cards ---------- */
@@ -85,7 +85,7 @@
   .i-plat { background: radial-gradient(circle at 35% 30%, #ffffff, #b8c6d6 45%, #56677a 100%); }
 
   /* back phone */
-  .backchart { position: absolute; left: 0; top: 0; width: 776px; height: 1656px; }
+  .backchart { position: absolute; left: 0; top: 0; width: 776px; height: 1688px; }
   .dim { position: absolute; inset: 0; background: #0b0a1c; }
 </style>
 </head>
@@ -99,7 +99,7 @@
       <div class="frame"></div>
       <div class="bezel"></div>
       <div class="screen">
-        <canvas class="backchart" id="backChart" width="776" height="1656"></canvas>
+        <canvas class="backchart" id="backChart" width="776" height="1688"></canvas>
         <div class="dim" id="backDim"></div>
       </div>
     </div>
@@ -121,7 +121,7 @@
         <div id="slots"></div>
         <div class="chartwrap">
           <div class="tf"><span>M1</span><span>M5</span><span class="on">M15</span><span>H1</span><span>H4</span><span>D1</span></div>
-          <canvas id="chart" width="1472" height="960"></canvas>
+          <canvas id="chart" width="1472" height="1024"></canvas>
         </div>
         <div class="homebar"></div>
       </div>
@@ -348,6 +348,7 @@ const easeInOutSine = x => -(Math.cos(Math.PI * clamp(x)) - 1) / 2;
 const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
 const softplus = (x, w) => w * Math.log(1 + Math.exp(x / w));
 const DUR = 12;
+const ATLAS = location.hash === '#atlas', ATLAS_CARD_STEP = 150;
 
 function render(t) {
   // ---- camera: one slow, continuous dolly for the whole shot (no fly-in), like the reference
@@ -366,6 +367,7 @@ function render(t) {
   // ---- quote list scrolls slowly and continuously; cards leaving the top fold into a deck
   const s = 2.3 * easeInOutSine(clamp((t - 0.2) / (DUR - 0.2)));
   const W = 0.35, sp0 = softplus(0, W);
+  window.cardState = [];
   cards.forEach((c, i) => {
     const slot = i - s;
     const y = CARD_TOP + 38 * slot + (CARD_STEP - 38) * (softplus(slot, W) - sp0);
@@ -374,10 +376,11 @@ function render(t) {
     const z = (72 - 16 * d) * enter;
     const sc2 = 1 - 0.045 * d;
     const op = clamp(1.12 - 0.32 * d) * enter;
-    const vis = op > 0.003;
+    window.cardState.push({ y, z, sc: sc2, op });
+    const vis = ATLAS || op > 0.003;
     c.el.style.display = vis ? 'block' : 'none';
-    c.el.style.opacity = op;
-    c.el.style.transform = `translate3d(0, ${y}px, ${z}px) scale(${sc2})`;
+    c.el.style.opacity = ATLAS ? 1 : op;
+    c.el.style.transform = ATLAS ? `translate(0, ${i * ATLAS_CARD_STEP}px)` : `translate3d(0, ${y}px, ${z}px) scale(${sc2})`;
     c.sh.style.top = (y + 22 + z * 0.35) + 'px';
     c.sh.style.left = (24 + z * 0.25) + 'px';
     c.sh.style.opacity = vis ? clamp(op) * clamp(z / 70) * 0.9 : 0;
@@ -402,10 +405,23 @@ function render(t) {
 
   // ---- charts
   const cf = 70 + t / CANDLE_SEC;
-  drawCandles(chartG, 1472, 960, MAIN, cf, 26, { axis: true, glow: 10 });
-  drawCandles(backG, 776, 1656, BACK, 90 + t / (CANDLE_SEC * 1.2), 22, { axis: false, glow: 0 });
+  drawCandles(chartG, 1472, 1024, MAIN, cf, 26, { axis: true, glow: 10 });
+  drawCandles(backG, 776, 1688, BACK, 90 + t / (CANDLE_SEC * 1.2), 22, { axis: false, glow: 0 });
 }
 window.render = render;
+
+// ---------------------------------------------------------------- texture atlas for the Blender render
+// #atlas lays the screen, each card face and the back phone's chart out flat, side by side:
+//   screen (0,0) 776x1688 | cards (800, i*150) 860x140 | back chart (1700,0) 776x1688
+if (ATLAS) {
+  document.documentElement.style.cssText = document.body.style.cssText = 'width:2500px;height:1700px;background:#000';
+  ['stage', 'bg', 'glow', 'vignette', 'fade'].forEach(id => $(id).style.display = 'none');
+  const place = (el, x) => { document.body.appendChild(el); el.style.left = x + 'px'; el.style.top = '0px'; };
+  place($('screen'), 0); $('screen').style.borderRadius = '0';
+  place($('cards'), 800);
+  cards.forEach(c => { c.el.style.left = '0px'; c.el.style.boxShadow = 'inset 0 2px 0 rgba(255,255,255,.10)'; });
+  place($('backChart'), 1700); $('backChart').style.position = 'absolute';
+}
 window.ready = document.fonts.ready.then(() => { render(0); return true; });
 </script>
 </body>

@@ -8,12 +8,17 @@ A 12-second vertical video (1080×1920, 60 fps) in the style of the MT5 phone re
 
 ## Rebuild
 
+The phone is a modelled **iPhone 16 Pro** (71.5 × 149.6 × 8.25 mm, black titanium, Action/volume/side buttons, Camera Control, USB-C port and speaker holes) rendered in Blender Cycles. The MT5 UI is drawn in HTML and used as an animated texture on the display and on the floating quote-card slabs.
+
 ```bash
-node floret/render.js still 1,4,8           # preview stills -> floret/out/stills
-node floret/render.js video 60 12           # -> floret/out/video_silent.mp4
+pip install bpy==5.2.2 numpy pillow
+node floret/render.js atlas 30 12                          # UI textures, one atlas per frame + card positions
+python3 floret/blender_phone.py still 1,180,360           # preview stills (PCT=50 SAMPLES=6 for quick ones)
+python3 floret/blender_phone.py render 1 360              # RGBA frames (resumable; split ranges across processes)
+python3 floret/composite.py                               # navy background, glow, vignette -> out/video_3d_silent.mp4
 python3 floret/audio.py floret/out/mix.wav floret/voiceover.wav 1.1
-ffmpeg -i floret/out/video_silent.mp4 -i floret/out/mix.wav -c:v copy \
+ffmpeg -i floret/out/video_3d_silent.mp4 -i floret/out/mix.wav -c:v copy \
   -af loudnorm=I=-14:TP=-1.5 -c:a aac -b:a 192k -shortest floret/floret_mt5_phone_vo.mp4
 ```
 
-`scene.html` is the whole animation. It is plain HTML/CSS 3D plus canvas, and `render(t)` draws the frame at time `t`. Open it in a browser and call `render(4)` from the console to inspect any moment.
+`scene.html` holds all the UI animation: `render(t)` draws time `t`. Opened normally it shows the earlier CSS-3D version. Opened as `scene.html#atlas` it lays the screen, card faces and back-phone chart out flat for Blender.
