@@ -1,3 +1,13 @@
+# Clinic for Plastic Surgery reel: B&W testimonial captions
+
+A 55-second vertical reel (1080×1920, 23.976 fps). It adds the following to the surgery B-roll and patient testimonial:
+
+- black-and-white captions, with no red
+- big words drawn with a "difference" blend that flips black or white against what's behind them, some tucked behind the surgeon
+- transitions at every cut
+
+**Video:** [`reel/surgery/Surgery_Testimonial_1080x1920.mp4`](reel/surgery/Surgery_Testimonial_1080x1920.mp4) (master) · [`reel/surgery/Surgery_Testimonial_share.mp4`](reel/surgery/Surgery_Testimonial_share.mp4) (share copy) · **How it's built:** [`pipeline/surgery/README.md`](pipeline/surgery/README.md)
+
 # P.S. Med Spa reel: captions, transitions, grade
 
 A 41-second vertical reel (1080×1920, 23.976 fps). It adds the following to the supplied P.S. Med Spa edit:
