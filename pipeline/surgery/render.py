@@ -83,7 +83,7 @@ FAST = dict(dur=0.22, stagger_total=0.10)
 
 def hero(shot, l2, t2, end, cx, base, size=None, l1=None, l3=None, l3_y=None, pin=1.0,
          l1_size=72, l3_size=100, max_w=900, behind=True, l1_fill=('solid', (1.0, 1.0, 1.0)),
-         l1_x=None, fast=False, out=0.22, blend='diff'):
+         l1_x=None, fast=False, out=0.22, blend='diff', color='white', l3_x=None):
     """Two-line caption: thin light-italic lead-in + big Fraunces word drawn with a
     black & white 'difference' blend (inverts the luminance behind it, like the
     client's 'using / SEO' sample), optionally tucked behind people via the matte."""
@@ -91,7 +91,7 @@ def hero(shot, l2, t2, end, cx, base, size=None, l1=None, l3=None, l3_y=None, pi
         size = G.fit(l2, G.SERIF, 260, max_w)
     width = G.text_width(l2, G.SERIF, size)
     top = base - size * 0.80
-    SCENE[shot].append(dict(kind='l2', text=l2, t0=t2, end=end, x=cx, y=base, size=size, color='white',
+    SCENE[shot].append(dict(kind='l2', text=l2, t0=t2, end=end, x=cx, y=base, size=size, color=color,
                             pin=pin if behind else 0.0, glow=False, behind=behind, fast=fast, out=out, blend=blend))
     if l1:
         w_, t_ = l1
@@ -100,7 +100,8 @@ def hero(shot, l2, t2, end, cx, base, size=None, l1=None, l3=None, l3_y=None, pi
                             y=top - size * 0.06, size=l1_size, fill=l1_fill))
     if l3:
         w_, t_ = l3
-        OVERLAY.append(dict(kind='l3', words=w_, times=t_, end=end, x=cx,
+        OVERLAY.append(dict(kind='l3', words=w_, times=t_, end=end,
+                            x=cx if l3_x is None else l3_x + G.text_width(' '.join(w_), G.SERIF_I, l3_size) / 2,
                             y=l3_y if l3_y else base + l3_size * 1.15, size=l3_size))
 
 
@@ -111,17 +112,24 @@ OVERLAY.append(cap(0, 2, y=1450))
 OVERLAY.append(cap(3, 4, y=1450))
 OVERLAY.append(cap(5, 7, y=1450))
 # shot 1 -- prep hands: "stepping on a / Lego / would hurt way worse"
-hero(1, 'Lego', C[1] + 0.01, 5.08, 540, 760, size=300, l1=words(8, 10), l3=words(12, 15), l3_y=900, behind=False)
+# client: top-left with room above, and a darker 'Lego' -> solid black instead of the difference blend
+_lx = 70
+hero(1, 'Lego', C[1] + 0.01, 5.08, _lx + G.text_width('Lego', G.SERIF, 250) / 2, 560, size=250, l1=words(8, 10),
+     l1_x=_lx + 10, l3=words(12, 15), l3_y=680, l3_size=84, l3_x=_lx, behind=False, blend=None, color='dark')
+# client: a Lego brick next to the word (cut out, no white background; see lego_brick.py)
+SCENE[1].append(dict(kind='sprite', path=f'{WS}/src/lego_brick.png', t0=C[1] + 0.12, end=5.08, w=330, rot=-6,
+                     x=_lx + G.text_width('Lego', G.SERIF, 250) + 30 + 165, y=470))
 OVERLAY.append(cap(16, 19, y=1050))
 OVERLAY.append(cap(20, 24, y=1050))
 # shot 2 -- implant sizers on the table: "Today I came in / for an / implant / exchange under local."
 OVERLAY.append(cap(25, 28, y=1050))
 hero(2, 'implant', ws(31), 10.30, 540, 700, l1=words(29, 30), l3=words(32, 34), l3_y=840, max_w=820, behind=False)
-OVERLAY.append(cap(35, 37, y=1050))
-hero(2, 'fullness,', ws(40), C[3] - 0.06, 540, 700, l1=words(38, 39), max_w=820, behind=False)
+OVERLAY.append(cap(35, 37, y=1180))
+hero(2, 'fullness,', ws(40), C[3] - 0.06, 540, 1230, l1=words(38, 39), max_w=820, behind=False)
 # shot 3 -- surgeon + nurse: "and it went great. / I felt / no pain."
 OVERLAY.append(cap(41, 44, y=1100))
-hero(3, 'no pain.', ws(47), 15.55, 540, 500, l1=words(45, 46), max_w=900)
+hero(3, 'no pain.', ws(47), 15.55, 540, 1520, size=200, l1=words(45, 46), behind=False)
+SCENE[3][-1]['contrast'] = 5.0   # light-blue drape is mid-tone: push the flip harder so it reads dark
 OVERLAY.append(cap(49, 50, y=1100))
 OVERLAY.append(cap(51, 52, y=1100))
 # shot 4 -- syringe macro
@@ -295,12 +303,45 @@ def affine(z, c, dx=0.0, dy=0.0, r=1.0):
     return np.float32([[z * r, 0, px * (1 - z) + dx], [0, z * r, py * (1 - z) + dy]])
 
 
+_sprites = {}
+
+
+def draw_sprite(layer, el, t):
+    """A cut-out image (premultiplied RGBA) that pops in with a slight tilt, floats, and
+    casts a soft drop shadow."""
+    if el['path'] not in _sprites:
+        im = cv2.imread(el['path'], cv2.IMREAD_UNCHANGED)
+        ys, xs = np.where(im[..., 3] > 8)
+        im = im[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+        sc = el['w'] / im.shape[1]
+        im = cv2.resize(im, (int(im.shape[1] * sc), int(im.shape[0] * sc)), interpolation=cv2.INTER_AREA)
+        spr = E.to_premul(im[..., [2, 1, 0, 3]])
+        spr = np.pad(spr, ((40, 40), (40, 40), (0, 0)))
+        sh = cv2.GaussianBlur(spr[..., 3], (0, 0), 16) * 0.55
+        sh = np.concatenate([np.zeros(sh.shape + (3,), np.float32), sh[..., None]], 2)
+        _sprites[el['path']] = (spr, sh)
+    spr, sh = _sprites[el['path']]
+    p = E.prog(t, el['t0'], el['t0'] + 0.45)
+    if p <= 0:
+        return
+    e = E.e_out_back(p, 2.0)
+    op = E.prog(t, el['t0'], el['t0'] + 0.15) * (1 - E.prog(t, el['end'], el['end'] + 0.22))
+    tt = t - el['t0']
+    sc = 0.55 + 0.45 * e
+    rot = -14 * (1 - e) + el.get('rot', -6) + math.sin(tt * 2.2) * 1.5
+    x, y = el['x'], el['y'] + math.sin(tt * 1.8) * 8 + (1 - e) * 40
+    E.draw(layer, sh, x + 14, y + 26, scale=sc, rot=rot, opacity=op)
+    E.draw(layer, spr, x, y, scale=sc, rot=rot, opacity=op)
+
+
 def scene_graphics(k, t, src_fi):
     """Behind / front scene layers for shot k in unzoomed plate coords (or None)."""
     els = SCENE[k]
     if not els:
         return None, None, None, None
     lb, lf, db, df = None, None, None, None
+    global _diff_k
+    _diff_k = 2.4
     for el in els:
         if el['kind'] == 'l2':
             if t < el['t0'] or t > el['end'] + el['out'] + 0.02:
@@ -326,6 +367,7 @@ def scene_graphics(k, t, src_fi):
                     sh = np.concatenate([np.zeros((H, W, 3), np.float32), sa[..., None]], 2)
                     tgt = G.over(sh, tgt)
             if el.get('blend') == 'diff':   # only the coverage is used: see diff_blend()
+                _diff_k = el.get('contrast', 2.4)
                 if el['behind']:
                     db = tgt if db is None else G.over(db, tgt)
                 else:
@@ -334,6 +376,11 @@ def scene_graphics(k, t, src_fi):
                 lb = tgt if lb is None else G.over(lb, tgt)
             else:
                 lf = tgt if lf is None else G.over(lf, tgt)
+        elif el['kind'] == 'sprite':
+            if t < el['t0'] or t > el['end'] + 0.25:
+                continue
+            lf = G.new_layer() if lf is None else lf
+            draw_sprite(lf, el, t)
         elif el['kind'] == 'strike':
             if t < el['t0'] or t > el['end'] + 0.2:
                 continue
@@ -365,14 +412,15 @@ def scene_graphics(k, t, src_fi):
 
 
 LUMA = np.array([0.2126, 0.7152, 0.0722], np.float32)
+_diff_k = 2.4
 
 
-def diff_blend(img, a):
+def diff_blend(img, a, k=2.4):
     """Black & white 'difference' blend: where the text covers, show the inverted
     luminance of what's behind it, with extra contrast so mid-tones (blue scrubs)
     still flip clearly to white or black."""
     lum = (img @ LUMA)[..., None]
-    inv = np.clip(0.5 - (lum - 0.5) * 2.4, 0, 1)
+    inv = np.clip(0.5 - (lum - 0.5) * k, 0, 1)
     return img * (1 - a) + inv * a
 
 
@@ -396,13 +444,13 @@ def plate(k, src_fi, t, zx=1.0, dx=0.0, dy=0.0):
                 out = out * (1 - lb[..., 3:4]) + lb[..., :3]
             if db is not None:
                 db = cv2.warpAffine(db, ML, (W, H), flags=cv2.INTER_LINEAR)
-                out = diff_blend(out, db[..., 3:4])
+                out = diff_blend(out, db[..., 3:4], _diff_k)
             mm = np.clip((mat - 0.08) / 0.77, 0, 1)
             mm = (mm * mm * (3 - 2 * mm))[..., None]
             out = out * (1 - mm) + rgb * mm
         if df is not None:
             df = cv2.warpAffine(df, ML, (W, H), flags=cv2.INTER_LINEAR)
-            out = diff_blend(out, df[..., 3:4])
+            out = diff_blend(out, df[..., 3:4], _diff_k)
         if lf is not None:
             lf = cv2.warpAffine(lf, ML, (W, H), flags=cv2.INTER_LINEAR)
             out = out * (1 - lf[..., 3:4]) + lf[..., :3]
