@@ -8,6 +8,12 @@ A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Hi
 
 **v1:** [`reel/higgsfield_genjutsu_reel.mp4`](reel/higgsfield_genjutsu_reel.mp4) (10 Mbps master) · [`reel/higgsfield_genjutsu_reel_share.mp4`](reel/higgsfield_genjutsu_reel_share.mp4) (7 Mbps, under 30 MB) · cover frame [`reel/cover.jpg`](reel/cover.jpg)
 
+**Result reel (34 s):** [`reel/genjutsu_result_reel.mp4`](reel/genjutsu_result_reel.mp4). It plays the full ORIGINAL / GENJUTSU split-screen in the same orange-and-black theme, with the original audio plus SFX and no Higgsfield logo. A "COMMENT "JD" FOR THE TUTORIAL" CTA runs throughout, and it ends on a zoom-out to the @jawad_mp4 profile card ("WANT THE TUTORIAL?").
+
+**Instagram covers** in [`reel/covers/`](reel/covers/). Each reel has two sizes, 1080×1920 for the reel and 1080×1350 for the 4:5 feed grid:
+- tutorial reel: `cover_tutorial_reel_1080x1920.jpg`, `cover_tutorial_feed_1080x1350.jpg`
+- result reel: `cover_result_reel_1080x1920.jpg`, `cover_result_feed_1080x1350.jpg`
+
 ## Storyboard
 
 | Time | Scene | What happens |
@@ -41,6 +47,15 @@ pip install bpy numpy "opencv-python-headless==4.10.0.84" pillow scipy imageio-f
 python3 pipeline/prep_sources.py          # fonts, logo vectorization, frame extraction
 python3 pipeline/blender_assets.py blob_drop blob_bear blob_flower blob_cube torus rcube capsule sphere cursor3d arrow3d logo3d
 python3 pipeline/render_all.py            # -> workspace/out/higgsfield_genjutsu_reel.mp4
+```
+
+The result reel and covers reuse the same assets:
+
+```bash
+python3 pipeline/audio2.py                # -> workspace/out/audio2.wav (original audio + SFX)
+python3 pipeline/reel2.py range 0 1020 workspace/out/result_video.mp4   # 34 s × 30 fps, silent
+ffmpeg -i workspace/out/result_video.mp4 -i workspace/out/audio2.wav -c:v copy -c:a aac -b:a 192k -shortest workspace/out/genjutsu_result_reel.mp4
+python3 pipeline/thumbs.py                # -> workspace/out/cover_*_{reel_1080x1920,feed_1080x1350}.jpg
 ```
 
 To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Set `REEL_WORKDIR` to use a different workspace folder.
