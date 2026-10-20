@@ -48,6 +48,10 @@ CARD_KEYS = [
 
 # ---------------------------------------------------------------- camera / pose, fitted to the reference
 LENS, CAM_D = 85.0, 51.97
+# The reference is a TikTok screen recording (9:19.9) that fills the phone by cropping the sides of the ad,
+# so its phone fills the frame width. Zoom so our 1080 px width is exactly the reference's visible width
+# (477 -> 384 px), framing its y 85..768.
+FRAME_ZOOM, FRAME_SHIFT_Y = 477 / 384, -0.003
 POSE = dict(tilt=-21.90, roll=37.43, angle=36.62)    # top tilted away, left side toward camera, in-plane
 PHONE_POS = (1.109, 1.713)                           # start; slides up its own long axis at constant speed
 PAN = (-0.679, 0.923)                                # (tracked on the reference: linear, ~3.2 x 4.3 px/s)
@@ -297,7 +301,8 @@ sc.world = world
 cam_data = bpy.data.cameras.new('Camera')
 cam_data.sensor_fit = 'VERTICAL'
 cam_data.sensor_height = 36
-cam_data.lens = LENS
+cam_data.lens = LENS * FRAME_ZOOM
+cam_data.shift_y = FRAME_SHIFT_Y
 cam_data.clip_start, cam_data.clip_end = 0.1, 500
 cam = bpy.data.objects.new('Camera', cam_data)
 cam.location = (0, 0, CAM_D)
