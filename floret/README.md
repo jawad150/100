@@ -14,7 +14,7 @@ The camera pose, card poses and timing were measured from the reference. Landmar
 
 ## Rebuild
 
-The phone is a modelled **iPhone 16 Pro** (71.5 × 149.6 × 8.25 mm, black titanium, Action/volume/side buttons, Camera Control, USB-C port and speaker holes) rendered in Blender Cycles. The MT5 UI is drawn in HTML and used as an animated texture on the display and on the floating quote-card slabs.
+The phone is a modelled **iPhone 16 Pro** (71.5 × 149.6 × 8.25 mm, natural silver titanium, Action/volume/side buttons, Camera Control, USB-C port and speaker holes) rendered in Blender Cycles. The MT5 UI is drawn in HTML and used as an animated texture on the display and on the floating quote-card slabs.
 
 ```bash
 pip install bpy==5.2.2 numpy pillow
