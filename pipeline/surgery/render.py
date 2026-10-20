@@ -112,18 +112,21 @@ OVERLAY.append(cap(0, 2, y=1450))
 OVERLAY.append(cap(3, 4, y=1450))
 OVERLAY.append(cap(5, 7, y=1450))
 # shot 1 -- prep hands: "stepping on a / Lego / would hurt way worse"
-# client: top-left with room above, and a darker 'Lego' -> solid black instead of the difference blend
+# client: left-aligned down over the blue cloth (their mockup), with a darker 'Lego' -> solid black
+# instead of the difference blend
 _lx = 70
-hero(1, 'Lego', C[1] + 0.01, 5.08, _lx + G.text_width('Lego', G.SERIF, 250) / 2, 560, size=250, l1=words(8, 10),
-     l1_x=_lx + 10, l3=words(12, 15), l3_y=680, l3_size=84, l3_x=_lx, behind=False, blend=None, color='dark')
-# client: a Lego brick next to the word (cut out, no white background; see lego_brick.py)
-SCENE[1].append(dict(kind='sprite', path=f'{WS}/src/lego_brick.png', t0=C[1] + 0.12, end=5.08, w=330, rot=-6,
-                     x=_lx + G.text_width('Lego', G.SERIF, 250) + 30 + 165, y=470))
-OVERLAY.append(cap(16, 19, y=1050))
-OVERLAY.append(cap(20, 24, y=1050))
+hero(1, 'Lego', C[1] + 0.01, 5.08, _lx + G.text_width('Lego', G.SERIF, 250) / 2, 1370, size=250, l1=words(8, 10),
+     l1_x=_lx + 10, l3=words(12, 15), l3_y=1490, l3_size=84, l3_x=_lx, behind=False, blend=None, color='dark')
+# client: their red Lego brick next to the word (alpha cut-out, see lego_cutout.py)
+SCENE[1].append(dict(kind='sprite', path=f'{WS}/src/lego_brick_red.png', t0=C[1] + 0.12, end=5.08, w=360, rot=-4,
+                     x=_lx + G.text_width('Lego', G.SERIF, 250) + 50 + 180, y=1270))
+OVERLAY.append(cap(16, 19, y=900))   # above the Lego block, which now sits on the cloth
+OVERLAY.append(cap(20, 24, y=900))
 # shot 2 -- implant sizers on the table: "Today I came in / for an / implant / exchange under local."
 OVERLAY.append(cap(25, 28, y=1050))
-hero(2, 'implant', ws(31), 10.30, 540, 700, l1=words(29, 30), l3=words(32, 34), l3_y=840, max_w=820, behind=False)
+# client mockup: down on the blue table cloth
+hero(2, 'implant', ws(31), 10.30, 540, 1300, l1=words(29, 30), l3=words(32, 34), l3_y=1440, max_w=820, behind=False)
+SCENE[2][-1].update(contrast=5.0, pivot=0.1)   # the cloth is mid-dark: read it as 'light' so the word stays black on it
 OVERLAY.append(cap(35, 37, y=1180))
 hero(2, 'fullness,', ws(40), C[3] - 0.06, 540, 1230, l1=words(38, 39), max_w=820, behind=False)
 # shot 3 -- surgeon + nurse: "and it went great. / I felt / no pain."
@@ -340,8 +343,8 @@ def scene_graphics(k, t, src_fi):
     if not els:
         return None, None, None, None
     lb, lf, db, df = None, None, None, None
-    global _diff_k
-    _diff_k = 2.4
+    global _diff_k, _diff_p
+    _diff_k, _diff_p = 2.4, 0.5
     for el in els:
         if el['kind'] == 'l2':
             if t < el['t0'] or t > el['end'] + el['out'] + 0.02:
@@ -368,6 +371,7 @@ def scene_graphics(k, t, src_fi):
                     tgt = G.over(sh, tgt)
             if el.get('blend') == 'diff':   # only the coverage is used: see diff_blend()
                 _diff_k = el.get('contrast', 2.4)
+                _diff_p = el.get('pivot', 0.5)
                 if el['behind']:
                     db = tgt if db is None else G.over(db, tgt)
                 else:
@@ -412,15 +416,16 @@ def scene_graphics(k, t, src_fi):
 
 
 LUMA = np.array([0.2126, 0.7152, 0.0722], np.float32)
-_diff_k = 2.4
+_diff_k, _diff_p = 2.4, 0.5
 
 
-def diff_blend(img, a, k=2.4):
+def diff_blend(img, a, k=2.4, pivot=0.5):
     """Black & white 'difference' blend: where the text covers, show the inverted
     luminance of what's behind it, with extra contrast so mid-tones (blue scrubs)
-    still flip clearly to white or black."""
+    still flip clearly to white or black. Backgrounds lighter than `pivot` turn the
+    text black, darker ones turn it white."""
     lum = (img @ LUMA)[..., None]
-    inv = np.clip(0.5 - (lum - 0.5) * k, 0, 1)
+    inv = np.clip(0.5 - (lum - pivot) * k, 0, 1)
     return img * (1 - a) + inv * a
 
 
@@ -444,13 +449,13 @@ def plate(k, src_fi, t, zx=1.0, dx=0.0, dy=0.0):
                 out = out * (1 - lb[..., 3:4]) + lb[..., :3]
             if db is not None:
                 db = cv2.warpAffine(db, ML, (W, H), flags=cv2.INTER_LINEAR)
-                out = diff_blend(out, db[..., 3:4], _diff_k)
+                out = diff_blend(out, db[..., 3:4], _diff_k, _diff_p)
             mm = np.clip((mat - 0.08) / 0.77, 0, 1)
             mm = (mm * mm * (3 - 2 * mm))[..., None]
             out = out * (1 - mm) + rgb * mm
         if df is not None:
             df = cv2.warpAffine(df, ML, (W, H), flags=cv2.INTER_LINEAR)
-            out = diff_blend(out, df[..., 3:4], _diff_k)
+            out = diff_blend(out, df[..., 3:4], _diff_k, _diff_p)
         if lf is not None:
             lf = cv2.warpAffine(lf, ML, (W, H), flags=cv2.INTER_LINEAR)
             out = out * (1 - lf[..., 3:4]) + lf[..., :3]
