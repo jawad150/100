@@ -2,10 +2,10 @@
 
     python3 floret/audio.py <out.wav> [voiceover.wav] [vo_start_seconds]
 """
-import sys, wave
+import os, sys, wave
 import numpy as np
 
-SR, DUR = 48000, 12.0
+SR, DUR = 48000, float(os.environ.get("DUR", 10.0))
 N = int(SR * DUR)
 t = np.arange(N) / SR
 rng = np.random.default_rng(3)

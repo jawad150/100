@@ -58,7 +58,7 @@ for i, f in enumerate(frames):
     a = fg[..., 3:] / 255
     frame = fg[..., :3] * a + frame * (1 - a)
     frame = frame * (1 - vig_a) + vig_c * vig_a
-    fade = 1 - smooth(t / 0.8)
+    fade = 1 - smooth(t / 0.4)
     frame = frame * (1 - fade) + navy * fade
     enc.stdin.write(np.clip(frame + 0.5, 0, 255).astype(np.uint8).tobytes())
     if i % 60 == 0:
