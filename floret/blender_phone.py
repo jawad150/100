@@ -34,19 +34,15 @@ CARD_W, CARD_H, CARD_R = 1100, 166, 44
 CARD_X, CARD_STEP_ATLAS, BACK_X = 820, 180, 1920
 
 # ---------------------------------------------------------------- quote list motion (screen px)
-# Quote list, fitted to the reference through the solved camera (card corners, ~6 px rms) as ONE list.
-# Geometry depends on a row's rank r in the list: rank 0 (front) is full size; each rank further down is 9 %
-# smaller, 265 px lower and flatter, so the lowest rows are screen width and lie in the glass. Every card
-# shares one shape (1100 x 166), one 27 deg tilt and one left edge. Around 1.5-3.1 s every row moves up two
-# ranks: the top two fold into a stack above the new front row (125 px apart) and the list start moves down
-# from 370 to 818 px to make room for the stack and the header.
-CARD_TILT, CARD_TILT_Y = 27.0, 6.2
-RAISED_LEFT, FLAT_LEFT = -28.5, 0
-RANK_STEP, RANK_SCALE = 265, 0.085           # px between rank bottoms; scale lost per rank
-HINGE_0, HINGE_PER_RANK = 38, -28           # hinge lift of the front row and its change per rank (px)
-LIST_TOP = (370, 818)                       # bottom edge of the front row before / after the fold
-DECK_GAP = 125                              # spacing inside the folded stack
-FOLD = (1.5, 3.1)                           # seconds over which the list moves up two ranks
+# Quote list. It starts as an ordinary list lying in the screen (rows screen-width, evenly spaced), then the
+# rows pop out of the glass one after another, top to bottom: each lifts, tilts up and grows (hinged at its
+# bottom edge, a small springy settle) into the reference's floating cards. Both states share one row
+# spacing, so every card rises straight out of its own row; raised cards all have the same size, tilt and
+# left edge (fitted on the reference: 1100 x 166 card, 27 deg tilt), so the gaps between them are equal.
+ROW_BOTTOM_0, ROW_STEP = 470, 240           # bottom edges of the rows (screen px), same flat and raised
+FLAT = dict(left=14, scale=0.68, tilt=0.0, tilt_y=0.0, hinge=0.0)      # lying in the screen
+RAISED = dict(left=-30, scale=0.90, tilt=27.0, tilt_y=6.0, hinge=40.0)  # floating, as in the reference
+POP_START, POP_STAGGER, POP_TIME = 0.6, 0.2, 0.85                      # seconds
 
 # ---------------------------------------------------------------- camera / pose, fitted to the reference
 LENS, CAM_D = 85.0, 51.97
@@ -402,21 +398,21 @@ def softplus(x, w=0.35):
     return w * math.log(1 + math.exp(x / w))
 
 
+def ease_out_back(x, overshoot=1.3):
+    x = clamp(x)
+    return 1 + (overshoot + 1) * (x - 1) ** 3 + overshoot * (x - 1) ** 2
+
+
 def card_pose(i, t):
     """Row i at time t -> (left px, bottom-edge y px, hinge lift px, scale, tilt X deg, tilt Y deg, opacity)."""
     if i > 4:
         return 24, 1700, 0, 1.0, 0, 0, 0.0
-    fold = smooth((t - FOLD[0]) / (FOLD[1] - FOLD[0]))
-    top = lerp(*LIST_TOP, fold)
-    r = i - 2 * fold                                   # rank in the list
-    raised = smooth((3.8 - r) / 1.6)
-    if r >= 0:
-        bottom, scale = top + RANK_STEP * r, 1.0 - RANK_SCALE * r
-        hinge = max(0.0, HINGE_0 + HINGE_PER_RANK * r)
-    else:                                              # folded into the stack above the front row
-        bottom, scale, hinge = top + DECK_GAP * r, 1.0, HINGE_0
-    tilt = CARD_TILT * raised
-    return lerp(FLAT_LEFT, RAISED_LEFT, raised), bottom, hinge, scale, tilt, CARD_TILT_Y * raised, 1.0
+    p = (t - POP_START - POP_STAGGER * i) / POP_TIME
+    grow = 1 - (1 - clamp(p)) ** 3              # size and position settle smoothly
+    lift = ease_out_back(p)                     # lift and tilt overshoot a touch, then settle
+    mix = lambda k, e: lerp(FLAT[k], RAISED[k], e)
+    return (mix('left', grow), ROW_BOTTOM_0 + ROW_STEP * i, max(0.0, mix('hinge', lift)), mix('scale', grow),
+            mix('tilt', lift), mix('tilt_y', lift), 1.0)
 
 
 def set_frame(f):

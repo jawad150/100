@@ -3,7 +3,7 @@
 A 10-second vertical video (1080×1920, 30 fps) matched shot-for-shot to the MT5 phone reference, on the navy `#1A1734` background, with no on-screen text or logo.
 
 - **Phone:** a silver iPhone 16 Pro modelled in Blender. It lies on a steep diagonal, turned on its long axis so its silver left side and buttons face the camera. A second iPhone with a red/green candle chart sits behind it.
-- **Quote cards:** cards for Gold, Silver, Crude Oil, Brent and Natural Gas flip up off the screen like a rolodex, with live red **Sell** and blue **Buy** prices. Around 2–4 s the top two fold into a stack, revealing the header, while the lower rows keep rising.
+- **Quote cards:** Gold, Silver, Crude Oil, Brent and Natural Gas start as a normal list lying in the screen, then pop out of the glass one after another into floating cards. All the cards share the same size, tilt and left edge, with equal gaps, and show live red **Sell** and blue **Buy** prices.
 - **Camera:** it slides slowly and steadily up the phone's long axis.
 
 The camera pose, card poses and timing were measured from the reference. Landmarks such as the status bar, the phone edges and the card corners were solved through a pinhole camera model, then verified by overlaying renders on reference frames at 2, 4, 6 and 9 s.
