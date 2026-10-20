@@ -28,3 +28,24 @@ ffmpeg -i floret/out/video_3d_silent.mp4 -i floret/out/mix.wav -c:v copy \
 ```
 
 `ui_atlas.html` draws the UI (screen, card faces and back-phone chart, laid out flat) at time `t` via `render(t)`. `blender_phone.py` holds the fitted camera and card keyframes (`POSE`, `PHONE_POS`/`PAN`, `CARD_KEYS`). `scene.html` is the earlier CSS-only version.
+
+## SaaS motion-graphics cut
+
+**`floret_saas_vo.mp4`** (voiceover) and **`floret_saas_music.mp4`** (music only). This is an 11-second version with the same iPhone, products, Sell/Buy buttons, chart and navy background. It is presented in an original motion-graphics style rather than as a recreation of the reference shot.
+
+| Time | Shot |
+|---|---|
+| 0.0–2.2 s | **Reveal.** The upright phone turns from edge-on to face the camera while the camera pushes in. The quote list lies flat. |
+| 2.2–4.6 s | **Pop.** A low wide-angle shot skims the glass while the cards pop out toward the camera. Focus racks to each card as it rises. |
+| 4.6–6.6 s | **Tap.** A macro shot on the Gold card glides from Sell to Buy. The Buy button is tapped (press, ripple, glow ring) while the other cards dim. |
+| 6.6–8.6 s | **Chart.** A tracking shot runs across the red and green candles on the second phone. |
+| 8.6–11.0 s | **Hero.** A three-quarter angle, mirrored from the reference, shows all five cards floating evenly while the camera pulls back slowly. |
+
+Every cut has a white flash, a zoom punch and a light sweep. The sound effects (whooshes, card pops, a tap click) are synced to the cuts.
+
+```bash
+ATLAS_HASH='#tap=0:5.6' OUT=floret/out node floret/render.js atlas 30 11
+python3 floret/saas_film.py render 1 330
+python3 floret/composite_saas.py
+SFX=saas DUR=11 python3 floret/audio.py floret/out/mix.wav floret/voiceover.wav 1.3
+```
