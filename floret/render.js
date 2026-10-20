@@ -16,7 +16,7 @@ async function openPage(browser, atlas) {
   const page = atlas
     ? await browser.newPage({ viewport: { width: 2700, height: 1700 }, deviceScaleFactor: 1.5 })
     : await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
-  await page.goto(atlas ? ATLAS_URL : URL);
+  await page.goto(atlas ? ATLAS_URL + (process.env.ATLAS_HASH || '') : URL);
   await page.evaluate(() => window.ready);
   await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
   return page;

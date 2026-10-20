@@ -412,19 +412,39 @@ def camera(lens=85.0):
     return cam
 
 
-def look_at(ob, eye, target, roll=0.0):
-    """Place a camera at eye looking at target, rolled by `roll` degrees."""
+def look_at(ob, eye, target, roll=0.0, up=(0, 1, 0)):
+    """Place a camera at eye looking at target with world `up` (this scene's up is +Y), rolled by `roll` degrees.
+    (Vector.to_track_quat keeps the camera's up toward world Z, which flips shots that look down the Z axis.)"""
+    from mathutils import Matrix, Quaternion
+    fwd = (Vector(target) - Vector(eye)).normalized()
+    right = fwd.cross(Vector(up)).normalized()
+    upv = right.cross(fwd)
+    rot = Matrix((right, upv, -fwd)).transposed()          # columns: camera X, Y, Z in world space
     ob.location = Vector(eye)
-    q = (Vector(target) - Vector(eye)).to_track_quat('-Z', 'Y')
     ob.rotation_mode = 'QUATERNION'
-    from mathutils import Quaternion
-    ob.rotation_quaternion = q @ Quaternion((0, 0, 1), math.radians(roll))
+    ob.rotation_quaternion = rot.to_quaternion() @ Quaternion((0, 0, 1), math.radians(roll))
+
+
+def set_visible(root, visible):
+    """Show or hide an object and everything parented under it (hiding an empty alone hides nothing)."""
+    for ob in [root, *root.children_recursive]:
+        ob.hide_render = not visible
 
 
 # ---------------------------------------------------------------- CLI render loop
 def run(set_frame):
     """still <f,f,...> -> $OUT/blender_stills, render <a> <b> -> $OUT/blender (skips frames already on disk)."""
     mode = sys.argv[1] if len(sys.argv) > 1 else 'still'
+    if mode == 'debug':
+        # where do the phone's top and right edges land in camera space (x right, y up, -z forward)?
+        for f in [int(x) for x in sys.argv[2].split(',')]:
+            sc.frame_set(f); set_frame(f); bpy.context.view_layer.update()
+            inv = sc.camera.matrix_world.inverted()
+            for ob in [o for o in sc.objects if o.type == 'EMPTY' and o.name.startswith('iPhone')]:
+                c, top, right = (inv @ (ob.matrix_world @ Vector(v)) for v in ((0, 0, 0), (0, BH / 2, 0), (BW / 2, 0, 0)))
+                print(f, ob.name, 'centre', tuple(round(x, 2) for x in c), 'top dir', tuple(round(x, 2) for x in (top - c)),
+                      'right dir', tuple(round(x, 2) for x in (right - c)))
+        return
     if mode == 'save':
         set_frame(1)
         bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, 'scene.blend'))
