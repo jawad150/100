@@ -69,6 +69,24 @@ for s in np.arange(1.0, DUR - 0.4, 0.61):
     e = env(s + rng.uniform(-0.05, 0.05), 0.0005, 0.02)
     fx += np.sin(2 * np.pi * 2400 * t) * e * 0.014
 
+# ---- motion-graphics cut (SFX=saas): whooshes into each cut, soft pops as the cards rise, a click on the tap
+if os.environ.get('SFX') == 'saas':
+    def whoosh_into(at, length=0.45, gain=0.35):
+        e = np.zeros(N)
+        i0, i1 = max(0, int((at - length) * SR)), min(N, int((at + 0.08) * SR))
+        x = np.linspace(0, 1, i1 - i0)
+        e[i0:i1] = x ** 2 * np.exp(-((x - 0.85) / 0.25) ** 2)
+        return lowpass(noise * e, 2200) * gain
+
+    for c in (2.2, 4.6, 6.6, 8.6):
+        fx += whoosh_into(c)
+        fx += np.sin(2 * np.pi * 55 * t) * env(c, 0.002, 0.25) * 0.18          # low thump on the cut
+    for i in range(5):
+        s0 = 2.5 + 0.2 * i + 0.25
+        fx += np.sin(2 * np.pi * (520 + 60 * i) * t) * env(s0, 0.001, 0.12) * 0.10
+    tap = 5.6
+    fx += lowpass(noise * env(tap, 0.0005, 0.03), 5000) * 0.5 + np.sin(2 * np.pi * 1800 * t) * env(tap, 0.0005, 0.05) * 0.12
+
 music = pad + pulse + arp
 
 # ---- voiceover
