@@ -6,7 +6,7 @@
 <!--
   Texture atlas for the Blender render (floret/blender_phone.py). One screenshot per frame, at 1.5x:
     main screen  (0, 0)          776 x 1688   iPhone 16 Pro display aspect
-    quote cards  (820, i*240)    1100 x 230   one per instrument
+    quote cards  (820, i*180)    1100 x 166   one per instrument (the reference's card proportions)
     back screen  (1920, 0)       776 x 1688   chart on the phone behind
   render(t) draws time t. Card positions in 3D are animated in Blender, not here.
 -->
@@ -38,11 +38,11 @@
   .search::before { content: ""; position: absolute; left: 24px; top: 15px; width: 18px; height: 18px; border: 3px solid #5d5d6d; border-radius: 50%; }
 
   .cols { position: absolute; left: 40px; right: 40px; top: 330px; display: flex; justify-content: space-between; color: #5f5f70; font-size: 19px; font-weight: 600; }
-  .chartwrap { position: absolute; left: 18px; top: 1440px; width: 740px; height: 214px; border-radius: 28px; background: #101017; overflow: hidden; }
+  .chartwrap { position: absolute; left: 18px; top: 1468px; width: 740px; height: 190px; border-radius: 28px; background: #101017; overflow: hidden; }
   .tf { position: absolute; left: 16px; top: 12px; display: flex; gap: 6px; }
   .tf span { font-size: 18px; font-weight: 600; color: #7d7d8c; padding: 6px 13px; border-radius: 13px; }
   .tf span.on { background: #2a2a36; color: #fff; }
-  #chart { position: absolute; left: 0; top: 44px; width: 740px; height: 170px; }
+  #chart { position: absolute; left: 0; top: 42px; width: 740px; height: 154px; }
   .homebar { position: absolute; left: 268px; bottom: 16px; width: 240px; height: 8px; border-radius: 4px; background: rgba(255,255,255,.65); }
 
   #backChart { position: absolute; left: 0; top: 0; width: 776px; height: 1688px; }
@@ -50,22 +50,22 @@
   .bhead small { display: block; color: #7d7d8e; font-size: 18px; font-weight: 500; margin-top: 4px; }
 
   /* ---------- quote cards (1070 x 190) ---------- */
-  .card { position: absolute; left: 820px; width: 1100px; height: 230px; border-radius: 56px; box-sizing: border-box; overflow: hidden;
+  .card { position: absolute; left: 820px; width: 1100px; height: 166px; border-radius: 44px; box-sizing: border-box; overflow: hidden;
     background: linear-gradient(180deg, #25252d 0%, #15151b 100%);
     border: 4px solid rgba(205,205,220,.42);
     box-shadow: inset 0 3px 0 rgba(255,255,255,.12); }
-  .card .ico { position: absolute; left: 34px; top: 30px; width: 58px; height: 58px; border-radius: 50%; }
-  .card .sym { position: absolute; left: 106px; top: 32px; color: #fff; font-size: 42px; font-weight: 700; letter-spacing: .3px; }
-  .card .desc { position: absolute; top: 45px; color: #7a7a8c; font-size: 25px; font-weight: 500; white-space: nowrap; }
-  .card .chg { position: absolute; left: 560px; top: 110px; font-size: 29px; font-weight: 600; }
-  .card canvas.spark { position: absolute; left: 430px; top: 150px; width: 330px; height: 62px; }
+  .card .ico { position: absolute; left: 30px; top: 18px; width: 46px; height: 46px; border-radius: 50%; }
+  .card .sym { position: absolute; left: 90px; top: 17px; color: #fff; font-size: 34px; font-weight: 700; letter-spacing: .3px; }
+  .card .desc { position: absolute; top: 27px; color: #7a7a8c; font-size: 21px; font-weight: 500; white-space: nowrap; }
+  .card .chg { position: absolute; left: 540px; top: 74px; font-size: 24px; font-weight: 600; }
+  .card canvas.spark { position: absolute; left: 420px; top: 104px; width: 330px; height: 48px; }
   .box { position: absolute; overflow: hidden; }
-  .box .lbl { position: absolute; left: 0; right: 0; top: 12px; text-align: center; font-size: 23px; font-weight: 600; color: rgba(255,255,255,.75); }
-  .box .px { position: absolute; left: 0; right: 0; top: 42px; text-align: center; font-size: 47px; font-weight: 700; color: #fff; letter-spacing: .3px; font-variant-numeric: tabular-nums; }
-  .box .px small { font-size: 34px; }
+  .box .lbl { position: absolute; left: 0; right: 0; top: 7px; text-align: center; font-size: 18px; font-weight: 600; color: rgba(255,255,255,.75); }
+  .box .px { position: absolute; left: 0; right: 0; top: 29px; text-align: center; font-size: 38px; font-weight: 700; color: #fff; letter-spacing: .3px; font-variant-numeric: tabular-nums; }
+  .box .px small { font-size: 28px; }
   .box .flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
-  .sell { left: 34px; top: 104px; width: 360px; height: 108px; border-radius: 24px 24px 24px 54px; background: linear-gradient(180deg, #ff4855 0%, #d71d2e 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.35); }
-  .buy  { left: 780px; top: 26px; width: 292px; height: 122px; border-radius: 24px 60px 60px 24px; background: linear-gradient(180deg, #3a78ff 0%, #1240e2 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.35); }
+  .sell { left: 30px; top: 72px; width: 340px; height: 80px; border-radius: 18px 18px 18px 40px; background: linear-gradient(180deg, #ff4855 0%, #d71d2e 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.35); }
+  .buy  { left: 790px; top: 16px; width: 286px; height: 92px; border-radius: 18px 46px 46px 18px; background: linear-gradient(180deg, #3a78ff 0%, #1240e2 100%); box-shadow: inset 0 2px 0 rgba(255,255,255,.35); }
 
   .i-gold { background: radial-gradient(circle at 35% 30%, #fff3b0, #f2c230 45%, #a77a06 100%); }
   .i-silver { background: radial-gradient(circle at 35% 30%, #ffffff, #c9ccd6 45%, #6d717e 100%); }
@@ -89,7 +89,7 @@
   <div class="cols"><span>Symbol</span><span>Bid / Ask</span></div>
   <div class="chartwrap">
     <div class="tf"><span>M1</span><span>M5</span><span class="on">M15</span><span>H1</span><span>H4</span><span>D1</span></div>
-    <canvas id="chart" width="1480" height="340"></canvas>
+    <canvas id="chart" width="1480" height="308"></canvas>
   </div>
   <div class="homebar"></div>
 </div>
@@ -131,14 +131,14 @@ INSTR.forEach((ins, k) => {
 const tickIndex = (ins, t) => Math.max(0, Math.floor((t - ins.phase) / ins.period));
 
 const cards = INSTR.map((ins, i) => {
-  const c = document.createElement('div'); c.className = 'card'; c.style.top = (i * 240) + 'px';
+  const c = document.createElement('div'); c.className = 'card'; c.style.top = (i * 180) + 'px';
   c.innerHTML = `
     <div class="ico ${ins.ico}"></div>
     <div class="sym">${ins.sym}</div>
     <div class="desc">${ins.desc}</div>
     <div class="box sell"><div class="lbl">Sell</div><div class="px"></div><div class="flash"></div></div>
     <div class="chg"></div>
-    <canvas class="spark" width="660" height="124"></canvas>
+    <canvas class="spark" width="660" height="96"></canvas>
     <div class="box buy"><div class="lbl">Buy</div><div class="px"></div><div class="flash"></div></div>`;
   document.body.appendChild(c);
   const q = s => c.querySelector(s);
@@ -152,7 +152,7 @@ function pxHTML(v, d) {
 }
 
 function drawSpark(c, t) {
-  const g = c.sparkG, W = 660, H = 124, ins = c.ins;
+  const g = c.sparkG, W = 660, H = 96, ins = c.ins;
   g.clearRect(0, 0, W, H);
   const n = tickIndex(ins, t);
   const pts = ins.hist.slice(Math.min(40, n + 1)).concat(ins.ticks.slice(Math.max(0, n - 39), n + 1)).slice(-40);
@@ -250,12 +250,12 @@ function render(t) {
     c.chg.style.color = ch >= 0 ? '#2fd07f' : '#ff4a57';
     drawSpark(c, t);
   });
-  drawCandles(chartG, 1480, 340, MAIN, 70 + t / CANDLE_SEC, 30, { axis: true, padT: 24, padB: 24 });
+  drawCandles(chartG, 1480, 308, MAIN, 70 + t / CANDLE_SEC, 30, { axis: true, padT: 24, padB: 24 });
   drawCandles(backG, 776, 1688, BACK, 90 + t / (CANDLE_SEC * 1.2), 18, { axis: false, padT: 260, padB: 160 });
 }
 window.render = render;
 window.ready = document.fonts.ready.then(() => {
-  cards.forEach(c => { c.desc.style.left = (106 + c.sym.offsetWidth + 16) + 'px'; });
+  cards.forEach(c => { c.desc.style.left = (90 + c.sym.offsetWidth + 14) + 'px'; });
   render(0); return true;
 });
 </script>

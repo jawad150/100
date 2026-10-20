@@ -30,21 +30,23 @@ DR = BR - (BW - DW) / 2
 SCREEN_PX = (776, 1688)
 K = DW / SCREEN_PX[0]                       # atlas CSS px -> units on the display
 ATLAS_SIZE, AS = (4050, 2550), 1.5
-CARD_W, CARD_H, CARD_R = 1100, 230, 56
-CARD_X, CARD_STEP_ATLAS, BACK_X = 820, 240, 1920
+CARD_W, CARD_H, CARD_R = 1100, 166, 44
+CARD_X, CARD_STEP_ATLAS, BACK_X = 820, 180, 1920
 
 # ---------------------------------------------------------------- quote list motion (screen px)
-# Card poses fitted to the reference through the solved camera, at its 2 s and 9 s frames (start / end here):
-# (left px, bottom-edge y px, hinge lift px, scale, tilt X deg, tilt Y deg). Rows flip up off the glass like a
-# rolodex, hinged near the bottom edge. Over the shot the top two rows slide down into a stack behind the third,
-# revealing the header, while the lower rows rise and grow.
-CARD_KEYS = [
-    ((-70, 454, 128, 0.94, 12, 5), (-84, 680, 92, 0.93, 27, 4)),     # GOLD    (ref: GOLD)
-    ((-45, 697, 63, 0.86, 18, 4), (-84, 790, 92, 0.93, 27, 4)),      # SILVER  (ref: US SPX)
-    ((-124, 1006, 111, 0.80, 34, 7), (-84, 900, 92, 0.93, 27, 4)),   # CRUDE   (ref: AAPL)
-    ((20, 1185, 65, 0.66, 3, -10), (-20, 1110, 30, 0.93, 8, 5)),     # BRENT   (ref: NATGAS: right end lifting)
-    ((24, 1392, 0, 0.64, 0, 0), (10, 1330, 0, 0.75, 12, 4)),         # NATGAS  (ref: NVDA)
-]
+# Quote list, fitted to the reference through the solved camera (card corners, ~6 px rms) as ONE list.
+# Geometry depends on a row's rank r in the list: rank 0 (front) is full size; each rank further down is 9 %
+# smaller, 265 px lower and flatter, so the lowest rows are screen width and lie in the glass. Every card
+# shares one shape (1100 x 166), one 27 deg tilt and one left edge. Around 1.5-3.1 s every row moves up two
+# ranks: the top two fold into a stack above the new front row (125 px apart) and the list start moves down
+# from 370 to 818 px to make room for the stack and the header.
+CARD_TILT, CARD_TILT_Y = 27.0, 6.2
+RAISED_LEFT, FLAT_LEFT = -28.5, 0
+RANK_STEP, RANK_SCALE = 265, 0.085           # px between rank bottoms; scale lost per rank
+HINGE_0, HINGE_PER_RANK = 38, -28           # hinge lift of the front row and its change per rank (px)
+LIST_TOP = (370, 818)                       # bottom edge of the front row before / after the fold
+DECK_GAP = 125                              # spacing inside the folded stack
+FOLD = (1.5, 3.1)                           # seconds over which the list moves up two ranks
 
 # ---------------------------------------------------------------- camera / pose, fitted to the reference
 LENS, CAM_D = 85.0, 51.97
@@ -402,14 +404,19 @@ def softplus(x, w=0.35):
 
 def card_pose(i, t):
     """Row i at time t -> (left px, bottom-edge y px, hinge lift px, scale, tilt X deg, tilt Y deg, opacity)."""
-    if i >= len(CARD_KEYS):
-        return 24, 1700, 0, 0.64, 0, 0, 0.0
-    # reference timing: still until ~1.6 s, the top two rows fold into the stack by ~3.6 s, then the lower
-    # rows keep rising slowly until the end
-    fold, slow = smooth((t - 1.6) / 2.0), smooth((t - 1.4) / (DUR - 1.4))
-    k = (fold, fold, 0.7 * fold + 0.3 * t / DUR, slow, slow)[i]
-    a, b = CARD_KEYS[i]
-    return (*[lerp(x, y, k) for x, y in zip(a, b)], 1.0)
+    if i > 4:
+        return 24, 1700, 0, 1.0, 0, 0, 0.0
+    fold = smooth((t - FOLD[0]) / (FOLD[1] - FOLD[0]))
+    top = lerp(*LIST_TOP, fold)
+    r = i - 2 * fold                                   # rank in the list
+    raised = smooth((3.8 - r) / 1.6)
+    if r >= 0:
+        bottom, scale = top + RANK_STEP * r, 1.0 - RANK_SCALE * r
+        hinge = max(0.0, HINGE_0 + HINGE_PER_RANK * r)
+    else:                                              # folded into the stack above the front row
+        bottom, scale, hinge = top + DECK_GAP * r, 1.0, HINGE_0
+    tilt = CARD_TILT * raised
+    return lerp(FLAT_LEFT, RAISED_LEFT, raised), bottom, hinge, scale, tilt, CARD_TILT_Y * raised, 1.0
 
 
 def set_frame(f):
