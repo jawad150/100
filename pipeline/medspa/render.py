@@ -190,8 +190,9 @@ def _min_hold(hold=0.38):
 _min_hold()
 
 # transitions at cuts: (type, frames before, frames after)
-TRANS = {78: 'zoom', 137: 'flash', 196: 'whip', 246: 'zoom', 310: 'flash', 362: 'punch', 498: 'zoom',
-         570: 'whipv', 637: 'leak', 770: 'zoom', 837: 'blur', 884: 'whip', 937: 'flash'}
+# client: fewer transitions -- keep the opening push, two whips and the brand-red leak; every other
+# cut (137, 246, 310, 362, 498, 570, 770, 837, 937) is a plain hard cut (no SFX either: sfx.py follows TRANS)
+TRANS = {78: 'zoom', 196: 'whip', 637: 'leak', 884: 'whip'}
 SPAN = {'zoom': (4, 4), 'flash': (3, 4), 'whip': (3, 3), 'whipv': (3, 3), 'punch': (2, 3), 'blur': (4, 4),
         'leak': (5, 5)}
 

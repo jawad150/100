@@ -1,6 +1,6 @@
 # P.S. Med Spa reel: captions, motion graphics, transitions, grade
 
-A 41.1 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-Med-Spa.mov` (2160×3840, 14 shots, 40.5 s). The cut, voice and music are kept as delivered. The last frame is held about 0.6 s so the closing words land before the fade to black. On top of them the pipeline adds a color grade, motion-graphic captions, the before/after photo cards, and transitions at every cut, styled after the reference reel.
+A 41.1 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-Med-Spa.mov` (2160×3840, 14 shots, 40.5 s). The cut, voice and music are kept as delivered. The last frame is held about 0.6 s so the closing words land before the fade to black. On top of them the pipeline adds a color grade, motion-graphic captions, the before/after photo cards, and a few transitions, styled after the reference reel.
 
 **Output:** [`reel/medspa/PS_MedSpa_Reel_1080x1920.mp4`](../../reel/medspa/PS_MedSpa_Reel_1080x1920.mp4) · Resolve LUT: [`reel/medspa/PS_MedSpa_Look_Rec709.cube`](../../reel/medspa/PS_MedSpa_Look_Rec709.cube)
 
@@ -19,14 +19,13 @@ A 41.1 s vertical reel (1080×1920, 23.976 fps) made from the supplied edit `PS-
   To use the real fonts, drop `.ttf` or `.otf` files into `workspace/medspa/fonts/` under the names in `prep.py:FONTS` and re-render.
 - **Masking.** [Robust Video Matting](https://github.com/PeterL1n/RobustVideoMatting) (MobileNetV3, ONNX) produces a per-frame person matte, with its recurrent state reset at each cut. This lets words and cards sit behind her, her hair, her arms and her gloved hands. A background motion track (phase correlation with the person masked out) pins these graphics to the wall while the camera drifts. In the doorway shot, the out-of-focus door jamb is tracked too, so "8.5" sits behind both her and the jamb. In the sitting shots, the big words start at the edge of her hair, so the first letter tucks behind her and the word stays readable.
 - **Photo cards** appear while she talks about her work (15–20.8 s). The four before/after photos are rounded glass cards with soft drop shadows, tilted in 3D. Two sit behind her and two in front, joined by a glowing brand-red line, and they fly into the camera on the cut.
-- **Transitions:**
-  - zoom-blur push
-  - white flash
-  - horizontal and vertical whip
-  - punch-in
-  - blur dissolve
+- **Transitions.** Four, cut down from one at every cut on client feedback ("less transitions"):
+  - zoom-blur push into the opening
+  - two horizontal whips
   - brand-red light leak
-- **SFX.** Quiet whooshes, pops and swells sit about 16 dB under the voice. The original voice and music are untouched.
+
+  The other nine cuts are plain hard cuts, with no whoosh on them.
+- **SFX.** Quiet whooshes (only on the four transitions), pops and swells sit about 16 dB under the voice. The original voice and music are untouched.
 
 ## Grade, and the S-Log note
 
