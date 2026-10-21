@@ -1,3 +1,28 @@
+# Organic Fostering — "Your Year in Fostering"
+
+A 30 s vertical reel (1080×1920, 30 fps, -14 LUFS) built from the "Your Year in Fostering" concept. It borrows the year-in-review story format to picture a foster carer's year, then shows the support behind it, and ends with "Start your story".
+
+**Final:** [`reel/organic_fostering/organic_fostering_year_in_fostering.mp4`](reel/organic_fostering/organic_fostering_year_in_fostering.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_year_in_fostering_share.mp4)
+
+| Time | Scene |
+|---|---|
+| 0–3 s | 3D phone: "Your Year in Fostering is ready" notification with a 3D gift, then a tap on Play bursts into the magenta-to-orange gradient. Title: "What if this was your 2027?" |
+| 3–16.25 s | Story cards (cube swipes, story progress bar): the first 'goodnight' (rising 3D moon), "Can we have pizza tonight?" (beat-synced waveform, 3D pizza), Bedtime stories (book stack, counter spins to "Lost count"), your team (4 avatars), and a slot-machine roll to "From £447.60 a week*" |
+| 16.25–21.6 s | The glowing card that holds longest: "A safe home. Everyday care. A place to belong." with a 3D house, light rays and a heart |
+| 21.6–25.5 s | The cards fan out into a grid and shuffle into "Your 2027 story · Not started yet" (3D 2027), with a pulsing "Start your story" button |
+| 25.5–30 s | Tap, the card flips to "Enquiry started", then the logo end card with the enquiry, phone, web, Ofsted rating and small print, followed by a gentle fade |
+
+Voiceover: the same calm, natural voice as the Support Update reel (af_heart/bf_emma blend, en-gb), built phrase by phrase with soft tails. The last word ends before the 1.25 s fade.
+
+Pipeline (`pipeline_yf/`):
+- `vo_yf.py` generates the voiceover.
+- `blender_yf.py` renders the pizza, books, gift and 3D "2027".
+- `reel_yf.py` is the compositor and reuses the phone, glass and type helpers from `reel_su.py`.
+- `audio_yf.py` builds the 120 BPM pop bed, swipe whooshes, reveal dings and Foley.
+- `render_yf.py` renders and encodes.
+
+---
+
 # Organic Fostering — "Support Update Available"
 
 A 30 s vertical reel (1080×1920, 30 fps, -14 LUFS) for foster carers who are already approved elsewhere. It follows the "Support Update Available" concept script, its timing and its 14-panel storyboard, read as a calm, conversational voiceover. The voice is a blend of af_heart and bf_emma with en-gb pronunciation, built phrase by phrase with natural pauses and soft tails, and the reel ends with a gentle 1.3 s fade-out. A phone notification ("Fostering Support: update available") becomes a system check of six support questions. The release notes show it's all included, a chat raises continuity of care, and "Install" turns into "Explore a transfer". The look is night neon: plum, magenta-edged glass, orange buttons, green checks and Poppins.
