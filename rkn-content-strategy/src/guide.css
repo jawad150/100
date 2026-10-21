@@ -1,0 +1,71 @@
+@import url("style.css");
+
+body { font-size: 10pt; }
+
+/* Location header band */
+.loc { break-before: page; }
+.loc-band { background: var(--ink); color: #fff; border-radius: 2.4mm; padding: 4mm 5mm; display: flex; align-items: center; gap: 5mm; margin-bottom: 3.4mm; }
+.loc-band .n { font-family: "Cinzel", serif; font-size: 28pt; font-weight: 700; color: var(--gold); line-height: 1; }
+.loc-band .eyebrow { font-size: 7.6pt; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+.loc-band h2 { font-family: "Cinzel", serif; font-size: 18pt; margin: .6mm 0 0; color: #fff; line-height: 1.1; }
+.loc-band .meta { margin-left: auto; text-align: right; font-size: 8.4pt; color: #cfc8b8; line-height: 1.55; }
+.loc-band .meta b { color: var(--gold); }
+
+.setup { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-bottom: 3.4mm; }
+.setup > div { background: var(--cream); border-radius: 2mm; padding: 2.6mm 3.4mm; font-size: 8.8pt; }
+.setup .lbl { font-size: 7pt; letter-spacing: .18em; text-transform: uppercase; color: var(--bronze); font-weight: 800; display: block; margin-bottom: .8mm; }
+.setup ul { margin: 0; padding-left: 4mm; }
+.setup li { margin-bottom: .5mm; }
+
+/* Idea sub-heading inside a location */
+.idea-sub { display: flex; align-items: baseline; gap: 2.6mm; margin: 4.2mm 0 1.6mm; border-bottom: 1pt solid var(--gold); padding-bottom: 1.2mm; break-after: avoid; }
+.idea-sub .code { background: var(--gold); color: var(--ink); font-weight: 800; font-size: 8.4pt; border-radius: 1.2mm; padding: .6mm 2mm; }
+.idea-sub .t { font-weight: 800; font-size: 11pt; color: var(--ink); }
+.idea-sub .d { font-size: 8.4pt; color: var(--grey); margin-left: auto; text-align: right; }
+
+/* Shot tables */
+table.shots { font-size: 8.9pt; margin: 0 0 2mm; }
+table.shots thead th { font-size: 7.2pt; padding: 1.5mm 2mm; }
+table.shots tbody td { padding: 1.6mm 2mm; }
+table.shots td.ck { width: 6mm; }
+table.shots td.ck::before { content: ""; display: inline-block; width: 3.4mm; height: 3.4mm; border: 1pt solid var(--gold2); border-radius: .6mm; vertical-align: middle; }
+table.shots td.code { width: 12mm; font-weight: 800; color: var(--bronze-dk); white-space: nowrap; }
+table.shots td.tk { width: 10mm; text-align: center; font-weight: 700; }
+table.shots td.fr { width: 30mm; color: #444; }
+.say { display: block; margin-top: .6mm; font-weight: 700; color: var(--ink); }
+.say::before { content: "SAY: "; font-size: 6.8pt; letter-spacing: .12em; color: var(--bronze); font-weight: 800; }
+.ai-note { display: inline-block; margin-top: .6mm; font-size: 7.4pt; font-weight: 700; color: var(--gold); background: var(--ink); border-radius: 1mm; padding: .2mm 1.6mm; }
+
+/* Script sheet */
+.script { break-inside: avoid; border: .7pt solid var(--line); border-radius: 2mm; padding: 2.8mm 3.6mm; margin-bottom: 2.8mm; }
+.script .h { display: flex; gap: 2.4mm; align-items: center; margin-bottom: 1.2mm; }
+.script .h .code { background: var(--ink); color: var(--gold); font-weight: 800; font-size: 7.8pt; border-radius: 1.2mm; padding: .5mm 1.8mm; }
+.script .h .t { font-weight: 800; color: var(--ink); font-size: 9.8pt; }
+.script p { margin: 0 0 1.2mm; font-size: 9.2pt; }
+.script .ln { font-weight: 600; color: var(--ink); }
+.script .ln::before { content: "“"; color: var(--gold2); font-weight: 800; }
+.script .ln::after { content: "”"; color: var(--gold2); font-weight: 800; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2mm 4mm; font-size: 9pt; }
+.pair .p { color: var(--ink); }
+.pair .th { font-weight: 800; color: var(--bronze-dk); text-transform: uppercase; font-size: 8.6pt; }
+.pair .hd { font-size: 7pt; letter-spacing: .16em; text-transform: uppercase; font-weight: 800; color: var(--grey); }
+
+.rule-box { background: var(--ink); color: #e9e6df; border-radius: 2.4mm; padding: 3.6mm 4.4mm; margin-bottom: 3.4mm; break-inside: avoid; }
+.rule-box .lbl { font-size: 7.4pt; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 800; display: block; margin-bottom: 1.2mm; }
+.rule-box b { color: var(--gold); }
+.rule-box ol, .rule-box ul { margin-bottom: 0; }
+.rule-box li { font-size: 9.2pt; }
+
+.glance td { font-size: 8.6pt; }
+.big3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-bottom: 3.4mm; }
+.big3 .tile { text-align: center; }
+.big3 .k { font-family: "Cinzel", serif; font-size: 15pt; font-weight: 700; color: var(--gold2); line-height: 1.1; }
+.big3 .v { font-size: 8.4pt; color: var(--grey); }
+
+table.shots tbody td { padding: 1.25mm 1.8mm; }
+table.shots { font-size: 8.7pt; }
+.glance td { font-size: 8.2pt; padding: 1.1mm 2mm !important; }
+.setup { margin-bottom: 2.6mm; }
+.setup > div { padding: 2.2mm 3.2mm; font-size: 8.5pt; }
+.loc-band { padding: 3.2mm 4.6mm; margin-bottom: 2.8mm; }
+.idea-sub { margin: 3.4mm 0 1.4mm; }
