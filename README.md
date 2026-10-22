@@ -1,3 +1,23 @@
+# IC London — "No Law Degree? You May Still Have a Route into Law"
+
+A 30 s vertical reel (1080×1920, 30 fps, -15 LUFS) for IC London (Innovate College London). The concept is a career "route planner". A montage of IC London's own website photography asks "Think you need a law degree to become a solicitor?". The "Law degree required?" toggle flips to "Not necessarily", the planner recalculates, and the camera travels a tilted 3D route map through the SRA's SQE requirements to "Qualified solicitor". It then shows IC London's SQE course and the call to action.
+
+**Final:** [`reel/ic_london/ic_london_no_law_degree.mp4`](reel/ic_london/ic_london_no_law_degree.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_no_law_degree_share.mp4)
+
+Sources for every on-screen fact:
+- SRA, [sra.org.uk/become-solicitor/sqe](https://www.sra.org.uk/become-solicitor/sqe/): a degree in any subject or an equivalent level 6 qualification, passing SQE1 and SQE2, two years' full-time-equivalent QWE, and character and suitability.
+- SRA, [QWE for candidates](https://www.sra.org.uk/become-solicitor/sqe/qualifying-work-experience-candidates/): up to four organisations, paid or volunteer, before, during or after the SQE.
+- IC London, [SQE course page](https://iclondon.co.uk/courses/solicitors-qualifying-examination-sqe-prep/): complete SQE1 and SQE2 coverage, mock exams and practice tests, career guidance and QWE support, and expert solicitor-tutors.
+
+Brand (from iclondon.co.uk): logo navy #00247D and red #CF142B, with the site fonts Inter and Cardo. Pipeline (`pipeline_ic/`):
+- `vo_ic.py` generates the voiceover.
+- `blender_ic.py` renders the navy/red 3D icons.
+- `reel_ic.py` is the compositor.
+- `audio_ic.py` builds the soundtrack.
+- `render_ic.py` renders and encodes.
+
+---
+
 # Organic Fostering — "Your Year in Fostering"
 
 A 30 s vertical reel (1080×1920, 30 fps, -14 LUFS) built from the "Your Year in Fostering" concept. It borrows the year-in-review story format to picture a foster carer's year, then shows the support behind it, and ends with "Start your story".
