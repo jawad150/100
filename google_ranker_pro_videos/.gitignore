@@ -1,0 +1,2 @@
+# Copies of videos already published on the live sites (re-download if needed)
+assets/sites/**/*.mp4

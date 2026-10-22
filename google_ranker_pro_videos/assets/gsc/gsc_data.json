@@ -1,0 +1,1522 @@
+[
+  {
+    "file": "goldenlinetaxiswarwick_gsc_3m.png",
+    "domain": "goldenlinetaxiswarwick.co.uk",
+    "property_url_shown": "https://goldenlinetaxiswarwick.co.uk/",
+    "source_type": "Google Search Console - Performance report",
+    "filters": "Search type: Web; Daily",
+    "image_size_px": [
+      1366,
+      2251
+    ],
+    "crops_xywh": {
+      "totals_cards": [
+        24,
+        201,
+        720,
+        110
+      ],
+      "line_chart_with_date_axis": [
+        24,
+        330,
+        1318,
+        240
+      ],
+      "table_header": [
+        24,
+        847,
+        1318,
+        57
+      ],
+      "table_header_plus_top3": [
+        24,
+        847,
+        1318,
+        204
+      ],
+      "table_header_plus_top5": [
+        24,
+        847,
+        1318,
+        303
+      ],
+      "full_query_table_25_rows": [
+        24,
+        847,
+        1318,
+        1281
+      ],
+      "pagination_1_25_of_N": [
+        930,
+        2135,
+        410,
+        40
+      ],
+      "url_inspect_bar_with_domain": [
+        376,
+        8,
+        710,
+        50
+      ]
+    },
+    "row_crop_rule": "row n (1-25): x=24, y=904+round((n-1)*49.1), w=1318, h=49 (header row y=847,h=57)",
+    "period": {
+      "label": "3 months (Search Console preset)",
+      "approx_start": "2026-07-19",
+      "approx_end": "2026-10-18",
+      "chart_axis_first_label": "7/19/26",
+      "chart_axis_last_label": "10/15/26",
+      "note": "Exact end date not printed; 'Last update: 5.5 hours ago'. Daily granularity."
+    },
+    "totals": {
+      "total_clicks": 312,
+      "total_impressions": "18.2K",
+      "total_impressions_approx": 18200,
+      "average_ctr": "1.7%",
+      "average_position": 18.9,
+      "total_queries": 744
+    },
+    "rows_shown": "1-25 of 744, sorted by clicks desc",
+    "rows": [
+      {
+        "rank": 1,
+        "query": "golden line taxis warwick",
+        "clicks": 14,
+        "impressions": 60,
+        "ctr": "23.3%",
+        "position": 1.8,
+        "crop_xywh": [
+          24,
+          904,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 2,
+        "query": "golden line taxis",
+        "clicks": 13,
+        "impressions": 57,
+        "ctr": "22.8%",
+        "position": 2.0,
+        "crop_xywh": [
+          24,
+          953,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 3,
+        "query": "warwick taxis",
+        "clicks": 8,
+        "impressions": 371,
+        "ctr": "2.2%",
+        "position": 11.5,
+        "crop_xywh": [
+          24,
+          1002,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 4,
+        "query": "kenilworth taxis",
+        "clicks": 7,
+        "impressions": 291,
+        "ctr": "2.4%",
+        "position": 6.7,
+        "crop_xywh": [
+          24,
+          1051,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 5,
+        "query": "taxi warwick",
+        "clicks": 6,
+        "impressions": 665,
+        "ctr": "0.9%",
+        "position": 10.7,
+        "crop_xywh": [
+          24,
+          1100,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 6,
+        "query": "warwick airport taxi",
+        "clicks": 6,
+        "impressions": 46,
+        "ctr": "13%",
+        "position": 6.1,
+        "crop_xywh": [
+          24,
+          1150,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 7,
+        "query": "airport transfers warwick",
+        "clicks": 4,
+        "impressions": 145,
+        "ctr": "2.8%",
+        "position": 7.1,
+        "crop_xywh": [
+          24,
+          1199,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 8,
+        "query": "golden line taxi",
+        "clicks": 4,
+        "impressions": 88,
+        "ctr": "4.5%",
+        "position": 8.0,
+        "crop_xywh": [
+          24,
+          1248,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 9,
+        "query": "warwick taxi",
+        "clicks": 3,
+        "impressions": 486,
+        "ctr": "0.6%",
+        "position": 12.6,
+        "crop_xywh": [
+          24,
+          1297,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 10,
+        "query": "warwick taxi service",
+        "clicks": 3,
+        "impressions": 132,
+        "ctr": "2.3%",
+        "position": 10.3,
+        "crop_xywh": [
+          24,
+          1346,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 11,
+        "query": "golden taxi",
+        "clicks": 2,
+        "impressions": 45,
+        "ctr": "4.4%",
+        "position": 8.8,
+        "crop_xywh": [
+          24,
+          1395,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 12,
+        "query": "golden taxis",
+        "clicks": 2,
+        "impressions": 15,
+        "ctr": "13.3%",
+        "position": 6.7,
+        "crop_xywh": [
+          24,
+          1444,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 13,
+        "query": "kenilworth taxi",
+        "clicks": 1,
+        "impressions": 314,
+        "ctr": "0.3%",
+        "position": 16.4,
+        "crop_xywh": [
+          24,
+          1493,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 14,
+        "query": "taxi kenilworth",
+        "clicks": 1,
+        "impressions": 265,
+        "ctr": "0.4%",
+        "position": 8.6,
+        "crop_xywh": [
+          24,
+          1542,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 15,
+        "query": "taxis warwick",
+        "clicks": 1,
+        "impressions": 187,
+        "ctr": "0.5%",
+        "position": 13.1,
+        "crop_xywh": [
+          24,
+          1591,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 16,
+        "query": "golden line",
+        "clicks": 1,
+        "impressions": 148,
+        "ctr": "0.7%",
+        "position": 7.0,
+        "crop_xywh": [
+          24,
+          1640,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 17,
+        "query": "warwick taxi numbers",
+        "clicks": 1,
+        "impressions": 144,
+        "ctr": "0.7%",
+        "position": 10.1,
+        "crop_xywh": [
+          24,
+          1690,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 18,
+        "query": "gold line taxis",
+        "clicks": 1,
+        "impressions": 89,
+        "ctr": "1.1%",
+        "position": 11.6,
+        "crop_xywh": [
+          24,
+          1739,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 19,
+        "query": "taxis kenilworth",
+        "clicks": 1,
+        "impressions": 70,
+        "ctr": "1.4%",
+        "position": 8.5,
+        "crop_xywh": [
+          24,
+          1788,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 20,
+        "query": "airport taxi warwick",
+        "clicks": 1,
+        "impressions": 64,
+        "ctr": "1.6%",
+        "position": 5.3,
+        "crop_xywh": [
+          24,
+          1837,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 21,
+        "query": "goldenline",
+        "clicks": 1,
+        "impressions": 41,
+        "ctr": "2.4%",
+        "position": 10.6,
+        "crop_xywh": [
+          24,
+          1886,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 22,
+        "query": "gold line taxi",
+        "clicks": 1,
+        "impressions": 18,
+        "ctr": "5.6%",
+        "position": 8.4,
+        "crop_xywh": [
+          24,
+          1935,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 23,
+        "query": "taxis near me",
+        "clicks": 1,
+        "impressions": 17,
+        "ctr": "5.9%",
+        "position": 12.1,
+        "crop_xywh": [
+          24,
+          1984,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 24,
+        "query": "taxi with car seat",
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": "33.3%",
+        "position": 1.7,
+        "crop_xywh": [
+          24,
+          2033,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 25,
+        "query": "taxi seven warwick",
+        "clicks": 1,
+        "impressions": 2,
+        "ctr": "50%",
+        "position": 9.0,
+        "crop_xywh": [
+          24,
+          2082,
+          1318,
+          49
+        ]
+      }
+    ],
+    "chart_notes": "All four metrics plotted with no visible y-axis values; no numbers can be read from the chart. Orange (position, inverted axis) visibly sits higher from mid-Aug 2026 onward = better average position later in the period; qualitative only.",
+    "notes": "Notification badge shows 97 (UI chrome, not data). Brand queries rank 1.8-2.0; 'taxi with car seat' pos 1.7 on only 3 impressions."
+  },
+  {
+    "file": "coventryairporttaxis247_gsc_3m_full.png",
+    "domain": "coventryairporttaxis247.co.uk",
+    "property_url_shown": "https://coventryairporttaxis247.co.uk/",
+    "source_type": "Google Search Console - Performance report",
+    "filters": "Search type: Web; Daily",
+    "image_size_px": [
+      1366,
+      2251
+    ],
+    "crops_xywh": {
+      "totals_cards": [
+        24,
+        201,
+        720,
+        110
+      ],
+      "line_chart_with_date_axis": [
+        24,
+        330,
+        1318,
+        240
+      ],
+      "table_header": [
+        24,
+        847,
+        1318,
+        57
+      ],
+      "table_header_plus_top3": [
+        24,
+        847,
+        1318,
+        204
+      ],
+      "table_header_plus_top5": [
+        24,
+        847,
+        1318,
+        303
+      ],
+      "full_query_table_25_rows": [
+        24,
+        847,
+        1318,
+        1281
+      ],
+      "pagination_1_25_of_N": [
+        930,
+        2135,
+        410,
+        40
+      ],
+      "url_inspect_bar_with_domain": [
+        376,
+        8,
+        710,
+        50
+      ]
+    },
+    "row_crop_rule": "row n (1-25): x=24, y=904+round((n-1)*49.1), w=1318, h=49 (header row y=847,h=57)",
+    "period": {
+      "label": "3 months (Search Console preset)",
+      "approx_start": "2026-07-19",
+      "approx_end": "2026-10-18",
+      "chart_axis_first_label": "7/19/26",
+      "chart_axis_last_label": "10/15/26",
+      "note": "Exact end date not printed; 'Last update: 5.5 hours ago'. Daily granularity."
+    },
+    "totals": {
+      "total_clicks": 224,
+      "total_impressions": "15.9K",
+      "total_impressions_approx": 15900,
+      "average_ctr": "1.4%",
+      "average_position": 18.4,
+      "total_queries": 508
+    },
+    "rows_shown": "1-25 of 508, sorted by clicks desc",
+    "rows": [
+      {
+        "rank": 1,
+        "query": "airport taxi coventry",
+        "clicks": 15,
+        "impressions": 343,
+        "ctr": "4.4%",
+        "position": 13.6,
+        "crop_xywh": [
+          24,
+          904,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 2,
+        "query": "airport transfers coventry",
+        "clicks": 12,
+        "impressions": 607,
+        "ctr": "2%",
+        "position": 22.0,
+        "crop_xywh": [
+          24,
+          953,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 3,
+        "query": "coventry airport taxi",
+        "clicks": 8,
+        "impressions": 95,
+        "ctr": "8.4%",
+        "position": 7.0,
+        "crop_xywh": [
+          24,
+          1002,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 4,
+        "query": "coventry airport transfers",
+        "clicks": 8,
+        "impressions": 76,
+        "ctr": "10.5%",
+        "position": 6.0,
+        "crop_xywh": [
+          24,
+          1051,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 5,
+        "query": "airport taxis coventry",
+        "clicks": 5,
+        "impressions": 200,
+        "ctr": "2.5%",
+        "position": 18.1,
+        "crop_xywh": [
+          24,
+          1100,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 6,
+        "query": "taxi to birmingham airport from coventry",
+        "clicks": 5,
+        "impressions": 70,
+        "ctr": "7.1%",
+        "position": 8.1,
+        "crop_xywh": [
+          24,
+          1150,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 7,
+        "query": "coventry airport taxis",
+        "clicks": 5,
+        "impressions": 19,
+        "ctr": "26.3%",
+        "position": 8.2,
+        "crop_xywh": [
+          24,
+          1199,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 8,
+        "query": "airport transfers",
+        "clicks": 2,
+        "impressions": 121,
+        "ctr": "1.7%",
+        "position": 11.2,
+        "crop_xywh": [
+          24,
+          1248,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 9,
+        "query": "airport taxi",
+        "clicks": 2,
+        "impressions": 102,
+        "ctr": "2%",
+        "position": 6.5,
+        "crop_xywh": [
+          24,
+          1297,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 10,
+        "query": "taxi from coventry to birmingham airport",
+        "clicks": 1,
+        "impressions": 76,
+        "ctr": "1.3%",
+        "position": 20.3,
+        "crop_xywh": [
+          24,
+          1346,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 11,
+        "query": "airport taxis",
+        "clicks": 1,
+        "impressions": 58,
+        "ctr": "1.7%",
+        "position": 6.9,
+        "crop_xywh": [
+          24,
+          1395,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 12,
+        "query": "heathrow to coventry taxi",
+        "clicks": 1,
+        "impressions": 33,
+        "ctr": "3%",
+        "position": 24.5,
+        "crop_xywh": [
+          24,
+          1444,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 13,
+        "query": "coventry taxis",
+        "clicks": 1,
+        "impressions": 17,
+        "ctr": "5.9%",
+        "position": 11.5,
+        "crop_xywh": [
+          24,
+          1493,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 14,
+        "query": "airport transfers coventry to birmingham",
+        "clicks": 1,
+        "impressions": 13,
+        "ctr": "7.7%",
+        "position": 4.9,
+        "crop_xywh": [
+          24,
+          1542,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 15,
+        "query": "taxi from birmingham airport to coventry",
+        "clicks": 1,
+        "impressions": 7,
+        "ctr": "14.3%",
+        "position": 33.1,
+        "crop_xywh": [
+          24,
+          1591,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 16,
+        "query": "airport transfer coventry to heathrow",
+        "clicks": 1,
+        "impressions": 6,
+        "ctr": "16.7%",
+        "position": 5.3,
+        "crop_xywh": [
+          24,
+          1640,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 17,
+        "query": "pre book taxi to airport",
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": "33.3%",
+        "position": 2.3,
+        "crop_xywh": [
+          24,
+          1690,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 18,
+        "query": "minibus airport transfers near me",
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": "33.3%",
+        "position": 10.7,
+        "crop_xywh": [
+          24,
+          1739,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 19,
+        "query": "rugby airport transfers",
+        "clicks": 1,
+        "impressions": 2,
+        "ctr": "50%",
+        "position": 31.5,
+        "crop_xywh": [
+          24,
+          1788,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 20,
+        "query": "8 people",
+        "clicks": 1,
+        "impressions": 1,
+        "ctr": "100%",
+        "position": 4.0,
+        "crop_xywh": [
+          24,
+          1837,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 21,
+        "query": "minibus hire in coventry",
+        "clicks": 1,
+        "impressions": 1,
+        "ctr": "100%",
+        "position": 21.0,
+        "crop_xywh": [
+          24,
+          1886,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 22,
+        "query": "airport taxi transfer",
+        "clicks": 0,
+        "impressions": 519,
+        "ctr": "0%",
+        "position": 23.5,
+        "crop_xywh": [
+          24,
+          1935,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 23,
+        "query": "airport transfer",
+        "clicks": 0,
+        "impressions": 362,
+        "ctr": "0%",
+        "position": 26.1,
+        "crop_xywh": [
+          24,
+          1984,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 24,
+        "query": "taxi rugby",
+        "clicks": 0,
+        "impressions": 344,
+        "ctr": "0%",
+        "position": 43.1,
+        "crop_xywh": [
+          24,
+          2033,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 25,
+        "query": "heathrow airport to coventry",
+        "clicks": 0,
+        "impressions": 307,
+        "ctr": "0%",
+        "position": 44.9,
+        "crop_xywh": [
+          24,
+          2082,
+          1318,
+          49
+        ]
+      }
+    ],
+    "chart_notes": "No y-axis values. Purple (impressions) higher in Jul-early Sep; orange (position, inverted) trends slightly higher from mid-Sep = position improving late in period; qualitative only.",
+    "notes": "Notification badge 30. 'airport taxi transfer' 519 impr / 0 clicks / pos 23.5 is an open opportunity, not a win."
+  },
+  {
+    "file": "coventryairporttaxis247_gsc_3m_chart.png",
+    "domain": "coventryairporttaxis247.co.uk",
+    "property_url_shown": null,
+    "source_type": "Google Search Console - Performance report (cropped view, totals + chart only)",
+    "filters": "Search type: Web; Daily",
+    "image_size_px": [
+      1320,
+      542
+    ],
+    "period": {
+      "label": "3 months (Search Console preset)",
+      "approx_start": "2026-07-19",
+      "approx_end": "2026-10-18",
+      "chart_axis_first_label": "7/19/26",
+      "chart_axis_last_label": "10/15/26",
+      "note": "Exact end date not printed; 'Last update: 5.5 hours ago'. Daily granularity."
+    },
+    "totals": {
+      "total_clicks": 224,
+      "total_impressions": "15.9K",
+      "average_ctr": "1.4%",
+      "average_position": 18.4
+    },
+    "rows": [],
+    "crops_xywh": {
+      "totals_cards": [
+        0,
+        121,
+        718,
+        110
+      ],
+      "line_chart_with_date_axis": [
+        20,
+        265,
+        1260,
+        210
+      ],
+      "cards_plus_chart": [
+        0,
+        121,
+        1300,
+        355
+      ]
+    },
+    "notes": "Same data as the _full screenshot at a larger, cleaner scale (1:1 pixels); preferred plate for the totals + chart overlay. Domain is not visible in this crop."
+  },
+  {
+    "file": "airporttaxis247_gsc_3m.png",
+    "domain": "airporttaxis247.co.uk",
+    "property_url_shown": "https://airporttaxis247.co.uk/",
+    "source_type": "Google Search Console - Performance report",
+    "filters": "Search type: Web; Daily",
+    "image_size_px": [
+      1366,
+      2251
+    ],
+    "crops_xywh": {
+      "totals_cards": [
+        24,
+        201,
+        720,
+        110
+      ],
+      "line_chart_with_date_axis": [
+        24,
+        330,
+        1318,
+        240
+      ],
+      "table_header": [
+        24,
+        847,
+        1318,
+        57
+      ],
+      "table_header_plus_top3": [
+        24,
+        847,
+        1318,
+        204
+      ],
+      "table_header_plus_top5": [
+        24,
+        847,
+        1318,
+        303
+      ],
+      "full_query_table_25_rows": [
+        24,
+        847,
+        1318,
+        1281
+      ],
+      "pagination_1_25_of_N": [
+        930,
+        2135,
+        410,
+        40
+      ],
+      "url_inspect_bar_with_domain": [
+        376,
+        8,
+        710,
+        50
+      ]
+    },
+    "row_crop_rule": "row n (1-25): x=24, y=904+round((n-1)*49.1), w=1318, h=49 (header row y=847,h=57)",
+    "period": {
+      "label": "3 months (Search Console preset)",
+      "approx_start": "2026-07-19",
+      "approx_end": "2026-10-18",
+      "chart_axis_first_label": "7/19/26",
+      "chart_axis_last_label": "10/15/26",
+      "note": "Exact end date not printed; 'Last update: 5.5 hours ago'. Daily granularity."
+    },
+    "totals": {
+      "total_clicks": 17,
+      "total_impressions": "4.05K",
+      "total_impressions_approx": 4050,
+      "average_ctr": "0.4%",
+      "average_position": 72.6,
+      "total_queries": 359
+    },
+    "rows_shown": "1-25 of 359, sorted by clicks desc (all top 25 have 0 clicks)",
+    "rows": [
+      {
+        "rank": 1,
+        "query": "heathrow to gatwick taxi",
+        "clicks": 0,
+        "impressions": 305,
+        "ctr": "0%",
+        "position": 85.8,
+        "crop_xywh": [
+          24,
+          904,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 2,
+        "query": "taxi from heathrow to birmingham",
+        "clicks": 0,
+        "impressions": 158,
+        "ctr": "0%",
+        "position": 76.4,
+        "crop_xywh": [
+          24,
+          953,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 3,
+        "query": "taxi from heathrow to gatwick",
+        "clicks": 0,
+        "impressions": 158,
+        "ctr": "0%",
+        "position": 85.3,
+        "crop_xywh": [
+          24,
+          1002,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 4,
+        "query": "heathrow airport to gatwick airport taxi",
+        "clicks": 0,
+        "impressions": 99,
+        "ctr": "0%",
+        "position": 88.1,
+        "crop_xywh": [
+          24,
+          1051,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 5,
+        "query": "car service from london heathrow to birmingham",
+        "clicks": 0,
+        "impressions": 91,
+        "ctr": "0%",
+        "position": 83.1,
+        "crop_xywh": [
+          24,
+          1100,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 6,
+        "query": "heathrow meet and greet airport taxis",
+        "clicks": 0,
+        "impressions": 83,
+        "ctr": "0%",
+        "position": 75.2,
+        "crop_xywh": [
+          24,
+          1150,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 7,
+        "query": "london heathrow to birmingham taxi",
+        "clicks": 0,
+        "impressions": 66,
+        "ctr": "0%",
+        "position": 75.9,
+        "crop_xywh": [
+          24,
+          1199,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 8,
+        "query": "heathrow to gatwick taxis",
+        "clicks": 0,
+        "impressions": 62,
+        "ctr": "0%",
+        "position": 85.6,
+        "crop_xywh": [
+          24,
+          1248,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 9,
+        "query": "heathrow to gatwick private transfer",
+        "clicks": 0,
+        "impressions": 60,
+        "ctr": "0%",
+        "position": 87.6,
+        "crop_xywh": [
+          24,
+          1297,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 10,
+        "query": "heathrow to cambridge taxi",
+        "clicks": 0,
+        "impressions": 52,
+        "ctr": "0%",
+        "position": 73.9,
+        "crop_xywh": [
+          24,
+          1346,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 11,
+        "query": "taxi from london heathrow to gatwick airport",
+        "clicks": 0,
+        "impressions": 51,
+        "ctr": "0%",
+        "position": 82.6,
+        "crop_xywh": [
+          24,
+          1395,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 12,
+        "query": "heathrow to brighton taxi",
+        "clicks": 0,
+        "impressions": 49,
+        "ctr": "0%",
+        "position": 65.5,
+        "crop_xywh": [
+          24,
+          1444,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 13,
+        "query": "gatwick to bath taxi",
+        "clicks": 0,
+        "impressions": 45,
+        "ctr": "0%",
+        "position": 44.8,
+        "crop_xywh": [
+          24,
+          1493,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 14,
+        "query": "heathrow to oxford taxi",
+        "clicks": 0,
+        "impressions": 44,
+        "ctr": "0%",
+        "position": 72.5,
+        "crop_xywh": [
+          24,
+          1542,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 15,
+        "query": "heathrow meet and greet airport transfers",
+        "clicks": 0,
+        "impressions": 44,
+        "ctr": "0%",
+        "position": 80.0,
+        "crop_xywh": [
+          24,
+          1591,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 16,
+        "query": "heathrow meet and greet taxis",
+        "clicks": 0,
+        "impressions": 43,
+        "ctr": "0%",
+        "position": 76.4,
+        "crop_xywh": [
+          24,
+          1640,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 17,
+        "query": "gatwick to southampton taxi",
+        "clicks": 0,
+        "impressions": 40,
+        "ctr": "0%",
+        "position": 76.6,
+        "crop_xywh": [
+          24,
+          1690,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 18,
+        "query": "taxi from heathrow airport to gatwick airport",
+        "clicks": 0,
+        "impressions": 39,
+        "ctr": "0%",
+        "position": 88.3,
+        "crop_xywh": [
+          24,
+          1739,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 19,
+        "query": "taxi london heathrow to gatwick",
+        "clicks": 0,
+        "impressions": 38,
+        "ctr": "0%",
+        "position": 88.0,
+        "crop_xywh": [
+          24,
+          1788,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 20,
+        "query": "heathrow airport to brighton taxi",
+        "clicks": 0,
+        "impressions": 37,
+        "ctr": "0%",
+        "position": 73.6,
+        "crop_xywh": [
+          24,
+          1837,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 21,
+        "query": "london heathrow to gatwick taxi",
+        "clicks": 0,
+        "impressions": 35,
+        "ctr": "0%",
+        "position": 88.9,
+        "crop_xywh": [
+          24,
+          1886,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 22,
+        "query": "taxi from heathrow to gatwick airport",
+        "clicks": 0,
+        "impressions": 33,
+        "ctr": "0%",
+        "position": 85.2,
+        "crop_xywh": [
+          24,
+          1935,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 23,
+        "query": "heathrow airport taxi oxford",
+        "clicks": 0,
+        "impressions": 29,
+        "ctr": "0%",
+        "position": 82.5,
+        "crop_xywh": [
+          24,
+          1984,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 24,
+        "query": "cab from heathrow to gatwick",
+        "clicks": 0,
+        "impressions": 28,
+        "ctr": "0%",
+        "position": 89.8,
+        "crop_xywh": [
+          24,
+          2033,
+          1318,
+          49
+        ]
+      },
+      {
+        "rank": 25,
+        "query": "heathrow to birmingham taxi",
+        "clicks": 0,
+        "impressions": 27,
+        "ctr": "0%",
+        "position": 68.3,
+        "crop_xywh": [
+          24,
+          2082,
+          1318,
+          49
+        ]
+      }
+    ],
+    "chart_notes": "Mostly flat clicks with a spike around 7-8 Oct 2026; no axis values.",
+    "notes": "NOT in the user's client list; relationship unverified (possibly sister site). Weak/early-stage: every top-25 query has 0 clicks, positions 44.8-89.8. Do not use as a results story."
+  },
+  {
+    "file": "coventry_gbp_interactions_may-oct2026.png",
+    "domain": "unverified - filename says Coventry; business name not visible",
+    "source_type": "Google Business Profile - Performance, Overview tab",
+    "image_size_px": [
+      984,
+      524
+    ],
+    "period": {
+      "label": "May 2026-Oct 2026",
+      "note": "Oct 2026 is a partial month (screenshot taken in Oct)."
+    },
+    "totals": {
+      "business_profile_interactions": 79
+    },
+    "monthly_values": [
+      {
+        "month": "2026-05",
+        "value": 0,
+        "approx": true
+      },
+      {
+        "month": "2026-06",
+        "value": 6,
+        "approx": true
+      },
+      {
+        "month": "2026-07",
+        "value": 8,
+        "approx": true
+      },
+      {
+        "month": "2026-08",
+        "value": 32,
+        "approx": true,
+        "note": "marker sits exactly on the 32 gridline"
+      },
+      {
+        "month": "2026-09",
+        "value": 20,
+        "approx": true
+      },
+      {
+        "month": "2026-10",
+        "value": 13,
+        "approx": true,
+        "partial_month": true
+      }
+    ],
+    "monthly_check": "estimates sum to 79, matching the headline",
+    "crops_xywh": {
+      "headline_79_and_label": [
+        40,
+        175,
+        210,
+        80
+      ],
+      "line_chart_with_month_axis": [
+        40,
+        275,
+        890,
+        210
+      ],
+      "headline_plus_chart": [
+        40,
+        175,
+        890,
+        310
+      ],
+      "time_period_selector": [
+        367,
+        58,
+        246,
+        50
+      ]
+    },
+    "axis_gridlines_y_px": {
+      "32": 288,
+      "24": 331,
+      "16": 376,
+      "8": 420,
+      "0_baseline": 464
+    },
+    "notes": "Monthly values read by pixel position of markers (~5.5 px per interaction); only the total 79 is printed. Which Coventry business profile this is (Coventry Airport Taxis 24/7?) is not shown: confirm with the user."
+  },
+  {
+    "file": "leamingtonspa_gbp_calls_may-oct2026.png",
+    "domain": "unverified - filename says Leamington Spa (likely leamingtonspa-taxis.co.uk); business name not visible",
+    "source_type": "Google Business Profile - Performance, Calls tab",
+    "image_size_px": [
+      948,
+      502
+    ],
+    "period": {
+      "label": "May 2026-Oct 2026",
+      "note": "Oct 2026 is a partial month."
+    },
+    "totals": {
+      "calls_from_business_profile": 114
+    },
+    "monthly_values": [
+      {
+        "month": "2026-05",
+        "value": 19,
+        "approx": true
+      },
+      {
+        "month": "2026-06",
+        "value": 17,
+        "approx": true
+      },
+      {
+        "month": "2026-07",
+        "value": 20,
+        "approx": true
+      },
+      {
+        "month": "2026-08",
+        "value": 21,
+        "approx": true
+      },
+      {
+        "month": "2026-09",
+        "value": 25,
+        "approx": false,
+        "note": "exact, from on-screen tooltip '25 September 2026'"
+      },
+      {
+        "month": "2026-10",
+        "value": 12,
+        "approx": true,
+        "partial_month": true
+      }
+    ],
+    "monthly_check": "estimates sum to 114, matching the headline",
+    "crops_xywh": {
+      "headline_114_and_label": [
+        20,
+        165,
+        240,
+        80
+      ],
+      "line_chart_with_month_axis": [
+        15,
+        265,
+        910,
+        210
+      ],
+      "headline_plus_chart": [
+        15,
+        165,
+        910,
+        310
+      ],
+      "sept_tooltip_25": [
+        735,
+        278,
+        100,
+        55
+      ],
+      "time_period_selector": [
+        345,
+        48,
+        246,
+        50
+      ]
+    },
+    "axis_gridlines_y_px": {
+      "30": 277,
+      "15": 365,
+      "0_baseline": 453
+    },
+    "notes": "Only 114 and Sept=25 are printed; others are pixel estimates (~5.9 px per call)."
+  }
+]
