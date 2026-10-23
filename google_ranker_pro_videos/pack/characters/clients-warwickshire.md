@@ -19,7 +19,7 @@ He is the owner or operator of Golden Line Taxis, 27 St Michael's Rd, Warwick: p
 | Video | Generation IDs | Outfit |
 |---|---|---|
 | V01 The Four O'Clock Phone (Version A) | `v01_A-01_16x9`, `v01_A-02_16x9`, `v01_A-03_16x9`, `v01_A-04_16x9`, `v01_A-05_16x9`, `v01_B-03_16x9` (his right hand only), `v01_A-01_9x16`, `v01_A-04_9x16` (8 first takes) | JACKET |
-| V15 What Moved in Warwick (9:16 cut) | No new generation. The 9:16 cut opens on a 2 s stitch of his approved V01 line, taken from his best V01 take. | JACKET |
+| V15 What Moved in Warwick (9:16 cut) | No new generation. The 9:16 cut opens on a 2 s stitch of his approved V01 line 6, taken from his approved `v01_A-04_9x16` take. | JACKET |
 | V03 A Hundred and Fourteen (**fallback only**, if Gate G3 fails) | Proposed ID, not in the plan's count: `v03_GL-01_9x16`, a 12 s front-camera selfie in a Kenilworth car park with signage out of shot | JACKET |
 | **Fallback only** (V01 B1: his hands, the back of his head; box b) | `v01_B1-01_16x9`, `v01_B1-02_16x9`, `v01_B1-03_16x9` | JACKET |
 
@@ -135,7 +135,7 @@ Cut along the gutters and save each panel as a full-size PNG, with no upscaling,
 | `MEMO_CLIENT_GOLDENLINE_OWNER_v01_line4.m4a`, `_line5` | `v01_A-03_16x9` at 1 s and 8 s | [APPROVED LINES 4–5 FROM HIS TRANSCRIPT, Q2]. Only work the G7 work log confirms, for example "the new website". |
 | `MEMO_CLIENT_GOLDENLINE_OWNER_v01_line6.m4a` | `v01_A-04_16x9` and `v01_A-04_9x16` at 1 s | [APPROVED LINE 6 FROM HIS TRANSCRIPT, Q3]. A second approved Q3 line may run under the receipts as voice only. |
 | `MEMO_CLIENT_GOLDENLINE_OWNER_v01_line7.m4a` | `v01_A-05_16x9` at 1 s | [APPROVED LINE 7 FROM HIS TRANSCRIPT, Q4] |
-| No new file | V15 9:16 stitch | 2 s of line 6 or line 7. He approves which one. |
+| No new file | V15 9:16 stitch | 2 s of line 6, cut from his approved `v01_A-04_9x16` take (the only full-frame 9:16 clip of an answer; line 7 exists only in the 16:9 `v01_A-05`). We propose the exact 2 s (a complete phrase); he approves that excerpt in writing. |
 | `MEMO_CLIENT_GOLDENLINE_OWNER_v03_line1.m4a` | `v03_GL-01_9x16`, fallback only. Record it outdoors on his phone at arm's length as well. | [APPROVED LINE FROM HIS TRANSCRIPT about Kenilworth jobs, no number]. The figure 6.7 appears on screen only. |
 
 **Rules for his lines:** no numbers, no "number one", "No.1", "first", "now" or "just hit", no review wording and no "Ali". One line per 5–8 s talking stage. If the generated voice does not sound like him, it fails QC. Fix it in the order set out in production_rules G.1.
@@ -183,7 +183,7 @@ He is the owner or manager of Coventry Airport Taxis 247: pre-booked airport tra
 |---|---|---|
 | V02 Kitchen Table, Tuesday Night (Version A) | `v02_A-01_16x9` (over his right shoulder), `v02_R-01_16x9`, `v02_R-02_16x9`, `v02_A-02_16x9`, `v02_D-01_9x16`, `v02_D-02_9x16` (6 first takes) | JUMPER |
 | V04 May vs August | No generation of him. The plates are Mode C hands. His real voice memo may run over the last 3 s (optional). | none |
-| **Fallback only** (V02 voice-and-hands version; box b) | `v02_V-01_16x9`, `v02_V-01_9x16` (from behind his shoulder) | JUMPER |
+| **Fallback only** (V02 voice-and-hands version; box b) | `v02_A-01_16x9` (reused from Version A), `v02_V-01_16x9`, `v02_V-01_9x16` (from behind his shoulder) | JUMPER |
 
 **Gates before he appears:**
 - **G1:** his consent.
@@ -199,7 +199,7 @@ He is the owner or manager of Coventry Airport Taxis 247: pre-booked airport tra
 
 ### 2. Consent: get these in writing before any photo is used
 
-- **Likeness and AI re-creation:** we may make a Nano Banana Pro character sheet from his photos and generate the 6 listed V02 shots and nothing else without asking again. Separate tick boxes: (a) full face, (b) back of head and hands only, (c) voice only, and (d) a Soul ID, which is optional and only if needed. Box (b) covers `v02_V-01_16x9` and `v02_V-01_9x16` (from behind his shoulder); with box (c) alone the figure is an anonymous Mode C stand-in.
+- **Likeness and AI re-creation:** we may make a Nano Banana Pro character sheet from his photos and generate the 6 listed V02 shots and nothing else without asking again. Separate tick boxes: (a) full face, (b) back of head and hands only, (c) voice only, and (d) a Soul ID, which is optional and only if needed. Box (b) covers `v02_A-01_16x9` (over his right shoulder, face never seen; V02's B2 reuses it), `v02_V-01_16x9` and `v02_V-01_9x16` (from behind his shoulder); with box (c) alone the figure is an anonymous Mode C stand-in.
 - **His kitchen:** we may use photos of his own kitchen as the location reference.
 - **Voice:** his own memo is the `@Audio` reference for his one approved V02 line and is laid in as the final track. An optional V04 voice-only line is also covered. His voice is never cloned or synthesised.
 - **Approved words only:** he answers our question in his own words, approves the transcribed line and approves both final cuts (16:9 and the 9:16 duet) before they are published. He says no numbers, because the figures are ours, on screen with a source.
@@ -343,7 +343,7 @@ He is the owner or operator of Leam Taxis (leamingtonspa-taxis.co.uk), a private
 
 ### 2. Consent: get these in writing before any photo is used
 
-- **Likeness and AI re-creation:** we may make a Nano Banana Pro character sheet from his photos and generate the 5 listed shots (plus one test take of `v09_R-01`), or with box (b) only `v03_B-01`, `v09_B-01` and `v09_H-01_9x16`, and nothing else without asking again. Separate tick boxes: (a) full face, (b) hands only, (c) voice only, and (d) a Soul ID, which is optional.
+- **Likeness and AI re-creation:** we may make a Nano Banana Pro character sheet from his photos and generate the 5 listed shots (plus one test take of `v09_R-01`), or with box (b) only `v03_B-01`, `v09_B-01` and `v09_H-01_9x16`, and nothing else without asking again. Separate tick boxes: (a) full face, (b) hands and body below the chin, never the face (the wording V09 needs for `v09_H-01_9x16`), (c) voice only, and (d) a Soul ID, which is optional.
 - **His car, street and door:** we may use photos of his own car (plates hidden), his street and his front door (house number hidden) as location references. The re-created street is "Leamington-type", never his identifiable address.
 - **Voice:** his own memos are the `@Audio` reference and the final track. His voice is never cloned or synthesised.
 - **Approved words and numbers:** he rewrites our line shapes in his own words and approves them in writing. The only numbers he may say are "a hundred and fourteen" (calls from the Business Profile, May to October, with October a part month) and "twenty-five" (September). He approves both final cuts.

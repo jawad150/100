@@ -115,13 +115,13 @@ Cut along the gutters, one panel per file, full size, PNG, no upscaling, sharpen
 | Row 2, panel 4: hands | `CROP_CLIENT_YORK_MANAGER_hands.png` |
 | Row 2, panel 2: full body back (extra, for the walk) | `CROP_CLIENT_YORK_MANAGER_back.png` |
 
-**Which crops each shot uses** (asset map order: identity crops first, then the anchor still, then the location photo)
+**Which crops each shot uses** (attach exactly in the "Upload order" list printed above each prompt in the video file; that list decides the @Image numbers)
 
 | Shot | Crops |
 |---|---|
 | `v05_W-01` (both ratios) | front, the three-quarter on the side they glance back over in the anchor still, back |
 | `v05_W-02` (both ratios) | front, the three-quarter facing camera in the anchor still, body |
-| `v05_B-02_16x9` | back, hands, 34left or 34right to match the three-quarter rear angle |
+| `v05_B-02_16x9` | back, then `34right` (the crop that shows the left cheek), then hands |
 
 ### 7. Voice memos
 
@@ -267,13 +267,13 @@ Cut along the gutters, one panel per file, full size, PNG, no upscaling, sharpen
 | Row 2, panel 1: full body front | `CROP_CLIENT_OF_DIRECTOR_body.png` |
 | Row 2, panel 4: hands | `CROP_CLIENT_OF_DIRECTOR_hands.png` |
 
-**Which crops each shot uses** (asset map order: identity crops first, then the anchor still, then the location photo)
+**Which crops each shot uses** (attach exactly in the "Upload order" list printed above each prompt in the video file; that list decides the @Image numbers)
 
 | Shot | Crops |
 |---|---|
 | `v06_A-01` (both ratios) | front, then `34right` (eyes just past camera-left means the face turns to their right) |
 | `v06_A-02` (both ratios) | front, then `34right` |
-| `v06_B-01_16x9` | hands first, then front for the cuffs and cardigan |
+| `v06_B-01_16x9` and `v06_B-01_9x16` | `CROP_CLIENT_OF_DIRECTOR_hands.png` first, then their real photo `CLIENT_OF_DIRECTOR_22.jpg` (writing in the notebook, cuffs visible, no face). Never a face crop in these shots |
 
 ### 7. Voice memos
 
