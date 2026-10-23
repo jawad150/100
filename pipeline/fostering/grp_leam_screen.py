@@ -116,7 +116,7 @@ def base_screen():
     S.text(166, 34, 'Leam Taxis · Calls report', 19, FB, '#3C4043')
     ui.paste(S.img, fav, 470, 14)
     S.text(500, 33, 'Leam Taxis | Leamington Spa Taxis', 18, FR, '#5F6368')
-    S.text(778, 33, '+', 26, FR, '#5F6368')
+    S.text(818, 33, '+', 26, FR, '#5F6368')
     # toolbar
     S.rrect(-10, 46, SW + 20, 46, 0, ui.col('#FFFFFF'), 1.0)
     back = np.ascontiguousarray(ui.icon('arrow_right', 22, color='#5F6368', stroke=2.4)[:, ::-1])
@@ -271,6 +271,11 @@ def composite(frame, i, scr_u8):
     if a is None:
         a = np.zeros((SH, SW), np.float32)
     r, g, b = reg[..., 0], reg[..., 1], reg[..., 2]
+    # bottom rows: the monitor's own (slanted) taskbar edge is dark grey, not hand - keep only skin / navy sleeve
+    tail = slice(SH - 26, SH)
+    chroma = ((b[tail] - r[tail]) > 8) | ((r[tail] - b[tail]) > 12)
+    a = a.copy()
+    a[tail] *= chroma
     hand = np.dstack([r, np.minimum(g, np.maximum(r, b) + 4), b])
     ef = np.ones((SH, 1), np.float32)
     ef[0, 0] = 0.6

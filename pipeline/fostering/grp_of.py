@@ -28,6 +28,8 @@ BPM = 84
 FPS_SRC = 24.0
 N_SRC = 721
 T_CUT1, T_CUT2, T_END = 237 / 24.0, 420 / 24.0, 30.0417
+CUTS = [(T_CUT1, 237), (T_CUT2, 420)]
+T_CARD = 29.95                                      # end card starts after her last word (29.82 s)
 MAG, ORA, LEAF, PLUM, INK, IVORY, PEACH = '#B7006E', '#FF6411', '#64A60B', '#5B174F', '#321F35', '#FCF8F5', '#FFD4BA'
 FH = 'Nunito-ExtraBold'
 FHB = 'Nunito-Black'
@@ -39,9 +41,12 @@ LOGO = os.path.join(K.BRAND, 'logo_full.png')
 LOGO_DARK = os.path.join(K.BRAND, 'logo_full_onDark.png')
 HULK = G.site('hulkmarketing', 'hulk-marketing-logo.png')
 
-WORDS = G.load_words('organic_fostering', fixes={55: 'enquiries'}, retime={0: (0.30, 0.72)})
+WORDS = G.load_words('organic_fostering', fixes={55: 'enquiries'},
+                     retime={0: (0.56, 0.72), 22: (10.62, 10.78), 44: (18.44, 18.80), 45: (19.58, 19.80),
+                             64: (26.74, 27.24), 65: (28.34, 28.64)})
 CAP = G.Captions(WORDS, dict(font=FH, size=66, color='#FFFFFF', accent='#FFFFFF', mode='pill', pill_color=MAG,
-                             y=1630, max_w=900, shadow=0.7), max_chars=28)
+                             y=1630, max_w=900, shadow=0.7), max_chars=28,
+                 breaks=(26, 39, 58))
 
 # PiP window during shot 3 (the footage becomes a rounded card at the top)
 PIP_SRC = (0, 150, 1035, 1350)          # source rect x, y, w, h (stays left of the banner sliver)
@@ -71,34 +76,43 @@ def banner_patch(fi):
 
 
 # ----- laptop screen (shot 2)
-LAPTOP_Q = np.float32([[-70.0, 943.26], [229.84, 921.06], [368.86, 1169.56], [-70.0, 1209.89]])
+LAPTOP_Q = np.float32([[-72.0, 937.0], [290.0, 916.0], [395.0, 1188.0], [-72.0, 1258.0]])   # display + 2 px overscan
 
 
 @functools.lru_cache(maxsize=1)
 def _laptop_layers():
-    """Warped site page (sRGB float) + coverage mask for the laptop screen, minus the mug rim."""
+    """Warped site page (sRGB float) + coverage mask for the laptop display."""
     page = G._rgb(OF('now_areas_desktop.png'))
     ph, pw = page.shape[:2]
     Hm = cv2.getPerspectiveTransform(np.float32([[0, 0], [pw, 0], [pw, ph], [0, ph]]), LAPTOP_Q)
     warped = cv2.warpPerspective(page.astype(np.float32), Hm, (1080, 1920), flags=cv2.INTER_AREA,
                                  borderMode=cv2.BORDER_CONSTANT)
     mask = cv2.warpPerspective(np.ones((ph, pw), np.float32), Hm, (1080, 1920), flags=cv2.INTER_LINEAR)
-    mug = np.zeros((1920, 1080), np.uint8)
-    cv2.ellipse(mug, (240, 1186), (108, 28), 0, 0, 360, 1, -1)
-    mug[1186:1400, 132:350] = 1
-    mug = cv2.GaussianBlur(mug.astype(np.float32), (0, 0), 1.5)
-    mask = np.clip(mask * (1 - mug), 0, 1)
     # filmed look: defocus a touch, the original screen white (234) and a soft black level
     warped = cv2.GaussianBlur(warped, (0, 0), 1.1)
     warped = 14.0 + warped * (236.0 - 14.0) / 255.0
     return warped, mask
 
 
-def laptop_u8(fr):
+OCC_Y0, OCC_Y1, OCC_X1 = 900, 1270, 420
+
+
+@functools.lru_cache(maxsize=4)
+def _occl(fi):
+    """Mug / finger occlusion over the display for frame fi (grp_prep.py oflap), float (370, 420) or None."""
+    m = cv2.imread(os.path.join(G.GRP, 'of_occl', '%05d.png' % fi), cv2.IMREAD_GRAYSCALE)
+    return None if m is None else m.astype(np.float32) / 255.0
+
+
+def laptop_u8(fr, fi):
     warped, mask = _laptop_layers()
     out = fr.astype(np.float32)
-    y0, y1 = 900, 1230
-    m = mask[y0:y1, :, None]
+    y0, y1 = OCC_Y0, OCC_Y1
+    m = mask[y0:y1].copy()
+    oc = _occl(fi)
+    if oc is not None:
+        m[:, :OCC_X1] *= (1 - oc)
+    m = m[..., None]
     out[y0:y1] = out[y0:y1] * (1 - m) + warped[y0:y1] * m
     return np.clip(out + 0.5, 0, 255).astype(np.uint8)
 
@@ -131,9 +145,15 @@ def graded_frame(fi):
         if p is not None:
             fr = fr.copy()
             x0, y0, x1, y1 = _info()['banner']['1']
-            fr[y0:y1, x0:x1] = p
+            w = np.ones((y1 - y0, x1 - x0), np.float32)
+            w[-40:] *= np.linspace(1, 0, 40, dtype=np.float32)[:, None]       # feather the bottom edge
+            pa = G.person_alpha_u8('of', fi)
+            if pa is not None:
+                w *= 1 - cv2.GaussianBlur(pa[y0:y1, x0:x1].astype(np.float32) / 255.0, (0, 0), 1.0)
+            w = w[..., None]
+            fr[y0:y1, x0:x1] = np.clip(p * w + fr[y0:y1, x0:x1] * (1 - w) + 0.5, 0, 255).astype(np.uint8)
     elif sh == 2:
-        fr = laptop_u8(fr)
+        fr = laptop_u8(fr, fi)
     return fr
 
 
@@ -146,13 +166,15 @@ def footage(fi):
     return G.shot_sprite(fr, 'of_warm', c, z, sharpen=0.25)
 
 
-@functools.lru_cache(maxsize=2)
-def pip_sprite(fi):
+@functools.lru_cache(maxsize=3)
+def pip_sprite(fi, w_out, h_out):
+    """The PiP source rect resampled straight to the window's current size (no sprite upscaling)."""
     fr = graded_frame(fi)
     x, y, w, h = PIP_SRC
     sub = np.ascontiguousarray(fr[y:y + h, x:x + w])
-    sub = cv2.resize(sub, (PIP_W, PIP_H), interpolation=cv2.INTER_AREA)
-    return G.shot_sprite(G.sharpen_u8(sub, 0.3), 'of_warm')
+    interp = cv2.INTER_AREA if w_out < w else cv2.INTER_CUBIC
+    sub = cv2.resize(sub, (int(w_out), int(h_out)), interpolation=interp)
+    return G.shot_sprite(G.sharpen_u8(sub, 0.3 if w_out < w * 0.8 else 0.2), 'of_warm')
 
 
 @functools.lru_cache(maxsize=1)
@@ -176,19 +198,20 @@ def person(fi):
 
 def person_over(cv, t):
     if t < 0.78 or T_CUT1 - 0.16 <= t < T_CUT1 + 0.16 or T_CUT2 - 0.13 <= t < T_CUT2 + 0.31 \
-            or T_PIP_IN <= t < T_PIP_OUT + 0.6 or t >= 29.4:
+            or T_PIP_IN <= t < T_PIP_OUT + 0.6 or t >= 29.85:
         return
-    p = person(G.fidx(t, N_SRC))
+    p = person(G.fidx_cut(t, CUTS, N_SRC))
     if p is not None:
         K.over(cv, p)
 
 
 def plate(t):
-    fi = G.fidx(t, N_SRC)
+    fi = G.fidx_cut(t, CUTS, N_SRC)
     cv = footage(fi).copy()
     # 1 -> 2: brand-gradient diagonal band wipe
+    tq = round(t * FPS_SRC) / FPS_SRC              # wipes run on whole frames (no stepped sub-sample copies)
     if T_CUT1 - 0.15 <= t < T_CUT1 + 0.15:
-        u = K.ramp(t, T_CUT1 - 0.15, T_CUT1 + 0.15, 'inout_cubic')
+        u = K.ramp(tq, T_CUT1 - 0.15, T_CUT1 + 0.15, 'inout_cubic')
         new_first = t < T_CUT1
         other = footage(237 if new_first else 236)
         m = G.wipe(K.W, K.H, u, angle=-60, soft=0.001)[..., None]
@@ -196,8 +219,8 @@ def plate(t):
         _band(cv, u)
     # 2 -> 3: rounded rect grows from her face
     if T_CUT2 - 0.12 <= t < T_CUT2 + 0.30:
-        u = K.EASE['inout_cubic'](K.ramp(t, T_CUT2 - 0.12, T_CUT2 + 0.30, 'linear'))
-        m = G.rrect_grow(K.W, K.H, u, 40 * (1 - u) + 2, 0.5, 0.42, 240, 240)[..., None]
+        u = K.EASE['inout_cubic'](K.ramp(tq, T_CUT2 - 0.12, T_CUT2 + 0.30, 'linear'))
+        m = G.rrect_grow(K.W, K.H, u, 40 * (1 - u) + 2, 0.5, K.lerp(0.42, 0.5, u), 240, 240)[..., None]
         if t < T_CUT2:
             cv[:] = cv * (1 - m) + footage(420) * m
         else:
@@ -208,8 +231,8 @@ def plate(t):
         cv = _pip(cv, fi, p, t)
     if t >= T_END:
         cv = footage(N_SRC - 1).copy()
-    if t >= 29.4:
-        k = K.EASE['inout_cubic'](K.ramp(t, 29.4, 30.4, 'linear'))
+    if t >= 29.85:
+        k = K.EASE['inout_cubic'](K.ramp(t, 29.85, 30.6, 'linear'))
         bg = airy_bg()
         cv = K.gblur(cv, 16 * k) if k > 0.02 else cv
         cv[:] = cv * (1 - 0.82 * k) + bg * (0.82 * k)
@@ -233,12 +256,11 @@ def _pip(cv_full, fi, p, t):
     ww = K.lerp(fw, PIP_W, p)
     wh = K.lerp(fh, PIP_H, p)
     r = 44 * p
-    spr = pip_sprite(fi)
-    K.draw(out, spr, wx + ww / 2, wy + wh / 2, scale=(ww / PIP_W, wh / PIP_H))
+    sw_, sh_ = int(round(ww)), int(round(wh))
+    spr = pip_sprite(fi, sw_, sh_)
+    K.draw(out, spr, wx + ww / 2, wy + wh / 2, scale=(ww / sw_, wh / sh_))
     m = G.canvas_rrect_mask(wx, wy, ww, wh, max(r, 0.5))
-    # outside the window: backdrop (p) vs full footage (1 - p)
-    a = float(np.clip(1 - p * 1.6, 0, 1))
-    res = out * m[..., None] + (cv_full * a + out * (1 - a)) * (1 - m[..., None])
+    res = out * m[..., None] + out * (1 - m[..., None])
     # window border + shadow
     if p > 0.05:
         S = ui.Surf(K.W, K.H)
@@ -260,7 +282,7 @@ def _band(cv, u):
     ys = (np.arange(K.H, dtype=np.float32) + 0.5) / K.H - 0.5
     proj = xs[None, :] * dx + ys[:, None] * dy
     w = 0.06
-    m = np.clip(np.clip(1 - np.abs(proj - front + w / 2) / (w / 2), 0, 1) ** 0.35 * 1.4, 0, 1)
+    m = np.clip(np.clip(1 - np.abs(proj - front + w / 2) / (w / 2), 0, 1) ** 0.6 * 1.25, 0, 1)
     g = K.gradient(K.W, K.H, [G.lin(MAG), G.lin(ORA)], angle=35)
     cv[..., :3] = cv[..., :3] * (1 - m[..., None]) + g * m[..., None]
 
@@ -272,9 +294,9 @@ def white_card(w, h, r=30, accent=None):
 
 
 def logo_bug(cv, t):
-    if t < 2.55 or t >= 29.5:
+    if t < 2.55 or t >= 29.95:
         return
-    k = min(K.ramp(t, 2.55, 2.67), 1 - K.ramp(t, 29.2, 29.5, 'in_cubic'))
+    k = min(K.ramp(t, 2.55, 2.67), 1 - K.ramp(t, 29.7, 29.95, 'in_cubic'))
     lg = G.image_logo(LOGO, 210)
     pnl, pad = G.panel(244, lg.shape[0] + 22, 22, fill='#FFFFFF', fill_a=0.94, border_a=0.0, shadow=0.3,
                        shadow_blur=12, shadow_dy=6)
@@ -290,7 +312,7 @@ def ai_label(cv, t):
     w = G.measure(txt, 24, FU)
     pnl, pad = G.panel(int(w + 32), 40, 20, fill='#000000', fill_a=0.40, border_a=0.0, shadow=0.0)
     y = 1862
-    if T_PIP_IN + 0.3 < t < T_PIP_OUT + 0.3 or t >= 29.5:
+    if T_PIP_IN + 0.3 < t < T_PIP_OUT + 0.3 or t >= 30.2:
         pnl, pad = G.panel(int(w + 32), 40, 20, fill=PLUM, fill_a=0.85, border_a=0.0, shadow=0.0)
     K.draw(cv, pnl, 64 - pad, y - 20 - pad, anchor=(0, 0), opacity=k)
     G.draw_text(cv, txt, 80, y + 8, 24, FU, '#FFFFFF', 'ls', opacity=0.92 * k)
@@ -300,15 +322,16 @@ def intro_reveal(cv, t):
     """0-0.78 s: the footage opens out of a rounded square with a brand-gradient edge."""
     if t >= 0.78:
         return
-    u = K.EASE['inout_quart'](K.ramp(t, 0.0, 0.76, 'linear'))
+    u = K.EASE['inout_quart'](K.ramp(round(t * FPS_SRC) / FPS_SRC, 0.0, 0.76, 'linear'))
     w0, h0 = 300, 300
-    m = G.rrect_grow(K.W, K.H, u, 150 * (1 - u) + 1, 0.5, 0.42, w0, h0)
+    cyf = K.lerp(0.42, 0.5, u)
+    m = G.rrect_grow(K.W, K.H, u, 150 * (1 - u) + 1, 0.5, cyf, w0, h0)
     bg = airy_bg()
     cv[:] = bg * (1 - m[..., None]) + cv * m[..., None]
     bw = w0 + (K.W - w0) * u
     bh = h0 + (K.H - h0) * u
     st = ui.Surf(K.W, K.H)
-    a, X0, Y0 = st.stroke_rrect(540 - bw / 2, 0.42 * K.H - bh / 2, bw, bh, min(150 * (1 - u) + 1, bw / 2, bh / 2),
+    a, X0, Y0 = st.stroke_rrect(540 - bw / 2, cyf * K.H - bh / 2, bw, bh, min(150 * (1 - u) + 1, bw / 2, bh / 2),
                                 6, (1, 1, 1), 0.0)
     g = K.gradient(a.shape[1], a.shape[0], [G.lin(MAG), G.lin(ORA)], angle=35)
     st.fill(a, X0, Y0, g, 1.0 - u ** 2)
@@ -612,7 +635,7 @@ def enquiry_card(cv, t, t0=22.3, t1=25.7):
                        opacity=1 - out, look='airy')
 
 
-def end_card(cv, t, t0=29.5):
+def end_card(cv, t, t0=T_CARD):
     if t < t0:
         return
     lg = G.image_logo(LOGO, 640)
@@ -638,9 +661,9 @@ def end_card(cv, t, t0=29.5):
     K.draw(cv, pill, 540, 1270, scale=0.85 + 0.15 * cu, opacity=min(1, cu * 1.5))
     G.draw_text(cv, txt, 540, 1283, 38, FH, '#FFFFFF', 'ms', opacity=min(1, cu * 1.5))
     fp = K.ramp(t, t0 + 1.2, t0 + 1.5)
-    G.draw_text(cv, 'AI re-creation of the client’s testimonial. Website shown as captured 22 Oct 2026.',
-                540, 1390, 22, FR, '#6E5E72', 'ms', opacity=fp)
-    G.draw_text(cv, 'Results vary by business.', 540, 1424, 22, FR, '#6E5E72', 'ms', opacity=fp)
+    for k, ln in enumerate(['AI re-creation of the client’s testimonial.', 'Website shown as captured 22 Oct 2026.',
+                           'Results vary by business.']):
+        G.draw_text(cv, ln, 540, 1390 + 38 * k, 26, FR, '#6E5E72', 'ms', opacity=fp)
 
 
 # ---------------------------------------------------------------------------------------------- contract
@@ -661,16 +684,16 @@ def draw(t):
     guides_card(cv, t)
     enquiry_card(cv, t)
     pip = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
-    if t < 29.4:
-        G.bottom_shade(cv, 0.42, 1330, opacity=(1 - pip) * (1 - K.ramp(t, 29.1, 29.4)))
-    if t < 29.45:
+    if t < 30.2:
+        G.bottom_shade(cv, 0.42, 1330, opacity=(1 - pip) * (1 - K.ramp(t, 29.9, 30.2)))
+    if t < 30.4:
         p = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
         if p > 0.5:
             CAP.draw(cv, t, color=INK, shadow=0.0)
         else:
             CAP.draw(cv, t)
-    if 26.2 <= t < 29.6:
-        k = min(K.ramp(t, 26.2, 27.2, 'inout_sine'), 1 - K.ramp(t, 28.9, 29.6, 'inout_sine'))
+    if 26.2 <= t < 30.0:
+        k = min(K.ramp(t, 26.2, 27.2, 'inout_sine'), 1 - K.ramp(t, 29.3, 30.0, 'inout_sine'))
         K.light_leak(cv, t, colors=[G.lin(PEACH), G.lin(ORA)], strength=0.22 * k, seed=3, speed=0.6)
     logo_bug(cv, t)
     ai_label(cv, t)
@@ -687,11 +710,11 @@ def post(cv, t):
 
 
 FAST = [(0.0, 0.8), (2.2, 2.7), (9.7, 10.05), (10.45, 10.8), (12.55, 13.35), (17.3, 17.85), (19.0, 19.8),
-        (25.7, 26.4), (29.4, 30.3)]
+        (25.7, 26.4), (29.85, 30.9)]
 
 
 def samples(t):
-    return 3 if any(a <= t < b for a, b in FAST) else 1
+    return 7 if any(a <= t < b for a, b in FAST) else 1
 
 
 # ---------------------------------------------------------------------------------------------- sound cues
@@ -726,7 +749,7 @@ def cues():
         dict(t=24.02, name='ui_click', gain_db=-3),
         dict(t=T_PIP_OUT + 0.35, name='whoosh_fast', gain_db=-9),
         dict(t=29.95, name='logo_sting', gain_db=-4),
-        dict(t=30.42, name='pop', gain_db=-7, params=dict(pitch=1.2)),
+        dict(t=T_CARD + 0.92, name='pop', gain_db=-7, params=dict(pitch=1.2)),
     ]
 
 

@@ -26,7 +26,8 @@ BPM = 100
 FPS_SRC = 24.0
 N_SRC = 721
 T_CUT1, T_CUT2, T_END = 8.0, 17.0, 30.0417
-T_HERE = 14.30                                     # "and then here" -> the September tooltip
+T_HERE = 14.30                                     # "and then here" -> the 114 total callout
+CUTS = [(T_CUT1, 192), (T_CUT2, 408)]
 Y, K_, Y2 = '#FFC61A', '#1F1F1F', '#FBCE08'
 FONT_H = 'FiraSansCondensed-ExtraBold'
 FONT_HB = 'FiraSansCondensed-Bold'
@@ -39,10 +40,11 @@ HULK = G.site('hulkmarketing', 'hulk-marketing-logo.png')
 WORDS = G.load_words('leam_taxis',
                      fixes={5: 'Search', 6: 'Console.', 14: 'Hulk', 15: 'Marketing', 38: 'Leamington', 39: None,
                             40: 'Spa.'},
-                     retime={16: (10.12, 10.32), 25: (13.95, 14.18), 28: (15.40, 15.62), 38: (21.04, 21.40),
-                             40: (21.40, 21.70), 48: (25.50, 25.74)})
+                     retime={0: (2.92, 3.16), 16: (10.12, 10.32), 21: (12.10, 12.34), 25: (13.95, 14.18),
+                             28: (15.40, 15.62), 31: (19.48, 19.70), 38: (21.04, 21.40), 40: (21.40, 21.70),
+                             48: (25.64, 25.74)})
 CAP = G.Captions(WORDS, dict(font=FONT_H, size=70, color='#FFFFFF', accent=Y, mode='color', y=1625, max_w=900,
-                             shadow=0.7), max_chars=26)
+                             shadow=0.7), max_chars=38, breaks=(2, 35))
 
 
 # ---------------------------------------------------------------------------------------------- footage
@@ -97,18 +99,19 @@ def person_over(cv, t):
     """Re-composite the speaker over whatever was drawn so far (not during shot transitions)."""
     if t < 0.75 or 7.84 <= t < 17.24 or t >= 29.2:
         return
-    p = person(G.fidx(t, N_SRC))
+    p = person(G.fidx_cut(t, CUTS, N_SRC))
     if p is not None:
         K.over(cv, p)
 
 
 def plate(t):
     """Footage layer with the shot transitions (mask wipes), as a fresh canvas."""
-    fi = G.fidx(t, N_SRC)
+    fi = G.fidx_cut(t, CUTS, N_SRC)
     cv = footage(fi).copy()
     # 1 -> 2: yellow diagonal band wipe 7.86-8.14 (shot 2 behind the band from its first frame)
+    tq = round(t * FPS_SRC) / FPS_SRC              # wipes run on whole frames (no stepped sub-sample copies)
     if 7.86 <= t < 8.16:
-        u = K.ramp(t, 7.86, 8.16, 'inout_cubic')
+        u = K.ramp(tq, 7.86, 8.16, 'inout_cubic')
         other = footage(192 if t < T_CUT1 else 191)
         m = G.wipe(K.W, K.H, u, angle=-60, soft=0.001)
         new_first = t < T_CUT1
@@ -120,7 +123,7 @@ def plate(t):
         _band(cv, u)
     # 2 -> 3: iris from the fingertip 16.86-17.22
     if 16.86 <= t < 17.22:
-        u = K.ramp(t, 16.86, 17.22, 'inout_cubic')
+        u = K.ramp(tq, 16.86, 17.22, 'inout_cubic')
         m1 = G.iris(K.W, K.H, u, 1000 / 1080, 686 / 1920, soft=14)
         m = m1[..., None]
         if t < T_CUT2:
@@ -134,7 +137,7 @@ def plate(t):
     if t >= T_END:
         cv = footage(N_SRC - 1).copy()
     if t >= 29.2:
-        k = K.ramp(t, 29.2, 30.4, 'inout_cubic')
+        k = K.ramp(t, 29.2, 29.95, 'inout_cubic')
         blur = 18 * k
         if blur > 0.3:
             cv = K.gblur(cv, blur)
@@ -152,8 +155,8 @@ def _band(cv, u):
     ys = (np.arange(K.H, dtype=np.float32) + 0.5) / K.H - 0.5
     proj = xs[None, :] * dx + ys[:, None] * dy
     w = 0.055
-    m = np.clip(1 - np.abs(proj - front + w / 2) / (w / 2), 0, 1) ** 0.35
-    m = np.clip(m * 1.4, 0, 1)
+    m = np.clip(1 - np.abs(proj - front + w / 2) / (w / 2), 0, 1) ** 0.6
+    m = np.clip(m * 1.25, 0, 1)
     col = G.lin(Y)
     cv[..., :3] = cv[..., :3] * (1 - m[..., None]) + col * m[..., None]
 
@@ -183,7 +186,7 @@ def ai_label(cv, t):
 def intro(cv, t):
     """0-0.75 s: footage revealed through a growing yellow-edged pill; 0.35-2.5 s: client-story lockup."""
     if t < 0.75:
-        u = K.EASE['inout_quart'](K.ramp(t, 0.0, 0.74, 'linear'))
+        u = K.EASE['inout_quart'](K.ramp(round(t * FPS_SRC) / FPS_SRC, 0.0, 0.74, 'linear'))
         w0, h0 = 380, 120
         m = G.rrect_grow(K.W, K.H, u, 60 * (1 - u) + 1, 0.5, 0.5, w0, h0)
         bg = K.new_canvas(G.lin('#141414'))
@@ -210,7 +213,7 @@ def intro(cv, t):
         tag = 'CLIENT STORY'
         G.draw_text(cv, tag, cx, cy - 92, 28, FONT_HB, Y, 'ms', opacity=op, tracking=0.18)
         # logo: wipes in from the left, then flies to the corner
-        lg = G.leam_logo(104, strap=True, strap_color='#FFFFFF')
+        lg = G.leam_logo(104, strap=True, strap_color='#FFFFFF', outline=True)
         h, w = lg.shape[:2]
         wu = K.ramp(t, 0.55, 1.05, 'out_cubic')
         if wu > 0:
@@ -318,14 +321,14 @@ def card_sept(cv, t, t0=T_HERE + 0.05, t1=16.92):
         return
     u = K.spring(t - t0, 2.6, 0.55)
     out = K.ramp(t, t1 - 0.3, t1, 'in_cubic')
-    w, h = 600, 120
-    cx, cy = 640, 488 - 20 * (1 - u) - 90 * out
+    w, h = 690, 120
+    cx, cy = 595, 488 - 20 * (1 - u) - 90 * out
     pnl, pad = G.panel(w, h, 26, fill=Y, fill_a=0.96, border_a=0.0, shadow=0.45)
     K.draw(cv, pnl, cx, cy, scale=0.85 + 0.15 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out))
     op = K.ramp(t, t0 + 0.1, t0 + 0.35) * (1 - out)
     x0, y0 = cx - w / 2 + 34, cy - h / 2
     G.draw_text(cv, 'Sept 2026: 25 calls', x0, y0 + 60, 52, FONT_H, K_, 'ls', opacity=op)
-    G.draw_text(cv, 'the best of the six months shown · Oct is a part month', x0, y0 + 98, 23, FONT_B, K_, 'ls',
+    G.draw_text(cv, 'Best of the six months · Oct is a part month', x0, y0 + 98, 24, FONT_B, K_, 'ls',
                 opacity=op)
 
 
@@ -337,7 +340,7 @@ def hero_card(cv, t, t0=17.35, t1=22.55):
     u = K.spring(t - t0, 2.3, 0.62)
     out = K.ramp(t, t1 - 0.3, t1, 'in_cubic')
     reveal = G.rrect_grow(card.w, card.h, K.EASE['out_expo'](K.ramp(t, t0, t0 + 0.5, 'linear')), 26, 0.5, 0.5, 120, 40)
-    cx, cy = 540, 410 - 30 * (1 - u) - 120 * out
+    cx, cy = 540, 410 - 30 * (1 - u) - 30 * out
     card.draw(cv, cx, cy, scale=0.94 + 0.06 * u, opacity=1 - out, mask=reveal)
     # marker under the H1 "LEAMINGTON SPA TAXIS -" while he says "taxis in Leamington Spa"
     mk = K.ramp(t, 20.5, 21.3, 'inout_cubic') * (1 - out)
@@ -359,7 +362,7 @@ def calls_card(cv, t, t0=22.6, t1=24.05):
     u = K.spring(t - t0, 2.6, 0.55)
     out = K.ramp(t, t1 - 0.25, t1, 'in_cubic')
     w, h = 760, 190
-    cx, cy = 540, 390 - 20 * (1 - u) - 80 * out
+    cx, cy = 540, 390 - 20 * (1 - u) - 30 * out
     pnl, pad = G.panel(w, h, 34, fill='#121212', fill_a=0.86, border='#FFFFFF', border_a=0.10)
     K.draw(cv, pnl, cx, cy, scale=0.88 + 0.12 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out), frost=8)
     op = K.ramp(t, t0 + 0.08, t0 + 0.3) * (1 - out)
@@ -385,7 +388,7 @@ def airports_card(cv, t, t0=24.0, t1=25.5):
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.25, t1, 'in_cubic')
     reveal = G.wipe(card.w, card.h, K.ramp(t, t0, t0 + 0.4, 'out_cubic'), angle=0, soft=0.12)
-    cx, cy = 540 + 60 * (1 - u), 410 - 80 * out
+    cx, cy = 540 + 60 * (1 - u), 410 - 30 * out
     card.draw(cv, cx, cy, opacity=1 - out, mask=reveal)
     op = K.ramp(t, t0 + 0.2, t0 + 0.45) * (1 - out)
     txt = 'Airport transfers · on the website'
@@ -403,7 +406,7 @@ def drivers_card(cv, t, t0=25.45, t1=27.75):
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
     reveal = G.wipe(card.w, card.h, K.ramp(t, t0, t0 + 0.45, 'out_cubic'), angle=-90, soft=0.12)
-    cx, cy = 470, 395 - 30 * (1 - u) - 100 * out
+    cx, cy = 470, 395 - 30 * (1 - u) - 30 * out
     card.draw(cv, cx, cy, scale=0.94 + 0.06 * u, opacity=1 - out, mask=reveal)
 
 
@@ -414,7 +417,7 @@ def drivers_cursor(cv, t, t0=25.45, t1=27.75):
     card = G.browser_card(LEAM_FULL, (110, 2850, 720, 460), 600, 'leamingtonspa-taxis.co.uk')
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
-    cx, cy = 470, 395 - 30 * (1 - u) - 100 * out
+    cx, cy = 470, 395 - 30 * (1 - u) - 30 * out
     s = 600 / 720
     bx = cx - 300 + (276 - 110) * s
     by = cy - card.h / 2 + 58 + (3265 - 2850) * s
@@ -435,7 +438,7 @@ def end_card(cv, t, t0=29.35):
         bar[..., :3] = G.lin(Y)
         bar[..., 3] = 1
         K.draw(cv, bar, 540, 930)
-    lg = G.leam_logo(110, strap=True, strap_color='#FFFFFF')
+    lg = G.leam_logo(110, strap=True, strap_color='#FFFFFF', outline=True)
     lu = K.spring(t - (t0 + 0.15), 2.2, 0.6) if t > t0 + 0.15 else 0
     K.draw(cv, lg, 540, 760 - 30 * (1 - lu), scale=0.9 + 0.1 * lu, opacity=min(1, lu))
     G.draw_text(cv, 'leamingtonspa-taxis.co.uk', 540, 885, 30, FONT_B, '#FFFFFF', 'ms',
@@ -451,10 +454,9 @@ def end_card(cv, t, t0=29.35):
     K.draw(cv, pill, 540, 1235, scale=0.85 + 0.15 * cu, opacity=min(1, cu * 1.5))
     G.draw_text(cv, txt, 540, 1248, 38, FONT_HB, K_, 'ms', opacity=min(1, cu * 1.5))
     fp = K.ramp(t, t0 + 1.2, t0 + 1.5)
-    G.draw_text(cv, 'Data: Leam Taxis’ Google Business Profile, May–Oct 2026 (Oct part month).', 540, 1350, 22,
-                FONT_R, '#CFCFCF', 'ms', opacity=fp)
-    G.draw_text(cv, 'AI re-creation of the client’s testimonial. Results vary by business.', 540, 1384, 22,
-                FONT_R, '#CFCFCF', 'ms', opacity=fp)
+    for k, ln in enumerate(['Data: Leam Taxis’ Google Business Profile,', 'calls May–Oct 2026 (October part month).',
+                           'AI re-creation of the client’s testimonial.', 'Results vary by business.']):
+        G.draw_text(cv, ln, 540, 1350 + 38 * k + (12 if k >= 2 else 0), 26, FONT_R, '#CFCFCF', 'ms', opacity=fp)
 
 
 # ---------------------------------------------------------------------------------------------- module contract
@@ -476,8 +478,8 @@ def draw(t):
     if t < 29.3:
         G.bottom_shade(cv, 0.45, 1330, opacity=1 - K.ramp(t, 29.0, 29.3))
     lower_third(cv, t)
-    if t < 29.25:
-        CAP.draw(cv, t)
+    if t < 29.8:
+        CAP.draw(cv, t, opacity=1 - K.ramp(t, 29.45, 29.75))
     logo_bug(cv, t)
     ai_label(cv, t)
     end_card(cv, t)
@@ -497,7 +499,7 @@ FAST = [(0.0, 0.8), (2.15, 2.7), (5.4, 5.9), (7.8, 8.2), (8.3, 8.8), (14.2, 14.6
 
 
 def samples(t):
-    return 3 if any(a <= t < b for a, b in FAST) else 1
+    return 7 if any(a <= t < b for a, b in FAST) else 1
 
 
 # ---------------------------------------------------------------------------------------------- sound cues
@@ -548,7 +550,7 @@ def cues():
 def prewarm():
     S.base_screen()
     S.line_layer()
-    G.leam_logo(104, True, '#FFFFFF')
+    G.leam_logo(104, True, '#FFFFFF', True)
     G.leam_logo(54, False)
-    G.leam_logo(110, True, '#FFFFFF')
+    G.leam_logo(110, True, '#FFFFFF', True)
     _site_page()

@@ -216,9 +216,10 @@ def build(name):
     sfx = fit(rep['audio'], n) * A.undb(-7.0)
     clean = (music_leam if name == 'leam' else music_of)(dur)
     clean = fit(clean, n)
-    bed, meas = M.render_bed(clean, vo, sfx, mix_ref=vo + sfx, gap_lu=6.5, min_vo_lu=12.0)
+    bed, meas = M.render_bed(clean, vo, sfx, mix_ref=vo + sfx, gap_lu=6.5, min_vo_lu=12.0, vo_duck_db=6.0,
+                             vo_release=0.65)
     # the end card has no dialogue: let the music come up to a proper level there
-    tail0 = {'leam': 29.35, 'of': 29.9}[name]
+    tail0 = {'leam': 29.35, 'of': 29.95}[name]
     env = np.ones(n)
     a = int(tail0 * SR)
     b = min(n, a + int(0.6 * SR))

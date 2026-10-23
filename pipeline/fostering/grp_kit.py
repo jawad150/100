@@ -64,6 +64,18 @@ def fidx(t, n_frames=721, src_fps=24.0):
     return int(min(max(round(t * src_fps), 0), n_frames - 1))
 
 
+def fidx_cut(t, cuts, n_frames=721, src_fps=24.0):
+    """fidx() that never lets a motion-blur sub-sample cross a hard cut: cuts = [(t_cut, first_frame_of_new_shot)].
+    (A sub-sample at t_cut - 1/144 s would otherwise round to the new shot's first frame.)"""
+    fi = fidx(t, n_frames, src_fps)
+    for tc, f0 in cuts:
+        if t < tc and f0 <= fi < f0 + 3:
+            fi = f0 - 1
+        elif t >= tc and f0 - 3 <= fi < f0:
+            fi = f0
+    return fi
+
+
 @functools.lru_cache(maxsize=40)
 def frame_u8(cid, i):
     im = cv2.imread(os.path.join(K.FRAMES, cid, '%05d.jpg' % int(i)), cv2.IMREAD_COLOR)

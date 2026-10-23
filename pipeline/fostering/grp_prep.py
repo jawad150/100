@@ -2,6 +2,7 @@
 
 python3 grp_prep.py leam    hand mattes + finger track for the Leam Taxis screen shot (frames 192-407)
 python3 grp_prep.py of      banner clean-up patches + laptop screen quad for the Organic Fostering clip
+python3 grp_prep.py oflap   laptop display occlusion mattes (mug / fingers) for the OF desk shot
 python3 grp_prep.py mattes leam|of   person alpha mattes (Robust Video Matting, CPU) for depth-layered graphics
 
 Outputs go to workspace3/grp/ (git-ignored). Sources are the registered clips workspace3/frames/{leam,of}.
@@ -231,8 +232,45 @@ def mattes(cid):
         print(cid, 'shot', a, b, 'done', flush=True)
 
 
+# ---------------------------------------------------------------------------------------------- laptop occlusion
+OF_LAPTOP_Q = [[-72.0, 937.0], [290.0, 916.0], [395.0, 1188.0], [-72.0, 1258.0]]    # display incl. 2 px overscan
+
+
+def oflap():
+    """Per-frame occlusion matte for the OF laptop display (shot 2, frames 237-419): the mug and her fingers pass
+    in front of it (the mug is lifted at ~15.6 s). The display is the brightest surface there and every display
+    pixel is clear at some point, so a per-pixel 92nd-percentile plate over the shot is a clean screen; anything
+    darker / different than it inside the display quad is an occluder.
+    -> workspace3/grp/of_occl/%05d.png (rows 900-1270, cols 0-420 of the frame)"""
+    d = os.path.join(OUT, 'of_occl')
+    os.makedirs(d, exist_ok=True)
+    y0, y1, x1 = 900, 1270, 420
+    frames = range(237, 420)
+    stack = np.stack([_frame('of', i)[y0:y1, :x1] for i in range(237, 420, 2)]).astype(np.float32)
+    plate = np.percentile(stack, 92, axis=0)
+    qm = np.zeros((1920, 1080), np.uint8)
+    cv2.fillPoly(qm, [np.array(OF_LAPTOP_Q, np.int32)], 1)
+    m = qm[y0:y1, :x1].astype(bool)
+    for i in frames:
+        f = _frame('of', i)[y0:y1, :x1].astype(np.float32)
+        dd = np.maximum((plate - f).max(2), np.abs(plate - f).max(2) * 0.8)
+        dd = cv2.GaussianBlur(dd, (0, 0), 1.2)
+        occ = ((dd > 14) & m).astype(np.uint8)
+        occ = cv2.morphologyEx(occ, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+        occ = cv2.morphologyEx(occ, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15)))
+        n, lab, st, _ = cv2.connectedComponentsWithStats(occ)
+        big = np.zeros_like(occ)
+        for k in range(1, n):
+            if st[k, 4] > 400:
+                big[lab == k] = 1
+        big = cv2.dilate(big, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+        a = cv2.GaussianBlur(big.astype(np.float32), (0, 0), 1.3)
+        cv2.imwrite(os.path.join(d, '%05d.png' % i), np.clip(a * 255 + 0.5, 0, 255).astype(np.uint8))
+    print('of_occl done')
+
+
 if __name__ == '__main__':
     if sys.argv[1] == 'mattes':
         mattes(sys.argv[2])
     else:
-        {'leam': leam, 'of': of}[sys.argv[1]]()
+        {'leam': leam, 'of': of, 'oflap': oflap}[sys.argv[1]]()
