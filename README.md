@@ -1,3 +1,18 @@
+# IC London — "Three CV Mistakes" (version 2, sample-inspired)
+
+A 30 s vertical reel that takes ideas from the client's sample edit and makes them its own. It is a cinematic, footage-led cut of IC London's website photography with slow pushes and a cool filmic grade. Other elements:
+- Heavy condensed (Anton) captions in the lower left, with a spaced-caps line and a red accent.
+- A "MISTAKE 0X" label beside a CV-strength meter whose bars fill as each mistake is fixed.
+- UI cards fixing each mistake on top of the shot.
+- Blind-strip transitions, vertical side labels and a red staircase line.
+- A cream panel CTA "Make your next application count." and a logo badge end card.
+
+The voiceover is the brief's script, with a calm, natural read and a gentle fade-out.
+
+**Final:** [`reel/ic_london/ic_london_cv_mistakes_v2.mp4`](reel/ic_london/ic_london_cv_mistakes_v2.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_cv_mistakes_v2_share.mp4). Pipeline: `pipeline_cv2/`.
+
+---
+
 # IC London — "Three CV Mistakes That Could Cost You an Interview"
 
 A 30 s vertical reel (1080×1920, 30 fps, -15 LUFS). It is deliberately unlike the law reel: a bright, editorial "recruiter's desk" look instead of the dark navy route map. One 3D paper CV is shot from cinematic angles, marked up live with a red marker (circles, strike-throughs, scribbles and handwritten notes), then fixed mistake by mistake under big serif numerals: 01 vague achievements, 02 irrelevant information, 03 poor formatting. It ends with "Make your next application count." It uses Blender props (red marker, magnifier, paperclip), a warm piano-led soundtrack with desk sound effects, and the calm natural voiceover with a gentle fade-out.
