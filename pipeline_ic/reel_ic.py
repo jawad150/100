@@ -13,7 +13,7 @@ Usage:
 """
 import os, sys, math, functools
 HERE = os.path.dirname(os.path.abspath(__file__))
-os.environ['REEL_WORKDIR'] = os.path.abspath(os.path.join(HERE, '..', 'workspace_ic'))
+os.environ.setdefault('REEL_WORKDIR', os.path.abspath(os.path.join(HERE, '..', 'workspace_ic')))
 sys.path.insert(0, os.path.join(HERE, '..', 'pipeline_su'))
 import numpy as np
 import cv2
