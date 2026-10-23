@@ -141,7 +141,7 @@ def base_screen():
         S.text(136, round(y + 6), str(v), 17, FR, '#9AA0A6', anchor='rs')
     for k, m in enumerate(MONTHS):
         x, _ = pt(k)
-        S.text(round(x), round(loc(YB) + 30), m, 18, FB, '#5F6368', anchor='ms')
+        S.text(round(x), round(loc(YB) + 21), m, 16, FB, '#5F6368', anchor='ms')
     # KPI block (white backing over the gridlines)
     KX = 168
     S.rrect(KX - 14, 104, 560, 222, 18, ui.col('#FFFFFF'), 1.0)
@@ -256,6 +256,18 @@ def look_u8(scr_lin, seed=0):
     return np.clip(s + 0.5, 0, 255).astype(np.uint8)
 
 
+@functools.lru_cache(maxsize=1)
+def _screen_cover():
+    """Where the replacement screen goes: the display rows from the top edge down to the monitor's slanted
+    bottom bezel (measured: y = 1352.5 - 0.0362 x in frame px), anti-aliased; the real bezel stays below it."""
+    xs = np.arange(SW, dtype=np.float32)
+    yb = 1352.5 - 0.0362 * xs - 1.0 - Y0
+    ys = np.arange(SH, dtype=np.float32)[:, None]
+    cov = np.clip(yb[None, :] - ys + 0.5, 0, 1)
+    cov[0, :] *= 0.6                                   # soften the top edge against the bezel
+    return cov.astype(np.float32)
+
+
 @functools.lru_cache(maxsize=8)
 def matte(i):
     p = os.path.join(G.GRP, 'leam_matte', '%05d.png' % i)
@@ -271,18 +283,11 @@ def composite(frame, i, scr_u8):
     if a is None:
         a = np.zeros((SH, SW), np.float32)
     r, g, b = reg[..., 0], reg[..., 1], reg[..., 2]
-    # bottom rows: the monitor's own (slanted) taskbar edge is dark grey, not hand - keep only skin / navy sleeve
-    tail = slice(SH - 26, SH)
-    chroma = ((b[tail] - r[tail]) > 8) | ((r[tail] - b[tail]) > 12)
-    a = a.copy()
-    a[tail] *= chroma
     hand = np.dstack([r, np.minimum(g, np.maximum(r, b) + 4), b])
-    ef = np.ones((SH, 1), np.float32)
-    ef[0, 0] = 0.6
-    ef[-1, 0] = 0.6
     a3 = a[..., None]
     comp = scr_u8.astype(np.float32) * (1 - a3) + hand * a3
-    comp = comp * ef[..., None] + reg * (1 - ef[..., None])
+    S = _screen_cover()[..., None]
+    comp = comp * S + reg * (1 - S)
     out[Y0:Y1] = np.clip(comp + 0.5, 0, 255).astype(np.uint8)
     return out
 

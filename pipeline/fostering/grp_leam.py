@@ -8,7 +8,7 @@ shot 3 selfie 17.0-30.04 s; 30.04-33.0 s is the end card over the held last fram
 Every graphic is real: the Leam Taxis site (assets/sites/leamingtonspa-taxis, captured 22 Oct 2026), the Leam
 logo (vector rebuild of the site's logo), and the Google Business Profile Calls screenshot (114 calls May-Oct
 2026, September = 25, October a part month) shown at its true aspect on the monitor. No ranking badges, no
-growth arrows, no invented numbers. Captions are the owner's words as spoken (spelling fixed).
+growth arrows, no invented numbers. Captions are the client's words as spoken (spelling fixed). No personal name or job title on screen.
 """
 import functools
 import math
@@ -238,22 +238,6 @@ def intro(cv, t):
                         opacity=min(1, cu) * (1 - a_out))
 
 
-def lower_third(cv, t, t0=2.95, t1=5.35):
-    if not (t0 <= t < t1):
-        return
-    u_in = K.ramp(t, t0, t0 + 0.45, 'out_expo')
-    u_out = K.ramp(t, t1 - 0.35, t1, 'in_cubic')
-    x0, y0 = 64, 1372
-    name, sub = 'Leam Taxis', 'Owner · Leamington Spa'
-    w = int(max(G.measure(name, 50, FONT_H), G.measure(sub, 28, FONT_B)) + 76)
-    pnl, pad = G.panel(w, 128, 22, fill='#141414', fill_a=0.86, border_a=0.08, accent=Y, accent_w=10, shadow=0.45)
-    m = G.wipe(pnl.shape[1], pnl.shape[0], u_in * (1 - u_out) if u_out > 0 else u_in, angle=0, soft=0.08)
-    K.draw(cv, G.masked(pnl, m), x0 - pad, y0 - pad, anchor=(0, 0))
-    tu = K.ramp(t, t0 + 0.15, t0 + 0.55, 'out_cubic') * (1 - u_out)
-    G.draw_text(cv, name, x0 + 38 - 20 * (1 - tu), y0 + 60, 50, FONT_H, '#FFFFFF', 'ls', opacity=tu)
-    G.draw_text(cv, sub, x0 + 38 - 20 * (1 - tu), y0 + 102, 28, FONT_B, Y, 'ls', opacity=tu)
-
-
 @functools.lru_cache(maxsize=1)
 def _site_page():
     """The homepage, top 1600 px of the full capture, at card width (scrollable)."""
@@ -428,7 +412,7 @@ def drivers_cursor(cv, t, t0=25.45, t1=27.75):
                    opacity=1 - out)
 
 
-def end_card(cv, t, t0=29.35):
+def end_card(cv, t, t0=29.6):
     if t < t0:
         return
     # yellow sweep line
@@ -477,7 +461,6 @@ def draw(t):
     drivers_cursor(cv, t)
     if t < 29.3:
         G.bottom_shade(cv, 0.45, 1330, opacity=1 - K.ramp(t, 29.0, 29.3))
-    lower_third(cv, t)
     if t < 29.8:
         CAP.draw(cv, t, opacity=1 - K.ramp(t, 29.45, 29.75))
     logo_bug(cv, t)
@@ -523,7 +506,6 @@ def cues():
         dict(t=0.62, name='swish_small', gain_db=-3, pan=-0.2),
         dict(t=1.02, name='pop', gain_db=-6, params=dict(pitch=1.1)),
         dict(t=2.38, name='whoosh_fast', gain_db=-9, pan=-0.4),
-        dict(t=2.98, name='swish_small', gain_db=-5, pan=-0.3),
         dict(t=5.50, name='whoosh_fast', gain_db=-7),
         dict(t=7.12, name='ui_click', gain_db=-3),
         dict(t=8.00, name='whip', gain_db=-5),
@@ -538,8 +520,8 @@ def cues():
         dict(t=24.02, name='swish_small', gain_db=-6, pan=0.3),
         dict(t=25.48, name='whoosh_fast', gain_db=-9),
         dict(t=26.62, name='ui_click', gain_db=-3),
-        dict(t=29.35, name='logo_sting', gain_db=-4),
-        dict(t=30.28, name='pop', gain_db=-7, params=dict(pitch=1.2)),
+        dict(t=29.6, name='logo_sting', gain_db=-4),
+        dict(t=30.52, name='pop', gain_db=-7, params=dict(pitch=1.2)),
     ]
     for k, tt in _point_times():
         if tt > T_CUT1 + 0.05:

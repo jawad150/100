@@ -29,7 +29,7 @@ FPS_SRC = 24.0
 N_SRC = 721
 T_CUT1, T_CUT2, T_END = 237 / 24.0, 420 / 24.0, 30.0417
 CUTS = [(T_CUT1, 237), (T_CUT2, 420)]
-T_CARD = 29.95                                      # end card starts after her last word (29.82 s)
+T_CARD = 30.2                                       # end card builds once the backdrop has settled (last word 29.82 s)
 MAG, ORA, LEAF, PLUM, INK, IVORY, PEACH = '#B7006E', '#FF6411', '#64A60B', '#5B174F', '#321F35', '#FCF8F5', '#FFD4BA'
 FH = 'Nunito-ExtraBold'
 FHB = 'Nunito-Black'
@@ -232,7 +232,7 @@ def plate(t):
     if t >= T_END:
         cv = footage(N_SRC - 1).copy()
     if t >= 29.85:
-        k = K.EASE['inout_cubic'](K.ramp(t, 29.85, 30.6, 'linear'))
+        k = K.EASE['inout_cubic'](K.ramp(t, 29.85, 30.35, 'linear'))
         bg = airy_bg()
         cv = K.gblur(cv, 16 * k) if k > 0.02 else cv
         cv[:] = cv * (1 - 0.82 * k) + bg * (0.82 * k)
@@ -472,7 +472,7 @@ def _card_body(card):
     return np.ascontiguousarray(card.spr[p:p + card.h, p:p + card.w])
 
 
-def rebuild_card(cv, t, t0=12.6, t1=17.4):
+def rebuild_card(cv, t, t0=12.6, t1=15.45):
     """The page on the laptop lifts off the screen into a floating browser card ('They rebuilt our website')."""
     if not (t0 <= t < t1):
         return
@@ -503,7 +503,7 @@ def rebuild_card(cv, t, t0=12.6, t1=17.4):
     K.draw_quad(cv, body, [tuple(p) for p in q], opacity=(0.3 + 0.7 * u) * (1 - out))
 
 
-def tech_chips(cv, t, t0=14.05, t1=17.4):
+def tech_chips(cv, t, t0=14.05, t1=15.45):
     if not (t0 <= t < t1):
         return
     labels = [('Secure HTTPS', 'shield'), ('Mobile-friendly pages', 'check'), ('Sitemap · 61 pages', 'grid')]
@@ -556,17 +556,17 @@ def _map_tile(w=520, h=250):
     return S.img
 
 
-def manchester_card(cv, t, t0=15.25, t1=17.4):
+def manchester_card(cv, t, t0=15.4, t1=17.4):
     if not (t0 <= t < t1):
         return
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.3, t1, 'in_cubic')
-    w, h = 520, 330
-    cx, cy = 330, 1405 + 30 * (1 - u) + 40 * out
+    w, h = 560, 350
+    cx, cy = 370 - 50 * (1 - u), 470 - 40 * out
     pnl, pad = white_card(w, h, 32)
     K.draw(cv, pnl, cx, cy, scale=0.9 + 0.1 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out))
-    tile = _map_tile(470, 200)
-    K.draw(cv, tile, cx, cy - 38, opacity=(1 - out) * K.ramp(t, t0 + 0.05, t0 + 0.25))
+    tile = _map_tile(510, 214)
+    K.draw(cv, tile, cx, cy - 40, opacity=(1 - out) * K.ramp(t, t0 + 0.05, t0 + 0.25))
     # pin drop + ripple
     pt = t - (t0 + 0.25)
     if pt > 0:
@@ -748,7 +748,7 @@ def cues():
         dict(t=22.33, name='swish_small', gain_db=-5),
         dict(t=24.02, name='ui_click', gain_db=-3),
         dict(t=T_PIP_OUT + 0.35, name='whoosh_fast', gain_db=-9),
-        dict(t=29.95, name='logo_sting', gain_db=-4),
+        dict(t=T_CARD, name='logo_sting', gain_db=-4),
         dict(t=T_CARD + 0.92, name='pop', gain_db=-7, params=dict(pitch=1.2)),
     ]
 
@@ -756,7 +756,7 @@ def cues():
 def prewarm():
     _laptop_layers()
     airy_bg()
-    _map_tile(470, 200)
+    _map_tile(510, 214)
     G.image_logo(LOGO, 520)
     G.image_logo(LOGO, 210)
     G.image_logo(LOGO, 640)
