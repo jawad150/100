@@ -22,7 +22,7 @@ LINES = {
     'm1': [('One. Vague achievements.', 0.4), ("Don't just list duties,", 0.14), ('show what you did, with real examples.', 0.0)],
     'm2': [('Two. Irrelevant information.', 0.4), ("Tailor every line to the job you're applying for.", 0.0)],
     'm3': [('Three. Poor formatting.', 0.4), ('Use clear headings, bullet points,', 0.14), ('and one consistent style.', 0.0)],
-    'cta': [('Make your next application count,', 0.12), ('with IC London.', 0.0)],
+    'cta': [('Make your next application count.', 0.0)],                 # CTA exactly as briefed
 }
 
 
