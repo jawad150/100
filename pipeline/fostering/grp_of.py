@@ -166,6 +166,23 @@ def pip_amount(t):
                1 - K.EASE['inout_cubic'](K.ramp(t, T_PIP_OUT, T_PIP_OUT + 0.6, 'linear')))
 
 
+@functools.lru_cache(maxsize=2)
+def person(fi):
+    """The speaker cut out of the graded, cropped footage (to composite over cards placed behind her)."""
+    sh = shot_of(fi)
+    c, z = (_shot1_tf, _shot2_tf, _shot3_tf)[sh - 1](fi / FPS_SRC)
+    return G.person_sprite(footage(fi), 'of', fi, c, z)
+
+
+def person_over(cv, t):
+    if t < 0.78 or T_CUT1 - 0.16 <= t < T_CUT1 + 0.16 or T_CUT2 - 0.13 <= t < T_CUT2 + 0.31 \
+            or T_PIP_IN <= t < T_PIP_OUT + 0.6 or t >= 29.4:
+        return
+    p = person(G.fidx(t, N_SRC))
+    if p is not None:
+        K.over(cv, p)
+
+
 def plate(t):
     fi = G.fidx(t, N_SRC)
     cv = footage(fi).copy()
@@ -272,97 +289,100 @@ def ai_label(cv, t):
     txt = 'AI re-creation · real client website'
     w = G.measure(txt, 24, FU)
     pnl, pad = G.panel(int(w + 32), 40, 20, fill='#000000', fill_a=0.40, border_a=0.0, shadow=0.0)
-    y = 182 if t < 29.5 else 1840
+    y = 1862
     if T_PIP_IN + 0.3 < t < T_PIP_OUT + 0.3 or t >= 29.5:
         pnl, pad = G.panel(int(w + 32), 40, 20, fill=PLUM, fill_a=0.85, border_a=0.0, shadow=0.0)
     K.draw(cv, pnl, 64 - pad, y - 20 - pad, anchor=(0, 0), opacity=k)
     G.draw_text(cv, txt, 80, y + 8, 24, FU, '#FFFFFF', 'ls', opacity=0.92 * k)
 
 
-def intro(cv, t):
-    if t < 0.78:
-        u = K.EASE['inout_quart'](K.ramp(t, 0.0, 0.76, 'linear'))
-        w0, h0 = 300, 300
-        m = G.rrect_grow(K.W, K.H, u, 150 * (1 - u) + 1, 0.5, 0.42, w0, h0)
-        bg = airy_bg()
-        cv[:] = bg * (1 - m[..., None]) + cv * m[..., None]
-        bw = w0 + (K.W - w0) * u
-        bh = h0 + (K.H - h0) * u
-        st = ui.Surf(K.W, K.H)
-        a, X0, Y0 = st.stroke_rrect(540 - bw / 2, 0.42 * K.H - bh / 2, bw, bh, min(150 * (1 - u) + 1, bw / 2, bh / 2),
-                                    6, (1, 1, 1), 0.0)
-        g = K.gradient(a.shape[1], a.shape[0], [G.lin(MAG), G.lin(ORA)], angle=35)
-        st.fill(a, X0, Y0, g, 1.0 - u ** 2)
-        K.over(cv, st.img)
-    if 0.30 <= t < 2.7:
-        cx, cy = 540, 1290
-        a_in = K.spring(t - 0.30, 2.2, 0.62)
-        a_out = K.ramp(t, 2.25, 2.6, 'in_cubic')
-        pnl, pad = white_card(700, 300, 40)
-        K.draw(cv, pnl, cx, cy, scale=(0.86 + 0.14 * a_in) * (1 - 0.2 * a_out),
-               opacity=min(1.0, (t - 0.30) / 0.12) * (1 - a_out))
-        op = (1 - a_out) * K.ramp(t, 0.42, 0.62)
-        G.draw_text(cv, 'CLIENT STORY', cx, cy - 100, 26, FU, MAG, 'ms', opacity=op, tracking=0.2)
-        lg = G.image_logo(LOGO, 520)
-        h, w = lg.shape[:2]
-        wu = K.ramp(t, 0.55, 1.05, 'out_cubic')
-        if wu > 0:
-            m = G.wipe(w, h, wu, angle=0, soft=0.12)
-            fly = K.EASE['inout_cubic'](K.ramp(t, 2.2, 2.62, 'linear'))
-            x = K.lerp(cx, 64 + 17 + 105, fly)
-            y = K.lerp(cy + 6, 70 + 11 + h * 210 / 520 / 2, fly)
-            K.draw(cv, G.masked(lg, m), x, y, scale=K.lerp(1.0, 210 / 520, fly), opacity=1 - K.ramp(t, 2.55, 2.67))
-        cu = K.spring(t - 1.0, 2.6, 0.6) if t > 1.0 else 0
-        if cu > 0:
-            txt = 'organicfostering.co.uk · Manchester'
-            tw = G.measure(txt, 26, FB)
-            chip, cp = G.panel(int(tw + 50), 50, 25, fill=MAG, fill_a=0.10, border=MAG, border_a=0.35,
-                               border_w=1.5, shadow=0.0)
-            K.draw(cv, chip, cx, cy + 108, scale=0.9 + 0.1 * cu, opacity=min(1, cu) * (1 - a_out))
-            G.draw_text(cv, txt, cx, cy + 117, 26, FB, PLUM, 'ms', opacity=min(1, cu) * (1 - a_out))
+def intro_reveal(cv, t):
+    """0-0.78 s: the footage opens out of a rounded square with a brand-gradient edge."""
+    if t >= 0.78:
+        return
+    u = K.EASE['inout_quart'](K.ramp(t, 0.0, 0.76, 'linear'))
+    w0, h0 = 300, 300
+    m = G.rrect_grow(K.W, K.H, u, 150 * (1 - u) + 1, 0.5, 0.42, w0, h0)
+    bg = airy_bg()
+    cv[:] = bg * (1 - m[..., None]) + cv * m[..., None]
+    bw = w0 + (K.W - w0) * u
+    bh = h0 + (K.H - h0) * u
+    st = ui.Surf(K.W, K.H)
+    a, X0, Y0 = st.stroke_rrect(540 - bw / 2, 0.42 * K.H - bh / 2, bw, bh, min(150 * (1 - u) + 1, bw / 2, bh / 2),
+                                6, (1, 1, 1), 0.0)
+    g = K.gradient(a.shape[1], a.shape[0], [G.lin(MAG), G.lin(ORA)], angle=35)
+    st.fill(a, X0, Y0, g, 1.0 - u ** 2)
+    K.over(cv, st.img)
+
+
+def intro_card(cv, t):
+    """0.3-2.6 s: client-story card in the top band, tucked behind her head; the logo then flies to the bug."""
+    if not (0.30 <= t < 2.7):
+        return
+    cx, cy = 540, 168
+    a_in = K.spring(t - 0.30, 2.2, 0.62)
+    a_out = K.ramp(t, 2.25, 2.6, 'in_cubic')
+    pnl, pad = white_card(600, 252, 40)
+    K.draw(cv, pnl, cx, cy, scale=(0.86 + 0.14 * a_in) * (1 - 0.2 * a_out),
+           opacity=min(1.0, (t - 0.30) / 0.12) * (1 - a_out))
+    op = (1 - a_out) * K.ramp(t, 0.42, 0.62)
+    G.draw_text(cv, 'CLIENT STORY', cx, cy - 78, 24, FU, MAG, 'ms', opacity=op, tracking=0.2)
+    lg = G.image_logo(LOGO, 420)
+    h, w = lg.shape[:2]
+    wu = K.ramp(t, 0.55, 1.05, 'out_cubic')
+    if wu > 0:
+        m = G.wipe(w, h, wu, angle=0, soft=0.12)
+        fly = K.EASE['inout_cubic'](K.ramp(t, 2.2, 2.62, 'linear'))
+        x = K.lerp(cx, 64 + 17 + 105, fly)
+        y = K.lerp(cy + 22, 70 + 11 + h * 210 / 420 / 2, fly)
+        K.draw(cv, G.masked(lg, m), x, y, scale=K.lerp(1.0, 210 / 420, fly), opacity=1 - K.ramp(t, 2.55, 2.67))
+
+
+@functools.lru_cache(maxsize=1)
+def _ticks_card():
+    """The homepage's three trust ticks, set as a narrow card (no photos of children)."""
+    w, h = 300, 440
+    pnl, pad = white_card(w, h, 28)
+    spr = pnl.copy()
+    S = ui.Surf(spr.shape[1], spr.shape[0], img=spr)
+    ox, oy = pad, pad
+    ui.paste(spr, ui.icon('globe', 20, color=MAG, stroke=2.2), ox + 24, oy + 26)
+    S.text(ox + 50, oy + 43, 'organicfostering.co.uk', 17, FB, PLUM)
+    S.rrect(ox + 24, oy + 64, w - 48, 1.5, 0, G.lin(PLUM), 0.15)
+    rows = [('Independent', 'Fostering Agency'), ('Cultural Matching', 'Specialists'), ('Informal First', 'Conversation')]
+    for i, (l1, l2) in enumerate(rows):
+        y = oy + 94 + i * 114
+        S.circle(ox + 38, y + 23, 17, G.lin(LEAF), 1.0)
+        ui.paste(spr, ui.icon('check', 21, color='#FFFFFF', stroke=3.0), ox + 28, y + 13)
+        S.text(ox + 66, y + 22, l1, 23, FU, INK)
+        S.text(ox + 66, y + 54, l2, 23, FU, INK)
+    spr.setflags(write=False)
+    return spr, pad, w, h
 
 
 def cultural_card(cv, t, t0=2.75, t1=5.15):
-    """Homepage text column only (no photos): the 'Cultural Matching Specialists' trust tick gets a marker."""
+    """Left of her head, tucked behind her: the site's trust ticks; 'Cultural Matching Specialists' lights up
+    as she says it."""
     if not (t0 <= t < t1):
         return
-    crop = (40, 150, 570, 490)
-    card = G.browser_card(OF('now_desktop.png'), crop, 640, 'organicfostering.co.uk', accent=MAG)
+    spr, pad, w, h = _ticks_card()
     u = K.spring(t - t0, 2.3, 0.62)
     out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
-    reveal = G.wipe(card.w, card.h, K.ramp(t, t0, t0 + 0.45, 'out_cubic'), angle=-90, soft=0.1)
-    cx, cy = 540, 1250 + 40 * (1 - u) + 60 * out
-    sc = 0.94 + 0.06 * u
-    card.draw(cv, cx, cy, scale=sc, opacity=1 - out, mask=reveal)
-    s = 640 / 570
-    mk = K.ramp(t, 3.6, 4.2, 'inout_cubic') * (1 - out)
-    if mk > 0:
-        x0 = cx + ((238 - 40) * s - 320) * sc
-        y0 = cy + (58 + (585 - 150) * s - card.h / 2) * sc
-        bw, bh = (392 - 238) * s * sc, 42 * s * sc
-        S = ui.Surf(int(bw) + 4, int(bh) + 4)
-        S.rrect(2, 2, bw, bh, 8, G.lin(PEACH), 1.0)
-        m = G.wipe(S.img.shape[1], S.img.shape[0], mk, angle=0, soft=0.06)
-        K.draw(cv, G.masked(S.img, m), x0, y0, anchor=(0, 0), mode='multiply')
-        # the tick pops out as a large chip over the card (a magnifier on the site's own trust tick)
-        pu = K.spring(t - 3.85, 2.6, 0.55) if t > 3.85 else 0.0
-        if pu > 0:
-            lab = 'Cultural Matching Specialists'
-            tw = G.measure(lab, 36, FU)
-            w, h = int(tw + 120), 84
-            sx, sy = x0 + bw / 2, y0 + bh / 2
-            ex, ey = 540, cy - card.h / 2 + 250
-            px, py = K.lerp(sx, ex, min(1.0, pu)), K.lerp(sy, ey, min(1.0, pu))
-            pnl, pad = G.panel(w, h, 42, fill='#FFFFFF', fill_a=1.0, border=MAG, border_a=0.55, border_w=2.5,
-                               shadow=0.45, shadow_blur=18, shadow_dy=10)
-            op = min(1.0, pu * 2) * (1 - out)
-            K.draw(cv, pnl, px, py, scale=0.35 + 0.65 * min(1.2, pu), opacity=op)
-            k = min(1.0, pu)
-            K.draw(cv, K.disc(26, G.lin(LEAF)), px - w / 2 * k + 50 * k, py, scale=k, opacity=op)
-            K.draw(cv, ui.icon('check', 30, color='#FFFFFF', stroke=3.0), px - w / 2 * k + 50 * k, py, scale=k,
-                   opacity=op)
-            G.draw_text(cv, lab, px - w / 2 * k + 92 * k, py + 12 * k, 36, FU, INK, 'ls', opacity=op * K.clamp(pu * 1.4 - 0.3),
-                        scale=k)
+    x0, y0 = 30, 410 + 30 * (1 - u) + 40 * out
+    m = np.zeros(spr.shape[:2], np.float32)
+    m[pad:pad + h, pad:pad + w] = G.wipe(w, h, K.ramp(t, t0, t0 + 0.45, 'out_cubic'), angle=-90, soft=0.1)
+    m = np.maximum(m, K.gblur(m, 16, border='constant'))
+    K.draw(cv, G.masked(spr, m), x0 - pad, y0 - pad, anchor=(0, 0), opacity=1 - out)
+    hl = K.ramp(t, 3.55, 3.95, 'out_cubic') * (1 - out)
+    if hl > 0:
+        ry = y0 + 94 + 114 - 14
+        S = ui.Surf(w - 20, 100)
+        S.rrect(2, 2, w - 24, 96, 18, G.lin(PEACH), 1.0)
+        mm = G.wipe(S.img.shape[1], S.img.shape[0], hl, angle=0, soft=0.06)
+        K.draw(cv, G.masked(S.img, mm), x0 + 10, ry, anchor=(0, 0), mode='multiply')
+        ring = ui.Surf(w - 4, 116)
+        ring.stroke_rrect(4, 4, w - 12, 108, 22, 3, G.lin(MAG), 1.0)
+        K.draw(cv, ring.img, x0 + 2, ry - 8, anchor=(0, 0), opacity=K.ramp(t, 3.85, 4.15) * (1 - out))
 
 
 def search_card(cv, t, t0=5.25, t1=7.95):
@@ -370,8 +390,8 @@ def search_card(cv, t, t0=5.25, t1=7.95):
         return
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.25, t1, 'in_cubic')
-    w, h = 800, 112
-    cx, cy = 540, 1300 + 30 * (1 - u) + 50 * out
+    w, h = 760, 104
+    cx, cy = 540, 232 - 20 * (1 - u) - 40 * out
     # gentle 'not found' shake on "nobody could find us"
     sh = 10 * math.sin((t - 6.62) * 38) * math.exp(-(t - 6.62) * 6) if t > 6.62 else 0.0
     pnl, pad = G.panel(w, h, h // 2, fill='#FFFFFF', fill_a=0.97, border=PLUM, border_a=0.12, shadow=0.4)
@@ -395,19 +415,19 @@ def phone_card(cv, t, t0=8.25, t1=9.8):
         return
     u = K.spring(t - t0, 2.6, 0.55)
     out = K.ramp(t, t1 - 0.22, t1, 'in_cubic')
-    cx, cy = 540, 1290 + 20 * (1 - u)
-    disc = K.disc(78, G.lin('#FFFFFF'))
+    cx, cy = 190, 640 + 20 * (1 - u)
+    disc = K.disc(70, G.lin('#FFFFFF'))
     K.draw(cv, disc, cx, cy, scale=0.8 + 0.2 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out))
     tilt = -8 + 3 * math.sin((t - t0) * 2.0)
-    K.draw(cv, ui.icon('phone', 74, color='#9A8C9D', stroke=2.4), cx, cy, rot=tilt,
+    K.draw(cv, ui.icon('phone', 66, color='#9A8C9D', stroke=2.4), cx, cy, rot=tilt,
            opacity=K.ramp(t, t0 + 0.05, t0 + 0.25) * (1 - out))
     # flat line: silence
-    lw = 360 * K.ramp(t, t0 + 0.2, t0 + 0.8, 'out_cubic')
+    lw = 220 * K.ramp(t, t0 + 0.2, t0 + 0.8, 'out_cubic')
     if lw > 2:
         bar = np.zeros((4, int(lw), 4), np.float32)
         bar[..., :3] = 1.0
         bar[..., 3] = 1.0
-        K.draw(cv, bar, cx, cy + 118, opacity=0.8 * (1 - out))
+        K.draw(cv, bar, cx, cy + 108, opacity=0.8 * (1 - out))
 
 
 def hulk_card(cv, t, t0=10.45, t1=12.55):
@@ -417,7 +437,7 @@ def hulk_card(cv, t, t0=10.45, t1=12.55):
     out = K.ramp(t, t1 - 0.25, t1, 'in_cubic')
     lg = G.image_logo(HULK, 520)
     w, h = 620, 150
-    cx, cy = 430, 430 - 20 * (1 - u) - 60 * out
+    cx, cy = 400, 430 - 20 * (1 - u) - 60 * out
     pnl, pad = G.panel(w, h, 34, fill='#17121A', fill_a=0.94, border='#FFFFFF', border_a=0.10, shadow=0.45)
     K.draw(cv, pnl, cx, cy, scale=0.85 + 0.15 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out))
     m = G.wipe(lg.shape[1], lg.shape[0], K.ramp(t, t0 + 0.12, t0 + 0.55, 'out_cubic'), angle=0, soft=0.1)
@@ -433,13 +453,13 @@ def rebuild_card(cv, t, t0=12.6, t1=17.4):
     """The page on the laptop lifts off the screen into a floating browser card ('They rebuilt our website')."""
     if not (t0 <= t < t1):
         return
-    card = G.browser_card(OF('now_areas_desktop.png'), (0, 0, 1440, 900), 760, 'organicfostering.co.uk/areas-we-cover',
+    card = G.browser_card(OF('now_areas_desktop.png'), (0, 0, 1440, 900), 680, 'organicfostering.co.uk/areas-we-cover',
                           accent=MAG)
     body = _card_body(card)
     u = K.EASE['inout_cubic'](K.ramp(t, t0, t0 + 0.65, 'linear'))
     out = K.ramp(t, t1 - 0.3, t1, 'in_cubic')
     w, h = card.w, card.h
-    cx, cy = 450, 470 - 60 * out
+    cx, cy = 400, 470 - 60 * out
     # tech-chips phase: the card eases up a little and shrinks
     k2 = K.EASE['inout_cubic'](K.ramp(t, 13.95, 14.4, 'linear'))
     sc = 1.0 - 0.12 * k2
@@ -518,12 +538,12 @@ def manchester_card(cv, t, t0=15.25, t1=17.4):
         return
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.3, t1, 'in_cubic')
-    w, h = 560, 360
-    cx, cy = 610, 1335 + 30 * (1 - u) + 40 * out
+    w, h = 520, 330
+    cx, cy = 330, 1405 + 30 * (1 - u) + 40 * out
     pnl, pad = white_card(w, h, 32)
     K.draw(cv, pnl, cx, cy, scale=0.9 + 0.1 * u, opacity=min(1, (t - t0) / 0.1) * (1 - out))
-    tile = _map_tile()
-    K.draw(cv, tile, cx, cy - 40, opacity=(1 - out) * K.ramp(t, t0 + 0.05, t0 + 0.25))
+    tile = _map_tile(470, 200)
+    K.draw(cv, tile, cx, cy - 38, opacity=(1 - out) * K.ramp(t, t0 + 0.05, t0 + 0.25))
     # pin drop + ripple
     pt = t - (t0 + 0.25)
     if pt > 0:
@@ -626,7 +646,9 @@ def end_card(cv, t, t0=29.5):
 # ---------------------------------------------------------------------------------------------- contract
 def draw(t):
     cv = plate(t)
-    intro(cv, t)
+    intro_reveal(cv, t)
+    # behind the speaker
+    intro_card(cv, t)
     cultural_card(cv, t)
     search_card(cv, t)
     phone_card(cv, t)
@@ -634,8 +656,13 @@ def draw(t):
     rebuild_card(cv, t)
     tech_chips(cv, t)
     manchester_card(cv, t)
+    person_over(cv, t)
+    # in front
     guides_card(cv, t)
     enquiry_card(cv, t)
+    pip = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
+    if t < 29.4:
+        G.bottom_shade(cv, 0.42, 1330, opacity=(1 - pip) * (1 - K.ramp(t, 29.1, 29.4)))
     if t < 29.45:
         p = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
         if p > 0.5:
@@ -706,7 +733,7 @@ def cues():
 def prewarm():
     _laptop_layers()
     airy_bg()
-    _map_tile()
+    _map_tile(470, 200)
     G.image_logo(LOGO, 520)
     G.image_logo(LOGO, 210)
     G.image_logo(LOGO, 640)

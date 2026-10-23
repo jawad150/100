@@ -1,16 +1,20 @@
 """grp_leam_screen.py: the replacement monitor screen for the Leam Taxis edit (shot 2, frames 192-407).
 
-The generated clip shows a green screen with a made-up climbing line. We replace the whole display (frame rows
-594-1342, full width) with a browser holding the REAL Google Business Profile Performance > Calls screenshot
-(assets/gsc/leamingtonspa_gbp_calls_may-oct2026.png, May-Oct 2026, 114 calls, Sept = 25) at its true aspect
-ratio. Only the line, its fill and its points are redrawn (from the screenshot's own point positions, measured to
-0.1 px) so the line can draw on under the owner's finger; the tooltip is the screenshot's own pixels.
-Nothing is stretched or re-scaled vertically.
+The generated clip shows a green screen with a made-up line that his finger traces up and to the right. His
+monthly calls are flat-ish (Google Business Profile, May-Oct 2026: about 19, 17, 20, 21, then 25 in September and
+12 in part-month October; 114 in all), so no honest monthly chart can follow that finger. The RUNNING TOTAL of those
+same calls does climb steadily, so the screen shows a calls report with the running total, clearly labelled, at a
+linear y axis from 0: 19 - 36 - 56 - 77 - 102 - 114. The geometry (month spacing, baseline, px per call) is fitted
+to the measured fingertip path (grp_prep.py leam: hand mattes, 'tip2'), so the line sits under his fingertip as it
+draws on (rms 26 px, finger pad ~30 px under the line). Only 114 and September's 25 are printed exactly as
+reported; the other monthly points are read from the Business Profile chart (labelled on screen).
 
-    screen_u8(t, fx) -> (748, 1080, 3) uint8 sRGB screen at time t with the reveal front at screen x `fx`
-    composite(frame_u8, i, scr_u8) -> frame with the screen under the owner's hand (workspace3/grp/leam_matte)
+    front_x(t) -> reveal front (frame px) = fingertip x + lead
+    screen_lin(t, fx, t_here) -> linear premultiplied (749, 1080, 4) screen
+    look_u8(scr) -> filmed-looking uint8;  composite(frame_u8, i, scr_u8) -> frame with the screen under his hand
 """
 import functools
+import json
 import os
 
 import cv2
@@ -21,221 +25,221 @@ import core as K
 import grp_kit as G
 import ui
 
-GBP = os.path.join(G.GSC, 'leamingtonspa_gbp_calls_may-oct2026.png')
-# point centres in screenshot px (May .. Oct 2026), measured from the ring pixels
-PTS = [(26.71, 341.07), (201.84, 352.65), (371.68, 335.0), (547.13, 329.26), (723.39, 306.37), (892.11, 381.45)]
-BASE_Y = 452.5
-BLUE = (11, 87, 208)                  # #0B57D0, line + tooltip
-FILL_A = 0.045
 Y0, Y1 = 594, 1343                    # display rows in the frame (= the matte crop, 749 rows)
 SW, SH = 1080, Y1 - Y0
-PAGE_S, PAGE_X, PAGE_Y = 1.12, 8.0, 92.0
-WHITE_OUT = np.float32([236, 240, 238]) / 255.0     # filmed monitor white / black (sRGB), from the plate
+# chart geometry in FRAME px, fitted to the fingertip path
+X0, DX, YB, PPC = 189.95, 155.10, 1290.18, 4.8402     # May x, month spacing, baseline (0 calls), px per call
+CUM = [19, 36, 56, 77, 102, 114]                        # running total by month (May..Oct 2026)
+MONTHS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct*']
+INK = '#1F1F1F'
+YEL = '#FFC61A'
+GREY = '#6B6B6B'
+WHITE_OUT = np.float32([236, 240, 238]) / 255.0     # filmed monitor white / black (sRGB)
 BLACK_OUT = np.float32([26, 30, 32]) / 255.0
+FB = 'OpenSans-SemiBold'
+FBB = 'OpenSans-Bold'
+FR = 'OpenSans-Regular'
+FH = 'FiraSansCondensed-ExtraBold'
+FHB = 'FiraSansCondensed-Bold'
 
 
-def to_scr(x, y):
-    return PAGE_X + PAGE_S * x, PAGE_Y + PAGE_S * y
+def pt(k):
+    """Frame px of month k's point."""
+    return X0 + DX * k, YB - PPC * CUM[k]
 
 
-def line_y(xp):
-    """Line height (screenshot px) at screenshot x (piecewise linear between the real points)."""
-    xs = [p[0] for p in PTS]
-    ys = [p[1] for p in PTS]
-    return float(np.interp(xp, xs, ys))
+def loc(y):
+    return y - Y0
 
 
-@functools.lru_cache(maxsize=1)
-def _shot():
-    im = cv2.cvtColor(cv2.imread(GBP), cv2.COLOR_BGR2RGB)
-    return im
+def line_y(x):
+    xs = [pt(k)[0] for k in range(6)]
+    ys = [pt(k)[1] for k in range(6)]
+    return float(np.interp(x, xs, ys))
 
 
-@functools.lru_cache(maxsize=1)
-def empty_chart_u8():
-    """The screenshot with the line, points, area fill and tooltip removed (gridlines and labels kept)."""
-    im = _shot().astype(np.float32)
-    x0, y0, x1, y1 = 18, 268, 905, 452
-    reg = np.zeros(im.shape[:2], bool)
-    reg[y0:y1, x0:x1] = True
-    # tooltip box -> white (nothing else lives there)
-    im[276:337, 729:842] = 255.0
-    r, b = im[..., 0], im[..., 2]
-    tint = reg & (b - r >= 3) & (b - r < 40) & (r > 180)
-    C = np.float32(BLUE)
-    un = (im - FILL_A * C) / (1 - FILL_A)
-    im[tint] = np.clip(un[tint], 0, 255)
-    strong = (reg & (b - im[..., 0] >= 40)).astype(np.uint8)
-    # point discs (white centres inside rings)
-    for (px, py) in PTS:
-        cv2.circle(strong, (int(round(px)), int(round(py))), 8, 1, -1)
-    strong = cv2.dilate(strong, np.ones((3, 3), np.uint8))
-    out = cv2.inpaint(np.clip(im, 0, 255).astype(np.uint8), strong, 3, cv2.INPAINT_TELEA)
+def total_at(fx):
+    """Running total read along the line at the front (0 a little before May, 114 at October)."""
+    xs = [X0 - 60] + [pt(k)[0] for k in range(6)]
+    return float(np.interp(fx, xs, [0] + CUM))
+
+
+def _supersample(fn, ss=4):
+    im = Image.new('RGBA', (SW * ss, SH * ss), (0, 0, 0, 0))
+    fn(ImageDraw.Draw(im), ss)
+    a = np.asarray(im, np.float32) / 255.0
+    a = cv2.resize(a, (SW, SH), interpolation=cv2.INTER_AREA)
+    out = np.zeros_like(a)
+    out[..., :3] = K.to_lin(a[..., :3]) * a[..., 3:4]
+    out[..., 3] = a[..., 3]
     return out
 
 
-@functools.lru_cache(maxsize=1)
-def tooltip_sprite():
-    """The screenshot's own '25 · September 2026' tooltip (box + pointer) as a linear sprite at screen scale,
-    with its anchor = the tip of the pointer (its left edge, level with the Sept point)."""
-    im = _shot()
-    x0, y0, x1, y1 = 729, 276, 840, 336
-    sub = im[y0:y1, x0:x1].astype(np.int32)
-    blue = ((sub[..., 2] - sub[..., 0] > 100) & (sub[..., 0] < 90)).astype(np.uint8)
-    blue[:, :8] = 0                                   # keep the line / point out of the crop
-    box = cv2.morphologyEx(blue, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
-    # fill text holes inside the box rows
-    ys, xs = np.nonzero(box)
-    bx0, bx1, by0, by1 = xs.min(), xs.max(), ys.min(), ys.max()
-    full = np.zeros_like(box)
-    full[by0:by1 + 1, bx0 + 6:bx1 + 1] = 1
-    alpha = np.maximum(box, full).astype(np.float32)
-    alpha = cv2.GaussianBlur(alpha, (0, 0), 0.6)
-    rgba = np.dstack([sub.astype(np.uint8), (alpha * 255).astype(np.uint8)])
-    s = PAGE_S
-    rgba = cv2.resize(rgba, (round(rgba.shape[1] * s), round(rgba.shape[0] * s)), interpolation=cv2.INTER_CUBIC)
-    spr = K.sprite(rgba)
-    spr.setflags(write=False)
-    return spr, (x0, y0)
-
-
-def _supersample_draw(fn, w, h, ss=4):
-    im = Image.new('RGBA', (w * ss, h * ss), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    fn(d, ss)
-    a = np.asarray(im, np.float32) / 255.0
-    a = cv2.resize(a, (w, h), interpolation=cv2.INTER_AREA)
-    return a                                          # straight sRGB RGBA float
+def _hex(c, a=255):
+    c = c.lstrip('#')
+    return tuple(int(c[i:i + 2], 16) for i in (0, 2, 4)) + (a,)
 
 
 @functools.lru_cache(maxsize=1)
 def line_layer():
-    """Premultiplied linear RGBA (SH, SW) with the area fill and the line (no points)."""
-    pts = [to_scr(x, y) for x, y in PTS]
-    base = to_scr(0, BASE_Y)[1]
+    """Area fill (Leam yellow) + the line, premultiplied linear (SH, SW, 4); revealed per frame by the front."""
+    pts = [(pt(k)[0], loc(pt(k)[1])) for k in range(6)]
+    base = loc(YB)
 
     def fill(d, ss):
         poly = [(x * ss, y * ss) for x, y in pts] + [(pts[-1][0] * ss, base * ss), (pts[0][0] * ss, base * ss)]
-        d.polygon(poly, fill=BLUE + (int(255 * FILL_A),))
+        d.polygon(poly, fill=_hex(YEL, 80))
 
     def line(d, ss):
-        d.line([(x * ss, y * ss) for x, y in pts], fill=BLUE + (255,), width=int(round(3.0 * PAGE_S * ss)),
-               joint='curve')
-    f = _supersample_draw(fill, SW, SH)
-    ln = _supersample_draw(line, SW, SH)
-    out = np.zeros((SH, SW, 4), np.float32)
-    for layer in (f, ln):
-        a = layer[..., 3:4]
-        rgb = K.to_lin(layer[..., :3]) * a
-        out[..., :3] = out[..., :3] * (1 - a) + rgb
-        out[..., 3:4] = out[..., 3:4] * (1 - a) + a
+        d.line([(x * ss, y * ss) for x, y in pts], fill=_hex(INK), width=int(4.5 * ss), joint='curve')
+    f = _supersample(fill)
+    ln = _supersample(line)
+    out = f.copy()
+    a = ln[..., 3:4]
+    out = out * (1 - a) + ln
     out.setflags(write=False)
     return out
 
 
-# ---------------------------------------------------------------------------------------------- chrome
+# ---------------------------------------------------------------------------------------------- static page
 @functools.lru_cache(maxsize=1)
 def base_screen():
-    """Linear premultiplied (SH, SW, 4): browser chrome + page (empty chart) + taskbar."""
+    """Browser chrome + the report page (axes, labels, KPI block), linear premultiplied (SH, SW, 4)."""
     S = ui.Surf(SW, SH)
     S.rrect(-10, 0, SW + 20, SH, 0, ui.col('#FFFFFF'), 1.0)
     # tab strip
     S.rrect(-10, 0, SW + 20, 46, 0, ui.col('#DEE1E6'), 1.0)
     S.rrect(118, 6, 330, 44, 12, ui.col('#FFFFFF'), 1.0)
     S.rrect(456, 8, 300, 34, 10, ui.col('#E9EBEE'), 1.0)
-    ic = ui.icon('chart', 22, color='#0B57D0', stroke=2.4)
-    ui.paste(S.img, ic, 134, 16)
-    S.text(166, 34, 'Business Profile · Performance', 19, 'OpenSans-SemiBold', '#3C4043')
     fav = G.image_crop('/home/user/100/workspace3/leam/cropped-Leam-taxis-icon-270x270.png', None, 22)
+    ui.paste(S.img, fav, 134, 15)
+    S.text(166, 34, 'Leam Taxis · Calls report', 19, FB, '#3C4043')
     ui.paste(S.img, fav, 470, 14)
-    S.text(500, 33, 'Leam Taxis | Leamington Spa Taxis', 18, 'OpenSans-Regular', '#5F6368')
-    S.text(778, 33, '+', 26, 'OpenSans-Regular', '#5F6368')
+    S.text(500, 33, 'Leam Taxis | Leamington Spa Taxis', 18, FR, '#5F6368')
+    S.text(778, 33, '+', 26, FR, '#5F6368')
     # toolbar
     S.rrect(-10, 46, SW + 20, 46, 0, ui.col('#FFFFFF'), 1.0)
-    for i, nm in enumerate(('arrow_right',)):
-        pass
-    S.text(22, 78, '←', 24, 'OpenSans-Regular', '#5F6368')
-    S.text(58, 78, '→', 24, 'OpenSans-Regular', '#BDC1C6')
+    back = np.ascontiguousarray(ui.icon('arrow_right', 22, color='#5F6368', stroke=2.4)[:, ::-1])
+    ui.paste(S.img, back, 20, 58)
+    ui.paste(S.img, ui.icon('arrow_right', 22, color='#BDC1C6', stroke=2.4), 56, 58)
     S.circle(104, 69, 9, ui.col('#5F6368'), 1.0)
     S.circle(104, 69, 6.5, ui.col('#FFFFFF'), 1.0)
     S.rrect(140, 52, 820, 34, 17, ui.col('#F1F3F4'), 1.0)
-    lock = ui.icon('shield', 18, color='#5F6368', stroke=2.2)
-    ui.paste(S.img, lock, 156, 60)
-    S.text(184, 75, 'business.google.com', 19, 'OpenSans-Regular', '#202124')
-    S.circle(1010, 69, 14, ui.col('#FFC61A'), 1.0)
-    S.text(1003, 76, 'L', 18, 'OpenSans-Bold', '#1F1F1F')
+    ui.paste(S.img, ui.icon('book', 18, color='#5F6368', stroke=2.2), 156, 60)
+    S.text(184, 75, 'Leam Taxis – Google Business Profile report – Oct 2026', 19, FR, '#202124')
+    S.circle(1010, 69, 14, ui.col(YEL), 1.0)
+    S.text(1003, 76, 'L', 18, FBB, INK)
     S.rrect(-10, 91, SW + 20, 1, 0, ui.col('#DADCE0'), 1.0)
-    # page
-    page = K.sprite(empty_chart_u8())
-    pw, ph = round(page.shape[1] * PAGE_S), round(page.shape[0] * PAGE_S)
-    page = cv2.resize(page, (pw, ph), interpolation=cv2.INTER_CUBIC)
-    ui.paste(S.img, np.clip(page, 0, None), round(PAGE_X), round(PAGE_Y))
-    # (the monitor's own taskbar sits just below row 1343 and stays from the plate)
+    # gridlines + y labels (linear axis from 0)
+    for v in (0, 30, 60, 90, 120):
+        y = loc(YB - PPC * v)
+        if v == 0:
+            S.rrect(150, y - 1, 890, 2, 0, ui.col('#BDBDBD'), 1.0)
+        else:
+            for x in range(150, 1040, 14):
+                S.rrect(x, y - 0.75, 7, 1.5, 0, ui.col('#E3E3E3'), 1.0)
+        S.text(136, round(y + 6), str(v), 17, FR, '#9AA0A6', anchor='rs')
+    for k, m in enumerate(MONTHS):
+        x, _ = pt(k)
+        S.text(round(x), round(loc(YB) + 30), m, 18, FB, '#5F6368', anchor='ms')
+    # KPI block (white backing over the gridlines)
+    KX = 168
+    S.rrect(KX - 14, 104, 560, 222, 18, ui.col('#FFFFFF'), 1.0)
+    S.text(KX, 136, 'CALLS FROM GOOGLE BUSINESS PROFILE', 17, FBB, GREY, tracking=0.06)
+    adv = S.text(KX - 2, 236, '114', 98, FH, INK)
+    S.text(KX - 2 + adv + 12, 236, 'calls', 40, FHB, INK)
+    S.rrect(KX, 250, 120, 6, 3, ui.col(YEL), 1.0)
+    S.text(KX, 286, 'Running total · May–Oct 2026', 21, FB, '#3C4043')
+    S.text(KX, 314, '*Oct is a part month. Monthly points read from the Business Profile chart.', 14, FR, '#8A8A8A')
+    S.img.setflags(write=False)
+    return S.img
+
+
+@functools.lru_cache(maxsize=8)
+def _dot(r, fill, ring=None, ring_w=0.0, glow=0.0):
+    d = int(r * 2 + ring_w * 2 + glow * 3 + 6)
+    S = ui.Surf(d, d)
+    c = d / 2
+    if glow > 0:
+        a, X0_, Y0_ = S.circle(c, c, r + ring_w, ui.col(fill), 0.0)
+        S.glow(a, X0_, Y0_, ui.col(fill), sigmas=(glow * 0.4, glow), strength=0.8, knock=0.0)
+    if ring is not None:
+        S.circle(c, c, r + ring_w, ui.col(ring), 1.0)
+    S.circle(c, c, r, ui.col(fill), 1.0)
     S.img.setflags(write=False)
     return S.img
 
 
 @functools.lru_cache(maxsize=4)
-def _dot(r, color, ring=None, ring_w=0.0, glow=0.0):
-    d = int(r * 2 + ring_w * 2 + glow * 3 + 6)
-    S = ui.Surf(d, d)
-    c = d / 2
-    if glow > 0:
-        a, X0, Y0 = S.circle(c, c, r, ui.col(color), 0.0)
-        S.glow(a, X0, Y0, ui.col(color), sigmas=(glow * 0.4, glow), strength=0.9, knock=0.0)
-    if ring is not None:
-        S.circle(c, c, r + ring_w, ui.col(ring), 1.0)
-    S.circle(c, c, r, ui.col(color), 1.0)
+def _chip(text, fill, color, size=19, pad=14, h=34):
+    w = int(ui.measure(text, size, FBB) + 2 * pad)
+    S = ui.Surf(w + 12, h + 16)
+    S.rrect(6, 4, w, h, h / 2, ui.col(fill), 1.0)
+    S.text(6 + pad, 4 + h / 2 + size * 0.36, text, size, FBB, color)
+    S.img.setflags(write=False)
+    return S.img
+
+
+@functools.lru_cache(maxsize=1)
+def _total_tip():
+    """Dark callout '114 calls in total' with a pointer on its right (for the October end point)."""
+    w, h = 214, 50
+    S = ui.Surf(w + 30, h + 8)
+    S.rrect(2, 2, w, h, 10, ui.col(INK), 1.0)
+    a = np.zeros((h + 8, w + 30), np.float32)
+    tri = np.array([[w + 1, 14], [w + 16, 27], [w + 1, 40]], np.int32)
+    cv2.fillPoly(a, [tri * 1], 1.0)
+    S.fill(a, 0, 0, ui.col(INK), 1.0)
+    S.text(18, 35, '114', 26, FH, YEL)
+    S.text(70, 35, 'calls in total', 19, FB, '#FFFFFF')
     S.img.setflags(write=False)
     return S.img
 
 
 def screen_lin(t, fx, t_here, t_start=8.0):
-    """Linear screen at time t. fx = reveal front in SCREEN px; t_here = when the Sept tooltip pops."""
+    """Linear screen at time t. fx = reveal front in frame px; t_here = 'and then here' (total callout)."""
     scr = base_screen().copy()
     xs = np.arange(SW, dtype=np.float32) + 0.5
-    soft = 5.0
-    m = np.clip((fx - xs) / soft + 0.5, 0, 1)[None, :]
+    m = np.clip((fx - xs) / 5.0 + 0.5, 0, 1)[None, :, None]
     lay = line_layer()
-    scr[:] = scr * (1 - lay[..., 3:4] * m[..., None]) + lay * m[..., None]
-    # scrubber guide at the front (hover crosshair), only while it moves through the plot
-    p0 = to_scr(PTS[0][0], 0)[0]
-    p5 = to_scr(PTS[-1][0], 0)[0]
-    if p0 < fx < p5 + 2:
-        gy0 = to_scr(0, 268)[1]
-        gy1 = to_scr(0, BASE_Y)[1]
+    scr[:] = scr * (1 - lay[..., 3:4] * m) + lay * m
+    x_first, x_last = pt(0)[0], pt(5)[0]
+    # hover guide at the front while it moves along the line
+    if x_first - 120 < fx < x_last + 2:
         gx = int(round(fx))
-        col = K.to_lin(np.float32(BLUE) / 255.0)
-        seg = np.zeros((int(gy1 - gy0), 1), np.float32)
-        seg[(np.arange(seg.shape[0]) // 6) % 2 == 0] = 0.55
-        reg = scr[int(gy0):int(gy0) + seg.shape[0], gx:gx + 2]
-        a = seg[:, :, None] * np.ones((1, 2, 1), np.float32)
-        reg[..., :3] = reg[..., :3] * (1 - a) + col * a
+        y_top, y_bot = int(loc(YB - PPC * 120)), int(loc(YB))
+        seg = ((np.arange(y_bot - y_top) // 7) % 2 == 0).astype(np.float32)[:, None, None] * 0.55
+        reg = scr[y_top:y_bot, gx:gx + 2]
+        reg[..., :3] = reg[..., :3] * (1 - seg) + K.to_lin(np.float32([0.62, 0.62, 0.62])) * seg
     # points pop as the front passes them
-    for k, (px, py) in enumerate(PTS):
-        sx, sy = to_scr(px, py)
-        if fx < sx - 1:
+    for k in range(6):
+        px, py = pt(k)
+        if fx < px - 1:
             continue
-        sel = (k == 4 and t >= t_here)
-        pop = K.spring(max(0.0, (fx - sx)) / 600.0 + 0.0, 2.6, 0.5) if not sel else 1.0
-        if sel:
-            dot = _dot(5.6 * PAGE_S, '#0B57D0', ring='#FFFFFF', ring_w=1.2)
-            K.draw(scr, dot, sx, sy, scale=1.0 + 0.35 * K.impulse(t, t_here, 6))
+        pop = K.spring((fx - px) / 450.0, 2.6, 0.5)
+        if k == 4:
+            dot = _dot(8.0, YEL, ring=INK, ring_w=3.0)
         else:
-            dot = _dot(4.2 * PAGE_S, '#FFFFFF', ring='#0B57D0', ring_w=2.0 * PAGE_S)
-            K.draw(scr, dot, sx, sy, scale=0.4 + 0.6 * min(1.0, pop * 1.0))
-    # travelling dot on the line at the front
-    if p0 < fx < p5:
-        xp = (fx - PAGE_X) / PAGE_S
-        sy = to_scr(0, line_y(xp))[1]
-        K.draw(scr, _dot(6.0, '#0B57D0', glow=9.0), fx, sy)
-    # the tooltip (screenshot pixels) pops at "here"
+            dot = _dot(6.5, '#FFFFFF', ring=INK, ring_w=3.0)
+        K.draw(scr, dot, px, loc(py), scale=0.35 + 0.65 * min(1.15, pop))
+    # September: the one exact monthly figure
+    sx, sy = pt(4)
+    if fx >= sx:
+        u = K.spring((fx - sx) / 380.0, 2.4, 0.55)
+        chip = _chip('+25 in Sept · best month', INK, YEL)
+        K.draw(scr, chip, sx - 20, loc(sy) - 40, scale=0.6 + 0.4 * min(1.1, u), opacity=min(1.0, u * 2),
+               anchor=(0.62, 0.5))
+    # travelling dot riding the line at the front
+    if x_first <= fx < x_last:
+        K.draw(scr, _dot(7.0, YEL, ring=INK, ring_w=2.5, glow=10.0), fx, loc(line_y(fx)))
+    # 'and then here': callout on the 114 end point
     if t >= t_here:
-        spr, (tx0, ty0) = tooltip_sprite()
         u = K.spring(t - t_here, 3.0, 0.55)
-        sx, sy = to_scr(tx0, ty0)
-        K.draw(scr, spr, sx, sy + spr.shape[0] * 0.5, scale=0.6 + 0.4 * u, opacity=min(1.0, (t - t_here) / 0.08),
-               anchor=(0.0, 0.5))
+        ex, ey = pt(5)
+        tip = _total_tip()
+        K.draw(scr, tip, ex - 14, loc(ey) - 52, anchor=(1.0, 0.5), scale=0.7 + 0.3 * min(1.1, u),
+               opacity=min(1.0, (t - t_here) / 0.08))
+        K.draw(scr, _dot(9.0, YEL, ring=INK, ring_w=3.0), ex, loc(ey), scale=1.0 + 0.3 * K.impulse(t, t_here, 6))
     return scr
 
 
@@ -267,9 +271,7 @@ def composite(frame, i, scr_u8):
     if a is None:
         a = np.zeros((SH, SW), np.float32)
     r, g, b = reg[..., 0], reg[..., 1], reg[..., 2]
-    g2 = np.minimum(g, np.maximum(r, b) + 4)
-    hand = np.dstack([r, g2, b])
-    # feather the top / bottom edge of the display a touch
+    hand = np.dstack([r, np.minimum(g, np.maximum(r, b) + 4), b])
     ef = np.ones((SH, 1), np.float32)
     ef[0, 0] = 0.6
     ef[-1, 0] = 0.6
@@ -283,9 +285,8 @@ def composite(frame, i, scr_u8):
 # ---------------------------------------------------------------------------------------------- finger -> front
 @functools.lru_cache(maxsize=1)
 def _front_table():
-    """Fingertip x per frame: the hand-matte point farthest from where the arm enters (bottom right), median
-    filtered, made monotonic (the line never un-draws) and lightly smoothed."""
-    import json
+    """Fingertip x per frame (hand-matte point farthest from where the arm enters), median filtered, monotonic
+    (the line never un-draws), lightly smoothed."""
     with open(os.path.join(G.GRP, 'leam_track.json')) as f:
         tr = json.load(f)
     fr = sorted(int(k) for k in tr)
@@ -305,5 +306,5 @@ def finger_x(fi):
 
 
 def front_x(t, fps=24.0):
-    """Reveal front (screen px) = the fingertip's x plus a small lead (the chart spans the same x range)."""
-    return finger_x(t * fps) + 10.0
+    """Reveal front (frame px) = the fingertip's x plus a small lead, so the line draws just under it."""
+    return finger_x(t * fps) + 12.0

@@ -2,6 +2,7 @@
 
 python3 grp_prep.py leam    hand mattes + finger track for the Leam Taxis screen shot (frames 192-407)
 python3 grp_prep.py of      banner clean-up patches + laptop screen quad for the Organic Fostering clip
+python3 grp_prep.py mattes leam|of   person alpha mattes (Robust Video Matting, CPU) for depth-layered graphics
 
 Outputs go to workspace3/grp/ (git-ignored). Sources are the registered clips workspace3/frames/{leam,of}.
 """
@@ -202,5 +203,36 @@ def of():
     print('of ->', json.dumps(info))
 
 
+# ---------------------------------------------------------------------------------------------- person mattes
+SHOTS = {'leam': [(0, 191), (192, 407), (408, 720)], 'of': [(0, 236), (237, 419), (420, 720)]}
+
+
+def mattes(cid):
+    """Person alpha mattes with Robust Video Matting (rvm_mobilenetv3_fp32.onnx, CPU) for every frame, run per
+    shot with the recurrent state warmed up on the shot's first 12 frames -> workspace3/grp/person_<cid>/%05d.png"""
+    import onnxruntime as ort
+    so = ort.SessionOptions()
+    so.intra_op_num_threads = 2
+    sess = ort.InferenceSession(os.path.join(K.WS, 'models', 'rvm_mobilenetv3_fp32.onnx'), so,
+                                providers=['CPUExecutionProvider'])
+    d = os.path.join(OUT, 'person_' + cid)
+    os.makedirs(d, exist_ok=True)
+    dr = np.array([0.25], np.float32)
+    for a, b in SHOTS[cid]:
+        rec = [np.zeros((1, 1, 1, 1), np.float32)] * 4
+        order = list(range(a, min(a + 12, b + 1))) + list(range(a, b + 1))
+        for k, i in enumerate(order):
+            im = cv2.cvtColor(_frame(cid, i), cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+            out = sess.run(None, {'src': im.transpose(2, 0, 1)[None], 'r1i': rec[0], 'r2i': rec[1], 'r3i': rec[2],
+                                  'r4i': rec[3], 'downsample_ratio': dr})
+            rec = out[2:]
+            if k >= min(12, b - a + 1):
+                cv2.imwrite(os.path.join(d, '%05d.png' % i), np.clip(out[1][0, 0] * 255 + 0.5, 0, 255).astype(np.uint8))
+        print(cid, 'shot', a, b, 'done', flush=True)
+
+
 if __name__ == '__main__':
-    {'leam': leam, 'of': of}[sys.argv[1]]()
+    if sys.argv[1] == 'mattes':
+        mattes(sys.argv[2])
+    else:
+        {'leam': leam, 'of': of}[sys.argv[1]]()

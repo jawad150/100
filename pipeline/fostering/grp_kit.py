@@ -549,3 +549,42 @@ def spring_in(t, t0, freq=2.4, damping=0.55):
 def window(t, t0, t1, fin=0.25, fout=0.25):
     """1 inside [t0, t1] with eased in / out ramps."""
     return min(K.ramp(t, t0, t0 + fin, 'out_cubic'), 1 - K.ramp(t, t1 - fout, t1, 'in_cubic'))
+
+
+# ---------------------------------------------------------------------------------------------- depth layering
+@functools.lru_cache(maxsize=6)
+def person_alpha_u8(cid, i):
+    """Person matte (Robust Video Matting, grp_prep.py mattes) for source frame i, uint8 (H, W) or None."""
+    m = cv2.imread(os.path.join(GRP, 'person_%s' % cid, '%05d.png' % int(i)), cv2.IMREAD_GRAYSCALE)
+    if m is not None:
+        m.setflags(write=False)
+    return m
+
+
+def person_sprite(spr, cid, i, center=(0.5, 0.5), zoom=1.0, choke=0.0):
+    """The footage sprite (already cropped with center / zoom) times the person matte cropped the same way:
+    composite it over graphics to put them BEHIND the speaker."""
+    m = person_alpha_u8(cid, i)
+    if m is None:
+        return None
+    if zoom != 1.0 or tuple(center) != (0.5, 0.5):
+        m = F.cover_crop(np.dstack([m, m, m]), W, H, center, zoom)[..., 0]
+    a = m.astype(np.float32) * np.float32(1 / 255.0)
+    if choke > 0:
+        a = np.clip((a - choke) / (1 - choke), 0, 1)
+    return spr * a[..., None]
+
+
+@functools.lru_cache(maxsize=4)
+def _shade_ramp(y0, strength):
+    y = np.arange(H, dtype=np.float32)
+    r = np.clip((y - y0) / max(H - y0, 1), 0, 1) ** 1.6 * strength
+    return (1 - r)[:, None, None].astype(np.float32)
+
+
+def bottom_shade(cv, strength=0.42, y0=1350, opacity=1.0):
+    """Soft dark gradient at the bottom of frame (caption legibility over bright footage)."""
+    if opacity <= 0:
+        return
+    k = _shade_ramp(int(y0), round(float(strength * opacity), 3))
+    cv[..., :3] *= k

@@ -82,6 +82,26 @@ def footage(fi):
     return G.shot_sprite(fr, 'leam_selfie', c, z, sharpen=0.3)
 
 
+@functools.lru_cache(maxsize=2)
+def person(fi):
+    """The speaker cut out of the graded footage (shots 1 and 3), to composite over cards placed behind him."""
+    sh = shot_of(fi)
+    if sh == 2:
+        return None
+    tf = fi / FPS_SRC
+    c, z = _shot1_tf(tf) if sh == 1 else _shot3_tf(tf)
+    return G.person_sprite(footage(fi), 'leam', fi, c, z)
+
+
+def person_over(cv, t):
+    """Re-composite the speaker over whatever was drawn so far (not during shot transitions)."""
+    if t < 0.75 or 7.84 <= t < 17.24 or t >= 29.2:
+        return
+    p = person(G.fidx(t, N_SRC))
+    if p is not None:
+        K.over(cv, p)
+
+
 def plate(t):
     """Footage layer with the shot transitions (mask wipes), as a fresh canvas."""
     fi = G.fidx(t, N_SRC)
@@ -155,7 +175,7 @@ def ai_label(cv, t):
     txt = 'AI re-creation · real client data'
     w = G.measure(txt, 24, FONT_B)
     pnl, pad = G.panel(int(w + 32), 40, 20, fill='#000000', fill_a=0.42, border_a=0.0, shadow=0.0)
-    y = 172 if t < 29.6 else 1840
+    y = 1862
     K.draw(cv, pnl, 64 - pad, y - 20 - pad, anchor=(0, 0), opacity=k)
     G.draw_text(cv, txt, 80, y + 8, 24, FONT_B, '#FFFFFF', 'ls', opacity=0.9 * k)
 
@@ -177,7 +197,7 @@ def intro(cv, t):
                         G.lin(Y), 1.0 - u ** 2)
         K.over(cv, st.img)
     if 0.30 <= t < 2.65:
-        cx, cy = 540, 640
+        cx, cy = 540, 400
         a_in = K.spring(t - 0.30, 2.2, 0.62)
         a_out = K.ramp(t, 2.20, 2.55, 'in_cubic')
         # panel
@@ -220,7 +240,7 @@ def lower_third(cv, t, t0=2.95, t1=5.35):
         return
     u_in = K.ramp(t, t0, t0 + 0.45, 'out_expo')
     u_out = K.ramp(t, t1 - 0.35, t1, 'in_cubic')
-    x0, y0 = 64, 1300
+    x0, y0 = 64, 1372
     name, sub = 'Leam Taxis', 'Owner · Leamington Spa'
     w = int(max(G.measure(name, 50, FONT_H), G.measure(sub, 28, FONT_B)) + 76)
     pnl, pad = G.panel(w, 128, 22, fill='#141414', fill_a=0.86, border_a=0.08, accent=Y, accent_w=10, shadow=0.45)
@@ -247,18 +267,26 @@ def site_card(cv, t, t0=5.45, t1=7.9):
     u = K.spring(t - t0, 2.3, 0.62)
     out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
     reveal = G.wipe(card.w, card.h, K.ramp(t, t0, t0 + 0.42, 'out_cubic'), angle=-90, soft=0.10)
-    cx, cy = 540, 575 - 40 * (1 - u) - 120 * out
+    cx, cy = 540, 470 - 40 * (1 - u) - 120 * out
     card.draw(cv, cx, cy, scale=0.92 + 0.08 * u, opacity=1 - out, mask=reveal)
-    # cursor -> "Calculate price" (homepage form button at (1020, 569) in the capture)
+
+
+def site_cursor(cv, t, t0=5.45, t1=7.9):
+    """Cursor -> 'Calculate price' on the site card (form button at (1020, 569) in the capture); in front."""
+    if not (t0 + 0.5 < t < t1):
+        return
+    sc = 70.0 * K.EASE['inout_cubic'](K.ramp(t, 5.95, 6.7, 'linear'))
+    out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
+    u = K.spring(t - t0, 2.3, 0.62)
+    cx, cy = 540, 470 - 40 * (1 - u) - 120 * out
     s = 860 / 1440
     bx = cx - 430 + 1020 * s
     by = cy - (58 + 450) / 2 + 58 + 569 * s - sc
-    if t > t0 + 0.5:
-        ct = K.EASE['inout_cubic'](K.ramp(t, t0 + 0.5, 7.05, 'linear'))
-        x = K.lerp(bx + 220, bx + 10, ct)
-        y = K.lerp(by + 260, by + 6, ct)
-        ui.draw_cursor(cv, x, y, 'hand', 62, press=K.impulse(t, 7.12, 9), click=t - 7.12 if t > 7.12 else None,
-                       opacity=1 - out)
+    ct = K.EASE['inout_cubic'](K.ramp(t, t0 + 0.5, 7.05, 'linear'))
+    x = K.lerp(bx + 220, bx + 10, ct)
+    y = K.lerp(by + 260, by + 6, ct)
+    ui.draw_cursor(cv, x, y, 'hand', 62, press=K.impulse(t, 7.12, 9), click=t - 7.12 if t > 7.12 else None,
+                   opacity=1 - out)
 
 
 # ----- shot 2 overlay cards
@@ -277,11 +305,12 @@ def card_calls(cv, t, t0=8.35, t1=16.92):
     ic = ui.icon('phone', 30, color=Y, stroke=2.4)
     K.draw(cv, ic, x0 + 14, y0 + 46, opacity=op)
     G.draw_text(cv, 'Calls from Google Business Profile', x0 + 42, y0 + 56, 28, FONT_B, '#E8E8E8', 'ls', opacity=op)
-    n = int(round(114 * K.EASE['out_quart'](K.ramp(t, t0 + 0.3, t0 + 1.9, 'linear'))))
+    # the count runs with the line under his finger (running total read along the line)
+    n = int(round(S.total_at(S.front_x(t))))
     G.draw_text(cv, str(n), x0, y0 + 160, 112, FONT_H, '#FFFFFF', 'ls', opacity=op)
     G.draw_text(cv, 'calls', x0 + G.measure('114', 112, FONT_H) + 18, y0 + 160, 50, FONT_HB, Y, 'ls', opacity=op)
-    G.draw_text(cv, 'May–Oct 2026', x0 + 380, y0 + 128, 30, FONT_B, '#FFFFFF', 'ls', opacity=op)
-    G.draw_text(cv, 'Leam Taxis', x0 + 380, y0 + 164, 26, FONT_R, '#BDBDBD', 'ls', opacity=op)
+    G.draw_text(cv, 'Running total', x0 + 380, y0 + 128, 30, FONT_B, '#FFFFFF', 'ls', opacity=op)
+    G.draw_text(cv, 'May–Oct 2026', x0 + 380, y0 + 164, 26, FONT_R, '#BDBDBD', 'ls', opacity=op)
 
 
 def card_sept(cv, t, t0=T_HERE + 0.05, t1=16.92):
@@ -374,18 +403,26 @@ def drivers_card(cv, t, t0=25.45, t1=27.75):
     u = K.spring(t - t0, 2.4, 0.6)
     out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
     reveal = G.wipe(card.w, card.h, K.ramp(t, t0, t0 + 0.45, 'out_cubic'), angle=-90, soft=0.12)
-    cx, cy = 540, 412 - 30 * (1 - u) - 100 * out
+    cx, cy = 470, 395 - 30 * (1 - u) - 100 * out
     card.draw(cv, cx, cy, scale=0.94 + 0.06 * u, opacity=1 - out, mask=reveal)
-    # cursor clicks "BECOME A DRIVER" (button centre (276, 3265) in the full capture)
+
+
+def drivers_cursor(cv, t, t0=25.45, t1=27.75):
+    """Cursor clicks 'BECOME A DRIVER' (button centre (276, 3265) in the full capture); in front."""
+    if not (t0 + 0.4 < t < t1):
+        return
+    card = G.browser_card(LEAM_FULL, (110, 2850, 720, 460), 600, 'leamingtonspa-taxis.co.uk')
+    u = K.spring(t - t0, 2.4, 0.6)
+    out = K.ramp(t, t1 - 0.28, t1, 'in_cubic')
+    cx, cy = 470, 395 - 30 * (1 - u) - 100 * out
     s = 600 / 720
     bx = cx - 300 + (276 - 110) * s
     by = cy - card.h / 2 + 58 + (3265 - 2850) * s
-    if t > t0 + 0.4:
-        ct = K.EASE['inout_cubic'](K.ramp(t, t0 + 0.4, 26.55, 'linear'))
-        x = K.lerp(bx + 300, bx, ct)
-        y = K.lerp(by + 220, by, ct)
-        ui.draw_cursor(cv, x, y, 'hand', 62, press=K.impulse(t, 26.62, 9), click=t - 26.62 if t > 26.62 else None,
-                       opacity=1 - out)
+    ct = K.EASE['inout_cubic'](K.ramp(t, t0 + 0.4, 26.55, 'linear'))
+    x = K.lerp(bx + 300, bx, ct)
+    y = K.lerp(by + 220, by, ct)
+    ui.draw_cursor(cv, x, y, 'hand', 62, press=K.impulse(t, 26.62, 9), click=t - 26.62 if t > 26.62 else None,
+                   opacity=1 - out)
 
 
 def end_card(cv, t, t0=29.35):
@@ -423,15 +460,22 @@ def end_card(cv, t, t0=29.35):
 # ---------------------------------------------------------------------------------------------- module contract
 def draw(t):
     cv = plate(t)
-    intro(cv, t)
-    lower_third(cv, t)
+    # behind the speaker
     site_card(cv, t)
-    card_calls(cv, t)
-    card_sept(cv, t)
     hero_card(cv, t)
     calls_card(cv, t)
     airports_card(cv, t)
     drivers_card(cv, t)
+    person_over(cv, t)
+    # in front
+    intro(cv, t)
+    card_calls(cv, t)
+    card_sept(cv, t)
+    site_cursor(cv, t)
+    drivers_cursor(cv, t)
+    if t < 29.3:
+        G.bottom_shade(cv, 0.45, 1330, opacity=1 - K.ramp(t, 29.0, 29.3))
+    lower_third(cv, t)
     if t < 29.25:
         CAP.draw(cv, t)
     logo_bug(cv, t)
@@ -462,8 +506,8 @@ def _point_times():
     out = []
     ts = np.arange(T_CUT1, T_CUT2, 1 / 96.0)
     fx = np.array([S.front_x(t) for t in ts])
-    for k, (px, py) in enumerate(S.PTS):
-        sx = S.to_scr(px, py)[0]
+    for k in range(6):
+        sx = S.pt(k)[0]
         hit = np.nonzero(fx >= sx - 1)[0]
         if len(hit):
             out.append((k, float(ts[hit[0]])))
@@ -482,7 +526,6 @@ def cues():
         dict(t=7.12, name='ui_click', gain_db=-3),
         dict(t=8.00, name='whip', gain_db=-5),
         dict(t=8.40, name='card_slide', gain_db=-7, pan=-0.3),
-        dict(t=8.66, name='slot_tick', gain_db=-12, align='start', params=dict(n=14, dur=1.55)),
         dict(t=10.05, name='grow_swell', gain_db=-16, align='start', params=dict(duration=3.2)),
         dict(t=T_HERE, name='toast_chime', gain_db=-7, pan=0.2),
         dict(t=16.98, name='air_zoom', gain_db=-9),
@@ -505,7 +548,6 @@ def cues():
 def prewarm():
     S.base_screen()
     S.line_layer()
-    S.tooltip_sprite()
     G.leam_logo(104, True, '#FFFFFF')
     G.leam_logo(54, False)
     G.leam_logo(110, True, '#FFFFFF')
