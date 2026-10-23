@@ -2,6 +2,8 @@
 
 Lead creative director's synthesis, 22 Oct 2026. British English. Built on the winning pitch **A "Show the receipt"** (`concept_A-proof.md`), with films grafted from **B "Every call is a fare"** (`concept_B-story.md`: videos 1, 2, 5, 6, 8, 10, 15) and **C "Filmed on a phone"** (`concept_C-social.md`: video 3 and the social packaging), and every weakness the judge named fixed (§11).
 
+> **Note:** this is the planning document. Where it differs from the production pack in `pack/` (durations, line wording, fixes from two review rounds), follow the pack.
+
 **Sources of truth.** Every number traces to `assets/gsc/gsc_data.json` and the six PNGs in `assets/gsc/` (crop rectangles from `gsc_story.md` §4), the live sites captured 22 Oct 2026 (`client_*.md`, `assets/sites/`), or a public record (Companies House). Prompt rules follow `production_rules.md`, which distils the user's own `human-realism`, `production-consistency`, `cinedance-higgsfield` and `higgsfield-production` skills. The structured twin of this file is `master_plan.json` (same content, same IDs).
 
 **The user's brief, in their words:** *"make sure to follow the realism in the prompts. it must not feel like ai, cgi or plastic effect or 3d game render it must look like a real life shot, videos."*
@@ -837,7 +839,7 @@ LOCATION MAP
 Camera at seated eye height on a tripod, 2.5 metres away across the room, facing the owner and the back wall. Foreground: the corner of the table, out of focus. Midground: the owner seated at the table; a laptop open at the left edge of frame, its screen turned partly towards camera. Background: a radiator with chipped paint under a window camera-right showing blue-grey dusk, a coat on a hook, a wall calendar turned face to the wall. A mug with a tea ring by his right hand; a phone face-down beside it.
 
 FIRST FRAME AND SPATIAL BLOCKING
-The first visible frame already contains the owner in position; no empty establishing frame. He sits centre-right, forearms on the table edge, torso angled slightly towards camera-left, eyes just past camera-left towards the interviewer. Left hand resting near the laptop, right hand loose beside the mug.
+The first visible frame already contains the owner in position; no empty establishing frame. He sits centre-right, forearms on the table edge, torso angled slightly towards camera-left, eyes just past camera-left towards the interviewer. The laptop at the left edge of frame is on his right-hand side; right hand loose beside the mug on that side, left hand resting flat on the table.
 
 FORMAT MODE
 SINGLE CONTINUOUS TAKE.
