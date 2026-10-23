@@ -233,7 +233,7 @@ OUT = os.path.join(WS, 'out')
 SELFTEST = os.path.join(OUT, 'selftest')
 
 W, H = 1080, 1920
-FPS = 30
+FPS = int(os.environ.get('FOSTER_FPS', '30'))   # 30 by default; FOSTER_FPS=24 for 24 fps footage edits
 CX, CY = W / 2.0, H / 2.0
 
 
