@@ -16,7 +16,7 @@ Draft wording: the client must confirm these lines are true and in their words b
 
 | Time | Picture | Spoken | Visuals we add |
 |---|---|---|---|
-| 0-1 s | edit: the last second of video 3 (his "…twenty-five" at his front door) | (from video 3) | The September tooltip crop `735, 278, 100, 55` of `assets/gsc/leamingtonspa_gbp_calls_may-oct2026.png` ("25 · September 2026") on screen by 0.8 s. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` |
+| 0-1 s | edit: 1 s of video 3's front-door shot, c03 prompt about 14-15 s (his "…Twenty-five") | (from video 3) | The September tooltip crop `735, 278, 100, 55` of `assets/gsc/leamingtonspa_gbp_calls_may-oct2026.png` ("25 · September 2026") on screen by 0.8 s. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` |
 | 1-13 s | Prompt, 1-13 s: in his parked car, reading his report on his phone; a laugh; "Twenty-five"; he looks out at the rain; a second line | "Twenty-five." (prompt, 5 s) · "September. Best of the lot." (prompt, 10 s) | On "Twenty-five": the tooltip crop punches in to the top band with an orange underline and a soft tick; source line `Calls made from your Business Profile · September 2026`. From 9 s the headline and chart crop `15, 165, 910, 310` slides up under it with the caption `September: 25 calls, the best of the six months shown.` and the strip `Leam Taxis' Business Profile, confirmed by the owner` |
 | 13-15 s | edit: end card over his last frame | - | `114 calls May–Oct 2026 (October part month).` Lockup. Website: `assets/sites/leamingtonspa-taxis/now_mobile.png` in a small phone frame |
 

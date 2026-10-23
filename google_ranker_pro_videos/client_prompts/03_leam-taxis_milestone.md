@@ -16,7 +16,7 @@ Draft wording: the client must confirm these lines are true and in their words b
 
 | Time | Picture | Spoken | Visuals we add |
 |---|---|---|---|
-| 0-2 s | Prompt, 0-2 s: selfie by his car, two buzzes in his pocket, he pushes the car door shut | - | By 0.5 s, in the top band: crop `20, 165, 240, 80` of `assets/gsc/leamingtonspa_gbp_calls_may-oct2026.png` ("114 · Calls made from your Business Profile"), exact pixels on our navy card. Source line: `Calls made from your Business Profile · May–Oct 2026 · October part month`. Strip: `Leam Taxis' Business Profile, confirmed by the owner` with his name and date. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` |
+| 0-2 s | Prompt, 0-2 s: selfie by his car, two buzzes in his pocket, he bumps the car door shut | - | By 0.5 s, in the top band: crop `20, 165, 240, 80` of `assets/gsc/leamingtonspa_gbp_calls_may-oct2026.png` ("114 · Calls made from your Business Profile"), exact pixels on our navy card. Source line: `Calls made from your Business Profile · May–Oct 2026 · October part month`. Strip: `Leam Taxis' Business Profile, confirmed by the owner` with his name and date. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` |
 | 2-10 s | Prompt, 2-10 s: he walks along the wet terraced street at night, talking to his phone | "A hundred and fourteen calls off our Google listing, May to October." | Orange underline under "114" with a soft tick. From 4 s the real chart wipes on under it, left to right (crop `15, 265, 910, 210`, real pixels, never redrawn; October stays as captured and is never called a drop). Name caption: his name and `Owner, Leam Taxis, Leamington Spa`. Word-timed captions ("114") |
 | 10-16.5 s | Prompt, 10-16.5 s: at his front door under the porch light; he says the second line, laughs, turns the key | "September was the best of those six months. Twenty-five." | On "Twenty-five": the September tooltip crop `735, 278, 100, 55` ("25 · September 2026") punches in with an underline and a tick. Caption: `September: 25 calls, the best of the six months shown.` |
 | 16.5-19 s | edit: end card over his last frame, darkened | - | Headline and chart crop `15, 165, 910, 310` with its source line and `114 calls May–Oct 2026 (October part month).` Website: `assets/sites/leamingtonspa-taxis/now_mobile.png` crop about `0, 140, 780, 800` in a plain phone frame labelled `leamingtonspa-taxis.co.uk`. End-card lockup. No "website by" line |
@@ -49,12 +49,12 @@ FORMAT MODE
 CONTROLLED MULTI-SHOT SEQUENCE: two shots, both filmed by him on his own phone's front camera, with one HARD CUT at second 10 from the street to his front door. Real-time motion. No fades, no dissolves, no transition effects. His clothes, the night, the rain and the phone camera look stay the same across the cut.
 
 LOCATION MAP
-Shot 1: the pavement of a terraced street in Leamington at night: cream stucco and red-brick house fronts on the right side of the frame, doors and windows dark, house numbers soft or out of frame; a line of parked cars along the kerb on the left side of the frame, among them his own plain dark grey saloon, side-on, its driver's door open at the start; a cold white LED street lamp on the kerb a few metres behind him, one older amber lamp far down the street; flattened brown leaves in the gutter; a plain dark wheelie bin at the kerb half cut off at the left edge.
-Shot 2: his own front door: a plain painted door with a frosted glass panel, a small step, a warm porch light in a plain wall lantern above and to the right of the door; the dark street behind him.
+Shot 1: the pavement of a terraced street in Leamington at night: cream stucco and red-brick house fronts on the right side of the frame, doors and windows dark, house numbers soft or out of frame; a line of parked cars along the kerb on the left side of the frame, among them his own plain dark grey saloon, side-on, its front passenger door, on the pavement side, open at the start; a cold white LED street lamp on the kerb a few metres behind him, one older amber lamp far down the street; flattened brown leaves in the gutter; a plain dark wheelie bin at the kerb half cut off at the left edge.
+Shot 2: his own front door: a plain painted door with a frosted glass panel, a small step, a warm porch light in a plain wall lantern above the door; the dark street behind him.
 
 FIRST FRAME AND SPATIAL BLOCKING
-Shot 1 (0-10s): the first frame already contains him at arm's length on his front camera, standing beside his car on the pavement: his head and shoulders in the lower-middle of the vertical frame, a little right of centre, the top of his head at about 40 percent of the frame height, the street filling the upper part behind him; his right upper arm runs out of the lower-left edge towards the phone; his left hand rests on the top edge of the open driver's door at the left of the frame. His eyes are on the screen just below the lens; lips closed; a breath of vapour in front of his mouth.
-Shot 2 (10-18s): the first frame of the shot already contains him at his front door, framed the same way on the front camera, the door and the porch lantern behind his right shoulder, his left hand at the right edge of the frame holding a key already pushed into the lock.
+Shot 1 (0-10s): the first frame already contains him at arm's length on his front camera, standing beside his car on the pavement: his head and shoulders in the lower-middle of the vertical frame, a little right of centre, the top of his head at about 40 percent of the frame height, the street filling the upper part behind him; his right upper arm runs out of the lower-left edge towards the phone; the open car door stands just behind his right hip at the left edge of the frame; his left hand hangs at his side below frame, holding his keys. His eyes are on the screen just below the lens; lips closed; a breath of vapour in front of his mouth.
+Shot 2 (10-18s): the first frame of the shot already contains him at his front door, framed the same way on the front camera, his body turned three-quarters towards his front door, which fills the right edge of the frame about 40 centimetres from him; his head turned back to the phone; his left hand at chest height at the right edge of the frame holding a key already pushed into the lock; the porch lantern above the door just out of frame at the top-right.
 
 OPTICS
 About 80° diagonal field of view, phone front-camera perspective, lens 40 to 55 centimetres from the face at arm's length, slightly above eye level. The face sits close and slightly enlarged at the centre, the background visible to the frame edges and mostly in focus, straight lines stay straight, no portrait bokeh.
@@ -65,13 +65,13 @@ His eyes flick between the lens and the screen image of himself, as people do on
 Auto exposure breathes slightly as he passes the street lamp, and again when the porch light fills the frame in shot 2, then settles.
 
 TIMELINE
-0-1s (Shot 1): At second 0 a phone in his fleece pocket gives two short message buzzes; his eyes drop towards the pocket for a moment and come back to the screen. End state: his left hand still on the open car door.
-1-2s: He pushes the car door shut with the heel of his left hand without looking; it lands with a heavy thunk at second 1 and the car rocks once on its suspension; he turns and starts to walk. End state: walking towards camera, the car falling behind.
+0-1s (Shot 1): At second 0 a phone in his fleece pocket gives two short message buzzes; his eyes drop towards the pocket for a moment and come back to the screen. End state: the car door still open behind his right hip.
+1-2s: He bumps the car door shut with his right hip without looking; it lands with a heavy thunk at second 1 and the car rocks once on its suspension; he turns and starts to walk. End state: walking towards camera, the car falling behind.
 2-7s: At second 2 @Image 1 the owner says, in natural British English, "A hundred and fourteen calls off our Google listing, May to October.", at an easy walking pace and a conversational volume, eyes flicking between the lens and the screen, one small nod near the end. End state: line finished, a half-smile.
 7-10s: He breathes out; a cloud of breath vapour drifts past his cheek; at second 9 he re-grips the phone and the frame jolts slightly and settles; the wheelie bin falls away behind him. End state: still walking, eyes on the screen.
 10-11s (Shot 2): HARD CUT at second 10 to his front door. He stands still, a small breath. End state: lips parted, key in the lock.
-11-15s: At second 11 he says, "September was the best of those six months. Twenty-five.", quietly, then gives a small laugh through his nose. End state: a half-smile.
-15-17s: At second 16 his left hand turns the key; the lock clunks; the door stays shut. End state: the key turned, his hand still on it.
+11-15s: At second 11 he says, "September was the best of those six months. Twenty-five.", quietly, with a small pause before the last word. End state: lips closed, a half-smile starting.
+15-17s: A small laugh through his nose; at second 16 his left hand turns the key; the lock clunks; the door stays shut. End state: the key turned, his hand still on it.
 17-18s: He holds, looking at the screen; ambience only.
 
 PHYSICS
@@ -79,7 +79,7 @@ Each heel strikes the wet pavement and his weight rolls forward; his shoulders r
 
 LIGHTING
 Shot 1: Cold white LED street lamps mixed with one older amber lamp further down the street are the only light; wet pavement reflects both; the face is lit from one side by the nearest lamp and falls into shadow on the other; a faint rim of lamp light separates the head and shoulders from the dark street.
-Shot 2: the warm porch light in the lantern above and to the right of the door is the key; it lights the top of his head and the right side of his face and falls into shadow on the left; the street behind stays dark except one cold street lamp far away.
+Shot 2: the warm bulb in the wall lantern above his front door, camera-right, is the key; it lights the top of his head and the side of his face nearest the door and falls off into soft shadow on the far cheek; the street behind stays dark except one cold street lamp far away.
 Natural skin from the reference, visible pores and fine texture, unretouched.
 
 AUDIO

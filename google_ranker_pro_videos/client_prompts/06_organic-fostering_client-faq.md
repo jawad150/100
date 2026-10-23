@@ -18,14 +18,14 @@ Draft wording: the client must confirm these lines are true and in their words b
 |---|---|---|---|
 | 0-1.5 s | edit: plain navy card | - | Question card from frame 1: `What was it actually like working with Hulk?` (Inter 600, white, on navy `#0B1628`; a plain card, never a comment bubble). AI label, small, lower left, to the end: `AI re-creation, made with [Name]'s permission. Their approved words, AI voice.` |
 | 1.5-14.5 s | Prompt, 0.5-13.5 s: the director at the office table, mug in hand, a yellow city bus soft through the wet window | "Honestly, it was easy. They explained everything in plain English, no jargon." · "They listened to how we talk to families, and now the website sounds like us." | Name caption 2-5 s: `[Name], [role], Organic Fostering`. Word-timed captions, no numbers |
-| 14.5-15.5 s | Prompt, 14.5-15.5 s: their hands, a pen ticks a blank notebook page | - | - |
+| 14.5-15.5 s | Prompt, 15-16 s: their hands, a pen ticks a blank notebook page | - | - |
 | 15.5-17.5 s | edit: website | - | `assets/sites/organicfostering/now_areas_desktop_full.png`, crop `100, 940, 1240, 1010` (the "Check whether we cover your area" panel and postcode form), orange underline under "Ask us to check your area". Source line: `organicfostering.co.uk/areas-we-cover · captured 22 Oct 2026` (recaptured on publish day) |
 | 17.5-21.5 s | edit: website | - | `assets/sites/organicfostering/now_blog_desktop_full.png`, crop `96, 200, 560, 640`, underline under "Our guides explain fostering in plain English"; the three newest guide titles slide up (crop `96, 1440, 1248, 160`, text only). Card: `61 pages · 32 plain-English guides` (counted from `assets/sites/organicfostering/sitemap_20261022.xml`), strip `Site structure, not traffic results.` |
 | 21.5-30 s | Prompt, 17.5-26 s: close, line 3, a half-smile, a nod, a sip of tea | "I'd recommend them. They just quietly get on with it." | Captions. Brand lockup small, bottom right, from 28 s. No "built by" line (who built the Sept 2026 rebuild is not confirmed) |
 
 No music: room tone, rain, the bus and the mug carry it. Never on screen: the homepage captures (they show the allowance calculator and photos of children), any allowance or income figure, an Ofsted grade, "24/7", "No.1", traffic or enquiry results.
 
-- **Testimonial:** working with the agency was easy and free of jargon, the website now sounds like the way they talk to families, and they would recommend the agency. The director may reword all three lines; no numbers.
+- **Testimonial:** working with the agency was easy and free of jargon, the website now sounds like the way they talk to families, and they would recommend the agency. The director may reword all three lines; no numbers. Keep line 2 only if the director confirms in writing that Hulk wrote or rewrote the site's copy; otherwise use "They listened to how we talk to families." at the same second, in the prompt and the script.
 - **Before and after:** none in this video. There is no "before" capture yet and who built the Sept 2026 rebuild is not confirmed. For one, the client confirms Hulk's role in writing and you capture the old site in your own browser from the Wayback Machine. We never mock up an old site.
 - **Positive reviews:** none on screen yet. If Organic Fostering has Google Business Profile reviews, send a dated screenshot; we quote them word for word, names and photos blurred, and never use any that name a carer or child. Never generate or voice a review.
 
@@ -84,7 +84,7 @@ PHYSICS
 The mug has weight and pulls the wrists down slightly; when it touches the table the tea shivers and settles; the cardigan sleeves slide back a little as they reach forward; a lanyard swings once and settles, the card turned to the body; the chair takes their weight and creaks as they sit back; steam bends and thins in the window light; the nib drags slightly on the paper and leaves real ink; outside, the bus throws a faint spray off the wet road.
 
 LIGHTING
-Soft overcast daylight from a large window camera-left is the only key; the right side of the face falls a stop darker with soft shadow under the cheekbone; the overhead office lights are on but weak, adding a faint cooler top light; the window itself is slightly overexposed.
+Soft overcast daylight from a large window camera-left is the only key; the right side of the face falls a stop darker with soft shadow under the cheekbone; the overhead office lights are on but weak, adding a faint cooler top light; the window itself is slightly overexposed. The darker side is the side of the face away from the window: camera-right, their left cheek.
 Natural skin from the reference, visible pores and fine texture, unretouched; a little bobbling on one cardigan sleeve.
 Hands relaxed with natural knuckle creases and veins; five fingers each, fingers not touching the face during speech.
 

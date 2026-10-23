@@ -17,7 +17,7 @@ Draft wording: the client must confirm these lines are true and in their words b
 | Time | Picture | Spoken | Visuals we add |
 |---|---|---|---|
 | 0-1 s | edit: black | - | One wiper thunk. AI label from 1 s to the end, small, lower left: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` |
-| 1-5 s | Prompt 1, 0-4 s: his phone lights up face-up on the dark dashboard; his hand lifts it | Voiceover: "Every morning it's the same. Phone on the dash, waiting for the next job." | No title. The buzz carries the hook |
+| 1-5 s | Prompt 1, 1-5 s: his phone lights up face-up on the dark dashboard; his hand lifts it | Voiceover: "Phone on the dash, waiting for the next job." | No title. The buzz carries the hook |
 | 5-20 s | Prompt 1, 5-20 s: in the driver's seat, filmed from the passenger seat | "Most of our work was regulars. Word of mouth, people who knew us." · "Someone new searching online wouldn't really find us." | Name and role at 6 s, as he approves them (or `Owner, Golden Line Taxis`), never "Ali" on its own. Word-timed captions, white Inter, two lines at most |
 | 20-30 s | Prompt 1, 20-30 s: head and shoulders, then a tired half-laugh | "What was missing was a proper website. Somewhere people could actually book." | Captions |
 | 30-44 s | Prompt 2, 0-14 s: his back office at dusk, laptop open with a green screen | "When the new website went live, people started finding us on Google." · "They can see what we do and book online." | Corner-pinned on his green laptop: first the old site for 3 s, only if you send a Wayback capture (source line `goldenlinetaxiswarwick.co.uk · Wayback Machine capture · [date]`); then today's site, `assets/sites/goldenlinetaxiswarwick/now_desktop.png` crop `200, 226, 470, 382` ("Book Warwick Taxis Online" and the quote-and-book form, with the site's "No.1" tagline and review badge kept out of frame); then the footer, `now_desktop_full.png` crop `0, 6544, 1440, 810` |
@@ -59,11 +59,11 @@ FORMAT MODE
 CONTROLLED MULTI-SHOT SEQUENCE: three shots inside the same parked car, with HARD CUTS at second 5 and second 20. Real-time motion. No fades, no dissolves, no transition effects. The car, his clothes, the light direction and the rain stay the same across every cut.
 
 LOCATION MAP
-Inside his own parked car, a right-hand-drive saloon, on a red-brick terraced street in Warwick before sunrise, engine off. He sits in the driver's seat on the right; the interviewer and the camera are in the front passenger seat on the left. The windscreen is beaded with rain, the wiper parked halfway up the glass. Through the driver's window behind him: wet terraced house fronts and one street lamp, soft. On the dashboard: a phone in a plain dark case, a parking ticket lying face-down, a charging cable looping down to the console. A paper coffee cup in the door pocket.
+Inside his own parked car, a right-hand-drive saloon, on a red-brick terraced street in Warwick before sunrise, engine off. He sits in the driver's seat on the right; the interviewer and the camera are in the front passenger seat on the left. The windscreen is beaded with rain, the wiper parked halfway up the glass. Through the driver's window behind him: wet terraced house fronts and one street lamp, soft. On the dashboard: a phone in a plain dark case, a parking ticket lying face-down, a charging cable looping down to the console. A plain paper coffee cup with no print in the door pocket.
 
 FIRST FRAME AND SPATIAL BLOCKING
 Shot 1 (0-5s): the first frame already shows the dark dashboard from low across it, the phone lying face-up with its screen edge-on to the lens and unlit, the rainy windscreen and the parked wiper above. Nobody in frame yet.
-Shot 2 (5-20s): the first frame of the shot already contains the owner in the driver's seat, filling the right half of the frame, his left hand resting on top of the wheel, the phone now face-down in the dash mount. His torso is angled towards the passenger seat; his eyes are just past camera-left on the interviewer; lips closed.
+Shot 2 (5-20s): the first frame of the shot already contains the owner in the driver's seat, filling the right half of the frame, his left hand resting on top of the wheel, the phone now face-down in the tray in front of the gear lever, the vent mount empty. His torso is angled towards the passenger seat; his eyes are just past camera-left on the interviewer; lips closed.
 Shot 3 (20-30s): the same axis, tighter: his head and shoulders, the rainy driver's window soft behind him.
 
 OPTICS
@@ -93,14 +93,14 @@ PHYSICS
 The phone buzzes and creeps a millimetre across the plastic; the seat and his jacket compress as he shifts; the wheel takes the weight of his forearm; rain beads on the glass gather and run down in short jerks; his breath shows faintly in the cold cabin; the car rocks very slightly when he settles back against the seat.
 
 LIGHTING
-Blue-grey early daylight through the car windows mixed with the warm amber of street lamps outside; the dashboard stays dark; the face is lit softly from the side window and falls off into shadow on the far cheek; rain beads on the glass catch small points of light. In shot 1 the phone's glow lights the roof lining and his fingers for a moment as he lifts it.
+Blue-grey early daylight through the car windows mixed with the warm amber of street lamps outside; the dashboard stays dark; the face is lit softly from the side window and falls off into shadow on the far cheek; rain beads on the glass catch small points of light. In shot 1 the phone's glow lights the roof lining and his fingers for a moment as he lifts it. In shots 2 and 3 the soft key on his face is the window light through the passenger-side window behind the camera; the street lamp beyond the driver's window gives only a faint rim.
 Natural skin from the reference, visible pores and fine texture, unretouched; a little stubble shadow along the jaw.
 Hands relaxed with natural knuckle creases and veins; five fingers each, fingers not touching the face during speech.
 
 AUDIO
 Ambience: steady rain on the roof, water running in the gutter outside, a distant car hissing past on a wet road.
 Foley: the phone buzzing against the dashboard from 1 to 4 seconds; a jacket rustle as he lifts it at 4 seconds; his thumb rubbing the wheel at 11 seconds; the seat creaking as he settles back at 28 seconds.
-Voiceover, shot 1 only: his voice, off screen and not lip-synced to anyone in frame, close and quiet, in natural British English. At second 1: "Every morning it's the same. Phone on the dash, waiting for the next job."
+Voiceover, shot 1 only: his voice, off screen and not lip-synced to anyone in frame, close and quiet, in natural British English. At second 1: "Phone on the dash, waiting for the next job."
 Dialogue: only the quoted lines, spoken by the owner at seconds 6, 13 and 21, in natural British English; lips still when not speaking; no other voices.
 Clean close dialogue as if from a clip-on microphone, the small cabin sound underneath, no echo.
 No background music. No subtitles. At least 1 second of ambience-only before the first word and after the last word.
@@ -155,7 +155,7 @@ TIMELINE
 6-8s: A short pause; he swallows and gives one small nod. End state: lips parted again.
 8-11s: At second 8 he says, "They can see what we do and book online.", and taps the table twice with two fingers on the last word. End state: line finished.
 11-14s: He sits back in the chair, breathing, a half-smile. End state: leaning back.
-14-15s (Shot 2): HARD CUT at second 14 to his right hand on the trackpad; still. End state: fingers resting.
+14-15s (Shot 2): HARD CUT at second 14 to his right hand on the trackpad; still; his voiceover starts. End state: fingers resting.
 15-18s: His index and middle fingers slide slowly up the trackpad in one unhurried scroll and stop; his voiceover plays. End state: fingers resting near the top of the trackpad.
 18-19s: The hand stays still; steam drifts up from the mug. End state: still.
 19-20s (Shot 3): HARD CUT at second 19 to his face, close. End state: eyes on the interviewer, lips parted.
@@ -174,7 +174,7 @@ Hands relaxed with natural knuckle creases and veins; five fingers each, fingers
 AUDIO
 Ambience: a small back-office room tone, a radiator ticking, light rain on the window, a distant car on a wet road.
 Foley: a two-finger tap on the table at 10 seconds; a chair creak at 11 seconds; the soft whisper of fingertips on the trackpad from 15 to 18 seconds; the mug lifted and set down from 25 to 27 seconds.
-Voiceover, shot 2 only: his voice, off screen and not lip-synced to anyone in frame, close and calm, in natural British English. At second 15: "And now I can actually see what people search to find us."
+Voiceover, shot 2 only: his voice, off screen and not lip-synced to anyone in frame, close and calm, in natural British English. At second 14: "And now I can actually see what people search to find us."
 Dialogue: only the quoted lines, spoken by the owner at seconds 1, 8 and 20, in natural British English; lips still when not speaking; no other voices.
 Clean close dialogue as if from a clip-on microphone, natural room tone underneath, no echo.
 No background music. No subtitles. At least 1 second of ambience-only before the first word and after the last word.
@@ -185,7 +185,7 @@ His face in close-up after the sip, a half-smile, eyes on the interviewer, the d
 POSITIVE CONSTRAINTS
 Muted, lived-in indoor colour as it really looks: off-white and pale grey walls, worn wood and grey laminate, cool daylight at the window, a warm pocket of light from a lamp or ceiling bulb; people in navy, grey and mid-blue everyday clothes; nothing saturated.
 No on-screen text, captions or subtitles. All signs, labels, mugs, clothing, papers and screens are plain or turned away, with no readable words, logos or numbers. Number plates are not readable.
-The laptop screen shows a flat, uniform, matte chroma-green fill from edge to edge, evenly lit, with no interface, no text, no reflections and no glare; all four corners and the bezel stay visible, with one small dark dot in each corner of the green. The screen gives off almost no light.
+In shots 1 and 2, the laptop screen shows a flat, uniform, matte chroma-green fill from edge to edge, evenly lit, with no interface, no text, no reflections and no glare; all four corners and the bezel stay visible, with one small dark dot in each corner of the green. The screen gives off almost no light.
 Exactly one person visible. No extra people.
 Filmed on a handheld documentary video camera in available light: natural colour with a restrained grade, fine even digital grain, soft highlight roll-off on bright windows, real depth of field with a gently soft background.
 ```
@@ -200,26 +200,26 @@ ASSET MAP
 @Image 1: identity of the owner of a small Warwick taxi firm from the attached character sheet: face, hair, build, hands and clothing. 100% matches the reference. Use the person only; do not copy the sheet's grey background, panel layout, labels or its flat, even sheet lighting.
 
 SCENE CONTEXT
-At first light on a wet late-October morning, the owner of a small Warwick taxi firm sits in his parked car with the engine running and gives one line of advice to other taxi firms; then, seen from the pavement, his car pulls away from the kerb into the grey street.
+At first light on a wet late-October morning, the owner of a small Warwick taxi firm sits in his parked car with the engine running and gives one line of advice to other taxi firms; then, seen from across the road, his car pulls away from the kerb and drives off along the grey street.
 
 FORMAT MODE
-CONTROLLED MULTI-SHOT SEQUENCE: two shots, with one HARD CUT at second 10 from inside the car to the pavement outside it. Real-time motion. No fades, no dissolves, no transition effects.
+CONTROLLED MULTI-SHOT SEQUENCE: two shots, with one HARD CUT at second 10 from inside the car to the opposite pavement. Real-time motion. No fades, no dissolves, no transition effects.
 
 LOCATION MAP
-Shot 1: inside his parked right-hand-drive saloon on a red-brick terraced street, engine running, first grey light; he sits in the driver's seat on the right, the interviewer and camera in the front passenger seat. A phone sits face-up in a vent mount to his left, its screen edge-on to the camera. Rain on the windscreen, the wiper parked halfway up the glass.
-Shot 2: the pavement of the same terraced street. The camera stands at waist height on the pavement; his plain dark saloon is parked at the kerb 4 metres away, side-on, facing camera-right; the corner of another parked hatchback in the near foreground hides his car's rear number plate. Wet tarmac, flattened brown leaves in the gutter, red-brick house fronts beyond.
+Shot 1: inside his parked right-hand-drive saloon on a red-brick terraced street, engine running, first grey light; he sits in the driver's seat on the right, the interviewer and camera in the front passenger seat. His phone sits upright in the vent mount to his left, turned towards him, so from the passenger seat its screen is seen edge-on. Rain on the windscreen, the wiper parked halfway up the glass.
+Shot 2: the same terraced street from the opposite pavement. The camera stands on a small tripod at waist height on the opposite pavement, looking straight across the road; his plain dark saloon is parked side-on at the far kerb about 8 metres away, its nose pointing to frame right, so neither number plate faces the lens; the soft rear corner of a parked hatchback fills the lower-left foreground, out of focus. Wet tarmac, flattened brown leaves in the gutter, red-brick house fronts beyond.
 
 FIRST FRAME AND SPATIAL BLOCKING
 Shot 1 (0-10s): the first frame already contains the owner in the driver's seat, filling the right half of the frame, both hands resting low on the wheel, eyes just past camera-left on the interviewer, lips closed.
-Shot 2 (10-17s): the first frame of the shot already shows his car at the kerb, engine running, exhaust vapour curling from the back, a soft shape of him at the wheel through the wet side glass, not readable as a face.
+Shot 2 (10-17s): the first frame of the shot already shows his car at the far kerb, engine running, exhaust vapour curling from the back, a soft shape of him at the wheel through the wet side glass, not readable as a face.
 
 OPTICS
 Shot 1: about 60° diagonal field of view, camera 70 to 90 centimetres from his face, natural perspective, the cabin readable, the street beyond the glass soft.
-Shot 2: 47° diagonal field of view, standard normal lens character, camera 4 metres from the car, the street readable but not exaggerated.
+Shot 2: 47° diagonal field of view, standard normal lens character, camera about 8 metres from the car across the road, the street readable but not exaggerated.
 
 CAMERA
 Shot 1: handheld by the interviewer in the passenger seat: subtle breathing rhythm, small weight shifts, never gimbal-smooth, never shaky; focus on his eyes.
-Shot 2: static on a small tripod at waist height on the pavement; the camera does not follow the car.
+Shot 2: static on a small tripod at waist height on the opposite pavement; the camera does not follow the car.
 
 TIMELINE
 0-1s (Shot 1): Ambience; the engine idles. End state: lips parted, about to speak.
@@ -227,21 +227,21 @@ TIMELINE
 5-8s: He gives one small nod, looks ahead through the windscreen and moves both hands to the top of the wheel. End state: hands on the wheel, eyes ahead.
 8-10s: At second 8 the phone in the vent mount lights up, its screen edge-on and unreadable, its cool glow falling on his fingers; the car does not move. End state: the phone lit, his eyes flicking to it.
 10-11s (Shot 2): HARD CUT at second 10 to the pavement. The car idles at the kerb. End state: unchanged.
-11-13s: The amber indicator on the near side blinks; the car rolls forward off the kerb. End state: the car moving away to camera-right.
-13-15s: The car turns out of frame at the end of the street, its exhaust vapour hanging in the air behind it. End state: the street empty.
+11-13s: The amber side indicator facing the camera blinks; the car pulls out from the kerb, its nose angling into the road towards frame right, the body rising slightly on its suspension. End state: the car in the road, moving right, side-on to the camera.
+13-15s: It gathers speed along the street and leaves the right edge of frame at second 15, side-on the whole way, its exhaust vapour hanging in the air behind it. End state: the street empty.
 15-17s: The empty wet street; drizzle; ambience only.
 
 PHYSICS
 In shot 1 the idling engine sends a faint vibration through the wheel and the phone mount; his hands settle on the wheel with real weight. In shot 2 the car has real weight: suspension settles after it stops, tyres flex on the kerb, road grime along the sills, rain beads on the bonnet, reflections of the grey sky distort across the panels. The tyres hiss through a puddle as it pulls away and the water ripples after it.
 
 LIGHTING
-Shot 1: Blue-grey early daylight through the car windows mixed with the warm amber of street lamps outside; the dashboard stays dark; the face is lit softly from the side window and falls off into shadow on the far cheek; rain beads on the glass catch small points of light.
-Shot 2: Flat overcast sky as a huge soft source from above; soft shadows under the eyes and chin; wet tarmac reflects the grey sky; no direct sun.
+Shot 1: Blue-grey early daylight through the car windows mixed with the warm amber of street lamps outside; the dashboard stays dark; the face is lit softly from the side window and falls off into shadow on the far cheek; rain beads on the glass catch small points of light. The soft key on his face is the window light through the passenger-side window behind the camera; the street lamp beyond the driver's window gives only a faint rim.
+Shot 2: Flat overcast sky as a huge soft source from above; wet tarmac reflects the grey sky; no direct sun.
 Natural skin from the reference, visible pores and fine texture, unretouched.
 
 AUDIO
 Ambience: shot 1, the idling engine and rain on the roof; shot 2, the street in light drizzle, a gutter dripping, a distant road.
-Foley: the phone's short buzz at 8 seconds; the indicator ticking from 11 seconds; tyres hissing through wet tarmac from 12 seconds; the engine note fading as the car turns away at 14 seconds.
+Foley: the phone's short buzz at 8 seconds; the indicator ticking from 11 seconds; tyres hissing through wet tarmac from 12 seconds; the engine note fading along the street from 15 seconds.
 Dialogue: only the quoted line, spoken by the owner at second 1, in natural British English; lips still when not speaking; no other voices.
 Clean close dialogue as if from a clip-on microphone in shot 1.
 No background music. No subtitles. At least 1 second of ambience-only before the first word and after the last word.
@@ -250,8 +250,8 @@ FINAL FRAME
 The empty wet terraced street, the exhaust vapour thinning, the camera holding.
 
 POSITIVE CONSTRAINTS
-Muted colour inside a parked car as it really looks: a charcoal dashboard and grey seat fabric, rain beads on the glass, the world outside soft and grey; people in navy, grey and mid-blue everyday clothes; nothing saturated.
-Muted autumn colour as it really looks: wet slate greys, an overcast white sky, wet black tarmac, red-brick terraces and cream stucco, cold white LED and older amber street light; people in navy, grey and mid-blue everyday clothes; nothing saturated.
+Shot 1: Muted colour inside a parked car as it really looks: a charcoal dashboard and grey seat fabric, rain beads on the glass, the world outside soft and grey; people in navy, grey and mid-blue everyday clothes; nothing saturated.
+Shot 2: Muted autumn colour as it really looks: wet slate greys, an overcast white sky, wet black tarmac, red-brick terraces and cream stucco, cold white LED and older amber street light; people in navy, grey and mid-blue everyday clothes; nothing saturated.
 No on-screen text, captions or subtitles. All signs, labels, mugs, clothing, papers and screens are plain or turned away, with no readable words, logos or numbers. Number plates are not readable.
 A plain dark saloon with no livery, no door lettering, no roof sign text, no decals. The front and rear number plates are angled away from the camera, out of focus, or hidden behind a foreground object. It waits at a kerb, a driveway or a drop-off zone, never on a rank.
 Exactly one person: the owner, seen clearly in shot 1 and only as a soft shape through the glass in shot 2. No extra people.

@@ -16,7 +16,7 @@ Draft wording: the client must confirm these lines are true and in their words b
 
 | Time | Picture | Spoken | Visuals we add |
 |---|---|---|---|
-| 0-9 s | Prompt, 0-9 s: from behind his shoulder he sits down, drops his keys and pulls the laptop in; green screen | Voiceover: "Three months of Google, all in one place." · "Honestly, it's good to see it laid out like that." | Chip, top left: `Coventry Airport Taxis 247 · three months on Google`. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` From 4 s, keyed into the green screen: `assets/gsc/coventryairporttaxis247_gsc_3m_chart.png`, cards and chart crop `0, 121, 1300, 355`, as a slow real scroll. Label: `224 clicks · 15.9K times shown`, source line `Google Search Console · coventryairporttaxis247.co.uk · 19 Jul–18 Oct 2026` |
+| 0-9 s | Prompt, 0-9 s: from behind his shoulder he sits down, drops his keys and pulls the laptop in; green screen | Voiceover: "Three months of Google, all in one place." · "Good to see it all laid out." | Chip, top left: `Coventry Airport Taxis 247 · three months on Google`. AI label, lower left, throughout: `AI re-creation, made with [Name]'s permission. His approved words, AI voice. Real data.` From 4 s, keyed into the green screen: `assets/gsc/coventryairporttaxis247_gsc_3m_chart.png`, cards and chart crop `0, 121, 1300, 355`, as a slow real scroll. Label: `224 clicks · 15.9K times shown`, source line `Google Search Console · coventryairporttaxis247.co.uk · 19 Jul–18 Oct 2026` |
 | 9-16 s | Prompt, 9-16 s: close on his face, lit by the screen; he leans in, eyebrows lift, breathes out | - | From 12 s, a small card: the pagination crop `930, 2135, 410, 40` of `_full.png` ("1-25 of 508") with the label `508 different searches` |
 | 16-21 s | Prompt, 16-21 s: a laugh through the nose, a jaw rub, his pen points at the screen | - | The pen point motivates the cut |
 | 21-24 s | edit: receipt card | - | Row 3, crop `24, 1002, 1318, 49`, exact pixels on a navy card, underline under `7.0`: `coventry airport taxi · avg 7.0 · page one on average`. Strip: `Average position over 3 months. Positions 1–10 are page one.` |
@@ -47,17 +47,17 @@ ASSET MAP
 @Image 1: identity of the owner of a small Coventry airport-taxi firm from the attached character sheet: face, hair, build, hands and clothing. 100% matches the reference. Use the person only; do not copy the sheet's grey background, panel layout, labels or its flat, even sheet lighting.
 
 SCENE CONTEXT
-Late on a wet October night, after his last airport run, the owner of a small Coventry airport-taxi firm sits down at his kitchen table, pulls his laptop closer and reads his last three months of Google numbers for the first time, with an interviewer sitting across the table. It starts with him sitting down, turns on his quiet reactions, and ends with one line about the job he wants most.
+On a wet late-October evening, after his last airport run, the owner of a small Coventry airport-taxi firm sits down at his kitchen table, pulls his laptop closer and reads his last three months of Google numbers for the first time, with an interviewer sitting across the table. It starts with him sitting down, turns on his quiet reactions, and ends with one line about the job he wants most.
 
 FORMAT MODE
 CONTROLLED MULTI-SHOT SEQUENCE: four shots at the same kitchen table, with HARD CUTS at second 9, second 16 and second 21. Real-time motion. No fades, no dissolves, no transition effects. The kitchen, his clothes, the laptop, the mug and the light direction stay the same across every cut.
 
 LOCATION MAP
-A small kitchen at night: a wooden table against the wall, a kettle and a toaster on the worktop behind, a pendant bulb over the table, a window on the right with dark blue-grey night outside and rain on the glass, a phone charger cable across the table, a plain mug of tea, a pen. His car keys on a plain fob in his hand at the start. The laptop sits square in front of him on the table. The interviewer sits across the table from him, just off camera.
+A small kitchen in the evening: a wooden table, the doorway to the hall opposite him behind the laptop, a kettle and a toaster on the worktop behind him, a pendant bulb over the end of the table on his right, a window behind him to his left with blue-grey dusk outside and rain on the glass, a phone charger cable across the table, a plain mug of tea, a pen. His car keys on a plain fob in his hand at the start. The laptop sits square in front of him on the table. The interviewer is never in frame: behind the camera in shot 1, across the table just camera-left of the lens in shots 2 to 4.
 
 FIRST FRAME AND SPATIAL BLOCKING
 Shot 1 (0-9s): the camera is about 1 metre behind him and slightly to his right, at shoulder height, looking over his right shoulder. In the first frame he is already pulling the chair out with his left hand, keys in his right hand. Once seated he fills the left third of the frame: the back of his head, his right shoulder and the edge of his right ear; the laptop stands square in front of him in the centre-right of the frame, its green screen fully visible with all four corners.
-Shot 2 (9-16s): a close-up of his face from across the table, a little to camera-left of the interviewer; the laptop screen faces away from the camera; his eyes are down on the screen.
+Shot 2 (9-16s): a close-up of his face from across the table, with the interviewer sitting just camera-left of the lens; the laptop screen faces away from the camera; his eyes are down on the screen.
 Shot 3 (16-21s): a medium close-up from the same side, his hands and the pen in frame at the bottom edge.
 Shot 4 (21-30s): a close-up from the same side as shot 2; he lifts his eyes to the interviewer just past camera-left.
 
@@ -88,14 +88,14 @@ PHYSICS
 The chair legs scrape on the floor; the keys land with weight and slide a few centimetres; the laptop moves with a little friction on the wood; his weight settles into the chair; the pen taps lightly as it is set down; the laptop lid has a real hinge and stops where his hand leaves it; the tea tips as he lifts the mug.
 
 LIGHTING
-A warm tungsten ceiling bulb or lamp camera-left is the key; cool blue-grey dusk from a window camera-right; the two colour temperatures meet on the face; corners of the room fall into soft shadow. In shots 2 to 4 the screen's glow is faint: the laptop screen faces away from the camera; its cool white glow lights the face from below, brighter on the chin and under the nose. The laptop screen in shot 1 gives off almost no light.
+Shot 1, filmed from behind him: A warm tungsten ceiling bulb or lamp camera-right is the key; cool blue-grey dusk from a window camera-left; the two colour temperatures meet across the back of his neck and shoulders; corners of the room fall into soft shadow. Shots 2 to 4: A warm tungsten ceiling bulb or lamp camera-left is the key; cool blue-grey dusk from a window camera-right; the two colour temperatures meet on the face; corners of the room fall into soft shadow. In shots 2 to 4 the screen's glow is faint: the laptop screen faces away from the camera; its cool white glow lights the face from below, brighter on the chin and under the nose. The laptop screen in shot 1 gives off almost no light.
 Natural skin from the reference, visible pores and fine texture, unretouched; tired eyes after a long shift.
 Hands relaxed with natural knuckle creases and veins; five fingers each, fingers not touching the face during speech.
 
 AUDIO
-Ambience: a quiet kitchen at night, a fridge humming, rain on the window, the kettle ticking as it cools.
+Ambience: a quiet kitchen in the evening, a fridge humming, rain on the window, the kettle ticking as it cools.
 Foley: the chair scraping at 0 seconds; the keys clattering on the table at 2 seconds; the laptop sliding at 3 seconds; a short breath out at 14 seconds; a laugh through the nose at 17 seconds; the pen set down at 20 seconds; the laptop lid at 27 seconds.
-Voiceover, shot 1 only: his voice, off screen and not lip-synced to anyone in frame, close and quiet, in natural British English. At second 3: "Three months of Google, all in one place." At second 6: "Honestly, it's good to see it laid out like that."
+Voiceover, shot 1 only: his voice, off screen and not lip-synced to anyone in frame, close and quiet, in natural British English. At second 3: "Three months of Google, all in one place." At second 6: "Good to see it all laid out."
 Dialogue: only the quoted line, spoken by the owner at second 22, in natural British English; lips still and closed in shots 2 and 3 and whenever he is not speaking; no other voices.
 Clean close dialogue as if from a clip-on microphone, natural room tone underneath, no echo.
 No background music. No subtitles. At least 1 second of ambience-only after the last word.
@@ -106,7 +106,7 @@ His face in close-up, mug of tea at chest height, the laptop half-closed below f
 POSITIVE CONSTRAINTS
 Muted, lived-in indoor colour as it really looks: off-white and pale grey walls, worn wood and grey laminate, cool daylight at the window, a warm pocket of light from a lamp or ceiling bulb; people in navy, grey and mid-blue everyday clothes; nothing saturated.
 No on-screen text, captions or subtitles. All signs, labels, mugs, clothing, papers and screens are plain or turned away, with no readable words, logos or numbers. Number plates are not readable.
-The laptop screen shows a flat, uniform, matte chroma-green fill from edge to edge, evenly lit, with no interface, no text, no reflections and no glare; all four corners and the bezel stay visible, with one small dark dot in each corner of the green. The screen gives off almost no light.
+In shot 1, the laptop screen shows a flat, uniform, matte chroma-green fill from edge to edge, evenly lit, with no interface, no text, no reflections and no glare; all four corners and the bezel stay visible, with one small dark dot in each corner of the green. The screen gives off almost no light. In shots 2 to 4 the laptop screen is angled away from the camera; only the back of the lid is visible.
 Exactly one person visible. No extra people.
 Filmed on a handheld documentary video camera in available light: natural colour with a restrained grade, fine even digital grain, soft highlight roll-off on bright windows, real depth of field with a gently soft background.
 ```
