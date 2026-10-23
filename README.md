@@ -1,3 +1,24 @@
+# IC London — "Three CV Mistakes That Could Cost You an Interview"
+
+A 30 s vertical reel (1080×1920, 30 fps, -15 LUFS). It is deliberately unlike the law reel: a bright, editorial "recruiter's desk" look instead of the dark navy route map. One 3D paper CV is shot from cinematic angles, marked up live with a red marker (circles, strike-throughs, scribbles and handwritten notes), then fixed mistake by mistake under big serif numerals: 01 vague achievements, 02 irrelevant information, 03 poor formatting. It ends with "Make your next application count." It uses Blender props (red marker, magnifier, paperclip), a warm piano-led soundtrack with desk sound effects, and the calm natural voiceover with a gentle fade-out.
+
+**Final:** [`reel/ic_london/ic_london_cv_mistakes.mp4`](reel/ic_london/ic_london_cv_mistakes.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_cv_mistakes_share.mp4)
+
+Sources:
+- [National Careers Service, CV sections](https://nationalcareers.service.gov.uk/careers-advice/cv-sections): tailor your CV to the job advert, a clear font at size 11 or bigger, headings and bullet points, and the same style throughout.
+- [Prospects, How to write a CV](https://www.prospects.ac.uk/careers-advice/cvs-and-cover-letters/how-to-write-a-cv): evidence instead of generic claims, the rewritten achievement (Prospects' own example), removing irrelevant details (date of birth, photo, generic hobbies), and a maximum of two A4 pages.
+
+The candidate "Alex Morgan" and their CV are fictional.
+
+Pipeline (`pipeline_cv/`):
+- `vo_cv.py` generates the voiceover.
+- `blender_cv.py` renders the props.
+- `reel_cv.py` is the compositor and reuses helpers from `pipeline_ic/reel_ic.py`.
+- `audio_cv.py` builds the soundtrack.
+- `render_cv.py` renders and encodes.
+
+---
+
 # IC London — "No Law Degree? You May Still Have a Route into Law"
 
 A 30 s vertical reel (1080×1920, 30 fps, -15 LUFS) for IC London (Innovate College London). The concept is a career "route planner". A montage of IC London's own website photography asks "Think you need a law degree to become a solicitor?". The "Law degree required?" toggle flips to "Not necessarily", the planner recalculates, and the camera travels a tilted 3D route map through the SRA's SQE requirements to "Qualified solicitor". It then shows IC London's SQE course and the call to action.
