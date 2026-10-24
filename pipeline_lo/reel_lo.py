@@ -130,6 +130,14 @@ def night(c, warm=0.0):
 _yy = np.linspace(0, 1, H, dtype=np.float32)[:, None, None]
 
 
+def title_band(c, y0, y1, a=0.8):
+    """Soft dark band behind a headline block (keeps warm text readable over lit windows / bright walls)."""
+    ys = np.linspace(0, H, H, dtype=np.float32)[:, None, None]
+    mid, half = (y0 + y1) / 2, (y1 - y0) / 2
+    m = np.clip(1 - np.abs(ys - mid) / (half + 140), 0, 1) ** 0.8 * a
+    return c * (1 - m) + np.array([0.03, 0.01, 0.03], np.float32) * m
+
+
 def scrim(c, top=0.5, bot=0.75):
     col = np.array([0.02, 0.01, 0.03], np.float32)
     a = np.clip(1 - _yy / 0.32, 0, 1) ** 1.5 * top + np.clip((_yy - 0.58) / 0.42, 0, 1) ** 1.3 * bot
@@ -259,6 +267,7 @@ def sc_hook(t):
         k = prog(t, CLICK, CLICK + 0.25)
         c = c + np.array([1.0, 0.6, 0.25], np.float32) * 0.18 * math.exp(-(t - CLICK) * 4) * k
     c = scrim(c, 0.65, 0.4)
+    c = title_band(c, 250, 560, 0.78)
     headline(c, 'When this light', 300, 82, t, 0.35, fname=PK)
     headline(c, 'comes on,', 400, 82, t, 0.7, fname=PK)
     headline(c, "someone's ready.", 520, 92, t, CLICK + 0.1, color=WARM, glow=ORANGE_B, sweep_t=CLICK + 0.6)
@@ -403,6 +412,7 @@ def sc_payoff(t):
     c = seq_full('wellies', t - t0, T['rise'] - t0)
     c = c * 0.9 + np.array([0.03, 0.01, 0.0], np.float32)
     c = scrim(c, 0.7, 0.75)
+    c = title_band(c, 230, 580, 0.86)
     headline(c, 'Ready when', 280, 92, t, t0 + 0.3, color=WHITE_)
     headline(c, 'it matters.', 390, 92, t, t0 + 0.55, color=WARM, glow=ORANGE_B, sweep_t=t0 + 1.2)
     kc = prog(t, VO['never'] + 0.9, VO['never'] + 1.3)
@@ -434,8 +444,9 @@ def sc_rise(t):
     c = seq_full('street_rise', t - t0, T['end'] - t0 + 0.2)
     c = rain(c, t, 1.0)
     c = scrim(c, 0.55, 0.5)
-    headline(c, 'Could you leave', 760, 90, t, VO['cta'] + 0.05, fname=PK)
-    headline(c, 'the light on?', 870, 104, t, VO['cta'] + 0.5, color=WARM, glow=ORANGE_B, sweep_t=VO['cta'] + 1.2)
+    c = title_band(c, 1180, 1420, 0.7)
+    headline(c, 'Could you leave', 1230, 90, t, VO['cta'] + 0.05, fname=PK)
+    headline(c, 'the light on?', 1345, 104, t, VO['cta'] + 0.5, color=WARM, glow=ORANGE_B, sweep_t=VO['cta'] + 1.2)
     kf = prog(t, T['end'] - 0.35, T['end'])
     if kf > 0:
         c = c * (1 - kf) + grad_bg() * kf
