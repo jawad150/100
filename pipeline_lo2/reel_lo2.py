@@ -609,7 +609,7 @@ def blob_wipe(prev, nxt, p, col=ORA):
 
 
 def heart_iris(prev, nxt, p):
-    s = e_in_cubic(clamp(p)) * 2100 + 1
+    s = e_in_cubic(clamp(p)) * 3400 + 1
     m = m_heart(W / 2, H / 2, s)
     ring = np.clip(cv2.dilate(m, np.ones((17, 17), np.uint8)) - m, 0, 1)
     ring = cv2.GaussianBlur(ring, (0, 0), 3)[..., None] * (1 - clamp(p))
