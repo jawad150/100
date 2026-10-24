@@ -1,3 +1,23 @@
+# Organic Fostering — "Leave the Light On" (version 2, 3D + website photos)
+
+A 30 s vertical reel in a bright graphic-poster style taken from the campaign key visual: cream paper, magenta and orange blobs, a green brush stroke, and bold black, magenta and orange type.
+
+New Blender 3D:
+- A close-up of a real light switch flicking on at 9:47 PM, which opens the video.
+- A cut-away dollhouse whose rooms light up one by one. The camera dives into each lit room and a real organicfostering.co.uk photo opens out of it: a bedtime story, brother and sister, cooking together, and the family at the door.
+- A 3D word "HOME". The camera flies through its "O", where the arrival photo grows.
+- A glossy 3D heart on the end card.
+
+Other website photos: the family at the front door (hook), "Emergency – a calm welcome" (arrival, with a self-drawing neon heart), the adviser and family-outdoors photos as sliding instant prints, and the children at sunset (call to action).
+
+Transitions: light burst, blob wipes, heart iris, split slides, 3D card flips, room dives and the HOME fly-through. Captions are sticker-box captions that pop in word by word.
+
+Sound: a plucked-piano groove with a sound on every animation, and the same calm male voiceover as version 1 with a gentle fade-out.
+
+**Final:** [`reel/organic_fostering/organic_fostering_leave_the_light_on_v2.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on_v2.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on_v2_share.mp4). Pipeline: `pipeline_lo2/` (`blender_lo2.py`, `reel_lo2.py`, `audio_lo2.py`, `render_lo2.py`).
+
+---
+
 # Organic Fostering — "Leave the Light On"
 
 A 30 s vertical reel about emergency fostering on a rainy night, following the "Leave the Light On" concept. It is a cinematic motion-graphics cut. Scenes:
