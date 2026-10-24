@@ -554,7 +554,7 @@ def sc_rise(t):
 def sc_end(t):
     t0 = T['end']
     c = paper().copy()
-    c = blob(c, 940, 300, 270, ORA, t, 11)
+    c = blob(c, 1010, 640, 210, ORA, t, 11)
     c = blob(c, 110, 1720, 250, MAG, t, 12)
     lg = fitted('logo', png('logo_full'), width=600)
     kl = prog(t, t0, t0 + 0.45)
@@ -570,7 +570,7 @@ def sc_end(t):
         c = framed(c, fill, m_arch(790, 1210, aw, ah), border=12)
     kh = e_out_back(prog(t, t0 + 0.6, t0 + 1.1), 1.8)      # ...with the glossy 3D heart over its corner
     if kh > 0.01:
-        draw(c, sprite_at('heart', ((t - t0) * 16) % max(1, len(files('heart')) - 1)), 600, 1470, scale=0.5 * kh)
+        draw(c, sprite_at('heart', ((t - t0) * 16) % max(1, len(files('heart')) - 1)), 610, 1480, scale=0.95 * kh)
     kb_ = prog(t, t0 + 0.8, t0 + 1.2)
     if kb_ > 0:
         p = pill('Start the conversation', PK, 38, pad_x=38, pad_y=20, fill=MAG, border=None, text_color=WHITE_)
@@ -667,6 +667,12 @@ def home_fly(t):
     if L is None:
         return nxt
     rgb, a, hole = L
+    ys, xs = np.where(hole > 0.5)
+    if len(xs) > 50 and hole.mean() < 0.9:          # portal: the whole arrival picture sits inside the O and grows
+        hx, hy = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
+        f = clamp(max((xs.max() - xs.min()) / W, (ys.max() - ys.min()) / H) * 1.25, 0.05, 1.0)
+        M = np.float32([[f, 0, hx - f * W / 2], [0, f, hy - f * H / 2]])
+        nxt = cv2.warpAffine(nxt, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
     prev = sc_ready(min(t, T['arrive'] - 0.01))
     k = prog(t, HOME0, HOME0 + 0.15)
     outside = np.clip(1 - a - hole, 0, 1)[..., None]
