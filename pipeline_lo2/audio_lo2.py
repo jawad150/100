@@ -1,4 +1,4 @@
-"""Soundtrack for "Leave the Light On" v2: a warm, bouncy plucked-piano groove (poster-pop, ~100 bpm) under the same
+"""Soundtrack for "Leave the Light On" v2: a warm, heartfelt acoustic track (guitar, felt piano, strings, glockenspiel) under the same
 calm male voiceover, with a sound for every animation: switch click + light bloom, blob splats, heart iris shimmer,
 room lights clicking on, card flips, the HOME fly-through riser, photo prints sliding in, and a gentle fade-out.
 """
@@ -70,42 +70,124 @@ def slide(v=0.25):
     return bp(rng.normal(0, 1, len(t)), 1500, 7000) * np.sin(np.pi * t / 0.45) ** 2 * v
 
 
-# ------------------------------------------------------------------ music: bright plucked piano groove, 100 bpm
-B = 0.6                                                     # one beat
-CH = [(41, [65, 69, 72, 76]), (38, [62, 65, 69, 72]), (34, [62, 65, 70, 74]), (36, [64, 67, 72, 76])]   # F Dm Bb C
-start = R.SW_END                                           # music starts as the poster world bursts in
+# ------------------------------------------------------------------ music: warm acoustic, heartfelt (G major, 92 bpm)
+# strummed acoustic guitar (Karplus-Strong), felt piano melody, soft strings, glockenspiel sparkles, light claps
+mtof = A.mtof
+
+
+def guitar_note(m, dur=2.2, vel=0.3, bright=0.5):
+    f = mtof(m)
+    n = int(SR / f)
+    L = int(SR * dur)
+    exc = np.zeros(L)
+    burst = rng.normal(0, 1, n)
+    burst = lp(burst, 1500 + 4500 * bright, 1)
+    exc[:n] = burst
+    g = 0.996
+    a = np.zeros(n + 2)
+    a[0] = 1.0
+    a[n] -= g * 0.5
+    a[n + 1] -= g * 0.5
+    y = signal.lfilter([1.0], a, exc)
+    y = hp(y, 80, 1)
+    y *= np.minimum(1, (L - np.arange(L)) / (0.05 * SR))
+    return y / max(1e-6, np.abs(y).max()) * vel
+
+
+def strum(t0, notes, vel=0.25, up=False, dur=2.0, bright=0.5, pan=0.0):
+    ns = notes[::-1] if up else notes
+    for k, m in enumerate(ns):
+        add(music, t0 + k * (0.009 if up else 0.013), guitar_note(m, dur, vel * (0.75 if up else 1.0), bright),
+            pan=pan + (k - len(ns) / 2) * 0.05)
+
+
+def strings(ms, dur, vel=0.12, att=0.8, bright=2200):
+    t = tt(dur + 0.8)
+    x = np.zeros_like(t)
+    for m in ms:
+        for d in (-0.07, 0.0, 0.08):
+            f = mtof(m + d) * (1 + 0.003 * np.sin(2 * np.pi * 5.2 * t + rng.uniform(0, 6)))
+            x += signal.sawtooth(2 * np.pi * np.cumsum(f) / SR)
+    x = lp(x, bright, 2) / (len(ms) * 3)
+    env = np.minimum(1, t / att) * np.where(t > dur, np.exp(-(t - dur) * 3), 1.0)
+    return x * env * vel
+
+
+def glock(m, vel=0.12):
+    t = tt(1.6)
+    f = mtof(m)
+    x = np.sin(2 * np.pi * f * t) + 0.35 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 6) + \
+        0.12 * np.sin(2 * np.pi * f * 5.4 * t) * np.exp(-t * 12)
+    return x * np.exp(-t * 3.2) * np.minimum(1, t / 0.001) * vel
+
+
+def clap(vel=0.12):
+    out = np.zeros(int(0.25 * SR))
+    for d in (0.0, 0.008, 0.017):
+        t = tt(0.2)
+        x = bp(rng.normal(0, 1, len(t)), 900, 5000) * np.exp(-t * 35)
+        i = int(d * SR)
+        out[i:i + len(x)] += x * (0.6 if d else 1.0)
+    return out * vel
+
+
+BPM = 92
+B = 60 / BPM
+BAR = 4 * B
+GTR = [[43, 47, 50, 55, 59, 67], [50, 57, 62, 66], [40, 47, 52, 55, 59, 64], [48, 52, 55, 60, 64]]   # G D Em C
+ROOT = [43, 38, 40, 36]
+PADN = [[55, 59, 62, 67], [54, 57, 62, 66], [55, 59, 64, 67], [55, 60, 64, 67]]
+MEL = [[71, 74, 79, 78], [74, 69, 66, 69], [71, 67, 64, 67], [72, 76, 79, 76]]
+M0 = R.SW_FLIP                                   # music blooms with the light switch
+ARR0, ARR1 = R.HOME0 + 0.3, T['payoff']          # tender breakdown for the arrival
+STRUM = [(0, False, 1.0), (1, False, 0.7), (1.5, True, 0.6), (2.5, True, 0.6), (3, False, 0.8), (3.5, True, 0.6)]
 bi = 0
 while True:
-    t0 = start + bi * 4 * B
-    if t0 >= T['end']:
+    t0 = M0 + bi * BAR
+    if t0 >= T['end'] - 0.2:
         break
-    root, tones = CH[bi % 4]
-    lift = 1.15 if t0 >= T['payoff'] else 1.0
-    add(music, t0, pad(tones[:3], 4 * B + 0.4, vel=0.11 * lift, bright=1800))
-    add(music, t0, bass(root + 12, 1.6 * B, 0.2 * lift))
-    add(music, t0 + 2.5 * B, bass(root + 12, 1.2 * B, 0.13 * lift))
-    for j, m in enumerate([tones[0], tones[2], tones[1], tones[3], tones[2], tones[1], tones[3], tones[2]]):
-        add(music, t0 + j * B / 2, piano(m + 12, 0.8, (0.12 if j % 2 == 0 else 0.08) * lift), pan=-0.25 + 0.07 * j)
+    c = bi % 4
+    tender = ARR0 - 0.2 <= t0 < ARR1 - 0.3
+    sec = 'hook' if t0 < T['call'] - 0.3 else 'call' if t0 < T['ready'] - 0.5 else 'full'
+    # felt piano melody, all the way through (quieter under the busier sections)
+    for j, m in enumerate(MEL[c]):
+        add(music, t0 + j * B, piano(m, 1.4, (0.13 if sec == 'hook' or tender else 0.09) * (1.0 if j == 0 else 0.8)),
+            pan=0.15)
+    if sec == 'hook':
+        add(music, t0, strings(PADN[c], BAR, vel=0.11, att=0.9, bright=2000))
+        strum(t0, GTR[c], 0.2, dur=BAR, bright=0.6)
+        strum(t0 + 2 * B, GTR[c], 0.13, up=True, dur=BAR / 2, bright=0.6)
+        add(music, t0, bass(ROOT[c] + 12, BAR, 0.08))
+    elif tender:
+        add(music, t0, strings(PADN[c] + [PADN[c][0] + 12], BAR, vel=0.18, att=0.9, bright=2200))
+        add(music, t0, bass(ROOT[c] + 12, BAR, 0.08))
+        strum(t0, GTR[c], 0.17, dur=BAR + 0.5, bright=0.45)
+    else:
+        lift = 1.15 if t0 >= T['payoff'] else 1.0
+        if sec == 'call':
+            for q in range(4):                                   # gentle palm-muted strums on each beat
+                strum(t0 + q * B, GTR[c][:4], 0.15, dur=0.35, bright=0.5)
+        else:
+            for (bt, up, v) in STRUM:
+                strum(t0 + bt * B, GTR[c], 0.2 * v * lift, up=up, dur=1.2, bright=0.75, pan=-0.15)
+            add(music, t0, strings(PADN[c], BAR, vel=0.07 * lift, att=0.6, bright=2200))
+            add(music, t0 + 1 * B, clap(0.1 * lift), pan=0.1)
+            add(music, t0 + 3 * B, clap(0.1 * lift), pan=0.1)
+            add(music, t0 + 2 * B + B / 2, glock(MEL[c][2] + 12, 0.06), pan=0.35)
+        add(music, t0, bass(ROOT[c] + 12, 1.8 * B, 0.12 * lift))
+        add(music, t0 + 2 * B, bass(ROOT[c] + 12, 1.5 * B, 0.085 * lift))
+        for q in range(4):
+            add(music, t0 + q * B, kick(0.11 if q % 2 == 0 else 0.07))
     bi += 1
-i = 0
-while True:
-    tb = start + i * B
-    if tb >= T['end'] - 0.1:
-        break
-    inside_dive = T['arrive'] - 0.6 <= tb < T['arrive'] + 1.2     # drop out for the arrival
-    if not inside_dive:
-        add(music, tb, kick(0.26 if i % 4 == 0 else 0.18))
-        add(music, tb + B / 2, shaker(0.07), pan=0.3)
-        if i % 2 == 1:
-            add(music, tb, snap(0.1), pan=-0.1)
-    i += 1
-add(music, T['arrive'], pad([65, 69, 72, 77], 3.0, vel=0.2, bright=1500))       # tender swell at the welcome
-for j, m in enumerate([77, 81, 84]):
-    add(music, T['arrive'] + 0.4 + j * 0.5, piano(m, 1.8, 0.1), pan=-0.2 + 0.2 * j)
-add(music, T['end'], pad([65, 69, 72, 77], DUR - T['end'], vel=0.26, bright=2000))
-for j, m in enumerate([65, 69, 72, 77, 81]):
-    add(music, T['end'] + 0.05 + j * 0.09, piano(m + 12, 2.6, 0.15), pan=-0.3 + j * 0.15)
-music = reverb(music, wet=0.24, length=2.0, key='hall')
+for j, m in enumerate([79, 83, 86]):                           # glockenspiel sparkle as the light comes on
+    add(music, R.SW_FLIP + 0.05 + j * 0.11, glock(m, 0.1), pan=-0.2 + 0.2 * j)
+# end card: big warm G chord, ringing strum + strings + glock
+strum(T['end'], GTR[0], 0.22, dur=DUR - T['end'], bright=0.6)
+add(music, T['end'], strings([55, 59, 62, 67, 71], DUR - T['end'], vel=0.14, att=0.5, bright=2600))
+add(music, T['end'], bass(43 + 12, DUR - T['end'], 0.15))
+for j, m in enumerate([79, 83, 86, 91]):
+    add(music, T['end'] + 0.3 + j * 0.18, glock(m, 0.08), pan=-0.3 + 0.2 * j)
+music = reverb(music, wet=0.28, length=2.3, key='hall')
 
 # ------------------------------------------------------------------ SFX
 amb = lp(rng.normal(0, 1, (int(SR * R.SW_END), 2)), 400) * 0.05            # quiet night room before the switch
@@ -183,7 +265,7 @@ env = np.abs(vo).max(axis=1)
 rel = int(0.4 * SR)
 smooth = signal.lfilter([1.0 / rel], [1, -(1 - 1.0 / rel)], env)
 lvl = np.clip(smooth / (smooth.max() + 1e-9) * 4.0, 0, 1)
-bed = music * 0.8 * (1 - 0.62 * lvl)[:, None] + sfx * 0.9 * (1 - 0.35 * lvl)[:, None]
+bed = music * 1.05 * (1 - 0.72 * lvl)[:, None] + sfx * 0.9 * (1 - 0.35 * lvl)[:, None]
 mix = bed + vo * 1.5
 mix = np.tanh(mix * 1.05) / 1.05
 fade = np.ones(N)
@@ -193,5 +275,6 @@ fade[:int(0.05 * SR)] = np.linspace(0, 1, int(0.05 * SR))
 mix *= fade[:, None]
 mix /= max(1e-6, np.abs(mix).max()) / 0.89
 os.makedirs(f'{R.S}/audio', exist_ok=True)
+wavfile.write(f'{R.S}/audio/music_stem.wav', SR, (music / max(1e-6, np.abs(music).max()) * 0.9 * 32767).astype(np.int16))
 wavfile.write(f'{R.S}/audio/mix_raw.wav', SR, (mix * 32767).astype(np.int16))
 print('wrote', f'{R.S}/audio/mix_raw.wav')

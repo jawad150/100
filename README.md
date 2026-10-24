@@ -12,7 +12,7 @@ Other website photos: the family at the front door (hook), "Emergency – a calm
 
 Transitions: light burst, blob wipes, heart iris, split slides, 3D card flips, room dives and the HOME fly-through. Captions are sticker-box captions that pop in word by word.
 
-Sound: a plucked-piano groove with a sound on every animation, and the same calm male voiceover as version 1 with a gentle fade-out.
+Sound: a warm, heartfelt acoustic track (strummed guitar, felt piano, strings, glockenspiel, light claps). It builds through the dollhouse dives, drops to tender strings for the arrival and swells into the end card. There is a sound on every animation, and the same calm male voiceover as version 1 with a gentle fade-out.
 
 **Final:** [`reel/organic_fostering/organic_fostering_leave_the_light_on_v2.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on_v2.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on_v2_share.mp4). Pipeline: `pipeline_lo2/` (`blender_lo2.py`, `reel_lo2.py`, `audio_lo2.py`, `render_lo2.py`).
 
