@@ -1,3 +1,19 @@
+# Organic Fostering — "Leave the Light On"
+
+A 30 s vertical reel about emergency fostering on a rainy night, following the "Leave the Light On" concept. It is a cinematic motion-graphics cut. Scenes:
+- A Blender 3D drone push down a rainy row of red-brick terraced houses, where one porch light clicks on.
+- A 9:47pm call on a 3D phone in a warm kitchen.
+- A "getting ready" montage (OF footage) with a ticking clock chip and a live "Tonight's checklist" card.
+- The arrival, using the brand key visual in 2.5D parallax with its neon heart glowing and the carer's words as subtitles.
+- A 3D clay payoff: tiny pink wellies beside big slippers by the radiator.
+- A 3D rise from the porch into the rain, then the gradient end card.
+
+Rain and lens drops run throughout, with word-by-word highlighted captions. The voiceover is a calm, warm British male voice (bm_george/bm_lewis/am_michael blend), phrase-paced with a gentle fade-out. The end card carries the safeguarding note "AI-generated imagery. Not a real child."
+
+**Final:** [`reel/organic_fostering/organic_fostering_leave_the_light_on.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_leave_the_light_on_share.mp4). Pipeline: `pipeline_lo/` (`blender_lo.py`, `vo_lo.py`, `reel_lo.py`, `audio_lo.py`, `render_lo.py`).
+
+---
+
 # IC London — "Three CV Mistakes" (version 2, sample-inspired)
 
 A 30 s vertical reel that takes ideas from the client's sample edit and makes them its own. It is a cinematic, footage-led cut of IC London's website photography with slow pushes and a cool filmic grade. Other elements:
