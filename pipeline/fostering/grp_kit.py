@@ -468,6 +468,19 @@ class Captions:
             cuts = []
             for k in range(1, n):
                 j = int(np.argmin(np.abs(cum - k * n_chars / n)))
+                # prefer the nearby boundary with the longest pause (a page should not flip right after a word
+                # has popped on), as long as neither side grows past max_chars by much
+                best, best_gap = j, -1.0
+                for jj in (j - 1, j, j + 1):
+                    if not (0 <= jj < len(ph) - 1):
+                        continue
+                    left = cum[jj] - (cum[cuts[-1] - 1] if cuts else 0)
+                    if left > max_chars * 1.25:
+                        continue
+                    gap = ph[jj + 1][1] - ph[jj][1]
+                    if gap > best_gap + 0.06:
+                        best, best_gap = jj, gap
+                j = best
                 if j + 1 < len(ph) and (not cuts or j + 1 > cuts[-1]):
                     cuts.append(j + 1)
             prev_j = 0

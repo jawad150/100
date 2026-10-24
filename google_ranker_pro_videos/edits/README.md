@@ -27,7 +27,7 @@ Six finished 9:16 testimonials for **Google Ranker Pro** (googlerankerpro.com). 
 
 ### Leam Taxis
 - **Desk:** a "taxi Leamington Spa" search and the live site.
-- **Monitor:** the green monitor is keyed and replaced with a calls report. His Google Business Profile calls (114, May–Oct 2026) are drawn as a running total that draws on under his finger as he traces it.
+- **Monitor:** the green monitor is keyed and replaced with a calls report. His Google Business Profile calls (114, May–Oct 2026) are drawn as a running total that draws on under his finger as he traces it. The counters step through the real monthly totals only, never an in-between number.
 - **Selfie:** a window with the real site, the airports strip and the calls total.
 
 ### York Cars
@@ -37,6 +37,7 @@ Six finished 9:16 testimonials for **Google Ranker Pro** (googlerankerpro.com). 
 ### Golden Line Taxis
 - **Before:** the green laptop shows an *illustrated* dated "before" site. It is labelled "BEFORE · illustration".
 - **After:** on "Then Google Ranker Pro rebuilt it", a before/after divider wipes to the real site. The site then lifts into a window, and the real mobile site shows "book in two taps".
+- **Tagline removed:** the live site's own hero tagline, "No.1 Taxi Hire & Airport Transfer Company in Warwick", is painted out of the captures (`now_*_notag.png`). It would read as a ranking claim, and nothing backs it. The end card says so.
 - **Close-up:** Search Console figures and the top searches.
 
 ### Coventry Airport Taxis 247
@@ -48,8 +49,8 @@ Six finished 9:16 testimonials for **Google Ranker Pro** (googlerankerpro.com). 
 ### Zentro
 - **Opening:** the question "How was working with Google Ranker Pro?"
 - **Middle:** Google Ranker Pro's own promises (no jargon, no long-term contracts, transparent reporting).
-- **Then:** Zentro's real repair and Business IT pages.
-- **Close:** "Get your free SEO audit". No figures are shown, because none were available.
+- **Then:** Zentro's real repair and Business IT pages. These carry the site's own service terms, such as the 90-day warranty.
+- **Close:** "Get your free SEO audit". No performance figures are shown, because none were available.
 
 ## What is real in the graphics
 
@@ -82,7 +83,9 @@ Six finished 9:16 testimonials for **Google Ranker Pro** (googlerankerpro.com). 
 
 **All six**
 - Graphics sit in clear space or behind the speaker (person mattes), never over a face.
-- Captions are word-timed. Speech-recognition slips are corrected, for example "Google ran GoPro" → Google Ranker Pro, "Spey" → Spa, "cap" → cab, and "inquiries" → enquiries.
+- Captions are word-timed and checked against the voice. Speech-recognition slips are corrected, for example "Google ran GoPro" → Google Ranker Pro, "cap" → cab, and "inquiries" → enquiries.
+- **Coventry:** a generated background voice babbles under the control-room shot. It is dipped 12 dB.
+- **Organic Fostering:** a generated phrase was garbled ("…and uoating for Manchester"). It is cut out of both picture and sound.
 
 ## Before you publish: claims that need evidence
 
@@ -91,7 +94,7 @@ The voices and faces are AI re-creations from the scripts. Under UK advertising 
 | Video | Lines to verify |
 |---|---|
 | Organic Fostering | "rebuilt our site, fixed the technical issues, got our local profile working for Manchester" (confirm this was Google Ranker Pro's work); "page one for the searches that matter"; "real enquiries every week". |
-| Leam Taxis | "this is our Search Console … see these clicks": the screen shows **Business Profile calls**, since we have no Search Console export for Leam. "Flatline, all of last year": no 2025 data was supplied. "Number one for taxis in Leamington Spa" needs a dated ranking screenshot. "The phone's ringing all day". |
+| Leam Taxis | "this is our Search Console … see these clicks": the screen shows **Business Profile calls**, since we have no Search Console export for Leam. "Flatline, all of last year": no 2025 data was supplied. "Number one for taxis in Leamington Spa" needs a dated ranking screenshot. "The phone's ringing all day". **Mispronounced town:** the generated voice says "Leamington *Spey*", rhyming with "day". The caption says "Spa". Regenerate that line before publishing. |
 | York Cars | "typed taxi York into Google … number one", "years buried on page three", "right to the top": no ranking data at all. Your notes asked for a results-page mock-up and a "#1" pop-up. I left both out because they would show a ranking we can't prove. Send a dated ranking screenshot and I'll add it. |
 | Golden Line Taxis | "slow, broken on phones, nobody could find it" (the before site is an illustration); "online bookings … now it's our busiest channel" (no booking data). The generated voice sounds like "business channel" here; the caption says "busiest". Consider regenerating that line. |
 | Coventry Airport Taxis 247 | "Since Google Ranker Pro took over our SEO, we've had to add cars just to keep up" (no fleet or booking data). |

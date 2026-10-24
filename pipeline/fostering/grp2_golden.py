@@ -47,8 +47,10 @@ F.GRADES['golden_room'] = dict(wb=(1.015, 1.0, 0.985), exposure=0.02, contrast=1
 GL = lambda *p: G.site('goldenlinetaxiswarwick', *p)            # noqa: E731
 BEFORE_D = GL('before_mock', 'before_desktop.png')
 BEFORE_M = GL('before_mock', 'before_mobile.png')
-AFTER_D = GL('now_desktop.png')
-AFTER_M = GL('now_mobile.png')
+# the live site's hero tagline ('No.1 Taxi Hire & Airport Transfer Company in Warwick') is painted out: it would
+# read as a ranking claim in a Google Ranker Pro testimonial and nothing backs it (noted in the end-card fine print)
+AFTER_D = GL('now_desktop_notag.png')
+AFTER_M = GL('now_mobile_notag.png')
 LOGO = GL('logo.png')
 URL = 'goldenlinetaxiswarwick.co.uk'
 
@@ -130,6 +132,23 @@ def _region3():
     return cv2.GaussianBlur(m, (0, 0), 3)
 
 
+@functools.lru_cache(maxsize=1)
+def _kb_mask():
+    m = np.zeros((K.H, K.W), np.float32)
+    cv2.fillConvexPoly(m, np.array([[100, 1330], [470, 1290], [600, 1400], [170, 1470]], np.int32), 1.0)
+    return cv2.GaussianBlur(m, (0, 0), 12)
+
+
+def _despill_keyboard(fr):
+    """The keyboard under the (formerly green) screen still glows green: pull G down to max(R, B) there."""
+    m = _kb_mask()[1250:1520, 60:660]
+    sub = fr[1250:1520, 60:660].astype(np.float32)
+    g2 = np.minimum(sub[..., 1], np.maximum(sub[..., 0], sub[..., 2]) + 3)
+    out = fr.copy()
+    out[1250:1520, 60:660, 1] = np.clip(sub[..., 1] * (1 - m) + g2 * m + 0.5, 0, 255).astype(np.uint8)
+    return out
+
+
 def prep(fr, fi):
     t = fi / 24.0
     if fi <= 216:
@@ -137,6 +156,7 @@ def prep(fr, fi):
         return GB.green_replace(fr, q, desktop_content(t))
     if fi <= 389:
         fr = GB.green_replace(fr, Q2, desktop_content(t))
+        fr = _despill_keyboard(fr)
         on = K.ramp(t, T_REBUILD + 0.5, T_REBUILD + 0.9)
         fr = GB.paste_quad(fr, QP, _phone_dark(), feather=1.0, blur=0.4)
         if on > 0:
@@ -153,7 +173,7 @@ CLIP = GB.Clip('golden', N_SRC, [
 ], 'golden_room', prep=prep)
 
 WORDS = G.load_words('golden', fixes={29: 'cab', 43: 'busiest'})
-CAP = B.captions(WORDS, max_chars=26)
+CAP = B.captions(WORDS, max_chars=30, breaks=(20, 35))
 
 
 # ---------------------------------------------------------------------------------------------- pieces
@@ -345,16 +365,16 @@ def draw(t):
         booking_card(cv, t)
         gsc_card(cv, t)
         queries_card(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8)])
         before_tags(cv, t)
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD))
-        CAP.draw(cv, t)
+        CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 2.4, 17.9)
     B.ai_label(cv, t, solid=t >= T_END_CARD,
                text='AI re-creation · old site illustrated' if t < T_REBUILD + 0.4 else
                'AI re-creation · real client website')
     B.end_card(cv, t, T_END_CARD, 'Golden Line Taxis', URL,
-               extra_fine=('The “before” website is an illustration.',
+               extra_fine=('The “before” website is an illustration; one site tagline removed.',
                            'Search data: Google Search Console, Jul–Oct 2026.'))
     return np.ascontiguousarray(cv, dtype=np.float32)
 

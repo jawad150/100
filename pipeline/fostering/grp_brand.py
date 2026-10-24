@@ -245,7 +245,8 @@ def end_backdrop(cv, t, t0, footage_last=None, dur=0.5):
     base = cv
     if k > 0.02:
         base = K.gblur(base, 18 * k)
-    return base * (1 - 0.9 * k) + backdrop() * (0.9 * k)
+    kk = k ** 2.2                                   # linear-light mix: keep the veil perceptually even
+    return base * (1 - 0.9 * kk) + backdrop() * (0.9 * kk)
 
 
 def _swoosh(w, h=26, color=ORANGE, thick=7.0):
@@ -277,16 +278,16 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026'):
     # logo
     lu = K.spring(tt - 0.10, 2.2, 0.62) if tt > 0.10 else 0.0
     lg = logo(214)
-    K.draw(cv, lg, 540, 560 - 30 * (1 - lu), scale=0.9 + 0.1 * lu, opacity=min(1.0, lu * 1.4))
+    K.draw(cv, lg, 540, 420 - 30 * (1 - lu), scale=0.9 + 0.1 * lu, opacity=min(1.0, lu * 1.4))
     # promise line from the site hero
     hu = K.ramp(tt, 0.35, 0.75, 'out_cubic')
-    G.draw_text(cv, 'Your next customer', 540, 792 + 16 * (1 - hu), 62, FB, INK, 'ms', opacity=hu)
+    G.draw_text(cv, 'Your next customer', 540, 652 + 16 * (1 - hu), 62, FB, INK, 'ms', opacity=hu)
     w1 = G.measure('is ', 62, FB)
     w2 = G.measure('searching.', 62, FB)
     x0 = 540 - (w1 + w2) / 2
     hu2 = K.ramp(tt, 0.48, 0.88, 'out_cubic')
-    G.draw_text(cv, 'is ', x0, 868 + 16 * (1 - hu2), 62, FB, INK, 'ls', opacity=hu2)
-    G.draw_text(cv, 'searching.', x0 + w1, 868 + 16 * (1 - hu2), 62, FB, BLUE, 'ls', opacity=hu2)
+    G.draw_text(cv, 'is ', x0, 728 + 16 * (1 - hu2), 62, FB, INK, 'ls', opacity=hu2)
+    G.draw_text(cv, 'searching.', x0 + w1, 728 + 16 * (1 - hu2), 62, FB, BLUE, 'ls', opacity=hu2)
     su = K.EASE['inout_cubic'](K.ramp(tt, 0.75, 1.15, 'linear'))
     if su > 0.01:
         sw = int(w2 + 20)
@@ -294,38 +295,38 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026'):
             _SWOOSH[sw] = _swoosh(sw)
         sp = _SWOOSH[sw]
         m = G.wipe(sp.shape[1], sp.shape[0], su, angle=0, soft=0.05)
-        K.draw(cv, G.masked(sp, m), x0 + w1 - 10, 884, anchor=(0, 0))
+        K.draw(cv, G.masked(sp, m), x0 + w1 - 10, 744, anchor=(0, 0))
     # client
     cu = K.spring(tt - 0.65, 2.4, 0.62) if tt > 0.65 else 0.0
     if cu > 0:
         cw, ch = 780, 150
         pnl, pad = card(cw, ch, 30, shadow=0.25)
-        y = 1050 + 24 * (1 - cu)
+        y = 910 + 24 * (1 - cu)
         op = min(1.0, cu * 1.5)
         K.draw(cv, pnl, 540, y, scale=0.94 + 0.06 * cu, opacity=op)
         G.draw_text(cv, 'CLIENT', 540, y - 34, 22, FS, BODY, 'ms', opacity=op, tracking=0.22)
         G.draw_text(cv, client, 540, y + 14, 40, FB, INK, 'ms', opacity=op)
         G.draw_text(cv, url, 540, y + 56, 28, FM, ACTION, 'ms', opacity=op)
     # CTA (the site's own call to action)
-    bu = K.spring(tt - 0.95, 2.4, 0.6) if tt > 0.95 else 0.0
+    bu = K.spring(tt - 0.8, 2.4, 0.6) if tt > 0.8 else 0.0
     if bu > 0:
         txt = 'Get your free SEO audit'
         tw = G.measure(txt, 38, FS)
         bw, bh = int(tw + 150), 104
         btn, pad = G.panel(bw, bh, 24, fill=ORANGE, fill_a=1.0, border_a=0.0, shadow=0.35, shadow_blur=18,
                            shadow_dy=10)
-        y = 1262
+        y = 1122
         op = min(1.0, bu * 1.5)
         K.draw(cv, btn, 540, y, scale=0.88 + 0.12 * bu, opacity=op)
         G.draw_text(cv, txt, 540 - 22, y + 13, 38, FS, INK, 'ms', opacity=op)
         K.draw(cv, ui.icon('arrow_right', 34, color=INK, stroke=3.0), 540 + tw / 2 + 12, y, opacity=op)
         G.draw_text(cv, 'googlerankerpro.com', 540, y + 118, 40, FB, ACTION, 'ms',
-                    opacity=K.ramp(tt, 1.15, 1.45))
-    fp = K.ramp(tt, 1.35, 1.7)
+                    opacity=K.ramp(tt, 0.95, 1.2))
+    fp = K.ramp(tt, 1.0, 1.3)
     lines = ['AI re-creation of the client’s testimonial.', 'Client website as captured %s.' % captured] + \
         list(extra_fine) + ['Results vary by business.']
     for k, ln in enumerate(lines):
-        G.draw_text(cv, ln, 540, 1520 + 36 * k, 25, FM, BODY, 'ms', opacity=fp)
+        G.draw_text(cv, ln, 540, 1330 + 34 * k, 25, FM, BODY, 'ms', opacity=fp)
 
 
 def prewarm():

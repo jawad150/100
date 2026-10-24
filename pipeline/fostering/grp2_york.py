@@ -39,8 +39,9 @@ SITE = lambda *p: G.site('yorkcars', *p)            # noqa: E731
 LOGO = SITE('logo.png')
 URL = 'yorkcars.co.uk'
 
-WORDS = G.load_words('york', fixes={6: '“taxi', 7: 'York”'})
-CAP = B.captions(WORDS, max_chars=26, breaks=(8,))
+WORDS = G.load_words('york', fixes={6: '“taxi', 7: 'York”'},
+                     retime={0: (0.96, 1.12), 10: (4.86, 5.02), 28: (13.58, 13.70)})   # checked against the voice
+CAP = B.captions(WORDS, max_chars=28, breaks=(8,))
 
 
 # ---------------------------------------------------------------------------------------------- pieces
@@ -107,9 +108,9 @@ def draw(t):
         phone(cv, t)
         grp(cv, t)
         chips(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8)])
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD))
-        CAP.draw(cv, t)
+        CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 2.6, T_END_CARD)
     B.ai_label(cv, t, solid=t >= T_END_CARD)
     B.end_card(cv, t, T_END_CARD, 'York Cars', URL)

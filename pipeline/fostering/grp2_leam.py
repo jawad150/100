@@ -94,8 +94,10 @@ def front_x(fi):
 
 
 def total_at(x):
-    xs = [pt(0)[0] - 40] + [pt(k)[0] for k in range(6)]
-    return float(np.interp(x, xs, [0] + CUM))
+    """Running total shown at reveal front x: the last REAL monthly value the line has reached (0 before May).
+    (No interpolated in-between totals: only the six Business Profile figures are shown.)"""
+    reached = [CUM[k] for k in range(6) if x >= pt(k)[0] - 2]
+    return float(reached[-1]) if reached else 0.0
 
 
 def _font(name, px):
@@ -217,9 +219,13 @@ def page_at(fi, t):
         cv2.circle(out, (int(xx), int(yy)), 14, (255, 255, 255), -1, cv2.LINE_AA)
         cv2.circle(out, (int(xx), int(yy)), 10, _hex(KK)[:3], -1, cv2.LINE_AA)
         n = int(round(total_at(min(fx, pt(5)[0]))))
-        if t < 15.65:
+        if t < 15.65 and n > 0:
             lab = _label('%d calls' % n, 22, '#FFFFFF', KK)
-            _blend(out, lab, xx - lab.shape[1] - 26, yy - lab.shape[0] - 6)
+            lx, ly = xx - lab.shape[1] - 26, yy - lab.shape[0] - 6
+            # keep the tag off the KPI block (page x 356-842, y 112-330): put it below-right of the dot instead
+            if lx < 842 and lx + lab.shape[1] > 356 and ly < 330:
+                lx, ly = xx + 26, yy + 20
+            _blend(out, lab, lx, ly)
     # end: the total callout above October
     if t >= 15.7:
         k = K.ramp(t, 15.7, 16.0)
@@ -278,7 +284,9 @@ def prep(fr, fi):
         th = _thin_marks(fr, q)
         return GB.green_replace(fr, q, page_at(392, 16.5), extra_alpha=th, blur=0.8 + 0.6 * (fi - 399),
                                 black=16, white=236)
-    if fi > 406:
+    if 406 < fi <= 432:
+        return _swing_fill(fr, fi)
+    if fi > 432:
         # defocused sliver at the right edge: a soft page with the line, laid over the green's extent
         g = fr[..., 1].astype(np.int32) - np.maximum(fr[..., 0], fr[..., 2]).astype(np.int32)
         ys, xs = np.where(g[:, 700:] > 30)
@@ -313,6 +321,40 @@ def prep(fr, fi):
 
 
 @functools.lru_cache(maxsize=1)
+def _swing_page():
+    return cv2.GaussianBlur(page_at(392, 16.5), (0, 0), 7)
+
+
+def _swing_fill(fr, fi):
+    """Camera whip (frames 407-432): the monitor is motion-blurred and partly off frame, so the whole green area
+    (and the blurred made-up line inside it) is replaced with a blurred page laid over the green's extent; only
+    the person (RVM matte) stays in front."""
+    g = fr[..., 1].astype(np.int32) - np.maximum(fr[..., 0], fr[..., 2]).astype(np.int32)
+    gm = (g > 22).astype(np.uint8)
+    gm = cv2.morphologyEx(gm, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    pts = cv2.findNonZero(gm)
+    if pts is None or len(pts) < 300:
+        return fr
+    x, y, w, h = cv2.boundingRect(pts)
+    # the visible green is the left part of the display: extend the page to the right, past the frame edge
+    q = [[x - 0.05 * w, y], [x + max(w * 1.6, 1.4 * h), y + 0.05 * h], [x + max(w * 1.6, 1.4 * h), y + h * 1.05],
+         [x - 0.05 * w, y + h]]
+    hull = np.zeros_like(gm)
+    cv2.fillConvexPoly(hull, cv2.convexHull(pts), 1)
+    hull = cv2.dilate(hull, np.ones((9, 9), np.uint8)).astype(np.float32)
+    pa = G.person_alpha_u8('leam2', fi)
+    notme = 1.0 if pa is None else 1 - cv2.GaussianBlur(pa.astype(np.float32) / 255.0, (0, 0), 1.5)
+    extra_full = np.clip(cv2.GaussianBlur(hull, (0, 0), 4) * 1.2, 0, 1) * notme
+    qq = np.float32(q)
+    bx0 = int(max(0, np.floor(qq[:, 0].min()) - 3))
+    by0 = int(max(0, np.floor(qq[:, 1].min()) - 3))
+    bx1 = int(min(K.W, np.ceil(qq[:, 0].max()) + 4))
+    by1 = int(min(K.H, np.ceil(qq[:, 1].max()) + 4))
+    return GB.green_replace(fr, q, _swing_page(), blur=0.0, black=16, white=232, shade=False,
+                            extra_alpha=extra_full[by0:by1, bx0:bx1])
+
+
+@functools.lru_cache(maxsize=1)
 def _defocused_page():
     p = page_at(392, 16.5)[:, 520:1100]
     return cv2.GaussianBlur(p, (0, 0), 9)
@@ -327,11 +369,17 @@ WORDS = G.load_words('leam2', fixes={4: 'Search', 5: 'Console.', 17: 'Ranker', 1
 CAP = B.captions(WORDS, max_chars=26)
 
 # selfie section: picture-in-picture window with cards below
-PIP_SRC = (60, 0, 960, 1300)
+PIP_SRC = (60, 300, 960, 1300)          # forehead to below the chin
 PIP_S = 0.64
 PIP_W, PIP_H = int(PIP_SRC[2] * PIP_S), int(PIP_SRC[3] * PIP_S)
 PIP_X, PIP_Y = (1080 - PIP_W) // 2, 128
 T_PIP_IN, T_PIP_OUT = 18.6, 26.3
+
+
+def pip_surround(t):
+    """How far the surround has dissolved from the footage to the brand plate (0..1)."""
+    p = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
+    return K.EASE['inout_cubic'](K.clamp(p / 0.4))
 
 
 def pip_amount(t):
@@ -350,7 +398,10 @@ def pip_sprite(fi, w_out, h_out):
 
 
 def _pip(fi, p):
-    out = B.backdrop().copy()
+    # dissolve the surround (footage -> brand plate) over the first part of the move instead of cutting to it
+    a = K.EASE['inout_cubic'](K.clamp(p / 0.4))
+    out = CLIP.footage(fi).copy()
+    out[..., :3] = out[..., :3] * (1 - a) + B.backdrop()[..., :3] * a
     c, z = CLIP.tf(fi)
     vw, vh = 1080 / z, 1920 / z
     x0 = c[0] * 1080 - vw / 2
@@ -491,18 +542,19 @@ def draw(t):
         site_card(cv, t)
         grp(cv, t)
         calls_card(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8), (T_PIP_IN, T_PIP_OUT + 0.6)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8), (T_PIP_IN, T_PIP_OUT + 0.6)])
         hero_card(cv, t)
         airports_card(cv, t)
         ringing_card(cv, t)
         G.bottom_shade(cv, 0.42, 1330, opacity=(1 - p) * (1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD)))
-        if p > 0.5:
-            CAP.draw(cv, t, color=B.INK, shadow=0.0)
+        cap_k = 1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine')
+        if pip_surround(t) > 0.5:
+            CAP.draw(cv, t, color=B.INK, shadow=0.0, opacity=cap_k)
         else:
-            CAP.draw(cv, t)
+            CAP.draw(cv, t, opacity=cap_k)
         if 26.9 <= t < T_END_CARD:
             k = min(K.ramp(t, 26.9, 27.8, 'inout_sine'), 1 - K.ramp(t, T_END_CARD - 0.7, T_END_CARD, 'inout_sine'))
-            K.light_leak(cv, t, colors=[G.lin('#FFE7A3'), G.lin(YEL)], strength=0.16 * k, seed=5, speed=0.6)
+            K.light_leak(cv, t, colors=[G.lin('#FFD9B0'), G.lin('#FFC27A')], strength=0.07 * k, seed=5, speed=0.6)
         B.logo_bug(cv, t, 2.6, T_END_CARD)
     B.ai_label(cv, t, solid=(T_PIP_IN + 0.3 < t < T_PIP_OUT + 0.3) or t >= T_END_CARD,
                text='AI re-creation · real client data')

@@ -78,6 +78,12 @@ T_PIP_IN, T_PIP_OUT = 16.2, 23.95
 
 
 # ---------------------------------------------------------------------------------------------- PiP
+def pip_surround(t):
+    """How far the surround has dissolved from the footage to the brand plate (0..1)."""
+    p = pip_amount(t) if T_PIP_IN <= t < T_PIP_OUT + 0.6 else 0.0
+    return K.EASE['inout_cubic'](K.clamp(p / 0.4))
+
+
 def pip_amount(t):
     return min(K.EASE['inout_cubic'](K.ramp(t, T_PIP_IN, T_PIP_IN + 0.6, 'linear')),
                1 - K.EASE['inout_cubic'](K.ramp(t, T_PIP_OUT, T_PIP_OUT + 0.6, 'linear')))
@@ -94,7 +100,10 @@ def pip_sprite(fi, w_out, h_out):
 
 
 def _pip(fi, p):
-    out = B.backdrop().copy()
+    # dissolve the surround (footage -> brand plate) over the first part of the move instead of cutting to it
+    a = K.EASE['inout_cubic'](K.clamp(p / 0.4))
+    out = CLIP.footage(fi).copy()
+    out[..., :3] = out[..., :3] * (1 - a) + B.backdrop()[..., :3] * a
     c, z = CLIP.tf(fi)
     vw, vh = 1080 / z, 1920 / z
     x0 = c[0] * 1080 - vw / 2
@@ -195,11 +204,11 @@ def search(cv, t, t0=6.0, t1=8.4):
     shake = 0.0
     if t > 7.5:
         shake = 10 * math.sin((t - 7.5) * 38) * math.exp(-(t - 7.5) * 6)
-    B.search_bar(cv, t, 'foster agency Manchester', t0, t1, cx=540 + shake, cy=176, w=780, h=100, type_dur=1.0,
+    B.search_bar(cv, t, 'foster agency Manchester', t0, t1, cx=540 + shake, cy=215, w=780, h=100, type_dur=1.0,
                  size=36)
 
 
-def phone_card(cv, t, t0=8.6, t1=9.95):
+def phone_card(cv, t, t0=8.6, t1=9.80):
     if not (t0 <= t < t1):
         return
     u = K.spring(t - t0, 2.6, 0.55)
@@ -384,15 +393,16 @@ def draw(t):
         grp(cv, t)
         rebuild_card(cv, t)
         tech_chips(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8), (T_PIP_IN, T_PIP_OUT + 0.6)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8), (T_PIP_IN, T_PIP_OUT + 0.6)])
         manchester_card(cv, t)
         guides_card(cv, t)
         enquiry_card(cv, t)
         G.bottom_shade(cv, 0.42, 1330, opacity=(1 - p) * (1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD)))
-        if p > 0.5:
-            CAP.draw(cv, t, color=B.INK, shadow=0.0)
+        cap_k = 1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine')
+        if pip_surround(t) > 0.5:
+            CAP.draw(cv, t, color=B.INK, shadow=0.0, opacity=cap_k)
         else:
-            CAP.draw(cv, t)
+            CAP.draw(cv, t, opacity=cap_k)
         if 24.6 <= t < T_END_CARD:
             k = min(K.ramp(t, 24.6, 25.6, 'inout_sine'), 1 - K.ramp(t, T_END_CARD - 0.7, T_END_CARD, 'inout_sine'))
             K.light_leak(cv, t, colors=[G.lin(PEACH), G.lin(ORA)], strength=0.18 * k, seed=3, speed=0.6)

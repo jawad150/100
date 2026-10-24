@@ -55,7 +55,7 @@ WORDS = G.load_words('zentro', fixes={0: 'How', 4: 'them?', 5: 'Honestly?', 6: '
                              10: (8.04, 8.30), 11: (8.34, 8.72), 12: (9.20, 9.32), 19: (10.88, 11.0),
                              31: (13.64, 13.74), 37: (15.80, 16.06), 38: (16.12, 16.44), 39: (16.48, 16.86),
                              40: (17.32, 17.46), 44: (19.58, 19.70), 49: (20.78, 20.92)})
-CAP = B.captions(WORDS, max_chars=32, breaks=(28, 34))
+CAP = B.captions(WORDS, max_chars=32, breaks=(28, 34, 52))   # 'Google Ranker Pro.' on its own page
 
 
 # ---------------------------------------------------------------------------------------------- pieces
@@ -145,7 +145,7 @@ HERO_CROP = (90, 140, 620, 480)             # now_desktop.png: hero headline, ti
 BIT_CROP = (945, 935, 395, 248)             # now_desktop_full.png: 'Business IT Support' card, 'Book IT Enquiry'
 
 
-def site_repair(cv, t, t0=15.62, t1=17.32):
+def site_repair(cv, t, t0=15.62, t1=17.18):
     """'More repair bookings': Zentro's real homepage hero with its 'Book a Repair' button, top left."""
     crd = GB.site_card(SITE('now_desktop.png'), HERO_CROP, 560, URL)
     GB.card_in(cv, crd, t, t0, t1, 322, 450, rise=40, drift=(0, -10))
@@ -190,7 +190,7 @@ def draw(t):
         site_business(cv, t)
         grp(cv, t)
         cta(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8)])
         # shot 1: over his hands and the keyboard (the matte includes the hands), well below his face
         question(cv, t)
         client_card(cv, t)

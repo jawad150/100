@@ -47,9 +47,9 @@ CLIENT = 'Coventry Airport Taxis 247'
 
 # ASR start times checked against the audio envelope: 'Morning' starts at 2.04, 'This is the control room' at 11.0
 WORDS = G.load_words('coventry', fixes={8: '24/7', 9: None},
-                     retime={0: (2.04, 2.44), 15: (11.0, 11.12), 16: (11.16, 11.26), 17: (11.28, 11.42),
+                     retime={8: (5.46, 6.34), 10: (6.58, 6.82), 58: (28.92, 29.16), 0: (2.04, 2.44), 15: (11.0, 11.12), 16: (11.16, 11.26), 17: (11.28, 11.42),
                              18: (11.44, 11.74), 19: (11.76, 12.16), 29: (18.56, 18.72), 30: (18.92, 19.22)})
-CAP = B.captions(WORDS, max_chars=26, breaks=(3, 9, 44, 53))
+CAP = B.captions(WORDS, max_chars=26, breaks=(3, 9, 22, 44, 53))
 
 
 # ---------------------------------------------------------------------------------------------- pieces
@@ -84,7 +84,7 @@ def chips_24(cv, t, t1=7.45):
         B.draw_chip(cv, t, txt, x, y, t0, t1, icon=ic, size=32, anchor=a)
 
 
-def control_chip(cv, t, t0=10.95, t1=12.62):
+def control_chip(cv, t, t0=8.3, t1=12.62):
     """'This is the control room': a label on the free wall, top right."""
     B.draw_chip(cv, t, 'Control room', 770, 330, t0, t1, icon='pin', size=32)
 
@@ -166,7 +166,7 @@ def draw(t):
         chips_drivers(cv, t)
         grp(cv, t)
         data_card(cv, t)
-        CLIP.person_over(cv, t, skip=[(0, 0.8)])
+        CLIP.person_over(cv, t, skip=[(-1.0, 0.8)])
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 2.6, T_END_CARD)
@@ -194,7 +194,7 @@ def cues():
         dict(t=5.22, name='check_ding', gain_db=-12, pan=-0.3),
         dict(t=6.32, name='check_ding', gain_db=-13, pan=0.3, params=dict(pitch=1.06)),
         dict(t=c0, name='whip', gain_db=-6),
-        dict(t=10.97, name='ui_click', gain_db=-9, pan=0.4),
+        dict(t=8.32, name='ui_click', gain_db=-9, pan=0.4),
         dict(t=12.57, name='card_slide', gain_db=-6, pan=0.4),
         dict(t=12.9, name='shimmer', gain_db=-16, pan=0.4),
         dict(t=c1, name='whip', gain_db=-6),

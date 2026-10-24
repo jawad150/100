@@ -33,6 +33,8 @@ CLIPS = {'of': 'hf_20261024_062502', 'leam': 'hf_20261024_062503', 'york': 'hf_2
 # fade the production sound after the last word: (start, end) in output seconds
 FADE = {'of': (28.36, 28.62), 'leam': (29.02, 29.3), 'york': (18.72, 19.0), 'golden': (24.86, 25.0),
         'coventry': (29.8, 30.0), 'zentro': (22.36, 22.8)}
+# dips (start, end, dB) on the production sound: generated background babble with no on-screen speaker
+DIP = {'coventry': [(7.85, 10.85, -12.0)]}
 # remap cuts (output t, source offset) as in the picture
 REMAP = {'of': [(15.85, 1.31)]}
 
@@ -105,6 +107,14 @@ def dialogue(name, dur):
     env = np.ones(n)
     env[a:b] = np.cos(np.linspace(0, np.pi / 2, b - a)) ** 2
     env[b:] = 0.0
+    for d0, d1, db in DIP.get(name, ()):
+        r = int(0.05 * SR)
+        a, b = int(d0 * SR), int(d1 * SR)
+        g = np.ones(n)
+        g[a:b] = A.undb(db)
+        g[a - r:a] = np.linspace(1, A.undb(db), r)
+        g[b:b + r] = np.linspace(A.undb(db), 1, r)
+        env = env * g
     st *= env[:, None]
     st *= A.undb(-16.0 - A.loudness(st))
     gl = A.limiter_gain(None, -8.5, pk=A.tp_envelope(st))

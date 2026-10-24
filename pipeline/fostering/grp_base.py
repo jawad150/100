@@ -40,6 +40,7 @@ class Clip:
             self.cuts.append((t_out, f))
         self.cuts.sort()
         self._fc, self._pc, self._gc = {}, {}, {}
+        self._end_t0 = None
 
     # ------------------------------------------------------------------ time
     def src_t(self, t):
@@ -120,7 +121,9 @@ class Clip:
 
     def person_over(self, cv, t, skip=()):
         """Speaker over the graphics behind them (skipped around transitions and in `skip` windows)."""
-        if self.near_cut(t) or any(a <= t < b for a, b in skip):
+        # t < 0: motion-blur sub-samples of frame 0 (the intro reveal); end card: the veil starts at end_t0
+        if t < 0 or (self._end_t0 is not None and t >= self._end_t0) or self.near_cut(t) \
+                or any(a <= t < b for a, b in skip):
             return
         fi = self.fi(t)
         if self.person_shots is not None and self.shot(fi) not in self.person_shots:
@@ -132,6 +135,7 @@ class Clip:
     # ------------------------------------------------------------------ plate + transitions
     def plate(self, t, transitions=None, t_end=None, end_t0=None):
         transitions = transitions or {}
+        self._end_t0 = end_t0
         fi = self.fi(t)
         cv = self.footage(fi).copy()
         tq = round(t * FPS) / FPS
@@ -251,7 +255,10 @@ def green_replace(fr, quad, content, k_lo=12.0, k_hi=58.0, black=14.0, white=238
         s = np.clip(gl / max(ref, 1), 0.82, 1.08)
         warped = warped * s[..., None]
     fg = sub.copy()
-    fg[..., 1] = np.minimum(g, np.maximum(r, b) + 3)                       # despill
+    # despill near the key: navy / grey edges take G down to the R-B mean, warm or yellow edges only to max(R, B)
+    zone = cv2.GaussianBlur((k > 0.01).astype(np.float32), (0, 0), 3.0) > 0.01
+    lim = np.where(r > b + 40, np.maximum(r, b), (r + b) * 0.5) + 3
+    fg[..., 1] = np.where(zone, np.minimum(g, lim), np.minimum(g, np.maximum(r, b) + 3))
     km = k[..., None]
     out[y0:y0 + bh, x0:x0 + bw] = fg * (1 - km) + warped * km
     return np.clip(out + 0.5, 0, 255).astype(np.uint8)
