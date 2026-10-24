@@ -150,7 +150,7 @@ class Clip:
                 else:
                     cv[:] = self.footage(self.fi(tc - 0.05)) * (1 - m) + cv * m
         if end_t0 is not None and t >= end_t0:
-            cv = B.end_backdrop(cv, t, end_t0, self.footage(self.n - 1 if t_end is None else self.fi(t_end)))
+            cv = B.end_backdrop(cv, t, end_t0)
         return cv
 
 

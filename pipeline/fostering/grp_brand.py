@@ -236,12 +236,13 @@ def captions(words, max_chars=28, breaks=(), y=1640, size=60):
                       max_chars=max_chars, breaks=breaks)
 
 
-def end_backdrop(cv, t, t0, footage_last, dur=0.5):
-    """Blur the held last frame and fade the brand plate over it (returns the new canvas)."""
+def end_backdrop(cv, t, t0, footage_last=None, dur=0.5):
+    """Blur the current footage (which holds its last frame once the clip ends) and fade the brand plate over it.
+    (footage_last is unused: swapping to the clip's last frame here caused a jump and a motion-blur ghost.)"""
     if t < t0:
         return cv
     k = K.EASE['inout_cubic'](K.ramp(t, t0, t0 + dur, 'linear'))
-    base = footage_last.copy()
+    base = cv
     if k > 0.02:
         base = K.gblur(base, 18 * k)
     return base * (1 - 0.9 * k) + backdrop() * (0.9 * k)
