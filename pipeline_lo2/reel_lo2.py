@@ -570,7 +570,7 @@ def sc_end(t):
         c = framed(c, fill, m_arch(790, 1210, aw, ah), border=12)
     kh = e_out_back(prog(t, t0 + 0.6, t0 + 1.1), 1.8)      # ...with the glossy 3D heart over its corner
     if kh > 0.01:
-        draw(c, sprite_at('heart', ((t - t0) * 24) % 47), 600, 1470, scale=0.5 * kh)
+        draw(c, sprite_at('heart', ((t - t0) * 16) % max(1, len(files('heart')) - 1)), 600, 1470, scale=0.5 * kh)
     kb_ = prog(t, t0 + 0.8, t0 + 1.2)
     if kb_ > 0:
         p = pill('Start the conversation', PK, 38, pad_x=38, pad_y=20, fill=MAG, border=None, text_color=WHITE_)

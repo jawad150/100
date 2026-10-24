@@ -164,7 +164,7 @@ ON_FRAMES = [8, 32, 56, 80]                         # matches the four ready sho
 
 
 def house():
-    reset((800, 800), samples=18, transparent=True)
+    reset((800, 800), samples=12, transparent=True)
     world(lin('#F3E6D6'), 0.55)
     sc = bpy.context.scene
     shadow_catcher(40, 0.0)
