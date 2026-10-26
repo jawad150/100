@@ -1,3 +1,15 @@
+# P.S. Med Spa "Meet Jana" reel: captions, grade, minimal transitions
+
+A 43-second vertical reel (1080×1920, 23.976 fps) made from the supplied edit `Meet Jana.mov`, in the same style as the P.S. Med Spa reel:
+
+- two-line motion-graphic captions in brand red and black, with some words masked behind her
+- small word-by-word captions
+- the same color grade
+
+It has only three transitions (opening push, one whip, red light leak); the other cuts are hard cuts. It ends on her last line, because the delivered file's last 27 s are silent B-roll.
+
+**Video:** [`reel/jana/PS_MedSpa_Meet_Jana_1080x1920.mp4`](reel/jana/PS_MedSpa_Meet_Jana_1080x1920.mp4) (master) · [`reel/jana/PS_MedSpa_Meet_Jana_share.mp4`](reel/jana/PS_MedSpa_Meet_Jana_share.mp4) (share copy) · **Subtitles:** [`reel/jana/PS_MedSpa_Meet_Jana.srt`](reel/jana/PS_MedSpa_Meet_Jana.srt) · **How it's built:** [`pipeline/jana/README.md`](pipeline/jana/README.md)
+
 # Higgsfield Genjutsu — orange × black SaaS reel
 
 A 30-second vertical reel (1080×1920, 30 fps, with sound design). It shows a Higgsfield Genjutsu motion-transfer result and walks through how it was made, in a cinematic orange-and-black SaaS motion-graphics style.
