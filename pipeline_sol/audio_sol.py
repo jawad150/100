@@ -121,77 +121,244 @@ def scribble(dur=1.0, vel=0.1):
     return n * am * np.minimum(1, t / 0.05) * np.minimum(1, (dur - t) / 0.1) * vel
 
 
-# ------------------------------------------------------------------ music
-BPM = 124
+# ------------------------------------------------------------------ music: bright dance-pop groove (A major, 128 bpm)
+# piano offbeat stabs, octave-bouncing bass, a catchy pulse-synth hook, four-on-the-floor kick, open hats, claps,
+# sidechain pump. Muffled (low-passed) under the interview hook, full drop at "build your answer", breakdown for the
+# strong answer, big bright chord on the logo.
+LOGO_T = ph('cta', 1) + 0.6
+BPM = 128
 B = 60 / BPM
 BAR = 4 * B
-CH = [(35, [59, 62, 66]), (31, [59, 62, 67]), (38, [62, 66, 69]), (33, [61, 64, 69])]       # Bm G D A
-ARP = [0, 1, 2, 1, 2, 1, 0, 2]
-# hook + generic: tense pulse (sub + ticking hats + sparse piano)
-t = 0.15
-while t < T['three'] - 0.3:
-    q = int(round((t - 0.15) / (B / 2)))
-    add(music, t, hat(0.035 if q % 2 else 0.05), pan=0.25)
-    if q % 4 == 0:
-        add(music, t, sub(35 + 12, B * 1.8, 0.16))
-    if q % 8 == 0:
-        add(music, t, piano(71 if (q // 8) % 2 == 0 else 74, 1.4, 0.09), pan=-0.2)
-    t += B / 2
-add(music, R.T['generic'] + 0.05, strings([59, 62, 66], 3.0, vel=0.06, att=1.5, bright=1600))
-add(music, ph('three', 0) - 0.9, riser(0.85, 0.22))                       # into the build
-# build: from "three" to the CTA
-start = ph('three', 0) - 0.05
+CH = [(45, [69, 73, 76]), (40, [68, 71, 76]), (42, [69, 73, 78]), (38, [69, 74, 78])]      # A  E  F#m  D
+HOOK = [76, 78, 81, 78, 76, 73, 76, None, 74, 76, 78, 76, 73, 71, 73, None]               # 8ths over 2 bars
+
+
+def pulse(m, dur, vel=0.1, width=0.3):
+    t = tt(dur + 0.15)
+    f = mtof(m) * (1 + 0.004 * np.sin(2 * np.pi * 5.5 * t) * np.minimum(1, t / 0.15))
+    ph_ = np.cumsum(f) / SR % 1.0
+    x = np.where(ph_ < width, 1.0, -1.0) - (2 * width - 1)
+    x = lp(x, 3800, 2)
+    return x * np.minimum(1, t / 0.008) * np.where(t > dur, np.exp(-(t - dur) * 30), 1) * vel
+
+
+def stab(ms, vel=0.12):
+    out = None
+    for m in ms:
+        x = piano(m, 0.22, vel)
+        out = x if out is None else out[:len(x)] + x[:len(out)]
+    return out
+
+
+def open_hat(vel=0.06):
+    return hat(vel, open_=True)
+
+
+D0 = R.T['hook'] + 0.15                   # groove start
+DROP = ph('three', 0) - 0.05              # full drop
+BREAK0 = T['cta'] - 0.05                  # breakdown under the emblem snap
+groove = np.zeros((N, 2))
 bi = 0
 while True:
-    t0 = start + bi * BAR
-    if t0 >= T['cta'] - 0.1:
+    t0 = D0 + bi * BAR
+    if t0 >= BREAK0:
         break
     root, tones = CH[bi % 4]
-    full = t0 >= T['motiv'] - 0.1
-    lift = 1.0 if t0 < T['goals'] - 0.2 else 1.15
-    add(music, t0, strings(tones + [tones[0] + 12], BAR, vel=(0.07 if full else 0.05) * lift, att=0.5))
-    add(music, t0, sub(root + 12, BAR * 0.95, 0.15 * lift))
-    for j in range(8):
-        m = tones[ARP[j]] + 12
-        add(music, t0 + j * B / 2, pluck(m, 0.3, (0.11 if j % 2 == 0 else 0.08) * lift, bright=1.0 + 0.4 * (lift - 1) * 6),
-            pan=-0.3 + 0.08 * j)
+    full = t0 >= DROP - 0.1
     for q in range(4):
         tb = t0 + q * B
-        if tb >= T['cta'] - 0.1:
+        if tb >= BREAK0:
             break
-        add(music, tb, kick((0.24 if q % 2 == 0 else 0.18) * (1.0 if full else 0.75)))
-        add(music, tb + B / 2, hat(0.05), pan=0.3)
+        add(groove, tb, kick(0.26 if full else 0.2))
+        add(groove, tb + B / 2, open_hat(0.05 if full else 0.035), pan=0.3)
+        add(groove, tb + B / 2, stab([m for m in tones], 0.09 if full else 0.07), pan=-0.15)       # offbeat piano
+        add(groove, tb + B / 2, bass(root + (24 if q % 2 else 12), B * 0.45, 0.16 if full else 0.12))   # octave bounce
+        if q % 2 == 1:
+            add(groove, tb, clap(0.12 if full else 0.08), pan=0.05)
         if full:
-            add(music, tb + B / 4, hat(0.025), pan=0.35)
-            add(music, tb + 3 * B / 4, hat(0.025), pan=0.35)
-        if full and q % 2 == 1:
-            add(music, tb, clap(0.11 * lift), pan=-0.05)
+            add(groove, tb + B / 4, hat(0.022), pan=0.4)
+            add(groove, tb + 3 * B / 4, hat(0.022), pan=0.4)
+    if full and t0 >= T['motiv'] - 0.2:                      # the synth hook from the first point onward
+        for j, m in enumerate(HOOK[(bi % 2) * 8:(bi % 2) * 8 + 8]):
+            if m is not None:
+                add(groove, t0 + j * B / 2, pulse(m, B * 0.42, 0.075), pan=0.2)
     if full:
-        add(music, t0 + 2 * B, piano(tones[2] + 12, 1.2, 0.08), pan=0.2)
+        add(groove, t0, strings([tones[0], tones[1] + 12, tones[2]], BAR, vel=0.05, att=0.3, bright=2400))
     bi += 1
-# CTA: drop to strings while the emblem assembles, then a bright brand chord for the logo
-add(music, T['cta'], strings([62, 66, 69, 74], 2.6, vel=0.09, att=0.3, bright=3000))
-add(music, T['cta'], sub(38 + 12, 2.0, 0.14))
-LOGO_T = ph('cta', 1) + 0.6
-add(music, LOGO_T, strings([62, 66, 69, 74, 78], DUR - LOGO_T, vel=0.13, att=0.15, bright=3600))
-add(music, LOGO_T, sub(38 + 12, DUR - LOGO_T, 0.16))
-for j, m in enumerate([74, 78, 81, 86]):
-    add(music, LOGO_T + j * 0.07, piano(m, 2.4, 0.14), pan=-0.3 + 0.2 * j)
-    add(music, LOGO_T + j * 0.07, pluck(m + 12, 0.8, 0.06), pan=0.3 - 0.2 * j)
-add(music, LOGO_T, kick(0.3))
-def snare(vel=0.15):
+# sidechain pump: duck the groove (except kicks) after each beat
+tt_ = np.arange(N) / SR
+ph_b = ((tt_ - D0) % B) / B
+pump = np.where(tt_ > D0, 0.55 + 0.45 * np.clip(ph_b / 0.45, 0, 1) ** 0.6, 1.0)
+groove *= pump[:, None]
+# muffled (low-passed) under the hook, opening up into the drop
+filt = lp(groove, 900, 2)
+mixk = np.clip((tt_ - (DROP - 1.2)) / 1.2, 0, 1)[:, None]
+music += filt * (1 - mixk) * 1.3 + groove * mixk
+add(music, DROP - 1.0, riser(1.0, 0.22))
+add(music, DROP, boom(0.5))
+for tc in [T['motiv'], T['exp'], T['goals']]:
+    for j in range(8):
+        add(music, tc - 0.5 + j * 0.0625, clap(0.03 + 0.01 * j), pan=-0.1)       # clap roll into each point
+    add(music, tc - 0.8, riser(0.8, 0.15))
+    add(music, tc, boom(0.3))
+# breakdown: piano chords + strings while the emblem snaps; then the bright logo chord
+add(music, BREAK0, strings([69, 73, 76, 81], 2.4, vel=0.1, att=0.2, bright=3000))
+for j in range(4):
+    add(music, BREAK0 + j * B * 2, stab([69, 73, 76], 0.1), pan=-0.1)
+add(music, BREAK0, bass(45 + 12, 2.0, 0.14))
+add(music, LOGO_T, strings([69, 73, 76, 81, 85], DUR - LOGO_T, vel=0.13, att=0.1, bright=3800))
+add(music, LOGO_T, bass(45 + 12, DUR - LOGO_T, 0.15))
+add(music, LOGO_T, kick(0.32))
+add(music, LOGO_T, boom(0.3))
+for j, m in enumerate([81, 85, 88, 93]):
+    add(music, LOGO_T + j * 0.06, piano(m, 2.4, 0.13), pan=-0.3 + 0.2 * j)
+    add(music, LOGO_T + 0.3 + j * 0.12, pulse(m + 12, 0.18, 0.04), pan=0.3 - 0.2 * j)
+music = reverb(music, wet=0.2, length=1.8, key='hall')
+
+# ------------------------------------------------------------------ SFX palette v2 (modern UI / tech sound design)
+# Redefined here so the music above keeps its own instruments; everything below uses these.
+def pop(vel=0.3, f=900):
+    """Bubbly UI blip: fast upward chirp with a soft body."""
+    t = tt(0.16)
+    fr = f * 0.7 * (1 + 1.2 * (1 - np.exp(-t * 60)))
+    x = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t * 26)
+    return (x + 0.25 * np.sin(4 * np.pi * np.cumsum(fr) / SR) * np.exp(-t * 40)) * np.minimum(1, t / 0.002) * vel
+
+
+def whoosh(dur=0.5, f0=300, f1=3500, vel=0.5, rev=False):
+    """Reverse-swell swish: filtered noise that swells in, with a faint tonal sweep."""
+    t = tt(dur)
+    k = t / dur
+    env = (k ** 2.2) * np.exp(-((k - 0.85) / 0.25) ** 2 * (k > 0.85))
+    noise = rng.normal(0, 1, len(t))
+    fa, fb = sorted((f0, f1))
+    lo = bp(noise, max(80, fa * 0.6), min(16000, fb * 1.2), 2)
+    f = f0 * (f1 / max(1, f0)) ** k
+    tone = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.15
+    x = (lo + tone) * env
+    return np.stack([x, np.roll(x, 90)], 1) * vel
+
+
+def boom(vel=0.5):
+    """Punchy sub-drop impact."""
+    t = tt(1.1)
+    f = 40 + 90 * np.exp(-t * 14)
+    sub = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 3.2)
+    crack = hp(rng.normal(0, 1, len(t)), 2500) * np.exp(-t * 70) * 0.5
+    return np.tanh((sub + crack) * 1.4) * vel
+
+
+def thud(vel=0.5, f=70):
+    t = tt(0.45)
+    fr = f * 0.8 + f * 1.6 * np.exp(-t * 40)
+    body = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t * 11)
+    snap_ = bp(rng.normal(0, 1, len(t)), 2000, 9000) * np.exp(-t * 160) * 0.5
+    return (body + snap_) * vel
+
+
+def shimmer(dur=0.9, vel=0.3, base=84):
+    """Glassy FM bell sparkle arpeggio."""
+    out = np.zeros(int((dur + 0.8) * SR))
+    for j, iv in enumerate([0, 7, 12, 16, 19]):
+        t = tt(dur + 0.6)
+        f = mtof(base + iv)
+        x = np.sin(2 * np.pi * f * t + 1.8 * np.sin(2 * np.pi * f * 3.5 * t) * np.exp(-t * 6)) * np.exp(-t * 4.5)
+        i = int(j * 0.045 * SR)
+        out[i:i + len(x)] += x[:len(out) - i] * (0.9 ** j)
+    return out * vel * 0.5
+
+
+def tick(vel=0.3):
+    t = tt(0.03)
+    return np.sin(2 * np.pi * 3200 * t) * np.exp(-t * 400) * vel + hp(rng.normal(0, 1, len(t)), 6000) * np.exp(-t * 500) * vel * 0.5
+
+
+def key_click(vel=0.18):
+    """Mechanical keyboard clack: switch tick + key bottoming out."""
+    out = np.zeros(int(0.08 * SR))
+    for d, f, a in ((0.0, 4200, 1.0), (0.018, 1400, 0.7)):
+        t = tt(0.05)
+        x = bp(rng.normal(0, 1, len(t)), f * 0.6, min(15000, f * 1.6), 2) * np.exp(-t * 220) * a
+        i = int(d * SR)
+        out[i:i + len(x)] += x[:len(out) - i]
+    return out * vel * 1.4
+
+
+def clack(vel=0.4):
     t = tt(0.18)
-    return (bp(rng.normal(0, 1, len(t)), 1200, 8000) * np.exp(-t * 28) + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.5) * vel
+    return (np.sin(2 * np.pi * 1760 * t) * np.exp(-t * 60) * 0.6 + bp(rng.normal(0, 1, len(t)), 3000, 10000) * np.exp(-t * 120)) * vel
 
 
-for tc in [T['motiv'], T['exp'], T['goals'], T['cta']]:
-    for j in range(8):                                      # snare fill into the section
-        add(music, tc - 0.5 + j * 0.0625, snare(0.05 + 0.012 * j), pan=-0.1)
-    add(music, tc - 0.9, riser(0.9, 0.18))
-    add(music, tc, boom(0.35))
-    add(music, tc, kick(0.32))
-add(music, T['three'], boom(0.45))                              # sub drop into the build
-music = reverb(music, wet=0.22, length=2.0, key='hall')
+def ping(vel=0.15, f=1320):
+    """FM bell plink for the target rings."""
+    t = tt(1.0)
+    return np.sin(2 * np.pi * f * 0.75 * t + 2.5 * np.sin(2 * np.pi * f * 1.4 * t) * np.exp(-t * 8)) * np.exp(-t * 6) * vel
+
+
+def zip_up(vel=0.15, f0=300, f1=1400, dur=0.45):
+    """Laser rise: detuned saw sweep."""
+    t = tt(dur)
+    f = f0 * (f1 / f0) ** ((t / dur) ** 1.4)
+    x = signal.sawtooth(2 * np.pi * np.cumsum(f) / SR) + signal.sawtooth(2 * np.pi * np.cumsum(f * 1.01) / SR)
+    return lp(x, 5000, 2) * np.sin(np.pi * t / dur) ** 1.5 * vel * 0.5
+
+
+def scribble(dur=1.0, vel=0.1):
+    """Felt-tip writing: short scratchy strokes."""
+    t = tt(dur)
+    n = bp(rng.normal(0, 1, len(t)), 3000, 9000)
+    strokes = (np.sin(2 * np.pi * 5.5 * t + 2 * np.sin(2 * np.pi * 1.7 * t)) > -0.2).astype(float)
+    strokes = np.convolve(strokes, np.ones(400) / 400, mode='same')
+    return n * strokes * np.minimum(1, t / 0.03) * np.minimum(1, (dur - t) / 0.08).clip(0, 1) * vel
+
+
+def squeak(dur=0.3, vel=0.12):
+    """Marker swipe."""
+    t = tt(dur)
+    f = 1800 + 2600 * t / dur
+    return bp(rng.normal(0, 1, len(t)), 1500, 8000) * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(f) / SR / 40)) * np.sin(np.pi * t / dur) * vel * 1.3
+
+
+def crinkle(dur=0.35, vel=0.3):
+    out = np.zeros(int(dur * SR) + 4000)
+    for _ in range(26):
+        t = tt(0.02)
+        x = bp(rng.normal(0, 1, len(t)), 2500, 11000) * np.exp(-t * 300)
+        i = int(rng.uniform(0, dur) * SR)
+        out[i:i + len(x)] += x * rng.uniform(0.4, 1.0)
+    return out * vel
+
+
+def clang(vel=0.35):
+    """Tin-can clank."""
+    t = tt(0.9)
+    x = sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t * d) for f, a, d in ((780, 1, 6), (1910, 0.7, 9), (3020, 0.5, 12), (4470, 0.3, 16)))
+    return (x + bp(rng.normal(0, 1, len(t)), 1000, 6000) * np.exp(-t * 50) * 0.8) * vel
+
+
+def knock(vel=0.3):
+    """Snappy click for the signs."""
+    t = tt(0.12)
+    return (np.sin(2 * np.pi * 900 * t) * np.exp(-t * 70) + hp(rng.normal(0, 1, len(t)), 3000) * np.exp(-t * 150) * 0.6) * vel
+
+
+def bonk(vel=0.3):
+    """Wrong-answer buzz: two detuned square blips falling."""
+    out = np.zeros(int(0.45 * SR))
+    for d, f in ((0.0, 330), (0.15, 233)):
+        t = tt(0.22)
+        x = np.sign(np.sin(2 * np.pi * f * t)) + np.sign(np.sin(2 * np.pi * f * 1.012 * t))
+        x = lp(x, 1800) * np.exp(-t * 9) * 0.5
+        out[int(d * SR):int(d * SR) + len(x)] += x
+    return out * vel
+
+
+def slam(vel=0.6):
+    """Rubber-stamp slam: impact + metallic ring."""
+    t = tt(0.8)
+    ring = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * dd) * a for f, a, dd in ((410, 0.5, 7), (1130, 0.3, 10)))
+    return boom(1.0)[:len(t)] * vel + ring * vel * 0.4
+
 
 # ------------------------------------------------------------------ SFX timeline
 add(sfx, 0.1, pop(0.18, 900))                                         # chip
@@ -209,7 +376,7 @@ add(sfx, ph('hook', 1) + 0.3, bonk(0.28))                             # wrong an
 for i, (x, y, rot, d, sp, sc) in enumerate(R.COPIES):                 # everyone says the same thing
     add(sfx, T['generic'] + 0.05 + d * 1.1, pop(0.07, 600 + (i * 53) % 700), pan=(x - 540) / 700)
 st = ph('generic', 0) + 0.65
-add(sfx, st, boom(0.55))                                              # TOO GENERIC stamp
+add(sfx, st, slam(0.6))                                               # TOO GENERIC stamp
 add(sfx, st, thud(0.5, 60))
 fall0 = R.FALL0
 add(sfx, fall0, whoosh(0.7, 3000, 200, 0.2))                          # bubbles fall away
@@ -342,5 +509,6 @@ fade[:int(0.03 * SR)] = np.linspace(0, 1, int(0.03 * SR))
 mix *= fade[:, None]
 mix /= max(1e-6, np.abs(mix).max()) / 0.89
 os.makedirs(f'{R.S}/audio', exist_ok=True)
+wavfile.write(f'{R.S}/audio/music_stem.wav', SR, (music / max(1e-6, np.abs(music).max()) * 0.9 * 32767).astype(np.int16))
 wavfile.write(f'{R.S}/audio/mix_raw.wav', SR, (mix * 32767).astype(np.int16))
 print('wrote', f'{R.S}/audio/mix_raw.wav')

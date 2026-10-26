@@ -30,7 +30,7 @@ if __name__ == '__main__':
                     '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-shortest', out],
                    check=True)
     share = out.replace('.mp4', '_share.mp4')
-    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', out, '-c:v', 'libx264', '-preset', 'slow', '-b:v', '7M',
-                    '-maxrate', '8.5M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
+    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', out, '-c:v', 'libx264', '-preset', 'slow', '-b:v', '6M',
+                    '-maxrate', '7.5M', '-bufsize', '12M', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
                     '-c:a', 'copy', share], check=True)
     print('wrote', out, share, flush=True)
