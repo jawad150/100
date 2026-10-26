@@ -1,3 +1,33 @@
+# IC London — "What Is the SQE?" (story version)
+
+A 37 s vertical reel told as a story with real people.
+
+The story:
+1. London goes to work: commuters at the Gherkin, then courtrooms (law), boardrooms (HR) and trading floors (finance), the three worlds IC London teaches.
+2. An aspiring solicitor is confused by the SQE jargon.
+3. The SQE is simplified step by step: SQE1 (legal knowledge, two multiple-choice exams), SQE2 (practical skills), then a degree, two years' qualifying work experience and the SRA's character checks.
+4. The story ends at a courthouse with "Qualified solicitor", then an IC London CTA (Law · HR · Finance, SQE preparation, iclondon.co.uk).
+
+Word-synced pop-ups: every key word the voice says pops its 3D object on screen:
+- emblem-shaped LAW, HR and FINANCE badges
+- 3D scales, briefcase, question mark, exam papers, lightbulb, calendar, graduation cap and shield
+- the skill icons
+
+Other visuals:
+- **Cuts:** cuts land on the words, with whip-pans, zoom-throughs, glitch slices, red circle wipes and flashes.
+- **Effects:** zoom punches, colour-split hits, light leaks and confetti.
+- **Captions:** documentary-style captions with a red marker underline on key words.
+
+The voiceover is a warm, expressive male narrator, shaped phrase by phrase so the voice brightens and smiles on the questions and payoffs.
+
+Sources and licences:
+- **Footage:** Mixkit, free licence.
+- **Music:** "Upbeat Forever" by Kevin MacLeod (incompetech.com), CC BY 4.0; the post caption must credit it.
+
+**Final:** [`reel/ic_london/ic_london_what_is_the_sqe.mp4`](reel/ic_london/ic_london_what_is_the_sqe.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_what_is_the_sqe_share.mp4). Pipeline: `pipeline_sqe/` (`vo_sqe.py`, `blender_sqe.py`, `reel_sqe.py`, `audio_sqe.py`, `render_sqe.py`).
+
+---
+
 # IC London — "Why do you want to be a solicitor?"
 
 A 36 s vertical reel with a full storyline, built around the IC London emblem. The emblem's three pieces become the three parts of a strong answer: the red block with its white circle is motivation (a target), the navy base is experience (the foundation) and the navy spire is long-term goals (pointing up).

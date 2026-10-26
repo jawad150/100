@@ -371,6 +371,13 @@ def sh_sqe2(t):            # "SQE two tests practical skills: client interviews,
     c = c + R.grid_layer()[:H, :W][..., None] * 0.35 * np.array(LINE[:3], np.float32) + R.dust(t, 0.3)
     FP.logo_badge(c)
     chip_in(c, 'SQE2', 880, 105, t, t0, fill=RED, size=60)
+    ka = 1 - prog(t, P('l6', 2) - 0.35, P('l6', 2) - 0.05)          # 3D SQE2 arch holds the screen until the skills arrive
+    if ka > 0:
+        k = prog(t, t0, t0 + 0.4)
+        if k > 0:
+            sc = 1.15 * e_out_back(k, 1.8) * (0.6 + 0.4 * ka)
+            draw(c, blur_sprite(tint(P3('arch2'), (0, 0, 0.1)), 22), 552, 980, scale=sc, opacity=0.45 * ka)
+            draw(c, P3('arch2'), 540, 950 + 8 * math.sin(t * 2), scale=sc, opacity=ka)
     pw, ph_ = 470, 540
     for j, (cid, x, y, icon_, lab, fx) in enumerate(SKILLS):
         tj = P('l6', 2 + j) - 0.05
