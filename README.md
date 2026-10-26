@@ -20,6 +20,8 @@ Energy layer:
 
 Sound: a bright dance-pop groove (A major, 128 bpm) with piano stabs, a bouncing bass, a synth hook and a pumping beat. It is muffled under the hook, drops in fully at "build your answer" and ends on a big logo chord. Modern UI-style sound design: blips, reverse swishes, sub-drop impacts, bell sparkles, keyboard clacks, a stamp slam, a marker swipe, a tin-can clank and laser rises. Clear British male voiceover with a gentle fade-out.
 
+**Music options (licensed tracks):** [`…_upbeat.mp4`](reel/ic_london/ic_london_why_solicitor_upbeat.mp4) uses "Upbeat Forever" and [`…_inspired.mp4`](reel/ic_london/ic_london_why_solicitor_inspired.mp4) uses "Inspired", both by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0 (credit required in the post caption). Build with `TRACK=Upbeat_Forever.mp3 TRACK_OFFSET=30 OUTWAV=mix_upbeat.wav python3 pipeline_sol/audio_sol.py`.
+
 **Final:** [`reel/ic_london/ic_london_why_solicitor.mp4`](reel/ic_london/ic_london_why_solicitor.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_why_solicitor_share.mp4). Pipeline: `pipeline_sol/` (`vo_sol.py`, `blender_sol.py`, `reel_sol.py`, `audio_sol.py`, `render_sol.py`).
 
 ---

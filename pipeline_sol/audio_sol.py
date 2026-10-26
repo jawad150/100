@@ -215,6 +215,32 @@ for j, m in enumerate([81, 85, 88, 93]):
     add(music, LOGO_T + 0.3 + j * 0.12, pulse(m + 12, 0.18, 0.04), pan=0.3 - 0.2 * j)
 music = reverb(music, wet=0.2, length=1.8, key='hall')
 
+# ------------------------------------------------------------------ optional licensed track (replaces the synth score)
+TRACK = os.environ.get('TRACK')            # e.g. Upbeat_Forever.mp3 (Kevin MacLeod, incompetech.com, CC BY 4.0)
+TRACK_OFFSET = float(os.environ.get('TRACK_OFFSET', '20'))
+if TRACK:
+    import subprocess
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', f'{R.S}/music/{TRACK}', '-ss', str(TRACK_OFFSET), '-t', str(DUR + 1),
+                          '-ac', '2', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+    tr = np.frombuffer(raw, np.float32).reshape(-1, 2).astype(np.float64)[:N]
+    if len(tr) < N:
+        tr = np.concatenate([tr, np.zeros((N - len(tr), 2))])
+    tr = tr / max(1e-6, np.sqrt(np.mean(tr ** 2))) * 0.12          # level-match
+    tt_ = np.arange(N) / SR
+    muff = lp(tr, 700, 2) * 1.6                                     # "next room" under the interview hook
+    k_open = np.clip((tt_ - (DROP - 1.0)) / 1.0, 0, 1)[:, None]
+    dip = lp(tr, 1400, 2) * 1.2                                      # breakdown under the emblem snap
+    k_dip = (np.clip((tt_ - BREAK0) / 0.25, 0, 1) * np.clip((LOGO_T - tt_) / 0.15, 0, 1))[:, None]
+    music = (muff * (1 - k_open) + tr * k_open) * (1 - k_dip) + dip * k_dip * 0.8
+    add(music, DROP - 1.0, riser(1.0, 0.2))
+    add(music, DROP, boom(0.45))
+    for tc in [T['motiv'], T['exp'], T['goals']]:
+        add(music, tc - 0.8, riser(0.8, 0.12))
+        add(music, tc, boom(0.25))
+    add(music, LOGO_T, boom(0.35))
+    music = reverb(music, wet=0.08, length=1.2, key='trk')
+
+
 # ------------------------------------------------------------------ SFX palette v2 (modern UI / tech sound design)
 # Redefined here so the music above keeps its own instruments; everything below uses these.
 def pop(vel=0.3, f=900):
@@ -509,6 +535,7 @@ fade[:int(0.03 * SR)] = np.linspace(0, 1, int(0.03 * SR))
 mix *= fade[:, None]
 mix /= max(1e-6, np.abs(mix).max()) / 0.89
 os.makedirs(f'{R.S}/audio', exist_ok=True)
+OUTWAV = os.environ.get('OUTWAV', 'mix_raw.wav')
 wavfile.write(f'{R.S}/audio/music_stem.wav', SR, (music / max(1e-6, np.abs(music).max()) * 0.9 * 32767).astype(np.int16))
-wavfile.write(f'{R.S}/audio/mix_raw.wav', SR, (mix * 32767).astype(np.int16))
-print('wrote', f'{R.S}/audio/mix_raw.wav')
+wavfile.write(f'{R.S}/audio/{OUTWAV}', SR, (mix * 32767).astype(np.int16))
+print('wrote', f'{R.S}/audio/{OUTWAV}')
