@@ -18,7 +18,7 @@ Energy layer:
 - whip-pans and brand-shape transitions
 - confetti bursts and light sweeps
 
-Sound: a 124 bpm score with fills and risers, full sound design, and a clear British male voiceover with a gentle fade-out.
+Sound: a bright dance-pop groove (A major, 128 bpm) with piano stabs, a bouncing bass, a synth hook and a pumping beat. It is muffled under the hook, drops in fully at "build your answer" and ends on a big logo chord. Modern UI-style sound design: blips, reverse swishes, sub-drop impacts, bell sparkles, keyboard clacks, a stamp slam, a marker swipe, a tin-can clank and laser rises. Clear British male voiceover with a gentle fade-out.
 
 **Final:** [`reel/ic_london/ic_london_why_solicitor.mp4`](reel/ic_london/ic_london_why_solicitor.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_why_solicitor_share.mp4). Pipeline: `pipeline_sol/` (`vo_sol.py`, `blender_sol.py`, `reel_sol.py`, `audio_sol.py`, `render_sol.py`).
 
