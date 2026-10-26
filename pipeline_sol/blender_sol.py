@@ -376,6 +376,142 @@ def cap():
     render_seq('cap', 48, upd)
 
 
+# ------------------------------------------------------------------ storyboard scenes: paper into the bin, law books, signpost
+def paper_bin():
+    reset((720, 960), samples=14, transparent=True)
+    std()
+    studio(key=1000)
+    catcher(0.0)
+    paper = mat('paper', lin('#F4F1EA'), rough=0.85)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=0.42)
+    ball = bpy.context.object
+    tex = bpy.data.textures.new('crumple', 'VORONOI')
+    tex.noise_scale = 0.18
+    d = ball.modifiers.new('disp', 'DISPLACE')
+    d.texture, d.strength = tex, 0.18
+    ball.data.materials.append(paper)
+    metal = mat('bin', lin('#8C95A8'), rough=0.3, metal=1.0)
+    parts = []
+    bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=0.95, radius2=1.2, depth=2.2, end_fill_type='NOTHING', location=(0, 0, 1.1))
+    b_ = bpy.context.object
+    b_.modifiers.new('sol', 'SOLIDIFY').thickness = 0.05
+    bpy.ops.object.shade_smooth()
+    b_.data.materials.append(metal)
+    parts.append(b_)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.95, depth=0.05, location=(0, 0, 0.03))
+    bpy.context.object.data.materials.append(metal)
+    parts.append(bpy.context.object)
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.2, minor_radius=0.045, location=(0, 0, 2.2))
+    bpy.context.object.data.materials.append(mat('rim', lin(RED), rough=0.3, coat=0.5))
+    parts.append(bpy.context.object)
+    bpy.ops.object.empty_add(location=(0.9, 0, 0))
+    piv = bpy.context.object
+    for o in parts:
+        o.parent = piv
+    cam = camera(lens=38)
+    cam.data.dof.use_dof = False
+    look(cam, (-0.4, -9.5, 3.4), (-0.2, 0, 1.7))
+    land = 24
+
+    def upd(i, n):
+        if i <= land:
+            k = i / land
+            ball.location = (lerp(-3.0, 0.9, k), 0, max(0.45, 1.6 + 2.0 * 4 * k * (1 - k) - 1.2 * k ** 2))
+            ball.rotation_euler = (k * 7, k * 4, k * 3)
+            ball.hide_render = False
+        else:
+            ball.location = (0.9, 0, 0.45)
+            ball.hide_render = i > land + 1
+        w = max(0, i - land)
+        piv.rotation_euler = (0, math.radians(7 * math.exp(-w / 6) * math.sin(w * 0.9)) if w else 0, 0)
+    render_seq('paper_bin', 40, upd)
+
+
+BOOKS = [('WORK EXPERIENCE', NAVY), ('VOLUNTEERING', '#8E1020'), ('ACADEMIC PROJECTS', '#0B2C8F'), ('TRANSFERABLE SKILLS', RED)]
+
+
+def books():
+    reset((900, 900), samples=14, transparent=True)
+    std()
+    studio(key=1000)
+    catcher(0.0)
+    gold = mat('gold', lin(GOLD), rough=0.25, metal=1.0)
+    pages = mat('pages', lin('#EFE6D2'), rough=0.9)
+    roots = []
+    TH = 0.5
+    for k, (title, col) in enumerate(BOOKS):
+        cover = mat('cover%d' % k, lin(col), rough=0.45, coat=0.3)
+        root = bpy.data.objects.new('book%d' % k, None)
+        bpy.context.scene.collection.objects.link(root)
+        w = 3.6 - 0.1 * k
+        parts = [box((w, 2.4, TH), (0, 0, 0), cover, bevel=0.04), box((w - 0.12, 2.3, TH - 0.1), (0.07, 0.03, 0), pages)]
+        parts.append(text_obj(title, 0.23, (0, -1.215, 0), (90, 0, 0), gold, font=FONT_SERIF, extrude=0.005))
+        for sx in (-w / 2 + 0.22, w / 2 - 0.22):
+            parts.append(box((0.05, 0.02, TH * 0.75), (sx, -1.205, 0), gold))
+        for p_ in parts:
+            p_.parent = root
+        roots.append(root)
+    cam = camera(lens=45)
+    cam.data.dof.use_dof = False
+
+    def upd(i, n):
+        look(cam, (lerp(-0.8, 0.8, i / n), -8.2, lerp(3.0, 3.5, i / n)), (0, 0, 1.0))
+        for k, r in enumerate(roots):
+            kk = (i - (8 + 18 * k)) / 9.0
+            z_rest = TH / 2 + k * TH
+            if kk <= 0:
+                r.location = (0, 0, 40)
+                continue
+            d_ = min(1.0, kk)
+            bounce = 0.06 * math.exp(-(kk - 1) * 3) * abs(math.sin((kk - 1) * 9)) if kk > 1 else 0
+            r.location = (0.08 * (k % 2 * 2 - 1), 0, lerp(z_rest + 4.5, z_rest, d_ ** 2) + bounce)
+            r.rotation_euler = (0, 0, math.radians((1 - d_) * (25 if k % 2 else -25) + (2 if k % 2 else -2)))
+    render_seq('books', 96, upd)
+
+
+SIGNS = [('TRAINEE SOLICITOR', NAVY, WHITE, 1), ('SPECIALISE', WHITE, NAVY, -1), ('MAKE AN IMPACT', RED, WHITE, 1)]
+
+
+def signpost():
+    reset((720, 1080), samples=14, transparent=True)
+    std()
+    studio(key=1000)
+    catcher(0.0)
+    post_m = mat('post', lin('#1A1F2E'), rough=0.4, metal=0.6)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.12, depth=6.4, location=(0, 0, 3.2), vertices=32)
+    bpy.ops.object.shade_smooth()
+    bpy.context.object.data.materials.append(post_m)
+    bpy.ops.mesh.primitive_cone_add(radius1=0.18, radius2=0.0, depth=0.3, location=(0, 0, 6.55), vertices=32)
+    bpy.context.object.data.materials.append(mat('cap', lin(RED), rough=0.3))
+    roots = []
+    for k, (label, bgc, fgc, d) in enumerate(SIGNS):
+        board = mat('sign%d' % k, lin(bgc), rough=0.35, coat=0.4)
+        ink = mat('ink%d' % k, lin(fgc), rough=0.4)
+        root = bpy.data.objects.new('sign%d' % k, None)
+        bpy.context.scene.collection.objects.link(root)
+        root.location = (0, 0, 5.6 - k * 1.3)
+        L = 3.6 if len(label) > 12 else 2.8
+        body = box((L, 0.16, 0.85), (0, 0, 0), board, bevel=0.03)        # box() bakes location, so move after
+        body.location = (d * (L / 2 + 0.05), 0, 0)
+        tip = prism(0.85, 0.16, 0.5, (d * (L + 0.05), 0, 0), board)
+        tip.rotation_euler = (0, math.radians(90 * d), 0)
+        txt = text_obj(label, 0.34, (d * (L / 2 + 0.05), -0.09, 0), (90, 0, 0), ink, font=FONT_B, extrude=0.004)
+        for p_ in (body, tip, txt):
+            p_.parent = root
+        roots.append(root)
+    cam = camera(lens=42)
+    cam.data.dof.use_dof = False
+
+    def upd(i, n):
+        a = math.radians(lerp(-14, 10, ease(i / n)))
+        look(cam, (1.3 + 14.5 * math.sin(a), -14.5 * math.cos(a), 4.4), (1.3, 0, 3.6))
+        for k, r in enumerate(roots):
+            kk = out_back((i - 8 - 18 * k) / 12.0, 1.8)
+            r.scale = (max(0.001, min(1.2, kk)),) * 3 if kk < 1 else (1, 1, 1)
+            r.rotation_euler = (0, 0, math.radians(lerp(80 * SIGNS[k][3], 0, min(1, max(0, kk))) + 3 * math.sin(i / 11 + k)))
+    render_seq('signpost', 96, upd)
+
+
 if __name__ == '__main__':
     for a in sys.argv[1:]:
         globals()[a]()

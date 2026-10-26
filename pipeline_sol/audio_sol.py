@@ -122,7 +122,7 @@ def scribble(dur=1.0, vel=0.1):
 
 
 # ------------------------------------------------------------------ music
-BPM = 116
+BPM = 124
 B = 60 / BPM
 BAR = 4 * B
 CH = [(35, [59, 62, 66]), (31, [59, 62, 67]), (38, [62, 66, 69]), (33, [61, 64, 69])]       # Bm G D A
@@ -161,6 +161,9 @@ while True:
             break
         add(music, tb, kick((0.24 if q % 2 == 0 else 0.18) * (1.0 if full else 0.75)))
         add(music, tb + B / 2, hat(0.05), pan=0.3)
+        if full:
+            add(music, tb + B / 4, hat(0.025), pan=0.35)
+            add(music, tb + 3 * B / 4, hat(0.025), pan=0.35)
         if full and q % 2 == 1:
             add(music, tb, clap(0.11 * lift), pan=-0.05)
     if full:
@@ -176,6 +179,18 @@ for j, m in enumerate([74, 78, 81, 86]):
     add(music, LOGO_T + j * 0.07, piano(m, 2.4, 0.14), pan=-0.3 + 0.2 * j)
     add(music, LOGO_T + j * 0.07, pluck(m + 12, 0.8, 0.06), pan=0.3 - 0.2 * j)
 add(music, LOGO_T, kick(0.3))
+def snare(vel=0.15):
+    t = tt(0.18)
+    return (bp(rng.normal(0, 1, len(t)), 1200, 8000) * np.exp(-t * 28) + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.5) * vel
+
+
+for tc in [T['motiv'], T['exp'], T['goals'], T['cta']]:
+    for j in range(8):                                      # snare fill into the section
+        add(music, tc - 0.5 + j * 0.0625, snare(0.05 + 0.012 * j), pan=-0.1)
+    add(music, tc - 0.9, riser(0.9, 0.18))
+    add(music, tc, boom(0.35))
+    add(music, tc, kick(0.32))
+add(music, T['three'], boom(0.45))                              # sub drop into the build
 music = reverb(music, wet=0.22, length=2.0, key='hall')
 
 # ------------------------------------------------------------------ SFX timeline
@@ -196,10 +211,10 @@ for i, (x, y, rot, d, sp, sc) in enumerate(R.COPIES):                 # everyone
 st = ph('generic', 0) + 0.65
 add(sfx, st, boom(0.55))                                              # TOO GENERIC stamp
 add(sfx, st, thud(0.5, 60))
-fall0 = ph('three', 0) - 0.55
+fall0 = R.FALL0
 add(sfx, fall0, whoosh(0.7, 3000, 200, 0.2))                          # bubbles fall away
 for k in range(10):
-    add(sfx, fall0 + 0.25 + rng.uniform(0, 0.5), tick(0.12), pan=rng.uniform(-0.7, 0.7))
+    add(sfx, fall0 + 0.25 + rng.uniform(0, 0.5), tick(0.1), pan=rng.uniform(-0.7, 0.7))
 add(sfx, T['three'] + 0.15, scribble(1.05, 0.08))                     # blueprint draws itself
 add(sfx, T['three'] + 0.15, zip_up(0.05, 200, 900, 1.05))
 for j in range(3):
@@ -213,8 +228,6 @@ add(sfx, ph('motiv', 0), pop(0.18, 800))
 for k in range(4):
     add(sfx, T['motiv'] + 0.6 + k * 1.43, ping(0.1, 1320))             # target sonar
 add(sfx, T['motiv'] + 0.55, tick(0.15))
-for j in range(3):
-    add(sfx, ph('motiv', 2) + 0.5 + j * 0.35, pop(0.18, 700 + 120 * j))
 add(sfx, ph('motiv', 2) + 0.1, pop(0.2, 600))                         # idea bulb appears...
 add(sfx, ph('motiv', 2) + 0.1 + 14 / 24, key_click(0.25))             # ...and switches on
 add(sfx, ph('motiv', 2) + 0.12 + 14 / 24, chime(91, 0.12, 1.4))
@@ -229,10 +242,6 @@ add(sfx, ph('exp', 3) - 0.1, zip_up(0.1, 400, 1200, 0.6))             # lines co
 add(sfx, ph('exp', 3) + 0.3, pop(0.26, 900))
 add(sfx, T['goals'] - 0.25, whoosh(0.5, 200, 5000, 0.22))             # spire wipe
 add(sfx, ph('goals', 0), pop(0.18, 800))
-for j in range(3):
-    tj = ph('goals', 2) - 0.4 + j * 0.85
-    add(sfx, tj - 0.5, zip_up(0.1, 300 + 150 * j, 900 + 300 * j, 0.5))
-    add(sfx, tj, pop(0.24, 760 + 140 * j))
 add(sfx, ph('goals', 3), shimmer(1.0, 0.16, 90))
 add(sfx, T['cta'] - 0.25, whoosh(0.5, 300, 6000, 0.24))               # red square zoom
 add(sfx, T['cta'], boom(0.3))
@@ -246,6 +255,52 @@ add(sfx, ph('cta', 1) + 0.2, whoosh(0.6, 200, 3000, 0.16))            # card ris
 add(sfx, LOGO_T, shimmer(1.4, 0.2, 86))
 add(sfx, ph('cta', 1) + 0.8, pop(0.22, 700))                          # graduation cap
 add(sfx, ph('cta', 1) + 1.3, whoosh(0.4, 1500, 7000, 0.1))            # underline swish
+
+def squeak(dur=0.3, vel=0.12):
+    t = tt(dur)
+    f = 2200 + 500 * np.sin(2 * np.pi * 9 * t)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * bp(rng.normal(0, 1, len(t)), 1500, 6000) * 0.5 * np.sin(np.pi * t / dur) * vel + \
+        bp(rng.normal(0, 1, len(t)), 2000, 7000) * np.sin(np.pi * t / dur) * vel * 0.6
+
+
+def crinkle(dur=0.35, vel=0.3):
+    t = tt(dur)
+    n = hp(rng.normal(0, 1, len(t)), 1500)
+    gate = (rng.random(len(t)) < 0.02).astype(float)
+    gate = np.convolve(gate, np.exp(-np.arange(200) / 30), mode='same')
+    return n * np.clip(gate, 0, 1) * np.sin(np.pi * t / dur) * vel
+
+
+def clang(vel=0.35):
+    t = tt(1.4)
+    x = sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t * d) for f, a, d in ((520, 1, 3.5), (1340, 0.6, 5), (2210, 0.4, 7), (3170, 0.25, 9)))
+    return (x + hp(rng.normal(0, 1, len(t)), 2000) * np.exp(-t * 60) * 0.5) * vel
+
+
+def knock(vel=0.3):
+    t = tt(0.2)
+    return (np.sin(2 * np.pi * 240 * t) * np.exp(-t * 35) + bp(rng.normal(0, 1, len(t)), 600, 2500) * np.exp(-t * 60) * 0.4) * vel
+
+
+for j in range(2):                                              # red X marker strokes
+    add(sfx, R.X0 + j * 0.17, squeak(0.18, 0.14), pan=-0.2 + 0.4 * j)
+add(sfx, R.X0 + 0.32, pop(0.22, 500))                           # "Too generic" pill
+add(sfx, R.CR0, crinkle(0.32, 0.35))                            # crumple
+add(sfx, R.BIN0 - 0.35, whoosh(0.4, 200, 2500, 0.15))           # bin slides up
+add(sfx, R.BIN0, whoosh(0.5, 900, 3500, 0.16))                  # toss
+add(sfx, R.BIN0 + 1.0, clang(0.32))                             # into the bin
+add(sfx, R.BIN0 + 1.0, thud(0.25, 80))
+add(sfx, ph('motiv', 2) + 0.6, thud(0.2, 140))                  # sticky note slaps on
+add(sfx, ph('motiv', 2) + 0.9, scribble(1.3, 0.07))             # pen writing
+for j in range(3):                                              # signpost boards swing in
+    tj = R.sign_t0() + (8 + 18 * j + 8) / 24
+    add(sfx, tj, knock(0.3), pan=0.3 if j != 1 else -0.3)
+    add(sfx, tj, pop(0.15, 700 + 120 * j))
+add(sfx, ph('goals', 3) - 0.6, zip_up(0.14, 250, 1600, 1.0))    # growth arrow rises
+add(sfx, ph('goals', 3) + 0.4, pop(0.24, 950))
+add(sfx, ph('cta', 1) + 1.8, pop(0.22, 820))                    # red arrow button
+add(sfx, T['generic'] - 0.2, whoosh(0.4, 400, 7000, 0.22))      # whip pans
+add(sfx, T['three'] - 0.2, whoosh(0.4, 400, 7000, 0.22))
 sfx = reverb(sfx, wet=0.12, length=0.9, key='room')
 
 # ------------------------------------------------------------------ voiceover
