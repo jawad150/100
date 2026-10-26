@@ -1,3 +1,29 @@
+# IC London — "Why do you want to be a solicitor?"
+
+A 36 s vertical reel with a full storyline, built around the IC London emblem. The emblem's three pieces become the three parts of a strong answer: the red block with its white circle is motivation (a target), the navy base is experience (the foundation) and the navy spire is long-term goals (pointing up).
+
+Scenes:
+1. **Hook:** an interview chat over the client's library photo, with a red 3D question mark.
+2. **Too generic:** "I love law." is copied everywhere, stamped TOO GENERIC, crossed out, crumpled into a 3D paper ball and tossed into a 3D bin.
+3. **Three key things:** a blueprint of the emblem draws itself and the 3D pieces fly in.
+4. **Motivation:** the person appears inside the target circle, with a 3D lightbulb and a handwritten sticky note.
+5. **Experience:** 3D law books stack with spine titles and ticks.
+6. **Goals:** a 3D signpost (Trainee Solicitor / Specialise / Make an Impact) and a rising red arrow over the City photo.
+7. **Strong answer:** the pieces snap into the emblem with a checklist.
+8. **Ending:** the St Paul's steps photo, the logo, a 3D graduation cap and "Prepare with purpose."
+
+Energy layer:
+- 3D law props drifting through the scenes
+- zoom punches, colour-split hits, shakes and flashes
+- whip-pans and brand-shape transitions
+- confetti bursts and light sweeps
+
+Sound: a 124 bpm score with fills and risers, full sound design, and a clear British male voiceover with a gentle fade-out.
+
+**Final:** [`reel/ic_london/ic_london_why_solicitor.mp4`](reel/ic_london/ic_london_why_solicitor.mp4) · [`…_share.mp4`](reel/ic_london/ic_london_why_solicitor_share.mp4). Pipeline: `pipeline_sol/` (`vo_sol.py`, `blender_sol.py`, `reel_sol.py`, `audio_sol.py`, `render_sol.py`).
+
+---
+
 # Organic Fostering — "Leave the Light On" (version 2, 3D + website photos)
 
 A 30 s vertical reel in a bright graphic-poster style taken from the campaign key visual: cream paper, magenta and orange blobs, a green brush stroke, and bold black, magenta and orange type.
