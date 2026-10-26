@@ -205,7 +205,11 @@ def of():
 
 
 # ---------------------------------------------------------------------------------------------- person mattes
-SHOTS = {'leam': [(0, 191), (192, 407), (408, 720)], 'of': [(0, 236), (237, 419), (420, 720)]}
+SHOTS = {'leam': [(0, 191), (192, 407), (408, 720)], 'of': [(0, 236), (237, 419), (420, 720)],
+         # Google Ranker Pro set (24 Oct 2026 clips); leam2's monitor -> selfie move is one continuous shot
+         'of2': [(0, 239), (240, 409), (410, 720)], 'leam2': [(0, 186), (187, 720)],
+         'york': [(0, 216), (217, 480)], 'golden': [(0, 216), (217, 389), (390, 600)],
+         'coventry': [(0, 183), (184, 383), (384, 553), (554, 720)], 'zentro': [(0, 127), (128, 357), (358, 600)]}
 
 
 def mattes(cid):
@@ -271,6 +275,7 @@ def oflap():
 
 if __name__ == '__main__':
     if sys.argv[1] == 'mattes':
-        mattes(sys.argv[2])
+        for c in sys.argv[2:]:
+            mattes(c)
     else:
         {'leam': leam, 'of': of, 'oflap': oflap}[sys.argv[1]]()
