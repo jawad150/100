@@ -1,3 +1,38 @@
+# BMHC — "The First Word" (people + heritage version)
+
+A 78 s vertical reel for the British Muslim Heritage Centre, told as a story with real people and BMHC's own photos.
+
+The story:
+1. People walk through BMHC's gates in Whalley Range, into a place of learning that has stood since 1843.
+2. A question types into a search bar: what was the very first word of the Qur'an to be revealed? Pray? Fast? Read? Give? Take a guess, with a 3-2-1 countdown.
+3. "It was Iqra. Read." The other answers simply fade. ﷺ on screen and "peace be upon him" in the voice, with the source tag Sahih al-Bukhari 3.
+4. Sacred mode (quiet, no people, no SFX): Al-'Alaq 96:1 and 96:4 as English translations (Abdel Haleem), with a 3D open book and a gold quill.
+5. The pen draws a gold line through:
+   - Baghdad's House of Wisdom: al-Khwārizmī, الجبر → algebra, Algoritmi → algorithm
+   - Fez 859: Fatima al-Fihri, al-Qarawiyyin, "still teaching", with a Guinness source tag
+   - Manchester 1843: an engraving-to-today wipe, Lancashire Independent College
+6. BMHC today: programme photo cards (Qur'an classes, study circles, exhibitions, youth clubs) and a 130K+ visitors counter.
+7. "It all began with one word. So, what will you read next?", then a CTA: bmhc.org.uk, College Road, Whalley Range, M16 8BP.
+
+Word-synced pop-ups:
+- 3D Blender props: astrolabe, horseshoe arch, gold quill, open book and eight-pointed star
+- chips, glass cards and location tags
+
+Other visuals:
+- **Progress bar:** a bar in the logo's four colours runs along the top.
+- **Transitions:** whips, zoom-throughs, a colour-bar wipe, gold ring wipes and flashes, with soft dissolves in and out of the verse.
+
+Sound:
+- Expressive male narrator.
+- No music, per BMHC's brief.
+- Soft UI sound design, with nothing under the verse.
+
+Sources: footage from Mixkit (free licence); photos from bmhc.org.uk.
+
+**Final:** [`reel/bmhc/bmhc_the_first_word.mp4`](reel/bmhc/bmhc_the_first_word.mp4) · [`…_share.mp4`](reel/bmhc/bmhc_the_first_word_share.mp4). Scenes: `reel/bmhc/scene_images/`. Pipeline: `pipeline_bmhc/` (`blender_bmhc.py`, `frames_bmhc.py`, `vo_bmhc.py`, `reel_bmhc.py`, `audio_bmhc.py`, `render_bmhc.py`).
+
+---
+
 # IC London — "What Is the SQE?" (story version)
 
 A 37 s vertical reel told as a story with real people.
