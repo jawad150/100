@@ -124,10 +124,12 @@ def glass(c, x, y, w, h, r=36, tint_=(1, 1, 1), a=0.16, border=0.35):
     """Frosted-glass card: blurs what's behind it, adds a light fill and a hairline border."""
     x0, y0 = int(x - w / 2), int(y - h / 2)
     x1, y1 = x0 + int(w), y0 + int(h)
+    if x1 <= 0 or y1 <= 0 or x0 >= c.shape[1] or y0 >= c.shape[0]:
+        return
     sub = c[max(0, y0):y1, max(0, x0):x1]
     bl = cv2.GaussianBlur(sub, (0, 0), 22)
     m = R.sdf_fill(R.rrect_alpha(int(w), int(h), r, 2))
-    m = cv2.resize(m, (int(w), int(h)))[:sub.shape[0], :sub.shape[1], None]
+    m = cv2.resize(m, (int(w), int(h)))[max(0, -y0):, max(0, -x0):][:sub.shape[0], :sub.shape[1], None]
     sub[:] = sub * (1 - m) + (bl * (1 - a) + np.array(tint_, np.float32) * a) * m
     st = R.sdf_stroke(R.rrect_alpha(int(w), int(h), r, 2), 1.5) if hasattr(R, 'sdf_stroke') else None
     if st is not None:
