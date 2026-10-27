@@ -138,9 +138,9 @@ hero(6, 'changing', ws(55), 19.24, 760, 720, color='dark', max_w=520, l1=(w_, ti
 OVERLAY[-1].update(x=470, end=19.62)   # 'through the years,' on her black top, held past the big word
 OVERLAY.append(dict(cap(59, 60, y=690, x=760), fill=CHAR))
 OVERLAY.append(dict(cap(61, 61, end=C[7] - 0.05, y=690, x=760), fill=CHAR))
-# shot 7 -- injecting: "new ways to / correct", "and to make it"
+# shot 7 -- injecting: "new ways to / correct it", "and to make it"
 w_, t_ = words(62, 64)
-hero(7, 'correct', ws(65), 22.38, 660, 1500, color='dark', max_w=700, l1=(w_, times_from(t_, C[7] + 0.02)),
+hero(7, 'correct it', ws(65), 22.38, 660, 1500, color='dark', max_w=700, l1=(w_, times_from(t_, C[7] + 0.02)),
      behind=False, pin=0.5)
 OVERLAY.append(dict(cap(67, 70, end=C[8] - 0.03, y=1330, x=720), fill=CHAR))
 # shot 8 -- facial handpiece: "flourish."
@@ -150,9 +150,9 @@ OVERLAY.append(dict(cap(77, 80, end=C[9] - 0.04, y=720), fill=CHAR))
 # shot 9 -- sitting: "is / maintenance"
 hero(9, 'maintenance', ws(82), C[10] - 0.12, 470, 440, size=150, l1=words(81, 81), l1_fill=CHAR)
 OVERLAY.append(dict(cap(83, 85, end=C[10] - 0.04, y=860, x=380)))
-# shot 10 -- injecting close-up: "maintenance is / for your / skin health,"
+# shot 10 -- injecting close-up: "maintenance is for your / skin health,"
 # ('skin' falls 0.38 s before the cut: the big words come in one word early, on 'your', and clear at the cut)
-w_, t_ = words(86, 88)
+w_, t_ = words(86, 89)
 hero(10, 'skin health,', ws(89), C[11] - 0.10, 600, 1450, color='red', max_w=820, l1=(w_, times_from(t_, C[10] + 0.02)),
      glow=True, behind=False, pin=0.5, fast=True, out=0.12)
 # shot 11 -- sitting: "not only just the / appearance,", "but definitely"
