@@ -1,3 +1,25 @@
+# Organic Fostering — "Can I Foster If…?" (v2, phone-UI story)
+
+A 52 s vertical reel built from the client's concept PDF. The voiceover and captions follow the PDF script word for word. The visual style follows the client's phone-UI reference reel:
+- **Opening:** a saved post seen up close with hand-drawn scribbles; words appearing one by one on a dark brand gradient, with a photo inside the sentence; a giant gradient "if…" while the search bar types.
+- **"Honest answers":** a whip-blur wall of doubts.
+- **The five answers:** a pop-up card flips each answer on (Usually / Yes / Yes / Possibly / Not automatically). Then a scroll to a real person living it in a feed post, with the FAQ quote, chips on the cue words and 3D props (paw, infinity loop, speech bubble, clock, heart).
+- **Not on the list:** "not on the list?" on a glowing dot-matrix; a warm film-grain photo with handwritten "deserve a conversation".
+- **Call to action:** the search bar turns into "Send your question", gets clicked, and a 3D paper plane flies off. Notifications stack up ("A real person replies · Manchester team", "No pressure, no obligation."). Black end card with the phone number, website and Ofsted line.
+
+Every answer is quoted from organicfostering.co.uk/faqs. No red, no crosses, no platform branding.
+
+Sound: the same warm British narrator as the earlier Organic Fostering reels, smiling on the "Yes!" answers. UI sound design throughout, with a light, warm music bed ducked under the voice.
+
+Sources and licences:
+- **Footage:** Mixkit, free licence.
+- **Photos:** organicfostering.co.uk.
+- **Music:** "Wholesome" by Kevin MacLeod (incompetech.com), CC BY 4.0; the post caption must credit it.
+
+**Final:** [`reel/organic_fostering/organic_fostering_can_i_foster_if.mp4`](reel/organic_fostering/organic_fostering_can_i_foster_if.mp4) · [`…_share.mp4`](reel/organic_fostering/organic_fostering_can_i_foster_if_share.mp4). Scenes: `reel/organic_fostering/can_i_foster_if_v2_scenes/`. Pipeline: `pipeline_cf/` (`blender_cf.py`, `frames_cf.py`, `frames_cf2.py`, `vo_cf.py`, `reel_cf.py`, `audio_cf.py`, `render_cf.py`).
+
+---
+
 # BMHC — "The First Word" (people + heritage version)
 
 A 78 s vertical reel for the British Muslim Heritage Centre, told as a story with real people and BMHC's own photos.
