@@ -157,6 +157,114 @@ section { padding-block: var(--s8); }
 .lb .ctl { display: flex; gap: 8px; flex-wrap: wrap; }
 .lb button { font: 500 14px var(--body); color: #EEECE7; background: transparent; border: 1px solid #47444c; border-radius: 999px; padding: 8px 14px; cursor: pointer; }
 
+
+/* ---------- motion & effects ---------- */
+.progress { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: 3px; z-index: 30; pointer-events: none; }
+.progress span { display: block; height: 100%; width: 100%; background: var(--grease); transform-origin: 0 50%; transform: scaleX(0); }
+.bar { transition: box-shadow .3s; }
+.bar.scrolled { box-shadow: 0 6px 24px -18px rgba(0,0,0,.5); }
+.bar nav a { position: relative; transition: color .2s; }
+.bar nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; background: var(--grease); transform: scaleX(0); transform-origin: 0 50%; transition: transform .3s ease; }
+.bar nav a:hover::after { transform: scaleX(1); }
+.mark span { display: inline-block; transition: transform .3s; }
+.mark:hover span { transform: translateY(-4px) scale(1.4); }
+
+.name .ln { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .04em; }
+.name .ln > span { display: inline-block; }
+@media (prefers-reduced-motion: no-preference) {
+  .name .ln > span { animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+  .name .sel .ln > span { animation-delay: .12s; }
+  .roles > * { animation: fadeUp .7s cubic-bezier(.2,.8,.2,1) both; }
+  .roles > *:nth-child(2) { animation-delay: .25s; } .roles > *:nth-child(3) { animation-delay: .35s; } .roles > *:nth-child(4) { animation-delay: .45s; }
+  .lede, .facts { animation: fadeUp .8s .3s cubic-bezier(.2,.8,.2,1) both; }
+}
+@keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes fadeUp { from { transform: translateY(18px); opacity: .001; } to { transform: none; opacity: 1; } }
+
+.print { position: relative; margin: 0 0 var(--s3); justify-self: start; width: min(260px, 70%); background: var(--sheet); padding: 10px 10px 8px; border: 1px solid var(--line); border-radius: 3px;
+  box-shadow: 0 18px 40px -28px rgba(0,0,0,.6); transform: rotate(-2.5deg); transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s; }
+.print:hover { transform: rotate(0deg) translateY(-6px) scale(1.03); box-shadow: 0 30px 60px -30px rgba(0,0,0,.65); }
+.print-img { overflow: hidden; aspect-ratio: 4/5; background: #ddd; }
+.print-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+.print:hover .print-img img { transform: scale(1.06); }
+.print figcaption { display: flex; justify-content: space-between; gap: 8px; padding-top: 7px; font-size: 10px; color: var(--ink-2); }
+.print .ring { position: absolute; inset: -6% -10%; width: 120%; height: 112%; pointer-events: none; overflow: visible; }
+.print .ring path { fill: none; stroke: var(--grease); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset .9s ease-out; }
+.print:hover .ring path { stroke-dashoffset: 0; }
+
+.ticker { border-block: 1px solid var(--line); overflow: hidden; padding-block: 18px; background: var(--paper); }
+.tick-row { display: flex; gap: 28px; width: max-content; align-items: center; font-family: var(--display); font-size: clamp(34px, 6vw, 72px); font-weight: 800; font-stretch: 80%; letter-spacing: -0.02em; line-height: 1; }
+.tick-row span { color: transparent; -webkit-text-stroke: 1.4px var(--ink); transition: color .3s; }
+.tick-row span:hover { color: var(--grease); -webkit-text-stroke-color: var(--grease); }
+.tick-row i { font-style: normal; color: var(--grease); font-size: .5em; }
+@media (prefers-reduced-motion: no-preference) { .tick-row { animation: roll 38s linear infinite; } .ticker:hover .tick-row { animation-play-state: paused; } }
+
+.frame { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s; }
+.frame:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0 16px 30px -14px rgba(0,0,0,.8); z-index: 2; }
+.frame img { transition: filter .35s; }
+.reel:hover .frame:not(:hover) img { filter: grayscale(.85) brightness(.7); }
+
+.work { perspective: 900px; }
+.work .ph { transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s; will-change: transform; }
+.work:hover .ph { box-shadow: 0 26px 50px -30px rgba(0,0,0,.55); }
+.work .ph img { transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .4s; }
+.work:hover .ph img { transform: scale(1.05); }
+.work .ph::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.28), transparent 45%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.work:hover .ph::after { opacity: 1; }
+.work .t { transition: color .2s; }
+.work:hover .t { color: var(--grease); }
+.sheet.dim .work:not(:hover) .ph img { filter: saturate(.4) brightness(.92); }
+.work.enter { animation: pop .5s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes pop { from { transform: translateY(14px) scale(.98); opacity: .001; } to { transform: none; opacity: 1; } }
+
+.filters button { transition: background .2s, color .2s, border-color .2s, transform .2s; }
+.filters button:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+.disc { transition: transform .4s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .4s; }
+.disc:hover { transform: translateY(-8px); border-color: var(--grease); box-shadow: 0 24px 40px -30px rgba(0,0,0,.5); }
+.disc li { transition: transform .25s; }
+.disc li:hover { transform: translateX(6px); }
+.disc li::before { transition: background .25s; }
+.disc li:hover::before { background: var(--grease); }
+
+.clients span { transition: color .2s; cursor: default; }
+.clients span:hover { color: var(--ink); }
+
+.job { transition: background .3s, padding .3s; position: relative; }
+.job::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--grease); transform: scaleY(0); transition: transform .3s; }
+.job:hover { background: var(--sheet); }
+.job:hover::before { transform: scaleY(1); }
+.job:hover .when { color: var(--grease); }
+
+.row { transition: background .3s; }
+.row:hover { background: #222026; }
+.row .val a { transition: color .2s; }
+.row .val a:hover { color: var(--grease); }
+.copy { transition: background .2s, border-color .2s; }
+.copy:hover { background: var(--grease); border-color: var(--grease); }
+
+.lb:not([hidden]) { animation: lbIn .3s ease both; }
+.lb:not([hidden]) .stage > * { animation: pop .45s .05s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes lbIn { from { opacity: .001; } to { opacity: 1; } }
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .disc, .job, .head, .clients { animation: fadeUp linear both; animation-timeline: view(); animation-range: entry 0% cover 22%; }
+  }
+}
+
+/* viewfinder cursor (mouse only) */
+.cursor { position: fixed; left: 0; top: 0; width: 34px; height: 34px; z-index: 60; pointer-events: none; opacity: 0; transition: width .25s, height .25s, opacity .25s; transform: translate(-50%, -50%); }
+.cursor i { position: absolute; width: 9px; height: 9px; border-color: var(--grease); border-style: solid; border-width: 0; }
+.cursor i:nth-child(1) { left: 0; top: 0; border-left-width: 2px; border-top-width: 2px; }
+.cursor i:nth-child(2) { right: 0; top: 0; border-right-width: 2px; border-top-width: 2px; }
+.cursor i:nth-child(3) { left: 0; bottom: 0; border-left-width: 2px; border-bottom-width: 2px; }
+.cursor i:nth-child(4) { right: 0; bottom: 0; border-right-width: 2px; border-bottom-width: 2px; }
+.cursor b { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--grease); padding: 3px 7px; border-radius: 3px; opacity: 0; transition: opacity .2s; white-space: nowrap; }
+.cursor.on { opacity: 1; }
+.cursor.big { width: 92px; height: 92px; }
+.cursor.big b { opacity: 1; }
+
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
   .practice { grid-template-columns: minmax(0, 1fr); }
@@ -166,11 +274,14 @@ section { padding-block: var(--s8); }
   .lb .stage video, .lb .stage img { max-height: 62vh; }
   .lb .stage.multi img { height: 58vh; }
   .bar nav { display: none; }
+  .print { width: min(240px, 70%); }
 }
 @media (max-width: 520px) { .sheet { columns: 2 150px; column-gap: 12px; } .frame { width: 120px; } .frame.wide { width: 213px; } }
 </style>
 
-<header class="bar">
+<div class="progress" aria-hidden="true"><span id="prog"></span></div>
+<div class="cursor" id="cursor" aria-hidden="true"><i></i><i></i><i></i><i></i><b id="cursorLabel">View</b></div>
+<header class="bar" id="bar">
   <div class="wrap">
     <a class="mark" href="#top">Laiba Jamal<span>.</span></a>
     <nav class="mono" aria-label="Sections">
@@ -184,9 +295,14 @@ section { padding-block: var(--s8); }
     <div class="hero-grid">
       <div>
         <p class="mono" style="color:var(--ink-2);margin:0 0 18px">Portfolio · Gujranwala, Pakistan · Working remotely worldwide</p>
-        <h1 class="name">Laiba<br><span class="sel">Jamal<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M20,70 C10,30 90,8 170,10 C250,12 300,40 288,72 C276,104 180,116 110,110 C50,105 18,92 28,62"/></svg></span></h1>
+        <h1 class="name"><span class="ln"><span>Laiba</span></span><br><span class="sel"><span class="ln"><span>Jamal</span></span><svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path d="M20,70 C10,30 90,8 170,10 C250,12 300,40 288,72 C276,104 180,116 110,110 C50,105 18,92 28,62"/></svg></span></h1>
       </div>
       <div class="roles">
+        <figure class="print" id="portrait">
+          <div class="print-img"><img src="media/portrait.jpg" alt="Portrait of Laiba Jamal"></div>
+          <figcaption class="mono"><span>F00 · Laiba Jamal</span><span>Self-portrait</span></figcaption>
+          <svg class="ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M8,52 C4,22 40,4 62,6 C88,9 98,30 95,55 C92,82 66,97 42,95 C18,93 6,78 10,50"/></svg>
+        </figure>
         <div class="role"><span class="mono" style="color:var(--grease)">A</span><div><b>Graphic Designer</b><p>Social posts, carousels, branding, invitations and print.</p></div></div>
         <div class="role"><span class="mono" style="color:var(--grease)">B</span><div><b>AI Creative Specialist</b><p>Generative video commercials, prompt engineering, motion reels.</p></div></div>
         <div class="role"><span class="mono" style="color:var(--grease)">C</span><div><b>Photographer</b><p>Product, event and creative photography, with post-production.</p></div></div>
@@ -201,6 +317,11 @@ section { padding-block: var(--s8); }
     </div>
   </div>
   <div class="strip" aria-label="Selected frames"><div class="reel" id="reel"></div></div>
+
+  <div class="ticker" aria-hidden="true"><div class="tick-row">
+    <span>Graphic design</span><i>✶</i><span>AI creative</span><i>✶</i><span>Photography</span><i>✶</i><span>Motion reels</span><i>✶</i><span>Branding</span><i>✶</i>
+    <span>Graphic design</span><i>✶</i><span>AI creative</span><i>✶</i><span>Photography</span><i>✶</i><span>Motion reels</span><i>✶</i><span>Branding</span><i>✶</i>
+  </div></div>
 
   <section id="work">
     <div class="wrap">
@@ -277,9 +398,11 @@ section { padding-block: var(--s8); }
       <div class="head"><div><h2>Let's make something people stop for.</h2><p>Available for AI video, design and photography projects, remote or in Pakistan.</p></div></div>
       <div class="rows">
         <div class="row"><span class="mono">Email</span><span class="val" id="email">laibajamalkhan6@gmail.com</span><button class="copy" type="button" data-copy="email">Copy email</button></div>
-        <div class="row"><span class="mono">Phone / WhatsApp</span><span class="val" id="phone">+92 336776865</span><button class="copy" type="button" data-copy="phone">Copy number</button></div>
+        <div class="row"><span class="mono">Phone / WhatsApp · Pakistan</span><span class="val" id="phone">+92 336776865</span><button class="copy" type="button" data-copy="phone">Copy number</button></div>
+        <div class="row"><span class="mono">Phone · Turkey</span><span class="val" id="phoneTr">+90 (582) 552 8635</span><button class="copy" type="button" data-copy="phoneTr">Copy number</button></div>
         <div class="row"><span class="mono">LinkedIn</span><span class="val"><a href="https://www.linkedin.com/in/laiba-jamal-khan-5a1b89334/" target="_blank" rel="noopener">laiba-jamal-khan</a></span></div>
         <div class="row"><span class="mono">Instagram</span><span class="val"><a href="https://www.instagram.com/laibajamalk" target="_blank" rel="noopener">@laibajamalk</a></span></div>
+        <div class="row"><span class="mono">Full-resolution work</span><span class="val"><a href="https://drive.google.com/drive/folders/1JM57n2UWl5T_WYAiXzFPpg7fWQgQY50r" target="_blank" rel="noopener">Google Drive folder</a></span></div>
       </div>
       <div class="foot"><span>© 2026 Laiba Jamal</span><span>Full-resolution files on request</span></div>
     </div>
@@ -354,6 +477,7 @@ const picks = PICKS.map(id => WORKS.find(w => w.id === id)).filter(Boolean);
   f.setAttribute('aria-label', w.title + ', ' + w.client);
   if (i >= picks.length) f.tabIndex = -1;
   f.innerHTML = `<img loading="lazy" src="${m.type === 'video' ? m.poster : m.src}" alt=""><span class="fn">${w.fno} ▸ ${w.client.toUpperCase()}</span>`;
+  if (m.type === 'video') f.dataset.video = '1';
   f.addEventListener('click', () => openLB(w.id));
   reel.appendChild(f);
 });
@@ -395,6 +519,49 @@ lb.addEventListener('click', e => { if (e.target === lb || e.target === stage) c
 document.addEventListener('keydown', e => {
   if (lb.hidden) return;
   if (e.key === 'Escape') closeLB(); else if (e.key === 'ArrowRight') step(1); else if (e.key === 'ArrowLeft') step(-1);
+});
+
+
+// ---------- effects
+const prog = document.getElementById('prog'), bar = document.getElementById('bar');
+function onScroll() {
+  const h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+  prog.style.transform = 'scaleX(' + (max > 0 ? h.scrollTop / max : 0) + ')';
+  bar.classList.toggle('scrolled', h.scrollTop > 10);
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+const fine = matchMedia('(pointer: fine)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (fine && !still) {
+  // 3D tilt + glare on work tiles
+  sheet.addEventListener('pointermove', e => {
+    const t = e.target.closest('.work'); if (!t) return;
+    const ph = t.querySelector('.ph'), r = ph.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    ph.style.transform = `rotateX(${(0.5 - y) * 8}deg) rotateY(${(x - 0.5) * 10}deg) translateY(-4px)`;
+    ph.style.setProperty('--gx', (x * 100) + '%'); ph.style.setProperty('--gy', (y * 100) + '%');
+  });
+  sheet.addEventListener('pointerout', e => {
+    const t = e.target.closest('.work'); if (t && !t.contains(e.relatedTarget)) t.querySelector('.ph').style.transform = '';
+  });
+  sheet.addEventListener('pointerover', () => sheet.classList.add('dim'));
+  sheet.addEventListener('pointerleave', () => sheet.classList.remove('dim'));
+  // viewfinder cursor
+  const cur = document.getElementById('cursor'), lab = document.getElementById('cursorLabel');
+  let cx = 0, cy = 0, tx = 0, ty = 0;
+  addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; cur.classList.add('on');
+    const w = e.target.closest('.work, .frame, .print');
+    if (w) { const v = w.querySelector('video') || (w.classList.contains('frame') && w.dataset.video); lab.textContent = w.classList.contains('print') ? 'Hello' : (v ? 'Play' : 'View'); cur.classList.add('big'); }
+    else cur.classList.remove('big');
+  });
+  document.addEventListener('pointerleave', () => cur.classList.remove('on'));
+  (function loop() { cx += (tx - cx) * 0.22; cy += (ty - cy) * 0.22; cur.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`; requestAnimationFrame(loop); })();
+}
+// re-animate tiles when the filter changes
+filters.addEventListener('click', () => {
+  if (still) return;
+  let d = 0;
+  sheet.querySelectorAll('.work:not([hidden])').forEach(t => { t.classList.remove('enter'); void t.offsetWidth; t.style.animationDelay = Math.min(d, 0.6) + 's'; d += 0.03; t.classList.add('enter'); });
 });
 
 // copy buttons

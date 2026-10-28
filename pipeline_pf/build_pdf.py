@@ -110,6 +110,7 @@ add(f'''
 add(f'''
 <div class="two">
   <div>
+    <figure class="print"><img src="file://{WS}/site/media/portrait.jpg"><figcaption><span>F00 · Laiba Jamal</span><span>Self-portrait</span></figcaption></figure>
     <span class="mono red">About</span>
     <h2>I make brand content that people stop scrolling for.</h2>
     <p class="big">As AI Creative Content Specialist at Hulk Marketing I direct AI-generated commercials and voiceover reels for clients in fostering, legal education, heritage and fitness. As a freelancer I design social media, wedding cards, menus and thumbnails, and I bring a Software Engineering degree to every workflow.</p>
@@ -223,10 +224,11 @@ add(f'''
 <p class="big">Available for AI video, design and photography projects, remote or in Pakistan.</p></div>
 <div class="rows">
 <div><span class="mono">Email</span><a href="mailto:laibajamalkhan6@gmail.com">laibajamalkhan6@gmail.com</a></div>
-<div><span class="mono">Phone / WhatsApp</span><span>+92 336776865</span></div>
+<div><span class="mono">Phone / WhatsApp · Pakistan</span><span>+92 336776865</span></div>
+<div><span class="mono">Phone · Turkey</span><span>+90 (582) 552 8635</span></div>
 <div><span class="mono">LinkedIn</span><a href="https://www.linkedin.com/in/laiba-jamal-khan-5a1b89334/">linkedin.com/in/laiba-jamal-khan</a></div>
 <div><span class="mono">Instagram</span><a href="https://www.instagram.com/laibajamalk">@laibajamalk</a></div>
-<div class="full"><span class="mono">Watch the full videos</span><a href="{DRIVE}">Google Drive · full-resolution work folder</a></div>
+<div><span class="mono">Watch the full videos</span><a href="{DRIVE}">Google Drive · full-resolution work folder</a></div>
 </div></div>''', 'dark', section='Contact')
 
 CSS = open(f'{HERE}/pdf.css').read()
