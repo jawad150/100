@@ -114,10 +114,10 @@ hero(1, 'injector', ws(8), 3.58, 520, 1320, color='dark', l1=(w_, times_from(t_,
      pin=0.5, behind=False, l1_fill=CHAR)
 OVERLAY.append(dict(cap(9, 11, end=C[2] - 0.06, y=1480, x=520), fill=CHAR))
 # shot 2 -- laser close-up: "specialist for the last / 19 / years,"
-OVERLAY.append(dict(cap(12, 15, y=520, x=700), times=times_from(words(12, 15)[1], C[2] + 0.02)))
+OVERLAY.append(dict(cap(12, 15, end=6.10, y=520, x=700), times=times_from(words(12, 15)[1], C[2] + 0.02)))
 hero(2, '19', ws(16), 6.84, 800, 860, size=400, color='red', glow=True, l3=words(17, 17), l3_y=950, l3_size=96)
-OVERLAY.append(dict(cap(18, 22, end=8.02, y=1180), times=times_from(words(18, 22)[1], C[3] + 0.06)))
-# shot 3 -- storefront: "Clinic for Plastic Surgery / P.S. Medical Spa"
+OVERLAY.append(dict(cap(18, 22, end=C[4] - 0.14, y=1060), times=times_from(words(18, 22)[1], C[3] + 0.06)))
+# shot 3 -- storefront, stacked: "and I work at the / Clinic for Plastic Surgery / P.S. Medical Spa"
 OVERLAY.append(dict(kind='l3', words=words(23, 26)[0], times=words(23, 26)[1], end=C[4] - 0.14, x=540, y=1180, size=78))
 hero(3, 'P.S. Medical Spa', ws(27), C[4] - 0.14, 540, 1350, color='red', max_w=900, pin=0.0, glow=True, behind=False)
 # shot 4 -- laser hair removal (she stands left): "My specialty is / really just / listening"
@@ -125,7 +125,7 @@ OVERLAY.append(dict(cap(30, 32, y=760, x=470), times=times_from(words(30, 32)[1]
 hero(4, 'listening', ws(35), 13.20, 420, 920, color='red', max_w=520, l1=words(33, 34), glow=True, behind=False,
      pin=0.5)
 OVERLAY.append(cap(36, 38, y=760, x=470))
-OVERLAY.append(dict(cap(39, 41, end=C[5] - 0.04, y=760, x=470)))
+OVERLAY.append(dict(cap(39, 41, end=C[5] - 0.07, y=760, x=470)))
 # shot 5 -- sitting: "achieve the / skin / that they want to be in."
 w_, t_ = words(42, 43)
 hero(5, 'skin', ws(44), 17.25, 420, 640, size=230, l1=(w_, times_from(t_, C[5] + 0.02)), l1_fill=CHAR,
@@ -138,28 +138,34 @@ hero(6, 'changing', ws(55), 19.24, 760, 720, color='dark', max_w=520, l1=(w_, ti
 OVERLAY[-1].update(x=470, end=19.62)   # 'through the years,' on her black top, held past the big word
 OVERLAY.append(dict(cap(59, 60, y=690, x=760), fill=CHAR))
 OVERLAY.append(dict(cap(61, 61, end=C[7] - 0.05, y=690, x=760), fill=CHAR))
-# shot 7 -- injecting: "new ways to / correct it", "and to make it"
+# shot 7 -- injecting: "new ways to / correct it", "and to"
 w_, t_ = words(62, 64)
 hero(7, 'correct it', ws(65), 22.38, 660, 1500, color='dark', max_w=700, l1=(w_, times_from(t_, C[7] + 0.02)),
      behind=False, pin=0.5)
-OVERLAY.append(dict(cap(67, 70, end=C[8] - 0.03, y=1330, x=720), fill=CHAR))
-# shot 8 -- facial handpiece: "flourish."
-hero(8, 'flourish.', ws(71), 24.10, 540, 560, color='red', max_w=840, glow=True, behind=False, fast=True, out=0.14)
-OVERLAY.append(dict(cap(72, 76, y=720), fill=CHAR))
-OVERLAY.append(dict(cap(77, 80, end=C[9] - 0.04, y=720), fill=CHAR))
-# shot 9 -- sitting: "is / maintenance"
+OVERLAY.append(dict(cap(67, 68, end=C[8] - 0.03, y=1330, x=720), fill=CHAR))
+# shot 8 -- facial handpiece: "make it / flourish." ('make' lands on the cut)
+w_, t_ = words(69, 70)
+hero(8, 'flourish.', ws(71), 24.10, 540, 560, color='red', max_w=840, glow=True, behind=False, fast=True, out=0.14,
+     l1=(w_, times_from(t_, C[8] + 0.02)))
+OVERLAY.append(dict(cap(72, 74, y=720), fill=CHAR))
+OVERLAY.append(dict(cap(75, 77, end=C[9] - 0.03, y=720), fill=CHAR))
+# shot 9 -- sitting: "to my patients", "is / maintenance", "and"
 hero(9, 'maintenance', ws(82), C[10] - 0.12, 470, 440, size=150, l1=words(81, 81), l1_fill=CHAR)
-OVERLAY.append(dict(cap(83, 85, end=C[10] - 0.04, y=860, x=380)))
-# shot 10 -- injecting close-up: "maintenance is for your / skin health,"
+OVERLAY.append(dict(cap(78, 80, y=1000, x=655), times=times_from(words(78, 80)[1], C[9] + 0.02)))   # on her black top
+OVERLAY.append(dict(cap(83, 83, end=C[10] - 0.02, y=860, x=380)))
+# shot 10 -- injecting close-up: "how important", "maintenance is", "for your / skin health,"
 # ('skin' falls 0.38 s before the cut: the big words come in one word early, on 'your', and clear at the cut)
-w_, t_ = words(86, 89)
+OVERLAY.append(dict(cap(84, 85, y=1295, x=600), times=times_from(words(84, 85)[1], C[10] + 0.02)))
+OVERLAY.append(cap(86, 87, y=1295, x=600))
+w_, t_ = words(88, 89)
 hero(10, 'skin health,', ws(89), C[11] - 0.10, 600, 1450, color='red', max_w=820, l1=(w_, times_from(t_, C[10] + 0.02)),
      glow=True, behind=False, pin=0.5, fast=True, out=0.12)
-# shot 11 -- sitting: "not only just the / appearance,", "but definitely"
+# shot 11 -- sitting: "not only just the / appearance,"
 hero(11, 'appearance,', ws(96), 32.10, 470, 440, size=150, l1=words(92, 95), l1_fill=CHAR)
-OVERLAY.append(dict(cap(97, 98, end=C[12] - 0.04, y=860, x=380), fill=CHAR))
-# shot 12 -- RF handpiece: "the / health." then the invitation
-hero(12, 'health.', ws(100), 33.90, 330, 600, size=200, color='red', glow=True, l1=words(99, 99), l1_fill=CHAR)
+# shot 12 -- RF handpiece: "but definitely the / health." then the invitation
+w_, t_ = words(97, 99)
+hero(12, 'health.', ws(100), 33.90, 330, 600, size=200, color='red', glow=True, l1=(w_, times_from(t_, C[12] + 0.02)),
+     l1_fill=CHAR, l1_size=64)
 OVERLAY.append(dict(cap(101, 105, y=1460, x=520)))
 OVERLAY.append(dict(cap(106, 108, y=1460, x=520)))
 OVERLAY.append(dict(cap(109, 111, end=C[13] - 0.04, y=1460, x=520)))

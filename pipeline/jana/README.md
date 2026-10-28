@@ -24,7 +24,7 @@ The delivered file runs 69.4 s, but its audio is digital silence after 42.27 s. 
   - **listening**
   - skin
   - changing
-  - correct
+  - correct it
   - **flourish.**
   - maintenance
   - **skin health,**
