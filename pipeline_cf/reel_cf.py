@@ -157,6 +157,40 @@ def pop_in(c, spr, x, y, sc, t, t0, ray=True, float_amp=8, tilt=False, rot0=-16)
         draw(c, spr, x, yy, scale=sc * e, rot=rot, opacity=min(1, k * 2.5))
 
 
+@functools.lru_cache(maxsize=1)
+def CONF_SHAPES():
+    out = []
+    for col in (PURPLE, ORANGE, PEACH, LEAF, LAV_D):
+        m = np.zeros((40, 40), np.uint8)
+        cv2.circle(m, (20, 20), 14, 255, -1, cv2.LINE_AA)
+        out.append(solid(m.astype(np.float32) / 255, col))
+        h = np.zeros((40, 40), np.uint8)
+        pts = [(20 + 16 * math.sin(a) ** 3 * 0.9, 20 - (13 * math.cos(a) - 5 * math.cos(2 * a) - 2 * math.cos(3 * a) - math.cos(4 * a)) * 0.9)
+               for a in np.linspace(0, 2 * math.pi, 40)]
+        cv2.fillPoly(h, [np.array(pts, np.int32)], 255, cv2.LINE_AA)
+        out.append(solid(h.astype(np.float32) / 255, col))
+        r = np.zeros((40, 40), np.uint8)
+        cv2.rectangle(r, (8, 15), (32, 25), 255, -1)
+        out.append(solid(r.astype(np.float32) / 255, col))
+    return out
+
+
+def confetti(c, x, y, t, t0, seed=0, n=18, speed=800, size=1.0):
+    dt = t - t0
+    if dt < 0 or dt > 1.0:
+        return
+    rng = np.random.default_rng(seed)
+    sh = CONF_SHAPES()
+    for i in range(n):
+        a = rng.uniform(0, 2 * math.pi)
+        v = speed * rng.uniform(0.4, 1.0)
+        drag = math.exp(-dt * 2.6)
+        px = x + math.cos(a) * v * (1 - drag) / 2.6
+        py = y + math.sin(a) * v * (1 - drag) / 2.6 + 420 * dt * dt
+        draw(c, sh[rng.integers(len(sh))], px, py, scale=size * rng.uniform(0.5, 1.0),
+             rot=rng.uniform(0, 360) + dt * rng.uniform(-400, 400), opacity=clamp(1 - dt) ** 1.2)
+
+
 @functools.lru_cache(maxsize=64)
 def pill_spr(text, size=44):
     fill, ink, outline = ANS[text]
@@ -192,8 +226,8 @@ def cap_word(w, size, dark):
     return ts(w, I8, size, INK if dark else WHITE)
 
 
-def caption(c, t, phrases, dark=False, size=52, y=1720, maxw=900):
-    """Word-synced caption (= the voiceover). phrases: [(line, idx)]. Words rise in as spoken."""
+def caption(c, t, phrases, dark=False, size=62, y=1730, maxw=920):
+    """Word-synced caption (= the voiceover) on a solid pill so it reads on any background. Words rise in as spoken."""
     words = []
     for line, i in phrases:
         ws = INFO['phrases'][line][i][2].replace('...', '…').split(' ')
@@ -215,19 +249,31 @@ def caption(c, t, phrases, dark=False, size=52, y=1720, maxw=900):
         x += wd + size * 0.28
     rows.append((cur, x - size * 0.28))
     n = len(rows)
-    y0 = y - (n - 1) * size * 1.25
+    y0 = y - (n - 1) * size * 1.3
+    kb = e_out_back(prog(t, words[0][1] - 0.1, words[0][1] + 0.2), 1.6)
+    x0s = [W / 2 - rw / 2 for _, rw in rows]
+    ends = [x0 + max([x + cap_word(w, size, dark).shape[1] for w, ton, x in row if t >= ton - 0.05] or [0])
+            for x0, (row, _) in zip(x0s, rows)]
+    left = min(x0s) - 35
+    right = max(max(ends), left + 160) + 35
+    bw, bcx = right - left, (left + right) / 2
+    bh = n * size * 1.3 + 40
+    fill = (1, 1, 1, 0.94) if dark else (0.08, 0.03, 0.07, 0.72)
+    bar = rrect(bw, bh, 34, fill)
+    by = y0 + (n - 1) * size * 0.65
+    draw(c, blur_sprite(tint(bar, (0, 0, 0)), 18), bcx + 4, by + 12, scale=kb, opacity=0.25)
+    draw(c, bar, bcx, by, scale=kb)
+    draw(c, F.grad_spr(max(40, bw * 0.5), 8, 4), bcx, by + bh / 2 - 4, scale=kb)
     for li, (row, rw) in enumerate(rows):
-        yy = y0 + li * size * 1.25
+        yy = y0 + li * size * 1.3
         x0 = W / 2 - rw / 2
         for w, ton, x in row:
             k = prog(t, ton, ton + 0.2)
             if k <= 0:
                 continue
-            s = cap_word(w, size, dark)
+            s_ = cap_word(w, size, dark)
             e = e_out_cubic(k)
-            if not dark:
-                draw(c, blur_sprite(tint(s, (0, 0, 0)), 10), x0 + x + s.shape[1] / 2 + 2, yy + 5 + (1 - e) * 20, opacity=0.6 * k)
-            draw(c, s, x0 + x + s.shape[1] / 2, yy + (1 - e) * 20, opacity=min(1, k * 2))
+            draw(c, s_, x0 + x + s_.shape[1] / 2, yy + (1 - e) * 16, opacity=min(1, k * 2))
 
 
 def kinetic_t(c, t, items, y, size=80, font=I8, col=WHITE, gap=None):
@@ -315,18 +361,18 @@ PROPS = ['paw', 'infinity', 'speech', 'clock', 'heart']
 
 @functools.lru_cache(maxsize=1)
 def POP_BASE():
-    w = 880
-    rh = 108
-    h = 150 + rh * 5 + 150
-    card = rrect(w, h, 34, WHITE).copy()
-    s = ts('Can I foster if…', I8, 42, INK)
+    w = 940
+    rh = 124
+    h = 160 + rh * 5 + 160
+    card = rrect(w, h, 38, WHITE).copy()
+    s = ts('Can I foster if…', I8, 54, INK)
     paste_spr(card, s, 50 + s.shape[1] / 2, 76)
     tg = F.grad_spr(90, 50, 25).copy()
     paste_spr(tg, rrect(40, 40, 20, WHITE), 65, 25)
     paste_spr(card, tg, w - 95, 76)
     btn = F.grad_spr(w - 100, 96, 48).copy()
-    a = F.arrow(WHITE, 40)
-    s = ts('Send your question', N9, 40, WHITE)
+    a = F.arrow(WHITE, 46)
+    s = ts('Send your question', N9, 46, WHITE)
     tw = s.shape[1] + 14 + a.shape[1]
     paste_spr(btn, s, (w - 100) / 2 - tw / 2 + s.shape[1] / 2, 48)
     paste_spr(btn, a, (w - 100) / 2 + tw / 2 - a.shape[1] / 2, 50)
@@ -336,7 +382,7 @@ def POP_BASE():
 
 @functools.lru_cache(maxsize=8)
 def ROW_TEXT(j):
-    return ts(ROWS[j][0], I6, 36, INK)
+    return ts(ROWS[j][0], I6, 46, INK)
 
 
 def popover(c, t, cx, cy, sc=1.0, active=0, t_pill=None, opacity=1.0, rot=0.0):
@@ -344,12 +390,12 @@ def popover(c, t, cx, cy, sc=1.0, active=0, t_pill=None, opacity=1.0, rot=0.0):
     base, rh = POP_BASE()
     card = base.copy()
     w = card.shape[1]
-    hy = 150 + rh * active + rh / 2
+    hy = 160 + rh * active + rh / 2
     paste_spr(card, rrect(w - 40, rh - 14, 18, LAV), w / 2, hy)
     for j in range(5):
-        y = 150 + rh * j + rh / 2
+        y = 160 + rh * j + rh / 2
         paste_spr(card, ROW_TEXT(j), 50 + ROW_TEXT(j).shape[1] / 2, y)
-        p = pill_spr(ROWS[j][1], 32)
+        p = pill_spr(ROWS[j][1], 38)
         if j < active:
             paste_spr(card, p, w - 50 - p.shape[1] / 2, y)
     draw(c, blur_sprite(tint(card, (0, 0, 0)), 30), cx + 4, cy + 30, scale=sc, rot=rot, opacity=0.2 * opacity)
@@ -357,7 +403,7 @@ def popover(c, t, cx, cy, sc=1.0, active=0, t_pill=None, opacity=1.0, rot=0.0):
     if t_pill is not None:
         k = prog(t, t_pill, t_pill + 0.35)
         if k > 0:
-            p = pill_spr(ROWS[active][1], 32)
+            p = pill_spr(ROWS[active][1], 38)
             px = cx + (w / 2 - 50 - p.shape[1] / 2) * sc
             py = cy + (hy - card.shape[0] / 2) * sc
             draw(c, p, px, py, scale=sc * e_out_back(k, 2.6), opacity=min(1, k * 3))
@@ -381,17 +427,17 @@ QS = {'l3': 'Can I foster if… I have pets?', 'l4': 'Can I foster if… I’m r
 def feed_frame(line):
     """Static post chrome (white card) with a transparent photo hole; the clip is drawn under it each frame."""
     cid, fx, fy, cap = FEED[line]
-    blank = np.zeros((620, 860, 3), np.float32)
-    card = F2.post_card(blank, cap, sub=QS[line])
+    blank = np.zeros((620, 920, 3), np.float32)
+    card = F2.post_card(blank, cap, sub=QS[line], w=960, cap_size=33)
     return card
 
 
 def feed_post(c, t, line, t0, cx, cy):
     cid, fx, fy, cap = FEED[line]
     card = feed_frame(line)
-    im = clip_img(cid, t - t0, 860, 620, 0.25, fx, fy, 1.0, 1.08, 5.0)
-    m = R.sdf_fill(R.rrect_alpha(860, 620, 20, 2))
-    m = cv2.resize(m, (860, 620))
+    im = clip_img(cid, t - t0, 920, 620, 0.25, fx, fy, 1.0, 1.08, 5.0)
+    m = R.sdf_fill(R.rrect_alpha(920, 620, 20, 2))
+    m = cv2.resize(m, (920, 620))
     ph = np.concatenate([im * m[..., None], m[..., None]], 2).astype(np.float32)
     top = cy - card.shape[0] / 2
     draw(c, blur_sprite(tint(card, (0, 0, 0)), 30), cx, cy + 26, opacity=0.18)
@@ -499,11 +545,17 @@ def sh_wall(t):            # "Here are the honest answers."
     if ka > 0:
         draw(c, blur_sprite(tint(ARROW(), (0, 0, 0)), 20), lerp(-300, W / 2, e_out_cubic(ka)) + 10, 880 + 16, opacity=0.4)
         draw(c, ARROW(), lerp(-300, W / 2, e_out_cubic(ka)), 880)
-    kh = prog(t, WT('l2', 0, 0.55), WT('l2', 0, 0.75))
+    kh = prog(t, WT('l2', 0, 0.5), WT('l2', 0, 0.72))
     if kh > 0:
-        s = ts('HONEST ANSWERS.', I9, 96, INK, 0.0)
-        draw(c, blur_sprite(s, (1 - kh) * 10), W / 2, 1300, scale=1.4 - 0.4 * e_out_cubic(kh), opacity=min(1, kh * 2))
-    caption(c, t, [('l2', 0)], dark=True, y=1820, size=46)
+        c[:] = c * (1 - 0.55 * kh) + 0.55 * kh * GREY
+        band = rrect(W - 100, 210, 40, WHITE)
+        e = e_out_back(kh, 1.6)
+        draw(c, blur_sprite(tint(band, (0, 0, 0)), 26), W / 2, 1330, scale=e, opacity=0.25)
+        draw(c, band, W / 2, 1300, scale=e)
+        g = F2.grad_text('HONEST ANSWERS.', I9, 88)
+        draw(c, blur_sprite(g, (1 - kh) * 10) if kh < 1 else g, W / 2, 1300, scale=(1.3 - 0.3 * e_out_cubic(kh)) * 0.98)
+        confetti(c, W / 2, 1300, t, WT('l2', 0, 0.55), seed=3, n=26, speed=1100)
+    caption(c, t, [('l2', 0)], dark=True, y=1750)
     return c
 
 
@@ -521,14 +573,16 @@ def sh_ask(t, idx):        # popover: "<question>? <answer>."
     pop_in(c, P3(PROPS[idx]) if PROPS[idx] in ('paw', 'infinity', 'speech') else LO2(PROPS[idx]), 860, 330, 0.48, t, t_pill)
     cr = CURSOR()
     rh = POP_BASE()[1]
-    ry = cy + (150 + rh * idx + rh / 2 - POP_BASE()[0].shape[0] / 2)
+    ry = cy + (160 + rh * idx + rh / 2 - POP_BASE()[0].shape[0] / 2)
     kc = prog(t, t0, t0 + 0.4)
-    draw(c, cr, lerp(760, 820, kc), lerp(ry + 160, ry + 30, e_out_cubic(kc)), scale=0.15)
+    draw(c, cr, lerp(800, 900, kc), lerp(ry + 160, ry + 30, e_out_cubic(kc)), scale=0.15)
+    if pp is not None:
+        confetti(c, pp[0], pp[1], t, t_pill, seed=idx, n=18, speed=800)
     if line == 'l7':
         caption(c, t, [(line, 0), (line, 1)], dark=True)
     else:
         caption(c, t, [(line, 0), (line, 1)], dark=True)
-    draw(c, ts('From our FAQs · organicfostering.co.uk/faqs', 'Poppins-Medium', 24, (0.3, 0.3, 0.35, 1)), W / 2, 1860)
+    draw(c, ts('From our FAQs · organicfostering.co.uk/faqs', 'Poppins-Medium', 30, (0.3, 0.3, 0.35, 1)), W / 2, 1866)
     return c
 
 
@@ -536,9 +590,10 @@ def sh_feed(t, idx):       # feed post: a real person lives the answer
     line = ALINES[idx]
     ts0 = P(line, 2) if line != 'l7' else P('l7', 1) + PD('l7', 1) * 0.6
     c = grey()
-    cy = 830 - 40 * e_inout_cubic(clamp((t - ts0) / 4))
+    cy = 800 - 40 * e_inout_cubic(clamp((t - ts0) / 4))
     ptop, pbot = feed_post(c, t, line, ts0 - 0.4, W / 2, cy)
-    chip_in(c, pill_spr(ROWS[idx][1], 40), 760, ptop + 70, t, ts0 - 0.2, rot=3)
+    chip_in(c, pill_spr(ROWS[idx][1], 50), 800, ptop + 80, t, ts0 - 0.2, rot=3)
+    confetti(c, 800, ptop + 80, t, ts0 - 0.15, seed=idx + 20, n=16, speed=700)
     if line == 'l3':
         chip_in(c, chip_spr('Temperament', PURPLE, WHITE), 300, pbot - 80, t, WT('l3', 2, 0.68), rot=-3)
         chip_in(c, chip_spr('Safety', ORANGE, WHITE), 640, pbot - 60, t, P('l3', 3) + 0.15, rot=3)
@@ -627,6 +682,7 @@ def sh_send(t):            # "Send your question"
         lay = np.zeros((H, W), np.float32)
         cv2.circle(lay, (680, 975), int(20 + 160 * kr), 1.0, 6, cv2.LINE_AA)
         c = c * (1 - lay[..., None] * (1 - kr)) + np.array(PURPLE[:3], np.float32) * lay[..., None] * (1 - kr)
+    confetti(c, 680, 975, t, tc, seed=40, n=24, speed=1000)
     kp = prog(t, tc + 0.1, tc + 1.0)
     if kp > 0:
         x = lerp(560, 1250, e_in_cubic(kp))
@@ -688,6 +744,7 @@ def sh_end(t):             # "Organic Fostering."
         draw(c, btn, W / 2, 990, scale=e_out_back(kb, 2))
         if kb > 0.7:
             F.text_arrow(c, 'Send your question', W / 2, 990, size=46)
+    confetti(c, W / 2, 990, t, t0 + 0.45, seed=41, n=30, speed=1200)
     k2 = prog(t, t0 + 0.7, t0 + 1.0)
     if k2 > 0:
         draw(c, ts('0161 241 1332', N9, 56, WHITE), W / 2, 1150, opacity=k2)
@@ -758,6 +815,57 @@ def tr_scroll(a, b, p):
     return out
 
 
+def tr_spin(a, b, p):
+    """Spin-zoom: the shot twists away with zoom blur, the next twists in."""
+    e = e_inout_cubic(p)
+    src = a if p < 0.5 else b
+    ang = (e - (0 if p < 0.5 else 1)) * 28
+    z = 1 + 0.5 * math.sin(math.pi * p)
+    M = cv2.getRotationMatrix2D((W / 2, H / 2), ang, z)
+    out = cv2.warpAffine(src, M, (W, H), borderMode=cv2.BORDER_REFLECT)
+    sp = math.sin(math.pi * p)
+    if sp > 0.1:
+        acc = out.copy()
+        for k in range(1, 5):
+            zz = 1 + 0.035 * k * sp
+            acc += cv2.warpAffine(out, np.float32([[zz, 0, (1 - zz) * W / 2], [0, zz, (1 - zz) * H / 2]]), (W, H),
+                                  borderMode=cv2.BORDER_REPLICATE)
+        out = acc / 5
+    return out
+
+
+def tr_gradwipe(a, b, p):
+    """A diagonal band of the brand magenta→orange gradient sweeps across and reveals the next shot."""
+    e = e_inout_cubic(p)
+    pos = lerp(-700, W + 900, e)
+    d = _X + (_Y - H / 2) * 0.45 - pos
+    band = 260
+    out = np.where((d < -band / 2)[..., None], b, a)
+    m = np.clip(1 - np.abs(d) / (band / 2), 0, 1)[..., None]
+    u = np.clip((d + band / 2) / band, 0, 1)[..., None]
+    col = np.array(PURPLE[:3], np.float32) * (1 - u) + np.array(ORANGE[:3], np.float32) * u
+    m = np.clip(m * 3, 0, 1)
+    out = out * (1 - m) + col * m
+    edge = np.exp(-(d / 40) ** 2)[..., None] * 0.5
+    return np.clip(out + edge, 0, 1)
+
+
+def tr_glitch(a, b, p):
+    """Slice glitch with an RGB split and a brand tint flash."""
+    rng = np.random.default_rng(int(p * 24) + 5)
+    out = (b if p > 0.5 else a).copy()
+    sp = math.sin(math.pi * p)
+    for _ in range(10):
+        y0 = int(rng.uniform(0, H - 60))
+        hh = int(rng.uniform(20, 150))
+        dx = int(rng.uniform(-140, 140) * sp)
+        out[y0:y0 + hh] = np.roll(out[y0:y0 + hh], dx, 1)
+    s_ = int(18 * sp)
+    if s_:
+        out = np.stack([np.roll(out[..., 0], s_, 1), out[..., 1], np.roll(out[..., 2], -s_, 1)], 2)
+    return out * (1 - 0.15 * sp) + np.array(PURPLE[:3], np.float32) * 0.15 * sp
+
+
 def tr_flash(a, b, p):
     k = 1 - abs(p - 0.5) * 2
     return (a if p < 0.5 else b) * (1 - k) + k * np.array([1.0, 0.97, 0.95], np.float32)
@@ -768,10 +876,11 @@ def tr_cut(a, b, p):
 
 
 # per cut index: (kind, duration)
-TRANS = [(tr_zoom, 0.4), (tr_blurfade, 0.35), (lambda a, b, p: tr_whip(a, b, p, 1), 0.34), (tr_zoom, 0.4),
-         (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_scroll, 0.36),
-         (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_scroll, 0.36), (tr_blurfade, 0.5), (tr_blurfade, 0.5),
-         (tr_flash, 0.3), (lambda a, b, p: tr_whip(a, b, p, 0), 0.34), (tr_blurfade, 0.5)]
+TRANS = [(tr_zoom, 0.4), (tr_gradwipe, 0.5), (lambda a, b, p: tr_whip(a, b, p, 1), 0.34), (tr_spin, 0.45),
+         (tr_scroll, 0.36), (tr_gradwipe, 0.45), (tr_zoom, 0.4), (lambda a, b, p: tr_whip(a, b, p, 1), 0.34),
+         (tr_scroll, 0.36), (tr_glitch, 0.34), (tr_spin, 0.45), (tr_gradwipe, 0.45), (tr_scroll, 0.36),
+         (tr_glitch, 0.4), (tr_blurfade, 0.5), (tr_flash, 0.3), (lambda a, b, p: tr_whip(a, b, p, 0), 0.34),
+         (tr_gradwipe, 0.5)]
 
 
 def hits():
@@ -799,6 +908,32 @@ def energy(t):
     return z, sx, sy, ca
 
 
+SWEEPS = None
+
+
+def light_sweep(c, t):
+    """Magenta/orange light leaks sweeping across on the big moments, plus a white glint across UI cards."""
+    global SWEEPS
+    if SWEEPS is None:
+        SWEEPS = [P('l1', 2), WT('l2', 0, 0.5), P('l3', 0), P('l8', 0), P('l8', 1), P('l9', 0), P('l10', 0) - 0.2]
+    for j, tc in enumerate(SWEEPS):
+        d = t - tc + 0.2
+        if 0 <= d < 0.9:
+            k = d / 0.9
+            x = lerp(-300, W + 300, k)
+            g = np.exp(-(((_X - x) / 360) ** 2 + ((_Y - H * (0.3 + 0.1 * j % 3)) / 900) ** 2))[..., None] * math.sin(math.pi * k)
+            col = np.array((PURPLE if j % 2 else ORANGE)[:3], np.float32)
+            c = c + g * (col * 0.35 + 0.15)
+    for line in ALINES:                                               # glint over the pop-up card as each answer lands
+        tp = P(line, 1) if line != 'l7' else WT('l7', 1, 0.35)
+        d = t - tp - 0.1
+        if 0 <= d < 0.5:
+            pos = lerp(-400, W + 400, d / 0.5)
+            dd = _X + (_Y - H / 2) * 0.6 - pos
+            c = c + np.exp(-(dd / 50) ** 2)[..., None] * 0.22
+    return np.clip(c, 0, 1)
+
+
 def render_raw(t):
     global SHOTS, HITS
     if SHOTS is None:
@@ -819,10 +954,14 @@ def render_raw(t):
                 break
         if c is None:
             c = SHOTS[-1][2](t)
+    c = light_sweep(c, t)
     z, sx, sy, _ = energy(t)
-    if z > 1.001 or abs(sx) + abs(sy) > 0.5:
-        M = np.float32([[z, 0, (1 - z) * W / 2 + sx], [0, z, (1 - z) * H / 2 + sy]])
-        c = cv2.warpAffine(c, M, (W, H), borderMode=cv2.BORDER_REPLICATE)
+    z *= 1.012 + 0.01 * math.sin(t * 0.9)                          # slow breathing push, like a hand-held phone camera
+    rot = 0.5 * math.sin(t * 0.55)
+    M = cv2.getRotationMatrix2D((W / 2, H / 2), rot, z)
+    M[0, 2] += sx + 6 * math.sin(t * 0.7)
+    M[1, 2] += sy + 5 * math.cos(t * 0.6)
+    c = cv2.warpAffine(c, M, (W, H), borderMode=cv2.BORDER_REPLICATE)
     if t > DUR - FADE:
         c = c * (1 - 0.7 * e_inout_cubic(prog(t, DUR - FADE, DUR)))
     return c

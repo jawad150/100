@@ -32,6 +32,13 @@ def add(buf, t0, x, gain=1.0, pan=0.0):
         A.add(buf, t0, x, gain, pan)
 
 
+def glitch(dur=0.3, vel=0.2):
+    t = tt(dur)
+    x = np.sign(np.sin(2 * np.pi * rng.uniform(200, 900) * t)) * (rng.random(len(t)) > 0.5)
+    x = np.repeat(x[::40], 40)[:len(t)]
+    return bp(x, 400, 6000) * np.minimum(1, (dur - t) / 0.05) * vel
+
+
 def ding(f=1568, vel=0.12):
     return ping(vel, f) + 0.6 * np.pad(ping(vel * 0.7, f * 1.5), (int(0.09 * SR), 0))[:len(ping(vel, f))]
 
@@ -57,7 +64,14 @@ music = music * (shape * swell)[:, None]
 shots = R.shots()
 for j, (a, b, f) in enumerate(shots[1:]):
     kind, td = R.TRANS[j] if j < len(R.TRANS) else (R.tr_blurfade, 0.4)
-    if kind is R.tr_scroll:
+    if kind is R.tr_glitch:
+        add(sfx, a - td / 2, glitch(td + 0.05, 0.16))
+    elif kind is R.tr_spin:
+        add(sfx, a - td / 2 - 0.05, whoosh(td + 0.15, 200, 7000, 0.13))
+    elif kind is R.tr_gradwipe:
+        add(sfx, a - td / 2, whoosh(td + 0.1, 350, 5000, 0.11), pan=-0.2)
+        add(sfx, a - 0.05, shimmer(0.6, 0.05, 88))
+    elif kind is R.tr_scroll:
         add(sfx, a - td / 2, whoosh(0.32, 500, 4500, 0.08), pan=0.1)
     elif kind is R.tr_blurfade:
         add(sfx, a - td / 2, whoosh(0.5, 300, 2500, 0.06, rev=True))
@@ -80,6 +94,8 @@ for k in range(16):                                                   # typing "
     add(sfx, t0 + 0.05 + k * PD('l1', 2) * 0.9 / 16, key_click(0.07), pan=rng.uniform(-0.2, 0.2))
 add(sfx, WT('l2', 0, 0.35), whoosh(0.4, 400, 5000, 0.1))              # arrow
 add(sfx, WT('l2', 0, 0.55), thud(0.22, 110))                          # HONEST ANSWERS.
+add(sfx, WT('l2', 0, 0.58), crinkle(0.5, 0.09))
+add(sfx, WT('l2', 0, 0.58), shimmer(0.9, 0.08, 86))
 add(sfx, P('l3', 0) - 0.3, zip_up(0.1, 300, 1200, 0.3))               # popover opens
 for i, line in enumerate(R.ALINES):
     tp = P(line, 1) if line != 'l7' else WT('l7', 1, 0.35)
@@ -87,6 +103,7 @@ for i, line in enumerate(R.ALINES):
     add(sfx, tp, pop(0.24, 760 + 80 * i))                             # answer pill
     add(sfx, tp + 0.05, ping(0.06, 1320 if R.ROWS[i][1] in ('Yes',) else 1046))
     add(sfx, tp + 0.02, pop(0.16, 520))                               # 3D prop
+    add(sfx, tp + 0.05, crinkle(0.35, 0.06))                          # confetti
 for tt_, f in ((WT('l3', 2, 0.68), 820), (P('l3', 3) + 0.15, 980), (P('l5', 2) + 0.1, 820), (WT('l6', 2, 0.72), 760),
                (P('l6', 3), 880), (WT('l6', 4, 0.3), 1000)):
     add(sfx, tt_, pop(0.18, f))                                       # chips
@@ -99,6 +116,7 @@ tc = P('l9', 0) + PD('l9', 0) * 0.8
 add(sfx, P('l9', 0) - 0.1, zip_up(0.08, 500, 1400, 0.3))              # bar morphs into the button
 add(sfx, tc, key_click(0.22))                                         # click
 add(sfx, tc + 0.02, pop(0.2, 900))
+add(sfx, tc + 0.05, crinkle(0.45, 0.08))
 add(sfx, tc + 0.1, whoosh(0.8, 500, 7000, 0.14))                      # paper plane
 add(sfx, P('l9', 1) + 0.1, ding(1568, 0.13))                          # notification 1
 add(sfx, P('l9', 3) + 0.1, ding(1760, 0.11))                          # notification 2

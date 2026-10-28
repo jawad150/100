@@ -111,10 +111,11 @@ def icon(kind, size=44, col=INK):
     return solid(m, col)
 
 
-def post_card(img, caption, w=900, saved=False, user='organicfostering', sub='Manchester · Fostering', likes='1,204'):
+def post_card(img, caption, w=900, saved=False, user='organicfostering', sub='Manchester · Fostering', likes='1,204', cap_size=28):
     """A social post (generic, no platform branding): header, photo, action row, caption."""
     ih = img.shape[0]
-    hgt = 130 + ih + 110 + 46 * len(caption) + 30
+    lh = int(cap_size * 1.6)
+    hgt = 130 + ih + 110 + lh * len(caption) + 30
     card = rrect(w, hgt, 28, WHITE).copy()
     paste_spr(card, avatar(72), 70, 66)
     s = ts(user, I8, 30, INK)
@@ -136,8 +137,8 @@ def post_card(img, caption, w=900, saved=False, user='organicfostering', sub='Ma
     s = ts(likes + ' likes', I8, 26, INK)
     paste_spr(card, s, 38 + s.shape[1] / 2, yy + 58)
     for j, ln in enumerate(caption):
-        s = ts(ln, I4, 28, INK)
-        paste_spr(card, s, 38 + s.shape[1] / 2, yy + 104 + j * 46)
+        s = ts(ln, I6 if cap_size > 28 else I4, cap_size, INK)
+        paste_spr(card, s, 38 + s.shape[1] / 2, yy + 104 + j * lh)
     return card
 
 
@@ -227,20 +228,20 @@ def motion_blur(c, k=61, axis=1):
     return cv2.filter2D(c, -1, ker)
 
 
-def banner(title, body, w=940, time='now'):
-    h = 150
-    card = rrect(w, h, 34, (1, 1, 1, 0.97)).copy()
-    ic = rrect(96, 96, 24, WHITE).copy()
-    paste_spr(ic, emblem(78), 48, 48)
-    st = R.sdf_stroke(R.rrect_alpha(96, 96, 24, 0), 1.5)
+def banner(title, body, w=1000, time='now'):
+    h = 180
+    card = rrect(w, h, 40, (1, 1, 1, 0.98)).copy()
+    ic = rrect(112, 112, 28, WHITE).copy()
+    paste_spr(ic, emblem(92), 56, 56)
+    st = R.sdf_stroke(R.rrect_alpha(112, 112, 28, 0), 1.5)
     ic = R.over_spr(ic, solid(cv2.resize(st, (ic.shape[1], ic.shape[0])), (0.85, 0.85, 0.88, 1)))
-    paste_spr(card, ic, 80, h / 2)
-    s = ts(title, I8, 32, INK)
-    paste_spr(card, s, 150 + s.shape[1] / 2, h / 2 - 24)
-    s = ts(time, I4, 24, (0.5, 0.5, 0.55, 1))
-    paste_spr(card, s, w - 40 - s.shape[1] / 2, h / 2 - 24)
-    s = ts(body, I4, 28, INK)
-    paste_spr(card, s, 150 + s.shape[1] / 2, h / 2 + 22)
+    paste_spr(card, ic, 90, h / 2)
+    s = ts(title, I8, 40, INK)
+    paste_spr(card, s, 172 + s.shape[1] / 2, h / 2 - 30)
+    s = ts(time, I4, 28, (0.5, 0.5, 0.55, 1))
+    paste_spr(card, s, w - 44 - s.shape[1] / 2, h / 2 - 30)
+    s = ts(body, I6, 34, INK)
+    paste_spr(card, s, 172 + s.shape[1] / 2, h / 2 + 26)
     return card
 
 
