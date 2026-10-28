@@ -6,7 +6,7 @@ works = json.load(open(f'{WS}/site/works.json'))
 for w in works:
     for m in w['media']:
         m.pop('stills', None)
-tpl = open(f'{HERE}/site_template.html').read()
+tpl = open(f'{HERE}/site_template2.html').read()
 html = tpl.replace('/*WORKS*/[]', json.dumps(works, ensure_ascii=False))
 open(f'{WS}/site/index.html', 'w').write(html)
 print('wrote', len(html), 'bytes')
