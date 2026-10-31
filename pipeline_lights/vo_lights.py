@@ -15,7 +15,7 @@ from kokoro_onnx import Kokoro
 S = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace_lights'))
 T = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'workspace_ic', 'tts'))
 OUT = f'{S}/tts'
-BLEND = (('am_michael', 0.45), ('bm_george', 0.35), ('am_fenrir', 0.2))      # warm, energetic male narrator
+BLEND = (('bf_emma', 0.55), ('bf_isabella', 0.45))      # warm, smiling British female narrator (v2)
 
 # line -> [(text, pause_after, speed, pitch)]   pitch > 1 = brighter / smiling / rising
 LINES = {
@@ -64,7 +64,8 @@ if __name__ == '__main__':
     for name, phrases in LINES.items():
         parts, t, ons = [], 0.0, []
         for text, pause, speed, pitch in phrases:
-            a, sr = k.create(text, voice=style, speed=speed * 1.06 / pitch, lang='en-gb', trim=False)
+            pitch = 1 + (pitch - 1) * 0.7
+            a, sr = k.create(text, voice=style, speed=speed * 1.04 / pitch, lang='en-gb', trim=False)
             a = tidy(brighten(np.asarray(a, np.float32), sr, pitch), sr)
             ons.append((round(t + 0.03, 3), round(len(a) / sr, 3), text))
             parts.append(a)

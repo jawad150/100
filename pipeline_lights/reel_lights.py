@@ -163,6 +163,90 @@ def flare(c, x, y, t, ton, col=(1.0, 0.85, 0.55), size=1.0):
     c[:] = np.clip(c + (g * 0.9 + streak * 0.6) * a * np.array(col, np.float32), 0, 1)
 
 
+
+# ------------------------------------------------------------------ v2 effects: god rays, dust motes, stars, star pattern
+@functools.lru_cache(maxsize=24)
+def _polar(x, y):
+    ang = np.arctan2(_Y - y, _X - x).astype(np.float32)
+    rad = np.hypot(_X - x, _Y - y).astype(np.float32)
+    return ang, rad
+
+
+def god_rays(c, x, y, t, ton, col=(1.0, 0.82, 0.5), n=11, length=1100, amt=0.32):
+    k = prog(t, ton, ton + 0.8)
+    if k <= 0:
+        return
+    ang, rad = _polar(int(x), int(y))
+    beams = (0.5 + 0.5 * np.cos(ang * n + t * 0.35)) ** 10 + 0.6 * (0.5 + 0.5 * np.cos(ang * (n + 4) - t * 0.22)) ** 14
+    fall = np.clip(1 - rad / length, 0, 1) ** 1.6
+    g = (beams * fall * amt * k)[..., None]
+    c[:] = np.clip(c + g * np.array(col, np.float32), 0, 1)
+
+
+@functools.lru_cache(maxsize=1)
+def _mote_sprites():
+    out = []
+    for r in (4, 6, 9, 13):
+        m = np.zeros((r * 6, r * 6), np.float32)
+        cv2.circle(m, (r * 3, r * 3), r, 1.0, -1, cv2.LINE_AA)
+        m = cv2.GaussianBlur(m, (0, 0), r * 0.6)
+        out.append(solid(m / m.max(), (1.0, 0.86, 0.6, 1)))
+    return out
+
+
+def motes(c, t, seed=0, n=34, region=(0, 0, W, H * 0.8), amt=0.8):
+    rng = np.random.default_rng(seed)
+    sp = _mote_sprites()
+    x0, y0, x1, y1 = region
+    for i in range(n):
+        x = rng.uniform(x0, x1) + 30 * math.sin(t * rng.uniform(0.3, 0.8) + i)
+        y = y0 + (rng.uniform(0, 1) * (y1 - y0) - t * rng.uniform(12, 40)) % (y1 - y0)
+        tw = 0.4 + 0.6 * (0.5 + 0.5 * math.sin(t * rng.uniform(1.5, 3.5) + i * 1.7))
+        draw(c, sp[rng.integers(len(sp))], x, y, opacity=tw * amt * rng.uniform(0.3, 0.9))
+
+
+def night_stars(c, t, seed=5, n=60):
+    rng = np.random.default_rng(seed)
+    for i in range(n):
+        x, y = rng.uniform(20, W - 20), rng.uniform(20, 620)
+        if 360 < x < 620 and y > 120:
+            continue
+        tw = 0.3 + 0.7 * (0.5 + 0.5 * math.sin(t * rng.uniform(1.0, 3.0) + i))
+        r = rng.uniform(1.2, 2.8)
+        draw(c, rrect(r * 2, r * 2, r, (1, 1, 0.92, tw * 0.9)), x, y)
+
+
+def star_pattern(c, t, t0, cx, cy, r, col=GOLD, amt=0.45, dur=1.2):
+    """BMHC's eight-point star drawing itself in gold line, slowly turning."""
+    k = prog(t, t0, t0 + dur)
+    if k <= 0:
+        return
+    rot = (t - t0) * 0.15
+    lay = np.zeros((H, W), np.uint8)
+    for sq in range(2):
+        pts = []
+        for j in range(5):
+            a = rot + sq * math.pi / 4 + j * math.pi / 2 + math.pi / 4
+            pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+        segs = np.array(pts)
+        L = len(segs) - 1
+        upto = k * L
+        for j in range(int(math.ceil(upto))):
+            f = min(1.0, upto - j)
+            p0, p1 = segs[j], segs[j] + (segs[j + 1] - segs[j]) * f
+            cv2.line(lay, (int(p0[0] * 4), int(p0[1] * 4)), (int(p1[0] * 4), int(p1[1] * 4)), 255, 3 * 4, cv2.LINE_AA, shift=2)
+    cv2.circle(lay, (int(cx * 4), int(cy * 4)), int(r * 0.5 * 4 * k), 255, 2 * 4, cv2.LINE_AA, shift=2)
+    m = lay.astype(np.float32)[..., None] / 255 * amt
+    glow = cv2.GaussianBlur(m[..., 0], (0, 0), 8)[..., None] * 0.8
+    c[:] = np.clip(c * (1 - m) + np.array(col[:3], np.float32) * (m + glow), 0, 1)
+
+
+def room_glow(c, t, ton, x, y, seed, col=(1.0, 0.82, 0.5), rays=True, dust=True, region=None):
+    if rays:
+        god_rays(c, x, y, t, ton, col)
+    if dust and t > ton:
+        motes(c, t, seed, region=region or (0, 0, W, H * 0.75), amt=0.7 * prog(t, ton, ton + 0.6))
+
 # ------------------------------------------------------------------ animated overlays
 def rays(c, x, y, r0, kr, col=GOLD, n=12):
     if not 0 < kr < 1:
@@ -244,6 +328,9 @@ def caption(c, t, phrases, size=62, y=1650, keys=(), maxw=940):
                 continue
             s = cap_word(w, size, g)
             e = e_out_cubic(k)
+            if g:
+                pulse = 0.55 + 0.45 * math.sin((t - ton) * 5)
+                draw(c, blur_sprite(s, 14), x0 + x + s.shape[1] / 2, yy + (1 - e) * 22, opacity=0.9 * k * pulse)
             draw(c, blur_sprite(tint(s, (0, 0, 0)), 12), x0 + x + s.shape[1] / 2 + 2, yy + 6 + (1 - e) * 22, opacity=0.7 * k)
             draw(c, s, x0 + x + s.shape[1] / 2, yy + (1 - e) * 22, opacity=min(1, k * 2))
 
@@ -298,7 +385,9 @@ def sh_1843(t):
     M = np.float32([[z, 0, (1 - z) * W / 2], [0, z, (1 - z) * H * 0.4]])
     c = cv2.warpAffine(c, M, (W, H), borderMode=cv2.BORDER_REFLECT)
     flare(c, 490, 680, t, tw)
+    night_stars(c, t)
     c = L.bottom(c, 0.6)
+    star_pattern(c, t, tw - 0.1, W / 2, 1320, 330, amt=0.35)
     k = prog(t, tw, tw + 0.4)
     if k > 0:
         n = int(lerp(1800, 1843, e_out_cubic(prog(t, tw, tw + 0.7))))
@@ -333,6 +422,7 @@ def sh_learning(t):
     lit = L.warm(lit)
     ton = WT('l3', 0, 0.25)
     c = lights(src, lit, flick(t, ton))
+    room_glow(c, t, ton, 540, 1300, 3, region=(200, 700, 880, 1400))
     flare(c, 540, 1300, t, ton)
     c = grade_bottom(c, 0.7, 0.6)
     dial(c, t, 0.08, 0.1, t0, t0 + 2, show=prog(t, t0, t0 + 0.5))
@@ -357,6 +447,7 @@ def sh_fajr(t):
     kl = prog(t, ton, ton + 1.0)
     if kl > 0:
         L.lamp_light(c, 540, 300, 700, 0.45 * kl, (0.85, 0.9, 1.0))
+    room_glow(c, t, ton, 540, -60, 4, col=(0.8, 0.88, 1.0))
     c = L.bottom(c, 0.7)
     dial(c, t, 0.0, 0.0, t0, t0 + 1)
     pop_in(c, P3('switch_on') if t > ton else P3('switch_off'), 880, 560, 0.32, t, t0 + 0.2)
@@ -373,6 +464,7 @@ def sh_classes(t):
     L.lamp_light(lit, 300, 300, 700, 0.35)
     ton = t0 + 0.15
     c = lights(src, lit, flick(t, ton))
+    room_glow(c, t, ton, 300, 300, 5)
     flare(c, 300, 300, t, ton)
     c = grade_bottom(c, 0.75, 0.5)
     dial(c, t, 0.0, 0.18, t0, t0 + 1.2)
@@ -390,6 +482,7 @@ def sh_sport(t):
     lit = L.warm(src)
     ton = t0 + 0.1
     c = lights(src, lit, flick(t, ton))
+    room_glow(c, t, ton, 540, 220, 6)
     flare(c, 540, 300, t, ton, size=1.3)
     c = grade_bottom(c, 0.7, 0.6)
     dial(c, t, 0.18, 0.38, t0, t0 + 1.2)
@@ -409,6 +502,7 @@ def sh_radio(t):
     if kr > 0:
         L.lamp_light(lit, 860, 360, 420, 0.5 * kr, (1.0, 0.35, 0.3))
     c = lights(src, lit, min(1, 0.4 + kr))
+    room_glow(c, t, ton, 860, 360, 7, col=(1.0, 0.4, 0.35), dust=False)
     c = grade_bottom(c, 0.75, 0.55)
     dial(c, t, 0.38, 0.5, t0, t0 + 1.2)
     pop_in(c, P3('clock'), 870, 1180, 0.38, t, P('l7', 2))
@@ -456,6 +550,7 @@ def sh_open(t):
     lit = L.warm(src)
     ton = t0 + 0.1
     c = lights(src, lit, flick(t, ton))
+    room_glow(c, t, ton, 700, 300, 8)
     flare(c, 700, 400, t, ton)
     c = grade_bottom(c, 0.75, 0.5)
     dial(c, t, 0.66, 0.72, t0, t0 + 1)
@@ -473,6 +568,7 @@ def sh_friday(t):
     L.lamp_light(lit, 540, 500, 700, 0.3)
     ton = t0 + 0.1
     c = lights(src, lit, flick(t, ton))
+    room_glow(c, t, ton, 540, 380, 9)
     c = grade_bottom(c, 0.75, 0.5)
     dial(c, t, 0.72, 0.25, t0, t0 + 0.8)
     k = prog(t, t0 + 0.15, t0 + 0.45)
@@ -497,6 +593,8 @@ def sh_night(t):
     z = lerp(1.1, 1.0, e_inout_cubic(clamp((t - t0) / 4)))
     M = np.float32([[z, 0, (1 - z) * W / 2], [0, z, (1 - z) * H * 0.45]])
     c = cv2.warpAffine(c, M, (W, H), borderMode=cv2.BORDER_REFLECT)
+    night_stars(c, t, seed=8, n=80)
+    motes(c, t, 12, n=24, region=(0, 300, W, 1300), amt=0.5)
     c = L.bottom(np.clip(c, 0, 1), 0.6)
     dial(c, t, 0.25, 1.0, t0, t0 + 1.6)
     L.building_icon(c, 9)
@@ -535,6 +633,9 @@ def sh_grid(t):
         paste_spr(fr, F.sprite_of(im.astype(np.float32), 10), (cw + 14) / 2, (ch + 14) / 2)
         draw(c, fr, x, y)
     ts_ = t0 + 0.55
+    if t > ts_:
+        god_rays(c, 540, 1480, t, ts_, amt=0.25)
+        motes(c, t, 14, n=40, region=(0, 0, W, H), amt=0.6 * prog(t, ts_, ts_ + 0.5))
     pop_in(c, P3('switch_on') if t > ts_ else P3('switch_off'), 540, 1480, 0.24, t, t0 - 0.2, ray=t > ts_)
     flare(c, 540, 1480, t, ts_, size=1.6)
     caption(c, t, [('l12', 0)], size=86, y=1680, keys=('lights', 'on.'))
@@ -546,8 +647,11 @@ def sh_end(t):
     src = FACADE()
     c = np.clip(L.night(src) * 1.15, 0, 1)
     L.light_windows(c, src)
+    night_stars(c, t, seed=9, n=70)
     g = np.clip((_Y / H - 0.42) / 0.3, 0, 1)[..., None]
     c = c * (1 - 0.9 * g) + np.array(GREEN_D[:3], np.float32) * 0.9 * g
+    star_pattern(c, t, t0 - 0.4, W / 2, 1010, 300, amt=0.3, dur=1.5)
+    motes(c, t, 15, n=30, region=(0, 700, W, H), amt=0.45)
     pop_in(c, LOGO(), W / 2, 1010, 0.8, t, t0 - 0.3, ray=False, float_amp=3)
     k = prog(t, t0 - 0.1, t0 + 0.3)
     if k > 0:
@@ -621,6 +725,70 @@ def tr_iris(a, b, p, cx=490, cy=680):
     return A * (1 - hole - ring) + np.array([1.0, 0.78, 0.42], np.float32) * ring + b * hole
 
 
+def tr_arch(a, b, p):
+    """A gothic pointed-arch window grows from the bottom and opens onto the next shot (the building's own windows)."""
+    e = e_inout_cubic(p)
+    w = 60 + e * 1500
+    h = 80 + e * 2600
+    cx, base = W / 2, H + 40
+    xr = np.abs(_X - cx) / (w / 2)
+    top = base - h
+    inside_rect = (xr <= 1) & (_Y >= top + w * 0.6)
+    yy = (top + w * 0.6 - _Y) / (w * 0.95)
+    inside_arch = (xr <= 1) & (_Y < top + w * 0.6) & (yy <= np.sqrt(np.clip(1 - (xr * 0.85) ** 2, 0, 1)) * 0.9)
+    m = (inside_rect | inside_arch).astype(np.float32)
+    m = cv2.GaussianBlur(m, (0, 0), 2)[..., None]
+    edge = cv2.GaussianBlur(m[..., 0], (0, 0), 10)[..., None] - m
+    return np.clip(a * (1 - m) + b * m + np.clip(edge, 0, 1) * np.array([1.0, 0.8, 0.45], np.float32) * 1.4, 0, 1)
+
+
+@functools.lru_cache(maxsize=1)
+def _burn_noise():
+    rng = np.random.default_rng(21)
+    n = cv2.resize(rng.random((24, 14)).astype(np.float32), (W, H), interpolation=cv2.INTER_CUBIC)
+    n = cv2.GaussianBlur(n, (0, 0), 30)
+    n = (n - n.min()) / (np.ptp(n) + 1e-6)
+    return n * 0.7 + (1 - _Y / H) * 0.3
+
+
+def tr_burn(a, b, p):
+    """Warm film burn: the frame burns through from its brightest edge into the next shot."""
+    n = _burn_noise()
+    th = lerp(-0.1, 1.1, e_inout_cubic(p))
+    m = np.clip((th - n) / 0.06, 0, 1)[..., None]
+    edge = np.clip(1 - np.abs(th - n) / 0.12, 0, 1)[..., None]
+    out = a * (1 - m) + b * m
+    return np.clip(out + edge * np.array([1.0, 0.55, 0.18], np.float32) * 1.3 + edge ** 3 * 0.6, 0, 1)
+
+
+def tr_split(a, b, p):
+    """The shot splits down the middle and slides apart like doors."""
+    e = e_inout_cubic(p)
+    off = int(e * W / 2)
+    out = b.copy()
+    if off < W // 2:
+        out[:, :W // 2 - off] = a[:, off:W // 2]
+        out[:, W // 2 + off:] = a[:, W // 2:W - off]
+        lay = np.zeros((H, W), np.float32)
+        for x in (W // 2 - off, W // 2 + off):
+            cv2.line(lay, (x, 0), (x, H), 1.0, 6)
+        g = cv2.GaussianBlur(lay, (0, 0), 14)[..., None]
+        out = np.clip(out + g * np.array([1.0, 0.8, 0.45], np.float32), 0, 1)
+    return out
+
+
+def tr_zoomblur(a, b, p):
+    src = a if p < 0.5 else b
+    sp = math.sin(math.pi * p)
+    acc = src.copy()
+    for k in range(1, 6):
+        z = 1 + 0.045 * k * sp
+        acc += cv2.warpAffine(src, np.float32([[z, 0, (1 - z) * W / 2], [0, z, (1 - z) * H / 2]]), (W, H), borderMode=cv2.BORDER_REPLICATE)
+    out = acc / 6
+    k = 1 - abs(p - 0.5) * 2
+    return np.clip(out + k ** 3 * 0.35, 0, 1)
+
+
 def tr_whip(a, b, p, axis=1):
     return R.whip(a, b, p, axis)
 
@@ -630,9 +798,8 @@ def tr_dissolve(a, b, p):
     return a * (1 - e) + b * e
 
 
-TRANS = [(tr_dip, 0.5), (tr_sweep, 0.5), (tr_dip, 0.55), (tr_blinds, 0.5), (lambda a, b, p: tr_whip(a, b, p, 1), 0.34),
-         (tr_dip, 0.45), (lambda a, b, p: tr_whip(a, b, p, 0), 0.34), (tr_blinds, 0.5), (tr_sweep, 0.5), (tr_dip, 0.6),
-         (tr_iris, 0.6), (tr_dissolve, 0.6)]
+TRANS = [(tr_arch, 0.6), (tr_burn, 0.55), (tr_dip, 0.55), (tr_blinds, 0.5), (tr_zoomblur, 0.4), (tr_split, 0.5),
+         (lambda a, b, p: tr_whip(a, b, p, 0), 0.34), (tr_sweep, 0.5), (tr_arch, 0.55), (tr_dip, 0.6), (tr_iris, 0.6), (tr_burn, 0.6)]
 
 
 def hits():

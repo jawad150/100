@@ -9,7 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 S = os.path.abspath(os.path.join(HERE, '..', 'workspace_lights'))
 OUT = os.path.abspath(os.path.join(HERE, '..', 'reel', 'bmhc'))
 JOBS = int(os.environ.get('JOBS', '4'))
-NF = 1452   # 48.41 s at 30 fps
+NF = 1476   # 49.23 s at 30 fps
 
 
 def run(a, b):

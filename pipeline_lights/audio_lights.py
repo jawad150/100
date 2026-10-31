@@ -119,6 +119,17 @@ for j, (a, b, f) in enumerate(shots[1:]):
         add(sfx, a - td / 2, whoosh(td + 0.2, 200, 3000, 0.08))
     elif kind is R.tr_dissolve:
         pass
+    elif kind is R.tr_burn:
+        add(sfx, a - td / 2, crinkle(td + 0.2, 0.08))
+        add(sfx, a - td / 2, whoosh(td + 0.1, 200, 2500, 0.07))
+    elif kind is R.tr_arch:
+        add(sfx, a - td / 2, whoosh(td + 0.15, 250, 4500, 0.09))
+        add(sfx, a, shimmer(0.7, 0.05, 86))
+    elif kind is R.tr_split:
+        add(sfx, a - td / 2, whoosh(td, 300, 5000, 0.1), pan=-0.4)
+        add(sfx, a - td / 2, whoosh(td, 300, 5000, 0.1), pan=0.4)
+    elif kind is R.tr_zoomblur:
+        add(sfx, a - td / 2, whoosh(td + 0.1, 150, 6000, 0.12))
     else:
         add(sfx, a - td / 2 - 0.05, whoosh(0.36, 280, 6000, 0.11), pan=0.3)
 
