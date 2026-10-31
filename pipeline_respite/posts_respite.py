@@ -115,6 +115,25 @@ def sign_off(c, y=1150, ink=PLUM, panel=True):
     draw(c, sp, 1010 - sp.shape[1] / 2, y + 190)
 
 
+def sign_off2(c, y=1150, ink=PLUM):
+    """Cleaner sign-off: one-line subline, button, web address left and phone number right."""
+    g = np.clip((YY - (y - 150)) / 150, 0, 1)[..., None] ** 1.2
+    c[:] = c * (1 - 0.94 * g) + np.array(CREAM, np.float32) * 0.94 * g
+    line = 'Planned short breaks: one night, a weekend or part of a school holiday.'
+    size = 32
+    while ts(line, N8, size, ink).shape[1] > PW - 140 and size > 22:
+        size -= 1
+    text(c, line, 70, y + 10, N8, size, ink)
+    bw, bh = 590, 86
+    b = F.grad_spr(bw, bh, bh / 2)
+    draw(c, blur_sprite(b, 16), 70 + bw / 2, y + 98, opacity=0.4)
+    draw(c, b, 70 + bw / 2, y + 90)
+    F.text_arrow(c, 'Talk to us about respite fostering', 70 + bw / 2, y + 90, size=30)
+    text(c, 'organicfostering.co.uk', 70, y + 165, N8, 28, ink)
+    sp = ts('0161 241 1332', N9, 30, ink)
+    draw(c, sp, 1010 - sp.shape[1] / 2, y + 165)
+
+
 def hand(c, s, x, y, size, col, rot=0):
     sp = solid(_wmask(s, HAND, size), col)
     draw(c, sp, x, y, rot=rot)
@@ -347,7 +366,7 @@ def option_d():
     headline(c, y=230)
     hand(c, 'same child,', 960, 880, 40, PLUM, rot=-4)
     hand(c, '2 weeks later', 960, 924, 40, PLUM, rot=-4)
-    sign_off(c, 1110)
+    sign_off2(c, 1130)
     return vignette(grain(c, 0.01), 0.1)
 
 
