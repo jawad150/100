@@ -387,13 +387,62 @@ def option_e():
     return vignette(grain(c, 0.01), 0.12)
 
 
+# ------------------------------------------------------------------ F: Ready for Friday, with a real child (4K stock footage)
+def tent_card(w=300):
+    """The handwritten 'Welcome back!' tent card, standing (front face + a sliver of the back fold and a shadow)."""
+    note = cv2.imread(f'{S}/tex/note.png')[..., ::-1].astype(np.float32) / 255
+    h = int(w * note.shape[0] / note.shape[1])
+    face = cv2.resize(note, (w, h), interpolation=cv2.INTER_AREA)
+    shade = np.linspace(1.0, 0.9, h)[:, None, None]
+    face = face * shade
+    card = np.zeros((h + 16, w + 8, 4), np.float32)
+    card[8:8 + h, 4:4 + w, :3] = face
+    card[8:8 + h, 4:4 + w, 3] = 1
+    card[8 + h:8 + h + 8, 4:4 + w] = (0.85, 0.8, 0.74, 1)
+    card[..., :3] *= card[..., 3:4]
+    return card
+
+
+def option_f():
+    im = frame(52256, 0.645)
+    hh = 1000
+    sc = hh / im.shape[0]
+    big = cv2.resize(im, (int(im.shape[1] * sc), hh), interpolation=cv2.INTER_AREA)
+    x0 = int(np.clip(0.58 * big.shape[1] - PW / 2, 0, big.shape[1] - PW))
+    photo = big[:, x0:x0 + PW]
+    yo = PH - hh - 60
+    photo = np.concatenate([photo, cv2.flip(photo[-60:], 0)], 0)
+    ext = cv2.GaussianBlur(cv2.resize(photo[:120], (PW, PH), interpolation=cv2.INTER_LINEAR), (0, 0), 12)
+    c = ext.copy()
+    alpha = np.zeros((PH, PW, 1), np.float32); alpha[yo:yo + photo.shape[0]] = 1
+    alpha *= np.clip((YY - yo) / 120, 0, 1)[..., None]
+    layer = np.zeros_like(c); layer[yo:yo + photo.shape[0]] = photo
+    c = c * (1 - alpha) + layer * alpha
+    lum = c.mean(2, keepdims=True)
+    c = np.clip(lum + (c - lum) * 1.06, 0, 1)
+    c = warm_grade(c, 0.9)
+    top = np.clip(1 - YY / 470, 0, 1)[..., None] ** 1.5
+    c = c * (1 - 0.8 * top) + np.array(CREAM, np.float32) * 0.8 * top
+    card = tent_card(230)
+    x, y, rot = 905, 985, 4
+    draw(c, blur_sprite(tint(card, (0.25, 0.08, 0.06)), 14), x - 22, y + 34, rot=rot, opacity=0.45)
+    draw(c, card, x, y, rot=rot)
+    logo(c)
+    eyebrow(c)
+    headline(c, y=230)
+    sign_off2(c, 1160)
+    return vignette(grain(c, 0.012), 0.12)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:] or ['A', 'B', 'C']
     for k in want:
-        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e}[k]()
+        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e, 'F': option_f}[k]()
         cv2.imwrite(f'{OUT}/option_{k}.png', F.to_u8(im))
         print('option', k, flush=True)
+
+
 
 
 
