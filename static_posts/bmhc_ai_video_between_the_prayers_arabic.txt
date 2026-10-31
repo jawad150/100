@@ -1,0 +1,8 @@
+BMHC · “Between the Prayers” · Arabic prayer labels for the edit
+Type these from this file. Do not copy Arabic out of the PDF. Please ask BMHC's imam to check them.
+
+Fajr      الفجر
+Jummah    الجمعة
+Asr       العصر
+Maghrib   المغرب
+Isha      العشاء
