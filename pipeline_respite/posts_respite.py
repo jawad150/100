@@ -370,12 +370,31 @@ def option_d():
     return vignette(grain(c, 0.01), 0.1)
 
 
+# ------------------------------------------------------------------ E: Ready for Friday (photoreal 3D bedroom)
+def option_e():
+    im = cv2.imread(f'{S}/tex/bed_render.png')[..., ::-1].astype(np.float32) / 255
+    c = cv2.resize(im, (PW, PH), interpolation=cv2.INTER_AREA)
+    lum = c.mean(2, keepdims=True)
+    c = np.clip(lum + (c - lum) * 1.25, 0, 1)
+    c = np.clip((c - 0.5) * 1.12 + 0.48, 0, 1)
+    c = warm_grade(c, 0.8)
+    top = np.clip(1 - YY / 400, 0, 1)[..., None] ** 1.6
+    c = c * (1 - 0.3 * top) + np.array(CREAM, np.float32) * 0.3 * top
+    logo(c)
+    eyebrow(c)
+    headline(c, y=230)
+    sign_off2(c, 1150)
+    return vignette(grain(c, 0.01), 0.12)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:] or ['A', 'B', 'C']
     for k in want:
-        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d}[k]()
+        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e}[k]()
         cv2.imwrite(f'{OUT}/option_{k}.png', F.to_u8(im))
         print('option', k, flush=True)
+
+
 
 
