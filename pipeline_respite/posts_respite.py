@@ -270,10 +270,93 @@ def option_c():
     return vignette(grain(c, 0.01), 0.1)
 
 
+# ------------------------------------------------------------------ D: The Calendar + a string of family photos
+WEB = '/home/user/100/workspace_lo2/web/img'
+STRING_PHOTOS = [('06-respite-outdoor-play.webp', 'Park!', 0.5, 0.45), ('balanced-home-baking-2026-09-23.webp', 'Baking', 0.42, 0.5),
+                 ('balanced-home-reading-2026-09-23.webp', 'Story time', 0.5, 0.5), ('balanced-home-outdoors-2026-09-23.webp', 'Walkies', 0.45, 0.5)]
+
+
+def web_photo(name, w, h, fx=0.5, fy=0.5):
+    im = cv2.imread(f'{WEB}/{name}', cv2.IMREAD_COLOR)[..., ::-1].astype(np.float32) / 255
+    ih, iw = im.shape[:2]
+    s = max(w / iw, h / ih)
+    cw, ch = w / s, h / s
+    x0 = int(np.clip(fx * iw - cw / 2, 0, iw - cw)); y0 = int(np.clip(fy * ih - ch / 2, 0, ih - ch))
+    return warm_grade(cv2.resize(im[y0:y0 + int(ch), x0:x0 + int(cw)], (w, h), interpolation=cv2.INTER_AREA), 0.6)
+
+
+def print_card(img, caption, w=196):
+    ph_w, ph_h = img.shape[1], img.shape[0]
+    H_ = ph_h + 62
+    card = np.ones((H_, w, 4), np.float32)
+    card[..., :3] = np.array([0.99, 0.985, 0.975], np.float32) * (0.97 + 0.03 * np.random.default_rng(7).random((H_, w, 1)))
+    card[10:10 + ph_h, 10:10 + ph_w, :3] = img
+    sp = solid(_wmask(caption, HAND, 36), (0.25, 0.22, 0.42, 1))
+    paste_spr(card, sp, w / 2, ph_h + 38)
+    return card
+
+
+def peg():
+    p = np.zeros((70, 26, 4), np.float32)
+    p[2:68, 3:23] = (0.84, 0.68, 0.48, 1)
+    p[2:68, 12:14, :3] *= 0.7
+    p[30:38, 3:23, :3] *= 0.8
+    yy = np.arange(70)[:, None]
+    p[..., :3] *= (0.92 + 0.08 * np.sin(yy * 0.9))[..., None] if False else 1
+    p[..., :3] *= p[..., 3:4]
+    return p
+
+
+def photo_string(c, y_left=440, y_right=430, sag=70, n_bulbs=11):
+    xs = np.linspace(-20, PW + 20, 200)
+    u = (xs - xs[0]) / (xs[-1] - xs[0])
+    ys = y_left + (y_right - y_left) * u + sag * 4 * u * (1 - u)
+    lay = np.zeros((PH, PW), np.uint8)
+    cv2.polylines(lay, [(np.stack([xs, ys], 1) * 4).astype(np.int32)], False, 255, 3 * 4, cv2.LINE_AA, shift=2)
+    m = lay.astype(np.float32)[..., None] / 255
+    sh = cv2.GaussianBlur(np.roll(np.roll(m[..., 0], 14, 0), -10, 1), (0, 0), 4)[..., None] * 0.35
+    c[:] = c * (1 - sh)
+    c[:] = c * (1 - m) + np.array([0.72, 0.6, 0.47], np.float32) * m
+    yat = lambda x: y_left + (y_right - y_left) * ((x + 20) / (PW + 40)) + sag * 4 * ((x + 20) / (PW + 40)) * (1 - (x + 20) / (PW + 40))
+    for k in range(n_bulbs):
+        x = 40 + k * (PW - 80) / (n_bulbs - 1)
+        y = yat(x) + 10
+        g = np.exp(-((XX - x) ** 2 + (YY - y) ** 2) / (2 * 26 ** 2))[..., None] * 0.55
+        c[:] = np.clip(c + g * np.array([1.0, 0.72, 0.35], np.float32), 0, 1)
+        draw(c, rrect(16, 22, 8, (1.0, 0.93, 0.7, 1)), x, y)
+    for (name, cap, fx, fy), x, rot in zip(STRING_PHOTOS, (120, 318, 762, 960), (-7, 4, -4, 6)):
+        card = print_card(web_photo(name, 176, 185, fx, fy), cap)
+        top = yat(x)
+        cy = top + card.shape[0] / 2 - 8
+        draw(c, blur_sprite(tint(card, (0.3, 0.12, 0.05)), 14), x - 14, cy + 22, rot=rot, opacity=0.5)
+        draw(c, card, x, cy, rot=rot)
+        pg = peg()
+        draw(c, blur_sprite(tint(pg, (0.2, 0.1, 0.05)), 4), x - 4, top + 12, opacity=0.4)
+        draw(c, pg, x, top + 6)
+
+
+def option_d():
+    im = cv2.imread(f'{S}/tex/cal_render.png')[..., ::-1].astype(np.float32) / 255
+    c = cv2.resize(im, (PW, PH), interpolation=cv2.INTER_AREA)
+    blinds(c, 0.2, angle=-26, pitch=58, x0=PW * 1.1, y0=-120, reach=1350, soft=8)
+    top = np.clip(1 - YY / 420, 0, 1)[..., None] ** 1.6
+    c = c * (1 - 0.35 * top) + np.array(CREAM, np.float32) * 0.35 * top
+    photo_string(c)
+    logo(c)
+    eyebrow(c)
+    headline(c, y=230)
+    hand(c, 'same child,', 960, 880, 40, PLUM, rot=-4)
+    hand(c, '2 weeks later', 960, 924, 40, PLUM, rot=-4)
+    sign_off(c, 1110)
+    return vignette(grain(c, 0.01), 0.1)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:] or ['A', 'B', 'C']
     for k in want:
-        im = {'A': option_a, 'B': option_b, 'C': option_c}[k]()
+        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d}[k]()
         cv2.imwrite(f'{OUT}/option_{k}.png', F.to_u8(im))
         print('option', k, flush=True)
+
+
