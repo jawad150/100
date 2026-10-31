@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(HERE, '..', 'pipeline_cf'))
 import numpy as np
 import cv2
 import frames_cf as F
-from frames_cf import draw, blur_sprite, tint, rrect, ts, solid, paste_spr, _wmask, PURPLE, ORANGE, PLUM, WHITE, N9, N8, N7
+from frames_cf import draw, blur_sprite, tint, rrect, ts, solid, paste_spr, _wmask, PURPLE, ORANGE, PLUM, PEACH, WHITE, N9, N8, N7
 
 S = os.path.abspath(os.path.join(HERE, '..', 'workspace_respite'))
 OUT = f'{S}/posts'
@@ -115,10 +115,11 @@ def sign_off(c, y=1150, ink=PLUM, panel=True):
     draw(c, sp, 1010 - sp.shape[1] / 2, y + 190)
 
 
-def sign_off2(c, y=1150, ink=PLUM):
+def sign_off2(c, y=1150, ink=PLUM, fade=True):
     """Cleaner sign-off: one-line subline, button, web address left and phone number right."""
-    g = np.clip((YY - (y - 150)) / 150, 0, 1)[..., None] ** 1.2
-    c[:] = c * (1 - 0.94 * g) + np.array(CREAM, np.float32) * 0.94 * g
+    if fade:
+        g = np.clip((YY - (y - 150)) / 150, 0, 1)[..., None] ** 1.2
+        c[:] = c * (1 - 0.94 * g) + np.array(CREAM, np.float32) * 0.94 * g
     line = 'Planned short breaks: one night, a weekend or part of a school holiday.'
     size = 32
     while ts(line, N8, size, ink).shape[1] > PW - 140 and size > 22:
@@ -461,13 +462,54 @@ def option_g():
     return vignette(grain(c, 0.01), 0.12)
 
 
+# ------------------------------------------------------------------ H: three photos = three lengths of stay
+def photo_panel(name, w, h, fx, fy, r=28):
+    im = web_photo(name, w, h, fx, fy)
+    bl = cv2.GaussianBlur(im, (0, 0), 0.8)
+    im = np.clip(im * 1.2 - bl * 0.2, 0, 1)
+    m = cv2.resize(F.R.sdf_fill(F.R.rrect_alpha(w, h, r, 2)), (w, h))
+    sp = np.concatenate([im * m[..., None], m[..., None]], 2).astype(np.float32)
+    g = np.clip((np.arange(h)[:, None] / h - 0.6) / 0.4, 0, 1)[..., None] ** 1.4 * 0.55
+    sp[..., :3] = sp[..., :3] * (1 - g * m[..., None]) + np.array([0.2, 0.05, 0.16], np.float32) * g * m[..., None]
+    return sp
+
+
+def label_pill(c, text_, x, y, fill, ink=WHITE, size=34):
+    sp = ts(text_, N9, size, ink)
+    w = sp.shape[1] + 48
+    draw(c, rrect(w, 64, 32, fill), x + w / 2, y)
+    draw(c, sp, x + w / 2, y)
+
+
+def option_h():
+    c = np.ones((PH, PW, 3), np.float32) * np.array(CREAM, np.float32)
+    for x0, y0, r, col, a in ((120, 260, 520, PURPLE, 0.1), (980, 1150, 560, ORANGE, 0.12)):
+        g = np.exp(-((XX - x0) ** 2 + (YY - y0) ** 2) / (2 * r * r))[..., None] * a
+        c = c * (1 - g) + np.array(col[:3], np.float32) * g
+    panels = [('06-respite-outdoor-play.webp', 70, 400, 470, 680, 0.45, 0.4, 'A weekend', ORANGE, WHITE),
+              ('05-emergency-a-calm-welcome.webp', 560, 400, 450, 325, 0.62, 0.42, 'One night', PURPLE, WHITE),
+              ('04-long-term-family-belonging.webp', 560, 755, 450, 325, 0.55, 0.45, 'Part of a school holiday', PEACH, PLUM)]
+    for name, x, y, w, h, fx, fy, lab, fill, ink in panels:
+        sp = photo_panel(name, w, h, fx, fy)
+        draw(c, blur_sprite(tint(sp, (0.3, 0.1, 0.12)), 18), x + w / 2 + 6, y + h / 2 + 16, opacity=0.35)
+        draw(c, sp, x + w / 2, y + h / 2)
+        label_pill(c, lab, x + 20, y + h - 46, fill, ink, 30 if len(lab) > 12 else 34)
+    logo(c)
+    eyebrow(c)
+    headline(c, y=230)
+    sign_off2(c, 1125, fade=False)
+    return grain(c, 0.008)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:] or ['A', 'B', 'C']
     for k in want:
-        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e, 'F': option_f, 'G': option_g}[k]()
+        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e, 'F': option_f, 'G': option_g, 'H': option_h}[k]()
         cv2.imwrite(f'{OUT}/option_{k}.png', F.to_u8(im))
         print('option', k, flush=True)
+
+
 
 
 
