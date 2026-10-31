@@ -3,6 +3,5 @@ Type these from this file. Do not copy Arabic out of the PDF. Please ask BMHC's 
 
 Fajr      الفجر
 Jummah    الجمعة
-Asr       العصر
 Maghrib   المغرب
 Isha      العشاء
