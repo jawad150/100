@@ -434,13 +434,42 @@ def option_f():
     return vignette(grain(c, 0.012), 0.12)
 
 
+# ------------------------------------------------------------------ G: carer + child (Organic Fostering's own respite photo)
+def option_g():
+    im = cv2.imread(f'{WEB}/06-respite-outdoor-play.webp', cv2.IMREAD_COLOR)[..., ::-1].astype(np.float32) / 255
+    ph = int(PW * im.shape[0] / im.shape[1])
+    photo = cv2.resize(im, (PW, ph), interpolation=cv2.INTER_AREA)
+    bl = cv2.GaussianBlur(photo, (0, 0), 0.8)
+    photo = np.clip(photo * 1.25 - bl * 0.25, 0, 1)
+    yo = 300
+    ext = cv2.GaussianBlur(cv2.resize(photo[:160], (PW, PH), interpolation=cv2.INTER_LINEAR), (0, 0), 14)
+    c = ext.copy()
+    vis = min(ph, PH - yo)
+    alpha = np.zeros((PH, PW, 1), np.float32); alpha[yo:yo + vis] = 1
+    alpha *= np.clip((YY - yo) / 150, 0, 1)[..., None]
+    layer = np.zeros_like(c); layer[yo:yo + vis] = photo[:vis]
+    c = c * (1 - alpha) + layer * alpha
+    c = warm_grade(c, 0.7)
+    top = np.clip(1 - YY / 610, 0, 1)[..., None] ** 1.2
+    c = c * (1 - 0.9 * top) + np.array(CREAM, np.float32) * 0.9 * top
+    logo(c)
+    eyebrow(c)
+    headline(c, y=230)
+    hand(c, 'Saturday walk,', 850, 640, 46, (1, 1, 1, 1), rot=-4)
+    hand(c, 'then pancakes!', 850, 692, 46, (1, 0.86, 0.6, 1), rot=-4)
+    sign_off2(c, 1160)
+    return vignette(grain(c, 0.01), 0.12)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     want = sys.argv[1:] or ['A', 'B', 'C']
     for k in want:
-        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e, 'F': option_f}[k]()
+        im = {'A': option_a, 'B': option_b, 'C': option_c, 'D': option_d, 'E': option_e, 'F': option_f, 'G': option_g}[k]()
         cv2.imwrite(f'{OUT}/option_{k}.png', F.to_u8(im))
         print('option', k, flush=True)
+
+
 
 
 
