@@ -76,7 +76,7 @@ def prep(fr, fi):
     q = _quads().get(fi)
     if q is None:
         return fr
-    return C.despill_skin(C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8))
+    return C.despill_skin(C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8), max_excess=160, r_min=60)
 
 
 CLIP.prep = prep
