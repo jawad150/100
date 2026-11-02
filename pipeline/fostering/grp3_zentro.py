@@ -2,17 +2,14 @@
 
     cd pipeline/fostering && FOSTER_FPS=24 python3 render.py grp3_zentro --audio <mix.wav>
 
-Source: workspace3/frames/zentro2 (Seedance clip hf_20261102_121819, 30.05 s): one handheld shot of a green monitor,
-a hand points along a line the generator drew on the green; voiceover only (the SEO specialist). End card from 30.0 s.
+Source: workspace3/frames/zentro2 (Seedance clip hf_20261102_121819, 30.05 s): one handheld shot of a green monitor;
+a hand traces a rising line the generator drew on the green; voiceover only. End card from 30.0 s.
 
-The monitor (tracked by grp_prep3.py zentro2) shows ONLY real Zentro material: the live homepage, a plain search box
-with the query he names ('laptop repair near me'), the real Laptop Repair page and the real repair-brand menu
-(captured 22 Oct 2026). The generated chart line and its fake axis labels are keyed out with the green.
-
-No ranking data exists for Zentro (no Search Console export; Semrush had no API units), so nothing on screen shows a
-position. 'Not even on page two', 'position three' and 'next stop, position one' stay spoken claims only and are
-listed for verification in the README. Zentro's unsourced review badges ('5,000+ customers, 4.8/5', 'Trusted by
-thousands') are painted out of the captures.
+The monitor (tracked by grp_prep3.py zentro2) shows the Google ranking chart he describes for 'laptop repair near
+me' (grp3_rankchart.py): not in the top 20 three months ago, page two, top 10, position 3 this morning, the three
+fixes he lists, and 'next stop: #1'. Its line uses the generated line's exact vertices, so his finger stays on it,
+and it draws on behind his fingertip. No real ranking data exists for Zentro, so the chart is an ILLUSTRATION and is
+labelled as one on the monitor, in the AI label and in the end-card fine print.
 """
 import functools
 
@@ -20,6 +17,7 @@ import numpy as np
 
 import core as K
 import grp3_common as C
+import grp3_rankchart as R
 import grp_base as GB
 import grp_brand as B
 import grp_kit as G
@@ -51,22 +49,8 @@ CAP = B.captions(WORDS, max_chars=24, breaks=(4, 11, 16, 24, 27, 30, 35, 40, 43,
 
 # ---------------------------------------------------------------------------------------------- monitor content
 def content(t):
-    def at(tt):
-        if tt < 7.7:
-            return C.zen_page('now_desktop.png', SW, SH, 0)
-        if tt < 13.0:
-            k = int(np.clip((tt - 9.25) / (10.6 - 9.25), 0, 1) * len(QUERY))
-            return C.search_screen(SW, SH, QUERY, k, caret=(int(tt * 2.2) % 2 == 0) or 9.2 < tt < 10.7)
-        if tt < 21.0:
-            sc = K.EASE['inout_sine'](K.clamp((tt - 14.0) / 6.5)) * 260
-            return C.zen_page('laptop-repair_desktop_full.png', SW, SH, sc)
-        if tt < 25.6:
-            return C.zen_page('nav_repair_menu_laptop_desktop.png', SW, SH, 0)
-        return C.zen_page('mobile-repair_desktop.png', SW, SH, 0)
-    for tc in (7.7, 13.0, 21.0, 25.6):
-        if tc - 0.12 <= t < tc + 0.12:
-            return C.xfade(at(tc - 0.13), at(tc + 0.13), (t - (tc - 0.12)) / 0.24)
-    return at(t)
+    """The monitor: the ranking chart he describes (an illustration), drawn on behind his fingertip."""
+    return R.chart(t)
 
 
 @functools.lru_cache(maxsize=1)
@@ -137,6 +121,22 @@ def work_chips(cv, t, t1=27.7):
         B.draw_chip(cv, t, txt, 540, 268 + 104 * k, t0, t1, icon=ic, size=36)
 
 
+BEATS = [  # (text, icon, t0, t1, y): what he says, readable above the monitor
+    ('Page 2', 'chart', 13.45, 15.68, 330),
+    ('Top 10', 'chart', 15.7, 18.02, 330),
+    ('Position 3 · this morning', 'star', 18.05, 21.9, 330),
+    ('Service pages fixed', 'check', 22.6, 27.5, 230),
+    ('Google profile sorted', 'pin', 24.85, 27.5, 330),
+    ('Real reviews coming in', 'star', 26.3, 27.5, 430),
+    ('Next stop: #1', 'arrow_right', 27.6, 29.9, 330),
+]
+
+
+def beats(cv, t):
+    for txt, ic, t0, t1, y in BEATS:
+        B.draw_chip(cv, t, txt, 540, y, t0, t1, icon=ic, size=44)
+
+
 # ---------------------------------------------------------------------------------------------- contract
 def draw(t):
     cv = CLIP.plate(t, {}, end_t0=T_END_CARD - 0.15)
@@ -144,14 +144,14 @@ def draw(t):
     if t < T_END_CARD:
         client_card(cv, t)
         query_chip(cv, t)
-        live_chip(cv, t)
+        beats(cv, t)
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 1.2, T_END_CARD)
-    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated scene · real client website', y=1712)
+    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated scene · ranking chart is an illustration', y=1712)
     B.end_card(cv, t, T_END_CARD, CLIENT, URL,
-               fine=['AI-generated scene and voice.', 'Client website as captured Oct 2026.',
-                     'Results vary by business.'])
+               fine=['AI-generated scene and voice.', 'The ranking chart illustrates the story told;',
+                     'it is not Zentro’s live ranking data. Results vary by business.'])
     return np.ascontiguousarray(cv, dtype=np.float32)
 
 
@@ -168,15 +168,15 @@ def cues():
         dict(t=0.06, name='whoosh_fast', gain_db=-5),
         dict(t=2.97, name='card_slide', gain_db=-7),
         dict(t=3.30, name='pop', gain_db=-8, params=dict(pitch=1.05)),
-        dict(t=7.70, name='swish_small', gain_db=-9),
         dict(t=8.77, name='pop', gain_db=-7, params=dict(pitch=1.1)),
-        dict(t=9.30, name='typing', gain_db=-13, params=dict(n=14, cps=11.0)),
-        dict(t=12.95, name='ui_click', gain_db=-9),
-        dict(t=13.32, name='swish_small', gain_db=-9),
-        dict(t=21.0, name='ui_click', gain_db=-10),
+        dict(t=13.47, name='ui_tick', gain_db=-9),
+        dict(t=15.72, name='ui_tick', gain_db=-9, params=dict(pitch=1.08)),
+        dict(t=18.07, name='check_ding', gain_db=-9),
+        dict(t=18.10, name='shimmer', gain_db=-15),
         dict(t=22.62, name='check_ding', gain_db=-12, pan=-0.2),
         dict(t=24.87, name='check_ding', gain_db=-13, pan=0.2, params=dict(pitch=1.06)),
-        dict(t=25.6, name='ui_click', gain_db=-11),
+        dict(t=26.32, name='check_ding', gain_db=-13, params=dict(pitch=1.12)),
+        dict(t=27.62, name='swish_small', gain_db=-8),
         dict(t=T_END_CARD, name='logo_sting', gain_db=-4),
         dict(t=T_END_CARD + 0.95, name='pop', gain_db=-7, params=dict(pitch=1.2)),
     ]
@@ -189,4 +189,5 @@ def prewarm():
     for txt, ic, _, _ in CHIPS:
         B.chip(txt, ic, 36)
     B.chip(QUERY, 'search', 40)
-    B.chip('zentro.co.uk/laptop-repair', 'globe', 34, color=B.ACTION)
+    for txt, ic, *_ in BEATS:
+        B.chip(txt, ic, 44)
