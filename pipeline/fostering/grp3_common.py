@@ -256,3 +256,22 @@ def neutralise_green(fr, y_max, excess=10, keep=0.25):
     out = fr.copy()
     out[:y_max, :, 1] = np.clip(g2, 0, 255).astype(np.uint8)
     return out
+
+
+def kill_bright_green(fr, quad, g_min=165, excess=40, keep=10):
+    """Very bright, saturated green OUTSIDE the screen quad (spill on an arm crossing the bezel) -> neutral.
+    Plant leaves are darker and keep their colour."""
+    im = fr.astype(np.int16)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    mx = np.maximum(r, b)
+    m = (g > g_min) & (g - mx > excess)
+    qm = np.zeros(m.shape, np.uint8)
+    cv2.fillConvexPoly(qm, np.int32(np.round(quad)), 1)
+    m &= qm == 0
+    if not m.any():
+        return fr
+    mf = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 1.2)
+    out = fr.astype(np.float32)
+    tgt = np.minimum(g, mx + keep).astype(np.float32)
+    out[..., 1] = out[..., 1] * (1 - mf) + tgt * mf
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8)

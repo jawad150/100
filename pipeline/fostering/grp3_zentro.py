@@ -72,11 +72,23 @@ def _quads():
     return P3.load_quads('zentro2')
 
 
+def _wide(q, s=1.07):
+    c = np.mean(np.array(q), 0)
+    return [(c + (np.array(p) - c) * s).tolist() for p in q]
+
+
+_PAGE_WHITE = np.full((90, 160, 3), 247.0, np.float32)
+
+
 def prep(fr, fi):
     q = _quads().get(fi)
     if q is None:
         return fr
-    return C.despill_skin(C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8), max_excess=160, r_min=60)
+    fr = C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8)
+    # where the hand hid a screen edge from the tracker, any green left just past the edge becomes page white
+    fr = GB.green_replace(fr, _wide(q), _PAGE_WHITE, k_lo=20.0, k_hi=70.0, shade=False, black=10.0, white=240.0)
+    fr = C.kill_bright_green(fr, q)                  # bright spill on the forearm where it crosses the bezel
+    return C.despill_skin(fr, max_excess=160, r_min=60)
 
 
 CLIP.prep = prep
