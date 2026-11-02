@@ -316,7 +316,7 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026', fine=No
         bw, bh = int(tw + 150), 104
         btn, pad = G.panel(bw, bh, 24, fill=ORANGE, fill_a=1.0, border_a=0.0, shadow=0.35, shadow_blur=18,
                            shadow_dy=10)
-        y = 1122
+        y = 1122 if client else 960
         op = min(1.0, bu * 1.5)
         K.draw(cv, btn, 540, y, scale=0.88 + 0.12 * bu, opacity=op)
         G.draw_text(cv, txt, 540 - 22, y + 13, 38, FS, INK, 'ms', opacity=op)
@@ -330,7 +330,7 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026', fine=No
         lines = ['AI re-creation of the client’s testimonial.', 'Client website as captured %s.' % captured] + \
             list(extra_fine) + ['Results vary by business.']
     for k, ln in enumerate(lines):
-        G.draw_text(cv, ln, 540, 1330 + 34 * k, 25, FM, BODY, 'ms', opacity=fp)
+        G.draw_text(cv, ln, 540, (1330 if client else 1170) + 34 * k, 25, FM, BODY, 'ms', opacity=fp)
 
 
 def prewarm():
