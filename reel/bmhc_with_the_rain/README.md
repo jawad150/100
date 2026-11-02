@@ -43,7 +43,7 @@ The full-resolution clips are not committed; re-download them from the URLs in `
 - `bmhc_with_the_rain_v3_voice_bed.mp4` and `bmhc_with_the_rain_v3_piano_strings.mp4` replace the v2 files (same picture, two beds).
 - End-card button reads "Start the conversation"; "WITH" sits lower under مَعَ with a dark pool and stronger shadow.
 - Two typefaces throughout: Poppins for the body, Playfair Display Bold Italic (OFL, Google Fonts) for key words.
-- Colours: "A bill." white, "A loss." and "A worry" blue, "nobody sees." soft white; blue added to "with you," and
+- Colours: "A bill." white, "A loss." blue, "A worry" white, "nobody sees." blue; blue added to "with you," and
   "going through,". Blue is #74C6F2, gold #E9B45A.
 - The 24 s ripple sound is now a soft airy water sound (`soft_ripple()` in `audio_mix2.py`).
 - New shots from BMHC's own photos via `photo_shot.py`: photo 34 (sisters at a talk in BMHC's hall) for "Not only

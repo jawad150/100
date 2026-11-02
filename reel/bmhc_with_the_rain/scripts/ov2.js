@@ -65,7 +65,7 @@ const wordEls = n => [...n.querySelectorAll('.w')];
   P.forEach(([txt, a, b]) => { const n = el('<div class="cap" style="' + st + '">' + txt + '</div>');
     enter(n, [{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1.06)', offset: .001 }, { opacity: 1, transform: 'scale(1)' }], a - 0.03, 0.16, 'linear');
     exit(n, [{ opacity: 1 }, { opacity: 0 }], b - 0.03, 0.001); });
-  const n = el('<div class="cap" style="' + st + '"><span class="ln s b">A worry</span><span class="ln" style="font-weight:500;color:rgba(255,255,255,.68);letter-spacing:.02em">' +
+  const n = el('<div class="cap" style="' + st + '"><span class="ln s">A worry</span><span class="ln b" style="font-weight:500;letter-spacing:.02em">' +
                '<span class="w" id="nb">nobody sees.</span></span></div>');
   enter(n, [{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1.06)', offset: .001 }, { opacity: 1, transform: 'scale(1)' }], W('L2', 4) - 0.03, 0.16, 'linear');
   enter(n.querySelector('#nb'), [{ opacity: 0 }, { opacity: 1 }], W('L2', 6) - 0.03, 0.001, 'linear');
