@@ -43,8 +43,10 @@ URL = 'zentro.co.uk'
 CLIENT = 'Zentro'
 QUERY = 'laptop repair near me'
 
-WORDS = G.load_words('zentro2', fixes={0: 'Okay,', 30: 'Watch.', 31: 'Page', 32: 'two,', 33: 'top', 34: '10.'})
-CAP = B.captions(WORDS, max_chars=30, breaks=(4, 16, 24, 30, 35, 40, 43, 48, 52, 57))
+WORDS = G.load_words('zentro2', fixes={0: 'Okay,', 25: 'weren’t', 30: 'Watch.', 31: 'Page', 32: 'two,', 33: 'top',
+                                       34: '10.', 40: 'That’s'},
+                     retime={0: (1.72, 1.96), 31: (14.45, 14.72), 38: (18.08, 18.46), 57: (27.84, 28.10)})
+CAP = B.captions(WORDS, max_chars=24, breaks=(4, 11, 16, 24, 27, 30, 35, 40, 43, 48, 52, 57), y=1600, max_w=700)
 
 
 # ---------------------------------------------------------------------------------------------- monitor content
@@ -72,11 +74,25 @@ def _quads():
     return P3.load_quads('zentro2')
 
 
+def _wide(q, s=1.07):
+    """Widen the quad sideways only (a taller quad would reach the bezel and key the green-lit thumb)."""
+    c = np.mean(np.array(q), 0)
+    return [[c[0] + (p[0] - c[0]) * s, p[1]] for p in q]
+
+
+_PAGE_WHITE = np.full((90, 160, 3), 247.0, np.float32)
+
+
 def prep(fr, fi):
     q = _quads().get(fi)
     if q is None:
         return fr
-    return C.despill_skin(C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8), max_excess=160, r_min=60)
+    fr = C.key_with_hand(fr, q, content(fi / 24.0), shade=True, blur=0.8)
+    # where the hand hid a screen edge from the tracker, any green left just past the edge becomes page white
+    fr = C.ring_to_white(fr, q, _wide(q))
+    fr = C.kill_bright_green(fr, q, g_min=120, excess=45)   # lime spill on the forearm where it crosses the bezel
+    fr = C.kill_smooth_green(fr, q, excess=4, max_std=13.0)   # smooth (skin) spill outside the screen; plants stay
+    return C.despill_skin(fr, max_excess=160, r_min=60)
 
 
 CLIP.prep = prep
@@ -129,11 +145,10 @@ def draw(t):
         client_card(cv, t)
         query_chip(cv, t)
         live_chip(cv, t)
-        work_chips(cv, t)
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 1.2, T_END_CARD)
-    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated scene · real client website')
+    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated scene · real client website', y=1712)
     B.end_card(cv, t, T_END_CARD, CLIENT, URL,
                fine=['AI-generated scene and voice.', 'Client website as captured Oct 2026.',
                      'Results vary by business.'])

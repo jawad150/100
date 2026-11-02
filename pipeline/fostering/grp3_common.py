@@ -137,7 +137,23 @@ def key_with_hand(fr, quad, content, s_min=150, v_min=150, open_px=25, inset=5, 
     keep = cv2.dilate(keep, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
     extra = (inner > 0) & (keep == 0)
     ea = cv2.GaussianBlur(extra.astype(np.float32), (0, 0), 1.0)
-    return GB.green_replace(fr, quad, content, extra_alpha=ea, **kw)
+    kw.setdefault('despill_all', False)
+    out = GB.green_replace(fr, quad, content, extra_alpha=ea, **kw)
+    return despill_near(out, quad)
+
+
+def despill_near(fr, quad, reach=110, soft=45.0):
+    """Despill (G -> max(R, B) + 3) around the screen with a soft falloff (no hard bounding-box seam): cleans
+    the hand / arm edges lit by the green screen."""
+    qm = np.zeros(fr.shape[:2], np.uint8)
+    cv2.fillConvexPoly(qm, np.int32(np.round(quad)), 1)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * reach + 1, 2 * reach + 1))
+    w = cv2.GaussianBlur(cv2.dilate(qm, k).astype(np.float32), (0, 0), soft)
+    im = fr.astype(np.float32)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    tgt = np.minimum(g, np.maximum(r, b) + 3)
+    im[..., 1] = g * (1 - w) + tgt * w
+    return np.clip(im + 0.5, 0, 255).astype(np.uint8)
 
 
 # ---------------------------------------------------------------------------------------------- GRP report screens
@@ -256,3 +272,77 @@ def neutralise_green(fr, y_max, excess=10, keep=0.25):
     out = fr.copy()
     out[:y_max, :, 1] = np.clip(g2, 0, 255).astype(np.uint8)
     return out
+
+
+def kill_bright_green(fr, quad, g_min=165, excess=40, keep=10):
+    """Very bright, saturated green OUTSIDE the screen quad (spill on an arm crossing the bezel) -> neutral.
+    Plant leaves are darker and keep their colour."""
+    im = fr.astype(np.int16)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    mx = np.maximum(r, b)
+    m = (g > g_min) & (g - mx > excess)
+    qm = np.zeros(m.shape, np.uint8)
+    cv2.fillConvexPoly(qm, np.int32(np.round(quad)), 1)
+    m &= qm == 0
+    if not m.any():
+        return fr
+    mf = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 1.2)
+    out = fr.astype(np.float32)
+    tgt = np.minimum(g, mx + keep).astype(np.float32)
+    out[..., 1] = out[..., 1] * (1 - mf) + tgt * mf
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8)
+
+
+def kill_smooth_green(fr, quad, excess=18, max_std=9.0, win=9):
+    """Green spill on skin outside the screen is smooth; plant leaves are textured. Neutralise green pixels whose
+    neighbourhood is smooth (low local std of G) outside the screen quad."""
+    im = fr.astype(np.float32)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    mx = np.maximum(r, b)
+    gm = cv2.blur(g, (win, win))
+    sd = np.sqrt(np.maximum(cv2.blur(g * g, (win, win)) - gm * gm, 0))
+    m = (g - mx > excess) & (sd < max_std)
+    qm = np.zeros(m.shape, np.uint8)
+    cv2.fillConvexPoly(qm, np.int32(np.round(quad)), 1)
+    qm = cv2.dilate(qm, np.ones((7, 7), np.uint8))
+    m &= qm == 0
+    # the band's textured rim: green pixels within a few px of the smooth spill
+    near = cv2.dilate(m.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13))) > 0
+    m |= near & (g - mx > excess) & (qm == 0)
+    if not m.any():
+        return fr
+    mf = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 1.5)
+    tgt = np.where(r > b + 6, r - 4, mx + np.clip(r - b, 0, None) * 0.3 + 4)    # warm skin keeps a warm tone
+    out = im.copy()
+    out[..., 1] = g * (1 - mf) + np.minimum(g, tgt) * mf
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8)
+
+
+def neutral_outside(fr, quad, excess=12, keep=4):
+    """Neutralise every green cast outside the screen quad (used where nothing else in the shot is green)."""
+    im = fr.astype(np.int16)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    mx = np.maximum(r, b)
+    qm = np.zeros(g.shape, np.uint8)
+    cv2.fillConvexPoly(qm, np.int32(np.round(quad)), 1)
+    m = (g - mx > excess) & (qm == 0)
+    out = fr.copy()
+    out[..., 1] = np.where(m, np.minimum(g, mx + keep), g).astype(np.uint8)
+    return out
+
+
+def ring_to_white(fr, quad, wide, excess=35, white=247.0):
+    """Strong green in the strip between the tracked screen quad and a wider quad (screen the tracker missed)
+    -> page white, feathered. Touches nothing else (no bounding-box despill)."""
+    im = fr.astype(np.float32)
+    r, g, b = im[..., 0], im[..., 1], im[..., 2]
+    qa = np.zeros(g.shape, np.uint8)
+    qb = np.zeros(g.shape, np.uint8)
+    cv2.fillConvexPoly(qa, np.int32(np.round(quad)), 1)
+    cv2.fillConvexPoly(qb, np.int32(np.round(wide)), 1)
+    m = (qb > 0) & (qa == 0) & (g - np.maximum(r, b) > excess)
+    if not m.any():
+        return fr
+    a = cv2.GaussianBlur(m.astype(np.float32), (0, 0), 1.0)[..., None]
+    out = im * (1 - a) + white * a
+    return np.clip(out + 0.5, 0, 255).astype(np.uint8)

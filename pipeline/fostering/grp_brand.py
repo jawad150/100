@@ -216,7 +216,7 @@ def logo_bug(cv, t, t0, t1, x=60, y=66):
     K.draw(cv, lg, x + 13, y + 7, anchor=(0, 0), opacity=k)
 
 
-def ai_label(cv, t, t0=0.8, solid=False, text='AI re-creation · real client website'):
+def ai_label(cv, t, t0=0.8, solid=False, text='AI re-creation · real client website', y=1862):
     if t < t0:
         return
     k = K.ramp(t, t0, t0 + 0.4)
@@ -225,14 +225,13 @@ def ai_label(cv, t, t0=0.8, solid=False, text='AI re-creation · real client web
         pnl, pad = G.panel(int(w + 32), 40, 20, fill=INK, fill_a=0.80, border_a=0.0, shadow=0.0)
     else:
         pnl, pad = G.panel(int(w + 32), 40, 20, fill='#000000', fill_a=0.40, border_a=0.0, shadow=0.0)
-    y = 1862
     K.draw(cv, pnl, 60 - pad, y - 20 - pad, anchor=(0, 0), opacity=k)
     G.draw_text(cv, text, 76, y + 8, 24, FS, '#FFFFFF', 'ls', opacity=0.92 * k)
 
 
-def captions(words, max_chars=28, breaks=(), y=1640, size=60):
+def captions(words, max_chars=28, breaks=(), y=1640, size=60, max_w=900):
     return G.Captions(words, dict(font=FB, size=size, color='#FFFFFF', accent='#FFFFFF', mode='pill',
-                                  pill_color=ACTION, y=y, max_w=900, shadow=0.7, line_h=1.16),
+                                  pill_color=ACTION, y=y, max_w=max_w, shadow=0.7, line_h=1.16),
                       max_chars=max_chars, breaks=breaks)
 
 

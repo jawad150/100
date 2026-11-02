@@ -135,8 +135,8 @@ Four more 9:16 edits, 1080 × 1920, 24 fps, stereo AAC, mastered to −14 LUFS (
 
 | File | Brand | Length | What it shows |
 |---|---|---|---|
-| `grp_v07_hamza_seo_lessons_9x16.mp4` | Google Ranker Pro | 22.6 s | His three tips as numbered cards, Google Ranker Pro's real mobile page on a phone, the logo card. No figures. |
-| `grp_v08_zentro_keyword_9x16.mp4` | Zentro | 33.0 s | The green monitor is tracked and keyed. It shows Zentro's real homepage, a search box typing "laptop repair near me", the real Laptop Repair page and the real repair-brand menu. His hand stays in front; the generated chart line is removed. |
+| `grp_v07_hamza_seo_lessons_9x16.mp4` | Google Ranker Pro | 22.6 s | His three tips as numbered cards, Google Ranker Pro's real mobile page on a phone (its "500+ Businesses" and "UK's Trusted…" badges painted out), the logo card. No figures. |
+| `grp_v08_zentro_keyword_9x16.mp4` | Zentro | 33.0 s | The green monitor is tracked and keyed. It shows Zentro's real homepage, a search box typing "laptop repair near me", the real Laptop Repair page and the real repair-brand menu. His hand stays in front; the generated chart line is removed. No checkmark chips for the work he describes (no evidence on file). |
 | `grp_v09_coventry_reaction_9x16.mp4` | Coventry Airport Taxis 247 | 18.0 s | The green laptop shows the client's real Search Console report (224 clicks, 15.9K impressions, 1.4% CTR, position 18.4, the daily chart and the top three searches) under a Google Ranker Pro header. A card repeats the real totals during her reaction. |
 | `grp_v10_grace_meet_the_team_9x16.mp4` | Google Ranker Pro | 31.8 s | The laptop shows a monthly-review page built from Google Ranker Pro's own site copy ("A useful report answers better questions"), with no client data. The chips are lines from the site: "Straight-talking. No jargon.", "Clear progress updates" and "Know the monthly investment". |
 

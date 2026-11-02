@@ -32,8 +32,10 @@ SW, SH = 1600, 1000
 
 WORDS = G.load_words('grace', fixes={0: 'Hi,', 1: 'I’m', 10: 'I’m', 43: 'disappearing', 44: None, 45: 'act.',
                                      49: 'working,', 50: 'I’ll', 54: 'we’ll', 57: 'You’ll', 61: 'you’re',
-                                     37: 'we’re'})
-CAP = B.captions(WORDS, max_chars=28, breaks=(10, 17, 25, 30, 35, 40, 42, 46, 53, 57))
+                                     37: 'we’re', 47: 'something’s'},
+                     retime={0: (0.90, 1.20), 1: (1.76, 1.92), 17: (9.98, 10.26), 46: (22.38, 22.52),
+                             57: (26.72, 26.96)})
+CAP = B.captions(WORDS, max_chars=24, breaks=(10, 17, 25, 30, 35, 40, 42, 45, 52, 56), y=1600, max_w=700)
 
 
 @functools.lru_cache(maxsize=1)
@@ -123,7 +125,7 @@ def draw(t):
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 0.6, T_END_CARD)
-    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated presenter')
+    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated presenter', y=1712)
     B.end_card(cv, t, T_END_CARD, None, None,
                fine=['AI-generated presenter and voice.', 'Report screen: Google Ranker Pro’s own site copy.'])
     return np.ascontiguousarray(cv, dtype=np.float32)

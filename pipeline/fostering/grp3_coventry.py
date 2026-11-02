@@ -42,8 +42,9 @@ REPORT = (GSC + 'coventryairporttaxis247_gsc_3m_chart.png',
                                                        1318, 204)))
 
 WORDS = G.load_words('coventry2', fixes={0: 'Oh,', 1: 'monthly', 2: 'report’s', 3: 'in,', 9: 'doubled!',
-                                         10: 'Doubled!'})
-CAP = B.captions(WORDS, max_chars=26, breaks=(6, 10, 11))
+                                         10: 'Doubled!', 12: 'I’m'},
+                     retime={6: (6.95, 7.24), 9: (8.55, 9.00)})
+CAP = B.captions(WORDS, max_chars=24, breaks=(6, 10, 11, 15), y=1600, max_w=700)
 
 
 @functools.lru_cache(maxsize=1)
@@ -60,8 +61,10 @@ def prep(fr, fi):
         q = _quads().get(fi)
         if q is not None:
             fr = GB.green_replace(fr, q, _report(), k_lo=10.0, k_hi=45.0, black=10.0, white=236.0, shade=True)
-        # her hair and the keys were lit green by the green screen; the screen is now a white report
-        return C.despill_skin(fr, max_excess=150, r_min=30)
+        # her hair, the keyboard deck and the keys were lit / painted green by the generator; the screen is now a
+        # white report: neutralise every strong green outside the screen in this shot (nothing else here is green)
+        fr = C.despill_skin(fr, max_excess=150, r_min=30)
+        return C.neutral_outside(fr, q) if q is not None else fr
     # glasses / face reflections of the old green screen (her green jumper is below these rows and keeps its colour)
     return C.neutralise_green(fr, 960 if fi <= 253 else 760)
 
@@ -135,7 +138,7 @@ def draw(t):
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 0.6, T_END_CARD)
-    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI re-creation · real Search Console data')
+    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI re-creation · real Search Console data', y=1712)
     B.end_card(cv, t, T_END_CARD, CLIENT, URL,
                fine=['AI re-creation. Search Console: coventryairporttaxis247.co.uk,',
                      '3 months to 18 Oct 2026. Results vary by business.'])
