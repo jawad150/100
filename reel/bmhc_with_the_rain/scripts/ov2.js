@@ -15,6 +15,8 @@ const css = `
 @font-face{font-family:Poppins;font-weight:500;src:url('file://${B}/fonts/Poppins-Medium.ttf')}
 @font-face{font-family:Poppins;font-weight:600;src:url('file://${B}/fonts/Poppins-SemiBold.ttf')}
 @font-face{font-family:Poppins;font-weight:700;src:url('file://${B}/fonts/Poppins-Bold.ttf')}
+@font-face{font-family:Playfair;font-style:italic;font-weight:700;src:url('file://${B}/fonts/PlayfairDisplay-BoldItalic.ttf')}
+@font-face{font-family:Playfair;font-style:italic;font-weight:800;src:url('file://${B}/fonts/PlayfairDisplay-ExtraBoldItalic.ttf')}
 @font-face{font-family:Hafs;src:url('file://${B}/fonts/UthmanicHafs1Ver18.woff2')}
 html,body{margin:0;width:1080px;height:1920px;background:transparent;overflow:hidden}
 *{box-sizing:border-box}
@@ -23,7 +25,8 @@ html,body{margin:0;width:1080px;height:1920px;background:transparent;overflow:hi
   text-shadow:0 2px 18px rgba(0,0,0,.72),0 0 4px rgba(0,0,0,.5)}
 .ln{display:block;white-space:nowrap}
 .w{display:inline-block}
-.k{color:#7fd6cf}.g{color:#e9b45a}
+.k,.b{color:#74c6f2}.g{color:#e9b45a}
+.s{font-family:Playfair,serif;font-style:italic;font-weight:700;font-size:1.12em;letter-spacing:.005em}   /* second typeface: bold serif italic for the key words */
 .ar{font-family:Hafs;direction:rtl;color:#f4ece2;text-align:center}
 .mask{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .04em .06em}
 .mask>span{display:inline-block}
@@ -52,17 +55,17 @@ function caption(L, lines, cls = {}, style = '', wrap = x => x) {
 const wordEls = n => [...n.querySelectorAll('.w')];
 
 // ---------- 1 · HOOK (curiosity): words condense out of the rain, blurred and falling into focus
-{ const c = caption('L1', [[0, 1, 2], [3, 4, 5, 6, 7]], { 2: 'k' });
+{ const c = caption('L1', [[0, 1, 2], [3, 4, 5, 6, 7]], { 2: 'k s', 5: 's', 6: 's', 7: 's' });
   wordEls(c).forEach((w, i) => enter(w, [{ opacity: 0, filter: 'blur(14px)', transform: 'translateY(-30px)' }, { opacity: 1, filter: 'blur(0px)', transform: 'none' }], W('L1', i) - 0.06, 0.55));
   fadeOut(c, SH.window.end - 0.32, 0.26, { to: { filter: 'blur(8px)' } }); }
 
 // ---------- 2 · PROBLEM (seriousness): staccato hard cuts, one weight per phrase, the last words left dim
 { const st = 'left:64px;right:130px;top:1000px;font-size:88px;font-weight:700;line-height:1.1';
-  const P = [['A bill.', W('L2', 0), W('L2', 2)], ['A loss.', W('L2', 2), W('L2', 4)]];
+  const P = [['A bill.', W('L2', 0), W('L2', 2)], ['<span class="s b">A loss.</span>', W('L2', 2), W('L2', 4)]];
   P.forEach(([txt, a, b]) => { const n = el('<div class="cap" style="' + st + '">' + txt + '</div>');
     enter(n, [{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1.06)', offset: .001 }, { opacity: 1, transform: 'scale(1)' }], a - 0.03, 0.16, 'linear');
     exit(n, [{ opacity: 1 }, { opacity: 0 }], b - 0.03, 0.001); });
-  const n = el('<div class="cap" style="' + st + '"><span class="ln">A worry</span><span class="ln" style="font-weight:500;color:rgba(255,255,255,.5);letter-spacing:.02em">' +
+  const n = el('<div class="cap" style="' + st + '"><span class="ln s b">A worry</span><span class="ln" style="font-weight:500;color:rgba(255,255,255,.68);letter-spacing:.02em">' +
                '<span class="w" id="nb">nobody sees.</span></span></div>');
   enter(n, [{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'scale(1.06)', offset: .001 }, { opacity: 1, transform: 'scale(1)' }], W('L2', 4) - 0.03, 0.16, 'linear');
   enter(n.querySelector('#nb'), [{ opacity: 0 }, { opacity: 1 }], W('L2', 6) - 0.03, 0.001, 'linear');
@@ -95,17 +98,17 @@ const wordEls = n => [...n.querySelectorAll('.w')];
 let withCap;
 { const ws = words('L4'); const n4 = 4;
   const c = el('<div class="cap"><span class="ln">' + [0, 1, 2].map(i => '<span class="w">' + [...ws[i]].map(ch => '<span class="ch">' + ch + '</span>').join('') + '</span>').join(' ') +
-               '</span><span class="ln"><span class="w g" id="with">' + [...ws[3]].map(ch => '<span class="ch">' + ch + '</span>').join('') + '</span></span></div>');
+               '</span><span class="ln"><span class="w g s" id="with">' + [...ws[3]].map(ch => '<span class="ch">' + ch + '</span>').join('') + '</span></span></div>');
   const wEls = wordEls(c);
   wEls.forEach((w, i) => { const a = W('L4', i), b = i < 3 ? W('L4', i + 1) : W('L4', i) + 0.32; const chs = [...w.querySelectorAll('.ch')];
     chs.forEach((ch, j) => enter(ch, [{ opacity: 0 }, { opacity: 1 }], a - 0.04 + (b - a) * 0.8 * j / chs.length, 0.001, 'linear')); });
   exit(c, [{ opacity: 1 }, { opacity: 0 }], SH.umbrella.end - 0.03, 0.001);
   withCap = c; }
-const MA = el('<div class="abs" style="left:0;right:0;top:330px;height:440px"><div class="ar" id="ma" style="position:absolute;left:0;right:0;top:0;font-size:210px;color:#e9b45a;text-shadow:0 4px 40px rgba(0,0,0,.55)">مَعَ</div>' +
-  '<div id="wi" style="position:absolute;left:0;right:0;top:330px;text-align:center;font-family:Poppins;font-weight:600;font-size:40px;color:#f2d79e;text-shadow:0 2px 14px rgba(0,0,0,.6)">WITH</div></div>');
+const MA = el('<div class="abs" style="left:0;right:0;top:330px;height:560px"><div class="ar" id="ma" style="position:absolute;left:0;right:0;top:0;font-size:210px;color:#efb95c;text-shadow:0 3px 10px rgba(0,0,0,.7),0 4px 44px rgba(0,0,0,.75)">مَعَ</div>' +
+  '<div id="wi" style="position:absolute;left:0;right:0;top:470px;text-align:center;font-family:Poppins;font-weight:700;font-size:46px;color:#ffe3a8;text-shadow:0 2px 6px rgba(0,0,0,.95),0 0 26px rgba(0,0,0,.85)">WITH</div></div>');
 function wireWith() {   // needs layout, so it runs after fonts load
   const src = document.getElementById('with').getBoundingClientRect();
-  const fly = el('<div class="abs g" style="left:' + src.left + 'px;top:' + src.top + 'px;font-family:Poppins;font-weight:600;font-size:60px;line-height:1.22;transform-origin:0 0;text-shadow:0 0 30px rgba(233,180,90,.8)">' + words('L4')[3] + '</div>');
+  const fly = el('<div class="abs g" style="left:' + src.left + 'px;top:' + src.top + 'px;font-family:Playfair,serif;font-style:italic;font-weight:700;font-size:67px;line-height:1.22;transform-origin:0 0;text-shadow:0 0 30px rgba(233,180,90,.8)">' + words('L4')[3] + '</div>');
   const t = W('L4', 3) + 0.2;
   const dx = 540 - (src.left + src.width / 2), dy = 470 - (src.top + src.height / 2);
   enter(fly, [{ opacity: 0, transform: 'none' }, { opacity: 1, transform: 'none', offset: .01 }, { opacity: 0, transform: 'translate(' + dx + 'px,' + dy + 'px) scale(2.6)', filter: 'blur(6px)' }], t, 0.6, 'cubic-bezier(.5,0,.3,1)');
@@ -118,7 +121,7 @@ function wireWith() {   // needs layout, so it runs after fonts load
 { const ws = words('L4');
   const c = el('<div class="cap"><span class="ln" style="font-weight:500;color:rgba(255,255,255,.88)">' + [4, 5, 6].map(i => span(ws[i])).join(' ') + '</span>' +
                '<span class="ln" style="font-weight:500;color:rgba(255,255,255,.88)">' + [7, 8].map(i => span(ws[i])).join(' ') + '</span>' +
-               '<span class="ln" style="font-size:84px;line-height:1.25;font-weight:700">' + span(ws[9], 'g') + ' ' + span(ws[10], 'g') + '</span>' +
+               '<span class="ln" style="font-size:84px;line-height:1.25;font-weight:700">' + span(ws[9], 'g s') + ' ' + span(ws[10], 'g s') + '</span>' +
                '<div id="ul" style="height:6px;width:300px;background:#e9b45a;border-radius:3px;transform-origin:0 50%;box-shadow:0 0 14px rgba(233,180,90,.7)"></div></div>');
   const we = wordEls(c);
   we.forEach((w, k) => { const i = 4 + k;
@@ -129,14 +132,14 @@ function wireWith() {   // needs layout, so it runs after fonts load
 
 // ---------- 5a · "Ease often comes / while it's still raining:" breathes out: wide tracking settling to normal
 { const ws = words('L5');
-  const c = el('<div class="cap" style="left:40px;right:40px;text-align:center;font-weight:500"><span class="ln">' + span(ws[0], 'g') + ' ' + [1, 2].map(i => span(ws[i])).join(' ') + '</span>' +
-               '<span class="ln">' + [3, 4].map(i => span(ws[i])).join(' ') + ' ' + span(ws[5], 'k') + ' ' + span(ws[6], 'k') + '</span></div>');
+  const c = el('<div class="cap" style="left:40px;right:40px;text-align:center;font-weight:500"><span class="ln">' + span(ws[0], 'g s') + ' ' + [1, 2].map(i => span(ws[i])).join(' ') + '</span>' +
+               '<span class="ln">' + [3, 4].map(i => span(ws[i])).join(' ') + ' ' + span(ws[5], 'k s') + ' ' + span(ws[6], 'k s') + '</span></div>');
   const L = [...c.querySelectorAll('.ln')];
   [[L[0], W('L5', 0)], [L[1], W('L5', 3)]].forEach(([n, t]) => enter(n, [{ opacity: 0, letterSpacing: '.34em', filter: 'blur(6px)' }, { opacity: 1, letterSpacing: '0em', filter: 'blur(0px)' }], t - 0.08, 0.95, 'cubic-bezier(.15,.7,.2,1)'));
   fadeOut(c, SH.ease.end - 0.3, 0.28, { to: { transform: 'translateY(18px)' } }); }
 
 // ---------- 5b · "someone who sits / with you," rises word by word out of a baseline mask
-{ const c = caption('L5', [[7, 8, 9], [10, 11]], {}, 'top:1040px', x => '<span class="mask">' + x + '</span>');
+{ const c = caption('L5', [[7, 8, 9], [10, 11]], { 10: 'k s', 11: 'k s' }, 'top:1040px', x => '<span class="mask">' + x + '</span>');
   wordEls(c).forEach((w, k) => enter(w, [{ transform: 'translateY(108%)' }, { transform: 'none' }], W('L5', 7 + k) - 0.06, 0.42, 'cubic-bezier(.2,.9,.25,1)'));
   exit(c, [{ opacity: 1 }, { opacity: 0 }], SH.console.end - 0.02, 0.001); }
 
@@ -145,7 +148,7 @@ function wireWith() {   // needs layout, so it runs after fonts load
   const p = el('<div class="abs" style="left:64px;top:1010px;height:124px;padding:0 44px 0 22px;display:flex;align-items:center;gap:26px;border-radius:62px;background:rgba(14,40,36,.78);border:1.5px solid rgba(255,255,255,.2);box-shadow:0 18px 50px rgba(0,0,0,.45)">' +
     '<div id="ic" style="width:82px;height:82px;border-radius:50%;background:#76BF43;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0 rgba(118,191,67,.6)">' +
     '<svg width="44" height="44" viewBox="0 0 24 24"><path fill="#fff" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></div>' +
-    '<div style="font-family:Poppins;font-weight:600;font-size:54px;color:#fff;white-space:nowrap">' + ws.map((w, i) => span(w, i === 1 ? 'k' : '')).join(' ') + '</div></div>');
+    '<div style="font-family:Poppins;font-weight:600;font-size:54px;color:#fff;white-space:nowrap">' + ws.map((w, i) => span(w, i === 1 ? 'k s' : '')).join(' ') + '</div></div>');
   const t0 = SH.phonep.start;
   enter(p, [{ opacity: 0, transform: 'translateY(-70px) scale(.92)' }, { opacity: 1, transform: 'translateY(8px) scale(1)', offset: .7 }, { opacity: 1, transform: 'none' }], t0 - 0.02, 0.42, 'cubic-bezier(.2,.8,.3,1)');
   const ic = p.querySelector('#ic');
@@ -155,22 +158,22 @@ function wireWith() {   // needs layout, so it runs after fonts load
   fadeOut(p, SH.phonep.end - 0.24, 0.24, { to: { transform: 'translateY(-30px)' } }); }
 
 // ---------- 7 · "a door that's open." opens from a centre slit, like the door itself
-{ const c = caption('L7', [[0, 1, 2, 3]], { 1: 'g', 3: 'g' }, 'left:40px;right:40px;text-align:center;font-size:66px');
+{ const c = caption('L7', [[0, 1, 2, 3]], { 1: 'g s', 3: 'g s' }, 'left:40px;right:40px;text-align:center;font-size:66px');
   const ln = c.querySelector('.ln');
   enter(ln, [{ clipPath: 'inset(-20% 50% -20% 50%)', opacity: .4 }, { clipPath: 'inset(-20% 0% -20% 0%)', opacity: 1 }], W('L7', 0) - 0.06, 0.95, 'cubic-bezier(.6,0,.2,1)');
   enter(c.querySelectorAll('.w')[3], [{ textShadow: '0 2px 18px rgba(0,0,0,.72)' }, { textShadow: '0 0 34px rgba(255,200,120,.95)' }], W('L7', 3), 0.5);
   fadeOut(c, SH.bmhc.end - 0.32, 0.28, { to: { transform: 'scale(1.08)', filter: 'blur(4px)' } }); }
 
 // ---------- 8a · "Whatever you are / going through," appears dim, each word lit as it is spoken
-{ const c = caption('L8', [[0, 1, 2], [3, 4]], {}, 'font-weight:600');
+{ const c = caption('L8', [[0, 1, 2], [3, 4]], { 3: 's', 4: 's' }, 'font-weight:600');
   enter(c, [{ opacity: 0 }, { opacity: 1 }], TL.vo.L8 - 0.2, 0.2);
-  wordEls(c).forEach((w, i) => enter(w, [{ color: 'rgba(255,255,255,.3)' }, { color: 'rgba(255,255,255,1)' }], W('L8', i) - 0.03, 0.14, 'linear'));
+  wordEls(c).forEach((w, i) => enter(w, i < 3 ? [{ color: 'rgba(255,255,255,.3)' }, { color: 'rgba(255,255,255,1)' }] : [{ color: 'rgba(116,198,242,.3)' }, { color: 'rgba(116,198,242,1)' }], W('L8', i) - 0.03, 0.14, 'linear'));
   fadeOut(c, SH.inside.end - 0.2, 0.2, { to: { filter: 'blur(6px)' } }); }
 
 // ---------- 8b · "support is just / a conversation away." with a gold line drawn under it as it is spoken,
 //                that line then runs to the edges and the end card opens out of it
 const LINE_Y = 1236;
-{ const c = caption('L8', [[5, 6, 7], [8, 9, 10]], { 5: 'k' }, 'top:1060px');
+{ const c = caption('L8', [[5, 6, 7], [8, 9, 10]], { 5: 'k s', 9: 's' }, 'top:1060px');
   wordEls(c).forEach((w, k) => enter(w, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], W('L8', 5 + k) - 0.05, 0.2));
   fadeOut(c, SH.convo.end - 0.42, 0.3);
   const ln = el('<div class="abs" style="left:0;width:1080px;top:' + LINE_Y + 'px;height:6px;background:#e9b45a;box-shadow:0 0 16px rgba(233,180,90,.75);transform-origin:0 50%"></div>');
@@ -190,15 +193,15 @@ const LINE_Y = 1236;
   const logo = el('<img class="abs" src="file://${B}/logo_white_4x.png" style="left:250px;top:300px;width:580px">');
   enter(logo, [{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' }], E + 0.4, 0.7);
   const title = el('<div class="abs" style="left:60px;right:60px;top:640px;text-align:center;font-family:Poppins;font-weight:700;font-size:66px;line-height:1.16;color:#fff">' +
-    '<span class="mask"><span>Imam Counselling</span></span><br><span class="mask"><span>at BMHC</span></span></div>');
+    '<span class="mask"><span>Imam Counselling</span></span><br><span class="mask"><span class="s" style="font-size:1.04em">at BMHC</span></span></div>');
   [...title.querySelectorAll('.mask>span')].forEach((s, i) => enter(s, [{ transform: 'translateY(105%)' }, { transform: 'none' }], L9 - 0.1 + i * 0.5 + (i ? VO.L9.words[2].s : 0) * 0, 0.55, 'cubic-bezier(.2,.9,.25,1)'));
   // button: outline draws in gold, fills teal, then a cursor taps it
-  const BX = 230, BY = 845, BW = 620, BH = 124;
+  const BX = 150, BY = 845, BW = 780, BH = 124, RX = 500;   // RX: where the cursor taps, from the button's left edge
   const btn = el('<div class="abs" style="left:' + BX + 'px;top:' + BY + 'px;width:' + BW + 'px;height:' + BH + 'px;transform-origin:50% 50%">' +
     '<svg class="abs" width="' + BW + '" height="' + BH + '" style="left:0;top:0;overflow:visible"><rect id="bo" x="2" y="2" width="' + (BW - 4) + '" height="' + (BH - 4) + '" rx="' + (BH / 2 - 2) + '" fill="none" stroke="#e9b45a" stroke-width="4" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/></svg>' +
     '<div id="bf" class="abs" style="inset:0;border-radius:' + BH / 2 + 'px;background:linear-gradient(180deg,#0bb3b5,#09807f);box-shadow:0 14px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);overflow:hidden">' +
-    '<div id="rp" class="abs" style="width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;background:rgba(255,255,255,.55);left:388px;top:70px"></div></div>' +
-    '<div id="bl" class="abs" style="inset:0;display:flex;align-items:center;justify-content:center;gap:18px;font-family:Poppins;font-weight:600;font-size:46px;color:#fff;letter-spacing:.01em">Speak to an Imam' +
+    '<div id="rp" class="abs" style="width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;background:rgba(255,255,255,.55);left:' + RX + 'px;top:70px"></div></div>' +
+    '<div id="bl" class="abs" style="inset:0;display:flex;align-items:center;justify-content:center;gap:18px;font-family:Poppins;font-weight:600;font-size:44px;color:#fff;letter-spacing:.01em">Start the conversation' +
     '<svg width="40" height="40" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>');
   const tB = L9 + 1.15;
   enter(btn.querySelector('#bo'), [{ strokeDashoffset: 1000 }, { strokeDashoffset: 0 }], tB, 0.55, 'cubic-bezier(.5,0,.3,1)');
@@ -211,7 +214,7 @@ const LINE_Y = 1236;
   // cursor (arrow) glides in, taps, eases away
   const cur = el('<svg class="abs" width="70" height="96" viewBox="0 0 28 38" style="left:0;top:0;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));transform-origin:4px 3px">' +
     '<path d="M3 2 L3 31 L10 24.5 L15 35.5 L20.5 33 L15.5 22.5 L25 22.5 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>');
-  const P0 = [905, 1460], P1 = [BX + 388, BY + 70];
+  const P0 = [905, 1460], P1 = [BX + RX, BY + 70];
   enter(cur, [{ opacity: 0, transform: 'translate(' + P0[0] + 'px,' + P0[1] + 'px)' }, { opacity: 1, transform: 'translate(' + (P0[0] - 40) + 'px,' + (P0[1] - 60) + 'px)', offset: .15 },
               { opacity: 1, transform: 'translate(' + P1[0] + 'px,' + P1[1] + 'px)' }], tTap - 0.8, 0.72, 'cubic-bezier(.3,.1,.2,1)');
   enter(cur.querySelector('path'), [{ transform: 'scale(1)' }, { transform: 'scale(.82)', offset: .4 }, { transform: 'scale(1)' }], tTap - 0.04, 0.3);
@@ -220,7 +223,7 @@ const LINE_Y = 1236;
   enter(det, [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], tTap + 0.25, 0.5);
   const cri = el('<div class="abs" style="left:90px;right:90px;top:1170px;text-align:center;font-family:Poppins;font-weight:400;font-size:28px;line-height:1.45;color:rgba(255,255,255,.84)">Need to talk? Samaritans, free, day or night: 116 123.<br>Urgent mental health help: NHS 111, mental health option.<br>Emergency: 999.</div>');
   enter(cri, [{ opacity: 0 }, { opacity: 1 }], tTap + 0.65, 0.5);
-  const cr = el('<div class="abs" style="left:0;right:0;top:1330px;text-align:center;font-family:Poppins;font-size:21px;color:rgba(255,255,255,.55)">Stock footage · the building is from our own photos</div>');
+  const cr = el('<div class="abs" style="left:0;right:0;top:1330px;text-align:center;font-family:Poppins;font-size:21px;color:rgba(255,255,255,.55)">Stock footage · building and community photos are BMHC’s own</div>');
   enter(cr, [{ opacity: 0 }, { opacity: 1 }], tTap + 1.0, 0.5); }
 
 window.setup = async () => { await document.fonts.ready; await new Promise(r => setTimeout(r, 50)); wireWith();

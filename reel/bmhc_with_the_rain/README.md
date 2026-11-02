@@ -38,3 +38,13 @@ The full-resolution clips are not committed; re-download them from the URLs in `
 - Build: `vo2.py` → `align2.py` → `timeline3.py` → `gen_lut.py` → `stage1.py` (+ `stage1_v2.json`) → `bmhc_shot.py` →
   `ov2.js` (all text and the end card as one timed HTML page, rendered per frame) → `compose3.py` (rain, the
   transitions, overlay) → `audio_mix2.py vocal|<music>@pre@post` → `finish2.py` (two-pass loudnorm, mux, previews).
+
+## Draft v3 (client changes on v2)
+- `bmhc_with_the_rain_v3_voice_bed.mp4` and `bmhc_with_the_rain_v3_piano_strings.mp4` replace the v2 files (same picture, two beds).
+- End-card button reads "Start the conversation"; "WITH" sits lower under مَعَ with a dark pool and stronger shadow.
+- Two typefaces throughout: Poppins for the body, Playfair Display Bold Italic (OFL, Google Fonts) for key words.
+- Colours: "A bill." white, "A loss." and "A worry" blue, "nobody sees." soft white; blue added to "with you," and
+  "going through,". Blue is #74C6F2, gold #E9B45A.
+- The 24 s ripple sound is now a soft airy water sound (`soft_ripple()` in `audio_mix2.py`).
+- New shots from BMHC's own photos via `photo_shot.py`: photo 34 (sisters at a talk in BMHC's hall) for "Not only
+  after the hardship. With it.", photo 23 (group discussion at a round table) for "Whatever you are going through,".
