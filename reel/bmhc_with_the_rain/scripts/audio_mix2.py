@@ -16,7 +16,7 @@ VO = json.load(open(P('audio', 'vo', 'lines.json')))
 SH = {s['name']: s for s in TL['shots']}
 END = TL['end']
 N = int((END + 0.5) * SR)
-TAP = json.load(open(P('overlays2', 'meta.json')))['tap']
+TAP = json.load(open(P('overlays3', 'meta.json')))['tap']
 BED = sys.argv[1] if len(sys.argv) > 1 else 'vocal'
 OUTNAME = sys.argv[2] if len(sys.argv) > 2 else 'mix2'
 rng = np.random.default_rng(7)
@@ -113,13 +113,26 @@ def click():
     up = np.zeros(int(0.07 * SR), np.float32); t2 = np.arange(int(0.05 * SR)) / SR
     rel = (np.sin(2 * np.pi * 2400 * t2) * np.exp(-t2 * 220) * 0.35 + noise(0.05) * np.exp(-t2 * 1200) * 0.4).astype(np.float32)
     return np.concatenate([(tick * 0.8 + body).astype(np.float32), up, rel])
+def soft_ripple():
+    """a light, airy water sound for the ripple: a breath of high air plus one gentle bubble, both in a soft room"""
+    from scipy.signal import fftconvolve
+    d = 1.3; n = int(d * SR); t = np.arange(n) / SR
+    air = filt(filt(noise(d), 2500, 'high', 2), 9000, 'low', 2) * (np.minimum(1, t / 0.35) * np.exp(-np.maximum(0, t - 0.35) * 3.2))
+    bt = np.arange(int(0.07 * SR)) / SR
+    bub = np.sin(2 * np.pi * np.cumsum(520 + 380 * bt / 0.07) / SR) * np.hanning(len(bt))
+    dry = air * 0.8; dry[int(0.3 * SR):int(0.3 * SR) + len(bub)] += bub * 0.22
+    ir_t = np.arange(int(0.9 * SR)) / SR
+    L = fftconvolve(dry, filt(noise(0.9) * np.exp(-ir_t * 5), 6000, 'low', 2))[:n]
+    R = fftconvolve(dry, filt(noise(0.9) * np.exp(-ir_t * 5), 6000, 'low', 2))[:n]
+    w = np.stack([dry * 0.5 + L * 0.06, dry * 0.5 + R * 0.06], 1)
+    return w * np.minimum(1, (d - t) / 0.4)[:, None]
 def pop():   # soft bubble under the ripple on the button
     t = np.arange(int(0.25 * SR)) / SR; f = 300 + 500 * (1 - np.exp(-t * 30))
     return (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 18)).astype(np.float32)
 
 fx = np.zeros((N, 2), np.float32)
 place(fx, st(norm(st(shape(sweep(0.75, 900, 90, 0.8, 0.7), 0.25, 0.2)), -36)[:, 0], 0.05), v0 - 0.7)     # sinking into the dark, into silence
-place(fx, st(norm(st(droplet()), -33)[:, 0], 0.1), u0 - 0.1)                                               # the drop that opens the ripple
+place(fx, norm(soft_ripple().astype(np.float32), -43), u0 - 0.32)                                              # a light, airy ripple sound (replaces the v2 drop)
 place(fx, st(norm(st(shape(sweep(0.5, 300, 2400, 0.7, 1.4), 0.3, 0.15)), -40)[:, 0], 0.2), w0 - 0.28)     # motion handoff
 place(fx, st(norm(st(shape(sweep(0.55, 200, 5000, 0.9, 1.8), 0.45, 0.08)), -41)[:, 0], 0.15), e0 - 0.5)   # light breaks through
 place(fx, st(norm(st(shape(sweep(0.75, 5200, 900, 0.5, 0.8), 0.1, 0.3)), -42)[:, 0], 0.1), c0 - 0.32)     # streak running down the glass

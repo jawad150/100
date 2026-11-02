@@ -11,7 +11,7 @@ W, H, FPS, M = 1080, 1920, 30, 0.6
 TL = json.load(open(P('timeline.json')))
 SH = {s['name']: s for s in TL['shots']}
 ORDER = [s['name'] for s in TL['shots']]
-OVD = P('overlays2')
+OVD = P('overlays3')
 
 def clamp(u): return min(max(u, 0.0), 1.0)
 def ease(u): u = clamp(u); return u * u * (3 - 2 * u)
@@ -24,6 +24,9 @@ vig = np.clip(1 - 0.35 * (((XX - W / 2) / (W / 1.4)) ** 2 + ((YY - H / 2) / (H /
 VIG = np.repeat((vig * 255).astype(np.uint8)[..., None], 3, 2)
 shade_a = np.interp(YY[:, 0], [0, 0.38 * H, 0.52 * H, 0.68 * H, H], [0, 0, 0.50, 0.42, 0.10])
 SHADE = (1 - shade_a)[:, None, None].astype(np.float32)
+# a soft dark pool behind the gold مَعَ / WITH, used on the bright hall photo so the word reads clearly
+_top = np.exp(-(((XX - W / 2) / (W * 0.42)) ** 2 + ((YY - 600) / 330) ** 2))
+TOPSHADE = (1 - 0.55 * _top)[..., None].astype(np.float32)
 g = np.exp(-(((XX - W * 0.62) / (W * 0.35)) ** 2 + ((YY - H * 0.22) / (H * 0.25)) ** 2))
 GLOW = (np.stack([g * 1.0, g * 0.72, g * 0.38], -1) * 0.22 * 0.6 * 255).astype(np.uint8)
 BLACK = np.zeros((H, W, 3), np.uint8)
@@ -260,7 +263,7 @@ def frame_at(t, fi):
 
     # convo -> end card · the gold line under "support..." opens into the brand panel (drawn in the overlay layer)
     if cur in CAPTION_SHOTS:
-        im = (im.astype(np.float32) * SHADE).astype(np.uint8)
+        im = (im.astype(np.float32) * (SHADE * TOPSHADE if cur == 'with2' else SHADE)).astype(np.uint8)
     return overlay(im, fi)
 
 def overlay(im, fi):
