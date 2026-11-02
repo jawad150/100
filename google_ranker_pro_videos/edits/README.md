@@ -126,3 +126,49 @@ done
 The word timings live in `edits/asr/*.json` (faster-whisper medium.en).
 
 **Earlier versions:** the Hulk Marketing-branded Leam Taxis and Organic Fostering edits from 23 Oct 2026 are superseded. They remain in git history (commit 5e743ab).
+
+---
+
+# Videos 7–10 (Seedance clips of 2 Nov 2026)
+
+Four more 9:16 edits, 1080 × 1920, 24 fps, stereo AAC, mastered to −14 LUFS (about −2.3 dBTP). Each is the clip plus a Google Ranker Pro end card.
+
+| File | Brand | Length | What it shows |
+|---|---|---|---|
+| `grp_v07_hamza_seo_lessons_9x16.mp4` | Google Ranker Pro | 22.6 s | His three tips as numbered cards, Google Ranker Pro's real mobile page on a phone, the logo card. No figures. |
+| `grp_v08_zentro_keyword_9x16.mp4` | Zentro | 33.0 s | The green monitor is tracked and keyed. It shows Zentro's real homepage, a search box typing "laptop repair near me", the real Laptop Repair page and the real repair-brand menu. His hand stays in front; the generated chart line is removed. |
+| `grp_v09_coventry_reaction_9x16.mp4` | Coventry Airport Taxis 247 | 18.0 s | The green laptop shows the client's real Search Console report (224 clicks, 15.9K impressions, 1.4% CTR, position 18.4, the daily chart and the top three searches) under a Google Ranker Pro header. A card repeats the real totals during her reaction. |
+| `grp_v10_grace_meet_the_team_9x16.mp4` | Google Ranker Pro | 31.8 s | The laptop shows a monthly-review page built from Google Ranker Pro's own site copy ("A useful report answers better questions"), with no client data. The chips are lines from the site: "Straight-talking. No jargon.", "Clear progress updates" and "Know the monthly investment". |
+
+**Labels:** Videos 7 and 10 carry "AI-generated presenter". Video 8 carries "AI-generated scene · real client website". Video 9 carries "AI re-creation · real Search Console data". No name or job title is added in the graphics. Hamza and Grace say their own names and roles in the voice, and the captions follow the voice.
+
+**Clean-up:**
+- **Video 8:** the arm's green spill is removed. Zentro's unsourced "5,000+ happy customers, 4.8/5 (2,560+ reviews)" and "Trusted by thousands" badges are painted out of the page captures.
+- **Video 9:** the green-screen glow is taken off her hair, glasses and face. Her green jumper keeps its colour.
+- **Video 10:** the generated call-control buttons on the laptop are covered.
+- **Video 7:** the opening lens wobble (nine frames) is held under the intro, and the end card starts before the thumb covers the lens.
+
+## Before you publish videos 7–10: claims with no data behind them
+
+| Video | Spoken line | Problem | What to do |
+|---|---|---|---|
+| 8 Zentro | "Three months ago … they weren't even on page two", "this morning, position three", "next stop, position one" | We have no ranking data for Zentro: no Search Console export, and Semrush had no API units. Nothing on screen shows a position. Google Ranker Pro's own site also says it "cannot guarantee a particular position … not a promised number-one spot". | Send Zentro's Search Console row for "laptop repair near me", showing the query, position and date. I'll put it on the monitor. Or regenerate the voice lines without the positions. |
+| 8 Zentro | "got real reviews coming in" | No review data, and Zentro's existing review badges are unsourced. | Verify it, or cut the phrase. |
+| 9 Coventry | "Calls from Google doubled! Doubled!" | No call figures exist for this client, and the Search Console screenshot has no comparison period. The screen shows clicks, not calls. | Use the client's real call figure (from the Business Profile, with the business name visible) in a regenerated line, or get the client's written sign-off. Don't publish as is. |
+| 9 Coventry | "I'm going to need more drivers" | No fleet or booking data. | Client sign-off. |
+| 7 Hamza | "most people find you on their phone" | A general claim with no source on screen. | Fine as an opinion. Add a source if you want a number. |
+| 10 Grace | "Every month I sit down with each client" | Google Ranker Pro's pricing page lists a monthly ranking report and, on higher plans, fortnightly calls. | Make sure this matches what each plan includes. |
+
+Also check: the AI presenters (Hamza, Grace) are not real staff. See `characters/README.md`.
+
+**Rebuild (videos 7–10):**
+```bash
+cd pipeline/fostering
+python3 grp_prep.py mattes hamza coventry2 grace          # person mattes
+python3 grp_prep3.py zentro2 && python3 grp_prep3.py coventry2 && python3 grp_prep3.py grace   # screen tracks
+python3 grp3_audio.py all
+for n in hamza zentro coventry grace; do
+  FOSTER_FPS=24 python3 render.py grp3_$n --audio ../../workspace3/audio/grp3/${n}_mix.wav
+done
+```
+The modules are `grp3_hamza.py`, `grp3_zentro.py`, `grp3_coventry.py`, `grp3_grace.py` and `grp3_common.py` (screens, keying, despill). The word timings live in `edits/asr/{hamza,zentro2,coventry2,grace}.json`.
