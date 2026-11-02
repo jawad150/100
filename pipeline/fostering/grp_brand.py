@@ -270,8 +270,9 @@ def _swoosh(w, h=26, color=ORANGE, thick=7.0):
 _SWOOSH = {}
 
 
-def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026'):
-    """GRP end card (draw over end_backdrop): logo, the site's promise line, the client, CTA and fine print."""
+def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026', fine=None):
+    """GRP end card (draw over end_backdrop): logo, the site's promise line, the client, CTA and fine print.
+    client=None: Google Ranker Pro's own video (no client card). fine: replaces the default fine-print lines."""
     if t < t0:
         return
     tt = t - t0
@@ -297,7 +298,7 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026'):
         m = G.wipe(sp.shape[1], sp.shape[0], su, angle=0, soft=0.05)
         K.draw(cv, G.masked(sp, m), x0 + w1 - 10, 744, anchor=(0, 0))
     # client
-    cu = K.spring(tt - 0.65, 2.4, 0.62) if tt > 0.65 else 0.0
+    cu = K.spring(tt - 0.65, 2.4, 0.62) if (tt > 0.65 and client) else 0.0
     if cu > 0:
         cw, ch = 780, 150
         pnl, pad = card(cw, ch, 30, shadow=0.25)
@@ -323,8 +324,11 @@ def end_card(cv, t, t0, client, url, extra_fine=(), captured='Oct 2026'):
         G.draw_text(cv, 'googlerankerpro.com', 540, y + 118, 40, FB, ACTION, 'ms',
                     opacity=K.ramp(tt, 0.95, 1.2))
     fp = K.ramp(tt, 1.0, 1.3)
-    lines = ['AI re-creation of the client’s testimonial.', 'Client website as captured %s.' % captured] + \
-        list(extra_fine) + ['Results vary by business.']
+    if fine is not None:
+        lines = list(fine)
+    else:
+        lines = ['AI re-creation of the client’s testimonial.', 'Client website as captured %s.' % captured] + \
+            list(extra_fine) + ['Results vary by business.']
     for k, ln in enumerate(lines):
         G.draw_text(cv, ln, 540, 1330 + 34 * k, 25, FM, BODY, 'ms', opacity=fp)
 
