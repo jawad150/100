@@ -38,9 +38,12 @@ CLIP = GB.Clip('hamza', N_SRC, [
 ], LOOK, prep=prep)
 
 WORDS = G.load_words('hamza', fixes={3: 'SEO’s', 28: 'site’s', 30: 'they’re', 33: 'it’s', 36: 'it’s',
-                                     38: 'That’s'})
-CAP = B.captions(WORDS, max_chars=28, breaks=(6, 14, 17, 25, 32, 36, 38))
-GRP_MOBILE = G.site('googlerankerpro', 'now_mobile.png')
+                                     38: 'That’s'},
+                     retime={0: (0.60, 0.92), 30: (12.64, 12.88), 32: (14.28, 14.54)})
+CAP = B.captions(WORDS, max_chars=24, breaks=(6, 14, 17, 25, 32, 36, 38), y=1600, max_w=700)
+# googlerankerpro.com's mobile page with its two trust badges ('UK's Trusted Search Growth Experts',
+# '500+ Businesses Grow With Us') painted out: no figures or claims beyond the tips themselves
+GRP_MOBILE = G.site('googlerankerpro', 'now_mobile_nobadge.png')
 
 TIPS = [  # (number, line 1, line 2, t0, t1)
     ('1', 'Your Google profile', 'is your shop window.', 3.42, 7.2),
@@ -93,8 +96,8 @@ def tips(cv, t):
 
 def phone(cv, t, t0=8.45, t1=13.3):
     """'Most people find you on their phone': googlerankerpro.com's real mobile page, right of his face."""
-    crd = B.phone_card(GRP_MOBILE, (0, 0, 390, 760), 236)
-    GB.card_in(cv, crd, t, t0, t1, 925, 800, rise=50, wipe_angle=0, drift=(0, -12))
+    crd = B.phone_card(GRP_MOBILE, (0, 0, 390, 760), 206)
+    GB.card_in(cv, crd, t, t0, t1, 900, 660, rise=50, wipe_angle=0, drift=(0, -12))
 
 
 def grp(cv, t, t0=17.25, t1=19.5):
@@ -114,7 +117,7 @@ def draw(t):
         G.bottom_shade(cv, 0.42, 1330, opacity=1 - K.ramp(t, T_END_CARD - 0.4, T_END_CARD, 'inout_sine'))
         CAP.draw(cv, t, opacity=1 - K.ramp(t, T_END_CARD - 0.3, T_END_CARD - 0.05, 'inout_sine'))
         B.logo_bug(cv, t, 0.6, T_END_CARD)
-    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated presenter')
+    B.ai_label(cv, t, solid=t >= T_END_CARD, text='AI-generated presenter', y=1712)
     B.end_card(cv, t, T_END_CARD, None, None, fine=['AI-generated presenter and voice.'])
     return np.ascontiguousarray(cv, dtype=np.float32)
 
@@ -150,7 +153,7 @@ def cues():
 
 def prewarm():
     B.prewarm()
-    B.phone_card(GRP_MOBILE, (0, 0, 390, 760), 236)
+    B.phone_card(GRP_MOBILE, (0, 0, 390, 760), 206)
     B.grp_card(520, 190)
     for txt, ic, *_ in SUBS:
         B.chip(txt, ic, 36)

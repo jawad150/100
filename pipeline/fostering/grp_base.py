@@ -225,7 +225,7 @@ def warp_into(content, quad, size=(W, H), pre_w=None, flags=None):
 
 
 def green_replace(fr, quad, content, k_lo=12.0, k_hi=58.0, black=14.0, white=238.0, blur=0.9, shade=True,
-                  region=None, defocus=0.0, extra_alpha=None):
+                  region=None, defocus=0.0, extra_alpha=None, despill_all=True):
     """Chroma-key a green screen inside `quad` of RGB uint8 frame `fr` and put `content` (sRGB float, any size)
     there, keeping anything in front (hair, hands) and despilling its edges. region: optional (H, W) bool limit.
     extra_alpha: optional (bh, bw) float, 1 = force screen (e.g. drawn lines / fake text to drop)."""
@@ -258,7 +258,8 @@ def green_replace(fr, quad, content, k_lo=12.0, k_hi=58.0, black=14.0, white=238
     # despill near the key: navy / grey edges take G down to the R-B mean, warm or yellow edges only to max(R, B)
     zone = cv2.GaussianBlur((k > 0.01).astype(np.float32), (0, 0), 3.0) > 0.01
     lim = np.where(r > b + 40, np.maximum(r, b), (r + b) * 0.5) + 3
-    fg[..., 1] = np.where(zone, np.minimum(g, lim), np.minimum(g, np.maximum(r, b) + 3))
+    # despill_all=False: leave pixels away from the key alone (no seam at the bounding box's edge)
+    fg[..., 1] = np.where(zone, np.minimum(g, lim), np.minimum(g, np.maximum(r, b) + 3) if despill_all else g)
     km = k[..., None]
     out[y0:y0 + bh, x0:x0 + bw] = fg * (1 - km) + warped * km
     return np.clip(out + 0.5, 0, 255).astype(np.uint8)
