@@ -1,0 +1,16 @@
+BMHC · “With the Rain” · Arabic for the edit
+Type or paste the Arabic from THIS file, never from the PDF (PDF Arabic does not copy cleanly).
+Please ask BMHC’s imam to check it before the edit is locked.
+
+Qur’an, Ash-Sharh 94:5–6 (King Fahd Complex QPC Hafs text, for the KFGQPC Uthmanic Script Hafs font):
+فَإِنَّ مَعَ ٱلۡعُسۡرِ يُسۡرًا ٥
+إِنَّ مَعَ ٱلۡعُسۡرِ يُسۡرٗا ٦
+
+The same verses in standard Uthmani Unicode (for other Arabic fonts):
+فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا
+إِنَّ مَعَ ٱلْعُسْرِ يُسْرًا
+
+The word on screen in shot 4 (“with”):
+مَعَ
+
+Source: api.quran.com (text_qpc_hafs and text_uthmani), checked 2 November 2026.
