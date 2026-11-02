@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>BMHC: “With the Rain” storyboard options</title>
+<style>
+@font-face { font-family: "Poppins"; font-weight: 400; src: url("fonts/Poppins-Regular.ttf"); }
+@font-face { font-family: "Poppins"; font-weight: 500; src: url("fonts/Poppins-Medium.ttf"); }
+@font-face { font-family: "Poppins"; font-weight: 600; src: url("fonts/Poppins-SemiBold.ttf"); }
+@font-face { font-family: "Poppins"; font-weight: 700; src: url("fonts/Poppins-Bold.ttf"); }
+@font-face { font-family: "Hafs"; src: url("fonts/UthmanicHafs1Ver18.woff2"); }
+@font-face { font-family: "Amiri"; src: url("fonts/Amiri-Regular.ttf"); }
+:root { --green:#122F2A; --ivory:#EFEEEA; --teal:#09999C; --gold:#DD9933; --ink:#1d2523; --muted:#5b6662; --rule:#d9d7d0; }
+@page { size: A4; margin: 13mm 14mm 15mm 14mm; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Poppins", sans-serif; font-size: 8.9pt; line-height: 1.5; color: var(--ink); text-wrap: pretty; }
+p { margin: 0 0 2mm 0; }
+ul { margin: 0 0 2.4mm 0; padding-left: 4.4mm; }
+li { margin: 0 0 1mm 0; }
+li::marker { color: var(--teal); }
+b { font-weight: 600; color: var(--green); }
+h1 { font-size: 26pt; font-weight: 700; color: var(--green); margin: 3mm 0 1mm 0; line-height: 1.1; }
+h2 { font-size: 11.5pt; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green); margin: 4.5mm 0 2mm 0; padding-bottom: 1.4mm; border-bottom: 1.1pt solid var(--green); break-after: avoid; }
+h3 { font-size: 9.8pt; font-weight: 600; color: var(--green); margin: 2.6mm 0 1mm 0; break-after: avoid; }
+.sub { color: var(--muted); font-size: 9pt; }
+.bar { display:flex; height: 2mm; margin: 2.5mm 0 1mm 0; } .bar span { flex:1 }
+.pb { break-before: page; }
+.note { font-size: 8pt; color: var(--muted); }
+.cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 2mm 0; }
+.card { background: var(--ivory); border-radius: 2.5mm; padding: 2.6mm 3.2mm; }
+.card .t { font-weight: 700; color: var(--green); font-size: 10pt; }
+.card .rec { display:inline-block; background: var(--teal); color:#fff; font-size: 6.8pt; font-weight:600; letter-spacing:.08em; padding: .2mm 1.8mm; border-radius: 9mm; margin-left: 1mm; vertical-align: 1px; }
+.card .m { font-size: 7.8pt; color: var(--muted); margin-top: .6mm; }
+.grid { display:grid; grid-template-columns: repeat(5, 1fr); gap: 2.6mm 2.4mm; margin-top: 2mm; }
+.fr img { width: 100%; display:block; border-radius: 1.6mm; box-shadow: 0 0 0 .4pt #c9c7bf; }
+.fr .tc { font-weight: 700; color: var(--green); font-size: 7.6pt; margin-top: 1.2mm; }
+.fr .tc i { font-style: normal; color: var(--teal); }
+.fr .vo { font-size: 7.4pt; line-height: 1.35; margin-top: .4mm; }
+.fr .src { font-size: 6.6pt; color: var(--muted); line-height: 1.3; margin-top: .6mm; }
+.script { background: #fff; border: .6pt solid var(--rule); border-radius: 2mm; padding: 2.6mm 3.4mm; font-size: 8.6pt; line-height: 1.55; }
+.script .row { display:grid; grid-template-columns: 15mm 1fr; gap: 2mm; margin-bottom: .9mm; }
+.script .row .t { color: var(--teal); font-weight: 600; }
+.script .imam { color: #a8741f; font-weight: 600; }
+.ar { font-family: Hafs, serif; direction: rtl; unicode-bidi: isolate; font-size: 13pt; }
+.cols { display:grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+table.src { width:100%; border-collapse: collapse; font-size: 7.5pt; }
+table.src td { padding: 1mm 1.5mm 1mm 0; border-bottom: .5pt solid var(--rule); vertical-align: top; }
+table.src td:first-child { font-weight: 600; color: var(--green); white-space: nowrap; }
+.box { background: var(--green); color: #e8efea; border-radius: 2.5mm; padding: 3mm 4mm; }
+.box b { color: #fff; } .box li::marker { color: var(--gold); }
+.flag { background: #fff6e6; border-left: 1.2mm solid var(--gold); padding: 2mm 3mm; border-radius: 1mm; font-size: 8.3pt; }
+</style>
+</head>
+<body>
+
+<img src="logo_colour_4x.png" style="width:36mm;display:block" alt="British Muslim Heritage Centre">
+<h1>With the Rain · storyboard options</h1>
+<div class="sub">The first visuals for the BMHC Reel, built from licensed stock footage, BMHC’s own building photos and a rain layer generated in code · 9:16 vertical · on-screen text shown in the final style</div>
+<div class="bar"><span style="background:#DB225E"></span><span style="background:#09999C"></span><span style="background:#F26721"></span><span style="background:#76BF43"></span></div>
+
+<h2>How this works</h2>
+<ol style="margin:0 0 2mm 0;padding-left:5mm">
+  <li><b>You choose a storyboard</b> below (A, B or C), and tell me any frames to swap.</li>
+  <li><b>You record the voiceover</b> from the script for that option (page 4): a human narrator, plus BMHC’s imam reciting the verse.</li>
+  <li><b>I edit the final video</b> to your voiceover: motion, grade, rain, on-screen text timed to every word, sound design and the background bed.</li>
+</ol>
+
+<h2>The three options</h2>
+<div class="cards">
+  <div class="card"><div class="t">A · Rain to Refuge <span class="rec">RECOMMENDED</span></div>Follows the approved concept shot for shot: a worry, the verse, the word “with”, small mercies (tea, a call), then BMHC’s own front door lit in the rain.<div class="m">9 shots · about 45 seconds</div></div>
+  <div class="card"><div class="t">B · The City and the Centre</div>More cinematic and outdoor: wet streets, streetlamps and a tram street instead of the tea and phone close-ups. It feels like a short film about Manchester.<div class="m">10 shots · about 47 seconds</div></div>
+  <div class="card"><div class="t">C · The Short Cut</div>Only the strongest moments: the hook, the verse, “with” and BMHC’s door. Best for Stories and a paid boost.<div class="m">5 shots · about 31 seconds</div></div>
+</div>
+
+<h2>What I gathered</h2>
+<ul>
+  <li><b>About 970 candidate clips</b> were reviewed from Mixkit and Coverr, both free for commercial use. Every clip was checked frame by frame for faces, modest dress and anything unsuitable. Mixkit clips under its “Restricted” licence were rejected, because it doesn’t allow company social media posts.</li>
+  <li><b>Pexels, Pixabay and Videvo</b> block automated access, and Magnific (the premium stock and AI video service connected here) has only 2 credits left. So no premium or AI-generated clips are used yet; see page 5 for what they would add.</li>
+  <li><b>BMHC’s own photos</b> come from bmhc.org.uk: the Gothic tower and front door, graded to night with rain and warm light in the doorway. Instagram blocks automated access, so nothing was taken from @thebmhc. Any photos or clips you download from it can be swapped in.</li>
+  <li><b>Rain:</b> the rain falling over dry clips and photos is generated in code, so it has no licence issues and always matches.</li>
+</ul>
+
+<div class="flag"><b>Best upgrade:</b> a 1-minute phone video from BMHC (4K, vertical, at dusk) of the front door opening and the lit entrance hall, empty. Shots 7 and 8 would then be real footage instead of a photo with added light.</div>
+
+<!-- ============ OPTION A ============ -->
+<div class="pb"></div>
+<h2>Option A · Rain to Refuge · about 45 s · recommended</h2>
+<p class="note">Frames show the real clip or photo, graded and cropped to 9:16, with the on-screen text in its final style. In the edit each shot moves: slow push-ins, falling rain, words appearing as they are spoken.</p>
+<div class="grid">
+  <div class="fr"><img src="small/A1.jpg"><div class="tc"><i>1</i> · 0:00–0:03.5 · Hook</div><div class="vo">“Manchester knows rain. Some days, so do we.”</div><div class="src">Rain on a window, one amber light · Mixkit</div></div>
+  <div class="fr"><img src="small/A2.jpg"><div class="tc"><i>2</i> · 0:03.5–0:07.5</div><div class="vo">“A bill. A loss. A worry nobody sees.”</div><div class="src">Man alone under a light, from behind · Coverr · rain added</div></div>
+  <div class="fr"><img src="small/A3.jpg"><div class="tc"><i>3</i> · 0:07.5–0:20.5 · The verse</div><div class="vo">Imam recites 94:5–6, then the translation. Bed and rain go silent.</div><div class="src">Rain on dark water, graded to night · Mixkit</div></div>
+  <div class="fr"><img src="small/A4.jpg"><div class="tc"><i>4</i> · 0:20.5–0:25 · “with”</div><div class="vo">“Notice the word: with. Not only after the hardship. With it.”</div><div class="src">Two men under one umbrella, from behind · Mixkit 4K</div></div>
+  <div class="fr"><img src="small/A5.jpg"><div class="tc"><i>5</i> · 0:25–0:29.5</div><div class="vo">“Ease often comes while it’s still raining: a cup of tea,”</div><div class="src">Hands around a warm mug · Coverr</div></div>
+  <div class="fr"><img src="small/A6.jpg"><div class="tc"><i>6</i> · 0:29.5–0:32</div><div class="vo">“a friend who calls,”</div><div class="src">Phone glowing under a lamp · Mixkit, native vertical</div></div>
+  <div class="fr"><img src="small/A7.jpg"><div class="tc"><i>7</i> · 0:32–0:34.5</div><div class="vo">“a door that’s open.”</div><div class="src">BMHC’s tower, night grade and rain · BMHC photo</div></div>
+  <div class="fr"><img src="small/A8.jpg"><div class="tc"><i>8</i> · 0:34.5–0:39</div><div class="vo">“Whatever you are going through, support is just a conversation away.”</div><div class="src">Slow tilt down to BMHC’s front door as warm light grows · BMHC photo</div></div>
+  <div class="fr"><img src="small/A9.jpg"><div class="tc"><i>9</i> · 0:39–0:45 · End card</div><div class="vo">“Imam Counselling at BMHC.” Card held 6 s.</div><div class="src">Designed: real logo, the four colour bars, support numbers</div></div>
+</div>
+<p class="note" style="margin-top:2.5mm"><b>Shot 5:</b> the drink in this clip looks like black coffee. Either keep the line as “a cup of tea” and I’ll keep looking for a tea shot (or BMHC films hands pouring tea), or change the line to “a warm cup”.</p>
+
+<!-- ============ OPTION B ============ -->
+<div class="pb"></div>
+<h2>Option B · The City and the Centre · about 47 s</h2>
+<p class="note">Same verse, “with” and BMHC shots as A, but the city carries the story: wet streets and streetlamps replace the tea and phone close-ups.</p>
+<div class="grid">
+  <div class="fr"><img src="small/B1.jpg"><div class="tc"><i>1</i> · 0:00–0:03 · Hook</div><div class="vo">“Manchester knows rain.”</div><div class="src">Low, wet street reflections at night · Mixkit</div></div>
+  <div class="fr"><img src="small/B2.jpg"><div class="tc"><i>2</i> · 0:03–0:06.5</div><div class="vo">“Some days, so do we.”</div><div class="src">Rain on a window, amber light · Mixkit</div></div>
+  <div class="fr"><img src="small/B3.jpg"><div class="tc"><i>3</i> · 0:06.5–0:10.5</div><div class="vo">“A bill. A loss. A worry nobody sees.”</div><div class="src">Man walking away at blue hour · Coverr · rain added</div></div>
+  <div class="fr"><img src="small/A3.jpg"><div class="tc"><i>4</i> · 0:10.5–0:23.5 · The verse</div><div class="vo">Recitation, then the translation, in silence.</div><div class="src">As A3</div></div>
+  <div class="fr"><img src="small/A4.jpg"><div class="tc"><i>5</i> · 0:23.5–0:28 · “with”</div><div class="vo">“Notice the word: with. Not only after the hardship. With it.”</div><div class="src">As A4</div></div>
+  <div class="fr"><img src="small/B6.jpg"><div class="tc"><i>6</i> · 0:28–0:31.5</div><div class="vo">“Ease often comes while it’s still raining:”</div><div class="src">Rain through streetlamps · Mixkit 4K</div></div>
+  <div class="fr"><img src="small/B7.jpg"><div class="tc"><i>7</i> · 0:31.5–0:34.5</div><div class="vo">“a friend beside you, a light left on,”</div><div class="src">Red-brick street at dusk, tram wires · Mixkit 4K · rain added</div></div>
+  <div class="fr"><img src="small/A7.jpg"><div class="tc"><i>8</i> · 0:34.5–0:36.5</div><div class="vo">“a door that’s open.”</div><div class="src">As A7</div></div>
+  <div class="fr"><img src="small/A8.jpg"><div class="tc"><i>9</i> · 0:36.5–0:41</div><div class="vo">“Whatever you are going through, support is just a conversation away.”</div><div class="src">As A8</div></div>
+  <div class="fr"><img src="small/A9.jpg"><div class="tc"><i>10</i> · 0:41–0:47 · End card</div><div class="vo">“Imam Counselling at BMHC.”</div><div class="src">As A9</div></div>
+</div>
+
+<div class="pb"></div>
+<h2>Option C · The Short Cut · about 31 s</h2>
+<div class="grid">
+  <div class="fr"><img src="small/A1.jpg"><div class="tc"><i>1</i> · 0:00–0:03.5</div><div class="vo">“Manchester knows rain. Some days, so do we.”</div></div>
+  <div class="fr"><img src="small/A3.jpg"><div class="tc"><i>2</i> · 0:03.5–0:16.5</div><div class="vo">Recitation, then the translation.</div></div>
+  <div class="fr"><img src="small/A4.jpg"><div class="tc"><i>3</i> · 0:16.5–0:21</div><div class="vo">“Notice the word: with. Not only after the hardship. With it.”</div></div>
+  <div class="fr"><img src="small/A8.jpg"><div class="tc"><i>4</i> · 0:21–0:25.5</div><div class="vo">“Whatever you are going through, support is just a conversation away.”</div></div>
+  <div class="fr"><img src="small/A9.jpg"><div class="tc"><i>5</i> · 0:25.5–0:31.5</div><div class="vo">“Imam Counselling at BMHC.”</div></div>
+</div>
+
+<!-- ============ VOICEOVER ============ -->
+<h2>Voiceover script · Option A (for recording)</h2>
+<p class="note">About 76 spoken words plus the recitation, read calmly at about 150 words a minute. Captions on screen match the voice word for word. Options B and C use the same lines, with the changes listed under the script.</p>
+<div class="script">
+  <div class="row"><span class="t">0:00</span><span>Manchester knows rain. Some days, so do we.</span></div>
+  <div class="row"><span class="t">0:03.5</span><span>A bill. A loss. A worry nobody sees.</span></div>
+  <div class="row"><span class="t">0:07.5</span><span class="imam">[BMHC’s imam recites Ash-Sharh 94:5–6, about 6 seconds]</span></div>
+  <div class="row"><span></span><span class="ar">فَإِنَّ مَعَ ٱلۡعُسۡرِ يُسۡرًا ٥ إِنَّ مَعَ ٱلۡعُسۡرِ يُسۡرٗا ٦</span></div>
+  <div class="row"><span class="t">0:14</span><span>Allah says: “For indeed, with hardship [will be] ease. Indeed, with hardship [will be] ease.”</span></div>
+  <div class="row"><span class="t">0:20.5</span><span>Notice the word: with. Not only after the hardship. With it.</span></div>
+  <div class="row"><span class="t">0:25</span><span>Ease often comes while it’s still raining: a cup of tea,</span></div>
+  <div class="row"><span class="t">0:29.5</span><span>a friend who calls,</span></div>
+  <div class="row"><span class="t">0:32</span><span>a door that’s open.</span></div>
+  <div class="row"><span class="t">0:34.5</span><span>Whatever you are going through, support is just a conversation away.</span></div>
+  <div class="row"><span class="t">0:39</span><span>Imam Counselling at BMHC.</span></div>
+</div>
+<p style="margin-top:2mm"><b>Option B:</b> the opening is split across two shots (“Manchester knows rain.” / “Some days, so do we.”). Lines 5 and 6 become “Ease often comes while it’s still raining: a friend beside you, a light left on, a door that’s open.” <b>Option C:</b> lines 1, the verse, 4, 7 and 8 only.</p>
+
+<div class="cols">
+  <div>
+    <h3>Recording the voiceover</h3>
+    <ul>
+      <li>A calm, warm British narrator, human (no AI voice). Unhurried and kind, not dramatic.</li>
+      <li>Record each line separately with a second of silence between, in a quiet room or booth.</li>
+      <li>Send WAV, 48 kHz, 24-bit (an iPhone voice memo is a fallback). No music or effects on it.</li>
+      <li>Say “Ash-Sharh” and “Imam” naturally; the URL appears on screen, so it isn’t read out.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Recording the recitation</h3>
+    <ul>
+      <li>BMHC’s imam (or a qualified reciter) recites 94:5–6 once, slowly, as a separate file. No AI recitation.</li>
+      <li>The shot is sized to his take. It is never trimmed or sped up.</li>
+      <li>Ask the imam to check the Arabic on screen and the reflection on “with”. The text file is supplied with the concept.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ SOUND + SOURCES ============ -->
+<div class="pb"></div>
+<h2>Background music</h2>
+<p>You asked for proper background music. For a mosque, the respectful choice is a <b>vocal-only nasheed-style bed with no instruments</b>: soft layered humming that swells on “with” and on the door, dips under the voice, and goes completely silent under the recitation and the translation. Choose one:</p>
+<ul>
+  <li><b>1 · Licensed vocal-only nasheed (recommended):</b> a short “vocals only” or a cappella track from a library BMHC is happy with, or a nasheed artist BMHC knows. I edit it to the cut.</li>
+  <li><b>2 · AI-generated vocal bed:</b> made to fit the timing exactly with Magnific’s music tools. That needs about 1,000 credits for 50 seconds, and the account currently has 2.</li>
+  <li><b>3 · Voice and rain only:</b> no music, just rain, the city and the voice. It is free and ready now, and it is the safest choice if BMHC prefers no music.</li>
+</ul>
+<p class="note">Either way, the edit has full sound design: rain on glass and stone, a distant bus, an umbrella, a spoon in a cup, a soft phone buzz and the door. It is mixed for Instagram at −14 LUFS.</p>
+
+<h2>Gaps and upgrades</h2>
+<div class="cols">
+  <div>
+    <ul>
+      <li><b>The verse shot (3):</b> the best free clip is daylight water graded to night. An AI-generated night puddle under a streetlamp would be stronger: about 3 clips × 2,800 Magnific credits, or a Kling account connected in your claude.ai settings.</li>
+      <li><b>Shots 2 and 4:</b> the clips are dry or daytime, so rain and a night grade are added. AI or real footage of a bus shelter in the rain would be closer to the concept.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Shots 7 and 8:</b> BMHC’s real photo works well now. Real door and hall footage from BMHC would be better still.</li>
+      <li><b>Quality:</b> the 1080p landscape clips are cropped to vertical and sharpened, and the 4K clips stay full quality. The final export is 1080×1920 at 30 fps.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Sources and licences</h2>
+<table class="src">
+  <tr><td>A1, B2</td><td>Mixkit · “Window on a rainy day” (2846) · Free licence · 1080p</td></tr>
+  <tr><td>A2</td><td>Coverr · “A man walking in a parking lot” · Coverr licence · 1080p</td></tr>
+  <tr><td>A3</td><td>Mixkit · “Rain falling on the water of a lake seen up” (18312) · Free licence · 1080p</td></tr>
+  <tr><td>A4</td><td>Mixkit · “Couple walking in the street using an umbrella” (1322; two men) · Free licence · 4K</td></tr>
+  <tr><td>A5</td><td>Coverr · “Warming up hands on a mug” · Coverr licence · 1080p</td></tr>
+  <tr><td>A6</td><td>Mixkit · “Cellphone under a lamp” (1793) · Free licence · vertical 1080×1920</td></tr>
+  <tr><td>B1</td><td>Mixkit · “Traffic on a rainy night” (4331) · Free licence · 1080p</td></tr>
+  <tr><td>B3</td><td>Coverr · “Twilight city call” · Coverr licence · 1080p</td></tr>
+  <tr><td>B6</td><td>Mixkit · “Nighttime park with illuminated streetlights and trees” (100417) · Free licence · 4K</td></tr>
+  <tr><td>B7</td><td>Mixkit · “City street with trolleybus at night” (3429) · Free licence · 4K</td></tr>
+  <tr><td>A7, A8</td><td>BMHC’s own photo of the tower and front door (bmhc.org.uk), graded, with generated rain and light</td></tr>
+  <tr><td>Rain</td><td>Generated in code for this video</td></tr>
+</table>
+
+<div class="box" style="margin-top:4mm">
+  <b>Next step:</b> reply with <b>A, B or C</b> (and any frame you want swapped), send the <b>voiceover</b> and the <b>imam’s recitation</b>, and pick a <b>music option (1, 2 or 3)</b>. I’ll then edit and send the finished video.
+</div>
+
+</body>
+</html>

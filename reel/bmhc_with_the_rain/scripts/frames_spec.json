@@ -1,0 +1,86 @@
+[
+ {
+  "out": "frames/A1.jpg",
+  "bg": "sb/f_window3.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Manchester knows <span class=\"k\">rain</span>. Some days, so do we.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A2.jpg",
+  "bg": "sb/f_man_lamp.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">A bill. A loss. A <span class=\"k\">worry</span> nobody sees.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A3.jpg",
+  "bg": "sb/f_puddle.jpg",
+  "html": "<div style=\"position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 42%,rgba(0,0,0,.15),rgba(0,0,0,.55))\"></div><div class=\"ar\" style=\"position:absolute;left:60px;right:60px;top:560px;font-size:84px;line-height:1.75;text-shadow:0 2px 24px rgba(0,0,0,.6)\">\u0641\u064e\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e \u0671\u0644\u06e1\u0639\u064f\u0633\u06e1\u0631\u0650 \u064a\u064f\u0633\u06e1\u0631\u064b\u0627 \u0665<br>\u0625\u0650\u0646\u064e\u0651 \u0645\u064e\u0639\u064e \u0671\u0644\u06e1\u0639\u064f\u0633\u06e1\u0631\u0650 \u064a\u064f\u0633\u06e1\u0631\u0657\u0627 \u0666</div><div style=\"position:absolute;left:90px;right:90px;top:960px;text-align:center;font-family:Poppins;font-weight:500;font-size:44px;line-height:1.35;color:#f2ede4;text-shadow:0 2px 16px rgba(0,0,0,.6)\">\u201cFor indeed, with hardship [will be] ease. Indeed, with hardship [will be] ease.\u201d</div><div style=\"position:absolute;left:0;right:0;top:1150px;text-align:center;font-family:Poppins;font-weight:600;font-size:28px;letter-spacing:.12em;color:#e9b45a\">ASH-SHARH 94:5\u20136</div>",
+  "shade": "none"
+ },
+ {
+  "out": "frames/A4.jpg",
+  "bg": "sb/f_umbrella.jpg",
+  "html": "<div class=\"ar\" style=\"position:absolute;left:0;right:0;top:380px;font-size:200px;color:#e9b45a;text-shadow:0 4px 40px rgba(0,0,0,.55)\">\u0645\u064e\u0639\u064e</div><div style=\"position:absolute;left:0;right:0;top:880px;text-align:center;font-family:Poppins;font-weight:600;font-size:40px;letter-spacing:.25em;color:#f2d79e\">WITH</div><div class=\"cap\" style=\"top:1040px\">Notice the word: <span class=\"g\">with.</span> Not only after the hardship. <span class=\"g\">With it.</span></div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A5.jpg",
+  "bg": "sb/f_tea.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Ease often comes while it\u2019s <span class=\"k\">still raining</span>: a cup of tea,</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A6.jpg",
+  "bg": "sb/f_phone_lamp.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">a <span class=\"k\">friend</span> who calls,</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A7.jpg",
+  "bg": "sb/f_bmhc_tower.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">a <span class=\"k\">door</span> that\u2019s open.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A8.jpg",
+  "bg": "sb/f_bmhc_doorglow.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Whatever you are going through, <span class=\"k\">support</span> is just a conversation away.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/A9.jpg",
+  "bg": null,
+  "html": "<div style=\"position:absolute;inset:0;background:#122F2A\"></div><img src=\"file:///tmp/claude-0/-home-user-100/ac8ada7c-a2f6-5697-a3bb-5f7ec410c66f/scratchpad/bmhc_video/logo_white_4x.png\" style=\"position:absolute;left:240px;top:330px;width:600px\"><div style=\"position:absolute;left:60px;right:60px;top:690px;text-align:center;font-family:Poppins;font-weight:700;font-size:64px;line-height:1.15;color:#fff\">Imam Counselling<br>at BMHC</div><div style=\"position:absolute;left:60px;right:60px;top:880px;text-align:center;font-family:Poppins;font-weight:500;font-size:36px;line-height:1.5;color:#d9e5e0\">Confidential \u00b7 0161 881 8062 (opening hours)<br><span style=\"color:#7fd6cf;font-weight:600\">bmhc.org.uk/imam-counselling</span></div><div style=\"position:absolute;left:90px;right:90px;top:1060px;text-align:center;font-family:Poppins;font-weight:400;font-size:26px;line-height:1.45;color:rgba(255,255,255,.78)\">Need to talk? Samaritans, free, day or night: 116 123.<br>Urgent mental health help: NHS 111, mental health option.<br>Emergency: 999.</div><div style=\"position:absolute;left:0;right:0;top:1205px;text-align:center;font-family:Poppins;font-size:20px;color:rgba(255,255,255,.55)\">AI-assisted and stock scenes \u00b7 the building is from our own photos</div><div style=\"position:absolute;left:0;right:0;bottom:0;height:22px;display:flex\"><span style=\"flex:1;background:#DB225E\"></span><span style=\"flex:1;background:#09999C\"></span><span style=\"flex:1;background:#F26721\"></span><span style=\"flex:1;background:#76BF43\"></span></div>",
+  "shade": "none"
+ },
+ {
+  "out": "frames/B1.jpg",
+  "bg": "sb/f_city_wet.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Manchester knows <span class=\"k\">rain</span>.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/B2.jpg",
+  "bg": "sb/f_window3.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Some days, so do we.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/B3.jpg",
+  "bg": "sb/f_man_walk.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">A bill. A loss. A <span class=\"k\">worry</span> nobody sees.</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/B6.jpg",
+  "bg": "sb/f_city_lamps.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">Ease often comes while it\u2019s <span class=\"k\">still raining</span>:</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ },
+ {
+  "out": "frames/B7.jpg",
+  "bg": "sb/f_city_tram.jpg",
+  "html": "<div class=\"cap\" style=\"top:1040px\">a friend beside you, a light left on,</div>",
+  "shade": "linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(0,0,0,.50) 52%,rgba(0,0,0,.42) 68%,rgba(0,0,0,.10) 100%)"
+ }
+]

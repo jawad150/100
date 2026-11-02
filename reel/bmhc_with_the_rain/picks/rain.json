@@ -1,0 +1,184 @@
+{
+ "project": "BMHC 'With the Rain' 9:16 reel - rain shots",
+ "license_note": "Mixkit now has two licences. 'Stock Video Free License' allows commercial and company social use. 'Stock Video Restricted License' is personal use only: it does NOT allow company social media posts, advertising or commercial projects, so it cannot be used on BMHC's Instagram. All picks below were checked on their item pages as videoFree. Coverr is free for commercial use. Free Mixkit downloads stop at 1080p for most items (2160 URLs return 403) except where noted. See mixkit_licenses*.txt for the per-item check.",
+ "picks": [
+  {
+   "shot": "s1_window",
+   "rank": 1,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License (commercial + company social OK)",
+   "id": "99834",
+   "title": "Raindrops on glass with blurred city lights in the background",
+   "page": "https://mixkit.co/free-stock-video/raindrops-on-glass-with-blurred-city-lights-in-the-background-99834/",
+   "file_url": "https://assets.mixkit.co/active_storage/video_items/99834/1717026441/99834-video-2160.mp4",
+   "local_file": "picks_rain/s1_window_1.mp4",
+   "width": 3840,
+   "height": 2160,
+   "duration": 19.56,
+   "fps": 23.976,
+   "in": 6.0,
+   "out": 9.5,
+   "crop": {
+    "w": 1215,
+    "h": 2160,
+    "x": 900,
+    "scale_to": "1080x1920",
+    "note": "9:16 from 4K at full quality; can also push in (crop up to ~1.1x) without upscaling"
+   },
+   "frame": "picks_rain/s1_window_1.jpg",
+   "reason": "Best match: macro raindrops on glass over warm amber + cool white city bokeh, slow drift, no people/text. Concern: base grade is green-olive; needs a cool blue-grey grade. No actual window frame visible (bokeh only)."
+  },
+  {
+   "shot": "s1_window",
+   "rank": 2,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "id": "99841",
+   "title": "Colorful rain soaked bokeh lights at night",
+   "page": "https://mixkit.co/free-stock-video/colorful-rain-soaked-bokeh-lights-at-night-99841/",
+   "file_url": "https://assets.mixkit.co/active_storage/video_items/99841/1717105845/99841-video-1080.mp4",
+   "local_file": "picks_rain/s1_window_2.mp4",
+   "width": 1080,
+   "height": 1920,
+   "duration": 22.56,
+   "fps": 23.976,
+   "in": 10.0,
+   "out": 13.5,
+   "crop": {
+    "w": 1080,
+    "h": 1920,
+    "x": 0,
+    "note": "native vertical, no crop; 4K not offered free (2160 URL 403)"
+   },
+   "frame": "picks_rain/s1_window_2.jpg",
+   "reason": "Native 9:16 rain-on-glass night bokeh (amber/orange + teal), drifts and grows over time. Concern: strong green/teal tint and orange+green is more 'colourful' than the brief; desaturate toward blue-grey + amber."
+  },
+  {
+   "shot": "s1_window",
+   "rank": 3,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "id": "2846",
+   "title": "Window on a rainy day",
+   "page": "https://mixkit.co/free-stock-video/window-on-a-rainy-day-2846/",
+   "file_url": "https://assets.mixkit.co/videos/2846/2846-1080.mp4",
+   "local_file": "picks_rain/s1_window_3.mp4",
+   "width": 1920,
+   "height": 1080,
+   "duration": 22.08,
+   "fps": 25,
+   "in": 8.0,
+   "out": 11.5,
+   "crop": {
+    "w": 608,
+    "h": 1080,
+    "x": 440,
+    "scale_to": "1080x1920",
+    "note": "UPSCALE 1.78x from 1080p landscape (no 2160 free)"
+   },
+   "frame": "picks_rain/s1_window_3.jpg",
+   "reason": "Most literal 'rain running down a window' with one warm amber light behind cool grey glass: ideal palette. Concerns: daylight not dusk (grade down), 25fps, and 9:16 crop needs a 1.78x upscale (soft but the subject is already defocused)."
+  },
+  {
+   "shot": "s3_puddle",
+   "rank": 1,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "id": "18312",
+   "title": "Rain falling on the water of a lake seen up",
+   "page": "https://mixkit.co/free-stock-video/rain-falling-on-the-water-of-a-lake-seen-up-18312/",
+   "file_url": "https://assets.mixkit.co/videos/18312/18312-1080.mp4",
+   "local_file": "picks_rain/s3_puddle_1.mp4",
+   "width": 1920,
+   "height": 1080,
+   "duration": 15.02,
+   "fps": 23.976,
+   "in": 1.0,
+   "out": 14.5,
+   "crop": {
+    "w": 608,
+    "h": 1080,
+    "x": 700,
+    "scale_to": "1080x1920",
+    "note": "UPSCALE 1.78x; to reach 13 s use the full clip or slow to ~0.9x"
+   },
+   "frame": "picks_rain/s3_puddle_1.jpg",
+   "reason": "Locked-off, calm close-up of raindrops ringing on dark water with a soft sky reflection; nothing else moves. Concerns: daylight, olive-green water (grade to near-black blue with a warm 'lamp' highlight), not slow-mo, 1.78x upscale. No streetlamp/night puddle exists free."
+  },
+  {
+   "shot": "s3_puddle",
+   "rank": 2,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "id": "1751",
+   "title": "Rain in a fountain slow motion shot",
+   "page": "https://mixkit.co/free-stock-video/rain-in-a-fountain-slow-motion-shot-1751/",
+   "file_url": "https://assets.mixkit.co/videos/1751/1751-2160.mp4",
+   "local_file": "picks_rain/s3_puddle_2.mp4",
+   "width": 3840,
+   "height": 2160,
+   "duration": 12.05,
+   "fps": 23.976,
+   "in": 0.0,
+   "out": 12.0,
+   "crop": {
+    "w": 1215,
+    "h": 2160,
+    "x": 1312,
+    "scale_to": "1080x1920",
+    "note": "full quality from 4K; only 12 s, slow to ~0.92x or hold for 13 s"
+   },
+   "frame": "picks_rain/s3_puddle_2.jpg",
+   "reason": "True slow-motion, 4K, locked-off rain on water surface; clean, no people. Concerns: bright grey-green daylight look and busy all-over texture (less 'single drop' elegance); needs heavy darken/vignette; 12 s long."
+  },
+  {
+   "shot": "s3_puddle",
+   "rank": 3,
+   "source": "mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "id": "2208",
+   "title": "Drops of water falling in a puddle",
+   "page": "https://mixkit.co/free-stock-video/drops-of-water-falling-in-a-puddle-2208/",
+   "file_url": "https://assets.mixkit.co/videos/2208/2208-1080.mp4",
+   "local_file": "picks_rain/s3_puddle_3.mp4",
+   "width": 1920,
+   "height": 1080,
+   "duration": 20.15,
+   "fps": 23.976,
+   "in": 3.0,
+   "out": 16.0,
+   "crop": {
+    "w": 608,
+    "h": 1080,
+    "x": 656,
+    "scale_to": "1080x1920",
+    "note": "UPSCALE 1.78x"
+   },
+   "frame": "picks_rain/s3_puddle_3.jpg",
+   "reason": "Top-down shallow puddle with overlapping ripple rings, locked-off, 20 s. Concerns: daylight, visible leaf litter/grit on the bottom, busy; fallback only."
+  }
+ ],
+ "gaps": [
+  {
+   "shot": "x_overlay",
+   "status": "NO USABLE FREE CLIP",
+   "detail": "Every rain-on-black/dark-screen clip found (Mixkit 28087 'heavy rain on a dark screen', 28098 'rainfall against a screen', 45371 'water falling in front of a black background', 28097, 20727, 9589, 47557) is Mixkit Restricted License. The candidates.json x_overlay list has no rain-on-black clip at all (mostly flowers, cars and people). Coverr search found none. Recommendation: generate the rain procedurally (particle streaks on black in Blender, AE or the motion toolkit, with motion blur, two depth layers and slight wind angle), which also gives exact control over density and angle for compositing over the Centre photos. Non-rain fallback: Mixkit 4407 'white particles moving on black background' (videoFree, 4K) works only as a floating bokeh or dust layer."
+  },
+  {
+   "shot": "s3_puddle",
+   "status": "PARTIAL",
+   "detail": "No free clip of a night puddle under a streetlamp exists. The two closest puddle clips (Mixkit 45372 'slow motion of rain hitting puddles on the ground', 48004 'drops of rain falling on the street') and the dark Mixkit 31551 'rain falling on the street close up' are Restricted License. The picks are free daylight water-surface clips that need a heavy night grade. For the 13 s sacred-mode shot an AI-generated locked-off night puddle (single sodium or warm streetlamp reflection, slow-motion drops, 9:16 native) is recommended."
+  },
+  {
+   "shot": "s1_window",
+   "status": "OK-ish",
+   "detail": "Good free rain-on-glass bokeh exists (99834 4K, 99841 native vertical; also 99839 'raindrops on a window with blurred lights', videoFree, a close sibling of 99834). No free clip shows a tall Victorian or sash window frame with the city behind it. If the window frame matters, AI-generate it or shoot it."
+  }
+ ],
+ "rejected_for_content": [
+  "s1 34 'looking out through a wet car window' (car interior, neon/pink nightlife colours)",
+  "extra 12 28088 neon sidewalk reflections (Restricted, nightlife look)",
+  "many window clips with visible faces (women at windows, phone booths)",
+  "Coverr 'brunette woman smoking in the rain' and 'couple romantically under umbrella' (smoking, romance)"
+ ]
+}
