@@ -22,3 +22,19 @@ The full-resolution clips are not committed; re-download them from the URLs in `
   `bmhc_shot.py` (BMHC tower-to-door move with door glow) → `overlays.js` (captions/verse/end card) →
   `compose2.py` (rain, transitions, captions) → `audio_mix.py` → loudnorm and mux.
   The timeline is driven by the voice and recitation lengths, so swapping in new recordings re-times everything.
+
+## Draft v2 (Option A, revised after client feedback)
+- `bmhc_with_the_rain_v2_voice_bed.mp4`: 49 s, 1080×1920, 30 fps, −14 LUFS; background is a voices-only choir drone
+  (minor colour before the verse, major after it), silent during the verse. Recommended for BMHC.
+- `bmhc_with_the_rain_v2_piano_strings.mp4`: the same edit with "Rebecca on the Shore" (Mixkit Stock Music Free License),
+  for use only if BMHC is happy with instruments.
+- What changed: faster guide narration (Kokoro, speed 1.08; "Imam" set phonetically), 11 clips instead of 7 (two clips
+  each on the "with", "ease" and "support" lines; people consoling and a person on the phone), a different text
+  animation per scene, a purposeful transition per cut, a "Speak to an Imam" button with a cursor tap, and a new
+  bed blended with the voice and sound design (presence-band carve and ducking under the voice).
+- New clips (all checked on their own pages): Mixkit 50098 (father beside daughter's bike), 100417 (park lamps in rain),
+  50122/50131 series (father beside son), 50117 (older man), Coverr 1012 (older man answering phone), Coverr 7136
+  (two men talking). Rejected as Mixkit Restricted: 39184 (mosque interior), 28091 (mother and son in rain), 35815.
+- Build: `vo2.py` → `align2.py` → `timeline3.py` → `gen_lut.py` → `stage1.py` (+ `stage1_v2.json`) → `bmhc_shot.py` →
+  `ov2.js` (all text and the end card as one timed HTML page, rendered per frame) → `compose3.py` (rain, the
+  transitions, overlay) → `audio_mix2.py vocal|<music>@pre@post` → `finish2.py` (two-pass loudnorm, mux, previews).

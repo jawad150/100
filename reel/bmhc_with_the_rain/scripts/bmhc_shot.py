@@ -18,6 +18,7 @@ gy, gx = np.mgrid[0:H // 4, 0:W // 4].astype(np.float32) * 4
 enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
                         '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', P('shots', 'bmhc.mp4')], stdin=subprocess.PIPE)
 n = int(round(D * FPS))
+door = {}
 for fi in range(n):
     tl = fi / FPS - M; t_abs = s['start'] + tl
     u = ease(tl / dur)
@@ -26,14 +27,16 @@ for fi in range(n):
     cx, cy = 0.47 * BW, top * BH + hh / 2
     x0 = min(max(cx - ww / 2, 0), BW - ww); y0 = min(max(cy - hh / 2, 0), BH - hh)
     fr = G.transform((W, H), Image.AFFINE, (ww / W, 0, x0, 0, hh / H, y0), resample=Image.BICUBIC)
-    g_on = ease((t_abs - (TL['vo']['L7'] + 0.1)) / 2.2)
+    g_on = ease((t_abs - (TL['vo']['L7'] - 0.1)) / 1.3)
     if g_on > 0:
         dx = (0.47 * BW - x0) / ww * W; dy = (0.705 * BH - y0) / hh * H; sc = (0.035 * BH) / hh * H
         gl = np.exp(-(((gx - dx) / (sc * 1.15)) ** 2 + ((gy - dy) / (sc * 2.0)) ** 2))
         sp = np.exp(-(((gx - dx) / (sc * 3.2)) ** 2 + ((gy - (dy + sc * 2.5)) / (sc * 1.2)) ** 2))
+        door[round(t_abs, 3)] = [float(dx), float(dy)]
         f = g_on * (gl * 0.9 + sp * 0.35)
         rgb = (np.stack([f * 1.0, f * 0.72, f * 0.38], -1) * 255).clip(0, 255).astype(np.uint8)
         glow = Image.fromarray(rgb).resize((W, H), Image.BILINEAR)
         fr = ImageChops.add(fr, glow)
     enc.stdin.write(fr.tobytes())
 enc.stdin.close(); enc.wait(); print('bmhc frames', n)
+json.dump(door, open(P('shots', 'bmhc_door.json'), 'w'))

@@ -13,13 +13,23 @@ def grade(a, preset):
     elif preset == 'warm':
         a = lum + (a - lum) * 0.9
         a = np.clip(a, 0, 1) ** 1.1 * np.array([1.08, 0.98, 0.86])
+    elif preset == 'dusk':      # daylight exterior pushed to a low golden evening: darker, cool shadows, warm highlights
+        a = lum + (a - lum) * 0.55
+        a = np.clip(a, 0, 1) ** 1.55 * 0.66
+        hi = np.clip((lum - 0.35) / 0.65, 0, 1)
+        a = a * np.array([0.84, 0.94, 1.08]) * (1 - hi) + a * np.array([1.18, 0.96, 0.72]) * hi
+    elif preset == 'lamp':      # daylight interior pushed to a lamp-lit evening room
+        a = lum + (a - lum) * 0.78
+        a = np.clip(a, 0, 1) ** 1.35 * 0.74
+        hi = np.clip((lum - 0.3) / 0.7, 0, 1)
+        a = a * np.array([0.9, 0.95, 1.04]) * (1 - hi) + a * np.array([1.14, 0.97, 0.76]) * hi
     return np.clip(a, 0, 1)
 N = 33
 r = np.linspace(0, 1, N)
 # .cube order: R fastest, then G, then B
 bb, gg, rr = np.meshgrid(r, r, r, indexing='ij')
 rgb = np.stack([rr, gg, bb], -1).reshape(-1, 3)
-for p in ['night', 'deep', 'warm']:
+for p in ['night', 'deep', 'warm', 'dusk', 'lamp']:
     out = grade(rgb.copy(), p)
     with open(os.path.join(B, 'luts', f'{p}.cube'), 'w') as f:
         f.write(f'TITLE "{p}"\nLUT_3D_SIZE {N}\n')
