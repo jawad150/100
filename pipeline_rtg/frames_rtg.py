@@ -252,6 +252,8 @@ def leader(c, p, q, col=PLUM, th=3, dot=True):
 
 
 def sparkle(c, x, y, s=26, col=GOLD):
+    if s < 2:
+        return
     m = np.zeros((int(s * 8), int(s * 8)), np.uint8)
     cc = s * 4
     pts = []

@@ -207,6 +207,8 @@ for zz in ((0.25, 0.95), (1.1, 1.85)):
 parts.append(cyl(0.035, 0.07, (0.08, -DW + 0.08, 1.0), mat('brass', lin('#C9A45C'), metal=1, rough=0.3), rot=(0, math.radians(90), 0)))
 if has('s5'):
     parts.append(box(0.054, 0.06, -DW / 2 - 0.15, -DW / 2 + 0.15, 1.42, 1.62, mat('namecard', lin('#FFFFFF'), rough=0.6), bevel=0.004))
+    parts.append(box(-0.016, -0.01, -DW / 2 - 0.15, -DW / 2 + 0.15, 1.42, 1.62, mat('namecard', None), bevel=0.004))
+    parts.append(cyl(0.012, 0.02, (-0.022, -DW / 2, 1.6), mat('pinp', lin('#B7006E'), rough=0.3, coat=0.6), rot=(0, math.radians(90), 0)))
     parts.append(cyl(0.012, 0.02, (0.066, -DW / 2, 1.6), mat('pinp', lin('#B7006E'), rough=0.3, coat=0.6), rot=(0, math.radians(90), 0)))
 for o in parts:
     o.parent = hinge
@@ -321,13 +323,13 @@ if has('s5'):
     box(fx - fw / 2 + 0.05, fx + fw / 2 - 0.05, yb - 0.04, yb - 0.03, fz - fh / 2 + 0.05, fz + fh / 2 - 0.05, MOUNT)
     box(fx - fw / 2 + 0.11, fx + fw / 2 - 0.11, yb - 0.043, yb - 0.039, fz - fh / 2 + 0.11, fz + fh / 2 - 0.11, mat('emptypane', lin('#F1ECE6'), rough=0.6))
     # empty wall shelf on the left wall
-    box(R0, R0 + 0.22, 0.45, 1.3, 1.5, 1.535, WOOD_L, bevel=0.006)
+    box(R0, R0 + 0.22, 0.4, 1.3, 1.66, 1.695, WOOD_L, bevel=0.006)
     for yy in (0.55, 1.2):
-        box(R0, R0 + 0.16, yy - 0.012, yy + 0.012, 1.4, 1.5, mat('bracket', lin('#2B2B2B'), metal=0.8, rough=0.4))
+        box(R0, R0 + 0.16, yy - 0.012, yy + 0.012, 1.56, 1.66, mat('bracket', lin('#2B2B2B'), metal=0.8, rough=0.4))
     # bare cork pinboard on the left wall
-    box(R0, R0 + 0.03, -0.3, 0.32, 0.95, 1.38, WOOD_L, bevel=0.006)
-    box(R0 + 0.025, R0 + 0.035, -0.27, 0.29, 0.98, 1.35, mat('cork', lin('#C59A68'), rough=0.9, bump=(400, 0.4)))
-    for py, pz, pc in ((-0.2, 1.3, '#B7006E'), (0.2, 1.05, '#FF6411'), (0.05, 1.25, '#64A60B')):
+    box(R0, R0 + 0.03, 0.42, 1.08, 0.9, 1.36, WOOD_L, bevel=0.006)
+    box(R0 + 0.025, R0 + 0.035, 0.45, 1.05, 0.93, 1.33, mat('cork', lin('#C59A68'), rough=0.9, bump=(400, 0.4)))
+    for py, pz, pc in ((0.52, 1.27, '#B7006E'), (0.95, 1.0, '#FF6411'), (0.75, 1.22, '#64A60B')):
         cyl(0.012, 0.02, (R0 + 0.045, py, pz), mat('pin' + pc, lin(pc), rough=0.3, coat=0.6), rot=(0, math.radians(90), 0), v=16)
 
 # ------------------------------------------------------------------ light
