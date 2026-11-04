@@ -31,7 +31,7 @@ ffmpeg -i floret/out/video_3d_silent.mp4 -i floret/out/mix.wav -c:v copy \
 
 ## SaaS motion-graphics cut
 
-**`floret_saas_vo.mp4`** (Higgsfield's Vlad voice at a natural pace), **`floret_saas_vo_voice2.mp4`** (Vlad, slower and warmer) and **`floret_saas_music.mp4`** (music only). The voiceover takes are `voiceover.wav` and `voiceover_voice2.wav`. Each is trimmed with a light level polish and starts 1.0 s in. This is an 11-second version with the same iPhone, products, Sell/Buy buttons, chart and navy background. It is presented in an original motion-graphics style rather than as a recreation of the reference shot.
+**`floret_saas_vo.mp4`** (Hinglish voiceover: "Floret Capitals… investment ko banaya aasaan, lakhon Pakistaniyon ke liye"), **`floret_saas_vo_voice2.mp4`** (the original English line, "Floret Capitals. Simplifying investments for millions of Pakistanis", read with a desi accent) and **`floret_saas_music.mp4`** (music only). The voiceover takes are `voiceover.wav` and `voiceover_voice2.wav`. They are ElevenLabs reads with the line written in Devanagari script so the voice speaks with a native Urdu/Hindi accent. Each starts 1.0 s in. This is an 11-second version with the same iPhone, products, Sell/Buy buttons, chart and navy background. It is presented in an original motion-graphics style rather than as a recreation of the reference shot.
 
 | Time | Shot |
 |---|---|
