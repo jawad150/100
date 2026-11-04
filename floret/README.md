@@ -31,7 +31,7 @@ ffmpeg -i floret/out/video_3d_silent.mp4 -i floret/out/mix.wav -c:v copy \
 
 ## SaaS motion-graphics cut
 
-**`floret_saas_vo.mp4`** (voiceover) and **`floret_saas_music.mp4`** (music only). This is an 11-second version with the same iPhone, products, Sell/Buy buttons, chart and navy background. It is presented in an original motion-graphics style rather than as a recreation of the reference shot.
+**`floret_saas_vo.mp4`** (voiceover, voice 1), **`floret_saas_vo_voice2.mp4`** (the same with voice 2) and **`floret_saas_music.mp4`** (music only). The voiceover takes are `voiceover.wav` and `voiceover_voice2.wav`. They are natural-sounding ElevenLabs reads with light EQ, compression and room tone, starting 1.0 s in. This is an 11-second version with the same iPhone, products, Sell/Buy buttons, chart and navy background. It is presented in an original motion-graphics style rather than as a recreation of the reference shot.
 
 | Time | Shot |
 |---|---|
@@ -47,5 +47,5 @@ Every cut has a white flash, a zoom punch and a light sweep. The sound effects (
 ATLAS_HASH='#tap=0:5.6' OUT=floret/out node floret/render.js atlas 30 11
 python3 floret/saas_film.py render 1 330
 python3 floret/composite_saas.py
-SFX=saas DUR=11 python3 floret/audio.py floret/out/mix.wav floret/voiceover.wav 1.3
+SFX=saas DUR=11 python3 floret/audio.py floret/out/mix.wav floret/voiceover.wav 1.0
 ```
