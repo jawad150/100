@@ -49,3 +49,22 @@ python3 floret/saas_film.py render 1 330
 python3 floret/composite_saas.py
 SFX=saas DUR=11 python3 floret/audio.py floret/out/mix.wav floret/voiceover.wav 1.0
 ```
+
+## 15-second app promo (`floret_app_15s`)
+
+The finished versions of the supplied `floret_app_15s.mp4`:
+
+- **`floret_app_15s_final.mp4`**: the main version, with the ElevenLabs "Mark" voice.
+- **`floret_app_15s_final_voice2.mp4`**: the same video with the "Julian" voice.
+
+What was added:
+
+- **Voiceover (10.5–14.7 s):** "Floret Capitals. Simplifying investments for millions of Pakistanis." The brand name lands as the logo appears.
+- **Headline (about 1.0–9.6 s):** "One platform" (white) over "Multiple markets" (logo gold) at the bottom left, on a black gradient. It fades out before the phone fills that corner.
+- **Tagline (from 13.1 s):** "Simplifying investments for millions of Pakistanis", under the logo once it is fully drawn.
+- **Music:** an original bed (`music_app15.wav`, from `music_app15.py`) at 122.6 BPM, scored so that beat 24 hits the logo reveal. It has a pad intro, a groove from 1 s, a riser with the drums dropping under the video's own whoosh, and an impact plus a held chord for the logo. The video's original sound effects stay on top, and the music dips under the voice.
+
+```bash
+python3 floret/music_app15.py floret/music_app15.wav
+MUSIC=floret/music_app15.wav python3 floret/finish_app15.py floret_app_15s.mp4 <voiceover.mp3> floret/floret_app_15s_final.mp4
+```
