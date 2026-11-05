@@ -59,10 +59,11 @@ The finished versions of the supplied `floret_app_15s.mp4`:
 
 What was added:
 
-- **Voiceover (10.5–14.7 s):** "Floret Capitals. Simplifying investments for millions of Pakistanis." The brand name lands as the logo appears.
+- **Voiceover (0.5–4.7 s):** "Floret Capitals. Simplifying investments for millions of Pakistanis." It opens the video, under the headline.
 - **Headline (about 1.0–9.6 s):** "One platform" (white) over "Multiple markets" (logo gold) at the bottom left, on a black gradient. It fades out before the phone fills that corner.
 - **Tagline (from 13.1 s):** "Simplifying investments for millions of Pakistanis", under the logo once it is fully drawn.
-- **Music:** an original bed (`music_app15.wav`, from `music_app15.py`) at 122.6 BPM, scored so that beat 24 hits the logo reveal. It has a pad intro, a groove from 1 s, a riser with the drums dropping under the video's own whoosh, and an impact plus a held chord for the logo. The video's original sound effects stay on top, and the music dips under the voice.
+- **Audio:** the music bed and the voice only. The video's original sound effects are removed; pass `SFX=1` to keep them.
+- **Music:** an original track (`music_app15.wav`, from `music_app15.py`) at 122.6 BPM, so that beat 24 hits the logo reveal. It has a pad and reverse-cymbal swell intro, then a groove with a layered kick, clap, hats, shaker and sidechained bass. Over that sit a supersaw pad with an opening filter, a ping-pong arpeggio and a bell hook, followed by a riser and snare roll, then an impact with a held C(add9) chord for the logo. It is mixed with reverb and mastered with glue compression and a limiter. The music dips under the voice, and the final mix is set to -14 LUFS with peaks at about -1.5 dB.
 
 ```bash
 python3 floret/music_app15.py floret/music_app15.wav

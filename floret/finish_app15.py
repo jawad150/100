@@ -2,6 +2,7 @@
 and the tagline under the end logo.
 
     MUSIC=bed.wav python3 floret/finish_app15.py <in.mp4> <voiceover.(wav|mp3)> <out.mp4>
+    (VO_START=seconds to move the voice, SFX=1 to keep the video's own sound effects)
 """
 import os, subprocess, sys
 import numpy as np
@@ -12,7 +13,8 @@ W, H, FPS, SR = 1080, 1920, 30, 48000
 DUR = 15.0
 N = int(DUR * FPS)
 
-VO_START = float(os.environ.get('VO_START', 10.5))   # "Floret Capitals" lands as the logo starts (11.8 s)
+VO_START = float(os.environ.get('VO_START', 0.5))    # from the opening, under "One platform / Multiple markets"
+KEEP_SFX = os.environ.get('SFX') == '1'               # the video's own sound effects (off: music + voice only)
 TEXT_IN, TEXT_OUT = 1.0, 9.6                           # bottom-left lines, gone before the phone fills that corner (~9.9 s)
 TAG_IN = 13.1                                          # logo is fully drawn at ~13.0 s
 GOLD = (227, 157, 54)                                  # the logo's gold
@@ -90,22 +92,28 @@ bed = np.zeros_like(music)
 if os.environ.get('MUSIC'):
     bed = np.frombuffer(subprocess.run(['ffmpeg', '-v', 'error', '-i', os.environ['MUSIC'], '-ac', '2', '-ar', str(SR), '-f', 'f32le', '-'],
                                        capture_output=True, check=True).stdout, np.float32).reshape(-1, 2)
-    bed = np.pad(bed, ((0, max(0, len(music) - len(bed))), (0, 0)))[:len(music)] * float(os.environ.get('MUSIC_GAIN', 0.32))
+    bed = np.pad(bed, ((0, max(0, len(music) - len(bed))), (0, 0)))[:len(music)] * float(os.environ.get('MUSIC_GAIN', 0.58))
 env = np.zeros(len(track), np.float32)
 env[i0:i0 + len(vo)] = 1
 k = int(0.25 * SR)
 env = np.convolve(env, np.ones(k) / k, mode='same')
 duck = (1 - 0.55 * env)[:, None]
-mix = music * (1 - 0.3 * env)[:, None] + bed * duck + track[:, None]
-mix /= max(1.0, np.abs(mix).max() / 0.95)
+mix = (music * (1 - 0.3 * env)[:, None] if KEEP_SFX else 0) + bed * duck + track[:, None]
+# loudness to -14 LUFS (measured with ffmpeg's EBU R128 meter), then a soft limiter keeps peaks under -1 dBFS
 wav = OUT + '.wav'
+probe = subprocess.run(['ffmpeg', '-hide_banner', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', '-af', 'ebur128', '-f', 'null', '-'],
+                       input=mix.astype(np.float32).tobytes(), capture_output=True).stderr.decode()
+lufs = float(probe.rsplit('I:', 1)[1].split('LUFS')[0])
+mix = mix * 10 ** ((-14.0 - lufs) / 20)
+ceil = 10 ** (-1.2 / 20)
+mix = np.where(np.abs(mix) > 0.7 * ceil, np.sign(mix) * (0.7 * ceil + 0.3 * ceil * np.tanh((np.abs(mix) - 0.7 * ceil) / (0.3 * ceil))), mix)
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', wav], input=mix.astype(np.float32).tobytes(), check=True)
 
 # ---------------------------------------------------------------- video
 dec = subprocess.Popen(['ffmpeg', '-v', 'error', '-i', SRC, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
 enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
                         '-i', wav, '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'slow', '-crf', '15', '-pix_fmt', 'yuv420p',
-                        '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-ar', str(SR), '-c:a', 'aac', '-b:a', '192k', '-shortest',
+                        '-ar', str(SR), '-c:a', 'aac', '-b:a', '256k', '-shortest',
                         '-movflags', '+faststart', OUT], stdin=subprocess.PIPE)
 for i in range(N):
     buf = dec.stdout.read(W * H * 3)
