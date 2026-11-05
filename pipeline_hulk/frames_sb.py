@@ -37,7 +37,18 @@ def t3(name):
         pad = 30
         y0, y1 = max(0, ys.min() - pad), min(sp.shape[0], ys.max() + pad)
         x0, x1 = max(0, xs.min() - pad), min(sp.shape[1], xs.max() + pad)
-        _T3[name] = np.ascontiguousarray(sp[y0:y1, x0:x1])
+        sp = np.ascontiguousarray(sp[y0:y1, x0:x1]).copy()
+        a = sp[..., 3]
+        # shadow-catcher pixels: keep them as a dark, soft shadow (premultiplied black), never a pale box
+        solid_m = cv2.GaussianBlur((a > 0.6).astype(np.float32), (0, 0), 2)
+        sp[..., :3] *= np.clip(solid_m, 0, 1)[..., None] + (1 - np.clip(solid_m, 0, 1))[..., None] * 0.0
+        sp[..., 3] = a * np.clip(solid_m, 0, 1) + np.clip(a * (1 - solid_m), 0, 1) * 0.55
+        hh, ww = a.shape
+        fy = np.clip(np.minimum(np.arange(hh), hh - 1 - np.arange(hh)) / 24, 0, 1)[:, None]
+        fx = np.clip(np.minimum(np.arange(ww), ww - 1 - np.arange(ww)) / 24, 0, 1)[None, :]
+        f = (fy * fx)[..., None]
+        sp *= f
+        _T3[name] = sp
     return _T3[name]
 
 
