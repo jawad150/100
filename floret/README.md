@@ -69,3 +69,20 @@ What was added:
 python3 floret/music_app15.py floret/music_app15.wav
 MUSIC=floret/music_app15.wav python3 floret/finish_app15.py floret_app_15s.mp4 <voiceover.mp3> floret/floret_app_15s_final.mp4
 ```
+
+### Text-style variations (`floret_app_15s_style1-4.mp4`)
+
+Each variation has the top headline "One Platform for Multiple Markets" from 0.6 s, the bottom CTA "Start trading today with Floret Capitals" from 4.9 s (both out by 10.85 s, before the phone fills the frame), and the end tagline under the logo. All text stays inside the Reels safe area: the top 250 px, bottom 420 px and the right-hand button column are kept clear. The text sits on deep black gradients (about 92 % black at the top, about 94 % at the bottom). The audio is the finished voice-and-music mix, copied unchanged.
+
+| Style | Fonts | Colours | Motion |
+|---|---|---|---|
+| 1 Fintech Clean | Plus Jakarta Sans ExtraBold / Bold / Medium | white + electric blue | left-aligned masked slide-ups, accent bar, drawn arrow |
+| 2 Editorial Premium | DM Serif Display roman + italic, Montserrat tracked caps | ivory + champagne gold | soft blur-in, gold rules and a diamond |
+| 3 Bold Impact | Poppins Black / ExtraBold caps | white + navy on a brand-gold highlight | pop-in, highlight wipe, frosted CTA card that springs up |
+| 4 Serif Accent | Inter Regular over Instrument Serif roman + italic | white + brand-gold italic accent | words rise in one by one |
+
+The fonts are in `floret/fonts`, all under the SIL Open Font License (licences included), so they are free for commercial use.
+
+```bash
+python3 floret/text_styles_app15.py floret_app_15s.mp4 floret/floret_app_15s_final.mp4 floret 1,2,3,4
+```
