@@ -191,7 +191,7 @@ def headline(c, x, y, size):
 
 
 def logo(c, x, y, w=230):
-    lg = load_png_sprite(f'{S}/brand/hulk_logo_ref.png')
+    lg = load_png_sprite(f'{ROOT}/workspace_hulk/web/hulk-marketing-logo.png')
     draw(c, lg, x + w / 2, y, scale=w / lg.shape[1])
 
 
@@ -231,7 +231,7 @@ def background(W_=1080, H_=1350):
 
 def feed():
     c = background()
-    logo(c, 72, 84, 200)
+    logo(c, 72, 84, 300)
     eyebrow(c, 72, 156)
     headline(c, 72, 228, 90)
     # the example review floats up out of the phone on a lime beam
@@ -258,8 +258,8 @@ def feed():
 def linkedin():
     """1:1 cut for LinkedIn (PDF): no eyebrow; tighter layout; the logo moves top-right."""
     c = background(1080, 1350)[150:1230].copy()
-    lg = load_png_sprite(f'{S}/brand/hulk_logo_ref.png')
-    draw(c, lg, 1008 - 85, 82, scale=170 / lg.shape[1])
+    lg = load_png_sprite(f'{ROOT}/workspace_hulk/web/hulk-marketing-logo.png')
+    draw(c, lg, 1008 - 130, 70, scale=260 / lg.shape[1])
     headline(c, 72, 120, 78)
     rc = review_card(540, 24)
     ry0 = 262 + rc.shape[0] / 2
