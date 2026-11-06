@@ -84,7 +84,7 @@ def building(name='x.jpg', fx=0.5, fy=0.5, z=1.0, night=0.85, w=W, h=H):
     lum = (im * np.array([0.3, 0.59, 0.11], np.float32)).sum(2, keepdims=True)
     im = im * 0.35 + lum * 0.65
     im = dusk(im, night) * 0.62
-    k = np.clip(1 - _Y[:h, :w] / (h * 0.75), 0, 1)[..., None] ** 1.2
+    k = np.clip(1 - np.arange(h, dtype=np.float32)[:, None] / (h * 0.75), 0, 1)[..., None] ** 1.2
     g = np.array(hexf('#0A1F1B'), np.float32)
     return np.clip(im * (1 - 0.6 * k) + g * 0.6 * k, 0, 1).astype(np.float32)
 
