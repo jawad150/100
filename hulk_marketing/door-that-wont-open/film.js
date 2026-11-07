@@ -27,7 +27,7 @@ const HITS = [
   [DOOR_B_OPEN * 2, 'door B slides', 'whoosh'], [(DOOR_B_OPEN + 0.12) * 2, 'shop bell', 'bell'],
   [18.2 * 2, 'whip back', 'whoosh'], [T.cut6 * 2, 'cut to black', 'sub'], [T.rew0 * 2, 'rewind', 'whoosh'],
   [T.fast * 2, 'door clicks open', 'click'], [27.75 * 2, 'fast check', 'blip'], [27.9 * 2, 'stable check', 'blip'],
-  [28.62 * 2, 'easy check', 'blip'], [T.shrink * 2, 'shrink to card', 'whoosh'], [T.audit * 2, 'cta click', 'click'],
+  [28.62 * 2, 'easy check', 'blip'], [(T.shrink + 0.39) * 2, 'shrink to card (fastest frames)', 'whoosh'], [T.audit * 2, 'cta click', 'click'],
 ];
 
 // ---------------------------------------------------------------- world state at film time t
