@@ -46,17 +46,21 @@ def arp(tr, chord_notes, t0, t1, cutoff, vel=0.55, gain_db=0.0, pattern=(0, 1, 2
         i += 1
 
 
+# hits softened under a spoken word: the 5.0 downbeat lands on the cue word "open." (4.99-5.37)
+SOFT_HITS = {5.0: -4.0}
+
+
 def bass(tr, root, t0, t1, gain_db=0.0, every=2):
     t = t0
     while t < t1 - 1e-6:
-        tr.add(MS.sub_bass(root, dur=B * 0.9, vel=0.75), t, gain_db)
+        tr.add(MS.sub_bass(root, dur=B * 0.9, vel=0.75), t, gain_db + SOFT_HITS.get(round(t, 3), 0.0))
         t += B * every
 
 
 def kicks(tr, t0, t1, gain_db=0.0, every=1, vel=0.8):
     t = t0
     while t < t1 - 1e-6:
-        tr.add(MS.soft_kick(vel=vel, punch=0.45, decay=0.28), t, gain_db)
+        tr.add(MS.soft_kick(vel=vel, punch=0.45, decay=0.28), t, gain_db + SOFT_HITS.get(round(t, 3), 0.0))
         t += B * every
 
 
@@ -97,12 +101,12 @@ def build():
     tr.add(MS.sub_bass('F1', dur=1.5, vel=0.7), 18.0, -8)
     tr.add(MS.sub_bass('E1', dur=1.3, vel=0.7), 19.6, -8)
     # ---------------------------------------------------------- 21-25: the point
-    tr.add(MS.pad(MS.chord('A', 'madd9', octave=3), dur=3.7, vel=0.6, wave='warm', attack=0.05, release=0.5, cutoff=1500, sweep=0.2), 21.0, -9)
+    tr.add(MS.pad(MS.chord('A', 'madd9', octave=3), dur=4.0, vel=0.6, wave='warm', attack=0.05, release=0.3, cutoff=1500, sweep=0.2), 21.0, -9)
     tr.add(MS.sub_bass('A1', dur=1.6, vel=0.8, glide_from='A2', glide=0.25), 21.0, -5)
     for tt in (21.0, 23.0):
         tr.add(MS.soft_kick(vel=0.7, punch=0.3, decay=0.4), tt, -10)
-    for tt, n in ((22.0, 'E5'), (23.0, 'C5'), (24.0, 'B4')):
-        tr.add(MS.felt_piano(n, dur=0.9, vel=0.5), tt, -14)
+    for tt, n, d in ((22.0, 'E5', 0.9), (23.0, 'C5', 0.9), (24.0, 'B4', T_REW - 24.0)):   # the last one rings to the cut
+        tr.add(MS.felt_piano(n, dur=d, vel=0.5), tt, -14)
     rs = MS.reverse_swell(dur=0.6, vel=0.7, notes=MS.chord('C', octave=4))
     tr.add(rs, T_REW - 0.6, -10)            # ends on the hard cut to the rewind
     # ---------------------------------------------------------- 26.2-27: lift

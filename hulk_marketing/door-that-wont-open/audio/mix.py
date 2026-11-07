@@ -61,18 +61,20 @@ def exciter(x, gain_db=-21.0, drive=2.0):
     return x + e * A.undb(gain_db)
 
 
-def vad_key():
-    """0/1 voice-activity key from vo_words.json: each line from first word - 0.08 s to last word + 0.15 s (the last
-    line is held to the end, so the duck never releases into the final chord), smoothed ~20 ms."""
+def vad_key(hold_last=True, n=N):
+    """0/1 voice-activity key from vo_words.json: each line from first word - 0.08 s to last word + 0.15 s (with
+    hold_last the last line is held to the end, so the duck never releases into the final chord), smoothed ~20 ms.
+    Also used by sfx.py to duck the street bed."""
     w = json.load(open(os.path.join(FILM, 'vo_words.json')))['words']
     lines = {}
     for x in w:
         a, b = lines.get(x['line'], (1e9, -1e9))
         lines[x['line']] = (min(a, x['s']), max(b, x['e']))
     spans = sorted(lines.values())
-    k = np.zeros(N)
+    t = np.arange(n) / SR
+    k = np.zeros(n)
     for i, (a, b) in enumerate(spans):
-        k[(T >= a - 0.08) & (T < (DUR if i == len(spans) - 1 else b + 0.15))] = 1.0
+        k[(t >= a - 0.08) & (t < (1e9 if hold_last and i == len(spans) - 1 else b + 0.15))] = 1.0
     k = uniform_filter1d(k, int(0.02 * SR))
     return k, spans
 

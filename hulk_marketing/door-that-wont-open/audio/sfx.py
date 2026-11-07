@@ -176,6 +176,8 @@ def street_bed():
 def build():
     buf = np.zeros((N, 2))
     cues = []
+    from mix import vad_key        # look-ahead voice-activity key (vo_words.json lines), 0..1
+    key = vad_key(hold_last=False, n=N)[0]
 
     def cue(t, name, gain_db=0.0, pan=0.0, **p):
         x, h = cat(name, **p)
@@ -219,7 +221,9 @@ def build():
     cue(3.9, 'air_zoom', -10)
     custom(4.45, 'door_thud', door_thud(1), -4)
     custom(6.17, 'door_thud', door_thud(2), -3)
-    cue(4.99, 'toggle_on', -14)     # under "open." (4.99-5.37): kept low, no ui_hover breath
+    # under "open." (4.99-5.37): toggle kept low and high-passed at 2 kHz so it clears the vowel; no ui_hover breath
+    x, h = cat('toggle_on')
+    custom(4.99, 'toggle_on (hp 2 kHz)', A.hp(x, 2000, 2), -14, 0, h)
     # the faint looping loading tick, from the spinner's appearance to the cut
     tick = cat('ui_tick', pitch=1.6)[0]
     tt = 5.25
@@ -238,7 +242,7 @@ def build():
     custom(11.97, 'sigh', sigh(), -9, 0, 0.0)          # exhale peaks ~12.1 on the visible slump (12.0-12.4)
     # beat 4: across the road; shop B's door glides, its bell rings
     door_b = 16.22 - 0.42
-    custom(door_b, 'slide_door', slide_door(), -13, 0.2)
+    custom(door_b, 'slide_door', slide_door(), -20, 0.2)
     custom(door_b + 0.12, 'shop_bell', shop_bell(), -17, 0.25)
     cue(16.3, 'ripple', -18, 0.2)   # route ring at arrival
     # beat 5: whip back, the browser builds
@@ -272,15 +276,22 @@ def build():
     cue(33.0, 'card_slide', -12)
     cue(33.18, 'pop', -9, 0, pitch=1.15)
     cue(33.4, 'typing', -18, n=34, cps=36.0)
-    cue(T_AUDIT + 0.15, 'logo_sting', -9)   # 34.94: the logo lands on "audit."
+    # 34.94: the logo lands on "audit." (34.79-35.13). Its sub thump stays on the logo, but its airy pre-swell
+    # (0.9-6 kHz, peaking at the hit) and bell bloom (C5 partials) would cover "-dit": everything above 300 Hz is
+    # ducked 12 dB under the voice (same look-ahead key as the bed) and blooms back just after the word, under the
+    # final C chord.
+    sting = np.zeros((N, 2))
+    x, h = cat('logo_sting')
+    place(sting, x, T_AUDIT + 0.15, -9, 0, h)
+    hi = A.hp(sting, 300, 2)
+    buf += sting - hi + A.sidechain(hi, key, depth_db=12, attack=0.01, release=0.3, thresh_rel_db=-32)
+    cues.append(dict(t=round(T_AUDIT + 0.15, 3), name='logo_sting (>300 Hz ducked under the VO)', gain_db=-9))
     cue(34.0, 'ui_hover', -18)
     cue(T_AUDIT, 'ui_click', -4, 0.1, pitch=1.0); cue(T_AUDIT + 0.01, 'toggle_on', -16)
 
-    # the bed and the tick loop sit under the voice
-    import soundfile as sf
-    vo = sf.read(os.path.join(HERE, 'vo.wav'), dtype='float64')[0]
-    vo = vo[:N] if len(vo) >= N else np.vstack([vo, np.zeros((N - len(vo), 2))])
-    bedx = A.sidechain(bedx, vo, depth_db=10, attack=0.03, release=0.4)
+    # the bed sits 12 dB down under every spoken line: ducked by the same look-ahead voice-activity key as the
+    # music in mix.py (from vo_words.json), so soft words such as the cue word "open." get the full duck too
+    bedx = A.sidechain(bedx, key, depth_db=12, attack=0.03, release=0.4, thresh_rel_db=-32)
     out = buf + bedx
     out *= A.undb(-21 - A.loudness(out.astype(np.float32)))
     g = A.limiter_gain(out, ceiling_db=-3.0)

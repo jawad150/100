@@ -42,8 +42,9 @@ export function camStory(ts, her) {
     return { x: lerp(518, 360, p), y: lerp(1000, 830, p), z: logz(2.13, 0.95, p) * (1 + 0.045 * E.inOutSine(drift)) };
   }
   if (ts < 18.0) {
-    // follow her across the road (lagged), settle on shop B
-    const fx = clamp(her.x + 120, 360, 1690);
+    // follow her across the road (lagged), then ease to rest on shop B. outCubic leaves at ~410 px/s, her pace
+    // at 15.6, so the pan decelerates instead of stopping dead, and it is at rest by 17.03, before the 18.0 whip.
+    const fx = ts < 15.6 ? clamp(her.x + 120, 360, 1690) : lerp(camB0(), 1690, E.outCubic(prog(ts, 15.6, 17.03)));
     const p = E.inOutSine(prog(ts, 12.8, 13.6));
     return { x: lerp(360, fx, p), y: 830, z: lerp(0.993, 0.93, E.inOutSine(prog(ts, 12.8, 16.2))) };
   }
@@ -53,12 +54,71 @@ export function camStory(ts, her) {
   return { x: lerp(1690, 350, p), y: lerp(830, 880, p), z: lerp(0.93, 0.98, p) * (1 + 0.035 * drift) };
 }
 
+// ------------------------------------------------------------------ her path across the road (ts >= 12.55)
+// She sets off from shop A's door, drifting half a step nearer the kerb (FEET -> FEET+46, scale 1 -> 1.05), crosses
+// the side road on that line, then curves up off the pavement, over shop B's threshold (GROUND) and a few steps
+// into the shop (B_Y). Depth is screen y here, and her scale follows it (the replay's GROUND+6 is 0.9).
+// The walk cycle advances one TAU per STRIDE * scale world px of path, so her planted boot stays put.
+const STOP = 340, STRIDE = 322;
+const WALK_IN_PH = 6 * Math.PI - (STOP + 520) / STRIDE * TAU;   // the stroll ends on phase 6pi: feet together
+const KERB_Y = FEET + 46;
+const B_X0 = 1330, B_X1 = 1725, B_Y = GROUND - 50;
+const depthScale = (y) => 1 + (y - FEET) * (0.05 / 46);
+export function pathY(x) {
+  const a = clamp((x - STOP) / 300), b = clamp((x - B_X0) / (B_X1 - B_X0)), q = b * b;
+  return FEET + (KERB_Y - FEET) * E.inOutSine(a) - (KERB_Y - B_Y) * q * q * (3 - 2 * q);
+}
+function pathSlope(x) {
+  const a = (x - STOP) / 300, b = (x - B_X0) / (B_X1 - B_X0);
+  let s = 0;
+  if (a > 0 && a < 1) s += (KERB_Y - FEET) * Math.PI / 2 * Math.sin(Math.PI * a) / 300;
+  if (b > 0 && b < 1) s -= (KERB_Y - B_Y) * 12 * b ** 3 * (1 - b * b) / (B_X1 - B_X0);
+  return s;
+}
+// arc length and walk cycles along the path, tabulated once per px of x (deterministic)
+const PATH_N = B_X1 - STOP + 1;
+const ARC = new Float64Array(PATH_N), CYC = new Float64Array(PATH_N);
+for (let i = 1; i < PATH_N; i++) {
+  const xm = STOP + i - 0.5, dl = Math.hypot(1, pathSlope(xm));
+  ARC[i] = ARC[i - 1] + dl;
+  CYC[i] = CYC[i - 1] + dl / (STRIDE * depthScale(pathY(xm)));
+}
+function pathAtLen(l) {
+  const N = PATH_N - 1;
+  if (l <= 0) return { x: STOP, cyc: 0 };
+  if (l >= ARC[N]) return { x: STOP + N, cyc: CYC[N] + (l - ARC[N]) / (STRIDE * depthScale(B_Y)) };
+  let lo = 0, hi = N;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (ARC[m] <= l) lo = m; else hi = m; }
+  const f = (l - ARC[lo]) / (ARC[hi] - ARC[lo]);
+  return { x: STOP + lo + f, cyc: lerp(CYC[lo], CYC[hi], f) };
+}
+// pace along the path: a slow first (turning) step from 12.55, 410 px/s from 13.6 (the same crossing as before),
+// then she slows through shop B's door and stops inside at T_IN
+const V_WALK = 410, T_GO = 12.55, T_RAMP = 1.05, T_IN = 17.2;
+const T_DEC = 2 * ARC[PATH_N - 1] / V_WALK + 2 * (T_GO + T_RAMP / 2) - T_IN;
+const ssInt = (u) => u * u * u - u * u * u * u / 2;   // integral of smoothstep
+function lenAt(ts) {
+  const t0 = T_GO + T_RAMP / 2;
+  if (ts <= T_GO) return 0;
+  if (ts < T_GO + T_RAMP) return V_WALK * T_RAMP * ssInt((ts - T_GO) / T_RAMP);
+  if (ts < T_DEC) return V_WALK * (ts - t0);
+  const D = T_IN - T_DEC, u = Math.min(1, (ts - T_DEC) / D);
+  return V_WALK * (T_DEC - t0) + V_WALK * D * (u - ssInt(u));
+}
+function speedAt(ts) {
+  if (ts <= T_GO || ts >= T_IN) return 0;
+  if (ts < T_GO + T_RAMP) return V_WALK * ss(T_GO, T_GO + T_RAMP, ts);
+  return ts < T_DEC ? V_WALK : V_WALK * (1 - ss(T_DEC, T_IN, ts));
+}
+const CAM_B0 = clamp(herStory(15.6).x + 120, 360, 1690);   // where the camera starts easing onto shop B
+const camB0 = () => CAM_B0;
+
 // ------------------------------------------------------------------ the customer's story (slow variant)
-// returns the rig state; walkDist drives the walk cycle so feet don't skate
+// returns the rig state. phase = walk cycle (heel strikes at pi/2 + k*pi), driven by distance so feet don't skate;
+// slope = dy/dx of her path (the leg plane's direction); stride = world scale of one STRIDE (defaults to 1).
 export function herStory(ts) {
-  const s = { x: -520, y: FEET, dir: 1, scale: 1, walk: 0, phase: 0, reach: 0, push: 0, watch: 0, sigh: 0,
-    shift: 0, tilt: 0, smile: 0, alpha: 1, warm: 0, inside: 0, look: 0 };
-  const STOP = 340;
+  const s = { x: -520, y: FEET, dir: 1, scale: 1, stride: 1, slope: 0, walk: 0, phase: 0, reach: 0, push: 0, watch: 0,
+    sigh: 0, shift: 0, tilt: 0, smile: 0, alpha: 1, warm: 0, inside: 0, look: 0 };
   if (ts < 3.95) {
     // constant stroll, easing to a stop at the door
     const v = 290, tEase = 3.2;
@@ -68,7 +128,7 @@ export function herStory(ts) {
     s.x = -520 + d * ((STOP + 520) / (v * tEase + v * 0.375));
     s.walk = ts < tEase ? 1 : 1 - ss(tEase, 3.95, ts);
   } else s.x = STOP;
-  s.phase = (s.x + 520) / 322 * TAU;
+  s.phase = (s.x + 520) / STRIDE * TAU + WALK_IN_PH;
   // reach + two pushes
   s.reach = ss(3.85, 4.3, ts) * (1 - ss(7.1, 7.6, ts));
   s.push = Math.max(bumpP(ts, 4.36, 4.46, 4.75), 1.15 * bumpP(ts, 6.05, 6.17, 6.55));
@@ -78,33 +138,16 @@ export function herStory(ts) {
   s.shift = Math.sin(clamp((ts - 10.5) / 0.8) * Math.PI) * 1.0 - Math.sin(clamp((ts - 7.6) / 0.7) * Math.PI) * 0.5;
   s.sigh = ts < 11.6 ? 0 : ts < 11.95 ? E.inOutSine(prog(ts, 11.6, 11.95)) : 1 - 2 * E.inOutSine(prog(ts, 11.95, 12.45)) * 0.75;
   if (ts > 12.45) s.sigh = 0.25 * (1 - ss(12.45, 12.8, ts)) - 0.5 * (1 - ss(12.45, 12.8, ts));
-  s.look = ts > 12.5 ? 0 : 0;
-  // leave: half-step back toward the kerb, then walk right across the road
-  if (ts >= 12.55) {
-    const back = ss(12.55, 12.95, ts);
-    s.y = FEET + 46 * back;
-    s.scale = 1 + 0.05 * back;
-    const t0 = 12.9, v = 410;
-    const run = Math.max(0, ts - t0);
-    const accel = 0.35;
-    const d = run < accel ? v * run * run / (2 * accel) : v * (run - accel / 2);
-    s.x = STOP + d;
-    s.walk = Math.max(back * 0.35, ss(t0, t0 + 0.25, ts));
-    s.phase = (s.x - STOP) / 322 * TAU + Math.PI * 0.5;
-    const AT = 1640;
-    if (s.x >= AT) {
-      // arrive at shop B and step inside
-      const tArr = t0 + (AT - STOP) / v + accel / 2;
-      const u = ts - tArr;
-      s.x = AT + 70 * E.outCubic(clamp(u / 0.9));
-      s.phase = (AT - STOP) / 322 * TAU + Math.PI * 0.5 + (s.x - AT) / 322 * TAU;
-      s.walk = 1 - ss(0.5, 0.95, u);
-      s.y = lerp(FEET + 46, FEET - 6, E.inOutSine(clamp(u / 0.7)));
-      s.scale = lerp(1.05, 0.9, E.inOutSine(clamp(u / 0.9)));
-      s.inside = ss(0.15, 0.85, u);
-      s.warm = ss(0.0, 0.7, u);
-      s.alpha = 1 - 0.7 * ss(0.6, 1.3, u);
-    }
+  // leave (shot list: she turns 12.7): a slow first step that turns her off the door toward the kerb, then the walk
+  // across the road on her path, over shop B's threshold and into the shop, where she stops (T_IN) and stays
+  if (ts >= T_GO) {
+    const P = pathAtLen(lenAt(ts));
+    s.x = P.x; s.y = pathY(P.x); s.slope = pathSlope(P.x);
+    s.scale = s.stride = depthScale(s.y);
+    s.phase = 6 * Math.PI + P.cyc * TAU;
+    s.walk = ts < T_GO + T_RAMP ? ss(T_GO, 13.1, ts) : clamp(1.5 * speedAt(ts) / V_WALK);
+    s.inside = ss(GROUND + 8, GROUND - 12, s.y);          // her feet over the threshold
+    s.warm = ss(GROUND + 70, GROUND - 25, s.y);           // the shop's light, from the doorstep in
   }
   return s;
 }

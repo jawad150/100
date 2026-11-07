@@ -116,7 +116,7 @@
 },
 {
 "t": 4.99,
-"name": "toggle_on",
+"name": "toggle_on (hp 2 kHz)",
 "gain_db": -14
 },
 {
@@ -162,7 +162,7 @@
 {
 "t": 15.8,
 "name": "slide_door",
-"gain_db": -13
+"gain_db": -20
 },
 {
 "t": 15.92,
@@ -321,7 +321,7 @@
 },
 {
 "t": 34.94,
-"name": "logo_sting",
+"name": "logo_sting (>300 Hz ducked under the VO)",
 "gain_db": -9
 },
 {
