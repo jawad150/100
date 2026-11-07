@@ -62,8 +62,12 @@ export function camStory(ts, her) {
 const STOP = 340, STRIDE = 322;
 const WALK_IN_PH = 6 * Math.PI - (STOP + 520) / STRIDE * TAU;   // the stroll ends on phase 6pi: feet together
 const KERB_Y = FEET + 46;
-const B_X0 = 1330, B_X1 = 1725, B_Y = GROUND - 50;
+const B_X0 = 1330, B_X1 = 1725, B_Y = GROUND - 40;
 const depthScale = (y) => 1 + (y - FEET) * (0.05 / 46);
+// the set's depth (screen y) is foreshortened against x: a step taken straight into the scene moves her feet
+// DEPTH_K px of y per px it would move them along x. Strides are measured in x-equivalent px.
+export const DEPTH_K = 0.6;
+export const stepLen = (dx, dy) => Math.hypot(dx, dy / DEPTH_K);
 export function pathY(x) {
   const a = clamp((x - STOP) / 300), b = clamp((x - B_X0) / (B_X1 - B_X0)), q = b * b;
   return FEET + (KERB_Y - FEET) * E.inOutSine(a) - (KERB_Y - B_Y) * q * q * (3 - 2 * q);
@@ -75,35 +79,75 @@ function pathSlope(x) {
   if (b > 0 && b < 1) s -= (KERB_Y - B_Y) * 12 * b ** 3 * (1 - b * b) / (B_X1 - B_X0);
   return s;
 }
-// arc length and walk cycles along the path, tabulated once per px of x (deterministic)
+// stride multiplier: 1 on the crossing, easing to SK_B along the turn into shop B (solved below so her last step
+// in the shop closes her feet together instead of leaving her standing mid-stride)
+const bEase = (x) => { const b = clamp((x - B_X0) / (B_X1 - B_X0)), q = b * b; return q * q * (3 - 2 * q); };
+let SK_B = 1;
+const strideK = (x) => 1 + (SK_B - 1) * bEase(x);
+// arc length (x-equivalent px) and walk cycles along the path, tabulated once per px of x (deterministic)
 const PATH_N = B_X1 - STOP + 1;
 const ARC = new Float64Array(PATH_N), CYC = new Float64Array(PATH_N);
-for (let i = 1; i < PATH_N; i++) {
-  const xm = STOP + i - 0.5, dl = Math.hypot(1, pathSlope(xm));
-  ARC[i] = ARC[i - 1] + dl;
-  CYC[i] = CYC[i - 1] + dl / (STRIDE * depthScale(pathY(xm)));
+function tabulate() {
+  for (let i = 1; i < PATH_N; i++) {
+    const xm = STOP + i - 0.5, dl = stepLen(1, pathSlope(xm));
+    ARC[i] = ARC[i - 1] + dl;
+    CYC[i] = CYC[i - 1] + dl / (STRIDE * depthScale(pathY(xm)) * strideK(xm));
+  }
+}
+tabulate();
+{ // end on phase = 0 mod pi (6pi + TAU * cycles): round the half-cycles down and lengthen the stride to fit
+  const want = Math.floor(2 * CYC[PATH_N - 1]) / 2;
+  let lo = 1, hi = 1.6;
+  for (let i = 0; i < 40; i++) { SK_B = (lo + hi) / 2; tabulate(); if (CYC[PATH_N - 1] > want) lo = SK_B; else hi = SK_B; }
 }
 function pathAtLen(l) {
   const N = PATH_N - 1;
   if (l <= 0) return { x: STOP, cyc: 0 };
-  if (l >= ARC[N]) return { x: STOP + N, cyc: CYC[N] + (l - ARC[N]) / (STRIDE * depthScale(B_Y)) };
+  if (l >= ARC[N]) return { x: STOP + N, cyc: CYC[N] + (l - ARC[N]) / (STRIDE * depthScale(B_Y) * SK_B) };
   let lo = 0, hi = N;
   while (hi - lo > 1) { const m = (lo + hi) >> 1; if (ARC[m] <= l) lo = m; else hi = m; }
   const f = (l - ARC[lo]) / (ARC[hi] - ARC[lo]);
   return { x: STOP + lo + f, cyc: lerp(CYC[lo], CYC[hi], f) };
 }
-// pace along the path: a slow first (turning) step from 12.55, 410 px/s from 13.6 (the same crossing as before),
-// then she slows through shop B's door and stops inside at T_IN
-const V_WALK = 410, T_GO = 12.55, T_RAMP = 1.05, T_IN = 17.2;
-const T_DEC = 2 * ARC[PATH_N - 1] / V_WALK + 2 * (T_GO + T_RAMP / 2) - T_IN;
+function pathAtCyc(c) {
+  const N = PATH_N - 1;
+  let x;
+  if (c <= 0) x = STOP + c * STRIDE;
+  else if (c >= CYC[N]) x = STOP + N + (c - CYC[N]) * STRIDE * depthScale(B_Y) * SK_B;
+  else {
+    let lo = 0, hi = N;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (CYC[m] <= c) lo = m; else hi = m; }
+    x = STOP + lo + (c - CYC[lo]) / (CYC[hi] - CYC[lo]);
+  }
+  return [x, pathY(clamp(x, STOP, STOP + N))];
+}
+// where her boots are planted (world px of the ground under each ankle), from the path itself, so a boot stays
+// exactly put even where the path curves and she shrinks: [far, near], each { at } in stance or { from, to } in swing.
+// A stance is centred where the walk cycle puts it (the body passes over the boot at mid-stance).
+function plantsAt(phase, cyc) {
+  return [phase + Math.PI, phase].map((ph) => {
+    const q = ((ph - Math.PI / 2) % TAU + TAU) % TAU, c0 = cyc - (q - Math.PI / 2) / TAU;
+    if (q <= Math.PI) return { at: pathAtCyc(c0) };
+    const to = pathAtCyc(c0 + 1);
+    // her first step: the boot leaves from where it rested beside the other (halfway through this swing at the start)
+    return { from: c0 < -0.25 ? [2 * STOP - to[0], 2 * FEET - to[1]] : pathAtCyc(c0), to };
+  });
+}
+
+// pace along the path: a slow first (turning) step from 12.55, then 410 px/s across the road on exactly the old
+// crossing (x = 340 + 410 (ts - 13.075)), then she slows through shop B's door and stops inside at T_IN
+const V_WALK = 410, T_GO = 12.55, T_DEC = 16.15;
+const X_KERB = STOP + 300, L_KERB = ARC[X_KERB - STOP];             // end of the drift toward the kerb
+const T_CRUISE0 = 13.075 - (L_KERB - (X_KERB - STOP)) / V_WALK;       // cruise line l = V (ts - T_CRUISE0)
+const T_RAMP = 2 * (T_CRUISE0 - T_GO);
+const T_IN = T_DEC + 2 * (ARC[PATH_N - 1] - V_WALK * (T_DEC - T_CRUISE0)) / V_WALK;
 const ssInt = (u) => u * u * u - u * u * u * u / 2;   // integral of smoothstep
 function lenAt(ts) {
-  const t0 = T_GO + T_RAMP / 2;
   if (ts <= T_GO) return 0;
   if (ts < T_GO + T_RAMP) return V_WALK * T_RAMP * ssInt((ts - T_GO) / T_RAMP);
-  if (ts < T_DEC) return V_WALK * (ts - t0);
+  if (ts < T_DEC) return V_WALK * (ts - T_CRUISE0);
   const D = T_IN - T_DEC, u = Math.min(1, (ts - T_DEC) / D);
-  return V_WALK * (T_DEC - t0) + V_WALK * D * (u - ssInt(u));
+  return V_WALK * (T_DEC - T_CRUISE0) + V_WALK * D * (u - ssInt(u));
 }
 function speedAt(ts) {
   if (ts <= T_GO || ts >= T_IN) return 0;
@@ -143,9 +187,10 @@ export function herStory(ts) {
   if (ts >= T_GO) {
     const P = pathAtLen(lenAt(ts));
     s.x = P.x; s.y = pathY(P.x); s.slope = pathSlope(P.x);
-    s.scale = s.stride = depthScale(s.y);
+    s.scale = depthScale(s.y); s.stride = s.scale * strideK(P.x);
     s.phase = 6 * Math.PI + P.cyc * TAU;
-    s.walk = ts < T_GO + T_RAMP ? ss(T_GO, 13.1, ts) : clamp(1.5 * speedAt(ts) / V_WALK);
+    s.plants = plantsAt(s.phase, P.cyc);
+    s.walk = ts < T_GO + T_RAMP ? ss(T_GO, 13.05, ts) : clamp(1.5 * speedAt(ts) / V_WALK);
     s.inside = ss(GROUND + 8, GROUND - 12, s.y);          // her feet over the threshold
     s.warm = ss(GROUND + 70, GROUND - 25, s.y);           // the shop's light, from the doorstep in
   }
@@ -511,6 +556,19 @@ function spill(ctx, x0, x1, k) {
 // ------------------------------------------------------------------ the customer (flat vector rig)
 const SKIN = '#9A6545', SKIN_SH = '#7E4F36', HAIR = '#1C1615', COAT = '#C8453A', COAT_SH = '#A2362D', COAT_DK = '#7E2620';
 const TIGHTS = '#2A2E3A', TIGHTS_FAR = '#1E212B', BOOT = '#16161A', GLOVE = '#4A2C22', BAG = '#7A4A2A', BAG_L = '#8E5733';
+// her paints. The shop's warm light (s.warm) tints her own colours toward WARM by up to 0.22, the same result the
+// old source-atop wash gave inside her silhouette, without washing a box over the set around her.
+const PAINTS = { SKIN, SKIN_SH, HAIR, COAT, COAT_SH, COAT_DK, TIGHTS, TIGHTS_FAR, BOOT, GLOVE, BAG, BAG_L,
+  BRASS: '#C9A04A', SOLE: '#26262C', SOLE_FAR: '#101013', STRAP: '#5E381F', DIAL: '#D9C9A0', HAND: '#2A2420',
+  EYE: '#1A1210', MOUTH: '#5A2A22', SHADE: '#5A1410', CHEEK: '#C85A46' };
+let K = PAINTS;   // reassigned from s.warm at the top of every drawHer() call: nothing carries between frames
+function paints(k) {
+  if (k <= 0.001) return PAINTS;
+  const o = {};
+  for (const n in PAINTS) o[n] = mix(PAINTS[n], WARM, k);
+  return o;
+}
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 
 function limb(ctx, x, y, a1, l1, a2, l2, w1, w2, col) {
   // a: angle from straight down, + = forward (towards +x)
@@ -522,17 +580,53 @@ function limb(ctx, x, y, a1, l1, a2, l2, w1, w2, col) {
   return [hx, hy, ex, ey];
 }
 
-function leg(ctx, s, phase, far) {
-  const A = 0.42 * s.walk;
-  const thigh = A * Math.sin(phase);
-  const knee = 0.75 * s.walk * Math.pow(Math.max(0, Math.cos(phase)), 1.5);
-  const hipX = far ? -8 : 6, hipY = -205;
-  const [fx, fy] = limb(ctx, hipX, hipY, thigh, 100, thigh - knee, 98, 30, 26, far ? TIGHTS_FAR : TIGHTS);
+// legs: a planted-foot walk. One TAU of phase is STRIDE * s.stride world px of path, along her path's direction
+// (1, s.slope) in x and depth (depth reads as screen y). Through stance (cos(phase) <= 0) the boot moves back
+// linearly at exactly her pace, so it stays put on the ground (rolling onto the heel at the strike and off the toe
+// at the end); the swing lifts it forward to the next plant. Each leg is solved by two-bone IK in its walking plane
+// and projected to the screen, and the hips ride over the planted leg, lowest when both feet are down.
+const LEG1 = 100, LEG2 = 98, LEGL = LEG1 + LEG2, ANKLE_Y = -7;
+const HEEL = [-16, 9], TOE = [40, 9];
+function pivot(p, piv, a) {   // turn the boot by a about its heel or toe (that point stays on the ground)
+  const c = Math.cos(a), s = Math.sin(a);
+  p[0] += piv[0] - (piv[0] * c - piv[1] * s); p[1] += piv[1] - (piv[0] * s + piv[1] * c); p[2] = a;
+  return p;
+}
+function stanceFoot(u, G, at) {   // u: 0 heel strike .. 1 toe-off -> [ankle x, ankle y, boot angle], her local px
+  let p;
+  if (at) p = [(at[0] - G.wx) / G.sc, ANKLE_Y + (at[1] - G.wy) / G.sc, 0];   // the boot's plant on the ground
+  else { const w = G.X * (1 - 2 * u); p = [w * G.c, ANKLE_Y + w * G.sl * G.c, 0]; }   // straight path, steady scale
+  if (u < 0.16) return pivot(p, HEEL, -0.2 * G.walk * (1 - E.inOutSine(u / 0.16)));
+  if (u > 0.66) return pivot(p, TOE, 0.42 * G.walk * E.inOutSine((u - 0.66) / 0.34));
+  return p;
+}
+function footAt(phase, G, pl) {
+  const q = ((phase - Math.PI / 2) % TAU + TAU) % TAU;
+  if (q <= Math.PI) return stanceFoot(q / Math.PI, G, pl && pl.at);
+  const v = (q - Math.PI) / Math.PI, e = (1 - Math.cos(Math.PI * v)) / 2, up = Math.sin(Math.PI * v);
+  const a = stanceFoot(1, G, pl && pl.from), b = stanceFoot(0, G, pl && pl.to);
+  return [lerp(a[0], b[0], e), lerp(a[1], b[1], e) - 30 * G.walk * up, lerp(a[2], b[2], e) + 0.25 * G.walk * up];
+}
+function leg(ctx, G, phase, far) {
+  const F = footAt(phase, G, G.plants && G.plants[far ? 0 : 1]);
+  const hx = (far ? -8 : 6) + G.shift, hy = G.hipY;
+  // screen -> walking plane (w along the path, v vertical), IK with the knee forward, and back to the screen
+  const Hw = hx / G.c, Hv = hy - hx * G.sl, Fw = F[0] / G.c, Fv = F[1] - F[0] * G.sl;
+  let dw = Fw - Hw, dv = Fv - Hv, d = Math.hypot(dw, dv);
+  const f = clamp(d / (LEGL * 0.999), 1, 1.08);   // a touch of stretch (the breath, a long toe-off), never a lifted foot
+  const l1 = LEG1 * f, l2 = LEG2 * f, L = (l1 + l2) * 0.9995;
+  if (d > L) { dw *= L / d; dv *= L / d; d = L; }
+  const th = Math.atan2(dw, dv) + Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1));
+  const kw = Hw + Math.sin(th) * l1, kv = Hv + Math.cos(th) * l1, aw = Hw + dw, av = Hv + dv;
+  const kx = kw * G.c, ky = kv + kw * G.sl * G.c, ax = aw * G.c, ay = av + aw * G.sl * G.c;
+  ctx.strokeStyle = far ? K.TIGHTS_FAR : K.TIGHTS; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 30; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(kx, ky); ctx.stroke();
+  ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(ax, ay); ctx.stroke();
   // boot
-  ctx.save(); ctx.translate(fx, fy); ctx.rotate(-(thigh - knee) * 0.6);
-  ctx.fillStyle = BOOT;
+  ctx.save(); ctx.translate(ax, ay); ctx.rotate(F[2]);
+  ctx.fillStyle = K.BOOT;
   ctx.beginPath(); ctx.moveTo(-15, -40); ctx.lineTo(13, -40); ctx.lineTo(14, -12); ctx.quadraticCurveTo(40, -10, 42, 6); ctx.lineTo(-16, 8); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = far ? '#101013' : '#26262C'; ctx.fillRect(-16, 3, 58, 6);
+  ctx.fillStyle = far ? K.SOLE_FAR : K.SOLE; ctx.fillRect(-16, 3, 58, 6);
   ctx.restore();
 }
 
@@ -547,85 +641,87 @@ function arm(ctx, s, far, swing) {
     a1 = lerp(a1, -0.12, w); a2 = lerp(a2, 2.0, w);
   }
   const sx = far ? -10 : 4, sy = -366 - 6 * s.sighUp;
-  const col = far ? COAT_DK : COAT_SH;
+  const col = far ? K.COAT_DK : K.COAT_SH;
   const [hx, hy, ex, ey] = limb(ctx, sx, sy, a1, 92, a2, 84, far ? 30 : 32, far ? 26 : 28, col);
   // sleeve cuff + glove (mitten with thumb)
-  ctx.fillStyle = GLOVE;
+  ctx.fillStyle = K.GLOVE;
   ctx.beginPath(); ctx.ellipse(hx, hy, 15, 17, a2, 0, TAU); ctx.fill();
   ctx.beginPath(); ctx.ellipse(hx + Math.cos(a2) * 9, hy - Math.sin(a2) * 2 - 6, 6, 9, a2 + 0.6, 0, TAU); ctx.fill();
   if (!far && s.watch > 0.3) {
     // the watch face on the wrist
     const wx = lerp(ex, hx, 0.78), wy = lerp(ey, hy, 0.78);
-    ctx.fillStyle = '#D9C9A0'; ctx.beginPath(); ctx.arc(wx, wy - 2, 7.5, 0, TAU); ctx.fill();
-    ctx.fillStyle = '#2A2420'; ctx.fillRect(wx - 0.8, wy - 7, 1.6, 6);
+    ctx.fillStyle = K.DIAL; ctx.beginPath(); ctx.arc(wx, wy - 2, 7.5, 0, TAU); ctx.fill();
+    ctx.fillStyle = K.HAND; ctx.fillRect(wx - 0.8, wy - 7, 1.6, 6);
   }
   return [hx, hy];
 }
 
 export function drawHer(ctx, s) {
   if (s.alpha <= 0) return;
+  K = paints(0.22 * (s.warm || 0));
   ctx.save();
   ctx.translate(s.x, s.y);
   ctx.scale(s.scale * s.dir, s.scale);
   ctx.globalAlpha *= s.alpha;
   // contact shadow
   ctx.fillStyle = 'rgba(0,0,0,0.38)'; ctx.beginPath(); ctx.ellipse(4, 4, 70, 10, 0, 0, TAU); ctx.fill();
-  const ph = s.phase;
-  const bob = -5 * s.walk * Math.pow(Math.cos(ph), 2) + 3 * s.walk;
+  const ph = s.phase, sl = s.slope || 0;
+  // walk geometry: half a step in her local px along the path, the planted leg's progress, the hips over it
+  const X = 0.25 * STRIDE * (s.stride || 1) / s.scale;
+  const qn = ((ph - Math.PI / 2) % TAU + TAU) % TAU, us = (qn <= Math.PI ? qn : qn - Math.PI) / Math.PI;
+  const wst = Math.min(X * (1 - 2 * us), LEGL * 0.95), breath = 1 + 0.03 * s.sigh;   // breath: rises on the inhale
+  const hipY = ANKLE_Y - Math.sqrt(LEGL * LEGL - wst * wst) + 6 * s.walk * (1 - (1 - 2 * us) ** 2) - 205 * (breath - 1);
   s.sighUp = 2 * s.sigh;   // + = shoulders up, - = slump
-  const lean = 0.07 * s.push + 0.035 * s.walk + 0.03 * s.reach - 0.02 * s.sigh;
-  ctx.translate(s.shift * 6, bob);
-  ctx.scale(1, 1 + 0.03 * s.sigh);   // breath: rises on the inhale, slumps on the sigh
+  const shiftPx = 18 * s.shift;   // weight shift: the hips move over one foot, the feet stay put
+  const lean = 0.07 * s.push + 0.035 * s.walk + 0.03 * s.reach - 0.02 * s.sigh + 0.04 * s.shift;
+  const G = { X, c: 1 / stepLen(1, sl), sl, walk: s.walk, shift: shiftPx, hipY, plants: s.plants, wx: s.x, wy: s.y, sc: s.scale };
+  const body = () => { ctx.translate(shiftPx, hipY + 205 * breath); ctx.scale(1, breath); };
   // legs (far first)
-  leg(ctx, s, ph + Math.PI, true);
+  leg(ctx, G, ph + Math.PI, true);
   // far arm behind the body
-  ctx.save(); ctx.rotate(lean * 0.5);
+  ctx.save(); body(); ctx.rotate(lean * 0.5);
   arm(ctx, s, true, -0.32 * s.walk * Math.sin(ph) + 0.05);
   ctx.restore();
-  leg(ctx, s, ph, false);
+  leg(ctx, G, ph, false);
   // body
-  ctx.save(); ctx.translate(0, -205); ctx.rotate(lean); ctx.translate(0, 205);
+  ctx.save(); body();
+  ctx.translate(0, -205); ctx.rotate(lean); ctx.translate(0, 205);
   const sw = 4 * s.walk * Math.sin(ph);
   const up = -12 * s.sigh;
   // bag strap (behind coat front) + bag at the back hip
   const bagSw = 0.12 * s.walk * Math.sin(ph + 0.6);
   ctx.save(); ctx.translate(-36, -250); ctx.rotate(bagSw);
-  ctx.fillStyle = BAG; rr(ctx, -34, 0, 62, 48, 10); ctx.fill();
-  ctx.fillStyle = BAG_L; rr(ctx, -34, 0, 62, 22, 8); ctx.fill();
-  ctx.fillStyle = '#C9A04A'; ctx.fillRect(-6, 16, 10, 8);
+  ctx.fillStyle = K.BAG; rr(ctx, -34, 0, 62, 48, 10); ctx.fill();
+  ctx.fillStyle = K.BAG_L; rr(ctx, -34, 0, 62, 22, 8); ctx.fill();
+  ctx.fillStyle = K.BRASS; ctx.fillRect(-6, 16, 10, 8);
   ctx.restore();
   // coat
-  ctx.fillStyle = COAT;
+  ctx.fillStyle = K.COAT;
   ctx.beginPath();
   ctx.moveTo(-34, -372 + up); ctx.quadraticCurveTo(2, -392 + up, 36, -370 + up);
   ctx.lineTo(42, -250); ctx.lineTo(66 + sw, -140); ctx.lineTo(-62 + sw, -140); ctx.lineTo(-46, -250); ctx.closePath(); ctx.fill();
   // shading on the back half
   const cg = ctx.createLinearGradient(-60, 0, 40, 0);
-  cg.addColorStop(0, 'rgba(90,20,16,0.45)'); cg.addColorStop(0.55, 'rgba(90,20,16,0)');
+  cg.addColorStop(0, rgba(K.SHADE, 0.45)); cg.addColorStop(0.55, rgba(K.SHADE, 0));
   ctx.fillStyle = cg; ctx.fill();
   // front edge, belt, buttons, collar
-  ctx.strokeStyle = COAT_SH; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(30, -365 + up); ctx.lineTo(36, -250); ctx.lineTo(56 + sw, -142); ctx.stroke();
-  ctx.fillStyle = COAT_SH; ctx.fillRect(-46, -262, 89, 14);
-  ctx.fillStyle = '#C9A04A'; ctx.fillRect(18, -262, 12, 14);
-  ctx.fillStyle = COAT_DK; for (const by of [-330, -295]) { ctx.beginPath(); ctx.arc(26, by + up * 0.5, 4, 0, TAU); ctx.fill(); }
-  ctx.fillStyle = COAT_SH; ctx.beginPath(); ctx.moveTo(-26, -376 + up); ctx.lineTo(26, -376 + up); ctx.lineTo(16, -346 + up); ctx.lineTo(0, -362 + up); ctx.lineTo(-18, -346 + up); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = K.COAT_SH; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(30, -365 + up); ctx.lineTo(36, -250); ctx.lineTo(56 + sw, -142); ctx.stroke();
+  ctx.fillStyle = K.COAT_SH; ctx.fillRect(-46, -262, 89, 14);
+  ctx.fillStyle = K.BRASS; ctx.fillRect(18, -262, 12, 14);
+  ctx.fillStyle = K.COAT_DK; for (const by of [-330, -295]) { ctx.beginPath(); ctx.arc(26, by + up * 0.5, 4, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = K.COAT_SH; ctx.beginPath(); ctx.moveTo(-26, -376 + up); ctx.lineTo(26, -376 + up); ctx.lineTo(16, -346 + up); ctx.lineTo(0, -362 + up); ctx.lineTo(-18, -346 + up); ctx.closePath(); ctx.fill();
   // strap across the front
-  ctx.strokeStyle = '#5E381F'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-18, -372 + up); ctx.lineTo(30, -262); ctx.stroke();
+  ctx.strokeStyle = K.STRAP; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-18, -372 + up); ctx.lineTo(30, -262); ctx.stroke();
   // neck + head
   ctx.save(); ctx.translate(4, -388 + up);
   const tilt = s.tilt - 0.22 * s.watch + 0.2 * Math.min(0, s.sigh) + 0.16 * Math.max(0, s.sigh) + 0.05 * s.smile;
   ctx.rotate(-tilt);
-  ctx.fillStyle = SKIN_SH; ctx.fillRect(-8, -8, 18, 22);
+  ctx.fillStyle = K.SKIN_SH; ctx.fillRect(-8, -8, 18, 22);
   head(ctx, s);
   ctx.restore();
   // near arm in front
   arm(ctx, s, false, 0.32 * s.walk * Math.sin(ph) + 0.05);
   ctx.restore();
-  // warm light falling on her as she goes in
-  if (s.warm > 0) {
-    ctx.globalCompositeOperation = 'source-atop';
-    ctx.fillStyle = `rgba(242,194,122,${0.22 * s.warm})`; ctx.fillRect(-120, -520, 260, 560);
-  }
   ctx.restore();
 }
 
@@ -633,14 +729,14 @@ function head(ctx, s) {
   // local origin at the neck top; head centre (6, -42)
   const hx = 6, hy = -44;
   // bun (low, at the back)
-  ctx.fillStyle = HAIR; ctx.beginPath(); ctx.arc(hx - 36, hy + 20, 17, 0, TAU); ctx.fill();
+  ctx.fillStyle = K.HAIR; ctx.beginPath(); ctx.arc(hx - 36, hy + 20, 17, 0, TAU); ctx.fill();
   // face
-  ctx.fillStyle = SKIN; ctx.beginPath(); ctx.ellipse(hx, hy, 36, 40, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = K.SKIN; ctx.beginPath(); ctx.ellipse(hx, hy, 36, 40, 0, 0, TAU); ctx.fill();
   // nose + chin profile
   ctx.beginPath(); ctx.moveTo(hx + 30, hy - 10); ctx.quadraticCurveTo(hx + 46, hy + 4, hx + 34, hy + 8); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.ellipse(hx + 18, hy + 26, 16, 12, 0.3, 0, TAU); ctx.fill();
   // hair cap: covers the back and top, side-swept fringe
-  ctx.fillStyle = HAIR;
+  ctx.fillStyle = K.HAIR;
   ctx.beginPath();
   ctx.moveTo(hx + 30, hy - 22);
   ctx.quadraticCurveTo(hx + 22, hy - 48, hx - 6, hy - 44);
@@ -650,21 +746,21 @@ function head(ctx, s) {
   ctx.quadraticCurveTo(hx - 4, hy - 18, hx + 30, hy - 22);
   ctx.closePath(); ctx.fill();
   // ear
-  ctx.fillStyle = SKIN_SH; ctx.beginPath(); ctx.ellipse(hx - 8, hy + 2, 6, 9, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = K.SKIN_SH; ctx.beginPath(); ctx.ellipse(hx - 8, hy + 2, 6, 9, 0, 0, TAU); ctx.fill();
   // eye + brow
   const blink = 1;
-  ctx.fillStyle = '#1A1210'; ctx.beginPath(); ctx.ellipse(hx + 21, hy - 6, 3.6, 4.6 * blink, 0, 0, TAU); ctx.fill();
-  ctx.strokeStyle = HAIR; ctx.lineWidth = 3.2; ctx.lineCap = 'round';
+  ctx.fillStyle = K.EYE; ctx.beginPath(); ctx.ellipse(hx + 21, hy - 6, 3.6, 4.6 * blink, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = K.HAIR; ctx.lineWidth = 3.2; ctx.lineCap = 'round';
   const browUp = 3 * s.tilt * 8 - 2 * Math.max(0, -s.sigh);
   ctx.beginPath(); ctx.moveTo(hx + 14, hy - 15 - browUp * 0.3); ctx.quadraticCurveTo(hx + 21, hy - 19 - browUp, hx + 28, hy - 15); ctx.stroke();
   // mouth: neutral line, smile arc when happy
-  ctx.strokeStyle = '#5A2A22'; ctx.lineWidth = 2.6;
+  ctx.strokeStyle = K.MOUTH; ctx.lineWidth = 2.6;
   ctx.beginPath();
   const m = s.smile;
   const fr = Math.max(0, s.tilt) * 8;  // puzzled: corners down a touch
   ctx.moveTo(hx + 22, hy + 16 - 3 * m + fr * 0.6); ctx.quadraticCurveTo(hx + 27, hy + 16.5 + 5 * m - fr * 0.4, hx + 32, hy + 15.5 - 4 * m + fr * 0.6); ctx.stroke();
   // cheek
-  ctx.fillStyle = `rgba(200,90,70,${0.18 + 0.15 * m})`; ctx.beginPath(); ctx.arc(hx + 14, hy + 8, 7, 0, TAU); ctx.fill();
+  ctx.fillStyle = rgba(K.CHEEK, 0.18 + 0.15 * m); ctx.beginPath(); ctx.arc(hx + 14, hy + 8, 7, 0, TAU); ctx.fill();
 }
 
 // ------------------------------------------------------------------ the whole set
@@ -675,11 +771,8 @@ export function drawStreet(ctx, cam, ts, st) {
   neighbour(ctx, -900, -60, '#171C1D', [0.6, 0], 2);
   shopA(ctx, ts, st);
   neighbour(ctx, 2320, 3150, '#171B1D', [0, 0.7], 6);
-  // shop B with her drawn inside, behind the glass, once she steps in
-  st.drawInsideB = st.her && st.her.inside > 0 ? (c) => {
-    c.save(); c.beginPath(); c.rect(DOOR_B.x0 + 6, DOOR_B.y0, DOOR_B.x1 - DOOR_B.x0 - 12, GROUND - DOOR_B.y0); c.clip();
-    drawHer(c, st.her); c.restore();
-  } : null;
+  // shop B (she is drawn in the main pass below, after the pavement, even once she is inside: see there)
+  st.drawInsideB = null;
   shopB(ctx, ts, st);
   // her inside shop A (replay), clipped to the doorway, behind the swung door
   pavement(ctx, -1200, 790); pavement(ctx, 1470, 3400);
@@ -688,26 +781,39 @@ export function drawStreet(ctx, cam, ts, st) {
   spill(ctx, DOOR_A.x0, DOOR_A.x1, st.spillA || 0);
   spill(ctx, DOOR_B.x0, DOOR_B.x1, 0.35 + 0.65 * st.openB);
   lampPost(ctx, -330); lampPost(ctx, 2620);
-  // route line (lime, dotted) behind her across the road
+  // route line (lime, dotted) behind her across the road: it follows her path (r.y is its offset below her feet
+  // on the crossing line), so it curves up to shop B's doorstep with her
   if (st.route && st.route.p > 0) {
-    const r = st.route;
+    const r = st.route, off = r.y - KERB_Y, xe = lerp(r.x0, r.x1, r.p);
     ctx.save(); ctx.globalAlpha *= r.alpha;
     ctx.strokeStyle = C.lime; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.setLineDash([2, 22]);
-    ctx.beginPath(); ctx.moveTo(r.x0, r.y); ctx.lineTo(lerp(r.x0, r.x1, r.p), r.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(r.x0, pathY(r.x0) + off);
+    for (let x = r.x0 + 16; x < xe; x += 16) ctx.lineTo(x, pathY(x) + off);
+    ctx.lineTo(xe, pathY(xe) + off); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = C.lime; ctx.beginPath(); ctx.arc(r.x0, r.y, 9, 0, TAU); ctx.fill();
+    ctx.fillStyle = C.lime; ctx.beginPath(); ctx.arc(r.x0, pathY(r.x0) + off, 9, 0, TAU); ctx.fill();
     if (r.ring > 0) {
       ctx.strokeStyle = C.lime; ctx.lineWidth = 4; ctx.globalAlpha *= 1 - r.ring;
-      ctx.beginPath(); ctx.ellipse(r.x1, r.y, 30 + 70 * r.ring, 10 + 22 * r.ring, 0, 0, TAU); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(r.x1, pathY(r.x1) + off, 30 + 70 * r.ring, 10 + 22 * r.ring, 0, 0, TAU); ctx.stroke();
     }
     ctx.restore();
   }
-  if (st.her && !st.her.inside) {
+  if (st.her) {
+    const h = st.her;
     if (st.enterA) {
       // the outside part of her (left of the door's left jamb)
       ctx.save(); ctx.beginPath(); ctx.rect(-3000, -1000, DOOR_A.x0 + 3000, 4000); ctx.clip();
-      drawHer(ctx, st.her); ctx.restore();
-    } else drawHer(ctx, st.her);
+      drawHer(ctx, h); ctx.restore();
+    } else if (h.y < GROUND + 8 && h.x > DOOR_B.x0 - 100 && h.x < DOOR_B.x1 + 100) {
+      // her feet are over shop B's threshold: she is behind the shopfront now, so the wall hides everything of her
+      // above GROUND except what the doorway shows. Below GROUND (the step, her boots and shadow on it) stays
+      // visible. She is drawn here, after the pavement, so the pavement never paints over her feet; the switch
+      // happens with her whole figure inside the doorway's width, so no part of her pops.
+      ctx.save(); ctx.beginPath();
+      ctx.rect(DOOR_B.x0 + 6, DOOR_B.y0, DOOR_B.x1 - DOOR_B.x0 - 12, GROUND - DOOR_B.y0);
+      ctx.rect(-3000, GROUND, 9000, 3000);
+      ctx.clip(); drawHer(ctx, h); ctx.restore();
+    } else drawHer(ctx, h);
   }
   beacon(ctx, 790, ts); beacon(ctx, 1470, ts);
 }

@@ -4,7 +4,7 @@
 import * as M from './lib/motion.js';
 import { C, F, SAFE, title, pill, counterPill, spinner, tickBadge, cursor, background, rule, glassPanel, txt, measure,
   arrowUR, rewindIcon, lockIcon, pinIcon, bagIcon, rr, sp, makeGrain, grain, vignette } from './src/kit.js';
-import { GROUND, FEET, DOOR_A, DOOR_B, SPIN_A, drawStreet, camStory, herStory, herArrivalB, applyCam } from './src/street.js';
+import { GROUND, FEET, DOOR_A, DOOR_B, SPIN_A, drawStreet, camStory, herStory, herArrivalB, applyCam, stepLen } from './src/street.js';
 
 const { E, clamp, lerp, prog, TAU, wobble } = M;
 const ss = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -64,7 +64,8 @@ function fastState(t) {
     const d = 280 * E.inOutSine(clamp(u / 1.3));
     her.x = 340 + d;
     her.walk = Math.sin(clamp(u / 1.3) * Math.PI) * 0.95 + 0.05;
-    her.phase = d / 322 * TAU;
+    her.slope = (GROUND + 6 - FEET) / 280;
+    her.phase = stepLen(d, d * her.slope) / 322 * TAU;
     her.reach = her.reach * (1 - ss(27.42, 27.7, t));
     her.y = lerp(FEET, GROUND + 6, E.inOutSine(clamp(u / 1.3)));
     her.scale = lerp(1, 0.9, E.inOutSine(clamp(u / 1.3)));

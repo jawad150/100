@@ -294,3 +294,47 @@ python3 pipeline/render_all.py            # -> workspace/out/higgsfield_genjutsu
 ```
 
 To preview single frames, run `python3 pipeline/reel.py still 1.8,12.9,22.8`. Set `REEL_WORKDIR` to use a different workspace folder.
+
+# Hulk Marketing: "The Door That Won't Open" (SaaS motion-graphics reel)
+
+A 36.5-second vertical reel (1080×1920, 30 fps) for [hulkmarketing.co.uk](https://hulkmarketing.co.uk/), made from the client's concept PDF. The PDF was written for an AI live-action film; this version tells the same story in flat-vector SaaS motion graphics. It uses the brand's dark theme (lime `#9DEF69` on forest black) and the animation style of the client's reference reel: caps titles with a lime italic cue word, glass pills and cards, a typed URL and a cursor click.
+
+**Reel (voiceover, music, SFX):** [`reel/hulk_marketing/hulk_door_that_wont_open_9x16.mp4`](reel/hulk_marketing/hulk_door_that_wont_open_9x16.mp4)
+**Captions-only version (music and SFX, no voice):** [`reel/hulk_marketing/hulk_door_that_wont_open_9x16_no_vo.mp4`](reel/hulk_marketing/hulk_door_that_wont_open_9x16_no_vo.mp4)
+Cover frame: [`reel/hulk_marketing/hulk_door_that_wont_open_cover.jpg`](reel/hulk_marketing/hulk_door_that_wont_open_cover.jpg) · stems at master level (voice, music, SFX): [`reel/hulk_marketing/stems/`](reel/hulk_marketing/stems/)
+
+| Time | Beat | What happens |
+|---|---|---|
+| 0.0–4.0 s | **She found you** | A woman in a red coat walks to shop A. A lime map pin drops on it and a shopping-bag bubble pops over her. "SHE FOUND YOU. / SHE WANTS TO *buy.*" |
+| 4.0–8.0 s | **The door won't open** | Close-up: she pushes twice and the door judders. On "*open.*" a lime loading ring appears on the glass. |
+| 8.0–13.0 s | **She waits** | The music drops out. A counter ticks 0:01 / 0:02 / 0:03 while "ONE SECOND. / TWO. / *Three.*" stacks. She checks her watch, shifts her weight and sighs. |
+| 13.0–18.0 s | **She walks across the road** | She crosses the zebra on a lime dotted route. Shop B's glass doors slide open, its bell rings and she steps inside. |
+| 18.0–21.0 s | **That's a slow website** | Whip pan back to the empty doorway. A browser window builds around shop A, with the loading bar stuck at a third: the shop *is* the website. |
+| 21.0–25.2 s | **The point** | The lime ring alone on a black stage. "EVERY SECOND OF LOAD TIME *quietly costs you conversions.*" |
+| 25.2–30.6 s | **Rewind and fix** | The set plays backwards to the door. On "*fast,*" it swings open at her touch, the ring fills into a tick that flies into the "Fast" pill, and she walks in. Pills "Fast / Stable / Easy to grow" plus the site line "Core Web Vitals tuned and continuously measured." |
+| 30.6–36.5 s | **The ask** | The shot shrinks into a card above "SEE YOUR OPPORTUNITY *in 30 seconds.*" A CTA card follows: "Get Free Website Audit ↗", then "hulkmarketing.co.uk · 07577 764436" typed out. A cursor clicks on "audit" and the real Hulk Marketing logo lands. |
+
+Voiceover: ElevenLabs "Oliver – Warm British Narrator", reading the PDF's script word for word. The captions follow it word for word. The score (A minor → C major) and every sound effect are synthesised in code; the footsteps are timed from the walk rig itself. Master at -14 LUFS, true peak ≤ -1 dBTP. The voice sits at about -14 LUFS, a little hotter than the PDF's "about -16", so it stays clear on phone speakers. An independent five-lens QA pass found 40 issues, each verified adversarially, and all of them were fixed before delivery.
+
+## How it's built ([`hulk_marketing/door-that-wont-open/`](hulk_marketing/door-that-wont-open/))
+
+- `film.js` is the film as a pure function of time (`window.seek(t)` paints frame t), rendered frame-exact in Chromium with sub-frame motion blur by the motion-reel skill's `render.mjs`. It holds the timeline, captions, UI layer, rewind and end card.
+- `src/street.js` is the high street: two shops, a side road with a zebra, the camera, and her rig (walk cycle with planted feet, pushes, watch, weight shift, sigh). The set runs on one story clock, so the rewind really plays it backwards.
+- `src/kit.js` holds the brand kit: the colours, the three fonts (Inter Tight caps, Fraunces Italic accent, Hanken Grotesk UI), the title animation, pills, the loading ring, the cursor and vector ✓ / ↗ icons.
+- `audio/`:
+  - `build_vo.py` places the voice takes and writes the word times (`vo_words.json`) that the captions use.
+  - `score.py` writes the music.
+  - `probe.mjs` reads her heel strikes from the rig.
+  - `sfx.py` builds the effects.
+  - `mix.py` ducks, masters and writes the stems.
+- `docs/`: the shot list, the style guide drawn from the reference reel, and the QA brief. `assets/copy.md` gives every line with its source in the PDF or on the site.
+
+## Rebuild
+
+```bash
+cd hulk_marketing
+node door-that-wont-open/audio/probe.mjs        # heel strikes from the walk rig -> audio/steps.json
+(cd door-that-wont-open && python3 audio/build_vo.py && python3 audio/score.py && python3 audio/sfx.py && python3 audio/mix.py)
+node <motion-reel skill>/scripts/render.mjs --film door-that-wont-open --format 9x16 --fps 30 --video-only
+bash door-that-wont-open/package.sh             # -> reel/hulk_marketing/
+```

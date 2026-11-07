@@ -202,17 +202,17 @@ def build():
         x, h = cat('whoosh_by', dur=2.2, speed=40.0, dist=4.0, direction=d)
         place(bedx, A.lp(x, 2500), tc, -20, 0, h)
 
-    # footsteps (heel strikes from the film's walk cycle) + her step back from the door
-    # steps.json is read at run time (re-probed from the street rig); the two hand-placed step-back heels are
-    # only used where the probe has no heel strike within 0.12 s of them, so they are never doubled.
+    # footsteps: heel strikes from the film's walk cycle (steps.json, re-probed from the street rig at run time;
+    # her step back from the door is a real step now, landing at ~13.2), plus a soft set-down where her feet
+    # close at the end of a walk (the probe only counts strikes while walking): at shop A's door and inside shop B
     steps = json.load(open(os.path.join(HERE, 'steps.json')))
     for i, s in enumerate(steps):
         g = -13 if not s['inside'] else -17
         custom(s['t'], 'heel', heel(i, 1.0), g, pan=-0.1 + 0.2 * (s['x'] > 600))
-    for tt in (12.66, 12.86):
+    for tt, g in ((3.95, -18), (17.35, -22)):
         if any(abs(s['t'] - tt) < 0.12 for s in steps):
             continue
-        custom(tt, 'heel', heel(40 + int(tt * 10), 0.8), -15)
+        custom(tt, 'heel', heel(40 + int(tt * 10), 0.6), g)
 
     # beat 1: found + wants to buy
     cue(0.35, 'pop', -4, 0.15, pitch=1.25); cue(0.55, 'sparkle', -12, 0.15)
