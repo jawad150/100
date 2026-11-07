@@ -209,7 +209,7 @@ def build():
     for i, s in enumerate(steps):
         g = -13 if not s['inside'] else -17
         custom(s['t'], 'heel', heel(i, 1.0), g, pan=-0.1 + 0.2 * (s['x'] > 600))
-    for tt, g in ((3.95, -18), (17.35, -22)):
+    for tt, g in ((3.95, -18), (17.08, -22)):   # feet close: 3.89-3.93 at shop A; the far boot settles ~17.0-17.1 in shop B
         if any(abs(s['t'] - tt) < 0.12 for s in steps):
             continue
         custom(tt, 'heel', heel(40 + int(tt * 10), 0.6), g)

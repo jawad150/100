@@ -62,7 +62,7 @@ export function camStory(ts, her) {
 const STOP = 340, STRIDE = 322;
 const WALK_IN_PH = 6 * Math.PI - (STOP + 520) / STRIDE * TAU;   // the stroll ends on phase 6pi: feet together
 const KERB_Y = FEET + 46;
-const B_X0 = 1330, B_X1 = 1725, B_Y = GROUND - 40;
+const B_X0 = 1180, B_X1 = 1725, B_Y = GROUND - 20;
 const depthScale = (y) => 1 + (y - FEET) * (0.05 / 46);
 // the set's depth (screen y) is foreshortened against x: a step taken straight into the scene moves her feet
 // DEPTH_K px of y per px it would move them along x. Strides are measured in x-equivalent px.
@@ -605,7 +605,8 @@ function footAt(phase, G, pl) {
   if (q <= Math.PI) return stanceFoot(q / Math.PI, G, pl && pl.at);
   const v = (q - Math.PI) / Math.PI, e = (1 - Math.cos(Math.PI * v)) / 2, up = Math.sin(Math.PI * v);
   const a = stanceFoot(1, G, pl && pl.from), b = stanceFoot(0, G, pl && pl.to);
-  return [lerp(a[0], b[0], e), lerp(a[1], b[1], e) - 30 * G.walk * up, lerp(a[2], b[2], e) + 0.25 * G.walk * up];
+  const lift = 30 * clamp(1 - Math.abs(b[1] - a[1]) / 60);
+  return [lerp(a[0], b[0], e), lerp(a[1], b[1], e) - lift * G.walk * up, lerp(a[2], b[2], e) + 0.25 * G.walk * up];
 }
 function leg(ctx, G, phase, far) {
   const F = footAt(phase, G, G.plants && G.plants[far ? 0 : 1]);
@@ -618,7 +619,9 @@ function leg(ctx, G, phase, far) {
   if (d > L) { dw *= L / d; dv *= L / d; d = L; }
   const th = Math.atan2(dw, dv) + Math.acos(clamp((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1));
   const kw = Hw + Math.sin(th) * l1, kv = Hv + Math.cos(th) * l1, aw = Hw + dw, av = Hv + dv;
-  const kx = kw * G.c, ky = kv + kw * G.sl * G.c, ax = aw * G.c, ay = av + aw * G.sl * G.c;
+  let kx = kw * G.c, ky = kv + kw * G.sl * G.c, ax = aw * G.c, ay = av + aw * G.sl * G.c;
+  const ds = Math.hypot(ax - hx, ay - hy), dmax = 1.08 * LEGL;
+  if (ds > dmax) { const k = dmax / ds; kx = hx + (kx - hx) * k; ky = hy + (ky - hy) * k; ax = hx + (ax - hx) * k; ay = hy + (ay - hy) * k; }
   ctx.strokeStyle = far ? K.TIGHTS_FAR : K.TIGHTS; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.lineWidth = 30; ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(kx, ky); ctx.stroke();
   ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(ax, ay); ctx.stroke();
@@ -801,9 +804,11 @@ export function drawStreet(ctx, cam, ts, st) {
   if (st.her) {
     const h = st.her;
     if (st.enterA) {
-      // the outside part of her (left of the door's left jamb)
-      ctx.save(); ctx.beginPath(); ctx.rect(-3000, -1000, DOOR_A.x0 + 3000, 4000); ctx.clip();
-      drawHer(ctx, h); ctx.restore();
+      // the outside part of her (left of the door's left jamb), plus everything on the step and pavement in front
+      // of the doorway (her boots and shadow below the threshold line), which the pavement would otherwise cover
+      ctx.save(); ctx.beginPath(); ctx.rect(-3000, -1000, DOOR_A.x0 + 3000, 4000);
+      ctx.rect(DOOR_A.x0, GROUND - 6, 3000, 3000);
+      ctx.clip(); drawHer(ctx, h); ctx.restore();
     } else if (h.y < GROUND + 8 && h.x > DOOR_B.x0 - 100 && h.x < DOOR_B.x1 + 100) {
       // her feet are over shop B's threshold: she is behind the shopfront now, so the wall hides everything of her
       // above GROUND except what the doorway shows. Below GROUND (the step, her boots and shadow on it) stays

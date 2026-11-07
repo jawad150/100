@@ -6,7 +6,7 @@ F=door-that-wont-open
 V=out/$F/video_9x16.mp4
 OUT=../reel/hulk_marketing
 NAME=hulk_door_that_wont_open
-COVER_T=${COVER_T:-5.9}
+COVER_T=${COVER_T:-6.45}   # "BUT THE DOOR WON'T open." complete, caret gone
 mkdir -p "$OUT/stems"
 # reel with voiceover (primary) and a music + SFX version for captions-only use
 ffmpeg -v error -y -i "$V" -i $F/audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -ar 48000 -shortest \

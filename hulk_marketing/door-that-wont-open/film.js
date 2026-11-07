@@ -203,14 +203,14 @@ function captions(ctx, t) {
   title(ctx, t, [[{ t: 'ONE SECOND.', a: false, at: 8.95 }], [{ t: 'TWO.', a: false, at: T.two - 0.1 }],
     [{ t: 'Three.', a: true, at: T.three - 0.02, dur: 0.3 }]], { t0: 8.95, out: 12.55, top: 352, size: 76, align: 'left', x0: 72 });
   // beat 4
-  title(ctx, t, [[{ t: 'SO SHE WALKS', a: false }], [{ t: 'across', a: true, at: T.across, dur: 0.3 }, { t: ' THE ROAD.', a: false, at: 14.02 }]],
+  title(ctx, t, [[{ t: 'SO SHE WALKS', a: false }], [{ t: 'across', a: true, at: T.across, dur: 0.3 }, { t: ' THE ROAD.', a: false, at: 13.93 }]],
     { t0: 13.1, out: 17.55, top: 330, size: 76 });
   // beat 5
   title(ctx, t, [[{ t: 'THAT’S A', a: false }], [{ t: 'slow website.', a: true, at: T.slow, dur: 0.62 }]],
     { t0: 18.42, out: 20.72, top: 328, size: 76 });
   // beat 7
   title(ctx, t, [[{ t: 'WE BUILD SITES', a: false, at: 26.06 }], [{ t: 'THAT ARE ', a: false, at: 26.7 }, { t: 'fast,', a: true, at: T.fast, dur: 0.3 }],
-    [{ t: 'STABLE AND EASY TO GROW.', a: false, at: T.stable - 0.05 }]],
+    [{ t: 'STABLE AND EASY TO GROW.', a: false, at: T.stable - 0.2 }]],
     { t0: 26.0, out: 30.3, top: 318, size: 66 });
 }
 
@@ -218,7 +218,7 @@ function counter(ctx, t) {
   if (t < 8.3 || t > 13.1) return;
   const k = sp(t - 8.35, 'ui') * (1 - E.inCubic(prog(t, 12.75, 13.0)));
   const secs = clamp(Math.floor(t - 8.0), 0, 3);
-  counterPill(ctx, 746, 286, secs, t - Math.floor(t), k);
+  counterPill(ctx, 746, 286, secs, t - 8.0 - secs, k);
 }
 
 function rewindUI(ctx, t, ts) {
@@ -372,10 +372,10 @@ function endCard(ctx, t, IMG, drawShot) {
     arrowUR(ctx, bw / 2 - 52 + nudge, -nudge, 30, '#0A0B0A', 4.5);
     ctx.restore();
     // ripple from the click
-    const rp = prog(t, T.audit, T.audit + 0.6);
+    const rp = prog(t, T.audit, T.audit + 0.45);
     if (rp > 0 && rp < 1) {
       ctx.strokeStyle = `rgba(157,239,105,${0.8 * (1 - rp)})`; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(curTo[0], curTo[1], 14 + 90 * E.outCubic(rp), 0, TAU); ctx.stroke();
+      ctx.beginPath(); ctx.arc(curTo[0], curTo[1], 14 + 52 * E.outCubic(rp), 0, TAU); ctx.stroke();
     }
     // URL · phone, typed
     const n = Math.floor(clamp((t - 33.4) / 0.95) * line.length);
@@ -392,10 +392,10 @@ function endCard(ctx, t, IMG, drawShot) {
   }
   // cursor slides in from off-frame at button height (never over the URL line, the logo or the right-hand rail),
   // clicks on "audit", then eases up and away and fades, so the final hold is clean
-  if (t > 33.95 && t < T.audit + 0.8) {
+  if (t > 33.95 && t < T.audit + 0.5) {
     const cp = E.inOutCubic(prog(t, 33.98, 34.66));
     const x = lerp(1130, curTo[0], cp), y = lerp(960, curTo[1], cp) - Math.sin(cp * Math.PI) * 24;
-    const away = E.inOutCubic(prog(t, T.audit + 0.3, T.audit + 0.75));
+    const away = E.inOutCubic(prog(t, T.audit + 0.2, T.audit + 0.45));
     ctx.save(); ctx.globalAlpha = ss(33.95, 34.1, t) * (1 - away);
     cursor(ctx, x + 60 * away, y - 50 * away, 1.15, M.bump(t, T.audit + 0.02, 0.08));
     ctx.restore();

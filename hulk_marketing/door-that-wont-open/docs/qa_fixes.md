@@ -50,3 +50,18 @@ Finding ids are the reviewers' own.
 | Footsteps | Re-probed from the new rig. The stale hand-placed step-back heels are replaced by soft set-down taps at 3.95 and 17.35. |
 
 The voice sits at about -14.2 LUFS over speech in the -14 LUFS master. The PDF suggests about -16; it is kept hotter on purpose so it stays clear on phone speakers.
+
+# QA round 2: verification of the final cut
+
+An independent max-effort check of the round-1 cut confirmed 38 of the 40 fixes, including the blocker; the 2 counter findings were partly fixed. It found one older issue and a few small ones, all fixed below.
+
+| Finding | Fix |
+|---|---|
+| M1 (major, already in v1): her boots sink into door A's step in the replay (27.8-30.6) | street.js `drawStreet()`: the replay's outside pass also draws her below the threshold line (x ≥ the jamb, y ≥ GROUND − 6), after the pavement, so her boots and shadow stay whole. |
+| m2: the counter silently re-rolls 0:02 → 0:03 at 12.00 | film.js `counter()`: the roll is timed from the tick itself (`t − 8 − secs`), so it fires only at 9, 10 and 11. |
+| m3: the step into shop B reads as a stair-climbing lunge | street.js: the rise into the shop starts earlier and is shallower (`B_X0` 1330 → 1180, `B_Y` GROUND−40 → GROUND−20). The swing's extra lift shrinks when the step itself climbs, and the leg's on-screen stretch is capped at 1.08×. Footsteps re-probed. |
+| p4: the shop-B set-down tap is 0.2 s late | Moved 17.35 → 17.08, where the far boot settles. |
+| p5: the clean end-card hold is short | The cursor leaves 0.2-0.45 s after the click and the ripple is 0.45 s, so the card is static from about 35.3. The logo holds 1.56 s after it lands. |
+| p6: "THE" and "STABLE" land 0.15 s after they are spoken | Caps timed earlier (13.93 and T.stable − 0.2), so they land just before the voice. |
+| p7: the cover catches the blinking caret | Cover frame moved to 6.45 s (caption complete, caret gone). |
+| Click ripple brushed the phone digits' tops (35.07-35.23) | The ripple radius is 66 px at most, so it stays inside the button. |
