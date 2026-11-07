@@ -1,0 +1,21 @@
+{
+ "source": "/root/.claude/uploads/9c450839-ae81-55f4-a4cb-27f28fd0cdf5/a966bd0f-Whatsapp_Video_2026-11-04_At_11.13.49_Pm_1.mp4",
+ "duration": 44.583,
+ "threshold": 0.25,
+ "note": "hard cuts only; seamless transitions (match cuts, morphs, irises) are not counted",
+ "cuts": [
+  2.958,
+  22.667,
+  35
+ ],
+ "shots": [
+  2.958,
+  19.709,
+  12.333,
+  9.583
+ ],
+ "shot_count": 4,
+ "mean_shot_s": 11.146,
+ "median_shot_s": 12.333,
+ "cuts_per_10s": 0.67
+}

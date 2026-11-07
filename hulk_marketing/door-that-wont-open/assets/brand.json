@@ -1,0 +1,27 @@
+{
+  "source": "https://hulkmarketing.co.uk/ (site CSS tokens, dark theme), checked 7 Nov 2026",
+  "colors": {
+    "canvas": "#0A0B0A",
+    "canvas_raised": "#121412",
+    "canvas_raised2": "#1B1E1B",
+    "canvas_line": "#22261F",
+    "forest": "#111A16",
+    "forest_ink": "#20392E",
+    "lime": "#9DEF69",
+    "lime_glow": "#78E930",
+    "lime_deep": "#2A5C0A",
+    "ink": "#F2F6EE",
+    "ink_muted": "#9AA398",
+    "ink_dim": "#646F60",
+    "shop_green": "#20392E",
+    "shop_plum": "#4A1B34",
+    "coat_red": "#C8453A"
+  },
+  "accent": "lime #9DEF69 (one accent)",
+  "fonts": {
+    "display": "Inter Tight (site 'headline' face; PDF: Inter Tight ExtraBold captions) -> fonts/display.woff2",
+    "accent": "Fraunces Italic (lime accent words, as in the reference reel's italic serif) -> fonts/accent.woff2",
+    "ui": "Hanken Grotesk (site body face) -> fonts/ui.woff2"
+  },
+  "logo": "assets/hulk-marketing-logo.png (site /hulk-marketing-logo.png, 500x76 RGBA): HULK in a lime box + MARKETING in lime"
+}

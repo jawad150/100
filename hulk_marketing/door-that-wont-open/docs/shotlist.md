@@ -1,0 +1,21 @@
+# The Door That Won't Open: shot list
+36.5 s · 120 bpm (1 beat = 0.5 s, beat n at n/2 s) · 1080×1920, 30 fps · format 9:16
+Music: original light pulse composed in code (A minor → C major), drops to silence for the waiting beat.
+VO: ElevenLabs "Oliver – Warm British Narrator" (calm, understated), script word for word from the PDF.
+Captions = VO, one lime cue word each. Text inside x 60-960, y 270-1240.
+
+The PDF's live-action beats are re-staged as a flat vector high street (dusk, brand-dark palette) with Hulk's
+SaaS UI layer on top. One continuous set (story time ts), so the rewind in beat 7 literally plays the set backwards.
+
+| # | time | beats | shot | on screen | motion | out | sound |
+|---|------|-------|------|-----------|--------|-----|-------|
+| 1 Hook | 0.0-4.0 | 0-8 | Wide street, tracking | Woman (red coat) mid-stride toward shop A (deep green, blank sign). Lime map pin drops on shop A at 0.5 ("found"), ring pulse. Bag icon bubble pops over her at 2.0 ("wants to buy"). Caption "SHE FOUND YOU. / SHE WANTS TO *buy.*" | camera tracks right with her, parallax tile grid | push-in toward the door | street bed, footsteps, pin pop, bubble pop, music pulse in |
+| 2 Stuck | 4.0-8.0 | 8-16 | Close-up on the glass door | Gloved hand pushes; door judders, won't move. On "open" (5.0) the lime spinner appears on the glass (glass sheen over it). Second push 6.2, head tilt. Caption "BUT THE DOOR WON'T *open.*" | log push-in 3.6-4.3; judder shake 4.45 / 6.2 | pull back to wide 7.6-8.2 | dull thud ×2, spinner blip, loading tick loop starts |
+| 3 Wait | 8.0-13.0 | 16-26 | Wide, she waits | Counter pill top-right ticks 0:01 / 0:02 / 0:03 / 0:04 at 9/10/11/12. Watch check 9.3, weight shift 10.6, sigh 12.0. Captions "ONE SECOND." → "TWO." → "*Three.*" on the ticks | slow push 2 %, character idle | she turns 12.7 | music OFF; counter ticks, faint loading tick, sigh |
+| 4 Gone | 13.0-18.0 | 26-36 | Pan right across the side road | She walks over the zebra crossing; a lime dotted route draws behind her. Shop B (plum) sliding door glides open as she arrives (15.6), warm light; she steps in (16.2-17.2). Caption "SO SHE WALKS *across* THE ROAD." | camera pan follows | whip back left | footsteps, door slide, cheerful bell, music back (soft) |
+| 5 Reveal | 18.0-21.0 | 36-42 | Shop A, empty doorway, freeze | Spinner still turning. A browser window builds around the shopfront (title bar, dots, blank URL bar replacing the sign, loading bar): the shop *is* the website. "Paused" freeze tint. Caption "THAT'S A *slow website.*" | whip 18.0-18.4 (both shots on screen) | hard cut | whip, UI clicks ×3, low hit |
+| 6 Point | 21.0-25.0 | 42-50 | Forest black stage | Lime spinner alone, large, turning slowly, lime rules frame the stage. Caption "EVERY SECOND OF / LOAD TIME QUIETLY / COSTS YOU *conversions.*" | spinner slow spin, slight push | spinner reverses → rewind | sub drop on the cut, pad only |
+| 7 Rewind + fix | 25.0-31.0 | 50-62 | Rewind, then close-up on the door again | 25.0-26.0 the set plays backwards (browser retracts, she walks backwards across the road) with a scrub bar + ⏪ icon. 26.0: she reaches the door; on "fast" (27.2) it swings open the instant she touches it; the spinner fills and morphs into a lime tick; she walks in, smiling. Card "✓ Fast / ✓ Stable / ✓ Easy to grow" + "Core Web Vitals tuned and continuously measured." Caption "WE BUILD SITES THAT ARE *fast,* / STABLE AND EASY TO GROW." | time-remap rewind, push-in, door swing | the shot shrinks into a card | rewind whoosh, clean door click, success chime, check ticks |
+| 8 Ask | 31.0-36.5 | 62-73 | End card | Shot card (open door, warm light) at top; "SEE YOUR OPPORTUNITY *in 30 seconds.*"; CTA card: "FREE WEBSITE AUDIT" label, lime pill "Get Free Website Audit ↗", typed "hulkmarketing.co.uk · 07577 764436"; cursor clicks the pill on "audit" (34.9); real logo lands 33.6 | card shrink, staggered springs | hold ≥ 1.5 s | card whoosh, typing ticks, click, logo sting, final chord |
+
+Longest gap without a new event: beats 18-20 (8.9-10.0 s): covered by the counter tick + watch check.

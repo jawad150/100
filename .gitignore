@@ -5,3 +5,8 @@ workspace2/
 workspace3/
 workspace4/
 google_ranker_pro_videos/raw2/
+hulk_marketing/out/
+hulk_marketing/door-that-wont-open/audio/*.wav
+hulk_marketing/door-that-wont-open/audio/stems/
+hulk_marketing/door-that-wont-open/audio/vo_takes/takeB.wav
+hulk_marketing/door-that-wont-open/docs/reference/*.png
