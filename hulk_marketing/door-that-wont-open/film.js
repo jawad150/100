@@ -13,7 +13,7 @@ const logz = (a, b, p) => a * Math.pow(b / a, p);
 // ---------------------------------------------------------------- key times (s), from vo_words.json + shot list
 const T = {
   buy: 2.27, open: 4.99, push1: 4.45, push2: 6.17, one: 9.03, two: 10.0, three: 11.01, across: 13.73,
-  slow: 19.03, cut6: 21.0, quietly: 22.72, conversions: 23.9, rew0: 25.0, rew1: 26.2,
+  slow: 19.03, cut6: 21.0, quietly: 22.72, conversions: 23.9, rew0: 25.2, rew1: 26.2,
   fast: 27.18, stable: 27.82, easy: 28.56, shrink: 30.6, in30: 31.93, audit: 34.79, end: 36.5,
 };
 const ARR_B = herArrivalB();          // ~16.2: she reaches shop B
@@ -23,7 +23,7 @@ const DOOR_B_OPEN = ARR_B - 0.42;     // the sliding door glides open as she arr
 const HITS = [
   [0.35 * 2, 'pin drops on shop A', 'pop'], [1.95 * 2, 'bag bubble', 'pop'],
   [T.push1 * 2, 'push 1: dull thud', 'thud'], [T.open * 2, 'spinner appears', 'blip'], [T.push2 * 2, 'push 2: thud', 'thud'],
-  [9 * 2, 'counter 0:01', 'tick'], [10 * 2, 'counter 0:02', 'tick'], [11 * 2, 'counter 0:03', 'tick'], [12 * 2, 'counter 0:04', 'tick'],
+  [9 * 2, 'counter 0:01', 'tick'], [10 * 2, 'counter 0:02', 'tick'], [11 * 2, 'counter 0:03', 'tick'],
   [DOOR_B_OPEN * 2, 'door B slides', 'whoosh'], [(DOOR_B_OPEN + 0.12) * 2, 'shop bell', 'bell'],
   [18.2 * 2, 'whip back', 'whoosh'], [T.cut6 * 2, 'cut to black', 'sub'], [T.rew0 * 2, 'rewind', 'whoosh'],
   [T.fast * 2, 'door clicks open', 'click'], [27.75 * 2, 'fast check', 'blip'], [27.9 * 2, 'stable check', 'blip'],
@@ -86,7 +86,7 @@ function fastCam(t) {
   return { x: lerp(lerp(c0.x, 470, p), 556, q), y: lerp(lerp(c0.y, 1000, p), 985, q), z: logz(c0.z, 1.5, p) * (1 + 0.06 * q) * (1 + 0.025 * drift) };
 }
 
-// rewind (beat 7, 25.0-26.2): the story played backwards from the freeze to her arrival
+// rewind (beat 7, 25.2-26.2): the story played backwards from the freeze to her arrival
 const rewTs = (t) => lerp(20.9, 4.2, E.inOutSine(prog(t, T.rew0, T.rew1)));
 
 // ---------------------------------------------------------------- world-attached UI
@@ -144,15 +144,16 @@ function worldUI(ctx, cam, ts, st, mode) {
       ctx.restore();
       for (let i = 0; i < 3; i++) {
         const dk = sp(ts - 19.0 - i * 0.05, 'pop');
-        if (dk > 0) { ctx.fillStyle = '#3E463F'; ctx.beginPath(); ctx.arc(x0 + 48 + i * 34, y0 + bar / 2, 11 * dk, 0, TAU); ctx.fill(); }
+        if (dk > 0) { ctx.fillStyle = C.muted; ctx.beginPath(); ctx.arc(x0 + 48 + i * 34, y0 + bar / 2, 11 * dk, 0, TAU); ctx.fill(); }
       }
       const uk = E.outCubic(prog(ts, 19.08, 19.35));
       if (uk > 0) {
         const ux = x0 + 170, uw = (x1 - x0 - 230) * uk;
-        ctx.fillStyle = '#1F231F'; rr(ctx, ux, y0 + 22, uw, 52, 26); ctx.fill();
+        ctx.fillStyle = '#2A302A'; rr(ctx, ux, y0 + 22, uw, 52, 26); ctx.fill();
+        ctx.strokeStyle = `rgba(157,239,105,${0.35 * uk})`; ctx.lineWidth = 1.5; ctx.stroke();
         ctx.globalAlpha = uk; lockIcon(ctx, ux + 32, y0 + 44, 22, '#5A635A');
         // blank address (no shop names): a skeleton bar with a shimmer
-        ctx.fillStyle = '#2B312B'; rr(ctx, ux + 60, y0 + 40, Math.max(0, uw - 200), 16, 8); ctx.fill();
+        ctx.fillStyle = '#454D45'; rr(ctx, ux + 60, y0 + 40, Math.max(0, uw - 200), 16, 8); ctx.fill();
         ctx.globalAlpha = 1;
       }
       // loading bar, stuck at about a third, pulsing
@@ -198,15 +199,14 @@ function captions(ctx, t) {
   title(ctx, t, [[{ t: 'BUT THE DOOR', a: false }], [{ t: 'WON’T ', a: false, at: 4.68 }, { t: 'open.', a: true, at: T.open, dur: 0.32 }]],
     { t0: 4.2, out: 7.5, top: 330, size: 76 });
   // beat 3: left-aligned, the counter sits top-right
-  title(ctx, t, [[{ t: 'ONE SECOND.', a: false }]], { t0: 8.95, out: 9.8, outDur: 0.13, top: 352, size: 84, align: 'left', x0: 72 });
-  title(ctx, t, [[{ t: 'TWO.', a: false }]], { t0: 9.97, out: 10.8, outDur: 0.13, top: 352, size: 84, align: 'left', x0: 72 });
-  title(ctx, t, [[{ t: 'Three.', a: true, at: T.three - 0.02, dur: 0.3 }]], { t0: 10.95, out: 12.55, top: 352, size: 84, align: 'left', x0: 72 });
+  title(ctx, t, [[{ t: 'ONE SECOND.', a: false, at: 8.95 }], [{ t: 'TWO.', a: false, at: T.two - 0.1 }],
+    [{ t: 'Three.', a: true, at: T.three - 0.02, dur: 0.3 }]], { t0: 8.95, out: 12.55, top: 352, size: 76, align: 'left', x0: 72 });
   // beat 4
   title(ctx, t, [[{ t: 'SO SHE WALKS', a: false }], [{ t: 'across', a: true, at: T.across, dur: 0.3 }, { t: ' THE ROAD.', a: false, at: 14.02 }]],
     { t0: 13.1, out: 17.55, top: 330, size: 76 });
   // beat 5
   title(ctx, t, [[{ t: 'THAT’S A', a: false }], [{ t: 'slow website.', a: true, at: T.slow, dur: 0.62 }]],
-    { t0: 18.42, out: 20.72, top: 318, size: 76 });
+    { t0: 18.42, out: 20.72, top: 328, size: 76 });
   // beat 7
   title(ctx, t, [[{ t: 'WE BUILD SITES', a: false, at: 26.06 }], [{ t: 'THAT ARE ', a: false, at: 26.7 }, { t: 'fast,', a: true, at: T.fast, dur: 0.3 }],
     [{ t: 'STABLE AND EASY TO GROW.', a: false, at: T.stable - 0.05 }]],
@@ -216,7 +216,7 @@ function captions(ctx, t) {
 function counter(ctx, t) {
   if (t < 8.3 || t > 13.1) return;
   const k = sp(t - 8.35, 'ui') * (1 - E.inCubic(prog(t, 12.75, 13.0)));
-  const secs = clamp(Math.floor(t - 8.0), 0, 4);
+  const secs = clamp(Math.floor(t - 8.0), 0, 3);
   counterPill(ctx, 746, 286, secs, t - Math.floor(t), k);
 }
 
@@ -234,9 +234,13 @@ function rewindUI(ctx, t, ts) {
     g.addColorStop(0, 'rgba(242,246,238,0)'); g.addColorStop(0.5, 'rgba(242,246,238,0.07)'); g.addColorStop(1, 'rgba(242,246,238,0)');
     ctx.fillStyle = g; ctx.fillRect(0, y, 1080, 60);
   }
-  // rewind pill
-  glassPanel(ctx, 540 - 70, 300, 140, 84, 42, { border: 'rgba(157,239,105,0.45)' });
-  rewindIcon(ctx, 545, 342, 54, C.lime);
+  // rewind pill (leaves before the beat-7 caption rises into its place at 26.06)
+  ctx.globalAlpha = a * (1 - ss(T.rew1 - 0.32, T.rew1 - 0.14, t));
+  if (ctx.globalAlpha > 0) {
+    glassPanel(ctx, 540 - 70, 300, 140, 84, 42, { border: 'rgba(157,239,105,0.45)' });
+    rewindIcon(ctx, 545, 342, 54, C.lime);
+  }
+  ctx.globalAlpha = a;
   // scrub bar: the playhead runs backwards through the story
   const x0 = 150, x1 = 930, y = 1206;
   ctx.fillStyle = 'rgba(242,246,238,0.18)'; rr(ctx, x0, y - 4, x1 - x0, 8, 4); ctx.fill();
@@ -266,8 +270,15 @@ function pillRow(ctx, t, ctxMeasure) {
     x += ws[i] + gap;
   });
   // the line from the site
-  const lk = ss(29.15, 29.6, t) * (1 - out);
-  if (lk > 0) txt(ctx, 'Core Web Vitals tuned and continuously measured.', 540, 688 + 10 * (1 - lk), F.ui(34, 600), C.ink, 'center', 0, lk * 0.92);
+  const lk = ss(28.75, 29.05, t) * (1 - E.inCubic(prog(t, 30.4, 30.57)));
+  if (lk > 0) {
+    const line = 'Core Web Vitals tuned and continuously measured.', font = F.ui(34, 600);
+    const w = measure(ctx, line, font).w, dy = 10 * (1 - lk);
+    ctx.save(); ctx.globalAlpha = lk;
+    glassPanel(ctx, 540 - w / 2 - 26, 646 + dy, w + 52, 66, 33);
+    ctx.restore();
+    txt(ctx, line, 540, 690 + dy, font, C.ink, 'center', 0, lk);
+  }
   return slots;
 }
 
@@ -291,31 +302,41 @@ function tickFlight(ctx, t, cam, slots) {
 function stage(ctx, t) {
   background(ctx, 0, 0, 0.6);
   rule(ctx, 248, 1); rule(ctx, 1302, 1);
-  const k = 1 + 0.035 * E.inOutSine(prog(t, T.cut6, 25));
+  const k = 1 + 0.035 * E.inOutSine(prog(t, T.cut6, T.rew0));
   ctx.save(); M.zoomAbout(ctx, k, 540, 760);
   // the spinner alone, turning slowly; before the rewind it stalls and reverses
   const tt = t - T.cut6;
   let ang = tt * 2.7;
-  if (t > 24.55) { const u = t - 24.55; ang = 3.55 * 2.7 + 2.7 * (u - u * u / 0.5) - Math.max(0, u - 0.25) ** 2 * 36; }
+  const STALL = T.rew0 - 0.45;
+  if (t > STALL) { const u = t - STALL; ang = (STALL - T.cut6) * 2.7 + 2.7 * (u - u * u / 0.5) - Math.max(0, u - 0.25) ** 2 * 36; }
   const glowR = ctx.createRadialGradient(540, 610, 40, 540, 610, 420);
   glowR.addColorStop(0, 'rgba(120,233,48,0.10)'); glowR.addColorStop(1, 'rgba(120,233,48,0)');
   ctx.fillStyle = glowR; ctx.fillRect(100, 190, 880, 840);
   spinner(ctx, 540, 610, 176, 26, ang, 1.85, 1, 1.2);
   ctx.restore();
   title(ctx, t, [[{ t: 'EVERY SECOND OF', a: false, at: 21.3 }], [{ t: 'LOAD TIME', a: false, at: 22.1 }],
-    [{ t: 'quietly costs you', a: true, at: T.quietly, dur: 1.12 }], [{ t: 'conversions.', a: true, at: T.conversions, dur: 0.5 }]],
-  { t0: 21.22, out: 24.72, top: 960, size: 78, scrim: false });
+    [{ t: 'quietly costs you', a: true, at: T.quietly, dur: 1.12 }], [{ t: 'conversions.', a: true, at: T.conversions - 0.06, dur: 0.3 }]],
+  { t0: 21.22, top: 960, size: 78, scrim: false });   // no exit: the hard cut to the rewind (T.rew0) takes it
 }
 
 // ---------------------------------------------------------------- end card (beat 8)
-const CARD = { x: 190, y: 272, w: 700, h: 470, r: 30 };
+// stack: rule 222 · shot card 272-682 · headline 703-875 · CTA panel 918-1150 · logo ~1176-1234 · rule 1270
+const CARD = { x: 190, y: 272, w: 700, h: 410, r: 30 };
+const CTA = { y: 918, h: 232, label: 968, btn: 1030, url: 1124, logo: 1204, rule: 1270 };
 function endCard(ctx, t, IMG, drawShot) {
   background(ctx, 0, 0, 0.7);
   const rk = E.inOutCubic(prog(t, 30.95, 31.5));
-  rule(ctx, 222, rk); rule(ctx, 1306, rk);
+  rule(ctx, 222, rk); rule(ctx, CTA.rule, rk);
   // the shot shrinking into its card
   const p = E.inOutCubic(prog(t, T.shrink, T.shrink + 0.78));
   const box = { x: lerp(0, CARD.x, p), y: lerp(0, CARD.y, p), w: lerp(1080, CARD.w, p), h: lerp(1920, CARD.h, p), r: lerp(0, CARD.r, p) };
+  // headline first and only below the card's bottom edge, so that edge wipes the rule and words on as it rises
+  if (t > T.shrink + 0.2) {
+    ctx.save(); ctx.beginPath(); ctx.rect(0, box.y + box.h, 1080, 1920); ctx.clip();
+    title(ctx, t, [[{ t: 'SEE YOUR OPPORTUNITY', a: false, at: 31.12 }], [{ t: 'in 30 seconds.', a: true, at: T.in30, dur: 1.25 }]],
+      { t0: 31.08, top: 782, size: 66, scrim: false });
+    ctx.restore();
+  }
   ctx.save();
   if (p > 0.02) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 50 * p; ctx.shadowOffsetY = 20 * p; ctx.fillStyle = '#0A0B0A'; rr(ctx, box.x, box.y, box.w, box.h, box.r); ctx.fill(); }
   ctx.restore();
@@ -324,24 +345,28 @@ function endCard(ctx, t, IMG, drawShot) {
   ctx.restore();
   if (p > 0) { ctx.save(); ctx.lineWidth = 2; ctx.strokeStyle = `rgba(157,239,105,${0.35 * p})`; rr(ctx, box.x, box.y, box.w, box.h, box.r); ctx.stroke(); ctx.restore(); }
   if (t < T.shrink + 0.2) return;
-  // headline
-  title(ctx, t, [[{ t: 'SEE YOUR OPPORTUNITY', a: false, at: 31.12 }], [{ t: 'in 30 seconds.', a: true, at: T.in30, dur: 1.25 }]],
-    { t0: 31.08, top: 842, size: 66, scrim: false });
-  // CTA card
+  // CTA card, sized to its content and centred
+  const bfont = F.ui(36, 700), ufont = F.ui(35, 600);
+  const line = 'hulkmarketing.co.uk · 07577 764436';
+  const tw = measure(ctx, 'Get Free Website Audit', bfont).w;
+  const bw = tw + 202, bh = 86;
+  const cw = Math.max(bw, measure(ctx, line, ufont).w), X0 = Math.round(540 - cw / 2);
+  // the cursor clicks in the empty gap between "Audit" and the arrow, clear of the URL line below
+  const curTo = [X0 + 40 + tw + 22, CTA.btn - bh / 2 + 12];
   const ck = sp(t - 32.95, 'ui');
   if (ck > 0.001) {
     ctx.save(); ctx.globalAlpha = clamp(ck * 1.6); ctx.translate(0, (1 - ck) * 40);
-    glassPanel(ctx, 90, 978, 900, 214, 32, { border: 'rgba(157,239,105,0.3)' });
-    txt(ctx, 'FREE WEBSITE AUDIT', 132, 1030, F.ui(27, 700), C.muted, 'left', 5);
+    glassPanel(ctx, X0 - 42, CTA.y, cw + 84, CTA.h, 32, { border: 'rgba(157,239,105,0.3)' });
+    txt(ctx, 'FREE WEBSITE AUDIT', X0, CTA.label, F.ui(27, 700), C.muted, 'left', 5);
     // the button
     const bk = sp(t - 33.15, 'pop');
     const press = M.bump(t, T.audit + 0.03, 0.09);
-    const bw = 132 + measure(ctx, 'Get Free Website Audit', F.ui(36, 700)).w + 70, bh = 86;
-    ctx.save(); ctx.translate(132 + bw / 2, 1090); const bs = lerp(0.8, 1, bk) * (1 - 0.035 * press); ctx.scale(bs, bs);
+    ctx.save(); ctx.translate(X0 + bw / 2, CTA.btn); const bs = lerp(0.8, 1, bk) * (1 - 0.035 * press); ctx.scale(bs, bs);
     ctx.globalAlpha *= clamp(bk * 1.5);
-    const hover = ss(34.45, 34.65, t);
+    // hover tint while the cursor is on it, back to brand lime once it has clicked and gone
+    const hover = ss(34.45, 34.65, t) * (1 - ss(T.audit + 0.2, T.audit + 0.45, t));
     ctx.fillStyle = M.mix(C.lime, '#B6F58C', hover * 0.6); rr(ctx, -bw / 2, -bh / 2, bw, bh, bh / 2); ctx.fill();
-    txt(ctx, 'Get Free Website Audit', -bw / 2 + 40, 13, F.ui(36, 700), '#0A0B0A');
+    txt(ctx, 'Get Free Website Audit', -bw / 2 + 40, 13, bfont, '#0A0B0A');
     const nudge = 6 * M.bump(t, T.audit + 0.18, 0.18);
     arrowUR(ctx, bw / 2 - 52 + nudge, -nudge, 30, '#0A0B0A', 4.5);
     ctx.restore();
@@ -349,34 +374,32 @@ function endCard(ctx, t, IMG, drawShot) {
     const rp = prog(t, T.audit, T.audit + 0.6);
     if (rp > 0 && rp < 1) {
       ctx.strokeStyle = `rgba(157,239,105,${0.8 * (1 - rp)})`; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(CUR_TO[0], CUR_TO[1], 14 + 90 * E.outCubic(rp), 0, TAU); ctx.stroke();
+      ctx.beginPath(); ctx.arc(curTo[0], curTo[1], 14 + 90 * E.outCubic(rp), 0, TAU); ctx.stroke();
     }
     // URL · phone, typed
-    const line = 'hulkmarketing.co.uk · 07577 764436';
     const n = Math.floor(clamp((t - 33.4) / 0.95) * line.length);
-    if (n > 0) txt(ctx, line.slice(0, n), 132, 1166, F.ui(35, 600), C.ink, 'left', 0.2, 0.92);
+    if (n > 0) txt(ctx, line.slice(0, n), X0, CTA.url, ufont, C.ink, 'left', 0.2, 0.92);
     ctx.restore();
   }
-  // real logo
-  const lk = sp(t - 33.62, 'ui');
+  // real logo: lands on "audit.", after the click (the reference's click -> logo -> hold)
+  const lk = sp(t - (T.audit + 0.15), 'ui');
   if (lk > 0.001 && IMG.logo) {
     const w = 380, h = w * IMG.logo.height / IMG.logo.width;
     ctx.save(); ctx.globalAlpha = clamp(lk * 1.5);
-    ctx.drawImage(IMG.logo, 540 - w / 2, 1242 - h / 2 + (1 - lk) * 24, w, h);
+    ctx.drawImage(IMG.logo, 540 - w / 2, CTA.logo - h / 2 + (1 - lk) * 24, w, h);
     ctx.restore();
   }
-  // cursor glides in and clicks the button on "audit"
-  if (t > 33.95) {
+  // cursor slides in from off-frame at button height (never over the URL line, the logo or the right-hand rail),
+  // clicks on "audit", then eases up and away and fades, so the final hold is clean
+  if (t > 33.95 && t < T.audit + 0.8) {
     const cp = E.inOutCubic(prog(t, 33.98, 34.66));
-    const x = lerp(1010, CUR_TO[0], cp) + Math.sin(cp * Math.PI) * 40, y = lerp(1560, CUR_TO[1], cp) + Math.sin(cp * Math.PI) * 30;
-    // after the click it eases off the button and fades, so the URL and phone stay clear for the final hold
-    const away = E.inOutCubic(prog(t, T.audit + 0.35, T.audit + 0.85));
-    ctx.save(); ctx.globalAlpha = 1 - away;
-    cursor(ctx, x + 70 * away, y + 40 * away, 1.15, M.bump(t, T.audit + 0.02, 0.08));
+    const x = lerp(1130, curTo[0], cp), y = lerp(960, curTo[1], cp) - Math.sin(cp * Math.PI) * 24;
+    const away = E.inOutCubic(prog(t, T.audit + 0.3, T.audit + 0.75));
+    ctx.save(); ctx.globalAlpha = ss(33.95, 34.1, t) * (1 - away);
+    cursor(ctx, x + 60 * away, y - 50 * away, 1.15, M.bump(t, T.audit + 0.02, 0.08));
     ctx.restore();
   }
 }
-const CUR_TO = [560, 1102];
 
 // ---------------------------------------------------------------- frame
 function street(ctx, t, IMG) {
@@ -402,7 +425,9 @@ M.film({
   fonts: [F.caps(80), F.accent(80), F.ui(32, 600), F.ui(32, 500), F.ui(27, 700)],
   images: { logo: 'assets/hulk-marketing-logo.png' },
   hits: HITS,
-  samples: (t) => (t > 17.95 && t < 18.55) || (t > 24.95 && t < 26.3) ? 10 : (t > 3.3 && t < 4.5) || (t > 7.4 && t < 8.45) || (t > 30.55 && t < 31.45) || (t > 27.1 && t < 27.8) ? 7 : 4,
+  samples: (t) => (t > 18.05 && t < 18.35) ? 40 : (t > 25.3 && t < 26.1) ? 32 : (t > 27.34 && t < 27.76) ? 24
+    : (t > 17.95 && t < 18.55) || (t > T.rew0 - 0.05 && t < 26.3) ? 10
+    : (t > 3.3 && t < 4.5) || (t > 7.4 && t < 8.45) || (t > 30.55 && t < 31.45) || (t > 27.1 && t < 27.8) ? 7 : 4,
   init() { makeGrain(); },
   draw(ctx, u, t, IMG) {
     const S = street(ctx, t, IMG);
@@ -414,7 +439,7 @@ M.film({
       stage(ctx, t);
     } else if (t < T.shrink) {
       paintStreet(ctx, 1080, S.mode, S.ts, S.st, S.cam, t);
-      if (t < T.rew1 + 0.2) rewindUI(ctx, t, S.ts);
+      if (t < T.rew1 + 0.2) rewindUI(ctx, t, t < T.rew1 ? S.ts : 4.2);
       captions(ctx, t);
       const slots = pillRow(ctx, t);
       tickFlight(ctx, t, S.cam, slots);

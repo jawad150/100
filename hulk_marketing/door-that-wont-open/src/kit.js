@@ -47,7 +47,7 @@ export function txt(ctx, str, x, y, font, color, align = 'left', track = 0, alph
 // lines: [[seg, ...], ...], seg = { t: 'TEXT ', a: false } caps, or { t: 'word.', a: true, at: s, dur: s } accent
 // opts: { t0, out, cx, top, size, maxW, align, rule }
 export function title(ctx, t, lines, o) {
-  const size0 = o.size || 74, maxW = o.maxW || 900;
+  const size0 = o.size || 74, maxW = o.maxW || 2 * (SAFE.x1 - (o.cx ?? 540));
   if (t < o.t0 - 0.1 || (o.out != null && t > o.out + (o.outDur ?? 0.24) + 0.02)) return null;
   // layout at size0, then fit
   const lay = (size) => lines.map((segs) => {
@@ -121,21 +121,21 @@ export function title(ctx, t, lines, o) {
         const n = s.t.length;
         const shown = clamp((t - at) / dur) * n;
         const full = Math.floor(shown);
+        const frac = shown - full;
+        const part = s.t.slice(0, full);
         if (t >= at - 0.12) {
           ctx.save();
           ctx.globalAlpha = blockA;
           ctx.font = s.font; ctx.fillStyle = C.lime; ctx.letterSpacing = '0px';
-          const part = s.t.slice(0, full);
           ctx.fillText(part, x0 + s.x, base);
           // the next letter fades in (sub-frame smoothness)
-          const frac = shown - full;
           if (full < n && frac > 0) {
             const pw = measure(ctx, part, s.font).w;
             ctx.globalAlpha = blockA * frac;
             ctx.fillText(s.t[full], x0 + s.x + pw, base);
           }
           ctx.restore();
-          const cw = measure(ctx, s.t.slice(0, Math.min(n, Math.ceil(shown))).replace(/\s+$/, ''), s.font).w;
+          const cw = measure(ctx, part, s.font).w + (full < n ? frac * measure(ctx, s.t[full], s.font).w : 0);
           const lastOnLine = si === line.segs.length - 1;
           caretAt = { x: x0 + s.x + cw + 6, y: base, h: size * 1.02, tEnd: at + dur, tStart: at - 0.12, typingOnly: !lastOnLine };
         }
@@ -184,13 +184,22 @@ export function arrowUR(ctx, x, y, s, color, lw = null) {
   ctx.stroke(); ctx.restore();
 }
 export function bagIcon(ctx, x, y, s, color) {
-  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineWidth = s * 0.09; ctx.lineCap = 'round';
+  // shopping tote: flared body, a darker fold band under the rim, two thin strap loops entering the body
+  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineCap = 'round';
+  ctx.lineWidth = s * 0.055;
+  for (const sx of [-0.15, 0.15]) {
+    ctx.beginPath(); ctx.moveTo(x + (sx - 0.09) * s, y - 0.06 * s);
+    ctx.bezierCurveTo(x + (sx - 0.1) * s, y - 0.44 * s, x + (sx + 0.1) * s, y - 0.44 * s, x + (sx + 0.09) * s, y - 0.06 * s);
+    ctx.stroke();
+  }
   ctx.beginPath();
-  ctx.moveTo(x - s * 0.36, y - s * 0.12); ctx.lineTo(x + s * 0.36, y - s * 0.12);
-  ctx.lineTo(x + s * 0.42, y + s * 0.42); ctx.quadraticCurveTo(x + s * 0.42, y + s * 0.48, x + s * 0.36, y + s * 0.48);
-  ctx.lineTo(x - s * 0.36, y + s * 0.48); ctx.quadraticCurveTo(x - s * 0.42, y + s * 0.48, x - s * 0.42, y + s * 0.42);
+  ctx.moveTo(x - s * 0.34, y - s * 0.12); ctx.lineTo(x + s * 0.34, y - s * 0.12);
+  ctx.lineTo(x + s * 0.44, y + s * 0.42); ctx.quadraticCurveTo(x + s * 0.45, y + s * 0.48, x + s * 0.38, y + s * 0.48);
+  ctx.lineTo(x - s * 0.38, y + s * 0.48); ctx.quadraticCurveTo(x - s * 0.45, y + s * 0.48, x - s * 0.44, y + s * 0.42);
   ctx.closePath(); ctx.fill();
-  ctx.beginPath(); ctx.arc(x, y - s * 0.12, s * 0.2, Math.PI, 0); ctx.stroke();
+  ctx.fillStyle = 'rgba(10,11,10,0.38)';
+  ctx.beginPath(); ctx.moveTo(x - s * 0.345, y - s * 0.09); ctx.lineTo(x + s * 0.345, y - s * 0.09);
+  ctx.lineTo(x + s * 0.357, y - s * 0.02); ctx.lineTo(x - s * 0.357, y - s * 0.02); ctx.closePath(); ctx.fill();
   ctx.restore();
 }
 export function pinIcon(ctx, x, y, s, color, hole = '#0A0B0A') {

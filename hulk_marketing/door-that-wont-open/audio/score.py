@@ -7,11 +7,14 @@ Arrangement (seconds = beats / 2, bar = 2 s):
   8.0-13.0  silence: the waiting beat (the PDF: "drops to silence for the waiting beat")
   13.0-18.0 the pulse comes back lighter while she crosses the road (Am F C)
   18.0-21.0 reveal: drums out, pad Fmaj7 -> E (tension)
-  21.0-25.0 the point: sub drop on the hard cut, Am(add9) pad, a slow heartbeat kick, felt-piano notes
-  24.4-25.0 reverse swell into the rewind
-  25.0-26.2 rewind: the 13-21 s music played backwards on a spinning tape
+  21.0-25.2 the point: sub drop on the hard cut, Am(add9) pad (carries to the 25.2 cut), a slow heartbeat kick,
+            felt-piano notes
+  24.6-25.2 reverse swell into the rewind
+  25.2-26.2 rewind: the 13-21 s music played backwards on a spinning tape (1.0 s)
   26.2-27.0 pad lift under "We build sites that are..."
-  27.0-36.5 the fix + end card, C major (C G Am F | C): four-on-the-floor, claps, bright plucks, final chord
+  27.0-35.0 the fix + end card, C major (C G Am F): four-on-the-floor, claps, bright plucks
+  35.2-36.5 final C(add9) chord after "...au-dit." (35.15): struck, then it decays out inside the film (sub bass
+            gone by ~36.05, pad by ~36.4); no end fade here (mix.py fades the master's last 0.9 s)
 """
 import os
 import sys
@@ -28,6 +31,8 @@ DUR = 36.5
 BPM = 120
 B = 60 / BPM          # beat (s)
 S16 = B / 4
+T_REW, T_REW1 = 25.2, 26.2   # the rewind (film.js T.rew0 .. T.rew1): hard cut in at 25.2, out at 26.2
+T_END = 35.2                 # final chord, after "audit." (VO ends ~35.15)
 
 
 def arp(tr, chord_notes, t0, t1, cutoff, vel=0.55, gain_db=0.0, pattern=(0, 1, 2, 3, 2, 1, 0, 2), pan=0.15):
@@ -92,14 +97,14 @@ def build():
     tr.add(MS.sub_bass('F1', dur=1.5, vel=0.7), 18.0, -8)
     tr.add(MS.sub_bass('E1', dur=1.3, vel=0.7), 19.6, -8)
     # ---------------------------------------------------------- 21-25: the point
-    tr.add(MS.pad(MS.chord('A', 'madd9', octave=3), dur=3.4, vel=0.6, wave='warm', attack=0.05, release=0.5, cutoff=1500, sweep=0.2), 21.0, -9)
+    tr.add(MS.pad(MS.chord('A', 'madd9', octave=3), dur=3.7, vel=0.6, wave='warm', attack=0.05, release=0.5, cutoff=1500, sweep=0.2), 21.0, -9)
     tr.add(MS.sub_bass('A1', dur=1.6, vel=0.8, glide_from='A2', glide=0.25), 21.0, -5)
     for tt in (21.0, 23.0):
         tr.add(MS.soft_kick(vel=0.7, punch=0.3, decay=0.4), tt, -10)
     for tt, n in ((22.0, 'E5'), (23.0, 'C5'), (24.0, 'B4')):
         tr.add(MS.felt_piano(n, dur=0.9, vel=0.5), tt, -14)
     rs = MS.reverse_swell(dur=0.6, vel=0.7, notes=MS.chord('C', octave=4))
-    tr.add(rs, 25.0 - 0.6, -10)
+    tr.add(rs, T_REW - 0.6, -10)            # ends on the hard cut to the rewind
     # ---------------------------------------------------------- 26.2-27: lift
     tr.add(MS.pad(MS.chord('G', 'sus4', octave=3), dur=0.75, vel=0.5, wave='warm', attack=0.4, release=0.2, cutoff=1800), 26.2, -12)
     tr.add(MS.riser(dur=0.8, vel=0.5), 27.0 - 0.8, -16)
@@ -120,38 +125,37 @@ def build():
     tr.add(MS.glockenspiel('E6', vel=0.6), 27.0, -12)
     tr.add(MS.glockenspiel('G6', vel=0.5), 27.25, -14)
     tr.add(MS.glockenspiel('C7', vel=0.5), 27.5, -15)
-    # final chord: rings out under the end card
-    tr.add(MS.pad(MS.chord('C', 'add9', octave=3), dur=1.4, vel=0.6, wave='warm', attack=0.05, release=1.0, cutoff=2000), 35.0, -9)
+    # final chord after "-dit" (35.15): struck, then decaying out inside the film. The sub bass is short with a
+    # long smooth release (gone by ~36.05) so nothing low is left to stop at the end; pad and piano release by ~36.4.
+    tr.add(MS.pad(MS.chord('C', 'add9', octave=3), dur=0.5, vel=0.6, wave='warm', attack=0.05, release=0.7, cutoff=2000), T_END, -9)
     for n in MS.chord('C', 'add9', octave=4):
-        tr.add(MS.felt_piano(n, dur=1.3, vel=0.5), 35.0, -13)
-    tr.add(MS.sub_bass('C2', dur=1.2, vel=0.7), 35.0, -6)
-    tr.add(MS.soft_kick(vel=0.8), 35.0, -7)
+        tr.add(MS.felt_piano(n, dur=0.6, vel=0.5, release=0.6), T_END, -13)
+    tr.add(MS.sub_bass('C2', dur=0.3, vel=0.7, release=0.55), T_END, -6)
+    tr.add(MS.soft_kick(vel=0.8), T_END, -7)
     x = np.asarray(tr)
     # gentle room so it sits as one bed
     x = A.reverb(x, 'studio', wet_db=-16)[:len(x)]
-    # ---------------------------------------------------------- 25-26.2: tape rewind of 13-21 s
+    # ---------------------------------------------------------- 25.2-26.2: tape rewind of 13-21 s
     seg = x[int(13.0 * SR):int(21.0 * SR)][::-1].copy()
-    n_out = int(1.2 * SR)
+    rew = T_REW1 - T_REW
+    n_out = int(rew * SR)
     tau = np.arange(n_out) / SR
-    rate = 2.5 + 8.0 * np.sin(np.pi * np.clip(tau / 1.2, 0, 1)) ** 1.2      # spin up, then slow into the stop
+    rate = 2.5 + 8.0 * np.sin(np.pi * np.clip(tau / rew, 0, 1)) ** 1.2      # spin up, then slow into the stop
     pos = np.cumsum(rate)
     pos = pos / pos[-1] * (len(seg) - 2)
     i0 = np.floor(pos).astype(int)
     fr = (pos - i0)[:, None]
     tape = seg[i0] * (1 - fr) + seg[i0 + 1] * fr
     tape = A.hp(tape, 300)
-    env = np.minimum(1, tau / 0.06) * np.minimum(1, (1.2 - tau) / 0.1)
+    env = np.minimum(1, tau / 0.06) * np.minimum(1, (rew - tau) / 0.1)
     tape *= (0.55 * env)[:, None]
-    i25 = int(25.0 * SR)
+    i25 = int(T_REW * SR)
     x[i25:i25 + n_out] = x[i25:i25 + n_out] * 0.15 + tape
     # silence the waiting beat (keep the 8.0 s tails short and clean)
     a, b = int(8.0 * SR), int(13.0 * SR)
     fade = np.linspace(1, 0, int(0.35 * SR))[:, None]
     x[a:a + len(fade)] *= fade
     x[a + len(fade):b] = 0
-    # fade the very end
-    nf = int(0.3 * SR)
-    x[-nf:] *= np.linspace(1, 0, nf)[:, None]
     # level: -18 LUFS bed, true peak <= -3 dBTP before the mix
     x = x * A.undb(-18 - A.loudness(x.astype(np.float32)))
     g = A.limiter_gain(x, ceiling_db=-3.0)
