@@ -1,0 +1,33 @@
+{
+ "source": "/root/.claude/uploads/90a4ef87-416d-5abd-8ce6-7c6f7b6773ff/a4194c6f-WhatsApp_Video_Compressed_for_Claude.mp4",
+ "duration": 27.008,
+ "threshold": 0.25,
+ "note": "hard cuts only; seamless transitions (match cuts, morphs, irises) are not counted",
+ "cuts": [
+  3.75,
+  6.25,
+  8.458,
+  8.667,
+  8.875,
+  9.042,
+  17.583,
+  21.75,
+  22.875
+ ],
+ "shots": [
+  3.75,
+  2.5,
+  2.208,
+  0.209,
+  0.208,
+  0.167,
+  8.541,
+  4.167,
+  1.125,
+  4.133
+ ],
+ "shot_count": 10,
+ "mean_shot_s": 2.701,
+ "median_shot_s": 2.5,
+ "cuts_per_10s": 3.33
+}

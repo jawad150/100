@@ -1,3 +1,9 @@
 workspace/
 __pycache__/
 *.pyc
+node_modules/
+out/
+rkn_ref2/
+rkn_v/assets/shots/
+rkn/docs/reference/*.png
+rkn/audio/*.wav

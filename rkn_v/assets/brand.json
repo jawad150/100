@@ -1,0 +1,174 @@
+{
+ "url": "https://rkn-accountancy-homepage.vercel.app/",
+ "title": "Accounts, Tax & Business Advice | RKN Accountancy",
+ "description": "Personal accounting, tax and business support for limited companies, sole traders and individuals. Based in Bury, supporting clients across the UK.",
+ "themeColor": [
+  "#0a3c31"
+ ],
+ "text_colors": [
+  [
+   "#0a3c31",
+   93
+  ],
+  [
+   "#345347",
+   86
+  ],
+  [
+   "#ffffff",
+   54
+  ],
+  [
+   "#535b5f",
+   48
+  ],
+  [
+   "#d9e5de",
+   33
+  ],
+  [
+   "#143d31",
+   24
+  ],
+  [
+   "#152019",
+   17
+  ],
+  [
+   "#617066",
+   14
+  ],
+  [
+   "#ead1a0",
+   11
+  ],
+  [
+   "#7e5b20",
+   7
+  ]
+ ],
+ "background_colors": [
+  [
+   "#ffffff",
+   260
+  ],
+  [
+   "#062b23",
+   110
+  ],
+  [
+   "#0a3c31",
+   92
+  ],
+  [
+   "#f4f7f4",
+   40
+  ],
+  [
+   "#dddddd",
+   29
+  ],
+  [
+   "#eef4ef",
+   20
+  ],
+  [
+   "#e9e6df",
+   17
+  ],
+  [
+   "#b4852a",
+   13
+  ],
+  [
+   "#f7f7f7",
+   3
+  ],
+  [
+   "#e2ece4",
+   1
+  ]
+ ],
+ "font_families": [
+  [
+   "Inter",
+   360
+  ],
+  [
+   "Manrope",
+   55
+  ],
+  [
+   "Georgia",
+   3
+  ]
+ ],
+ "font_weights": [
+  [
+   "Inter 400",
+   167
+  ],
+  [
+   "Inter 450",
+   63
+  ],
+  [
+   "Inter 650",
+   50
+  ],
+  [
+   "Manrope 800",
+   47
+  ],
+  [
+   "Inter 600",
+   41
+  ],
+  [
+   "Inter 700",
+   22
+  ],
+  [
+   "Inter 500",
+   14
+  ],
+  [
+   "Manrope 700",
+   7
+  ],
+  [
+   "Inter 750",
+   3
+  ],
+  [
+   "Georgia 400",
+   3
+  ],
+  [
+   "Manrope 750",
+   1
+  ]
+ ],
+ "css_vars": {
+  "--ink": "#171918",
+  "--body": "#50534d",
+  "--gold": "#c39642",
+  "--gold-dark": "#896526",
+  "--cream": "#f3ecde",
+  "--light": "#f6f6f5",
+  "--line": "#e0e2da",
+  "--white": "#fff",
+  "--wide": "1240px",
+  "--gutter": "40px",
+  "--section-space": "64px",
+  "--grid-gap": "24px",
+  "--card-radius": "20px"
+ },
+ "wordmark": {
+  "text": "",
+  "font": "Inter, Arial, sans-serif",
+  "weight": "400",
+  "tracking": "normal",
+  "html": "<img class=\"brand-art\" src=\"/assets/rkn-logo-latest.svg\" width=\"1568\" height=\"384\" alt=\"RKN Accountancy\" decoding=\"async\">"
+ }
+}
