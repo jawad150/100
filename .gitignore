@@ -7,3 +7,4 @@ rkn_ref2/
 rkn_v/assets/shots/
 rkn/docs/reference/*.png
 rkn/audio/*.wav
+rkn/audio/vo/*.wav

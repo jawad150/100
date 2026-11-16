@@ -18,40 +18,35 @@ const DISPLAY = 'Display', ITALIC = 'DisplayI', UI = 'UI';
 // [beat, label, sfx, opts]
 const HITS = [
   [0, 'storm + Receipts.', 'impact'],
-  [2, 'Deadlines.', 'whoosh', { len: 0.35 }],
-  [4, 'HMRC letters.', 'whoosh', { len: 0.35, pan: 0.3 }],
-  [6, 'It all adds up.', 'thud'],
-  [8, 'page 28 tears', 'swish'],
-  [9, 'page 29 tears', 'swish'],
-  [10, 'page 30 tears', 'swish'],
-  [10, '31 January', 'tick'],
+  [2.4, 'Deadlines.', 'whoosh', { len: 0.3 }],
+  [4.6, 'HMRC letters.', 'whoosh', { len: 0.3, pan: 0.3 }],
+  [7.5, 'It all adds up.', 'thud'],
+  [8, 'page 28 tears', 'whoosh', { len: 0.3 }],
+  [9, 'page 29 tears', 'whoosh', { len: 0.3 }],
+  [10, 'page 30 tears', 'whoosh', { len: 0.3 }],
   [12, 'push to 31', 'riser', { len: 2 }],
   [15.3, 'tick slices in', 'whoosh', { len: 0.35, from: 400, to: 3200 }],
   [16, 'TIME STOPS', 'impact'],
   [17, 'paper flies to stack', 'whoosh', { len: 1.5, from: 2400, to: 500 }],
-  [18, 'Leave it with us.', 'pop', { pitch: 'D5' }],
-  [22, 'tick lands on stack', 'thud'],
-  [23, 'Taxation', 'tick'],
-  [24, 'Accounting & Bookkeeping', 'tick'],
-  [25, 'Business Advisory', 'tick'],
-  [26, 'Compliance & Filing', 'tick'],
-  [27.6, 'whip to counter', 'whoosh', { len: 0.4 }],
-  [28.5, 'drums roll', 'riser', { len: 1.6 }],
-  [32, '16 lands', 'thud'],
-  [35.6, 'whip to stars', 'whoosh', { len: 0.4 }],
-  [36, 'star 1', 'pop', { pitch: 'D5' }],
-  [36.5, 'star 2', 'pop', { pitch: 'F5' }],
-  [37, 'star 3', 'pop', { pitch: 'A5' }],
-  [37.5, 'star 4', 'pop', { pitch: 'C6' }],
-  [38, 'star 5', 'pop', { pitch: 'D6' }],
-  [43.6, 'whip to ring', 'whoosh', { len: 0.4 }],
-  [44, 'Accurate.', 'thud'],
-  [45.5, 'Personal.', 'thud'],
-  [47, 'Proactive.', 'thud'],
-  [48.5, 'work for you.', 'pop', { pitch: 'A5' }],
+  [21, 'tick lands on stack', 'thud'],
+  [21.3, 'Taxation', 'tick'],
+  [22.7, 'Accounting & Bookkeeping', 'tick'],
+  [23.7, 'Business Advisory', 'tick'],
+  [25.0, 'Compliance & Filing', 'tick'],
+  [26.6, 'whip to counter', 'whoosh', { len: 0.4 }],
+  [28.15, '16 lands', 'thud'],
+  [33.6, 'whip to stars', 'whoosh', { len: 0.4 }],
+  [34.4, 'star 1', 'pop', { pitch: 'D5' }],
+  [34.85, 'star 2', 'pop', { pitch: 'F5' }],
+  [35.3, 'star 3', 'pop', { pitch: 'A5' }],
+  [35.75, 'star 4', 'pop', { pitch: 'C6' }],
+  [36.2, 'star 5', 'pop', { pitch: 'D6' }],
+  [42.6, 'whip to ring', 'whoosh', { len: 0.4 }],
+  [43.75, 'Accurate.', 'thud'],
+  [45.25, 'Personal.', 'thud'],
+  [46.8, 'Proactive.', 'thud'],
   [52.4, 'tick flies to ring', 'whoosh', { len: 0.4 }],
   [53.5, 'logo', 'bell', { pitch: 'D6' }],
-  [55, 'Your numbers. Our care.', 'tick'],
 ];
 
 // ============================================================ helpers
@@ -322,12 +317,12 @@ function camAt(u) {
     if (uu < 8) { const p = E.outQuad(prog(uu, -2, 8)); return [[lerp(0.6, 0.12, p), lerp(0.55, 0.42, p), Math.exp(lerp(Math.log(15), Math.log(7.4), p))], [0, 0.3, 0]]; }
     if (uu < 15.3) { const p = E.inOutSine(prog(uu, 8, 15.3)); return [[lerp(0.12, 0.04, p), lerp(0.42, 0.34, p), Math.exp(lerp(Math.log(7.4), Math.log(2.75), p))], [0, lerp(0.3, 0.24, p), 0]]; }
     if (uu < 17) { const k = springU(uu, 15.6, SPRING.gentle); return [[0.04 + 0.12 * k, 0.34 + 0.06 * k, 2.75 + 0.55 * k], [0, 0.24, 0]]; }
-    if (uu < 21.5) { const p = E.inOutCubic(prog(uu, 17, 21.5)); return [[lerp(0.16, 1.55, p), lerp(0.4, 1.05, p), lerp(3.3, 4.4, p)], [0, lerp(0.24, TY, p), 0]]; }
-    const a = lerp(Math.atan2(1.55, 4.4), -0.38, E.inOutSine(prog(uu, 21.5, 28))), r = Math.hypot(1.55, 4.4) - 0.25 * prog(uu, 21.5, 28);
-    return [[r * Math.sin(a), lerp(1.05, 0.85, prog(uu, 21.5, 28)), r * Math.cos(a)], [0, TY, 0]];
+    if (uu < 20.5) { const p = E.inOutCubic(prog(uu, 17, 20.5)); return [[lerp(0.16, 1.55, p), lerp(0.4, 1.05, p), lerp(3.3, 4.4, p)], [0, lerp(0.24, TY, p), 0]]; }
+    const a = lerp(Math.atan2(1.55, 4.4), -0.38, E.inOutSine(prog(uu, 20.5, 27))), r = Math.hypot(1.55, 4.4) - 0.25 * prog(uu, 20.5, 27);
+    return [[r * Math.sin(a), lerp(1.05, 0.85, prog(uu, 20.5, 27)), r * Math.cos(a)], [0, TY, 0]];
   };
-  const B = (uu) => { const p = prog(uu, 28, 36); return [[ST.B + 0.15 - 0.3 * p, 0.62 - 0.05 * p, lerp(5.6, 4.7, E.outQuad(p))], [ST.B, P ? 0.0 : 0.25, 0]]; };
-  const Cc = (uu) => { const p = prog(uu, 36, 44); return [[ST.C - 0.2 + 0.4 * p, 0.62, lerp(5.6, 4.9, E.outQuad(p))], [ST.C, P ? 0.25 : 0.3, 0]]; };
+  const B = (uu) => { const p = prog(uu, 27, 34.3); return [[ST.B + 0.15 - 0.3 * p, 0.62 - 0.05 * p, lerp(5.6, 4.7, E.outQuad(p))], [ST.B, P ? 0.0 : 0.25, 0]]; };
+  const Cc = (uu) => { const p = prog(uu, 34, 43.3); return [[ST.C - 0.2 + 0.4 * p, 0.62, lerp(5.6, 4.9, E.outQuad(p))], [ST.C, P ? 0.25 : 0.3, 0]]; };
   const D = (uu) => {
     const p = E.inOutCubic(prog(uu, 50.5, 54));
     const dEnd = P ? 14 : 11.9, yEnd = P ? -1.43 : -0.9;
@@ -339,12 +334,12 @@ function camAt(u) {
     return [lerp3(p0, p1, p), lerp3(t0, t1, p)];
   };
   let r;
-  if (u < 27.6) r = A(u);
-  else if (u < 28.3) r = whip(u, 27.6, 28.3, A, B);
-  else if (u < 35.6) r = B(u);
-  else if (u < 36.3) r = whip(u, 35.6, 36.3, B, Cc);
-  else if (u < 43.6) r = Cc(u);
-  else if (u < 44.3) r = whip(u, 43.6, 44.3, Cc, D);
+  if (u < 26.6) r = A(u);
+  else if (u < 27.3) r = whip(u, 26.6, 27.3, A, B);
+  else if (u < 33.6) r = B(u);
+  else if (u < 34.3) r = whip(u, 33.6, 34.3, B, Cc);
+  else if (u < 42.6) r = Cc(u);
+  else if (u < 43.3) r = whip(u, 42.6, 43.3, Cc, D);
   else r = D(u);
   if (!FORMAT.portrait) { // landscape: subject right of centre, a bit closer
     if (u < 50) { r[0] = [r[0][0], r[0][1], r[0][2] * CAMK]; r[1] = [r[1][0] - 0.45 * (u > 17 ? 1 : 0.4) * (1 - prog(u, 44, 46)), r[1][1], r[1][2]]; }
@@ -379,7 +374,7 @@ function updateWorld(t, u) {
     if (!visibleA) { m4.makeScale(0, 0, 0); W3.papers[p.type].setMatrixAt(p.idx, m4); continue; }
     const [fp, fe] = paperPose(p, Math.min(u, 30));
     q.setFromEuler(fe);
-    const s0 = 17 + 4.2 * (p.slot / W3.N), k = prog(u, s0, s0 + 1.25);
+    const s0 = 16.9 + 2.8 * (p.slot / W3.N), k = prog(u, s0, s0 + 1.2);
     if (k > 0) {
       const e = E.outCubic(k);
       const top = FLOOR + 0.0032 * (p.slot + 0.5);
@@ -388,7 +383,7 @@ function updateWorld(t, u) {
       q2.copy(STACK_Q).multiply(new THREE.Quaternion().setFromAxisAngle(v3.set(0, 0, 1), p.jyaw));
       quat = q.clone().slerp(q2, E.outQuad(k));
       // stack settles when the tick lands
-      if (u > 22) pos[1] -= 0.004 * wobble(u - 22, 3, 6) * (p.slot / W3.N);
+      if (u > 21) pos[1] -= 0.004 * wobble(u - 21, 3, 6) * (p.slot / W3.N);
     } else { pos = fp; quat = q; }
     sc.set(1, 1, 1);
     m4.compose(v3.set(...pos), quat, sc);
@@ -413,7 +408,7 @@ function updateWorld(t, u) {
 
   // hero tick A: slices in on 15.3-16, lands on "31", hovers, then stands on top of the stack (beat 22)
   const tA = W3.tickA;
-  tA.visible = u > 15.0 && u < 29;
+  tA.visible = u > 15.0 && u < 28;
   if (tA.visible) {
     const S0 = 0.42;
     const pIn = E.outExpo(prog(u, 15.3, 16));
@@ -421,18 +416,18 @@ function updateWorld(t, u) {
     let rot = [lerp(1.2, 0, pIn), lerp(-1.4, 0, pIn), lerp(-0.9, -0.08, pIn)];
     let s = S0;
     // after the freeze: drift up and over the stack
-    const pUp = E.inOutCubic(prog(u, 17.2, 21));
+    const pUp = E.inOutCubic(prog(u, 17.2, 20.2));
     if (pUp > 0) {
       pos = lerp3(pos, [0.0, 0.25, 0.0], pUp); rot = [rot[0], lerp(0, Math.PI * 2, pUp), rot[2]];
       s = lerp(S0, 0.5, pUp);
     }
     // stamp onto the stack top at beat 22
-    const pDn = E.inQuad(prog(u, 21.3, 22));
+    const pDn = E.inQuad(prog(u, 20.4, 21));
     const stackTop = FLOOR + 0.0032 * W3.N;
     if (pDn > 0) pos = [pos[0], lerp(pos[1], stackTop + 0.03, pDn), pos[2]];
-    const sq = u > 22 ? 0.08 * wobble(u - 22, 2.4, 5) : 0;
+    const sq = u > 21 ? 0.08 * wobble(u - 21, 2.4, 5) : 0;
     tA.position.set(pos[0], pos[1] + (u < 17.2 ? 0.01 * Math.sin(u * 3) * prog(u, 16, 17) : 0), pos[2]);
-    tA.rotation.set(rot[0], rot[1] + (u > 22 ? 0.2 * Math.sin((u - 22) * 0.6) : 0), rot[2]);
+    tA.rotation.set(rot[0], rot[1] + (u > 21 ? 0.2 * Math.sin((u - 21) * 0.6) : 0), rot[2]);
     tA.scale.set(s * (1 + sq), s * (1 - sq), s);
   }
 
@@ -442,15 +437,15 @@ function updateWorld(t, u) {
     return turns * p + (u > u1 ? 0.02 * wobble((u - u1), 3, 5) : 0);
   };
   const DIG = (d) => -((d) / 10) * Math.PI * 2;  // rotation that brings digit d to the front (calibrated below)
-  W3.drums[0].cyl.rotation.y = DRUM0 + DIG(roll(28.6, 31.4, 1));
-  W3.drums[1].cyl.rotation.y = DRUM0 + DIG(roll(28.5, 32, 16));
-  W3.drums.forEach((d) => { d.grp.visible = u > 26 && u < 38; });
-  W3.housingParts.forEach((m) => { m.visible = u > 26 && u < 38; });
+  W3.drums[0].cyl.rotation.y = DRUM0 + DIG(roll(27.15, 27.95, 1));
+  W3.drums[1].cyl.rotation.y = DRUM0 + DIG(roll(27.0, 28.15, 16));
+  W3.drums.forEach((d) => { d.grp.visible = u > 25.5 && u < 36; });
+  W3.housingParts.forEach((m) => { m.visible = u > 25.5 && u < 36; });
 
   // stars drop in one by one on beats 36..38
   W3.stars.forEach((m, i) => {
-    const u0 = 35.7 + i * 0.5, k = springU(u, u0, SPRING.bouncy);
-    m.visible = u > 34 && u < 46 && k > 0;
+    const u0 = 34.4 + i * 0.45, k = springU(u, u0, SPRING.bouncy);
+    m.visible = u > 33 && u < 45 && k > 0;
     const x = ST.C + (i - 2) * 0.34;
     m.position.set(x, 0.45 + (1 - k) * 1.6, 0);
     m.rotation.set(0, (1 - k) * 4 + 0.15 * Math.sin(u * 0.7 + i), 0);
@@ -459,9 +454,9 @@ function updateWorld(t, u) {
 
   // the open circle: turns slowly behind the promise, then faces camera for the logo
   const R = W3.ring, fr = E.inOutCubic(prog(u, 50.5, 53.5));
-  R.visible = u > 42;
+  R.visible = u > 41;
   R.position.set(ST.D, 0, 0);
-  const spinY = lerp(1.05 + 0.18 * (u - 44), 0, fr), spinX = lerp(0.35 - 0.02 * (u - 44), 0, fr);
+  const spinY = lerp(0.62 - 0.035 * (u - 44), 0, fr), spinX = lerp(0.22 - 0.015 * (u - 44), 0, fr);
   R.rotation.set(spinX, spinY, 0);
   R.scale.setScalar(1);
   // the tick flies into the gap
@@ -579,82 +574,82 @@ function overlay(ctx, u, IMG, W3) {
   const baseY = P ? s.y + s.h - 30 : H * 0.62;
 
   // ---- S1 hook: three nouns stack, then "It all adds up."
-  scrim(ctx, prog(u, -1, 0.2) * (1 - prog(u, 15.6, 16.4)) + (u > 16 && u < 27.8 ? 1 - prog(u, 27.4, 27.9) : 0), false);
-  if (u < 8.2) {
-    const lines = [['Receipts.', 0], ['Deadlines.', 2], ['HMRC letters.', 4]];
+  scrim(ctx, prog(u, -1, 0.2) * (1 - prog(u, 15.6, 16.4)) + (u > 16 && u < 26.9 ? 1 - prog(u, 26.4, 26.9) : 0), false);
+  if (u < 10.2) {
+    const lines = [['Receipts.', 0.22], ['Deadlines.', 2.42], ['HMRC letters.', 4.58]];
     lines.forEach(([w, u0], i) => {
       const y = baseY - big * 1.02 * (2 - i) - big * 1.05;
-      richLine(ctx, [[w, 'r']], X, y, big * 0.86, u, u0 - 0.12, 5.75, { color: i === 2 ? C.white : 'rgba(255,255,255,0.92)' });
+      richLine(ctx, [[w, 'r']], X, y, big * 0.86, u, u0 - 0.12, 7.2, { color: i === 2 ? C.white : 'rgba(255,255,255,0.92)' });
     });
-    richLine(ctx, [['It all ', 'r'], ['adds up.', 'i']], X, baseY, big, u, 6, 7.7);
+    richLine(ctx, [['It all ', 'r'], ['adds up.', 'i']], X, baseY, big, u, 7.5, 9.7);
   }
   // ---- S2 the date
   if (u > 9.6 && u < 15.4) {
-    eyebrow(ctx, 'SELF ASSESSMENT', X, baseY - big * 1.25, u, 10, 14.7);
-    richLine(ctx, [['31 January ', 'r'], ["won't wait.", 'i']], X, baseY, big * 0.9, u, 10.2, 14.8);
+    eyebrow(ctx, 'SELF ASSESSMENT', X, baseY - big * 1.25, u, 10.3, 14.7);
+    richLine(ctx, [['31 January ', 'r'], ["won't wait.", 'i']], X, baseY, big * 0.9, u, 10.45, 14.8);
   }
   // ---- S3/S4 freeze + order
-  if (u > 16 && u < 22.2) {
-    richLine(ctx, [['Leave it ', 'r'], ['with us.', 'i']], X, baseY - big * 0.7, big * 1.05, u, 17.8, 21.6);
-    eyebrow(ctx, 'RKN ACCOUNTANCY  ·  BURY', X, baseY + 10, u, 19, 21.6, 'left', 26);
+  if (u > 16 && u < 21.2) {
+    richLine(ctx, [['Leave it ', 'r'], ['with us.', 'i']], X, baseY - big * 0.7, big * 1.05, u, 17.7, 20.5);
+    eyebrow(ctx, 'RKN ACCOUNTANCY  ·  BURY', X, baseY + 10, u, 18.4, 20.5, 'left', 26);
   }
   // ---- S5 services as check-mark bullets
-  if (u > 22 && u < 28.2) {
+  if (u > 20.6 && u < 27.2) {
     const items = ['Taxation', 'Accounting & Bookkeeping', 'Business Advisory', 'Compliance & Filing'];
     const fs = FORMAT.pick({ '9x16': 74, '16x9': 62 }), gap = fs * 1.38;
     const y0 = P ? baseY - gap * 3 - 10 : H * 0.36;
-    eyebrow(ctx, 'WHAT WE HANDLE', X, y0 - fs * 1.35, u, 22.2, 27.4);
+    eyebrow(ctx, 'WHAT WE HANDLE', X, y0 - fs * 1.35, u, 20.9, 26.3);
     items.forEach((it, i) => {
-      const u0 = 23 + i, y = y0 + i * gap;
-      tickGlyph(ctx, X + 4, y - fs * 0.33, fs * 0.5, E.outCubic(prog(u, u0, u0 + 0.35)) * (1 - prog(u, 27.4, 27.8)));
-      richLine(ctx, [[it, 'r']], X + fs * 0.95, y, fs, u, u0 - 0.15, 27.4, { stagger: 0.012 });
+      const u0 = [21.3, 22.7, 23.7, 25.0][i], y = y0 + i * gap;
+      tickGlyph(ctx, X + 4, y - fs * 0.33, fs * 0.5, E.outCubic(prog(u, u0, u0 + 0.35)) * (1 - prog(u, 26.3, 26.7)));
+      richLine(ctx, [[it, 'r']], X + fs * 0.95, y, fs, u, u0 - 0.15, 26.3, { stagger: 0.012 });
     });
   }
   // ---- S6 counter caption + sector flicker
-  if (u > 28 && u < 36.2) {
+  if (u > 27 && u < 34.2) {
     const cam = W3.camera;
     const [, dy] = toScreen(cam, ST.B, -0.25, 0);
     const cy = P ? Math.max(dy + 110, H * 0.62) : H * 0.74;
     const cxx = P ? W / 2 : W * 0.5 + 0;
-    eyebrow(ctx, 'SECTORS WE SERVE', cxx, cy, u, 28.6, 35.6, 'center');
-    const idx = Math.min(SECTORS.length - 1, Math.floor(prog(u, 28.6, 32) * SECTORS.length));
+    eyebrow(ctx, 'SECTORS WE SERVE', cxx, cy, u, 27.4, 33.5, 'center');
+    const idx = Math.min(SECTORS.length - 1, Math.floor(prog(u, 27.6, 29.9) * SECTORS.length));
     const fs = FORMAT.pick({ '9x16': 64, '16x9': 58 });
-    if (u > 28.6 && u < 33.3) {
+    if (u > 27.6 && u < 30.2) {
       const name = SECTORS[idx];
-      const k = (u - 28.6) * SECTORS.length / 3.4 % 1;
-      ctx.save(); ctx.globalAlpha = (1 - prog(u, 33, 33.3)) * (0.55 + 0.45 * (1 - k));
+      const k = (u - 27.6) * SECTORS.length / 2.3 % 1;
+      ctx.save(); ctx.globalAlpha = (1 - prog(u, 29.95, 30.2)) * (0.55 + 0.45 * (1 - k));
       text(ctx, name, cxx, cy + fs * 1.45, font(fs, 500, DISPLAY), C.white, 'center');
       ctx.restore();
     }
-    richLine(ctx, [['From start-up to ', 'r'], ['scale-up.', 'i']], cxx, cy + fs * 1.45, fs, u, 33.4, 35.5, { align: 'center', stagger: 0.015 });
+    richLine(ctx, [['From start-up to ', 'r'], ['scale-up.', 'i']], cxx, cy + fs * 1.45, fs, u, 30.2, 33.4, { align: 'center', stagger: 0.015 });
   }
   // ---- S7 the review
-  if (u > 36 && u < 44.2) {
+  if (u > 34 && u < 43.2) {
     const fs = FORMAT.pick({ '9x16': 76, '16x9': 70 });
     const [, sy] = toScreen(W3.camera, ST.C, 0.1, 0);
     const y0 = P ? Math.max(sy + 120, H * 0.55) : H * 0.68;
     const cxx = W / 2;
-    richLine(ctx, [['“Professional, qualified', 'i']], cxx, y0, fs, u, 38.4, 43.4, { align: 'center', stagger: 0.012 });
-    richLine(ctx, [['and down to earth.”', 'i']], cxx, y0 + fs * 1.2, fs, u, 38.9, 43.4, { align: 'center', stagger: 0.012 });
-    eyebrow(ctx, 'GOOGLE REVIEW', cxx, y0 + fs * 2.6, u, 39.8, 43.4, 'center', 24);
+    richLine(ctx, [['“Professional, qualified', 'i']], cxx, y0, fs, u, 37.6, 42.4, { align: 'center', stagger: 0.012 });
+    richLine(ctx, [['and down to earth.”', 'i']], cxx, y0 + fs * 1.2, fs, u, 39.9, 42.4, { align: 'center', stagger: 0.012 });
+    eyebrow(ctx, 'GOOGLE REVIEW', cxx, y0 + fs * 2.6, u, 40.8, 42.4, 'center', 24);
   }
   // ---- S8 promise over the turning ring
-  if (u > 43.8 && u < 52.2) {
+  if (u > 43.2 && u < 52.2) {
     const fs = FORMAT.pick({ '9x16': 132, '16x9': 120 });
     const cxx = W / 2, yc = H * (P ? 0.5 : 0.5);
-    const words = [['Accurate.', 44], ['Personal.', 45.5], ['Proactive.', 47]];
+    const words = [['Accurate.', 43.75], ['Personal.', 45.25], ['Proactive.', 46.8]];
     words.forEach(([w, u0], i) => {
       const y = yc - fs * 1.15 + i * fs * 1.15 + fs * 0.35;
-      richLine(ctx, [[w, i === 2 ? 'i' : 'r']], cxx, y, fs, u, u0 - 0.1, 48.2, { align: 'center' });
+      richLine(ctx, [[w, i === 2 ? 'i' : 'r']], cxx, y, fs, u, u0 - 0.1, 48.0, { align: 'center' });
     });
-    const f2 = FORMAT.pick({ '9x16': 100, '16x9': 100 });
+    const f2 = FORMAT.pick({ '9x16': 86, '16x9': 100 });
     if (P) {
-      richLine(ctx, [['Accounting services', 'r']], cxx, yc - f2 * 0.2, f2, u, 48.4, 51.6, { align: 'center', stagger: 0.012 });
-      richLine(ctx, [['that ', 'r'], ['work for you.', 'i']], cxx, yc + f2 * 1.0, f2, u, 48.7, 51.6, { align: 'center', stagger: 0.012 });
+      richLine(ctx, [['Accounting services', 'r']], cxx, yc - f2 * 0.2, f2, u, 48.3, 51.6, { align: 'center', stagger: 0.012 });
+      richLine(ctx, [['that ', 'r'], ['work for you.', 'i']], cxx, yc + f2 * 1.0, f2, u, 49.6, 51.6, { align: 'center', stagger: 0.012 });
     } else {
       richLine(ctx, [['Accounting services that ', 'r'], ['work for you.', 'i']], cxx, yc + f2 * 0.35, f2, u, 48.4, 51.6, { align: 'center', stagger: 0.01 });
     }
-    goldRule(ctx, cxx, yc + (P ? f2 * 1.45 : f2 * 0.8), 180, E.outCubic(prog(u, 49.4, 50.3)) * (1 - prog(u, 51.6, 52)), 'center');
+    goldRule(ctx, cxx, yc + (P ? f2 * 1.45 : f2 * 0.8), 180, E.outCubic(prog(u, 50.6, 51.3)) * (1 - prog(u, 51.6, 52)), 'center');
   }
   // ---- S9 logo: the 3-D ring + tick match-cut to the real logo artwork
   if (u > 53.2) logoCard(ctx, u, IMG, W3);
@@ -692,9 +687,9 @@ function logoCard(ctx, u, IMG, W3) {
   const below = cy - LOGO.cy * sc + LOGO.h * sc;
   const fs = FORMAT.pick({ '9x16': 92, '16x9': 84 });
   const tx = cx - LOGO.cx * sc + (LOGO.w * sc) / 2;
-  richLine(ctx, [['Your numbers. ', 'r'], ['Our care.', 'i']], tx, below + fs * 1.6, fs, u, 55, 99, { align: 'center', stagger: 0.02 });
-  goldRule(ctx, tx, below + fs * 2.15, 150, E.outCubic(prog(u, 55.8, 56.6)), 'center');
-  const k3 = E.outQuint(prog(u, 56.2, 57));
+  richLine(ctx, [['Your numbers. ', 'r'], ['Our care.', 'i']], tx, below + fs * 1.6, fs, u, 55.9, 99, { align: 'center', stagger: 0.02 });
+  goldRule(ctx, tx, below + fs * 2.15, 150, E.outCubic(prog(u, 56.4, 57.1)), 'center');
+  const k3 = E.outQuint(prog(u, 56.6, 57.4));
   if (k3 > 0) {
     ctx.save(); ctx.globalAlpha = k3;
     const f3 = FORMAT.pick({ '9x16': 40, '16x9': 34 });
@@ -755,7 +750,7 @@ M.film({
   fonts: [font(100, 500, DISPLAY), font(100, 500, ITALIC), font(40, 600, UI), font(40, 500, UI), font(40, 400, UI)],
   images: { logo: 'assets/logo/logo_full.png' },
   hits: HITS,
-  samples: (t) => 4,
+  samples: (t) => 3,
   shutter: 0.5,
   async init() {
     await G.initGL({ exposure: 0.86 });
