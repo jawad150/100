@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hulk carousel: The Leaky Pipe</title>
+<style>
+  @font-face { font-family: Display; src: url(display.woff2) format('woff2'); font-weight: 100 900; }
+  @font-face { font-family: UI; src: url(ui.woff2) format('woff2'); font-weight: 100 900; }
+  html, body { margin: 0; background: #111A16; }
+  #board { position: relative; width: 7560px; height: 1350px; background: #111A16; overflow: hidden; }
+  svg { position: absolute; inset: 0; }
+  .slide { position: absolute; top: 0; width: 1080px; height: 1350px; }
+  .count { position: absolute; top: 72px; right: 80px; font: 600 30px/1 UI; letter-spacing: .14em; color: #6F7A70; }
+  .eyebrow { position: absolute; left: 80px; top: 170px; font: 700 34px/1 UI; letter-spacing: .18em; color: #9DEF69; text-transform: uppercase; }
+  .head { position: absolute; left: 80px; right: 80px; top: 230px; font: 900 104px/0.95 Display; letter-spacing: -0.045em; color: #F4F2E9; margin: 0; }
+  .head em { font-style: italic; font-weight: 300; }
+  .sub { position: absolute; left: 80px; right: 140px; font: 400 36px/1.35 UI; color: #A9B2A6; margin: 0; }
+  .swipe { position: absolute; left: 80px; bottom: 80px; font: 600 34px/1 UI; color: #9DEF69; letter-spacing: .02em; }
+  .label { position: absolute; font: 600 34px/1 UI; color: #F4F2E9; text-align: center; width: 300px; }
+  .pill { position: absolute; display: inline-flex; align-items: center; gap: 20px; background: #9DEF69; color: #111A16; font: 600 38px/1 UI; padding: 30px 44px; border-radius: 999px; }
+  .url { position: absolute; font: 500 34px/1 UI; color: #F4F2E9; }
+</style>
+</head>
+<body>
+<div id="board">
+  <svg id="art" width="7560" height="1350" viewBox="0 0 7560 1350" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- 1 cover -->
+  <div class="slide" style="left:0">
+    <div class="count">1/7</div>
+    <h1 class="head" style="top:170px; font-size:132px;">Your marketing is <em>leaking</em> customers.</h1>
+    <div class="swipe">Swipe to find the leaks →</div>
+  </div>
+  <!-- 2 leak 01 -->
+  <div class="slide" style="left:1080px">
+    <div class="count">2/7</div>
+    <div class="eyebrow">Leak 01</div>
+    <h2 class="head">They can’t find you.</h2>
+    <p class="sub" style="top:470px;">Invisible on Google and the map, so they pick whoever shows up first.</p>
+  </div>
+  <!-- 3 leak 02 -->
+  <div class="slide" style="left:2160px">
+    <div class="count">3/7</div>
+    <div class="eyebrow">Leak 02</div>
+    <h2 class="head">Your website loses them.</h2>
+    <p class="sub" style="top:470px;">Slow, confusing, and no clear “Book now” button.</p>
+  </div>
+  <!-- 4 leak 03 -->
+  <div class="slide" style="left:3240px">
+    <div class="count">4/7</div>
+    <div class="eyebrow">Leak 03</div>
+    <h2 class="head">Nobody follows up.</h2>
+    <p class="sub" style="top:470px;">Enquiries sit in the inbox until they’ve gone elsewhere.</p>
+  </div>
+  <!-- 5 result -->
+  <div class="slide" style="left:4320px">
+    <div class="count">5/7</div>
+    <div class="eyebrow">The result</div>
+    <h2 class="head">This is what actually reaches you.</h2>
+    <p class="sub" style="top:570px;">A trickle of enquiries from a lot of interest.</p>
+  </div>
+  <!-- 6 fix -->
+  <div class="slide" style="left:5400px">
+    <div class="count">6/7</div>
+    <div class="eyebrow">The fix</div>
+    <h2 class="head">Same pipe. <em>No leaks.</em></h2>
+    <p class="sub" style="top:470px;">We find every leak and seal it, so more of the people looking for you actually reach you.</p>
+  </div>
+  <!-- 7 CTA -->
+  <div class="slide" style="left:6480px">
+    <div class="count">7/7</div>
+    <img src="logo.svg" style="position:absolute; left:80px; top:64px; width:300px;">
+    <h2 class="head" style="top:190px;">Find your leaks.<br><em>Fill your diary.</em></h2>
+    <div class="pill" style="left:80px; top:470px;">Get my free audit <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M8 5h11v11"/></svg></div>
+    <div class="url" style="left:84px; top:618px;">hulkmarketing.co.uk</div>
+  </div>
+</div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('art');
+const C = { forest: '#111A16', glass: '#17251F', cream: '#F4F2E9', ink: '#20392E', green: '#9DEF69', mute: '#2C3B33' };
+const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+// deterministic jitter
+let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+
+// ---------- a glass pipe along a path: cream walls, dark glass interior, green drops inside
+function pipe(d, segments) {
+  el('path', { d, fill: 'none', stroke: C.cream, 'stroke-width': 170, 'stroke-linecap': 'butt', 'stroke-linejoin': 'round' });
+  el('path', { d, fill: 'none', stroke: C.glass, 'stroke-width': 140, 'stroke-linecap': 'butt', 'stroke-linejoin': 'round' });
+  const p = el('path', { d, fill: 'none', stroke: 'none' });
+  const L = p.getTotalLength();
+  // segments: [[fromLen, toLen, spacing]]
+  for (const [a, b, gap] of segments) {
+    for (let s = a; s < Math.min(b, L); s += gap * (0.75 + rnd() * 0.5)) {
+      const pt = p.getPointAtLength(s), pt2 = p.getPointAtLength(Math.min(L, s + 1));
+      const ang = Math.atan2(pt2.y - pt.y, pt2.x - pt.x);
+      const off = (rnd() - 0.5) * 70;
+      el('circle', { cx: pt.x - Math.sin(ang) * off, cy: pt.y + Math.cos(ang) * off, r: 15 + rnd() * 8, fill: C.green });
+    }
+  }
+  // highlight line on the glass
+  el('path', { d, fill: 'none', stroke: '#ffffff', 'stroke-opacity': 0.08, 'stroke-width': 18, transform: 'translate(0,-44)' });
+  return { p, L };
+}
+const ptAt = (P, x) => { // point on path nearest a given x
+  let best = 0, bd = 1e9;
+  for (let s = 0; s < P.L; s += 4) { const q = P.p.getPointAtLength(s); const dd = Math.abs(q.x - x); if (dd < bd) { bd = dd; best = s; } }
+  return { s: best, pt: P.p.getPointAtLength(best) };
+};
+
+// ---------- a leak: crack on the underside, drops falling, a puddle
+function leak(x, y, floor) {
+  const cy = y + 78;
+  el('path', { d: `M ${x - 40} ${cy - 6} l 18 10 l 14 -12 l 16 14 l 14 -10 l 18 8`, fill: 'none', stroke: C.forest, 'stroke-width': 10, 'stroke-linejoin': 'round' });
+  const n = 7;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    const yy = cy + 40 + t * (floor - cy - 80);
+    const xx = x + Math.sin(i * 1.7) * 14;
+    el('circle', { cx: xx, cy: yy, r: 17 - t * 4, fill: C.green });
+  }
+  el('ellipse', { cx: x, cy: floor, rx: 150, ry: 26, fill: C.green, 'fill-opacity': 0.35 });
+  el('ellipse', { cx: x, cy: floor, rx: 80, ry: 14, fill: C.green, 'fill-opacity': 0.6 });
+}
+
+// ======================= slides 1-5: the leaky pipe (one continuous piece)
+// funnel on slide 1 catching "people searching"
+const fx = 760;
+el('path', { d: `M ${fx - 200} 780 L ${fx + 200} 780 L ${fx + 70} 930 L ${fx - 70} 930 Z`, fill: C.glass, stroke: C.cream, 'stroke-width': 15, 'stroke-linejoin': 'round' });
+for (let i = 0; i < 16; i++) el('circle', { cx: fx - 170 + rnd() * 340, cy: 650 + rnd() * 110, r: 15 + rnd() * 7, fill: C.green });
+for (let i = 0; i < 9; i++) el('circle', { cx: fx - 130 + rnd() * 260, cy: 800 + rnd() * 110 * (1 - i / 12), r: 14 + rnd() * 6, fill: C.green });
+
+const leakyD = `M ${fx} 925 L ${fx} 1000 Q ${fx} 1090 ${fx + 90} 1090 L 2300 1090
+  C 2560 1090 2560 950 2820 950 L 3560 950 C 3800 950 3800 1070 4040 1070 L 4760 1070 Q 4860 1070 4860 1160`;
+const LP = pipe(leakyD, []);
+const l1 = ptAt(LP, 1640), l2 = ptAt(LP, 2900), l3 = ptAt(LP, 3960);
+// redraw drops with density falling after each leak
+pipeDrops(LP, [[0, l1.s, 52], [l1.s + 60, l2.s, 105], [l2.s + 60, l3.s, 210], [l3.s + 60, LP.L - 40, 420]]);
+function pipeDrops(P, segs) {
+  for (const [a, b, gap] of segs) for (let s = a; s < b; s += gap * (0.75 + rnd() * 0.5)) {
+    const pt = P.p.getPointAtLength(s), pt2 = P.p.getPointAtLength(Math.min(P.L, s + 1));
+    const ang = Math.atan2(pt2.y - pt.y, pt2.x - pt.x), off = (rnd() - 0.5) * 70;
+    el('circle', { cx: pt.x - Math.sin(ang) * off, cy: pt.y + Math.cos(ang) * off, r: 15 + rnd() * 8, fill: C.green });
+  }
+}
+leak(l1.pt.x, l1.pt.y, 1290);
+leak(l2.pt.x, l2.pt.y, 1290);
+leak(l3.pt.x, l3.pt.y, 1290);
+
+// slide 5: tap nozzle + nearly empty glass
+const tx = 4860;
+el('rect', { x: tx - 60, y: 1150, width: 120, height: 34, rx: 8, fill: C.cream });
+el('circle', { cx: tx, cy: 1212, r: 9, fill: C.green });
+el('path', { d: `M ${tx - 120} 1218 L ${tx - 100} 1330 L ${tx + 100} 1330 L ${tx + 120} 1218`, fill: C.glass, stroke: C.cream, 'stroke-width': 12, 'stroke-linejoin': 'round' });
+el('path', { d: `M ${tx - 103} 1306 L ${tx + 103} 1306 L ${tx + 100} 1324 L ${tx - 100} 1324 Z`, fill: C.green });
+
+// ======================= slides 6-7: the fixed pipe pouring into a full bucket
+const fixedD = `M 5400 1060 L 6760 1060 Q 6900 1060 6900 1150`;
+const FP = pipe(fixedD, [[0, 1600, 40]]);
+const patches = [[5640, 'SEO & Maps'], [5940, 'Website'], [6240, 'AI follow-up']];
+for (const [x, label] of patches) {
+  el('rect', { x: x - 26, y: 960, width: 52, height: 200, rx: 12, fill: C.green });
+  el('rect', { x: x - 26, y: 960, width: 52, height: 200, rx: 12, fill: 'none', stroke: C.forest, 'stroke-width': 4 });
+}
+// stream pouring into the bucket
+for (let i = 0; i < 6; i++) el('circle', { cx: 6900 + Math.sin(i) * 10, cy: 1170 + i * 18, r: 16, fill: C.green });
+// bucket overflowing
+const bx = 7020;
+el('path', { d: `M ${bx - 210} 1150 L ${bx - 170} 1350 L ${bx + 170} 1350 L ${bx + 210} 1150 Z`, fill: C.cream });
+el('path', { d: `M ${bx - 210} 1150 L ${bx + 210} 1150`, stroke: C.ink, 'stroke-width': 10 });
+for (let i = 0; i < 26; i++) el('circle', { cx: bx - 190 + rnd() * 380, cy: 1105 + rnd() * 50, r: 17 + rnd() * 8, fill: C.green });
+for (let i = 0; i < 6; i++) el('circle', { cx: bx + (i % 2 ? 1 : -1) * (225 + rnd() * 30), cy: 1180 + i * 26, r: 14, fill: C.green });
+// "H" on the bucket
+el('text', { x: bx, y: 1290, 'text-anchor': 'middle', 'font-family': 'Display', 'font-weight': 900, 'font-size': 120, fill: C.forest }).textContent = 'H';
+
+// labels under the patches (HTML so they use the brand UI font)
+const board = document.getElementById('board');
+for (const [x, label] of patches) {
+  const d = document.createElement('div'); d.className = 'label'; d.textContent = label;
+  d.style.left = (x - 150) + 'px'; d.style.top = '1200px'; board.appendChild(d);
+}
+document.fonts.ready.then(() => { window.ready = true; });
+</script>
+</body>
+</html>
