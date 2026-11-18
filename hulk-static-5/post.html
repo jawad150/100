@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Customers Wanted</title>
+<style>
+@font-face { font-family: Display; src: url(display.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: UI; src: url(ui.woff2) format('woff2'); font-weight: 100 900; }
+html,body{margin:0;background:#000}
+#post{position:relative;width:1080px;height:1350px;overflow:hidden;background:#111A16}
+svg{position:absolute;left:0;top:0}
+.copy{position:absolute;left:80px;right:80px;color:#F4F2E9}
+h1{margin:0;font:900 84px/1 Display;letter-spacing:-0.025em}
+p{margin:0;font:400 34px/1.35 UI;color:rgba(244,242,233,.82)}
+.bar{position:absolute;left:80px;right:80px;top:1190px;display:flex;justify-content:space-between;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:20px;background:#9DEF69;color:#111A16;font:600 34px/1 UI;padding:24px 36px;border-radius:999px}
+.pill svg{position:static;width:24px;height:24px}
+.bar img{width:250px}
+</style></head><body>
+<div id="post">
+<svg width="1080" height="880" viewBox="0 0 1080 880">
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B4D46"/><stop offset="1" stop-color="#22302B"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111A16" stop-opacity="0"/><stop offset="1" stop-color="#111A16"/>
+    </linearGradient>
+    <pattern id="brick" width="120" height="56" patternUnits="userSpaceOnUse">
+      <rect width="120" height="56" fill="#E6E0D0"/>
+      <path d="M0 27.5H120M0 55.5H120M60 0V28M0 28V56M120 28V56" stroke="#D3CBB7" stroke-width="3" fill="none"/>
+    </pattern>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".35"/></filter>
+  </defs>
+  <!-- wall -->
+  <rect width="1080" height="880" fill="url(#brick)"/>
+  <!-- fascia -->
+  <rect x="80" y="70" width="920" height="130" fill="#20392E"/>
+  <rect x="96" y="86" width="888" height="98" fill="none" stroke="#3E5A4C" stroke-width="3"/>
+  <text x="540" y="157" text-anchor="middle" font-family="Display" font-weight="800" font-size="58" letter-spacing="8" fill="#F4F2E9">THE CORNER BAKERY</text>
+  <!-- frame -->
+  <rect x="80" y="200" width="920" height="620" fill="#20392E"/>
+  <!-- window -->
+  <rect x="118" y="236" width="590" height="548" fill="url(#glass)"/>
+  <!-- quiet interior: pendant lamps (off), empty tables and chairs -->
+  <g stroke="#17231F" stroke-width="4" fill="#17231F">
+    <line x1="230" y1="236" x2="230" y2="300"/><path d="M196 300a34 22 0 0 1 68 0z"/>
+    <line x1="600" y1="236" x2="600" y2="300"/><path d="M566 300a34 22 0 0 1 68 0z"/>
+    <rect x="150" y="690" width="150" height="12" rx="4"/><rect x="219" y="702" width="12" height="82"/>
+    <rect x="520" y="690" width="150" height="12" rx="4"/><rect x="589" y="702" width="12" height="82"/>
+    <path d="M312 784V700h34v-70M478 784V700h-34v-70" fill="none" stroke-width="8"/>
+    <rect x="300" y="694" width="52" height="10" rx="3"/><rect x="438" y="694" width="52" height="10" rx="3"/>
+  </g>
+  <!-- glass reflections -->
+  <g fill="#FFFFFF" opacity=".07">
+    <polygon points="118,420 330,236 410,236 118,520"/><polygon points="430,784 708,520 708,580 500,784"/>
+  </g>
+  <!-- mullion + sill -->
+  <rect x="118" y="760" width="590" height="24" fill="#20392E"/>
+  <!-- the sign -->
+  <g transform="rotate(-2.5 413 470)" filter="url(#soft)">
+    <rect x="263" y="285" width="300" height="380" fill="#FBFAF6"/>
+    <text x="413" y="425" text-anchor="middle" font-family="Display" font-weight="900" font-size="46" letter-spacing="-1" fill="#111A16">CUSTOMERS</text>
+    <text x="413" y="477" text-anchor="middle" font-family="Display" font-weight="900" font-size="46" letter-spacing="-1" fill="#111A16">WANTED</text>
+    <rect x="333" y="505" width="160" height="4" fill="#111A16"/>
+    <text x="413" y="560" text-anchor="middle" font-family="UI" font-weight="500" font-size="30" fill="#333">Enquire within.</text>
+    <rect x="248" y="270" width="64" height="26" fill="#E9DFC4" opacity=".85" transform="rotate(-28 280 283)"/>
+    <rect x="514" y="270" width="64" height="26" fill="#E9DFC4" opacity=".85" transform="rotate(28 546 283)"/>
+  </g>
+  <!-- door -->
+  <rect x="742" y="236" width="222" height="584" fill="#1A2E25"/>
+  <rect x="766" y="262" width="174" height="330" fill="url(#glass)"/>
+  <polygon points="766,420 900,262 940,262 766,470" fill="#FFFFFF" opacity=".07"/>
+  <rect x="766" y="612" width="174" height="180" fill="none" stroke="#2C463A" stroke-width="4"/>
+  <circle cx="926" cy="560" r="9" fill="#C9B98A"/>
+  <!-- small OPEN sign on the door -->
+  <line x1="815" y1="262" x2="853" y2="330" stroke="#C9B98A" stroke-width="2"/><line x1="891" y1="262" x2="853" y2="330" stroke="#C9B98A" stroke-width="2"/>
+  <rect x="808" y="330" width="90" height="40" rx="4" fill="#F4F2E9"/>
+  <text x="853" y="358" text-anchor="middle" font-family="UI" font-weight="700" font-size="22" letter-spacing="3" fill="#20392E">OPEN</text>
+  <!-- step + pavement -->
+  <rect x="60" y="820" width="960" height="18" fill="#B9B19C"/>
+  <rect x="0" y="838" width="1080" height="42" fill="#A8A08B"/>
+  <rect x="0" y="700" width="1080" height="180" fill="url(#fade)"/>
+</svg>
+<div class="copy" style="top:880px"><h1>You shouldn’t need<br>a sign for this.</h1></div>
+<div class="copy" style="top:1066px"><p>We bring customers to you with SEO,<br>ads and social that work.</p></div>
+<div class="bar">
+  <span class="pill">Get my free audit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M8 5h11v11"/></svg></span>
+  <img src="logo.svg" alt="Hulk Marketing">
+</div>
+</div>
+<script>document.fonts.ready.then(()=>{window.ready=true})</script>
+</body></html>
