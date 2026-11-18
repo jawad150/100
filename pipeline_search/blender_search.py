@@ -29,6 +29,10 @@ sc.cycles.samples = 48 if Q == 'draft' else 256
 sc.cycles.use_denoising = True
 sc.render.resolution_x, sc.render.resolution_y = 1080, 1350
 sc.render.resolution_percentage = 50 if Q == 'draft' else 100
+MODE = os.environ.get('MODE', '')           # '' full scene | 'plate_on' / 'plate_off' (no UI, no house) | 'house' (house anim only)
+if MODE:
+    sc.render.resolution_percentage = 150
+    sc.cycles.samples = int(os.environ.get('SAMPLES', '128'))
 sc.view_settings.view_transform = 'AgX'
 sc.view_settings.look = 'AgX - Medium High Contrast'
 w = bpy.data.worlds.new('w')
@@ -136,6 +140,7 @@ ui.blend_method = 'BLEND'
 UIW, UIH = 6.4, 8.0
 bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 0, 0.004))
 p = act()
+p.hide_render = bool(MODE)
 p.scale = (UIW, UIH, 1)
 bpy.ops.object.transform_apply(scale=True)
 setm(p, ui)
@@ -145,6 +150,8 @@ proj.data.shape, proj.data.size, proj.data.size_y = 'RECTANGLE', UIW, UIH
 proj.data.energy, proj.data.color = 25, (1.0, 0.82, 0.95)
 proj.location = (0, 0, 0.6)
 sc.collection.objects.link(proj)
+if MODE == 'plate_off':
+    proj.data.energy = 0.0
 
 # ------------------------------------------------------------------ the little home rising from the result card's photo slot
 def u2w(px, py):
@@ -153,6 +160,7 @@ def u2w(px, py):
 
 hx, hy = u2w(140 + 40 + 240, 680 + 430)
 S_ = 1.2
+_before = set(sc.objects)
 walls = box((1.25 * S_, 1.0 * S_, 0.95 * S_), (hx, hy, 0.5 * S_), mat('wall', lin('#FCF8F5'), 0.35, coat=0.3), bw=0.06)
 bpy.ops.mesh.primitive_cone_add(radius1=1.0 * S_, depth=0.7 * S_, vertices=4, location=(hx, hy, 1.32 * S_), rotation=(0, 0, math.radians(45)))
 r = act()
@@ -164,6 +172,7 @@ warmwin = mat('win', lin('#FFD27A'), 0.3, emit=(lin('#FFC45A'), 6.0))
 for wx in (-0.3, 0.3):
     box((0.24 * S_, 0.06, 0.24 * S_), (hx + wx * S_, hy - 0.5 * S_, 0.72 * S_), warmwin, bw=0.02)
 box((0.2 * S_, 0.2 * S_, 0.35 * S_), (hx + 0.32 * S_, hy + 0.15 * S_, 1.55 * S_), mat('chim', lin('#5B174F'), 0.3), bw=0.02)
+HOUSE_OBJS = [o for o in sc.objects if o not in _before and o.type == 'MESH']
 gl = bpy.data.objects.new('homeglow', bpy.data.lights.new('homeglow', 'POINT'))
 gl.data.energy, gl.data.color, gl.data.shadow_soft_size = 60, (1.0, 0.75, 0.45), 0.3
 gl.location = (hx, hy - 1.1, 1.0)
@@ -211,6 +220,60 @@ cam.data.lens = 42
 cam.location = (0.0, -9.0, 13.4)
 target = Vector((0, -0.1, 0.3))
 cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
-sc.render.filepath = f'{OUT}/{Q}.png'
-bpy.ops.render.render(write_still=True)
-print('rendered', Q)
+from bpy_extras.object_utils import world_to_camera_view
+import json
+bpy.context.view_layer.update()
+RW, RH = int(1080 * sc.render.resolution_percentage / 100), int(1350 * sc.render.resolution_percentage / 100)
+def P(pt):
+    v = world_to_camera_view(sc, cam, Vector(pt))
+    return [v.x * RW, (1 - v.y) * RH]
+HOUSE = HOUSE_OBJS
+if MODE:
+    json.dump({'res': [RW, RH], 'ui': [P((-UIW / 2, UIH / 2, 0.004)), P((UIW / 2, UIH / 2, 0.004)), P((UIW / 2, -UIH / 2, 0.004)), P((-UIW / 2, -UIH / 2, 0.004))],
+               'house_base': P((hx, hy, 0)), 'house_top': P((hx, hy, 1.7 * S_)), 'window': P((hx - 0.3 * S_, hy - 0.5 * S_, 0.72 * S_))},
+              open(f'{OUT}/proj.json', 'w'), indent=1)
+if MODE in ('plate_on', 'plate_off'):
+    for o in HOUSE + [o for o in sc.objects if o.name.startswith('homeglow')]:
+        o.hide_render = True
+    sc.render.filepath = f'{OUT}/{MODE}.png'
+    bpy.ops.render.render(write_still=True)
+    print('rendered', MODE)
+elif MODE == 'house':
+    keep = set(HOUSE) | {o for o in sc.objects if o.type in ('LIGHT', 'CAMERA')}
+    for o in sc.objects:
+        if o not in keep and o.type == 'MESH':
+            o.hide_render = True
+    bpy.ops.mesh.primitive_plane_add(size=6, location=(hx, hy, 0.0))
+    catcher = act()
+    catcher.is_shadow_catcher = True
+    sc.render.film_transparent = True
+    pivot = bpy.data.objects.new('pivot', None)
+    sc.collection.objects.link(pivot)
+    pivot.location = (hx, hy, 0)
+    for o in HOUSE:
+        mw = o.matrix_world.copy()
+        o.parent = pivot
+        o.matrix_world = mw
+    xs = [P((hx + dx, hy + dy, dz))[0] for dx in (-1.6, 1.6) for dy in (-1.6, 1.6) for dz in (0, 2.4 * S_)]
+    ys = [P((hx + dx, hy + dy, dz))[1] for dx in (-1.6, 1.6) for dy in (-1.6, 1.6) for dz in (0, 2.4 * S_)]
+    sc.render.use_border, sc.render.use_crop_to_border = True, True
+    bx0, bx1 = max(0, min(xs)) / RW, min(RW, max(xs)) / RW
+    by0, by1 = 1 - min(RH, max(ys)) / RH, 1 - max(0, min(ys)) / RH
+    sc.render.border_min_x, sc.render.border_max_x, sc.render.border_min_y, sc.render.border_max_y = bx0, bx1, by0, by1
+    json.dump({'box': [bx0 * RW, (1 - by1) * RH, bx1 * RW, (1 - by0) * RH]}, open(f'{OUT}/house_box.json', 'w'))
+    NF = 24
+    os.makedirs(f'{OUT}/house', exist_ok=True)
+    for i in range(NF + 1):
+        k = i / NF
+        e = 1 - (1 - k) ** 3
+        over = 1 + 0.12 * math.sin(math.pi * min(1, k * 1.3)) * (1 - k)
+        pivot.scale = (0.6 + 0.4 * e, 0.6 + 0.4 * e, max(0.001, e * over))
+        pivot.rotation_euler = (0, 0, math.radians(-25 * (1 - e)))
+        bpy.context.view_layer.update()
+        sc.render.filepath = f'{OUT}/house/{i:03d}.png'
+        bpy.ops.render.render(write_still=True)
+    print('rendered house')
+else:
+    sc.render.filepath = f'{OUT}/{Q}.png'
+    bpy.ops.render.render(write_still=True)
+    print('rendered', Q)
