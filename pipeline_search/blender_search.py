@@ -250,6 +250,7 @@ elif MODE == 'house':
     pivot = bpy.data.objects.new('pivot', None)
     sc.collection.objects.link(pivot)
     pivot.location = (hx, hy, 0)
+    bpy.context.view_layer.update()
     for o in HOUSE:
         mw = o.matrix_world.copy()
         o.parent = pivot

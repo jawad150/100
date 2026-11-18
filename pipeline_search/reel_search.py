@@ -128,7 +128,7 @@ def _back(n, t0, t1):
 
 
 _type(Q1, 5.55, 7.6)
-_back(len('rent my home?'), 7.95, 8.35)
+_back(len(' rent my home?'), 7.95, 8.38)
 _type("'m single?", 8.6, 9.25)
 _back(len("'m single?"), 9.65, 9.95)
 _type(' work full time?', 10.15, 11.25)
@@ -330,12 +330,12 @@ def camera(t):
     """(zoom, centre x, centre y) in plate coordinates."""
     hx, hy = PROJ['house_base']
     wx, wy = PROJ['window']
-    bx, by = ui_pt(800, 330)                          # the search bar + first suggestion
+    bx, by = ui_pt(760, 330)                          # the search bar + first suggestion
     mx, my = ui_pt(800, 1000)                         # middle of the projection
     if t < REAL:
         kin = e_inout_cubic(prog(t, 1.4, 5.3))        # push in on the search bar
         kout = e_inout_cubic(prog(t, ENTER, ENTER + 0.9))   # pull back on Enter
-        z = lerp(lerp(1.06, 1.95, kin), 1.12, kout)
+        z = lerp(lerp(1.06, 1.55, kin), 1.12, kout)
         cx = lerp(lerp(PW / 2, bx, kin), mx, kout)
         cy = lerp(lerp(PH / 2, by + 60, kin), my, kout)
         return z, cx, cy
@@ -378,6 +378,8 @@ def subtitles(c, t):
         t0, t1 = WT(a) - 0.1, WORDS[b][2] + 0.6
         if t0 <= t < t1:
             k = prog(t, t0, t0 + 0.25) * (1 - prog(t, t1 - 0.25, t1))
+            band = np.clip((_OY - 1150) / 90, 0, 1)[..., None] * 0.7
+            c = c * (1 - band * k)
             out = draw_text(c, text, 1268, 44)
             c[:] = c * (1 - k) + out * k
             return c
