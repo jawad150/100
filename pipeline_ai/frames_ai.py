@@ -304,7 +304,7 @@ def callout(c, p, label, u, side=1, dy=-120, col=MAG):
         return c
     x, y = p
     k = e_out(clamp(u / 0.4))
-    ex, ey = x + side * 170 * k, y + dy * k
+    ex, ey = x + side * 170 * k, clamp(y + dy * k, 330, H - 600)
     lay = np.zeros((H, W), np.uint8)
     cv2.circle(lay, (int(x * 4), int(y * 4)), 10 * 4, 255, -1, cv2.LINE_AA, shift=2)
     cv2.line(lay, (int(x * 4), int(y * 4)), (int(ex * 4), int(ey * 4)), 255, 3 * 4, cv2.LINE_AA, shift=2)
@@ -314,7 +314,7 @@ def callout(c, p, label, u, side=1, dy=-120, col=MAG):
         s = text_sprite(label, 800, 34, WHITE, track=0.08)
         rr = rrect(s.shape[1] + 40, 64, 14, col)
         a = clamp((u - 0.25) / 0.15)
-        bx = ex + side * (rr.shape[1] / 2)
+        bx = clamp(ex + side * (rr.shape[1] / 2), rr.shape[1] / 2 + 40, W - rr.shape[1] / 2 - 40)
         paste(c, rr, bx, ey, a)
         paste(c, s, bx, ey + 1, a)
     return c
@@ -343,7 +343,7 @@ def blueprint_bg(t=0.0, a=1.0):
 # ------------------------------------------------------------------ transitions / skills
 def eclipse(c, cx, cy, r, u, warm=(1.0, 0.72, 0.38)):
     """A dark disc slides over a light; a warm corona blooms around it (u 0..1)."""
-    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    yy, xx = _grid()
     off = (1 - e_inout(clamp(u))) * r * 2.2
     d = np.hypot(xx - cx - off, yy - cy)
     disc = np.clip((r - d) / 2.0, 0, 1)
@@ -449,15 +449,34 @@ def logo(width=820):
 
 
 # ------------------------------------------------------------------ the deep, dark film look
+@functools.lru_cache(None)
+def _grid():
+    return np.mgrid[0:H, 0:W].astype(np.float32)
+
+
+@functools.lru_cache(maxsize=64)
+def _pool(px, py, pr, amt):
+    yy, xx = _grid()
+    r = np.hypot((xx - px * W) / (W * pr), (yy - py * H) / (H * pr * 0.75))
+    light = np.exp(-r ** 2 * 1.6)
+    return ((1 - amt) + amt * (0.25 + 1.25 * light)).astype(np.float32)
+
+
+@functools.lru_cache(None)
+def _beam():
+    yy, xx = _grid()
+    d = np.abs((xx - W * 0.78) * 0.94 + yy * 0.34) / (W * 0.18)
+    beam = np.exp(-d ** 2) * np.clip(1 - yy / (H * 1.1), 0, 1)
+    bx = np.exp(-((xx - W * 0.78) * 0.94 + yy * 0.34) ** 2 / (W * 0.3) ** 2)
+    return beam.astype(np.float32), bx.astype(np.float32)
+
+
 def deep(c, exp=0.62, warm=0.5, night=0.0, hal=0.5, vig=0.85, seed=0, haze=0.0, t=0.0, pool=(0.5, 0.45, 0.55), pool_amt=0.75):
     """Low-key cinematic grade: lower exposure, filmic S-curve with crushed blacks, cool shadows and warm highlights,
     halation on the highlights, heavy vignette, optional day-for-night (night 0..1) and a light shaft with dust (haze)."""
     c = np.clip(c, 0, 1) * exp
     if pool is not None:                                  # one pool of light on the subject, the rest falls into shadow
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        r = np.hypot((xx - pool[0] * W) / (W * pool[2]), (yy - pool[1] * H) / (H * pool[2] * 0.75))
-        light = np.exp(-r ** 2 * 1.6)
-        c = c * ((1 - pool_amt) + pool_amt * (0.25 + 1.25 * light))[..., None]
+        c = c * _pool(round(pool[0], 3), round(pool[1], 3), round(pool[2], 3), round(pool_amt, 3))[..., None]
     lum = c.mean(-1, keepdims=True)
     if night:
         blue = np.concatenate([lum * 0.55, lum * 0.72, lum * 1.05], -1) * 0.75
@@ -474,9 +493,7 @@ def deep(c, exp=0.62, warm=0.5, night=0.0, hal=0.5, vig=0.85, seed=0, haze=0.0, 
         g = cv2.GaussianBlur(br, (0, 0), 22) * np.array((1.0, 0.55, 0.35), np.float32)
         c = c + g * hal
     if haze:
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        d = np.abs((xx - W * 0.78) * 0.94 + (yy - 0) * 0.34) / (W * 0.18)
-        beam = np.exp(-d ** 2) * np.clip(1 - yy / (H * 1.1), 0, 1)
+        beam, bx = _beam()
         c = c + beam[..., None] * np.array((1.0, 0.78, 0.55), np.float32) * 0.09 * haze
         rng = np.random.default_rng(seed)
         lay = np.zeros((H, W), np.float32)
@@ -485,7 +502,6 @@ def deep(c, exp=0.62, warm=0.5, night=0.0, hal=0.5, vig=0.85, seed=0, haze=0.0, 
             py = (rng.uniform(0, H) - t * rng.uniform(8, 25)) % H
             cv2.circle(lay, (int(px), int(py)), int(rng.uniform(1, 3)), float(rng.uniform(0.3, 1.0)), -1, cv2.LINE_AA)
         lay = cv2.GaussianBlur(lay, (0, 0), 1.2)
-        bx = np.exp(-((xx - W * 0.78) * 0.94 + yy * 0.34) ** 2 / (W * 0.3) ** 2)
         c = c + (lay * (0.25 + bx))[..., None] * np.array((1.0, 0.85, 0.65), np.float32) * 0.35 * haze
     c = c * (vignette(vig)[..., None] * 0.92 + 0.08 * 0)
     return grain(np.clip(c, 0, 1), 0.022, seed)
@@ -502,10 +518,10 @@ def window_lights(c, src, t=0.0, seed=0, amt=1.0, y0=0.45):
     ys, xs = np.nonzero(m)
     lay = np.zeros((H, W), np.float32)
     if len(xs):
-        idx = rng.choice(len(xs), min(260, len(xs)), replace=False)
+        idx = rng.choice(len(xs), min(150, len(xs)), replace=False)
         for i in idx:
             on = clamp((t - rng.uniform(0, 1.2)) / 0.25)
             if on > 0:
-                cv2.rectangle(lay, (int(xs[i]) - 3, int(ys[i]) - 5), (int(xs[i]) + 3, int(ys[i]) + 5), float(on * rng.uniform(0.5, 1)), -1)
-    g = cv2.GaussianBlur(lay, (0, 0), 2) + cv2.GaussianBlur(lay, (0, 0), 14) * 1.5
+                cv2.rectangle(lay, (int(xs[i]) - 3, int(ys[i]) - 4), (int(xs[i]) + 3, int(ys[i]) + 4), float(on * rng.uniform(0.6, 1)), -1)
+    g = cv2.GaussianBlur(lay, (0, 0), 1.5) * 0.9 + cv2.GaussianBlur(lay, (0, 0), 18) * 2.2
     return np.clip(c + g[..., None] * np.array((1.0, 0.68, 0.32), np.float32) * amt, 0, 1)

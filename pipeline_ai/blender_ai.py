@@ -231,11 +231,25 @@ def target():
     sph(0.12, loc=(0, -0.2, 0), m=mat(LIME, 0.3, emit=(LIME, 0.6)))
     for sx in (-1, 1):
         box((0.12, 0.12, 2.7), loc=(sx * 0.9, 0.35, -0.8), m=mat(hexc('#8A5A36'), 0.6), bw=0.03, rot=(math.radians(15), 0, sx * math.radians(10)))
-    shaft = cyl(0.035, 2.4, loc=(0.55, -1.15, 0.35), m=mat(hexc('#8A5A36'), 0.4), rot=(math.radians(70), 0, math.radians(25)), bw=0)
+    d = Vector((0.85, -0.5, 0.32)).normalized()
+    tip = Vector((0, -0.2, 0))
+    q = d.to_track_quat('Z', 'Y').to_euler()
+    L = 2.4
+    shaft = cyl(0.06, L, loc=tuple(tip + d * (L / 2)), m=mat(hexc('#3A2A20'), 0.4), rot=tuple(q), bw=0)
+    end = tip + d * (L - 0.25)
     for k in range(3):
-        a = k / 3 * 2 * math.pi
-        box((0.02, 0.35, 0.16), loc=(1.0 + 0.06 * math.cos(a), -2.2, 0.73 + 0.06 * math.sin(a)), m=mat(MAG, 0.4), bw=0.005,
-            rot=(math.radians(70) + a, 0, math.radians(25)))
+        bpy.ops.mesh.primitive_plane_add(size=0.4, location=tuple(end))
+        f = act()
+        f.rotation_euler = q
+        f.rotation_mode = 'XYZ'
+        bpy.context.view_layer.update()
+        f.rotation_euler.rotate_axis('Z', k * 2 * math.pi / 3)
+        f.rotation_euler.rotate_axis('Y', math.pi / 2)
+        f.scale = (1.0, 0.45, 1)
+        f.location = tuple(end + (q.to_matrix() @ Vector((math.cos(k * 2.094), math.sin(k * 2.094), 0))) * 0.1)
+        sol = f.modifiers.new('s', 'SOLIDIFY')
+        sol.thickness = 0.02
+        setm(f, mat(MAG, 0.4))
     objs = [o for o in bpy.context.scene.objects if o.type == 'MESH']
     group(objs, rot=(0, 0, math.radians(-26)))
 
