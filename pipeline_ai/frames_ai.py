@@ -446,3 +446,66 @@ def logo(width=820):
     big = cv2.resize(out, (width, int(out.shape[0] * sc)), interpolation=cv2.INTER_CUBIC)
     bl = cv2.GaussianBlur(big, (0, 0), 1.0)
     return np.clip(big * 1.5 - bl * 0.5, 0, 1)
+
+
+# ------------------------------------------------------------------ the deep, dark film look
+def deep(c, exp=0.62, warm=0.5, night=0.0, hal=0.5, vig=0.85, seed=0, haze=0.0, t=0.0, pool=(0.5, 0.45, 0.55), pool_amt=0.75):
+    """Low-key cinematic grade: lower exposure, filmic S-curve with crushed blacks, cool shadows and warm highlights,
+    halation on the highlights, heavy vignette, optional day-for-night (night 0..1) and a light shaft with dust (haze)."""
+    c = np.clip(c, 0, 1) * exp
+    if pool is not None:                                  # one pool of light on the subject, the rest falls into shadow
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        r = np.hypot((xx - pool[0] * W) / (W * pool[2]), (yy - pool[1] * H) / (H * pool[2] * 0.75))
+        light = np.exp(-r ** 2 * 1.6)
+        c = c * ((1 - pool_amt) + pool_amt * (0.25 + 1.25 * light))[..., None]
+    lum = c.mean(-1, keepdims=True)
+    if night:
+        blue = np.concatenate([lum * 0.55, lum * 0.72, lum * 1.05], -1) * 0.75
+        c = c * (1 - night) + blue * night
+        lum = c.mean(-1, keepdims=True)
+    c = lum + (c - lum) * (0.82 - 0.2 * night)
+    x = np.clip(c, 0, 1)
+    c = np.clip(np.clip(x - 0.035, 0, 1) ** 1.35 * (1.0 + 0.6 * x) / 1.6 * 1.55, 0, 1)        # S-curve, true blacks
+    sh = np.clip(1 - lum * 2.2, 0, 1)
+    hi_ = np.clip(lum * 2.0 - 0.6, 0, 1)
+    c = c + sh * np.array((-0.006, 0.006, 0.018), np.float32) + hi_ * np.array((0.05, 0.022, -0.03), np.float32) * warm
+    if hal:
+        br = np.clip(c - 0.5, 0, 1)
+        g = cv2.GaussianBlur(br, (0, 0), 22) * np.array((1.0, 0.55, 0.35), np.float32)
+        c = c + g * hal
+    if haze:
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        d = np.abs((xx - W * 0.78) * 0.94 + (yy - 0) * 0.34) / (W * 0.18)
+        beam = np.exp(-d ** 2) * np.clip(1 - yy / (H * 1.1), 0, 1)
+        c = c + beam[..., None] * np.array((1.0, 0.78, 0.55), np.float32) * 0.09 * haze
+        rng = np.random.default_rng(seed)
+        lay = np.zeros((H, W), np.float32)
+        for _ in range(110):
+            px = rng.uniform(0, W)
+            py = (rng.uniform(0, H) - t * rng.uniform(8, 25)) % H
+            cv2.circle(lay, (int(px), int(py)), int(rng.uniform(1, 3)), float(rng.uniform(0.3, 1.0)), -1, cv2.LINE_AA)
+        lay = cv2.GaussianBlur(lay, (0, 0), 1.2)
+        bx = np.exp(-((xx - W * 0.78) * 0.94 + yy * 0.34) ** 2 / (W * 0.3) ** 2)
+        c = c + (lay * (0.25 + bx))[..., None] * np.array((1.0, 0.85, 0.65), np.float32) * 0.35 * haze
+    c = c * (vignette(vig)[..., None] * 0.92 + 0.08 * 0)
+    return grain(np.clip(c, 0, 1), 0.022, seed)
+
+
+def window_lights(c, src, t=0.0, seed=0, amt=1.0, y0=0.45):
+    """Warm lit windows on the (real) building in a day-for-night drone shot: small glows where the stone façade is
+    (low-saturation, mid-bright pixels below y0), twinkling on over time."""
+    rng = np.random.default_rng(seed)
+    hsv = cv2.cvtColor((np.clip(src, 0, 1) * 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
+    m = ((hsv[..., 1] < 45) & (hsv[..., 2] > 90) & (hsv[..., 2] < 215)).astype(np.uint8)
+    m[:int(H * y0)] = 0
+    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    ys, xs = np.nonzero(m)
+    lay = np.zeros((H, W), np.float32)
+    if len(xs):
+        idx = rng.choice(len(xs), min(260, len(xs)), replace=False)
+        for i in idx:
+            on = clamp((t - rng.uniform(0, 1.2)) / 0.25)
+            if on > 0:
+                cv2.rectangle(lay, (int(xs[i]) - 3, int(ys[i]) - 5), (int(xs[i]) + 3, int(ys[i]) + 5), float(on * rng.uniform(0.5, 1)), -1)
+    g = cv2.GaussianBlur(lay, (0, 0), 2) + cv2.GaussianBlur(lay, (0, 0), 14) * 1.5
+    return np.clip(c + g[..., None] * np.array((1.0, 0.68, 0.32), np.float32) * amt, 0, 1)
