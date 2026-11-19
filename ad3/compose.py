@@ -195,67 +195,38 @@ draw.rounded_rectangle((bx0, by0, bx1, by1), radius=(by1 - by0) // 2, outline=(1
 put('Enquire now', lambda s: f_inter('bold', s), 781, 1032, 1286, NEAR_BLACK)
 put('rknaccountancy.co.uk', lambda s: f_inter('semi', s), 668, 1078, 1348, NEAR_BLACK)
 
-# ------------------------------------------------------------------ 4. the ledger, in perspective on the paper
-# homography: flat table (u 0..1000, v 0..900) -> original-image coords (measured grid corners + column lines)
-src_pts = np.float32([[0, 0], [440, 0], [700, 0], [1000, 0], [0, 900], [440, 900], [700, 900], [1000, 900]])
-dst_pts = np.float32([[488, 800], [658, 800], [771, 800], [872, 804], [358, 1121], [573, 1140], [699, 1146], [800, 1155]])
-Hm, _ = cv2.findHomography(src_pts, dst_pts)
-Hinv = np.linalg.inv(Hm)
-def to_flat(x, y):
-    p = Hinv @ np.array([x, y, 1.0]); return p[:2] / p[2]
-FS = 4                                                     # flat canvas pixels per flat unit
-V0 = -320                                                  # flat canvas starts above the table (title)
-U0 = -150
-fw, fh = 1350 * FS, (900 - V0) * FS
-flat = Image.new('RGBA', (fw, fh), (0, 0, 0, 0))
-fd = ImageDraw.Draw(flat)
-def fl(u, v): return ((u - U0) * FS, (v - V0) * FS)
-INK = (24, 24, 26, 255)
-def ltext(text, fontname, xl, yl, xr, yr, color=INK, extra=1.0):
-    (ul, vl), (ur, vr) = to_flat(xl, yl), to_flat(xr, yr)
-    v = (vl + vr) / 2
-    f = fit(lambda s: f_ebg(fontname, s), text, (ur - ul) * FS * extra)
-    fd.text(fl(ul, v), text, font=f, fill=color, anchor='ls')
-band = [to_flat(481, 797), to_flat(877, 799), to_flat(877, 842), to_flat(479, 840)]
-fd.polygon([fl(u, v) for u, v in band], fill=(226, 222, 215, 255))
-ltext('Description', 'ebg-italic-600.ttf', 503, 820, 593, 821)
-ltext('Money in', 'ebg-italic-600.ttf', 676, 822, 751, 824)
-ltext('Money out', 'ebg-italic-600.ttf', 780, 826, 859, 828)
-ROWS = [
-    ('Sales invoices', 485, 867, 616, 869, '£12,450.00', 660, 870, 755, 871, '£25.00', 802, 873, 863, 874),
-    ('Supplier bills', 469, 921, 601, 925, '£85.00', 681, 925, 744, 926, '£3,280.00', 769, 930, 855, 931),
-    ('Business', 456, 970, 546, 972, '£125.00', 658, 985, 735, 987, '£780.50', 774, 990, 851, 992),
-    ('Payroll', 428, 1041, 508, 1045, '£40.00', 650, 1050, 716, 1052, '£6,750.00', 740, 1055, 837, 1058),
-    ('VAT records', 398, 1111, 545, 1117, '£1,260.00', 607, 1117, 701, 1120, '£95.00', 753, 1120, 818, 1122),
-]
-for r in ROWS:
-    ltext(r[0], 'ebg-italic-700.ttf', *r[1:5])
-    ltext(r[5], 'ebg-italic-600.ttf', *r[6:10])
-    ltext(r[10], 'ebg-italic-600.ttf', *r[11:15])
-ltext('expenses', 'ebg-italic-700.ttf', 448, 994, 550, 996)
-# grid: column rules and row rules (flat space, so they follow the paper)
-LINE = (118, 132, 142, 235)
-def col_line(gaps):          # gaps: image points midway between two columns, one per row -> least-squares line in flat space
-    pts = np.array([to_flat(x, y) for x, y in gaps])
-    k, c = np.polyfit(pts[:, 1], pts[:, 0], 1)          # u = k v + c
-    fd.line([fl(c + k * -5, -5), fl(c + k * 905, 905)], fill=LINE, width=int(1.1 * FS))
-mid = lambda a, b: ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-col_line([mid((593, 821), (676, 822)), mid((616, 869), (660, 870)), mid((601, 925), (681, 925)), mid((546, 972), (658, 985)),
-          mid((508, 1045), (650, 1050)), mid((545, 1117), (607, 1117))])
-col_line([mid((751, 824), (780, 826)), mid((755, 871), (802, 873)), mid((744, 926), (769, 930)), mid((735, 987), (774, 990)),
-          mid((716, 1052), (740, 1055)), mid((701, 1120), (753, 1120))])
-# warp flat -> final image (S-scaled original coords)
-Tflat = np.array([[1 / FS, 0, U0], [0, 1 / FS, V0], [0, 0, 1]])            # flat canvas px -> (u, v)
-Sm = np.diag([S, S, 1.0])
-M = Sm @ Hm @ Tflat
-warped = cv2.warpPerspective(np.asarray(flat), M, (W, H), flags=cv2.INTER_CUBIC, borderValue=(0, 0, 0, 0))
-wimg = Image.fromarray(warped, 'RGBA')
-# printed ink, not stickers: multiply onto the paper so its shading shows through
-base = np.asarray(canvas).astype(np.float32)
-wa = warped[..., 3:4].astype(np.float32) / 255
-ink = warped[..., :3].astype(np.float32)
-base = base * (1 - wa) + (base * ink / 255) * wa * 0.25 + ink * wa * 0.75
-canvas = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8))
+# ------------------------------------------------------------------ 4. the ledger: a level, regular table
+draw = ImageDraw.Draw(canvas)
+TX0, TC1, TC2, TX1 = 494, 646, 746, 836          # table left, column dividers, table right (original px)
+HY0, HY1 = 800, 832                              # header band
+ROW_H = 60
+rows_y = [HY1 + i * ROW_H for i in range(6)]     # row boundaries: 832 .. 1132
+INK = (24, 24, 26)
+LINE = (122, 134, 144)
+X = lambda v: int(round(v * S))
+# header band + labels (same size, same baseline, level)
+draw.rectangle((X(TX0), X(HY0), X(TX1), X(HY1)), fill=(226, 222, 215))
+fh = f_ebg('ebg-600.ttf', 15.5 * S)
+hb = HY1 - 10
+draw.text((X(TX0 + 9), X(hb)), 'Description', font=fh, fill=INK, anchor='ls')
+draw.text((X(TC2 - 9), X(hb)), 'Money in', font=fh, fill=INK, anchor='rs')
+draw.text((X(TX1 - 9), X(hb)), 'Money out', font=fh, fill=INK, anchor='rs')
+# rows: one label size, one amount size, amounts right-aligned in their columns
+fl_ = f_ebg('ebg-600.ttf', 18 * S)
+fa = f_ebg('ebg-600.ttf', 17 * S)
+DATA = [('Sales invoices', '\u00A312,450.00', '\u00A325.00'), ('Supplier bills', '\u00A385.00', '\u00A33,280.00'),
+        ('Business expenses', '\u00A3125.00', '\u00A3780.50'), ('Payroll', '\u00A340.00', '\u00A36,750.00'),
+        ('VAT records', '\u00A31,260.00', '\u00A395.00')]
+for i, (lab, mi, mo) in enumerate(DATA):
+    base = rows_y[i] + ROW_H / 2 + 6
+    draw.text((X(TX0 + 9), X(base)), lab, font=fl_, fill=INK, anchor='ls')
+    draw.text((X(TC2 - 9), X(base)), mi, font=fa, fill=INK, anchor='rs')
+    draw.text((X(TX1 - 9), X(base)), mo, font=fa, fill=INK, anchor='rs')
+# rules: a line under the header and after every row; straight column dividers
+for y in rows_y:
+    draw.line((X(TX0), X(y), X(TX1), X(y)), fill=LINE, width=3)
+for x in (TC1, TC2):
+    draw.line((X(x), X(HY0), X(x), X(rows_y[-1])), fill=LINE, width=3)
 
 # title block: perfectly level, crisp
 draw = ImageDraw.Draw(canvas)
