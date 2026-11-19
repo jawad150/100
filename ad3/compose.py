@@ -106,8 +106,14 @@ for box, dil in [([(128, 40), (600, 40), (600, 142), (128, 142)], 9), ([(128, 18
 # the ledger on the paper (text + grid lines; the grey header band and the gold pins stay)
 LEDGER = [(532, 708), (862, 708), (874, 790), (866, 1000), (845, 1100), (800, 1165), (345, 1138), (420, 1000), (478, 880), (515, 790)]
 fill_smooth(dark_mask(LEDGER, 30, 4, 4 * S, exclude=[(887, 760, 15), (874, 921, 15), (859, 1041, 15)]), 4 * S, grain=1.2)
-band_old = np.zeros((H, W), np.uint8); cv2.fillPoly(band_old, [P([(476, 792), (880, 794), (880, 845), (474, 843)])], 1)
-fill_smooth(band_old.astype(np.float32), 10 * S, grain=1.0)
+band_old = np.zeros((H, W), np.uint8); # the old grey band: paper colour interpolated column by column from just above to just below it
+bx0, bx1, by0, by1 = 481 * S, 878 * S, 792 * S, 846 * S
+top = cv2.GaussianBlur(img[by0 - 8:by0 - 2], (0, 0), 3).mean(0)          # (w, 3) along the band
+bot = cv2.GaussianBlur(img[by1 + 2:by1 + 8], (0, 0), 3).mean(0)
+tcol = np.linspace(0, 1, by1 - by0)[:, None, None]
+fillb = top[None, bx0:bx1] * (1 - tcol) + bot[None, bx0:bx1] * tcol
+fillb = fillb + rng.standard_normal(fillb.shape[:2] + (1,)).astype(np.float32) * 1.3
+img[by0:by1, bx0:bx1] = fillb
 title_old = np.zeros((H, W), np.uint8); cv2.fillPoly(title_old, [P([(552, 716), (856, 716), (856, 786), (528, 786)])], 1)
 fill_smooth(title_old.astype(np.float32), 10 * S, grain=1.0)
 # URL on the floor, plaque on the brass: inpaint (textured surfaces)
@@ -210,7 +216,7 @@ def ltext(text, fontname, xl, yl, xr, yr, color=INK, extra=1.0):
     v = (vl + vr) / 2
     f = fit(lambda s: f_ebg(fontname, s), text, (ur - ul) * FS * extra)
     fd.text(fl(ul, v), text, font=f, fill=color, anchor='ls')
-band = [to_flat(486, 801), to_flat(872, 803), to_flat(872, 838), to_flat(484, 836)]
+band = [to_flat(481, 797), to_flat(877, 799), to_flat(877, 842), to_flat(479, 840)]
 fd.polygon([fl(u, v) for u, v in band], fill=(226, 222, 215, 255))
 ltext('Description', 'ebg-italic-600.ttf', 503, 820, 593, 821)
 ltext('Money in', 'ebg-italic-600.ttf', 676, 822, 751, 824)
