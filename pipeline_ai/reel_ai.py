@@ -24,7 +24,7 @@ import building as BL
 
 FPS = 30
 INFO = json.load(open(f'{S}/tts/info.json'))
-OFF = 0.0
+OFF = 0.75
 WORDS = [(w, a + OFF, b + OFF) for w, a, b in INFO['words']]
 
 
@@ -54,7 +54,7 @@ T_ITS, T_KEEP, T_ALIVE = A("it's"), A('keep'), A('alive')
 T_BRIT, T_LIVING = A('british'), A('living')
 T_COME, T_EXP = A('come'), A('experience')
 T_LAST = WORDS[-1][2]
-DUR = round(T_LAST + 2.6, 2)
+DUR = round(T_LAST + 2.4, 2)
 NF = int(DUR * FPS)
 
 # cut points
@@ -217,7 +217,7 @@ def ai_frame(t):
 # ------------------------------------------------------------------ real life
 def scene_iftar(t):
     if t < C_FRIEND:                                            # the welcome: a smiling volunteer
-        f = clip('scout').at(11.25 + (t - T_LC0) * 0.85)
+        f = clip('scout').at(11.05 + (t - T_LC0) * 0.8)
         c = cover(f, fx=0.64, fy=0.42, z=1.05 + 0.04 * prog(t, T_LC0, C_FRIEND))
         return deep(c, exp=0.66, haze=1.0, t=t, seed=11, pool=(0.55, 0.36, 0.5))
     f = clip('iftar').at(16.85 + (t - C_FRIEND) * 0.9)
@@ -236,7 +236,7 @@ def scene_know(t):
 
 
 def scene_young(t):
-    f = clip('hall').at(11.9 + (t - C_YOUNG) * 0.95)
+    f = clip('hall').at(12.25 + (t - C_YOUNG) * 0.6)
     c = cover(f, fx=0.45, fy=0.38, z=1.05 + 0.06 * prog(t, C_YOUNG, C_CONV))
     c = deep(c, exp=0.64, haze=1.4, t=t, seed=14, pool=(0.62, 0.3, 0.55))
     hit = t - (T_CONF + 0.12)
@@ -250,7 +250,7 @@ def scene_young(t):
 
 
 def scene_conv(t):
-    f = clip('expo').at(27.15 + (t - C_CONV) * 0.9)
+    f = clip('expo').at(27.15 + (t - C_CONV) * 0.8)
     c = cover(f, fx=0.36, fy=0.42, z=1.06 + 0.05 * prog(t, C_CONV, W_HER0))
     c = deep(c, exp=0.66, haze=1.0, t=t, seed=15, pool=(0.66, 0.3, 0.5))
     bump = math.exp(-max(0, t - T_TOG) * 7) * (t > T_TOG)
@@ -259,7 +259,7 @@ def scene_conv(t):
 
 
 def scene_heritage(t):
-    f = clip('tower').at(13.9 + (t - C_HER) * 0.7)
+    f = clip('tower').at(14.6 + (t - C_HER) * 0.6)
     c = cover(f, fx=0.56, fy=0.5, z=1.12 + 0.05 * prog(t, C_HER, X_ALIVE1))
     c = deep(c, exp=0.58, hal=0.25, t=t, seed=16, pool=(0.55, 0.45, 0.65))
     amt = 1 - prog(t, X_ALIVE0, X_ALIVE1)
@@ -284,7 +284,7 @@ def scene_alive(t):
 
 def scene_living(t):
     u = prog(t, C_BRIT, C_END)
-    f = clip('drone').at(33.0 + (t - C_BRIT) * 0.95)
+    f = clip('drone').at(33.6 + (t - C_BRIT) * 0.75)
     src = cover(f, fx=0.42, fy=0.6, z=1.0 + 0.06 * u)
     c = deep(src, exp=0.85, night=0.85, hal=0.8, t=t, seed=18, pool=(0.45, 0.62, 0.6))
     lt = (t - (T_LIVING - 1.2)) * 1.2
