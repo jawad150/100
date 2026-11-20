@@ -112,7 +112,7 @@ def home_door():
     """'A child comes to live with me': a home with its door open, warm light, a small rucksack on the step."""
     wall = box((2.2, 1.8, 1.7), loc=(0, 0, 0.85), m=mat(IVORY, 0.45, coat=0.2), bw=0.08)
     for s in (-1, 1):
-        box((1.45, 2.0, 0.14), loc=(s * 0.58, 0, 2.0), m=mat(PLUM, 0.3, coat=0.5), bw=0.05, rot=(0, s * math.radians(-40), 0))
+        box((1.6, 2.1, 0.14), loc=(s * 0.6, 0, 2.22), m=mat(PLUM, 0.3, coat=0.5), bw=0.05, rot=(0, s * math.radians(38), 0))
     box((0.62, 0.06, 1.05), loc=(0.25, -0.91, 0.53), m=mat(WARM, 0.3, emit=(WARM, 4.0)), bw=0.01)
     door = box((0.6, 0.08, 1.05), loc=(-0.12, -1.13, 0.53), m=mat(MAG, 0.3, coat=0.4), bw=0.03, rot=(0, 0, math.radians(-62)))
     box((0.5, 0.06, 0.45), loc=(-0.6, -0.91, 1.05), m=mat(WARM, 0.3, emit=(WARM, 2.5)), bw=0.01)
@@ -152,11 +152,6 @@ def night_clock():
         box((0.08, 0.08, 0.4), loc=(s * 0.55, 0, -1.0), m=mat(PLUM, 0.3), bw=0.02, rot=(0, s * math.radians(25), 0))
     # crescent moon
     import bmesh
-    mo = sph(0.5, loc=(1.15, 0.1, 1.35), m=mat(hexc('#FFE9A8'), 0.3, emit=(hexc('#FFD86B'), 1.5)))
-    cut = sph(0.45, loc=(1.38, -0.05, 1.5), m=mat(WHITE, 0.3))
-    md = mo.modifiers.new('b', 'BOOLEAN')
-    md.object, md.operation = cut, 'DIFFERENCE'
-    cut.hide_render = True
     for x, z in ((-1.2, 1.4), (-0.9, 1.9), (1.6, 0.5)):
         sph(0.06, loc=(x, 0, z), m=mat(WHITE, 0.3, emit=(WHITE, 3.0)))
     objs = [o for o in bpy.context.scene.objects if o.type == 'MESH' and not o.hide_render]

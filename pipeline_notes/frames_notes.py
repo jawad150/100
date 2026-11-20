@@ -82,12 +82,12 @@ def text_sprite(s, w, size, col=PLUM, alpha=1.0):
     return np.dstack([a * np.asarray(col, np.float32), a])
 
 
-def word(c, s, x, y, size, w=900, col=PLUM, u=1.0, anchor='c', rot=0.0, glow=None):
+def word(c, s, x, y, size, w=900, col=PLUM, u=1.0, anchor='c', rot=0.0, glow=None, a=1.0):
     """A kinetic word: pops up with overshoot (u = seconds since its cue)."""
-    if u <= 0:
+    if u <= 0 or a <= 0:
         return c
     k = e_back(clamp(u / 0.3), 1.4)
-    spr = text_sprite(s, w, size * (0.6 + 0.4 * k), col, clamp(u / 0.12))
+    spr = text_sprite(s, w, size * (0.6 + 0.4 * k), col, clamp(u / 0.12) * a)
     if rot:
         hh, ww = spr.shape[:2]
         R = cv2.getRotationMatrix2D((ww / 2, hh / 2), rot, 1.0)
@@ -95,7 +95,7 @@ def word(c, s, x, y, size, w=900, col=PLUM, u=1.0, anchor='c', rot=0.0, glow=Non
     ox = 0 if anchor == 'c' else (spr.shape[1] / 2 if anchor == 'l' else -spr.shape[1] / 2)
     if glow is not None:
         g = cv2.GaussianBlur(spr[..., 3], (0, 0), 16)
-        paste(c, np.dstack([g[..., None] * np.asarray(glow, np.float32), g]).astype(np.float32) * 0.9, x + ox, y)
+        paste(c, np.dstack([g[..., None] * np.asarray(glow, np.float32), g]).astype(np.float32) * 0.9 * a, x + ox, y)
     return paste(c, spr, x + ox, y + 18 * (1 - k))
 
 
@@ -228,7 +228,7 @@ def node(c, cx, cy, u, icon=None, size=120, col=GLOW, label=None, lab_side=1):
     if icon is not None and k > 0.3:
         pop(c, icon, cx, cy, size * 0.95 * k, u, shadow=False)
     if label and u > 0.2:
-        s = text_sprite(label, 800, 40, WHITE)
+        s = text_sprite(label, 800, 48, WHITE)
         paste(c, s, cx + lab_side * (r + 30 + s.shape[1] / 2), cy, clamp((u - 0.2) / 0.2))
     return c
 
