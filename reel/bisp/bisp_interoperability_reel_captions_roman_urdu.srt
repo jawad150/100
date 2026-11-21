@@ -1,0 +1,311 @@
+1
+00:00:00,010 --> 00:00:02,530
+Benazir Kafaalat ka naya Digital Payment System
+
+2
+00:00:02,540 --> 00:00:03,410
+Interoperability
+
+3
+00:00:03,420 --> 00:00:06,310
+Raqam Aapki aur Intikhab bhi Aapka!
+
+4
+00:00:06,320 --> 00:00:08,630
+Benazir Income Support Programme ne apne payment
+
+5
+00:00:08,640 --> 00:00:10,480
+system mein ek bari tabdeeli introduce ki
+
+6
+00:00:10,490 --> 00:00:10,840
+hai
+
+7
+00:00:10,850 --> 00:00:13,040
+Ek crore se zyada mustahiq khawateen ke
+
+8
+00:00:13,050 --> 00:00:15,067
+digital wallets qaim kiye ja chuke hain
+
+9
+00:00:15,077 --> 00:00:17,393
+Ab khawateen poore Pakistan mein kisi bhi
+
+10
+00:00:17,403 --> 00:00:19,103
+waqt aur kisi bhi din apni sahulat
+
+11
+00:00:19,113 --> 00:00:20,813
+ke hisaab se wazaaif ki raqam hasil
+
+12
+00:00:20,823 --> 00:00:21,700
+kar sakengi
+
+13
+00:00:21,710 --> 00:00:24,183
+Yeh iqdaam Sadr-e-Pakistan Asif Ali Zardari aur
+
+14
+00:00:24,193 --> 00:00:25,000
+Wazir-e-Azam
+
+15
+00:00:25,010 --> 00:00:26,987
+ke vision ke mutabiq khawateen ki maali
+
+16
+00:00:26,997 --> 00:00:29,150
+khudmukhtari ki taraf ek aham qadam hai
+
+17
+00:00:29,160 --> 00:00:30,900
+Ab Interoperability hai kya?
+
+18
+00:00:30,910 --> 00:00:32,873
+Pehle khawateen apni raqam hasil karne ke
+
+19
+00:00:32,883 --> 00:00:34,453
+liye ek khaas bank ke retailer ki
+
+20
+00:00:34,463 --> 00:00:35,263
+paband hoti thin,
+
+21
+00:00:35,273 --> 00:00:36,533
+jis ki wajah se lambi qataron,
+
+22
+00:00:36,543 --> 00:00:39,033
+intezar aur najaiz katautiyon ka saamna karna
+
+23
+00:00:39,043 --> 00:00:40,033
+parta tha
+
+24
+00:00:40,043 --> 00:00:42,633
+Ab Interoperability ke zariye khawateen kisi bhi
+
+25
+00:00:42,643 --> 00:00:44,613
+bank ya retailer ki paband nahi hain
+
+26
+00:00:44,623 --> 00:00:46,803
+Woh kisi bhi banking partner ke authorized
+
+27
+00:00:46,813 --> 00:00:48,603
+retailer se apni raqam hasil kar sakti
+
+28
+00:00:48,613 --> 00:00:49,127
+hain
+
+29
+00:00:49,137 --> 00:00:50,867
+Agar kisi retailer ke paas rush ho
+
+30
+00:00:50,877 --> 00:00:51,977
+ya woh taawun na kare,
+
+31
+00:00:51,987 --> 00:00:53,647
+toh woh kisi doosre retailer ka intikhab
+
+32
+00:00:53,657 --> 00:00:54,533
+bhi kar sakti hain
+
+33
+00:00:54,543 --> 00:00:56,373
+In ke 6 banking partners hain:
+
+34
+00:00:56,383 --> 00:00:57,583
+Habib Bank Limited,
+
+35
+00:00:57,593 --> 00:00:59,013
+HBL Microfinance Bank,
+
+36
+00:00:59,023 --> 00:00:59,833
+Easypaisa,
+
+37
+00:00:59,843 --> 00:01:00,733
+JazzCash,
+
+38
+00:01:00,743 --> 00:01:01,743
+Bank of Punjab,
+
+39
+00:01:01,753 --> 00:01:02,433
+Bank Alfalah
+
+40
+00:01:02,443 --> 00:01:04,383
+Is naye system ke paanch faide hain
+
+41
+00:01:04,393 --> 00:01:06,283
+Retailers ki monopoly ka khatma
+
+42
+00:01:06,293 --> 00:01:08,433
+Apni marzi se retailer chunne ki azadi
+
+43
+00:01:08,443 --> 00:01:10,673
+Lambi qataron aur intezar mein kami
+
+44
+00:01:10,683 --> 00:01:12,633
+Najaiz katautiyon ki hosla shikni
+
+45
+00:01:12,643 --> 00:01:13,973
+Aur digital wallet ke through
+
+46
+00:01:13,983 --> 00:01:17,297
+mehfooz payments aur financial facilities tak rasai
+
+47
+00:01:17,307 --> 00:01:18,337
+Ab main aap ko batati hoon ke
+
+48
+00:01:18,347 --> 00:01:19,747
+aap ne raqam kaise hasil karni hai
+
+49
+00:01:19,757 --> 00:01:21,327
+Sab se pehle aap ko bank ka
+
+50
+00:01:21,337 --> 00:01:22,287
+SMS receive hoga,
+
+51
+00:01:22,297 --> 00:01:23,707
+jis ke andar aap ke account mein
+
+52
+00:01:23,717 --> 00:01:24,917
+jama raqam batayi jaye gi
+
+53
+00:01:24,927 --> 00:01:26,857
+Is ke baad aap ne apna CNIC
+
+54
+00:01:26,867 --> 00:01:28,777
+aur registered mobile number le kar kisi
+
+55
+00:01:28,787 --> 00:01:30,747
+bhi partner bank ke authorized retailer ke
+
+56
+00:01:30,757 --> 00:01:31,387
+paas jana hai
+
+57
+00:01:31,397 --> 00:01:34,507
+Apni biometric verification karwani hai aur apni
+
+58
+00:01:34,517 --> 00:01:35,867
+raqam le kar gin leni hai
+
+59
+00:01:35,877 --> 00:01:36,700
+Is ke
+
+60
+00:01:36,710 --> 00:01:38,150
+baad aap ko ek aur SMS receive
+
+61
+00:01:38,160 --> 00:01:39,710
+hoga jis ko aap ne apne payment
+
+62
+00:01:39,720 --> 00:01:41,873
+record ke liye mehfooz rakhna hai
+
+63
+00:01:41,883 --> 00:01:42,893
+Ek zaroori hidayat:
+
+64
+00:01:42,903 --> 00:01:45,073
+apna mobile phone aur SIM kisi ghair
+
+65
+00:01:45,083 --> 00:01:46,393
+mutaliqa shakhs ko na dein.
+
+66
+00:01:46,403 --> 00:01:47,723
+Yeh aapka digital wallet hai,
+
+67
+00:01:47,733 --> 00:01:49,313
+iski hifazat aap ko khud hi karni
+
+68
+00:01:49,323 --> 00:01:49,927
+hai
+
+69
+00:01:49,937 --> 00:01:51,777
+Ek crore se zyada khawateen ko digital
+
+70
+00:01:51,787 --> 00:01:54,447
+wallets aur interoperable payment system se jorna
+
+71
+00:01:54,457 --> 00:01:56,217
+Pakistan hi nahi balke poori duniya ke
+
+72
+00:01:56,227 --> 00:01:57,700
+liye ek bohat bari kamyabi hai
+
+73
+00:01:57,710 --> 00:01:59,390
+Is se khawateen ko paison se juri
+
+74
+00:01:59,400 --> 00:02:01,740
+sahuliyaton aur digital madad tak pohanchne ka
+
+75
+00:02:01,750 --> 00:02:03,260
+behtar mauqa milta hai
+
+76
+00:02:03,270 --> 00:02:05,080
+Benazir ka Benazir Khwab,
+
+77
+00:02:05,090 --> 00:02:06,430
+Har Aurat Khud Mukhtar,
+
+78
+00:02:06,440 --> 00:02:07,900
+Ba Ikhtiyar!
