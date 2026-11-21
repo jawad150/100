@@ -374,7 +374,7 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 | 31–40 s | Pehle: khaas bank ka retailer, qataarein, intezar, katautiyan | The footage turns to a muted memory grade with a red "PEHLE" tag and four red pain chips |
 | 40–49 s | Ab: kisi bhi banking partner ka authorized retailer | Colour floods back with an "AB" tag; a network card links one woman to six retailers, which light up in gold and get checks |
 | 49–55 s | Rush ya taawun na kare, doosra retailer | "Retailer 1" (rush, taawun nahi, ✕) → arrow → "Doosra Retailer: aapka intikhab ✓" |
-| 55–63 s | 6 banking partners | "6 Banking Partners" header and a 2×3 grid of numbered tiles, each landing as she names the bank |
+| 55–62 s | 6 banking partners | "6 Banking Partners" header and a numbered glass list that grows as she names each bank (Habib Bank Limited, HBL Microfinance Bank, Easypaisa, JazzCash, Bank of Punjab, Bank Alfalah: her spoken order) |
 | 63–77 s | Naye system ke 5 faide | "5 Naye System ke Faide" header with progress dots and a growing checklist card |
 | 77–102 s | Raqam kaise hasil karein? (4 steps) | Title chip, then a 4-step stepper card (SMS → CNIC + mobile at an authorized retailer → biometric + count the cash → second SMS, keep it as a record) |
 | 102–110 s | Zaroori hidayat | Amber warning card: "Mobile phone aur SIM kisi ghair mutaliqa shakhs ko na dein" → shield "Yeh aapka Digital Wallet hai, iski hifazat karein!" |
@@ -388,7 +388,19 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 - **Voice** ([`audio_mix.py`](pipeline/bisp/audio_mix.py)): high-pass, FFT denoise, room-box cut at 280 Hz, presence lift, de-esser and 2.8:1 compression, then loudness-matched per clip and cut with 12 ms fades.
 - **Music:** an original track synthesised in code with `pipeline/fostering/music_synth.py` (no samples, no AI): G major, 100 BPM, I–V–vi–IV. The sections follow the story: a hook riser into "INTEROPERABILITY", a sparse minor "Pehle", a bright plucked "Ab" groove, a pulse-only "Zaroori hidayat", a final build with claps, and a bell resolve on the end card. It sits about 14.5 LU under the voice.
 - **SFX:** from the `pipeline/fostering/audio.py` library, on the same event plan as the graphics: whooshes on transitions, glass taps on the bank tiles, check dings on the checklist, notification chimes on the SMS steps and a logo sting.
-- **Master:** −14 LUFS integrated, ≤ −1.5 dBTP.
+- **Master:** −14 LUFS integrated, ≤ −1.9 dBTP after AAC encoding.
+
+**QA:** an independent reviewer went through the whole render frame by frame. Round 1 raised 4 must-fixes and 8 should-fixes; all of them were fixed:
+- the 1731 splice repeated "ke";
+- footage juddered from frame rounding at x.5 boundaries;
+- the glass drop shadows had hard edges;
+- text ran past its pills;
+- captions highlighted words early at section starts;
+- the logo pill overlapped headers;
+- step text smeared when the cards changed;
+- SFX masked key words.
+
+Round 2 verified every fix and signed off ("ship"). Its remaining polish items (bank names larger, the Alfalah tail, the 1731 in-point moved into silence) are also in the final render.
 
 ## Rebuild
 ```bash

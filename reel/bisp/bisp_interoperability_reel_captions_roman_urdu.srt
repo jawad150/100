@@ -151,161 +151,161 @@ JazzCash,
 Bank of Punjab,
 
 39
-00:01:01,753 --> 00:01:02,433
+00:01:01,753 --> 00:01:02,500
 Bank Alfalah
 
 40
-00:01:02,443 --> 00:01:04,383
+00:01:02,510 --> 00:01:04,450
 Is naye system ke paanch faide hain
 
 41
-00:01:04,393 --> 00:01:06,283
+00:01:04,460 --> 00:01:06,350
 Retailers ki monopoly ka khatma
 
 42
-00:01:06,293 --> 00:01:08,433
+00:01:06,360 --> 00:01:08,500
 Apni marzi se retailer chunne ki azadi
 
 43
-00:01:08,443 --> 00:01:10,673
+00:01:08,510 --> 00:01:10,740
 Lambi qataron aur intezar mein kami
 
 44
-00:01:10,683 --> 00:01:12,633
+00:01:10,750 --> 00:01:12,700
 Najaiz katautiyon ki hosla shikni
 
 45
-00:01:12,643 --> 00:01:13,973
+00:01:12,710 --> 00:01:14,040
 Aur digital wallet ke through
 
 46
-00:01:13,983 --> 00:01:17,297
+00:01:14,050 --> 00:01:17,363
 mehfooz payments aur financial facilities tak rasai
 
 47
-00:01:17,307 --> 00:01:18,337
+00:01:17,373 --> 00:01:18,403
 Ab main aap ko batati hoon ke
 
 48
-00:01:18,347 --> 00:01:19,747
+00:01:18,413 --> 00:01:19,813
 aap ne raqam kaise hasil karni hai
 
 49
-00:01:19,757 --> 00:01:21,327
+00:01:19,823 --> 00:01:21,393
 Sab se pehle aap ko bank ka
 
 50
-00:01:21,337 --> 00:01:22,287
+00:01:21,403 --> 00:01:22,353
 SMS receive hoga,
 
 51
-00:01:22,297 --> 00:01:23,707
+00:01:22,363 --> 00:01:23,773
 jis ke andar aap ke account mein
 
 52
-00:01:23,717 --> 00:01:24,917
+00:01:23,783 --> 00:01:24,983
 jama raqam batayi jaye gi
 
 53
-00:01:24,927 --> 00:01:26,857
+00:01:24,993 --> 00:01:26,923
 Is ke baad aap ne apna CNIC
 
 54
-00:01:26,867 --> 00:01:28,777
+00:01:26,933 --> 00:01:28,843
 aur registered mobile number le kar kisi
 
 55
-00:01:28,787 --> 00:01:30,747
+00:01:28,853 --> 00:01:30,813
 bhi partner bank ke authorized retailer ke
 
 56
-00:01:30,757 --> 00:01:31,387
+00:01:30,823 --> 00:01:31,453
 paas jana hai
 
 57
-00:01:31,397 --> 00:01:34,507
+00:01:31,463 --> 00:01:34,573
 Apni biometric verification karwani hai aur apni
 
 58
-00:01:34,517 --> 00:01:35,867
+00:01:34,583 --> 00:01:35,933
 raqam le kar gin leni hai
 
 59
-00:01:35,877 --> 00:01:36,700
+00:01:35,943 --> 00:01:36,800
 Is ke
 
 60
-00:01:36,710 --> 00:01:38,150
+00:01:36,810 --> 00:01:38,183
 baad aap ko ek aur SMS receive
 
 61
-00:01:38,160 --> 00:01:39,710
+00:01:38,193 --> 00:01:39,743
 hoga jis ko aap ne apne payment
 
 62
-00:01:39,720 --> 00:01:41,873
+00:01:39,753 --> 00:01:41,907
 record ke liye mehfooz rakhna hai
 
 63
-00:01:41,883 --> 00:01:42,893
+00:01:41,917 --> 00:01:42,927
 Ek zaroori hidayat:
 
 64
-00:01:42,903 --> 00:01:45,073
+00:01:42,937 --> 00:01:45,107
 apna mobile phone aur SIM kisi ghair
 
 65
-00:01:45,083 --> 00:01:46,393
+00:01:45,117 --> 00:01:46,427
 mutaliqa shakhs ko na dein.
 
 66
-00:01:46,403 --> 00:01:47,723
+00:01:46,437 --> 00:01:47,757
 Yeh aapka digital wallet hai,
 
 67
-00:01:47,733 --> 00:01:49,313
+00:01:47,767 --> 00:01:49,347
 iski hifazat aap ko khud hi karni
 
 68
-00:01:49,323 --> 00:01:49,927
+00:01:49,357 --> 00:01:49,960
 hai
 
 69
-00:01:49,937 --> 00:01:51,777
+00:01:49,970 --> 00:01:51,810
 Ek crore se zyada khawateen ko digital
 
 70
-00:01:51,787 --> 00:01:54,447
+00:01:51,820 --> 00:01:54,480
 wallets aur interoperable payment system se jorna
 
 71
-00:01:54,457 --> 00:01:56,217
+00:01:54,490 --> 00:01:56,250
 Pakistan hi nahi balke poori duniya ke
 
 72
-00:01:56,227 --> 00:01:57,700
+00:01:56,260 --> 00:01:57,733
 liye ek bohat bari kamyabi hai
 
 73
-00:01:57,710 --> 00:01:59,390
+00:01:57,743 --> 00:01:59,423
 Is se khawateen ko paison se juri
 
 74
-00:01:59,400 --> 00:02:01,740
+00:01:59,433 --> 00:02:01,773
 sahuliyaton aur digital madad tak pohanchne ka
 
 75
-00:02:01,750 --> 00:02:03,260
+00:02:01,783 --> 00:02:03,293
 behtar mauqa milta hai
 
 76
-00:02:03,270 --> 00:02:05,080
+00:02:03,303 --> 00:02:05,113
 Benazir ka Benazir Khwab,
 
 77
-00:02:05,090 --> 00:02:06,430
+00:02:05,123 --> 00:02:06,463
 Har Aurat Khud Mukhtar,
 
 78
-00:02:06,440 --> 00:02:07,900
+00:02:06,473 --> 00:02:07,933
 Ba Ikhtiyar!

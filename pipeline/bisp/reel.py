@@ -598,16 +598,27 @@ def sc_banks(f, t):
         b.put(T('Banking', 44, 'xbold'), -140, -26, anchor='l')
         b.put(T('Partners', 44, 'xbold', color=K.GOLD_L), -140, 26, anchor='l')
         b.put(K.icon_badge('bank', 86, bg=K.GREEN), 230, 0)
+    # single-column list (names at full size), growing as she names each bank
+    t_in = P['bank_t'][0] - 0.12
+    grow = sum(K.ease_out_cubic(K.lin(t, tk - 0.2, tk + 0.12)) for tk in P['bank_t'][1:])
+    rh = 68
+    hh = 56 + rh * (1 + grow)
+    top = LOW_Y - 215
+    bx = Box(f, t, CXL, top + hh / 2, 860, hh, t_in, P['banks_out'], r=40, style='dark')
+    if not bx.ok: return
     for k, name in enumerate(BANKS):
         tk = P['bank_t'][k]
-        col, row = k % 2, k // 2
-        cx = CXL - 222 + col * 444
-        cy = LOW_Y - 150 + row * 132
-        bb = Box(f, t, cx, cy, 424, 114, tk - 0.08, P['banks_out'] + k * 0.03, r=30, style='dark')
-        if bb.ok:
-            bb.put(K.disc(52, K.GOLD_D, ring=K.GOLD_L, ring_w=2), -178, 0)
-            bb.put(T(str(k + 1), 28, 'black', shadow=0.0), -178, 1)
-            bb.put(T(name, bank_size(), 'bold'), -140, 0, anchor='l')
+        p = K.ease_out_back(K.lin(t, tk - 0.08, tk + 0.3), 2.0)
+        if p <= 0: continue
+        y = -hh / 2 + 28 + rh / 2 + k * rh
+        bx.put(K.disc(50, K.GOLD_D, ring=K.GOLD_L, ring_w=2), -372, y, scale=max(0.01, p))
+        bx.put(T(str(k + 1), 27, 'black', shadow=0.0), -372, y + 1, alpha=min(1, p))
+        a2 = K.ease_out_cubic(K.lin(t, tk - 0.05, tk + 0.25))
+        bx.put(T(name, 34, 'bold'), -332 + (1 - a2) * 24, y, alpha=a2, anchor='l')
+        if k < 5 and t >= P['bank_t'][k + 1] - 0.2:
+            x0, y0 = bx.pos(-340, y + rh / 2)
+            x1, _ = bx.pos(380, y + rh / 2)
+            line(f, x0, y0, x1, y0, (1, 1, 1), 1.2 * bx.s, bx.a * 0.18 * K.lin(t, P['bank_t'][k + 1] - 0.2, P['bank_t'][k + 1]))
 
 
 FAIDE = ['Retailers ki monopoly ka khatma', 'Apni marzi se retailer chunne ki azadi', 'Lambi qataron aur intezar mein kami',
@@ -694,8 +705,8 @@ def sc_steps(f, t):
         ic, l1, l2 = STEPS[k]
         pop = K.ease_out_back(K.lin(t, tin + 0.05, tin + 0.45), 2.2)
         bx.put(K.icon_badge(ic, 156, bg=K.GREEN), -320 + dx, 40, alpha=a, scale=max(0.01, pop))
-        bx.put(Tfit(l1, 640, 44, 'xbold'), -210 + dx, 8, alpha=a, anchor='l')
-        bx.put(Tfit(l2, 640, 32, 'semi', color=K.GOLD_L), -210 + dx, 68, alpha=a, anchor='l')
+        bx.put(Tfit(l1, 600, 44, 'xbold'), -210 + dx, 8, alpha=a, anchor='l')
+        bx.put(Tfit(l2, 600, 32, 'semi', color=K.GOLD_L), -210 + dx, 68, alpha=a, anchor='l')
         if k in (0, 3):
             ping = K.lin(t, tin + 0.3, tin + 1.0)
             if 0 < ping < 1:
@@ -946,7 +957,7 @@ def sfx_cues():
     add(P['banks_head'], 'impact_soft', -9)
     for tk in P['bank_t']: add(tk, 'glass_tap', -8)
     add(P['faide_head'], 'impact_soft', -9)
-    for tk in P['faida_t']: add(tk, 'check_ding', -10)
+    for tk in P['faida_t']: add(tk, 'check_ding', -14)
     add(P['steps_title'], 'card_slide', -9)
     for k, tk in enumerate(P['step_t']):
         add(tk - 0.12, 'card_slide', -11)

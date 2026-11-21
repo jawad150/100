@@ -6,7 +6,7 @@ re-transcribing the joined audio:
   * IMG_1689: she says "Wazir-e-Azam Mian Muhammad Nawaz Sharif" (all three Whisper models agree and there is no "sh"
     burst where "Shehbaz" would start). The script says Shehbaz Sharif, so the name is cut (3.76 -> 4.93 s): the line
     becomes "... aur Wazir-e-Azam ke vision ke mutabiq ...", and the lower-third carries the script's correct name.
-  * IMG_1731 has several takes. Used: the clean take 13.9-33.78 s (up to "Is ke") + the last take from "baad" (39.55 s).
+  * IMG_1731 has several takes. Used: the clean take 13.9-33.78 s (up to "Is ke") + the last take from "baad" (39.567 s, in the silence before it).
   * IMG_1691: the first attempt (2.2-5.2 s) is dropped, the clean take starts at 7.2 s.
   * IMG_1704 is an alternate take of IMG_1705 (ends with an outtake), IMG_1738's second sentence is a flub that
     IMG_1740 repeats cleanly.
@@ -42,10 +42,10 @@ SEGMENTS = [
     ('pehle',     'IMG_1691', 7.18, 16.22, 1.00),
     ('ab',        'IMG_1698', 0.55, 9.50, 1.00),
     ('rush',      'IMG_1699', 0.48, 6.05, 1.10),
-    ('banks',     'IMG_1705', 0.50, 8.40, 1.00),
+    ('banks',     'IMG_1705', 0.50, 8.467, 1.00),
     ('faide',     'IMG_1725', 0.90, 15.30, 1.00),
     ('steps_a',   'IMG_1731', 13.86, 33.775, 1.00),
-    ('steps_b',   'IMG_1731', 39.55, 44.25, 1.13),
+    ('steps_b',   'IMG_1731', 39.567, 44.25, 1.13),
     ('hidayat',   'IMG_1737', 1.55, 9.70, 1.00),
     ('crore',     'IMG_1738', 1.48, 9.55, 1.00),
     ('khwab',     'IMG_1740', 1.80, 11.50, 1.00),
