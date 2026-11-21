@@ -101,6 +101,13 @@ def package():
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video] + common + ['-pass', '1', '-an', '-f', 'mp4', os.devnull], check=True)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-i', mix, '-map', '0:v', '-map', '1:a'] + common +
                    ['-pass', '2', '-af', 'apad', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-shortest'] + tags + [ig], check=True)
+    # high-quality download copy (2-pass 22 Mbps; under the 400 MB chat-attachment limit, visually = master)
+    hq = os.path.join(DELIV, f'{NAME}_HQ_22mbps.mp4')
+    hqc = ['-c:v', 'libx264', '-preset', 'slow', '-b:v', '22M', '-maxrate', '28M', '-bufsize', '44M', '-pix_fmt', 'yuv420p',
+           '-passlogfile', pl + '_hq']
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video] + hqc + ['-pass', '1', '-an', '-f', 'mp4', os.devnull], check=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-i', mix, '-map', '0:v', '-map', '1:a'] + hqc +
+                   ['-pass', '2', '-af', 'apad', '-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-shortest'] + tags + [hq], check=True)
     # cover (hook frame with the INTEROPERABILITY slab + both pills)
     import reel, cv2
     cov = reel.render_frame(5.5)

@@ -523,3 +523,64 @@ def grain(frame, t, amount=0.022, seed=0):
     lum = frame @ np.array([0.2126, 0.7152, 0.0722], np.float32)
     w = (0.4 + 0.6 * (1 - np.abs(lum - 0.45) * 1.6).clip(0, 1))[..., None]
     frame += n[..., None] * amount * w
+
+
+# ---- partner logos (official files in workspace_bisp/brand/banks) -----------------------------------------------------
+BANK_FILES = {'hbl': 'hbl_1920new.png', 'hblmfb': 'hbl_1920new.png', 'easypaisa': 'easypaisa.png',
+              'jazzcash': 'jazzcash.png', 'bop': 'bop.png', 'alfalah': 'alfalah.png'}
+
+
+@lru_cache(16)
+def _logo_img(key):
+    im = Image.open(os.path.join(WS, 'brand', 'banks', BANK_FILES[key])).convert('RGBA')
+    bb = im.getchannel('A').point(lambda v: 255 if v > 8 else 0).getbbox()
+    return im.crop(bb) if bb else im
+
+
+@lru_cache(64)
+def logo_plate(key, w, h, r=None, pad=0.16):
+    """White rounded plate (w x h) with the partner's official logo fitted inside -> premultiplied layer.
+    HBL Microfinance Bank = the HBL mark + 'MicroFinance Bank' (its brand lock-up)."""
+    S = 3
+    W_, H_ = int(w * S), int(h * S)
+    r = (h * 0.28 if r is None else r) * S
+    plate = Image.new('RGBA', (W_, H_), (0, 0, 0, 0))
+    ImageDraw.Draw(plate).rounded_rectangle([0, 0, W_ - 1, H_ - 1], radius=r, fill=(255, 255, 255, 250))
+    im = _logo_img(key)
+    pw, ph = W_ * (1 - 2 * pad), H_ * (1 - 2 * pad)
+    if key == 'hblmfb':
+        ph_logo = ph * 0.62
+        s = min(pw / im.width, ph_logo / im.height)
+        lg = im.resize((max(1, int(im.width * s)), max(1, int(im.height * s))), Image.LANCZOS)
+        fnt = font('ui_b', max(8, int(ph * 0.30)))
+        txt = 'MicroFinance Bank'
+        tw = fnt.getlength(txt)
+        y0 = int((H_ - (lg.height + ph * 0.34 + ph * 0.06)) / 2)
+        plate.alpha_composite(lg, (int((W_ - lg.width) / 2), y0))
+        ImageDraw.Draw(plate).text(((W_ - tw) / 2, y0 + lg.height + ph * 0.04), txt, font=fnt, fill=(0, 128, 112, 255))
+    else:
+        s = min(pw / im.width, ph / im.height)
+        lg = im.resize((max(1, int(im.width * s)), max(1, int(im.height * s))), Image.LANCZOS)
+        plate.alpha_composite(lg, (int((W_ - lg.width) / 2), int((H_ - lg.height) / 2)))
+    plate = plate.resize((int(w), int(h)), Image.LANCZOS)
+    L = to_layer(plate)
+    L.setflags(write=False)
+    return L
+
+
+@lru_cache(8)
+def emblem_disc(size):
+    """Government of Pakistan state emblem (bisp.gov.pk) on a white disc."""
+    N = int(size)
+    yy, xx = np.mgrid[0:N, 0:N].astype(np.float32)
+    m0 = np.clip(N / 2 - np.sqrt((xx + 0.5 - N / 2) ** 2 + (yy + 0.5 - N / 2) ** 2), 0, 1)[..., None]
+    L = np.concatenate([np.ones((N, N, 3), np.float32) * m0, m0], -1)
+    im = Image.open(os.path.join(WS, 'brand', 'banks', 'gov_emblem.png')).convert('RGB')
+    e = int(N * 0.74)
+    im = im.resize((e, int(e * im.height / im.width)), Image.LANCZOS)
+    a = np.asarray(im, np.float32) / 255.0
+    y0, x0 = (N - a.shape[0]) // 2, (N - a.shape[1]) // 2
+    m = L[y0:y0 + a.shape[0], x0:x0 + a.shape[1], 3:4]
+    L[y0:y0 + a.shape[0], x0:x0 + a.shape[1], :3] = a * m
+    L.setflags(write=False)
+    return L

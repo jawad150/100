@@ -22,7 +22,7 @@ CLIP_DUR = {}
 
 TOP_Y = 470       # centre of the upper graphics band (above her head)
 LOW_Y = 1215      # centre of the lower graphics band (over her body)
-CAP_Y = 1462      # caption line centre
+CAP_Y = 1425      # caption line centre (inside the Reels safe area, below every face)
 CX = 540
 CXL = 520         # lower band is nudged left of the like/comment/share column
 
@@ -126,6 +126,7 @@ CAP_OFF = [
     (S('whatis')['t0'] - 0.05, S('whatis')['t1']),
     (PLAN['bank_t'][0] - 0.05, S('banks')['t1']),
     (PLAN['faida_t'][0] - 0.05, S('faide')['t1']),
+    (S('hidayat')['t0'], S('hidayat')['t1']),
     (PLAN['kh_title'] - 0.05, 1e9),
 ]
 
@@ -273,30 +274,64 @@ STY = {
     'amber': dict(tint=(0.55, 0.32, 0.02), tint_a=0.5, dark=0.42, lift=0.0, vibrancy=1.0, rim=1.0, sheen=0.08),
 }
 
+# ---- layout: Instagram safe area + the presenter's face --------------------------------------------------------------
+# Safe area (1080x1920 Reels): clear of the top bar (y < 222), the caption/username/audio strip (y > 1538) and the
+# like/comment/share column (x > 960). Her face (forehead to chin, per segment, in output coordinates: facetrack.py)
+# is never covered: graphics live in the band above it (under the logo pill) or the band below it (above captions).
+SAFE = dict(top=222, bot=1538, l=60, r=960)
+LOGO_Y = 278
+TOP0 = 350
+CAP_TOP = 1372
+FSEG = json.load(open(os.path.join(WS, 'faces_seg.json')))
+RECTS = []          # panels drawn in the current frame (for the layout audit)
 
-def anim(t, t_in, t_out, d_in=0.38, d_out=0.24):
-    """-> (alpha, scale, in_progress, dy) for a pop-in / pop-out element; alpha 0 = hidden."""
+
+def band(seg, where, caps=True):
+    fz = FSEG[seg]
+    if where == 'top':
+        return TOP0, fz['top'] - 14
+    return fz['bottom'] + 14, (CAP_TOP - 10) if caps else SAFE['bot']
+
+
+def fit(seg, where, h, caps=True, align='start'):
+    """-> (centre y, scale) so a panel of design height h fits its band ('start' = nearest the logo / chin)."""
+    a, b = band(seg, where, caps)
+    k = min(1.0, (b - a) / h)
+    if align == 'center':
+        return (a + b) / 2, k
+    return a + h * k / 2, k
+
+
+def anim(t, t_in, t_out, d_in=0.36, d_out=0.24):
+    """-> (alpha, scale, in_progress, slide) for a pop-in / pop-out element; alpha 0 = hidden."""
     if t < t_in or t > t_out + d_out:
         return 0.0, 0.0, 0.0, 0.0
     pin = K.lin(t, t_in, t_in + d_in)
     pout = K.lin(t, t_out, t_out + d_out)
     a = min(K.ease_out_cubic(min(1, pin * 1.7)), 1 - K.ease_in_cubic(pout))
-    s = (0.80 + 0.20 * K.ease_out_back(pin, 2.0)) * (1 - 0.10 * K.ease_in_cubic(pout))
-    dy = (1 - K.ease_out_cubic(pin)) * 36 + K.ease_in_cubic(pout) * -20
-    return a, s, pin, dy
+    s = (0.86 + 0.14 * K.ease_out_back(pin, 1.4)) * (1 - 0.08 * K.ease_in_cubic(pout))
+    sl = (1 - K.ease_out_cubic(pin)) * 22 + K.ease_in_cubic(pout) * 12
+    return a, s, pin, sl
 
 
 class Box:
-    """A glass panel whose children are placed in its local coordinates (scaled/faded with it)."""
+    """A glass panel whose children are placed in its local coordinates (scaled/faded with it). k = fit scale;
+    side = +1 slides in from below (lower band), -1 from above (upper band), so nothing ever moves toward her face."""
 
-    def __init__(self, f, t, cx, cy, w, h, t_in, t_out, r=44, style='dark', d_in=0.38, d_out=0.24, **gk):
+    def __init__(self, f, t, cx, cy, w, h, t_in, t_out, r=44, style='dark', d_in=0.36, d_out=0.24, k=1.0, side=None,
+                 tag='panel', **gk):
         self.f = f
-        self.a, self.s, self.p, dy = anim(t, t_in, t_out, d_in, d_out)
-        self.cx, self.cy = cx, cy + dy
+        self.a, s, self.p, sl = anim(t, t_in, t_out, d_in, d_out)
+        self.s = s * k
+        side = side if side is not None else (1 if cy > 900 else -1)
+        self.cx, self.cy = cx, cy + side * sl
+        self.w, self.h = w, h
         self.ok = self.a > 0.003
         if self.ok:
             g = dict(STY[style]); g.update(gk)
             K.glass(f, self.cx, self.cy, w * self.s, h * self.s, r * self.s, alpha=self.a, **g)
+            RECTS.append((tag, self.cx - w * self.s / 2, self.cy - h * self.s / 2, self.cx + w * self.s / 2,
+                          self.cy + h * self.s / 2))
 
     def pos(self, dx, dy):
         return self.cx + dx * self.s, self.cy + dy * self.s
@@ -304,16 +339,11 @@ class Box:
     def put(self, L, dx, dy, alpha=1.0, scale=1.0, anchor='c'):
         if not self.ok or alpha <= 0: return
         x, y = self.pos(dx, dy)
-        if anchor == 'l':
-            K.blit(self.f, L, x, y, self.a * alpha, self.s * scale, 'l')
-        elif anchor == 'r':
-            K.blit(self.f, L, x, y, self.a * alpha, self.s * scale, 'r')
-        else:
-            K.blit(self.f, L, x, y, self.a * alpha, self.s * scale)
+        K.blit(self.f, L, x, y, self.a * alpha, self.s * scale, anchor)
 
 
 def T(s, size=40, w='xbold', color=(1, 1, 1), shadow=0.35, grad=None, tracking=0):
-    return K.text_layer(s, w, size, color=tuple(color), shadow=shadow, shadow_blur=6, shadow_dy=3,
+    return K.text_layer(s, w, int(size), color=tuple(color), shadow=shadow, shadow_blur=6, shadow_dy=3,
                         gradient=grad, tracking=tracking)
 
 
@@ -328,82 +358,106 @@ def Tfit(s, max_w, size, w='bold', **kw):
 
 def chip_width(text, size, h):
     L = T(text, size, 'bold')
-    return L.shape[1] - 12 + int(h * 0.74) + 64
+    return L.shape[1] - 12 + int(h * 0.74) + 56
 
 
-def chip(f, t, cx, cy, text, icon, t_in, t_out, style='dark', badge=K.GREEN, size=42, h=96, w=None, icon_fg=K.WHITE,
-         tsize=None, text_color=(1, 1, 1)):
-    L = T(text, tsize or size, 'bold', color=text_color)
+def chip(f, t, cx, cy, text, icon, t_in, t_out, style='dark', badge=K.GREEN, size=34, h=72, w=None, icon_fg=K.WHITE,
+         text_color=(1, 1, 1), k=1.0, side=None, tag='chip'):
+    L = T(text, size, 'bold', color=text_color)
     bw = int(h * 0.74)
-    w = w or (L.shape[1] - 12 + bw + 64)
-    b = Box(f, t, cx, cy, w, h, t_in, t_out, r=h / 2, style=style)
+    w = w or chip_width(text, size, h)
+    b = Box(f, t, cx, cy, w, h, t_in, t_out, r=h / 2, style=style, k=k, side=side, tag=tag)
     if not b.ok: return b
-    p = K.ease_out_back(K.lin(t, t_in + 0.08, t_in + 0.45), 2.4)
+    p = K.ease_out_back(K.lin(t, t_in + 0.08, t_in + 0.42), 1.6)
     b.put(K.icon_badge(icon, bw, bg=badge, fg=icon_fg), -w / 2 + h / 2, 0, scale=max(0.01, p))
-    b.put(L, -w / 2 + h / 2 + bw / 2 + 18, 0, anchor='l')
+    b.put(L, -w / 2 + h / 2 + bw / 2 + 16, 0, anchor='l')
     return b
+
+
+def chip_stack(f, t, seg, where, items, t_out, h=68, gap=8, size=31, style='dark', badge=K.GREEN, caps=True):
+    """Vertical stack of chips fitted into a band (centred on x = 540 top / 510 bottom)."""
+    tot = len(items) * h + (len(items) - 1) * gap
+    cy0, k = fit(seg, where, tot, caps)
+    top = cy0 - tot * k / 2
+    cx = CX if where == 'top' else CXL
+    for i, it in enumerate(items):
+        txt, ic, tt = it[:3]
+        sty = it[3] if len(it) > 3 else style
+        cy = top + (h / 2 + i * (h + gap)) * k
+        chip(f, t, cx, cy, txt, ic, tt, t_out + i * 0.04, style=sty, badge=badge, size=size, h=h, k=k,
+             side=(-1 if where == 'top' else 1))
+
+
+def tag_pill(f, t, text, icon, t_in, t_out, style):
+    """Small section tag left of the logo pill (PEHLE / AB)."""
+    b = Box(f, t, 168, LOGO_Y, 196, 70, t_in, t_out, r=35, style=style, side=-1, tag='tag')
+    if b.ok:
+        b.put(K.icon(icon, 30, (1, 1, 1)), -54, 0)
+        b.put(T(text, 33, 'black', tracking=3), 18, 0)
 
 
 # ---- scenes ------------------------------------------------------------------------------------------------------------
 def sc_logo(f, t):
-    """Official BISP banner in a glass pill, top centre; it flies into the end card."""
+    """Official BISP banner in a glass pill, top centre inside the safe area; it flies into the end card."""
     P = PLAN
     if t < P['logo_in']: return
     a = K.ease_out_cubic(K.lin(t, P['logo_in'], P['logo_in'] + 0.4))
-    drop = (1 - K.ease_out_back(K.lin(t, P['logo_in'], P['logo_in'] + 0.55), 1.8)) * -60
-    pulse = 1 + 0.10 * math.exp(-((t - P['logo_pulse'] - 0.25) / 0.22) ** 2)
+    drop = 0.0
+    pop = 0.85 + 0.15 * K.ease_out_cubic(K.lin(t, P['logo_in'], P['logo_in'] + 0.5))
+    pulse = 1 + 0.07 * math.exp(-((t - P['logo_pulse'] - 0.25) / 0.22) ** 2)
     e = K.ease_io(K.lin(t, P['end_in'], P['end_in'] + 0.75))
-    cx, cy = 540, 196 + drop
-    wl = 280 * pulse
-    # move into the end card
-    cy = cy * (1 - e) + 690 * e
-    wl = wl * (1 - e) + 880 * e
+    cx, cy = 540, LOGO_Y + drop
+    wl = 228 * pulse * pop
+    cy = cy * (1 - e) + 700 * e
+    wl = wl * (1 - e) + 740 * e
     hl = wl * 563 / 1600
-    K.glass(f, cx, cy, wl + 34, hl + 30, 30 + 14 * e, alpha=a, **STY['light'])
+    K.glass(f, cx, cy, wl + 28, hl + 26, 26 + 12 * e, alpha=a, **STY['light'])
     K.blit(f, K.logo_layer(880), cx, cy, a, wl / 880)
+    RECTS.append(('logo', cx - (wl + 28) / 2, cy - (hl + 26) / 2, cx + (wl + 28) / 2, cy + (hl + 26) / 2))
 
 
 def sc_hook(f, t):
     P = PLAN
     t_out = P['hook_out']
-    # line 1: BENAZIR KAFAALAT (gold, word pops)
-    b = Box(f, t, CXL, LOW_Y - 40, 880, 300, P['hook_title1'], P['hook_interop'] - 0.18, r=56, style='deep')
+    lo, hi = band('hook', 'low', caps=False)
+    # title card: BENAZIR KAFAALAT / ka Naya / Digital Payment System
+    h1 = 230
+    b = Box(f, t, CXL, lo + h1 / 2, 800, h1, P['hook_title1'], P['hook_interop'] - 0.18, r=48, style='deep', side=1)
     if b.ok:
-        wa = T('BENAZIR', 72, 'black', grad=K.GOLD_GRAD, shadow=0.0).shape[1] - 12
-        wb = T('KAFAALAT', 72, 'black', grad=K.GOLD_GRAD, shadow=0.0).shape[1] - 12
-        tot = wa + wb + 52
+        wa = T('BENAZIR', 58, 'black', grad=K.GOLD_GRAD, shadow=0.0).shape[1] - 12
+        wb = T('KAFAALAT', 58, 'black', grad=K.GOLD_GRAD, shadow=0.0).shape[1] - 12
+        tot = wa + wb + 44
         for i, (wd, dx) in enumerate((('BENAZIR', -tot / 2 + wa / 2), ('KAFAALAT', tot / 2 - wb / 2))):
             p = K.ease_out_back(K.lin(t, P['hook_title1'] + 0.12 + i * 0.22, P['hook_title1'] + 0.5 + i * 0.22), 1.3)
             if p > 0:
-                b.put(T(wd, 72, 'black', grad=K.GOLD_GRAD, shadow=0.0), dx, -62, alpha=min(1, p * 1.5), scale=max(0.01, p))
+                b.put(T(wd, 58, 'black', grad=K.GOLD_GRAD, shadow=0.0), dx, -62, alpha=min(1, p * 1.5), scale=max(0.01, p))
         p2 = K.ease_out_cubic(K.lin(t, P['hook_title2'], P['hook_title2'] + 0.4))
         if p2 > 0:
-            b.put(T('ka Naya', 44, 'semi'), 0, 22 + (1 - p2) * 20, alpha=p2)
-            b.put(T('Digital Payment System', 54, 'xbold'), 0, 86 + (1 - p2) * 24, alpha=p2)
-    # INTEROPERABILITY slab (slam)
+            b.put(T('ka Naya', 36, 'semi'), 0, 4 + (1 - p2) * 16, alpha=p2)
+            b.put(T('Digital Payment System', 46, 'xbold'), 0, 58 + (1 - p2) * 18, alpha=p2)
+    # INTEROPERABILITY slab (slam) + the two promise pills underneath
     ti = P['hook_interop']
-    b2 = Box(f, t, CXL, LOW_Y - 70, 900, 170, ti, t_out, r=50, style='deep', d_in=0.28)
+    h2 = 128
+    b2 = Box(f, t, CXL, lo + h2 / 2, 800, h2, ti, t_out, r=44, style='deep', d_in=0.28, side=1)
     if b2.ok:
-        slam = 1 + 0.35 * (1 - K.ease_out_expo(K.lin(t, ti, ti + 0.3)))
-        b2.put(T('INTEROPERABILITY', 76, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, -4, scale=slam)
-        # light sweep across the word
+        slam = 1 + 0.22 * (1 - K.ease_out_expo(K.lin(t, ti, ti + 0.3)))
+        b2.put(T('INTEROPERABILITY', 64, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, -2, scale=slam)
         sw = K.lin(t, ti + 0.3, ti + 1.1)
         if 0 < sw < 1:
-            x0, y0 = b2.pos(-470 + 940 * sw, 0)
-            K.blit(f, sweep_layer(), x0, y0, 0.55 * math.sin(math.pi * sw) * b2.a)
-    # Raqam Aapki / Intikhab Bhi Aapka
+            x0, y0 = b2.pos(-410 + 820 * sw, 0)
+            K.blit(f, sweep_layer(), x0, y0, 0.5 * math.sin(math.pi * sw) * b2.a, 0.85)
     for k, (txt, ic, tt, sty, bg) in enumerate((('Raqam Aapki,', 'cash', P['hook_raqam'], 'green', K.GREEN_D),
                                                ('Intikhab Bhi Aapka!', 'check', P['hook_intikhab'], 'gold', K.GOLD_D))):
-        chip(f, t, CXL, LOW_Y + 70 + k * 112, txt, ic, tt - 0.05, t_out, style=sty, badge=bg, size=46, h=100)
+        chip(f, t, CXL, lo + h2 + 16 + 40 + k * 92, txt, ic, tt - 0.05, t_out, style=sty, badge=bg, size=38, h=80, side=1)
 
 
 @lru_cache(1)
 def sweep_layer():
-    w, h = 160, 150
+    w, h = 150, 130
     xx = np.linspace(-1, 1, w, dtype=np.float32)[None, :]
     yy = np.linspace(-1, 1, h, dtype=np.float32)[:, None]
     a = np.exp(-(xx * 2.2) ** 2) * (1 - yy ** 2) * 0.9
-    a = cv2.warpAffine(a, np.float32([[1, -0.35, 26], [0, 1, 0]]), (w, h))
+    a = cv2.warpAffine(a, np.float32([[1, -0.35, 24], [0, 1, 0]]), (w, h))
     L = np.zeros((h, w, 4), np.float32)
     L[..., 3] = a
     L[..., :3] = a[..., None]
@@ -412,10 +466,8 @@ def sweep_layer():
 
 def counter_text(q):
     n = int(round(q * 10000000))
-    s = f'{n:,}'
-    # Pakistani grouping: 1,00,00,000
     s = str(n)
-    if len(s) > 3:
+    if len(s) > 3:   # Pakistani grouping: 1,00,00,000
         head, tail = s[:-3], s[-3:]
         parts = []
         while len(head) > 2:
@@ -428,106 +480,108 @@ def counter_text(q):
 def sc_wallets(f, t):
     P = PLAN
     t_in, t_out = P['crore_in'], P['crore_out']
-    b = Box(f, t, CX, TOP_Y + 10, 900, 300, t_in, t_out, r=52, style='dark')
+    h = 200
+    cy, k = fit('wallets', 'top', h)
+    b = Box(f, t, CX, cy, 780, h, t_in, t_out, r=46, style='dark', k=k)
     if not b.ok: return
-    b.put(K.icon_badge('wallet', 150, bg=K.GREEN), -330, 0, scale=max(0.01, K.ease_out_back(K.lin(t, t_in + 0.1, t_in + 0.5), 2.2)))
+    b.put(K.icon_badge('wallet', 116, bg=K.GREEN), -290, 0, scale=max(0.01, K.ease_out_back(K.lin(t, t_in + 0.1, t_in + 0.5), 1.6)))
     q = K.ease_out_expo(K.lin(t, t_in + 0.15, t_in + 1.5))
-    b.put(T(counter_text(q), 78, 'black', grad=K.GOLD_GRAD, shadow=0.0), -225, -42, anchor='l')
+    b.put(T(counter_text(q), 62, 'black', grad=K.GOLD_GRAD, shadow=0.0), -205, -38, anchor='l')
     p = K.ease_out_cubic(K.lin(t, t_in + 0.6, t_in + 1.0))
-    b.put(T('Mustahiq khawateen ke', 38, 'semi'), -225, 34, alpha=p, anchor='l')
-    b.put(T('Digital Wallets qaim', 44, 'xbold', color=K.GOLD_L), -225, 88, alpha=p, anchor='l')
+    b.put(T('Mustahiq khawateen ke', 30, 'semi'), -205, 24, alpha=p, anchor='l')
+    b.put(T('Digital Wallets qaim', 36, 'xbold', color=K.GOLD_L), -205, 64, alpha=p, anchor='l')
 
 
 def sc_anytime(f, t):
     P = PLAN
-    items = (('Poore Pakistan mein', 'pin', P['any_pak']), ('Kisi bhi waqt', 'clock', P['any_waqt']),
-             ('Kisi bhi din', 'calendar', P['any_din']), ('Apni sahulat ke mutabiq', 'heart', P['any_sahulat']))
-    for k, (txt, ic, tt) in enumerate(items):
-        chip(f, t, CX, 330 + k * 110, txt, ic, tt, P['any_out'] + k * 0.05, style='dark', size=44, h=96)
+    chip_stack(f, t, 'anytime', 'top', (('Poore Pakistan mein', 'pin', P['any_pak']), ('Kisi bhi waqt', 'clock', P['any_waqt']),
+                                        ('Kisi bhi din', 'calendar', P['any_din']),
+                                        ('Apni sahulat ke mutabiq', 'heart', P['any_sahulat'])), P['any_out'])
 
 
 def sc_vision(f, t):
     P = PLAN
+    lo = max(band('vision_a', 'low')[0], band('vision_b', 'low')[0])
     for k, (role, name, tt) in enumerate((('SADR-E-PAKISTAN', 'Asif Ali Zardari', P['plate1']),
                                           ('WAZIR-E-AZAM', 'Muhammad Shehbaz Sharif', P['plate2']))):
-        Ln = T(name, 44, 'xbold')
-        pw = Ln.shape[1] + 150
-        px = 70 + pw / 2
-        b = Box(f, t, px, LOW_Y - 70 + k * 150, pw, 128, tt, P['plates_out'] + k * 0.06, r=34, style='dark')
+        Ln = T(name, 36, 'xbold')
+        pw = Ln.shape[1] + 136
+        hh = 96
+        b = Box(f, t, SAFE['l'] + 6 + pw / 2, lo + hh / 2 + k * (hh + 12), pw, hh, tt, P['plates_out'] + k * 0.06, r=30,
+                style='dark', side=1, tag='plate')
         if b.ok:
-            b.put(K.icon_badge('person', 84, bg=K.GREEN), -pw / 2 + 64, 0)
-            b.put(T(role, 26, 'ui_b', color=K.GOLD, tracking=3, shadow=0.0), -pw / 2 + 120, -26, anchor='l')
-            b.put(Ln, -pw / 2 + 120, 18, anchor='l')
-    b = Box(f, t, CX, TOP_Y, 860, 230, P['maali_in'], P['maali_out'], r=48, style='dark')
+            b.put(K.emblem_disc(70), -pw / 2 + 52, 0)
+            b.put(T(role, 21, 'ui_b', color=K.GOLD, tracking=3, shadow=0.0), -pw / 2 + 100, -22, anchor='l')
+            b.put(Ln, -pw / 2 + 100, 14, anchor='l')
+    h = 150
+    cy, kk = fit('vision_b', 'top', h)
+    b = Box(f, t, CX, cy, 720, h, P['maali_in'], P['maali_out'], r=42, style='dark', k=kk)
     if b.ok:
-        b.put(K.icon_badge('rise', 132, bg=K.GOLD_D), -310, 0)
-        b.put(T('Khawateen ki', 38, 'semi'), -220, -52, anchor='l')
-        b.put(T('Maali Khudmukhtari', 54, 'black', grad=K.GOLD_GRAD, shadow=0.0), -220, 6, anchor='l')
-        b.put(T('ki taraf ek aham qadam', 34, 'semi', color=(0.9, 0.95, 0.92)), -220, 62, anchor='l')
+        b.put(K.icon_badge('rise', 100, bg=K.GOLD_D), -268, 0)
+        b.put(T('Maali Khudmukhtari', 46, 'black', grad=K.GOLD_GRAD, shadow=0.0), -195, -20, anchor='l')
+        b.put(T('ki taraf ek aham qadam', 30, 'semi', color=(0.92, 0.96, 0.93)), -195, 34, anchor='l')
 
 
 def sc_whatis(f, t):
     P = PLAN
     t_in, t_out = P['whatis_in'], P['whatis_out']
-    b = Box(f, t, CXL, LOW_Y - 20, 880, 300, t_in, t_out, r=60, style='deep', d_in=0.26)
+    h = 210
+    lo, hi = band('whatis', 'low', caps=False)
+    b = Box(f, t, CXL, lo + h / 2, 800, h, t_in, t_out, r=52, style='deep', d_in=0.26, side=1)
     if not b.ok: return
-    slam = 1 + 0.4 * (1 - K.ease_out_expo(K.lin(t, t_in, t_in + 0.32)))
-    b.put(T('INTEROPERABILITY', 78, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, -52, scale=slam)
-    p = K.ease_out_back(K.lin(t, t_in + 0.35, t_in + 0.75), 2.2)
+    slam = 1 + 0.25 * (1 - K.ease_out_expo(K.lin(t, t_in, t_in + 0.32)))
+    b.put(T('INTEROPERABILITY', 64, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, -42, scale=slam)
+    p = K.ease_out_back(K.lin(t, t_in + 0.35, t_in + 0.75), 1.6)
     if p > 0:
-        b.put(T('kya hai?', 70, 'black'), -40, 58, scale=max(0.01, p))
-        b.put(K.icon_badge('question', 92, bg=K.GOLD_D), 175, 58, scale=max(0.01, p), alpha=1)
+        b.put(T('kya hai?', 58, 'black'), -36, 50, scale=max(0.01, p))
+        b.put(K.icon_badge('question', 78, bg=K.GOLD_D), 150, 50, scale=max(0.01, p))
 
 
 def sc_pehle(f, t):
     P = PLAN
-    s = S('pehle')
-    b = Box(f, t, 205, 196, 250, 82, P['pehle_tag'], P['pehle_out'], r=41, style='red')
-    if b.ok:
-        b.put(K.icon('cross', 34, (1, 0.8, 0.8)), -78, 0)
-        b.put(T('PEHLE', 38, 'black', tracking=4), 22, 0)
+    tag_pill(f, t, 'PEHLE', 'cross', P['pehle_tag'], P['pehle_out'], 'red')
     items = (('Sirf ek khaas bank ka retailer', 'store', P['pain1']), ('Lambi qataarein', 'users', P['pain2']),
              ('Intezar', 'clock', P['pain3']), ('Najaiz katautiyan', 'cash', P['pain4']))
-    for k, (txt, ic, tt) in enumerate(items):
-        chip(f, t, CX, 330 + k * 104, txt, ic, tt, P['pehle_out'] + k * 0.04, style='red', badge=(0.62, 0.1, 0.12),
-             size=40, h=90)
+    chip_stack(f, t, 'pehle', 'top', items, P['pehle_out'], style='red', badge=(0.62, 0.1, 0.12))
 
 
-NET_NODES = [(-330, 0), (-230, 130), (0, 170), (230, 130), (330, 0), (0, -112)]
+BANK_KEYS = ['hbl', 'hblmfb', 'easypaisa', 'jazzcash', 'bop', 'alfalah']
+BANKS = ['Habib Bank Limited', 'HBL Microfinance Bank', 'Easypaisa', 'JazzCash', 'Bank of Punjab', 'Bank Alfalah']
+NET_NODES = [(-300, -44), (-300, 22), (-300, 88), (300, -44), (300, 22), (300, 88)]
 
 
 def sc_ab(f, t):
     P = PLAN
-    b = Box(f, t, 205, 196, 190, 82, P['ab_tag'], P['ab_out'], r=41, style='green')
-    if b.ok:
-        b.put(K.icon('check', 36), -50, 0)
-        b.put(T('AB', 40, 'black', tracking=4), 22, 0)
-    # network: one woman, many retailers
-    bx = Box(f, t, CX, 490, 900, 400, P['net_in'], P['ab_out'], r=56, style='dark')
+    tag_pill(f, t, 'AB', 'check', P['ab_tag'], P['ab_out'], 'green')
+    # one woman, any partner's authorized retailer: the six partner logos around her
+    h = 280
+    cy, k = fit('ab', 'top', h)
+    bx = Box(f, t, CX, cy, 836, h, P['net_in'], P['ab_out'], r=48, style='dark', k=k)
     if not bx.ok: return
-    cxy = (0, -10)
-    for k, (dx, dy) in enumerate(NET_NODES):
-        tk = P['net_lines'] + k * 0.12
+    cxy = (0, 22)
+    for i, (dx, dy) in enumerate(NET_NODES):
+        tk = P['net_lines'] + i * 0.12
         q = K.ease_out_cubic(K.lin(t, tk, tk + 0.35))
         if q <= 0: continue
         x0, y0 = bx.pos(*cxy)
-        x1, y1 = bx.pos(cxy[0] + dx * q, cxy[1] + dy * q * 0.8)
+        ex = dx - math.copysign(75, dx)
+        x1, y1 = bx.pos(cxy[0] + ex * q, cxy[1] + (dy - cxy[1]) * q)
         lit = K.lin(t, P['net_free'], P['net_free'] + 0.3)
         col = np.array(K.GOLD) * lit + np.array((0.85, 0.95, 0.9)) * (1 - lit)
-        line(f, x0, y0, x1, y1, col, 4 * bx.s, bx.a * 0.9)
-        p = K.ease_out_back(K.lin(t, tk + 0.2, tk + 0.55), 2.2)
+        line(f, x0, y0, x1, y1, col, 3 * bx.s, bx.a * 0.9)
+        p = K.ease_out_back(K.lin(t, tk + 0.15, tk + 0.5), 1.6)
         if p > 0:
-            bx.put(K.icon_badge('store', 78, bg=K.GREEN), dx, dy * 0.8, scale=max(0.01, p))
-            ka = K.ease_out_back(K.lin(t, P['net_auth'] + k * 0.08, P['net_auth'] + 0.35 + k * 0.08), 2.5)
+            bx.put(K.logo_plate(BANK_KEYS[i], 150, 56), dx, dy, scale=max(0.01, p))
+            ka = K.ease_out_back(K.lin(t, P['net_auth'] + i * 0.08, P['net_auth'] + 0.35 + i * 0.08), 1.8)
             if ka > 0:
-                bx.put(K.icon_badge('check', 34, bg=K.GOLD_D), dx + 28, dy * 0.8 - 28, scale=max(0.01, ka))
-    bx.put(K.icon_badge('woman', 120, bg=K.GOLD_D), *cxy)
+                bx.put(K.icon_badge('check', 30, bg=K.GOLD_D), dx + math.copysign(72, dx), dy - 22, scale=max(0.01, ka))
+    bx.put(K.icon_badge('woman', 96, bg=K.GOLD_D), *cxy)
     p = K.ease_out_cubic(K.lin(t, P['net_free'], P['net_free'] + 0.35))
     p2 = K.ease_out_cubic(K.lin(t, P['net_auth'], P['net_auth'] + 0.35))
     if p > 0:
         txt = 'Kisi ek bank ki paband nahi' if p2 < 0.5 else 'Kisi bhi Authorized Retailer se'
         a = p * (1 - 2 * min(p2, 0.5)) if p2 < 0.5 else (p2 - 0.5) * 2
-        bx.put(T(txt, 32, 'bold', color=K.GOLD_L), 0, -160, alpha=a)
+        bx.put(T(txt, 30, 'bold', color=K.GOLD_L), 0, -110, alpha=a)
 
 
 def line(f, x0, y0, x1, y1, col, wpx, a):
@@ -548,113 +602,101 @@ def line(f, x0, y0, x1, y1, col, wpx, a):
 
 def sc_rush(f, t):
     P = PLAN
-    # retailer A: rush / no co-operation
-    b = Box(f, t, 285, TOP_Y + 20, 420, 360, P['rush_a'], P['rush_out'], r=48, style='red')
+    h = 280
+    cy, k = fit('rush', 'top', h)
+    b = Box(f, t, 304, cy, 372, h, P['rush_a'], P['rush_out'], r=44, style='red', k=k)
     if b.ok:
         fade = 1 - 0.45 * K.lin(t, P['rush_b'], P['rush_b'] + 0.4)
-        b.put(K.icon_badge('store', 110, bg=(0.5, 0.1, 0.12)), 0, -92, alpha=fade)
-        b.put(T('Retailer 1', 40, 'xbold'), 0, 8, alpha=fade)
-        p = K.ease_out_back(K.lin(t, P['rush_a'] + 0.15, P['rush_a'] + 0.5), 2)
-        b.put(T('Rush', 36, 'semi', color=(1, 0.8, 0.8)), -60, 72, alpha=p * fade)
-        b.put(K.icon('users', 46, (1, 0.8, 0.8)), 40, 70, alpha=p * fade)
-        p2 = K.ease_out_back(K.lin(t, P['rush_taawun'], P['rush_taawun'] + 0.4), 2)
-        b.put(T('Taawun nahi', 34, 'semi', color=(1, 0.8, 0.8)), 0, 124, alpha=p2 * fade)
-        x = K.ease_out_back(K.lin(t, P['rush_b'] - 0.1, P['rush_b'] + 0.3), 2.5)
+        b.put(K.icon_badge('store', 96, bg=(0.5, 0.1, 0.12)), 0, -76, alpha=fade)
+        b.put(T('Retailer 1', 36, 'xbold'), 0, 8, alpha=fade)
+        p = K.ease_out_back(K.lin(t, P['rush_a'] + 0.15, P['rush_a'] + 0.5), 1.6)
+        b.put(T('Rush', 30, 'semi', color=(1, 0.8, 0.8)), -50, 58, alpha=p * fade)
+        b.put(K.icon('users', 40, (1, 0.8, 0.8)), 36, 56, alpha=p * fade)
+        p2 = K.ease_out_back(K.lin(t, P['rush_taawun'], P['rush_taawun'] + 0.4), 1.6)
+        b.put(T('Taawun nahi', 30, 'semi', color=(1, 0.8, 0.8)), 0, 102, alpha=p2 * fade)
+        x = K.ease_out_back(K.lin(t, P['rush_b'] - 0.1, P['rush_b'] + 0.3), 1.8)
         if x > 0:
-            b.put(K.icon_badge('cross', 70, bg=K.RED), 150, -130, scale=max(0.01, x))
-    # arrow
+            b.put(K.icon_badge('cross', 58, bg=K.RED), 138, -104, scale=max(0.01, x))
     q = K.ease_out_cubic(K.lin(t, P['rush_b'], P['rush_b'] + 0.35))
     a_out = 1 - K.lin(t, P['rush_out'], P['rush_out'] + 0.24)
     if q > 0 and a_out > 0:
-        K.blit(f, K.icon_badge('arrow', 76, bg=K.GOLD_D), 540, TOP_Y + 20, q * a_out, 0.6 + 0.4 * q)
-    b = Box(f, t, 795, TOP_Y + 20, 420, 360, P['rush_b'], P['rush_out'], r=48, style='green')
+        K.blit(f, K.icon_badge('arrow', 64, bg=K.GOLD_D), 540, cy, q * a_out, (0.6 + 0.4 * q) * k)
+    b = Box(f, t, 764, cy, 372, h, P['rush_b'], P['rush_out'], r=44, style='green', k=k)
     if b.ok:
-        b.put(K.icon_badge('store', 110, bg=K.GREEN_D), 0, -92)
-        b.put(T('Doosra Retailer', 38, 'xbold'), 0, 8)
-        p = K.ease_out_back(K.lin(t, P['rush_pick'] - 0.1, P['rush_pick'] + 0.3), 2.2)
-        b.put(T('Aapka intikhab', 36, 'bold', color=K.GOLD_L), 0, 72, alpha=p)
+        b.put(K.icon_badge('store', 96, bg=K.GREEN_D), 0, -76)
+        b.put(T('Doosra Retailer', 34, 'xbold'), 0, 8)
+        p = K.ease_out_back(K.lin(t, P['rush_pick'] - 0.1, P['rush_pick'] + 0.3), 1.6)
+        b.put(T('Aapka intikhab', 32, 'bold', color=K.GOLD_L), 0, 62, alpha=p)
         if p > 0:
-            b.put(K.icon_badge('check', 70, bg=K.GOLD_D), 150, -130, scale=max(0.01, p))
-
-
-BANKS = ['Habib Bank Limited', 'HBL Microfinance Bank', 'Easypaisa', 'JazzCash', 'Bank of Punjab', 'Bank Alfalah']
-
-
-@lru_cache(1)
-def bank_size():
-    """One font size for all six tiles: the largest at which every name fits the tile."""
-    size = 34
-    while size > 20 and max(T(n, size, 'bold').shape[1] - 12 for n in BANKS) > 340:
-        size -= 1
-    return size
+            b.put(K.icon_badge('check', 58, bg=K.GOLD_D), 138, -104, scale=max(0.01, p))
 
 
 def sc_banks(f, t):
+    """'6 Banking Partners': header pill + a 3x2 grid of the partners' official logos, each landing as she names it.
+    All of it sits below her chin (in this close-up there is no room above her head)."""
     P = PLAN
-    b = Box(f, t, CX, 362, 640, 150, P['banks_head'], P['banks_out'], r=75, style='dark')
+    lo, hi = band('banks', 'low', caps=False)
+    hh = 78
+    Lt = T('Banking Partners', 38, 'xbold')
+    tw0 = Lt.shape[1] - 12
+    hw = 60 + 44 + 14 + tw0 + 18 + 56 + 26          # pad | "6" | gap | text | gap | icon | pad
+    b = Box(f, t, CXL, lo + hh / 2, hw, hh, P['banks_head'], P['banks_out'], r=39, style='dark', side=1)
     if b.ok:
-        p = K.ease_out_back(K.lin(t, P['banks_head'] + 0.05, P['banks_head'] + 0.45), 2.3)
-        b.put(T('6', 112, 'black', grad=K.GOLD_GRAD, shadow=0.0), -210, 4, scale=max(0.01, p))
-        b.put(T('Banking', 44, 'xbold'), -140, -26, anchor='l')
-        b.put(T('Partners', 44, 'xbold', color=K.GOLD_L), -140, 26, anchor='l')
-        b.put(K.icon_badge('bank', 86, bg=K.GREEN), 230, 0)
-    # single-column list (names at full size), growing as she names each bank
-    t_in = P['bank_t'][0] - 0.12
-    grow = sum(K.ease_out_cubic(K.lin(t, tk - 0.2, tk + 0.12)) for tk in P['bank_t'][1:])
-    rh = 68
-    hh = 56 + rh * (1 + grow)
-    top = LOW_Y - 215
-    bx = Box(f, t, CXL, top + hh / 2, 860, hh, t_in, P['banks_out'], r=40, style='dark')
-    if not bx.ok: return
-    for k, name in enumerate(BANKS):
+        p = K.ease_out_back(K.lin(t, P['banks_head'] + 0.05, P['banks_head'] + 0.45), 1.6)
+        x0 = -hw / 2 + 30
+        b.put(T('6', 62, 'black', grad=K.GOLD_GRAD, shadow=0.0), x0 + 22, 2, scale=max(0.01, p))
+        b.put(Lt, x0 + 58, 0, anchor='l')
+        b.put(K.icon_badge('bank', 56, bg=K.GREEN), x0 + 58 + tw0 + 18 + 28, 0)
+    tw, th, gx, gy = 272, 106, 22, 14
+    y0 = lo + hh + 18
+    for k, key in enumerate(BANK_KEYS):
         tk = P['bank_t'][k]
-        p = K.ease_out_back(K.lin(t, tk - 0.08, tk + 0.3), 2.0)
-        if p <= 0: continue
-        y = -hh / 2 + 28 + rh / 2 + k * rh
-        bx.put(K.disc(50, K.GOLD_D, ring=K.GOLD_L, ring_w=2), -372, y, scale=max(0.01, p))
-        bx.put(T(str(k + 1), 27, 'black', shadow=0.0), -372, y + 1, alpha=min(1, p))
-        a2 = K.ease_out_cubic(K.lin(t, tk - 0.05, tk + 0.25))
-        bx.put(T(name, 34, 'bold'), -332 + (1 - a2) * 24, y, alpha=a2, anchor='l')
-        if k < 5 and t >= P['bank_t'][k + 1] - 0.2:
-            x0, y0 = bx.pos(-340, y + rh / 2)
-            x1, _ = bx.pos(380, y + rh / 2)
-            line(f, x0, y0, x1, y0, (1, 1, 1), 1.2 * bx.s, bx.a * 0.18 * K.lin(t, P['bank_t'][k + 1] - 0.2, P['bank_t'][k + 1]))
+        col, row = k % 3, k // 3
+        cx = CXL + (col - 1) * (tw + gx)
+        cy = y0 + th / 2 + row * (th + gy)
+        bb = Box(f, t, cx, cy, tw, th, tk - 0.08, P['banks_out'] + k * 0.03, r=26, style='light', side=1, tag='bank',
+                 shadow=0.25)
+        if bb.ok:
+            bb.put(K.logo_plate(key, tw - 16, th - 16, r=20), 0, 0)
+            bb.put(K.disc(34, K.GOLD_D, ring=K.GOLD_L, ring_w=2), -tw / 2 + 12, -th / 2 + 12)
+            bb.put(T(str(k + 1), 19, 'black', shadow=0.0), -tw / 2 + 12, -th / 2 + 13)
 
 
 FAIDE = ['Retailers ki monopoly ka khatma', 'Apni marzi se retailer chunne ki azadi', 'Lambi qataron aur intezar mein kami',
-         'Najaiz katautiyon ki hosla shikni', 'Digital wallets: mehfooz payments']
+         'Najaiz katautiyon ki hosla shikni', 'Digital wallets se mehfooz payments']
 FAIDE2 = {4: 'aur financial facilities tak rasai'}
 
 
 def sc_faide(f, t):
     P = PLAN
-    b = Box(f, t, CX, 362, 640, 150, P['faide_head'], P['faide_out'], r=75, style='dark')
+    hh0 = 104
+    cy, k = fit('faide', 'top', hh0)
+    b = Box(f, t, CX, cy, 560, hh0, P['faide_head'], P['faide_out'], r=52, style='dark', k=k)
     if b.ok:
         n = sum(1 for tt in P['faida_t'] if t >= tt)
-        p = K.ease_out_back(K.lin(t, P['faide_head'] + 0.05, P['faide_head'] + 0.45), 2.3)
-        b.put(T('5', 112, 'black', grad=K.GOLD_GRAD, shadow=0.0), -210, 4, scale=max(0.01, p))
-        b.put(T('Naye System', 40, 'xbold'), -140, -26, anchor='l')
-        b.put(T('ke Faide', 44, 'xbold', color=K.GOLD_L), -140, 26, anchor='l')
-        # progress ring dots
-        for k in range(5):
-            on = k < n
-            b.put(K.disc(20, K.GOLD if on else (0.5, 0.55, 0.52)), 150 + k * 30, 0)
+        p = K.ease_out_back(K.lin(t, P['faide_head'] + 0.05, P['faide_head'] + 0.45), 1.6)
+        b.put(T('5', 88, 'black', grad=K.GOLD_GRAD, shadow=0.0), -210, 4, scale=max(0.01, p))
+        b.put(T('Naye System', 34, 'xbold'), -150, -20, anchor='l')
+        b.put(T('ke Faide', 38, 'xbold', color=K.GOLD_L), -150, 22, anchor='l')
+        for i in range(5):
+            b.put(K.disc(18, K.GOLD if i < n else (0.5, 0.55, 0.52)), 138 + i * 27, 0)
     t_in = P['faida_t'][0] - 0.15
     grow = sum(K.ease_out_cubic(K.lin(t, tk - 0.2, tk + 0.15)) for tk in P['faida_t'][1:])
-    hh = 100 + 82 * (1 + grow) + 10 * K.lin(t, P['faida_t'][4] - 0.2, P['faida_t'][4] + 0.15)
-    top = LOW_Y - 195
-    bx = Box(f, t, CXL, top + hh / 2, 860, hh, t_in, P['faide_out'], r=46, style='dark')
+    rh = 64
+    hh = 44 + rh * (1 + grow) + 14 * K.lin(t, P['faida_t'][4] - 0.2, P['faida_t'][4] + 0.15)
+    lo, hi = band('faide', 'low', caps=False)
+    bx = Box(f, t, CXL, lo + hh / 2, 840, hh, t_in, P['faide_out'], r=40, style='dark', side=1)
     if not bx.ok: return
-    for k, txt in enumerate(FAIDE):
-        tk = P['faida_t'][k]
-        p = K.ease_out_back(K.lin(t, tk - 0.05, tk + 0.35), 2.0)
+    for i, txt in enumerate(FAIDE):
+        tk = P['faida_t'][i]
+        p = K.ease_out_back(K.lin(t, tk - 0.05, tk + 0.35), 1.6)
         if p <= 0: continue
-        y = -hh / 2 + 62 + k * 82 + (8 if k == 4 else 0)
-        bx.put(K.icon_badge('check', 54, bg=K.GREEN_L if k < 4 else K.GOLD_D), -372, y, scale=max(0.01, p))
+        y = -hh / 2 + 22 + rh / 2 + i * rh + (4 if i == 4 else 0)
+        bx.put(K.icon_badge('check', 46, bg=K.GREEN_L if i < 4 else K.GOLD_D), -372, y, scale=max(0.01, p))
         a = K.ease_out_cubic(K.lin(t, tk, tk + 0.3))
-        bx.put(T(txt, 33, 'bold'), -332 + (1 - a) * 24, y - (12 if k in FAIDE2 else 0), alpha=a, anchor='l')
-        if k in FAIDE2:
-            bx.put(T(FAIDE2[k], 28, 'semi', color=K.GOLD_L), -332 + (1 - a) * 24, y + 28, alpha=a, anchor='l')
+        bx.put(T(txt, 30, 'bold'), -336 + (1 - a) * 20, y - (12 if i in FAIDE2 else 0), alpha=a, anchor='l')
+        if i in FAIDE2:
+            bx.put(T(FAIDE2[i], 25, 'semi', color=K.GOLD_L), -336 + (1 - a) * 20, y + 18, alpha=a, anchor='l')
 
 
 STEPS = [
@@ -669,126 +711,128 @@ def sc_steps(f, t):
     P = PLAN
     t0, t_out = P['steps_title'], P['steps_out']
     st = P['step_t']
-    # title chip, then the stepper card
-    b = Box(f, t, CX, 340, 720, 104, t0, st[0] - 0.25, r=52, style='gold')
+    b = Box(f, t, CX, TOP0 + 44, 660, 84, t0, st[0] - 0.25, r=42, style='gold')
     if b.ok:
-        b.put(T('Raqam kaise hasil karein?', 46, 'black'), 0, 0)
-    bx = Box(f, t, CX, TOP_Y + 10, 920, 380, st[0] - 0.12, t_out, r=56, style='dark')
+        b.put(T('Raqam kaise hasil karein?', 40, 'black'), 0, 0)
+    h = 250
+    a1, b1 = band('steps_a', 'top'); a2, b2 = band('steps_b', 'top')
+    room = min(b1, b2) - TOP0
+    k = min(1.0, room / h)
+    bx = Box(f, t, CX, TOP0 + h * k / 2, 826, h, st[0] - 0.12, t_out, r=48, style='dark', k=k)
     if not bx.ok: return
-    cur = max([k for k in range(4) if t >= st[k] - 0.12] or [0])
-    # stepper header
-    for k in range(4):
-        x = -210 + k * 140
-        done = t >= st[k] - 0.1
-        fill = K.ease_out_back(K.lin(t, st[k] - 0.1, st[k] + 0.25), 2.0)
-        if k < 3:
-            q = K.lin(t, st[k + 1] - 0.4, st[k + 1] - 0.1)
-            x0, y0 = bx.pos(x + 30, -140)
-            x1, y1 = bx.pos(x + 30 + 80 * q, -140)
-            line(f, x0, y0, bx.pos(x + 110, -140)[0], y0, (0.6, 0.66, 0.62), 4 * bx.s, bx.a * 0.6)
+    for i in range(4):
+        x = -210 + i * 140
+        done = t >= st[i] - 0.1
+        fill = K.ease_out_back(K.lin(t, st[i] - 0.1, st[i] + 0.25), 1.6)
+        if i < 3:
+            q = K.lin(t, st[i + 1] - 0.4, st[i + 1] - 0.1)
+            x0, y0 = bx.pos(x + 26, -88)
+            x1, y1 = bx.pos(x + 26 + 88 * q, -88)
+            line(f, x0, y0, bx.pos(x + 114, -88)[0], y0, (0.6, 0.66, 0.62), 3.5 * bx.s, bx.a * 0.6)
             if q > 0:
-                line(f, x0, y0, x1, y1, K.GOLD, 5 * bx.s, bx.a)
-        bx.put(K.disc(54, (0.35, 0.42, 0.38)), x, -140)
+                line(f, x0, y0, x1, y1, K.GOLD, 4.5 * bx.s, bx.a)
+        bx.put(K.disc(46, (0.35, 0.42, 0.38)), x, -88)
         if done:
-            bx.put(K.disc(54, K.GOLD_D, ring=K.GOLD_L, ring_w=2), x, -140, scale=max(0.01, fill))
-        bx.put(T(str(k + 1), 28, 'black', shadow=0.0), x, -139)
-    bx.put(T('STEP', 22, 'ui_b', color=K.GOLD, tracking=4, shadow=0.0), 330, -140)
-    # content: outgoing slides left, incoming slides in from the right
-    for k in range(4):
-        tin = st[k] - 0.12
-        tnext = st[k + 1] - 0.12 if k < 3 else 1e9
+            bx.put(K.disc(46, K.GOLD_D, ring=K.GOLD_L, ring_w=2), x, -88, scale=max(0.01, fill))
+        bx.put(T(str(i + 1), 24, 'black', shadow=0.0), x, -87)
+    bx.put(T('STEP', 20, 'ui_b', color=K.GOLD, tracking=4, shadow=0.0), 320, -88)
+    for i in range(4):
+        tin = st[i] - 0.12
+        tnext = st[i + 1] - 0.12 if i < 3 else 1e9
         if t < tin or t > tnext: continue
         pin = K.ease_out_cubic(K.lin(t, tin, tin + 0.35))
         pout = K.ease_in_cubic(K.lin(t, tnext - 0.2, tnext - 0.02))
-        dx = (1 - pin) * 60 - pout * 60
+        dx = (1 - pin) * 50 - pout * 50
         a = min(pin, 1 - pout)
-        ic, l1, l2 = STEPS[k]
-        pop = K.ease_out_back(K.lin(t, tin + 0.05, tin + 0.45), 2.2)
-        bx.put(K.icon_badge(ic, 156, bg=K.GREEN), -320 + dx, 40, alpha=a, scale=max(0.01, pop))
-        bx.put(Tfit(l1, 600, 44, 'xbold'), -210 + dx, 8, alpha=a, anchor='l')
-        bx.put(Tfit(l2, 600, 32, 'semi', color=K.GOLD_L), -210 + dx, 68, alpha=a, anchor='l')
-        if k in (0, 3):
+        ic, l1, l2 = STEPS[i]
+        pop = K.ease_out_back(K.lin(t, tin + 0.05, tin + 0.45), 1.6)
+        bx.put(K.icon_badge(ic, 124, bg=K.GREEN), -318 + dx, 28, alpha=a, scale=max(0.01, pop))
+        bx.put(Tfit(l1, 580, 38, 'xbold'), -228 + dx, 4, alpha=a, anchor='l')
+        bx.put(Tfit(l2, 580, 28, 'semi', color=K.GOLD_L), -228 + dx, 54, alpha=a, anchor='l')
+        if i in (0, 3):
             ping = K.lin(t, tin + 0.3, tin + 1.0)
             if 0 < ping < 1:
-                bx.put(K.disc(30, K.RED, ring=(1, 1, 1), ring_w=3), -262 + dx, -22, alpha=a * (1 - ping * 0.2),
-                       scale=1 + 0.25 * math.sin(ping * math.pi))
-                bx.put(T('1', 18, 'black', shadow=0.0), -262 + dx, -21, alpha=a)
+                bx.put(K.disc(26, K.RED, ring=(1, 1, 1), ring_w=3), -276 + dx, -16, alpha=a,
+                       scale=1 + 0.2 * math.sin(ping * math.pi))
+                bx.put(T('1', 16, 'black', shadow=0.0), -276 + dx, -15, alpha=a)
 
 
 def sc_hidayat(f, t):
     P = PLAN
-    b = Box(f, t, CXL, LOW_Y - 40, 860, 330, P['hid_in'], P['hid_out'], r=52, style='amber')
+    h = 290
+    lo, hi = band('hidayat', 'low', caps=False)
+    b = Box(f, t, CXL, lo + h / 2, 820, h, P['hid_in'], P['hid_out'], r=48, style='amber', side=1)
     if not b.ok: return
-    p = K.ease_out_back(K.lin(t, P['hid_in'] + 0.05, P['hid_in'] + 0.45), 2.2)
-    b.put(K.icon_badge('warning', 84, bg=(0.85, 0.5, 0.02)), -330, -102, scale=max(0.01, p))
-    b.put(T('ZAROORI HIDAYAT', 46, 'black', color=K.GOLD_L, tracking=2), -270, -102, anchor='l')
+    p = K.ease_out_back(K.lin(t, P['hid_in'] + 0.05, P['hid_in'] + 0.45), 1.6)
+    b.put(K.icon_badge('warning', 72, bg=(0.85, 0.5, 0.02)), -320, -92, scale=max(0.01, p))
+    b.put(T('ZAROORI HIDAYAT', 40, 'black', color=K.GOLD_L, tracking=2), -270, -92, anchor='l')
     sw = K.ease_out_cubic(K.lin(t, P['hid_wallet'] - 0.05, P['hid_wallet'] + 0.35))
     a1 = K.ease_out_cubic(K.lin(t, P['hid_phone'], P['hid_phone'] + 0.35)) * (1 - sw)
     if a1 > 0:
-        b.put(K.icon_badge('sim', 104, bg=(0.5, 0.1, 0.12)), -312, 40, alpha=a1)
-        b.put(K.icon_badge('cross', 44, bg=K.RED), -272, 2, alpha=a1)
-        b.put(T('Mobile phone aur SIM', 40, 'xbold'), -235, 14, alpha=a1, anchor='l')
-        b.put(T('kisi ghair mutaliqa shakhs ko na dein', 30, 'semi', color=(1, 0.92, 0.8)), -235, 64, alpha=a1, anchor='l')
+        b.put(K.icon_badge('sim', 92, bg=(0.5, 0.1, 0.12)), -304, 36, alpha=a1)
+        b.put(K.icon_badge('cross', 38, bg=K.RED), -268, 2, alpha=a1)
+        b.put(T('Mobile phone aur SIM', 36, 'xbold'), -232, 14, alpha=a1, anchor='l')
+        b.put(T('kisi ghair mutaliqa shakhs ko na dein', 27, 'semi', color=(1, 0.92, 0.8)), -232, 58, alpha=a1, anchor='l')
     if sw > 0:
-        b.put(K.icon_badge('shield', 104, bg=K.GREEN), -312, 40, alpha=sw, scale=0.7 + 0.3 * K.ease_out_back(sw, 2))
-        b.put(T('Yeh aapka Digital Wallet hai', 40, 'xbold'), -235 + (1 - sw) * 30, 14, alpha=sw, anchor='l')
-        b.put(T('iski hifazat karein!', 34, 'bold', color=K.GOLD_L), -235 + (1 - sw) * 30, 64, alpha=sw, anchor='l')
+        b.put(K.icon_badge('shield', 92, bg=K.GREEN), -304, 36, alpha=sw, scale=0.75 + 0.25 * K.ease_out_back(sw, 1.6))
+        b.put(T('Yeh aapka Digital Wallet hai', 36, 'xbold'), -232 + (1 - sw) * 24, 14, alpha=sw, anchor='l')
+        b.put(T('iski hifazat karein!', 30, 'bold', color=K.GOLD_L), -232 + (1 - sw) * 24, 58, alpha=sw, anchor='l')
 
 
 def sc_crore(f, t):
     P = PLAN
-    b = Box(f, t, CX, 400, 900, 230, P['cr_in'], P['cr_out'], r=52, style='dark')
+    h = 170
+    cy, k = fit('crore', 'top', h)
+    b = Box(f, t, CX, cy, 780, h, P['cr_in'], P['cr_out'], r=44, style='dark', k=k)
     if b.ok:
         sw = K.ease_out_cubic(K.lin(t, P['cr_globe'], P['cr_globe'] + 0.4))
-        b.put(K.icon_badge('woman', 140, bg=K.GOLD_D), -320, -10, alpha=1 - sw)
-        b.put(K.icon_badge('globe', 140, bg=K.GREEN), -320, -10, alpha=sw, scale=0.7 + 0.3 * K.ease_out_back(sw, 2))
+        b.put(K.icon_badge('woman', 110, bg=K.GOLD_D), -290, 0, alpha=1 - sw)
+        b.put(K.icon_badge('globe', 110, bg=K.GREEN), -290, 0, alpha=sw, scale=0.75 + 0.25 * K.ease_out_back(sw, 1.6))
         if sw < 1:
-            b.put(T('1 Crore+', 80, 'black', grad=K.GOLD_GRAD, shadow=0.0), -215, -38, alpha=1 - sw, anchor='l')
-            b.put(T('khawateen jor di gayin', 38, 'semi'), -215, 40, alpha=1 - sw, anchor='l')
+            b.put(T('1 Crore+', 64, 'black', grad=K.GOLD_GRAD, shadow=0.0), -210, -26, alpha=1 - sw, anchor='l')
+            b.put(T('khawateen jor di gayin', 32, 'semi'), -210, 38, alpha=1 - sw, anchor='l')
         if sw > 0:
-            b.put(T('Ghair mamooli peshraft', 44, 'black', grad=K.GOLD_GRAD, shadow=0.0), -215, -36, alpha=sw, anchor='l')
-            b.put(T('Pakistan aur aalami satah par', 34, 'semi'), -215, 28, alpha=sw, anchor='l')
+            b.put(T('Ghair mamooli peshraft', 40, 'black', grad=K.GOLD_GRAD, shadow=0.0), -210, -24, alpha=sw, anchor='l')
+            b.put(T('Pakistan aur aalami satah par', 30, 'semi'), -210, 30, alpha=sw, anchor='l')
     chips = (('Digital Wallets', 'wallet', P['cr_chip1']), ('Interoperable Payments', 'phone', P['cr_chip2']))
     chips2 = (('Financial Inclusion', 'rise', P['cr_world']), ('Digital Social Protection', 'shield', P['cr_world'] + 0.3))
+    lo, hi = band('crore', 'low')
     for grp, t_out, sty in ((chips, P['cr_world'] - 0.35, 'dark'), (chips2, P['cr_out'], 'gold')):
-        ws = [chip_width(txt, 28, 78) for txt, _, _ in grp]
-        gap = 24
-        x = CX - (sum(ws) + gap) / 2
+        ws = [chip_width(txt, 27, 68) for txt, _, _ in grp]
+        gap = 20
+        x = CXL - (sum(ws) + gap) / 2
         for (txt, ic, tt), wch in zip(grp, ws):
-            chip(f, t, x + wch / 2, 590, txt, ic, tt, t_out, style=sty, badge=K.GREEN, size=28, h=78, w=wch)
+            chip(f, t, x + wch / 2, lo + 34, txt, ic, tt, t_out, style=sty, badge=K.GREEN, size=27, h=68, w=wch, side=1)
             x += wch + gap
 
 
 def sc_khwab(f, t):
     P = PLAN
-    for k, (txt, ic, tt) in enumerate((('Paison se juri sahuliyaat', 'hand_coin', P['kh_chip1']),
-                                       ('Digital madad tak rasai', 'phone', P['kh_chip2']))):
-        chip(f, t, CX, 330 + k * 112, txt, ic, tt, P['kh_chips_out'] + k * 0.05, style='dark', size=42, h=98)
+    chip_stack(f, t, 'khwab', 'top', (('Paison se juri sahuliyaat', 'hand_coin', P['kh_chip1']),
+                                      ('Digital madad tak rasai', 'phone', P['kh_chip2'])), P['kh_chips_out'], size=32, h=70)
     tt = P['kh_title']
     g2 = K.ease_out_cubic(K.lin(t, P['kh_title2'] - 0.15, P['kh_title2'] + 0.2))
     g3 = K.ease_out_cubic(K.lin(t, P['kh_line2'] - 0.15, P['kh_line2'] + 0.2))
-    hh = 120 + 100 * g2 + 140 * g3
-    top = LOW_Y + 20 - 180
-    b = Box(f, t, CXL, top + hh / 2, 900, hh, tt, P['end_in'] - 0.1, r=60, style='deep')
-    oy = (top + 180) - (top + hh / 2)   # keep children at fixed screen positions while the card grows
+    hh = 96 + 86 * g2 + 120 * g3
+    lo, hi = band('khwab', 'low', caps=False)
+    b = Box(f, t, CXL, lo + hh / 2, 820, hh, tt, P['end_in'] - 0.1, r=52, style='deep', side=1)
     if not b.ok: return
-    p1 = K.ease_out_back(K.lin(t, tt + 0.02, tt + 0.4), 2.0)
-    b.put(T('Benazir ka', 52, 'xbold'), 0, -112 + oy, scale=max(0.01, p1), alpha=min(1, p1 * 1.4))
-    p2 = K.ease_out_back(K.lin(t, P['kh_title2'], P['kh_title2'] + 0.45), 2.0)
+    oy = -hh / 2      # children anchored to the card's top edge while it grows downwards
+    p1 = K.ease_out_back(K.lin(t, tt + 0.02, tt + 0.4), 1.5)
+    b.put(T('Benazir ka', 44, 'xbold'), 0, oy + 48, scale=max(0.01, p1), alpha=min(1, p1 * 1.4))
+    p2 = K.ease_out_back(K.lin(t, P['kh_title2'], P['kh_title2'] + 0.45), 1.5)
     if p2 > 0:
-        b.put(T('Benazir Khwab!', 84, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, -30 + oy, scale=max(0.01, p2))
+        b.put(T('Benazir Khwab!', 70, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, oy + 128, scale=max(0.01, p2))
     p3 = K.ease_out_cubic(K.lin(t, P['kh_line2'], P['kh_line2'] + 0.45))
     if p3 > 0:
-        b.put(T('Har Aurat Khud Mukhtar,', 46, 'xbold'), 0, 64 + oy + (1 - p3) * 20, alpha=p3)
-        b.put(T('Ba Ikhtiyar!', 50, 'black', color=K.GOLD_L), 0, 124 + oy + (1 - p3) * 20, alpha=p3)
-    # sparkles
-    for k in range(7):
-        ph = (t - tt) * 0.9 + k * 0.37
-        q = ph % 1.0
+        b.put(T('Har Aurat Khud Mukhtar,', 40, 'xbold'), 0, oy + 206 + (1 - p3) * 16, alpha=p3)
+        b.put(T('Ba Ikhtiyar!', 44, 'black', color=K.GOLD_L), 0, oy + 258 + (1 - p3) * 16, alpha=p3)
+    for i in range(6):
         if t < P['kh_title2']: break
-        side = -1 if k % 2 else 1
-        x, y = b.pos(side * (400 + (k * 17) % 40), -hh / 2 + 30 + (k * 53) % max(1, int(hh - 60)))
-        K.blit(f, K.icon('sparkle', 30, K.GOLD_L), x, y - q * 30, b.a * math.sin(math.pi * q) * 0.9, 0.6 + 0.6 * q)
+        q = ((t - tt) * 0.9 + i * 0.37) % 1.0
+        side = -1 if i % 2 else 1
+        x, y = b.pos(side * (372 + (i * 17) % 30), -hh / 2 + 26 + (i * 53) % max(1, int(hh - 52)))
+        K.blit(f, K.icon('sparkle', 26, K.GOLD_L), x, y - q * 24, b.a * math.sin(math.pi * q) * 0.85, 0.6 + 0.5 * q)
 
 
 def sc_end(f, t):
@@ -796,24 +840,23 @@ def sc_end(f, t):
     t0 = P['end_in']
     if t < t0: return
     e = K.ease_io(K.lin(t, t0, t0 + 0.7))
-    # blur + green wash behind
     small = cv2.resize(f, (W // 8, H // 8), interpolation=cv2.INTER_AREA)
     small = cv2.GaussianBlur(small, (0, 0), 6)
     bl = cv2.resize(small, (W, H), interpolation=cv2.INTER_LINEAR)
     bl = bl * 0.45 + np.array(K.GREEN_D, np.float32) * 0.35
     f[:] = f * (1 - e) + bl * e
-    b = Box(f, t, 540, 905, 960, 780, t0 + 0.15, 1e9, r=70, style='dark', d_in=0.5)
+    b = Box(f, t, 540, 900, 840, 720, t0 + 0.15, 1e9, r=64, style='dark', d_in=0.5, side=0, tag='endcard')
     if not b.ok: return
     p = K.ease_out_cubic(K.lin(t, t0 + 0.7, t0 + 1.1))
-    b.put(T('Benazir ka Benazir Khwab!', 60, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, 70, alpha=p)
+    b.put(T('Benazir ka Benazir Khwab!', 54, 'black', grad=K.GOLD_GRAD, shadow=0.0), 0, 60, alpha=p)
     p2 = K.ease_out_cubic(K.lin(t, t0 + 0.95, t0 + 1.35))
-    b.put(T('Har Aurat Khud Mukhtar, Ba Ikhtiyar!', 40, 'bold'), 0, 146, alpha=p2)
-    p3 = K.ease_out_back(K.lin(t, t0 + 1.25, t0 + 1.7), 2.0)
+    b.put(T('Har Aurat Khud Mukhtar, Ba Ikhtiyar!', 36, 'bold'), 0, 128, alpha=p2)
+    p3 = K.ease_out_back(K.lin(t, t0 + 1.25, t0 + 1.7), 1.6)
     if p3 > 0:
-        x, y = b.pos(0, 272)
-        K.glass(f, x, y, 820 * b.s * p3, 120 * b.s, 60, alpha=b.a * min(1, p3), **STY['green'])
-        b.put(T('INTEROPERABILITY', 30, 'ui_x', color=K.GOLD_L, tracking=4, shadow=0.0), 0, 248, alpha=min(1, p3))
-        b.put(T('Raqam Aapki, Intikhab Bhi Aapka!', 38, 'xbold'), 0, 292, alpha=min(1, p3))
+        x, y = b.pos(0, 246)
+        K.glass(f, x, y, 740 * b.s * p3, 112 * b.s, 56, alpha=b.a * min(1, p3), **STY['green'])
+        b.put(T('INTEROPERABILITY', 27, 'ui_x', color=K.GOLD_L, tracking=4, shadow=0.0), 0, 224, alpha=min(1, p3))
+        b.put(T('Raqam Aapki, Intikhab Bhi Aapka!', 35, 'xbold'), 0, 266, alpha=min(1, p3))
 
 
 # ---- captions ----------------------------------------------------------------------------------------------------------
@@ -867,7 +910,7 @@ def build_pages():
 
 
 PAGES = build_pages()
-CAP_SIZE = 66
+CAP_SIZE = 60
 GAP = 20
 
 
@@ -884,20 +927,21 @@ def sc_captions(f, t):
     pad = Ls[0].shape[1] - K.text_size(words[0]['word'], 'xbold', CAP_SIZE)[0]
     widths = [L.shape[1] - pad for L in Ls]
     total = sum(widths) + GAP * (len(Ls) - 1)
-    scale = min(1.0, 860 / total)
+    scale = min(1.0, 840 / total)
     x = CXL - total * scale / 2
+    RECTS.append(('captions', x, CAP_Y - 44 * scale, x + total * scale, CAP_Y + 44 * scale))
     # active word = last word whose time has come (until the next one)
     act = max([i for i, w in enumerate(words) if t >= w['ot'] - 0.03] or [-1])
     for i, (w, L) in enumerate(zip(words, Ls)):
         cx = x + widths[i] * scale / 2
         x += (widths[i] + GAP) * scale
         tp = pg['t0'] + i * 0.035
-        p = K.ease_out_back(K.lin(t, tp, tp + 0.16), 2.4)
+        p = K.ease_out_back(K.lin(t, tp, tp + 0.16), 1.6)
         if p <= 0: continue
         dim = 1.0 if t >= w['ot'] - 0.05 else 0.78
         if i == act:
-            bp = K.ease_out_back(K.lin(t, w['ot'] - 0.04, w['ot'] + 0.1), 2.0)
-            K.fill_rrect(f, cx, CAP_Y + 3, (widths[i] + 26) * scale * (0.85 + 0.15 * bp), 90 * scale, 22, None,
+            bp = K.ease_out_back(K.lin(t, w['ot'] - 0.04, w['ot'] + 0.1), 1.5)
+            K.fill_rrect(f, cx, CAP_Y + 3, (widths[i] + 24) * scale * (0.85 + 0.15 * bp), 82 * scale, 20, None,
                          alpha=fade * min(1, bp * 1.5), grad=(K.GREEN_L, K.GREEN))
         K.blit(f, L, cx, CAP_Y, fade * min(1, p * 1.6) * dim, scale * (0.8 + 0.2 * p))
 
@@ -908,6 +952,7 @@ SCENES = [sc_hook, sc_wallets, sc_anytime, sc_vision, sc_whatis, sc_pehle, sc_ab
 
 
 def render_frame(t):
+    RECTS.clear()
     f = base_frame(t)
     f = np.ascontiguousarray(f, np.float32)
     f *= K.vignette_map(W, H)

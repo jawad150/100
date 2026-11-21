@@ -1,7 +1,7 @@
 """Rebuild workspace_bisp/ (git-ignored) from scratch: footage, brand, fonts, transcripts, grade, frames, faces.
 
     pip install numpy scipy "opencv-python-headless==4.10.0.84" pillow soundfile faster-whisper
-    python3 prep.py all            # or one step: download | brand | fonts | audio | transcribe | probe | grade | frames | faces
+    python3 prep.py all            # or one step: download | brand | logos | fonts | audio | transcribe | probe | grade | frames | faces | facetrack
 
 Footage: the client's Drive folder (shared anyone-with-link). Logo: the official banner from bisp.gov.pk.
 Transcripts: Whisper medium for every clip, large-v3 for IMG_1731 / IMG_1691 / IMG_1689 / IMG_1672 (edl.TR_FILES).
@@ -46,6 +46,33 @@ def brand():
     d = os.path.join(WS, 'brand', 'dl'); os.makedirs(d, exist_ok=True)
     get('https://bisp.gov.pk/Siteimage/Setting/bisplogonew.png', os.path.join(d, 'bisplogonew.png'))
     print('logo ok')
+
+
+LOGOS = {   # partner logos: official sites; JazzCash / BOP from Wikimedia Commons (their sites block bots)
+    'hbl_1920new.png': 'https://www.hbl.com/assets/theme_images/logo-1920-new.png',
+    'easypaisa.png': 'https://easypaisa.com.pk/wp-content/uploads/2026/01/cropped-cropped-easypaisa-logo-dark-1.png',
+    'alfalah.png': 'https://prodbaf.blob.core.windows.net/media/navbar-logos/bafl-logo-home-01.png',
+    'jazzcash.png': 'https://upload.wikimedia.org/wikipedia/commons/4/41/JazzCash_logo_%282025%29.png',
+    'bop.png': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Bank_of_Punjab_logo.png/500px-Bank_of_Punjab_logo.png',
+    'gov_emblem.png': 'https://bisp.gov.pk/SiteImage/Setting/gov_logo.png',
+}
+
+
+def logos():
+    import time
+    d = os.path.join(WS, 'brand', 'banks'); os.makedirs(d, exist_ok=True)
+    for name, url in LOGOS.items():
+        out = os.path.join(d, name)
+        for attempt in range(6):          # Wikimedia rate-limits bursts: back off
+            try:
+                req = urllib.request.Request(url, headers={'User-Agent': 'ReelAssetFetcher/1.0 (one-off logo download)'})
+                data = urllib.request.urlopen(req, timeout=60).read()
+                if data[:4] == b'\x89PNG':
+                    open(out, 'wb').write(data); break
+            except Exception:
+                pass
+            time.sleep(30)
+        print('logo', name, os.path.exists(out))
 
 
 def fonts():
@@ -119,6 +146,11 @@ def frames():
             print('frames', c)
 
 
+def facetrack():
+    import facetrack as ft
+    ft.main()
+
+
 def faces():
     import cv2, numpy as np
     fc = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -138,8 +170,8 @@ def faces():
     print('faces', len(out))
 
 
-STEPS = dict(download=download, brand=brand, fonts=fonts, audio=audio, transcribe=transcribe, probe=probe,
-             grade=grade_step, frames=frames, faces=faces)
+STEPS = dict(download=download, brand=brand, logos=logos, fonts=fonts, audio=audio, transcribe=transcribe, probe=probe,
+             grade=grade_step, frames=frames, faces=faces, facetrack=facetrack)
 
 if __name__ == '__main__':
     arg = sys.argv[1] if len(sys.argv) > 1 else 'all'

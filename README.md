@@ -344,7 +344,7 @@ bash door-that-wont-open/package.sh             # -> reel/hulk_marketing/
 A 2 min 11 s (130.8 s) vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
 
 **Instagram upload:** [`reel/bisp/bisp_interoperability_reel_instagram.mp4`](reel/bisp/bisp_interoperability_reel_instagram.mp4) (H.264 High, 2-pass ~10 Mbps, AAC 256k, Git LFS)
-**Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (H.264 CRF 15, AAC 320k, Git LFS) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
+**Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (H.264 CRF 15, AAC 320k, Git LFS) · **High-quality download copy:** [`…_HQ_22mbps.mp4`](reel/bisp/bisp_interoperability_reel_HQ_22mbps.mp4) (2-pass 22 Mbps, visually identical to the master, ~365 MB) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
 
 ## Colour: iPhone HDR to a branded Rec.709 grade
 The clips are iPhone **HLG / BT.2020 10-bit HEVC** (Dolby Vision-style HDR). Played as-is they look washed out on Instagram, so they go through a DaVinci-style chain built in code ([`pipeline/bisp/grade.py`](pipeline/bisp/grade.py)):
@@ -369,12 +369,12 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 | 0–6 s | Hook: "Benazir Kafaalat ka naya digital payment system, Interoperability, raqam aapki, intikhab bhi aapka" | Official BISP banner drops into a glass pill (stays top-centre). "BENAZIR KAFAALAT" word pops, the "INTEROPERABILITY" glass slab slams with a light sweep, then "Raqam Aapki," / "Intikhab Bhi Aapka!" pills |
 | 6–15 s | Bari tabdeeli, 1 crore+ digital wallets | Logo pulse on "Benazir Income Support Programme"; wallet card with a counter rolling to **1,00,00,000+** |
 | 15–22 s | Poore Pakistan, kisi bhi waqt / din | Four glass chips (pin, clock, calendar, heart) |
-| 22–29 s | Sadr-e-Pakistan / Wazir-e-Azam ka vision | Name plates "Asif Ali Zardari" and "Muhammad Shehbaz Sharif"; "Maali Khudmukhtari" card |
+| 22–29 s | Sadr-e-Pakistan / Wazir-e-Azam ka vision | Name plates with the Government of Pakistan emblem: "Asif Ali Zardari" and "Muhammad Shehbaz Sharif"; "Maali Khudmukhtari" card |
 | 29–31 s | "Ab Interoperability hai kya?" | Punch-in, flash, "INTEROPERABILITY kya hai?" slab |
 | 31–40 s | Pehle: khaas bank ka retailer, qataarein, intezar, katautiyan | The footage turns to a muted memory grade with a red "PEHLE" tag and four red pain chips |
-| 40–49 s | Ab: kisi bhi banking partner ka authorized retailer | Colour floods back with an "AB" tag; a network card links one woman to six retailers, which light up in gold and get checks |
+| 40–49 s | Ab: kisi bhi banking partner ka authorized retailer | Colour floods back with an "AB" tag; a network card links one woman to the six partners' official logos, whose links light up in gold and get checks |
 | 49–55 s | Rush ya taawun na kare, doosra retailer | "Retailer 1" (rush, taawun nahi, ✕) → arrow → "Doosra Retailer: aapka intikhab ✓" |
-| 55–62 s | 6 banking partners | "6 Banking Partners" header and a numbered glass list that grows as she names each bank (Habib Bank Limited, HBL Microfinance Bank, Easypaisa, JazzCash, Bank of Punjab, Bank Alfalah: her spoken order) |
+| 55–62 s | 6 banking partners | "6 Banking Partners" header and a 3×2 grid of the partners' **official logos** on white glass tiles, each landing as she names it (her spoken order: HBL, HBL Microfinance Bank, Easypaisa, JazzCash, Bank of Punjab, Bank Alfalah) |
 | 63–77 s | Naye system ke 5 faide | "5 Naye System ke Faide" header with progress dots and a growing checklist card |
 | 77–102 s | Raqam kaise hasil karein? (4 steps) | Title chip, then a 4-step stepper card (SMS → CNIC + mobile at an authorized retailer → biometric + count the cash → second SMS, keep it as a record) |
 | 102–110 s | Zaroori hidayat | Amber warning card: "Mobile phone aur SIM kisi ghair mutaliqa shakhs ko na dein" → shield "Yeh aapka Digital Wallet hai, iski hifazat karein!" |
@@ -382,7 +382,20 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 | 118–128 s | Behtar mauqa; Benazir ka Benazir Khwab, Har Aurat Khud Mukhtar, Ba Ikhtiyar | Two chips, then the closing slab "Benazir ka / Benazir Khwab! / Har Aurat Khud Mukhtar, Ba Ikhtiyar!" with sparkles |
 | 128–131 s | End card | The logo flies from its pill into a large glass card over the blurred last shot, with the tagline and an "Interoperability: Raqam Aapki, Intikhab Bhi Aapka!" pill |
 
-**Captions** are in **Roman Urdu (Hinglish)** and follow her actual words, synced word by word. Whisper word times are snapped to syllable onsets. Each page shows 2–3 words; the spoken word sits on a BISP-green pill, and brand keywords (raqam, digital wallet, CNIC, SMS, Interoperability…) are gold. Captions are hidden wherever a graphic already spells out the same words (hook, banks list, benefits list, closing title). Everything stays inside Instagram's safe zones: no text in the top 120 px, captions at y ≈ 1460, and lower-band panels kept left of the like/comment/share column.
+**Logos:**
+- The BISP banner comes from bisp.gov.pk.
+- The Government of Pakistan emblem comes from bisp.gov.pk.
+- The partner logos come from each bank's official site: HBL from hbl.com, Easypaisa from easypaisa.com.pk and Bank Alfalah from bankalfalah.com.
+- JazzCash and Bank of Punjab come from Wikimedia Commons, because their own sites block automated downloads.
+- HBL Microfinance Bank is shown as the HBL mark with "MicroFinance Bank", its brand lock-up.
+
+**Layout: her face is never covered, and everything sits inside the Reels safe area.**
+- [`facetrack.py`](pipeline/bisp/facetrack.py) tracks her face (forehead to chin) every 0.25 s in output coordinates, with zoom and push-ins applied.
+- Every panel is fitted into one of two bands: above her forehead (under the logo pill) or below her chin (above the captions). Panels slide in away from her face, and are scaled down when a band is tight.
+- The safe area is x 60–960 and y 222–1538. That keeps clear of the top bar, the caption, username and audio strip, and the like/comment/share column.
+- [`audit_layout.py`](pipeline/bisp/audit_layout.py) renders every 0.1 s (1,308 frames) and checks each panel and caption against the face box and the safe area. The final layout has **0 violations**.
+
+**Captions** are in **Roman Urdu (Hinglish)** and follow her actual words, synced word by word. Whisper word times are snapped to syllable onsets. Each page shows 2–3 words; the spoken word sits on a BISP-green pill, and brand keywords (raqam, digital wallet, CNIC, SMS, Interoperability…) are gold. Captions are hidden wherever a graphic already spells out the same words (hook, banks list, benefits list, closing title). Captions sit at y ≈ 1425, inside the safe area and below her chin in every shot.
 
 ## Audio
 - **Voice** ([`audio_mix.py`](pipeline/bisp/audio_mix.py)): high-pass, FFT denoise, room-box cut at 280 Hz, presence lift, de-esser and 2.8:1 compression, then loudness-matched per clip and cut with 12 ms fades.
@@ -406,7 +419,8 @@ Round 2 verified every fix and signed off ("ship"). Its remaining polish items (
 ```bash
 pip install numpy scipy "opencv-python-headless==4.10.0.84" pillow soundfile faster-whisper
 cd pipeline/bisp
-python3 prep.py all                 # Drive clips, BISP logo, fonts, transcripts, grade LUTs, graded frames, face positions
+python3 prep.py all                 # Drive clips, BISP + partner logos, fonts, transcripts, grade LUTs, graded frames, face tracks
+python3 audit_layout.py             # every 0.1 s: no panel on her face, all inside the Reels safe area
 python3 reel.py sheet 18            # contact sheet; python3 reel.py still 5.6,45 for stills
 python3 audio_mix.py                # voice + music + SFX -> workspace_bisp/audio_out/
 python3 render.py --workers 4       # parallel render -> workspace_bisp/out/video.mp4
