@@ -12,6 +12,7 @@ doc = Document()
 st = doc.styles["Normal"]
 st.font.name = "Calibri"
 st.font.size = Pt(11)
+st.paragraph_format.space_after = Pt(4)
 from docx.shared import Cm
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
