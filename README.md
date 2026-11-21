@@ -338,3 +338,65 @@ node door-that-wont-open/audio/probe.mjs        # heel strikes from the walk rig
 node <motion-reel skill>/scripts/render.mjs --film door-that-wont-open --format 9x16 --fps 30 --video-only
 bash door-that-wont-open/package.sh             # -> reel/hulk_marketing/
 ```
+
+# BISP: "Benazir Kafaalat ka Naya Digital Payment System: Interoperability" (Instagram reel)
+
+A 2 min 11 s vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
+
+**Instagram upload:** [`reel/bisp/bisp_interoperability_reel_instagram.mp4`](reel/bisp/bisp_interoperability_reel_instagram.mp4) (H.264 High, 2-pass ~10 Mbps, AAC 256k, Git LFS)
+**Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (CRF 12, Git LFS) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
+
+## Colour: iPhone HDR to a branded Rec.709 grade
+The clips are iPhone **HLG / BT.2020 10-bit HEVC** (Dolby Vision-style HDR). Played as-is they look washed out on Instagram, so they go through a DaVinci-style chain built in code ([`pipeline/bisp/grade.py`](pipeline/bisp/grade.py)):
+1. **Colour-space transform**, in 32-bit float. BT.2020 primaries go to BT.709, with the HLG curve kept as a log-like shaper. The LUT then applies the HLG inverse OETF and the BT.2100 OOTF, giving display-linear light where 1.0 = 203 nit reference white.
+2. **Shot matching** in linear light. Each clip's exposure and white balance come from the presenter's skin, measured by face detection on 5 frames per clip, so all 14 shots cut together.
+3. **Tone mapping.** Contrast is applied in log2 around mid grey, then a filmic shoulder rolls off the bright walls instead of clipping them.
+4. **The BISP look:** emerald shadows, warm gold highlights (the banner's green and gold), the purple aquarium tamed by hue-selective desaturation, skin protected, a slight matte black and gentle saturation.
+5. **Delivery.** The chain is baked into one 33³ `.cube` per clip and applied by ffmpeg `lut3d` (tetrahedral) on the float data, then finished with a soft vignette and fine grain.
+
+## Edit
+The edit follows the script, using the best take of every line: Whisper small, medium and large-v3 transcripts plus a 10 ms energy envelope. The two splices were checked by re-transcribing the joined audio. All decisions are in [`edl.py`](pipeline/bisp/edl.py):
+- **Prime Minister's name.** In IMG_1689 the presenter says "Wazir-e-Azam **Mian Muhammad Nawaz Sharif**". All three Whisper models agree, and there is no "sh" burst where "Shehbaz" would start. The script says **Muhammad Shehbaz Sharif**. The spoken name is therefore cut ("…aur Wazir-e-Azam ke vision ke mutabiq…"), and the lower-third shows the script's correct name. If you would rather keep the name spoken, re-record that one line.
+- **"Raqam kaise hasil karein".** IMG_1731 has four takes. The reel uses the clean take plus the last take of step 4.
+- **Dropped takes.** The false start in IMG_1691 is dropped. IMG_1704 (alternate take of IMG_1705) and the flubbed second line of IMG_1738 are not used.
+- **Pacing.** Jump cuts inside a clip become deliberate punch-ins. Changes of room use a liquid-glass wipe, a whip zoom or a flash cut.
+
+## Graphics (liquid glass, captions, animations)
+Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a frosted blur of the live footage behind it, lens refraction that bends the background at the rim (with a little chromatic split), vibrancy, a green or gold tint, a specular rim lit from the top-left and a soft drop shadow. Type is Poppins and Inter.
+
+| Time | Script beat | On screen |
+|---|---|---|
+| 0–6 s | Hook: "Benazir Kafaalat ka naya digital payment system, Interoperability, raqam aapki, intikhab bhi aapka" | Official BISP banner drops into a glass pill (stays top-centre). "BENAZIR KAFAALAT" word pops, the "INTEROPERABILITY" glass slab slams with a light sweep, then "Raqam Aapki," / "Intikhab Bhi Aapka!" pills |
+| 6–15 s | Bari tabdeeli, 1 crore+ digital wallets | Logo pulse on "Benazir Income Support Programme"; wallet card with a counter rolling to **1,00,00,000+** |
+| 15–22 s | Poore Pakistan, kisi bhi waqt / din | Four glass chips (pin, clock, calendar, heart) |
+| 22–29 s | Sadr-e-Pakistan / Wazir-e-Azam ka vision | Name plates "Asif Ali Zardari" and "Muhammad Shehbaz Sharif"; "Maali Khudmukhtari" card |
+| 29–31 s | "Ab Interoperability hai kya?" | Punch-in, flash, "INTEROPERABILITY kya hai?" slab |
+| 31–40 s | Pehle: khaas bank ka retailer, qataarein, intezar, katautiyan | The footage turns to a muted memory grade with a red "PEHLE" tag and four red pain chips |
+| 40–49 s | Ab: kisi bhi banking partner ka authorized retailer | Colour floods back with an "AB" tag; a network card links one woman to six retailers, which light up in gold and get checks |
+| 49–55 s | Rush ya taawun na kare, doosra retailer | "Retailer 1" (rush, taawun nahi, ✕) → arrow → "Doosra Retailer: aapka intikhab ✓" |
+| 55–63 s | 6 banking partners | "6 Banking Partners" header and a 2×3 grid of numbered tiles, each landing as she names the bank |
+| 63–77 s | Naye system ke 5 faide | "5 Naye System ke Faide" header with progress dots and a growing checklist card |
+| 77–102 s | Raqam kaise hasil karein? (4 steps) | Title chip, then a 4-step stepper card (SMS → CNIC + mobile at an authorized retailer → biometric + count the cash → second SMS, keep it as a record) |
+| 102–110 s | Zaroori hidayat | Amber warning card: "Mobile phone aur SIM kisi ghair mutaliqa shakhs ko na dein" → shield "Yeh aapka Digital Wallet hai, iski hifazat karein!" |
+| 110–118 s | 1 crore+ khawateen, poori duniya ke liye kamyabi | "1 Crore+" card that turns into a globe ("Ghair mamooli peshraft"), with chips: Digital Wallets, Interoperable Payments → Financial Inclusion, Digital Social Protection |
+| 118–128 s | Behtar mauqa; Benazir ka Benazir Khwab, Har Aurat Khud Mukhtar, Ba Ikhtiyar | Two chips, then the closing slab "Benazir ka / Benazir Khwab! / Har Aurat Khud Mukhtar, Ba Ikhtiyar!" with sparkles |
+| 128–131 s | End card | The logo flies from its pill into a large glass card over the blurred last shot, with the tagline and an "Interoperability: Raqam Aapki, Intikhab Bhi Aapka!" pill |
+
+**Captions** are in **Roman Urdu (Hinglish)** and follow her actual words, synced word by word. Whisper word times are snapped to syllable onsets. Each page shows 2–3 words; the spoken word sits on a BISP-green pill, and brand keywords (raqam, digital wallet, CNIC, SMS, Interoperability…) are gold. Captions are hidden wherever a graphic already spells out the same words (hook, banks list, benefits list, closing title). Everything stays inside Instagram's safe zones: no text in the top 120 px, captions at y ≈ 1460, and lower-band panels kept left of the like/comment/share column.
+
+## Audio
+- **Voice** ([`audio_mix.py`](pipeline/bisp/audio_mix.py)): high-pass, FFT denoise, room-box cut at 280 Hz, presence lift, de-esser and 2.8:1 compression, then loudness-matched per clip and cut with 12 ms fades.
+- **Music:** an original track synthesised in code with `pipeline/fostering/music_synth.py` (no samples, no AI): G major, 100 BPM, I–V–vi–IV. The sections follow the story: a hook riser into "INTEROPERABILITY", a sparse minor "Pehle", a bright plucked "Ab" groove, a pulse-only "Zaroori hidayat", a final build with claps, and a bell resolve on the end card. It sits about 14.5 LU under the voice.
+- **SFX:** from the `pipeline/fostering/audio.py` library, on the same event plan as the graphics: whooshes on transitions, glass taps on the bank tiles, check dings on the checklist, notification chimes on the SMS steps and a logo sting.
+- **Master:** −14 LUFS integrated, ≤ −1.5 dBTP.
+
+## Rebuild
+```bash
+pip install numpy scipy "opencv-python-headless==4.10.0.84" pillow soundfile faster-whisper
+cd pipeline/bisp
+python3 prep.py all                 # Drive clips, BISP logo, fonts, transcripts, grade LUTs, graded frames, face positions
+python3 reel.py sheet 18            # contact sheet; python3 reel.py still 5.6,45 for stills
+python3 audio_mix.py                # voice + music + SFX -> workspace_bisp/audio_out/
+python3 render.py --workers 4       # parallel render -> workspace_bisp/out/video.mp4
+python3 render.py --package         # reel/bisp/: Instagram + master mp4, cover, SRT, stems
+```
