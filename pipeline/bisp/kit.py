@@ -283,14 +283,30 @@ def glass(frame, cx, cy, w, h, r=None, *, alpha=1.0, tint=(1, 1, 1), tint_a=0.10
     fx1, fy1 = min(W, x0 + gw), min(H, y0 + gh)
     if fx1 <= fx0 or fy1 <= fy0: return
     if shadow:
-        sh = np.clip(0.5 - d, 0, 1)
-        sh = cv2.GaussianBlur(sh, (0, 0), max(4, min(w, h) * 0.06))
-        sh = np.roll(sh, int(min(18, h * 0.06)), axis=0) * shadow * alpha
-        sh = sh[fy0 - y0:fy1 - y0, fx0 - x0:fx1 - x0, None]
-        frame[fy0:fy1, fx0:fx1] *= (1 - sh)
+        drop_shadow(frame, cx, cy, w, h, r, shadow * alpha)
     sub_o = out[fy0 - y0:fy1 - y0, fx0 - x0:fx1 - x0]
     sub_m = m[fy0 - y0:fy1 - y0, fx0 - x0:fx1 - x0]
     frame[fy0:fy1, fx0:fx1] = frame[fy0:fy1, fx0:fx1] * (1 - sub_m) + np.clip(sub_o, 0, 1.2) * sub_m
+
+
+def drop_shadow(frame, cx, cy, w, h, r, strength):
+    """Soft drop shadow under a rounded rect: own canvas padded by 3 sigma + offset (no hard edges), blurred at 1/4
+    resolution, offset downwards by slicing."""
+    if strength <= 0.003: return
+    sig = max(4.0, min(w, h) * 0.06)
+    off = int(min(18, h * 0.06))
+    k = 4
+    sw, shh = max(2, int(round(w / k))), max(2, int(round(h / k)))
+    sp = int(np.ceil((3 * sig) / k)) + 2
+    m = np.clip(0.5 - rrect_field(sw, shh, int(round(min(r, w / 2, h / 2) / k)), sp)[0], 0, 1)
+    m = cv2.GaussianBlur(m, (0, 0), sig / k)
+    gw_, gh_ = (sw + 2 * sp) * k, (shh + 2 * sp) * k
+    m = cv2.resize(m, (gw_, gh_), interpolation=cv2.INTER_LINEAR) * strength
+    H, W = frame.shape[:2]
+    x0 = int(round(cx - gw_ / 2)); y0 = int(round(cy - gh_ / 2)) + off
+    ax0, ay0, ax1, ay1 = max(0, x0), max(0, y0), min(W, x0 + gw_), min(H, y0 + gh_)
+    if ax1 <= ax0 or ay1 <= ay0: return
+    frame[ay0:ay1, ax0:ax1] *= (1 - m[ay0 - y0:ay1 - y0, ax0 - x0:ax1 - x0, None])
 
 
 def fill_rrect(frame, cx, cy, w, h, r, color, alpha=1.0, grad=None):
@@ -394,13 +410,12 @@ def icon(name, size, color=(1, 1, 1), stroke=None):
         R(0.14, 0.32, 0.40, 0.66, 0.04, fill=255)
         Lne([(0.50, 0.38), (0.84, 0.38)]); Lne([(0.50, 0.52), (0.84, 0.52)]); Lne([(0.50, 0.66), (0.72, 0.66)])
     elif name == 'fingerprint':
-        w8 = int(lw * 0.75)
+        w8 = max(2, int(lw * 0.62))
+        gaps = [75, 115, 60, 125, 85]
         for k in range(5):
-            rr = 0.08 + k * 0.085
-            A(0.5 - rr * 0.9, 0.55 - rr * 1.25, 0.5 + rr * 0.9, 0.55 + rr * 1.25, 180 + 8 * (k % 2), 360 - 6 * (k % 3), width=w8)
-            if k < 4:
-                A(0.5 - rr * 0.9, 0.55 - rr * 1.25, 0.5 + rr * 0.9, 0.55 + rr * 1.25, 10 + 12 * k, 80 - 6 * k, width=w8)
-        Lne([(0.5, 0.48), (0.5, 0.74)], width=w8)
+            rx, ry = 0.055 + k * 0.078, 0.085 + k * 0.088
+            g = gaps[k]
+            A(0.5 - rx, 0.50 - ry, 0.5 + rx, 0.50 + ry, g + 34, g + 360, width=w8)
     elif name == 'cash':
         R(0.06, 0.26, 0.94, 0.74, 0.06)
         E(0.38, 0.36, 0.62, 0.64)

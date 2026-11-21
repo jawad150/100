@@ -341,10 +341,10 @@ bash door-that-wont-open/package.sh             # -> reel/hulk_marketing/
 
 # BISP: "Benazir Kafaalat ka Naya Digital Payment System: Interoperability" (Instagram reel)
 
-A 2 min 11 s vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
+A 2 min 11 s (130.8 s) vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
 
 **Instagram upload:** [`reel/bisp/bisp_interoperability_reel_instagram.mp4`](reel/bisp/bisp_interoperability_reel_instagram.mp4) (H.264 High, 2-pass ~10 Mbps, AAC 256k, Git LFS)
-**Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (CRF 12, Git LFS) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
+**Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (H.264 CRF 15, AAC 320k, Git LFS) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
 
 ## Colour: iPhone HDR to a branded Rec.709 grade
 The clips are iPhone **HLG / BT.2020 10-bit HEVC** (Dolby Vision-style HDR). Played as-is they look washed out on Instagram, so they go through a DaVinci-style chain built in code ([`pipeline/bisp/grade.py`](pipeline/bisp/grade.py)):

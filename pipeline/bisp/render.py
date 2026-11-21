@@ -90,19 +90,20 @@ def package():
     master = os.path.join(DELIV, f'{NAME}_master.mp4')
     ig = os.path.join(DELIV, f'{NAME}_instagram.mp4')
     tags = ['-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-movflags', '+faststart']
-    # master: the CRF 12 render, AAC 320k
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-i', mix, '-map', '0:v', '-map', '1:a', '-c:v', 'copy',
-                    '-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-shortest'] + tags + [master], check=True)
+    # master: x264 slow CRF 15 from the CRF 12 render, AAC 320k
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-i', mix, '-map', '0:v', '-map', '1:a', '-c:v', 'libx264',
+                    '-preset', 'slow', '-crf', '15', '-pix_fmt', 'yuv420p', '-af', 'apad', '-c:a', 'aac', '-b:a', '320k',
+                    '-ar', '48000', '-shortest'] + tags + [master], check=True)
     # Instagram: 2-pass H.264 High, ~10 Mbps, AAC 256k
     pl = os.path.join(OUT, 'x264pass')
     common = ['-c:v', 'libx264', '-preset', 'slow', '-profile:v', 'high', '-level', '4.2', '-b:v', '10M',
               '-maxrate', '16M', '-bufsize', '24M', '-pix_fmt', 'yuv420p', '-r', '30', '-g', '60', '-passlogfile', pl]
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video] + common + ['-pass', '1', '-an', '-f', 'mp4', os.devnull], check=True)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-i', mix, '-map', '0:v', '-map', '1:a'] + common +
-                   ['-pass', '2', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-shortest'] + tags + [ig], check=True)
+                   ['-pass', '2', '-af', 'apad', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-shortest'] + tags + [ig], check=True)
     # cover (hook frame with the INTEROPERABILITY slab + both pills)
     import reel, cv2
-    cov = reel.render_frame(5.6)
+    cov = reel.render_frame(5.5)
     cv2.imwrite(os.path.join(DELIV, f'{NAME}_cover.jpg'), cov[..., ::-1], [cv2.IMWRITE_JPEG_QUALITY, 93])
     open(os.path.join(DELIV, f'{NAME}_captions_roman_urdu.srt'), 'w').write(srt())
     st = os.path.join(DELIV, 'stems'); os.makedirs(st, exist_ok=True)

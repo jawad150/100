@@ -186,12 +186,12 @@ def main():
     sfx *= A.undb(-24.5 - A.loudness(sfx))
     music *= A.undb(-26.0 - A.loudness(music))
     music = A.sidechain(music, voice, depth_db=6, attack=0.05, release=0.5)
-    sfx = A.sidechain(sfx, voice, depth_db=2, attack=0.01, release=0.2)
+    sfx = A.sidechain(sfx, voice, depth_db=6, attack=0.01, release=0.25)
     mix = voice + sfx + music
     g = A.undb(-14.0 - A.loudness(mix))
     for it in range(6):
         y = mix * g
-        lim = A.limiter_gain(y, -1.5)
+        lim = A.limiter_gain(y, -2.2)
         y = y * lim[:, None] if lim.ndim == 1 else y * lim
         L = A.loudness(y)
         if abs(L + 14.0) < 0.15: break

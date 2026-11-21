@@ -6,7 +6,7 @@ re-transcribing the joined audio:
   * IMG_1689: she says "Wazir-e-Azam Mian Muhammad Nawaz Sharif" (all three Whisper models agree and there is no "sh"
     burst where "Shehbaz" would start). The script says Shehbaz Sharif, so the name is cut (3.76 -> 4.93 s): the line
     becomes "... aur Wazir-e-Azam ke vision ke mutabiq ...", and the lower-third carries the script's correct name.
-  * IMG_1731 has several takes. Used: the clean take 13.9-33.9 s ("Is ke") + the last take from "baad" (39.32 s).
+  * IMG_1731 has several takes. Used: the clean take 13.9-33.78 s (up to "Is ke") + the last take from "baad" (39.55 s).
   * IMG_1691: the first attempt (2.2-5.2 s) is dropped, the clean take starts at 7.2 s.
   * IMG_1704 is an alternate take of IMG_1705 (ends with an outtake), IMG_1738's second sentence is a flub that
     IMG_1740 repeats cleanly.
@@ -42,10 +42,10 @@ SEGMENTS = [
     ('pehle',     'IMG_1691', 7.18, 16.22, 1.00),
     ('ab',        'IMG_1698', 0.55, 9.50, 1.00),
     ('rush',      'IMG_1699', 0.48, 6.05, 1.10),
-    ('banks',     'IMG_1705', 0.50, 8.55, 1.00),
+    ('banks',     'IMG_1705', 0.50, 8.40, 1.00),
     ('faide',     'IMG_1725', 0.90, 15.30, 1.00),
-    ('steps_a',   'IMG_1731', 13.86, 33.89, 1.00),
-    ('steps_b',   'IMG_1731', 39.32, 44.25, 1.13),
+    ('steps_a',   'IMG_1731', 13.86, 33.775, 1.00),
+    ('steps_b',   'IMG_1731', 39.55, 44.25, 1.13),
     ('hidayat',   'IMG_1737', 1.55, 9.70, 1.00),
     ('crore',     'IMG_1738', 1.48, 9.55, 1.00),
     ('khwab',     'IMG_1740', 1.80, 11.50, 1.00),
@@ -64,12 +64,12 @@ SENTENCES = [
     ('IMG_1681', 1.0, 8.5, 'Ab khawateen poore Pakistan mein kisi bhi waqt aur kisi bhi din apni sahulat ke hisaab se wazaaif ki raqam hasil kar sakengi^2'),
     ('IMG_1689', 0.0, 3.7, 'Yeh iqdaam Sadr-e-Pakistan^2 Asif Ali Zardari aur Wazir-e-Azam^2'),
     ('IMG_1689', 3.7, 4.85, '-^4'),   # cut: "Mian Muhammad Nawaz Sharif"
-    ('IMG_1689', 4.85, 8.8, 'ke vision ke mutabiq khawateen ki maali khud-mukhtari^2 ki taraf ek aham qadam hai'),
+    ('IMG_1689', 4.85, 8.8, 'ke vision ke mutabiq khawateen ki maali khudmukhtari^2 ki taraf ek aham qadam hai'),
     ('IMG_1689', 8.8, 11.0, 'Ab@9.31 Interoperability^2 hai kya?'),
     ('IMG_1691', 6.5, 16.5, 'Pehle khawateen apni raqam hasil karne ke liye ek khaas bank ke retailer ki paband hoti thin, jis ki wajah se lambi qataron, intezar aur najaiz katautiyon ka saamna karna parta tha'),
-    ('IMG_1698', 0.0, 5.1, 'Ab^0 Interoperability^3 ke zariye khawateen kisi bhi bank ya retailer ki paband nahi hain'),
+    ('IMG_1698', 0.0, 5.1, 'Ab^0 Interoperability^3@0.88 ke zariye khawateen kisi bhi bank ya retailer ki paband nahi hain'),
     ('IMG_1698', 5.1, 9.6, 'Woh kisi bhi banking partner ke authorized retailer se apni raqam hasil kar sakti hain'),
-    ('IMG_1699', 0.0, 6.2, 'Agar kisi retailer ke paas rush ho ya woh taawun na kare, toh woh kisi doosre retailer ka intikhab bhi kar sakti hain'),
+    ('IMG_1699', 0.0, 6.2, 'Agar@0.72 kisi retailer ke paas rush ho ya woh taawun na kare, toh woh kisi doosre retailer ka intikhab bhi kar sakti hain'),
     ('IMG_1705', 0.0, 8.6, 'In ke 6 banking partners hain: Habib Bank Limited, HBL Microfinance Bank, Easypaisa, JazzCash, Bank of Punjab, Bank Alfalah'),
     ('IMG_1725', 0.0, 2.7, 'Is naye system ke paanch faide hain'),
     ('IMG_1725', 2.7, 4.7, 'Retailers ki monopoly ka khatma'),
@@ -78,7 +78,7 @@ SENTENCES = [
     ('IMG_1725', 9.1, 11.1, 'Najaiz katautiyon ki hosla shikni'),
     ('IMG_1725', 11.1, 12.45, 'Aur digital wallet ke through'),
     ('IMG_1725', 12.45, 15.5, 'mehfooz payments aur financial facilities tak rasai'),
-    ('IMG_1731', 13.5, 16.8, 'Ab main aap ko batati hoon ke aap ne raqam kaise hasil karni hai'),
+    ('IMG_1731', 13.5, 16.8, 'Ab@14.39 main@14.56 aap@14.71 ko@14.86 batati hoon ke aap ne raqam kaise hasil karni hai'),
     ('IMG_1731', 16.8, 21.9, 'Sab se pehle aap ko bank ka SMS receive hoga, jis ke andar aap ke account mein jama raqam batayi jaye gi'),
     ('IMG_1731', 21.9, 28.45, 'Is ke baad aap ne apna CNIC aur registered mobile number le kar kisi bhi partner bank ke authorized retailer ke paas jana hai'),
     ('IMG_1731', 28.45, 32.9, 'Apni biometric^2 verification karwani hai aur apni raqam le kar gin leni hai'),
@@ -86,9 +86,9 @@ SENTENCES = [
     ('IMG_1731', 33.7, 36.65, '-^12'),       # rest of take A (replaced by take C)
     ('IMG_1731', 36.65, 39.5, '-^2'),
     ('IMG_1731', 39.5, 44.3, 'baad aap ko ek aur SMS receive hoga jis ko aap ne apne payment record ke liye mehfooz rakhna hai'),
-    ('IMG_1737', 1.0, 9.7, 'Ek zaroori hidayat: apna mobile phone aur SIM kisi ghair mutaliqa shakhs ko na dein. Yeh aapka^2 digital wallet hai, iski^2 hifazat aap ko khud hi karni hai'),
-    ('IMG_1738', 1.0, 9.6, 'Ek crore se zyada khawateen ko digital wallets aur interoperable^3 payment system se jorna Pakistan hi nahi balke poori duniya ke^0 liye ek bohat bari kamyabi hai'),
-    ('IMG_1740', 1.0, 7.33, 'Is se khawateen ko paison se juri sahuliyaton aur digital madad tak pohanchne ka behtar mauqa milta hai'),
+    ('IMG_1737', 1.0, 9.7, 'Ek@2.00 zaroori@2.14 hidayat: apna mobile phone aur SIM kisi ghair mutaliqa shakhs ko na dein. Yeh aapka^2 digital wallet hai, iski^2 hifazat aap ko khud hi karni hai'),
+    ('IMG_1738', 1.0, 9.6, 'Ek@1.82 crore se zyada khawateen ko digital wallets aur interoperable^3 payment system se jorna Pakistan hi nahi balke poori duniya ke^0 liye ek bohat bari kamyabi hai'),
+    ('IMG_1740', 1.0, 7.33, 'Is se khawateen ko paison se juri sahuliyaton aur digital madad tak pohanchne ka behtar mauqa milta hai@6.60'),
     ('IMG_1740', 7.33, 11.6, 'Benazir ka Benazir Khwab, Har Aurat Khud Mukhtar, Ba^1 Ikhtiyar!'),
 ]
 
@@ -195,6 +195,7 @@ class Timeline:
         self.segs = []
         t = 0.0
         for sid, clip, a, b, z in SEGMENTS:
+            a, b = round(a * FPS) / FPS, round(b * FPS) / FPS
             d = (b - a) / SPEED
             self.segs.append(dict(id=sid, clip=clip, a=a, b=b, zoom=z, t0=t, t1=t + d))
             t += d
