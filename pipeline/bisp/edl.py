@@ -6,6 +6,10 @@ re-transcribing the joined audio:
   * IMG_1689: she says "Wazir-e-Azam Mian Muhammad Nawaz Sharif" (all three Whisper models agree and there is no "sh"
     burst where "Shehbaz" would start). The script says Shehbaz Sharif, so the name is cut (3.76 -> 4.93 s): the line
     becomes "... aur Wazir-e-Azam ke vision ke mutabiq ...", and the lower-third carries the script's correct name.
+  * On the client's request the President's name is skipped too: "Sadr-e-Pakistan Asif Ali Zardari aur" (1.098 ->
+    3.13 s, out-point just before the "S" frication of "Sadr"). The line now reads "Yeh iqdaam Wazir-e-Azam ke vision
+    ke mutabiq ...". Both cuts in this line are MORPH cuts (optical-flow warp + blend over 6 frames, reel.morph) under
+    one continuous push-in (ZOOM_GROUPS), so they do not read as jump cuts.
   * IMG_1731 has several takes. Used: the clean take 13.9-33.78 s (up to "Is ke") + the last take from "baad" (39.567 s, in the silence before it).
   * IMG_1691: the first attempt (2.2-5.2 s) is dropped, the clean take starts at 7.2 s.
   * IMG_1704 is an alternate take of IMG_1705 (ends with an outtake), IMG_1738's second sentence is a flub that
@@ -36,8 +40,9 @@ SEGMENTS = [
     ('hook',      'IMG_1672', 0.40, 6.62, 1.00),
     ('wallets',   'IMG_1677', 1.12, 9.98, 1.00),
     ('anytime',   'IMG_1681', 1.52, 8.18, 1.00),
-    ('vision_a',  'IMG_1689', 0.45, 3.76, 1.00),
-    ('vision_b',  'IMG_1689', 4.93, 9.02, 1.14),
+    ('vision_a',  'IMG_1689', 0.45, 1.098, 1.00),   # "Yeh iqdaam" | (Sadr-e-Pakistan Asif Ali Zardari aur: cut)
+    ('vision_a2', 'IMG_1689', 3.13, 3.76, 1.00),    # "Wazir-e-Azam" | (Mian Muhammad Nawaz Sharif: cut)
+    ('vision_b',  'IMG_1689', 4.93, 9.02, 1.00),    # "ke vision ke mutabiq ..." (morph cuts, one continuous zoom)
     ('whatis',    'IMG_1689', 9.20, 11.00, 1.28),
     ('pehle',     'IMG_1691', 7.18, 16.22, 1.00),
     ('ab',        'IMG_1698', 0.55, 9.50, 1.00),
@@ -50,6 +55,9 @@ SEGMENTS = [
     ('crore',     'IMG_1738', 1.48, 9.55, 1.00),
     ('khwab',     'IMG_1740', 1.80, 11.50, 1.00),
 ]
+# segments that share one continuous slow push-in (morph-cut groups)
+ZOOM_GROUPS = {'vision_a': 'vision', 'vision_a2': 'vision', 'vision_b': 'vision'}
+PUSH = 0.045            # slow push-in over a segment (or a whole zoom group)
 END_CARD = 3.4          # seconds of end card after the last segment
 SPEED = 1.0             # global playback speed (kept natural)
 XFADE_AUDIO = 0.012     # audio crossfade at every cut (s)
@@ -62,7 +70,7 @@ SENTENCES = [
     ('IMG_1677', 1.0, 5.7, 'Benazir Income Support Programme ne apne payment system mein ek bari tabdeeli introduce ki hai'),
     ('IMG_1677', 5.7, 10.0, 'Ek crore se zyada mustahiq khawateen ke digital wallets qaim kiye ja chuke hain'),
     ('IMG_1681', 1.0, 8.5, 'Ab khawateen poore Pakistan mein kisi bhi waqt aur kisi bhi din apni sahulat ke hisaab se wazaaif ki raqam hasil kar sakengi^2'),
-    ('IMG_1689', 0.0, 3.7, 'Yeh iqdaam Sadr-e-Pakistan^2 Asif Ali Zardari aur Wazir-e-Azam^2'),
+    ('IMG_1689', 0.0, 3.7, 'Yeh iqdaam -^6 Wazir-e-Azam^2'),   # cut on request: "Sadr-e-Pakistan Asif Ali Zardari aur"
     ('IMG_1689', 3.7, 4.85, '-^4'),   # cut: "Mian Muhammad Nawaz Sharif"
     ('IMG_1689', 4.85, 8.8, 'ke vision ke mutabiq khawateen ki maali khudmukhtari^2 ki taraf ek aham qadam hai'),
     ('IMG_1689', 8.8, 11.0, 'Ab@9.31 Interoperability^2 hai kya?'),
@@ -219,6 +227,17 @@ class Timeline:
             if s['clip'] == clip and s['a'] - 1e-6 <= src_t < s['b'] + 1e-6:
                 return s['t0'] + (src_t - s['a']) / SPEED
         return None
+
+    def zoom_at(self, s, t):
+        """Camera zoom of segment s at output time t (base zoom x slow push-in; groups share one push)."""
+        g = ZOOM_GROUPS.get(s['id'])
+        if g:
+            ss = [x for x in self.segs if ZOOM_GROUPS.get(x['id']) == g]
+            t0, t1 = ss[0]['t0'], ss[-1]['t1']
+        else:
+            t0, t1 = s['t0'], s['t1']
+        q = (min(max(t, t0), t1) - t0) / max(1e-3, t1 - t0)
+        return s['zoom'] * (1 + PUSH * q)
 
     def seg(self, sid):
         return next(s for s in self.segs if s['id'] == sid)

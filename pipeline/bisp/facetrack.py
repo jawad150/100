@@ -40,8 +40,7 @@ def main():
                   if abs(x * 2 + w - med['cx']) < 0.8 * med['size'] and abs(y * 2 + h - med['cy']) < 0.8 * med['size']]
             if fs:
                 x, y, w, h = max(fs, key=lambda r: r[2] * r[3])
-                q = (t - s['t0']) / max(1e-3, s['t1'] - s['t0'])
-                z = s['zoom'] * (1 + 0.045 * q)
+                z = tl.zoom_at(s, t)
                 x0, y0 = zmap(c, z, x - 0.06 * w, y - 0.32 * h)
                 x1, y1 = zmap(c, z, x + 1.06 * w, y + 1.14 * h)
                 X0, Y0 = zmap(c, z, x - 0.35 * w, y - 0.60 * h)

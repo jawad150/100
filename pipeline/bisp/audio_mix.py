@@ -55,12 +55,15 @@ def build_voice():
         parts = [x[int(s['a'] * SR):int(s['b'] * SR)] for s in TL.segs if s['clip'] == c]
         L = A.loudness(np.concatenate(parts))
         gains[c] = A.undb(-17.0 - L)
-    fade = int(0.012 * SR)
-    for s in TL.segs:
+    segs = TL.segs
+    for j, s in enumerate(segs):
         x = clips[s['clip']][int(round(s['a'] * SR)):int(round(s['b'] * SR))] * gains[s['clip']]
         x = x.copy()
-        w = np.linspace(0, 1, fade)
-        x[:fade] *= w; x[-fade:] *= w[::-1]
+        # 12 ms fades at cuts between clips; 6 ms inside one take, so a cut within a sentence flows without a dip
+        same_prev = j > 0 and segs[j - 1]['clip'] == s['clip']
+        same_next = j + 1 < len(segs) and segs[j + 1]['clip'] == s['clip']
+        fi, fo = int((0.006 if same_prev else 0.012) * SR), int((0.006 if same_next else 0.012) * SR)
+        x[:fi] *= np.linspace(0, 1, fi); x[-fo:] *= np.linspace(1, 0, fo)
         i0 = int(round(s['t0'] * SR))
         n = min(len(x), N - i0)
         v[i0:i0 + n] += x[:n]

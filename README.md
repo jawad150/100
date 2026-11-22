@@ -341,7 +341,7 @@ bash door-that-wont-open/package.sh             # -> reel/hulk_marketing/
 
 # BISP: "Benazir Kafaalat ka Naya Digital Payment System: Interoperability" (Instagram reel)
 
-A 2 min 11 s (130.8 s) vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
+A 2 min 9 s (128.8 s) vertical reel (1080×1920, 30 fps) for the Benazir Income Support Programme. It is cut from the presenter's 14 iPhone clips (Drive folder), follows the client's script line by line, and carries the official BISP logo from [bisp.gov.pk](https://bisp.gov.pk).
 
 **Instagram upload:** [`reel/bisp/bisp_interoperability_reel_instagram.mp4`](reel/bisp/bisp_interoperability_reel_instagram.mp4) (H.264 High, 2-pass ~10 Mbps, AAC 256k, Git LFS)
 **Master:** [`reel/bisp/bisp_interoperability_reel_master.mp4`](reel/bisp/bisp_interoperability_reel_master.mp4) (H.264 CRF 15, AAC 320k, Git LFS) · **High-quality download copy:** [`…_HQ_22mbps.mp4`](reel/bisp/bisp_interoperability_reel_HQ_22mbps.mp4) (2-pass 22 Mbps, visually identical to the master, ~365 MB) · cover [`…_cover.jpg`](reel/bisp/bisp_interoperability_reel_cover.jpg) · Roman Urdu captions [`…_captions_roman_urdu.srt`](reel/bisp/bisp_interoperability_reel_captions_roman_urdu.srt) · stems (voice, music, SFX) in [`reel/bisp/stems/`](reel/bisp/stems/)
@@ -357,6 +357,8 @@ The clips are iPhone **HLG / BT.2020 10-bit HEVC** (Dolby Vision-style HDR). Pla
 ## Edit
 The edit follows the script, using the best take of every line: Whisper small, medium and large-v3 transcripts plus a 10 ms energy envelope. The two splices were checked by re-transcribing the joined audio. All decisions are in [`edl.py`](pipeline/bisp/edl.py):
 - **Prime Minister's name.** In IMG_1689 the presenter says "Wazir-e-Azam **Mian Muhammad Nawaz Sharif**". All three Whisper models agree, and there is no "sh" burst where "Shehbaz" would start. The script says **Muhammad Shehbaz Sharif**. The spoken name is therefore cut ("…aur Wazir-e-Azam ke vision ke mutabiq…"), and the lower-third shows the script's correct name. If you would rather keep the name spoken, re-record that one line.
+- **President's name (client request).** "Sadr-e-Pakistan Asif Ali Zardari aur" is also cut from the audio, so the line reads "Yeh iqdaam Wazir-e-Azam ke vision ke mutabiq khawateen ki maali khudmukhtari ki taraf ek aham qadam hai". The out-point sits right before the "S" hiss of "Sadr", and Whisper large-v3 reads the final voice track as that sentence. The President's name card is removed.
+- **Making those cuts invisible.** IMG_1689 is a walking shot, so a morph cut cannot work: the background changes between the two moments. Each cut in that line is instead a **speed ramp**. Over about 0.3 s the skipped footage flies past with real motion blur (a smooth Hermite time-remap, normal speed at both ends), so it reads as one continuous camera move. One slow push-in runs across the whole line, and the audio joins with 6 ms fades so the words flow.
 - **"Raqam kaise hasil karein".** IMG_1731 has four takes. The reel uses the clean take plus the last take of step 4.
 - **Dropped takes.** The false start in IMG_1691 is dropped. IMG_1704 (alternate take of IMG_1705) and the flubbed second line of IMG_1738 are not used.
 - **Pacing.** Jump cuts inside a clip become deliberate punch-ins. Changes of room use a liquid-glass wipe, a whip zoom or a flash cut.
@@ -369,7 +371,7 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 | 0–6 s | Hook: "Benazir Kafaalat ka naya digital payment system, Interoperability, raqam aapki, intikhab bhi aapka" | Official BISP banner drops into a glass pill (stays top-centre). "BENAZIR KAFAALAT" word pops, the "INTEROPERABILITY" glass slab slams with a light sweep, then "Raqam Aapki," / "Intikhab Bhi Aapka!" pills |
 | 6–15 s | Bari tabdeeli, 1 crore+ digital wallets | Logo pulse on "Benazir Income Support Programme"; wallet card with a counter rolling to **1,00,00,000+** |
 | 15–22 s | Poore Pakistan, kisi bhi waqt / din | Four glass chips (pin, clock, calendar, heart) |
-| 22–29 s | Sadr-e-Pakistan / Wazir-e-Azam ka vision | Name plates with the Government of Pakistan emblem: "Asif Ali Zardari" and "Muhammad Shehbaz Sharif"; "Maali Khudmukhtari" card |
+| 22–27 s | Wazir-e-Azam ka vision | Name plate with the Government of Pakistan emblem: "Muhammad Shehbaz Sharif"; "Maali Khudmukhtari" card |
 | 29–31 s | "Ab Interoperability hai kya?" | Punch-in, flash, "INTEROPERABILITY kya hai?" slab |
 | 31–40 s | Pehle: khaas bank ka retailer, qataarein, intezar, katautiyan | The footage turns to a muted memory grade with a red "PEHLE" tag and four red pain chips |
 | 40–49 s | Ab: kisi bhi banking partner ka authorized retailer | Colour floods back with an "AB" tag; a network card links one woman to the six partners' official logos, whose links light up in gold and get checks |

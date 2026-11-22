@@ -63,9 +63,8 @@ def build_plan():
     P['any_din'] = Wt('anytime', 'din') - 0.25
     P['any_sahulat'] = Wt('anytime', 'sahulat')
     P['any_out'] = S('anytime')['t1'] - 0.35
-    P['plate1'] = Wt('vision_a', 'sadr-e-pakistan') - 0.1
-    P['plate2'] = Wt('vision_a', 'wazir-e-azam') - 0.15
-    P['plates_out'] = Wt('vision_b', 'khawateen') - 0.1
+    P['plate2'] = Wt('vision_a2', 'wazir-e-azam') - 0.15
+    P['plates_out'] = Wt('vision_b', 'maali') - 0.55
     P['maali_in'] = Wt('vision_b', 'maali') - 0.1
     P['maali_out'] = S('vision_b')['t1'] - 0.3
     P['whatis_in'] = S('whatis')['t0'] + 0.04
@@ -131,11 +130,13 @@ CAP_OFF = [
 ]
 
 # transitions at clip changes: segment id -> type of the cut INTO it
-TRANS = {'wallets': 'glass', 'anytime': 'whip', 'vision_a': 'glass', 'vision_b': 'punch', 'whatis': 'flash',
+TRANS = {'wallets': 'glass', 'anytime': 'whip', 'vision_a': 'glass', 'vision_a2': 'ramp', 'vision_b': 'ramp', 'whatis': 'flash',
          'pehle': 'glass', 'ab': 'flash', 'rush': 'punch', 'banks': 'glass', 'faide': 'whip', 'steps_a': 'glass',
          'steps_b': 'punch', 'hidayat': 'whip', 'crore': 'glass', 'khwab': 'punch'}
 GLASS_HALF = 0.24
 WHIP_HALF = 0.15
+MORPH_HALF = 0.10
+RAMP_HALF = 0.15
 
 
 # ---- footage ---------------------------------------------------------------------------------------------------------
@@ -170,8 +171,7 @@ def zoom_frame(img, z, clip, dx=0.0, dy=0.0):
 
 
 def seg_zoom(s, t):
-    q = (t - s['t0']) / max(1e-3, s['t1'] - s['t0'])
-    return s['zoom'] * (1 + 0.045 * q)
+    return TL.zoom_at(s, t)
 
 
 def seg_image(s, t, extra_z=1.0, src_shift=0.0):
@@ -218,6 +218,10 @@ def base_frame(t):
             return glass_wipe(a, b, t, T)
         if typ == 'whip' and abs(t - T) < WHIP_HALF:
             return whip(a, b, t, T)
+        if typ == 'morph' and abs(t - T) < MORPH_HALF:
+            return morph(a, b, t, T)
+        if typ == 'ramp' and abs(t - T) < RAMP_HALF:
+            return ramp(a, b, t, T)
     img = seg_image(s, t)
     typ = TRANS.get(s['id'], 'cut')
     if typ in ('punch', 'flash') and t - s['t0'] < 0.2:
@@ -245,6 +249,55 @@ def glass_wipe(a, b, t, T):
     K.glass(img, xw, H / 2, bw, H + 400, bw / 2, refract=60, bevel=90, blur=24, tint=K.GREEN_L, tint_a=0.08,
             shadow=0.0, rim=1.0, sheen=0.0, chroma=0.8)
     return img
+
+
+_dis = None
+
+
+def morph(a, b, t, T):
+    """Morph cut (like Premiere's): dense optical flow from the outgoing to the incoming frame; both are warped
+    towards the in-between position and cross-blended, so a jump cut inside one take reads as continuous motion."""
+    global _dis
+    q = K.ease_io((t - (T - MORPH_HALF)) / (2 * MORPH_HALF))
+    A = seg_image(a, t)
+    B = seg_image(b, t)
+    if _dis is None:
+        _dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
+    ga = cv2.cvtColor((cv2.resize(A, (W // 2, H // 2)) * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
+    gb = cv2.cvtColor((cv2.resize(B, (W // 2, H // 2)) * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY)
+    fl = _dis.calc(ga, gb, None)
+    fl = cv2.GaussianBlur(fl, (0, 0), 6)
+    fl = cv2.resize(fl, (W, H), interpolation=cv2.INTER_LINEAR) * 2.0
+    gx, gy = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(H, dtype=np.float32))
+    Aw = cv2.remap(A, gx - q * fl[..., 0], gy - q * fl[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    Bw = cv2.remap(B, gx + (1 - q) * fl[..., 0], gy + (1 - q) * fl[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    return Aw * (1 - q) + Bw * q
+
+
+def ramp_src(a, b, t, T):
+    """Source time through a speed ramp: normal speed at both edges of the window, a smooth (Hermite) acceleration
+    through the skipped moment in between, so the take's own camera move simply runs on, fast."""
+    h = RAMP_HALF
+    u = min(max((t - (T - h)) / (2 * h), 0.0), 1.0)
+    s0 = a['b'] - h * edl.SPEED
+    s1 = b['a'] + h * edl.SPEED
+    m = 2 * h * edl.SPEED
+    h00, h10, h01, h11 = 2 * u**3 - 3 * u**2 + 1, u**3 - 2 * u**2 + u, -2 * u**3 + 3 * u**2, u**3 - u**2
+    return h00 * s0 + h10 * m + h01 * s1 + h11 * m
+
+
+def ramp(a, b, t, T):
+    """Speed-ramp cut inside one take (used where she walks and the camera moves, so a morph cannot work): the skipped
+    seconds of video fly past in ~0.3 s with real motion blur; the audio cut stays clean."""
+    n = 10
+    acc = np.zeros((H, W, 3), np.float32)
+    s_lo = ramp_src(a, b, t - 0.5 / FPS, T)
+    s_hi = ramp_src(a, b, t + 0.5 / FPS, T)
+    for k in range(n):
+        src = s_lo + (s_hi - s_lo) * (k + 0.5) / n
+        img = src_frame(a['clip'], src)
+        acc += zoom_frame(img, seg_zoom(a, t), a['clip'])
+    return look_adjust(acc / n, a, t)
 
 
 def whip(a, b, t, T):
@@ -509,23 +562,21 @@ def sc_anytime(f, t):
 
 def sc_vision(f, t):
     P = PLAN
-    # name plates, below her neck, left-aligned, one band that is safe for both halves of the cut
-    a1, b1 = band('vision_a', 'low'); a2, b2 = band('vision_b', 'low')
+    # Wazir-e-Azam name plate (the President's name is cut from this line), below her neck, left-aligned, in a band
+    # that is safe for both segments it spans
+    a1, b1 = band('vision_a2', 'low'); a2, b2 = band('vision_b', 'low')
     lo, hi = max(a1, a2), min(b1, b2)
-    hh, gap = 76, 10
-    tot = 2 * hh + gap
-    k = min(1.0, (hi - lo) / tot)
-    for i, (role, name, tt) in enumerate((('SADR-E-PAKISTAN', 'Asif Ali Zardari', P['plate1']),
-                                          ('WAZIR-E-AZAM', 'Muhammad Shehbaz Sharif', P['plate2']))):
-        Ln = T(name, 30, 'xbold')
-        pw = Ln.shape[1] + 112
-        cy = hi - tot * k + (hh / 2 + i * (hh + gap)) * k
-        b = Box(f, t, SAFE['l'] + 6 + pw * k / 2, cy, pw, hh, tt, P['plates_out'] + i * 0.06, r=24,
-                style='dark', side=1, tag='plate', k=k)
-        if b.ok:
-            b.put(K.emblem_disc(56), -pw / 2 + 42, 0)
-            b.put(T(role, 17, 'ui_b', color=K.GOLD, tracking=3, shadow=0.0), -pw / 2 + 80, -17, anchor='l')
-            b.put(Ln, -pw / 2 + 80, 11, anchor='l')
+    hh = 76
+    k = min(1.0, (hi - lo) / hh)
+    role, name, tt = 'WAZIR-E-AZAM', 'Muhammad Shehbaz Sharif', P['plate2']
+    Ln = T(name, 30, 'xbold')
+    pw = Ln.shape[1] + 112
+    b = Box(f, t, SAFE['l'] + 6 + pw * k / 2, hi - hh * k / 2, pw, hh, tt, P['plates_out'], r=24,
+            style='dark', side=1, tag='plate', k=k)
+    if b.ok:
+        b.put(K.emblem_disc(56), -pw / 2 + 42, 0)
+        b.put(T(role, 17, 'ui_b', color=K.GOLD, tracking=3, shadow=0.0), -pw / 2 + 80, -17, anchor='l')
+        b.put(Ln, -pw / 2 + 80, 11, anchor='l')
     # "Maali Khudmukhtari" (after the plates have gone), same lower band
     (cy,), k = stack('vision_b', 'low', [104])
     b = Box(f, t, CXL, cy, 620, 104, P['maali_in'], P['maali_out'], r=32, style='dark', k=k)
@@ -992,6 +1043,7 @@ def sfx_cues():
     add(P['hook_raqam'] + 0.5, 'cash_kaching', -15); add(P['hook_intikhab'], 'check_ding', -8)
     for s in TL.segs[1:]:
         typ = TRANS.get(s['id'], 'cut')
+        if typ == 'morph': continue
         if typ == 'glass': add(s['t0'], 'whoosh_slow', -9)
         elif typ == 'whip': add(s['t0'], 'whip', -7)
         elif typ == 'flash': add(s['t0'], 'flash_hit', -9)
@@ -999,7 +1051,7 @@ def sfx_cues():
     add(P['logo_pulse'] + 0.2, 'glass_tap', -10)
     add(P['crore_in'], 'card_slide', -9); add(P['crore_in'] + 0.2, 'slot_tick', -12, align='start'); add(P['crore_in'] + 1.45, 'coin_ring', -10)
     for k in ('any_pak', 'any_waqt', 'any_din', 'any_sahulat'): add(P[k], 'bubble_pop', -9)
-    add(P['plate1'], 'card_slide', -10); add(P['plate2'], 'card_slide', -10)
+    add(P['plate2'], 'card_slide', -10)
     add(P['maali_in'], 'toast_chime', -10)
     add(P['whatis_in'], 'impact_big', -6)
     add(P['pehle_tag'], 'glitch_short', -12)
