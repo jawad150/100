@@ -389,13 +389,15 @@ Every panel is **liquid glass** ([`kit.py`](pipeline/bisp/kit.py) `glass()`): a 
 - JazzCash and Bank of Punjab come from Wikimedia Commons, because their own sites block automated downloads.
 - HBL Microfinance Bank is shown as the HBL mark with "MicroFinance Bank", its brand lock-up.
 
-**Layout: her face is never covered, and everything sits inside the Reels safe area.**
-- [`facetrack.py`](pipeline/bisp/facetrack.py) tracks her face (forehead to chin) every 0.25 s in output coordinates, with zoom and push-ins applied.
-- Every panel is fitted into one of two bands: above her forehead (under the logo pill) or below her chin (above the captions). Panels slide in away from her face, and are scaled down when a band is tight.
-- The safe area is x 60–960 and y 222–1538. That keeps clear of the top bar, the caption, username and audio strip, and the like/comment/share column.
-- [`audit_layout.py`](pipeline/bisp/audit_layout.py) renders every 0.1 s (1,308 frames) and checks each panel and caption against the face box and the safe area. The final layout has **0 violations**.
+**Layout: nothing ever covers her face or the area around it, and everything sits inside the Reels safe area.**
+- [`facetrack.py`](pipeline/bisp/facetrack.py) tracks her face every 0.2 s in output coordinates, with zoom and push-ins applied.
+- From that it builds a **protected zone** for each shot. The zone runs from the top of her hair to below her neck, and is 35 % wider than her face on each side.
+- Graphics live only in the band above the zone (under the logo pill) or the band below it (above the captions). They sit at the far edge of that band, away from her.
+- They are compact: about 25–35 % smaller than v1. Chips run in rows rather than tall stacks, and panels slide in away from her.
+- The safe area is x 60–960 and y 222–1538.
+- [`audit_layout.py`](pipeline/bisp/audit_layout.py) renders every 0.1 s (1,308 frames) and checks every panel and caption against the zone and the safe area. The final layout has **0 violations**.
 
-**Captions** are in **Roman Urdu (Hinglish)** and follow her actual words, synced word by word. Whisper word times are snapped to syllable onsets. Each page shows 2–3 words; the spoken word sits on a BISP-green pill, and brand keywords (raqam, digital wallet, CNIC, SMS, Interoperability…) are gold. Captions are hidden wherever a graphic already spells out the same words (hook, banks list, benefits list, closing title). Captions sit at y ≈ 1425, inside the safe area and below her chin in every shot.
+**Captions** are in **Roman Urdu (Hinglish)** and follow her actual words, synced word by word. Whisper word times are snapped to syllable onsets. Each page shows 2–3 words; the spoken word sits on a BISP-green pill, and brand keywords (raqam, digital wallet, CNIC, SMS, Interoperability…) are gold. Captions are hidden wherever a graphic already spells out the same words (hook, banks list, benefits list, closing title). Captions sit at y ≈ 1455, inside the safe area and below the protected zone in every shot.
 
 ## Audio
 - **Voice** ([`audio_mix.py`](pipeline/bisp/audio_mix.py)): high-pass, FFT denoise, room-box cut at 280 Hz, presence lift, de-esser and 2.8:1 compression, then loudness-matched per clip and cut with 12 ms fades.

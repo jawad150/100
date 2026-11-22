@@ -2,8 +2,8 @@
 
     python3 facetrack.py   -> workspace_bisp/faces_seg.json  {seg_id: {top, bottom, left, right, track: [[t, x0, y0, x1, y1]...]}}
 
-The protected "face area" is the Haar face box widened to forehead (-0.32 h) and chin (+1.14 h); graphics are laid
-out so they never enter it (reel.py bands)."""
+The face box is the Haar box widened to forehead (-0.32 h) and chin (+1.14 h). The protected ZONE adds the hair
+and neck around it (-0.60 h .. +1.55 h, 0.35 w either side): graphics never enter the zone (reel.py bands)."""
 import os, sys, json
 import numpy as np
 import cv2
@@ -44,14 +44,25 @@ def main():
                 z = s['zoom'] * (1 + 0.045 * q)
                 x0, y0 = zmap(c, z, x - 0.06 * w, y - 0.32 * h)
                 x1, y1 = zmap(c, z, x + 1.06 * w, y + 1.14 * h)
-                track.append([round(t, 2), x0, y0, x1, y1])
-            t += 0.25
+                X0, Y0 = zmap(c, z, x - 0.35 * w, y - 0.60 * h)
+                X1, Y1 = zmap(c, z, x + 1.35 * w, y + 1.55 * h)
+                track.append([round(t, 2), x0, y0, x1, y1, X0, Y0, X1, Y1])
+            t += 0.2
         a = np.array([r[1:] for r in track])
+        # protected ZONE around the face: hair top (-0.60 h) to below the neck (+1.55 h), 0.35 w either side; the
+        # extremes over the whole segment (outliers whose size is >35 % off the median are dropped), so nothing that
+        # moves in or out can ever sit on her head or neck.
+        zs = np.array([r[5:] for r in track])
+        hs = zs[:, 3] - zs[:, 1]
+        ok = np.abs(hs / np.median(hs) - 1) < 0.35
+        zs = zs[ok]
         out[s['id']] = dict(left=float(np.percentile(a[:, 0], 3)), top=float(np.percentile(a[:, 1], 3)),
                             right=float(np.percentile(a[:, 2], 97)), bottom=float(np.percentile(a[:, 3], 97)),
-                            n=len(track), track=track)
+                            zone=[float(zs[:, 0].min()), float(zs[:, 1].min()), float(zs[:, 2].max()), float(zs[:, 3].max())],
+                            n=len(track), track=[r[:5] for r in track], ztrack=[[r[0]] + r[5:] for r in track])
         r = out[s['id']]
-        print(f"{s['id']:10s} n={len(track):3d}  face x {r['left']:.0f}-{r['right']:.0f}  y {r['top']:.0f}-{r['bottom']:.0f}")
+        z = r['zone']
+        print(f"{s['id']:10s} n={len(track):3d}  face y {r['top']:.0f}-{r['bottom']:.0f}   ZONE x {z[0]:.0f}-{z[2]:.0f} y {z[1]:.0f}-{z[3]:.0f}")
     json.dump(out, open(os.path.join(WS, 'faces_seg.json'), 'w'))
 
 
