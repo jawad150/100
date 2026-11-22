@@ -63,6 +63,7 @@ def build_plan():
     P['any_din'] = Wt('anytime', 'din') - 0.25
     P['any_sahulat'] = Wt('anytime', 'sahulat')
     P['any_out'] = S('anytime')['t1'] - 0.35
+    P['plate1'] = Wt('vision_a', 'sadr-e-pakistan') - 0.1
     P['plate2'] = Wt('vision_a2', 'wazir-e-azam') - 0.15
     P['plates_out'] = Wt('vision_b', 'maali') - 0.55
     P['maali_in'] = Wt('vision_b', 'maali') - 0.1
@@ -562,21 +563,23 @@ def sc_anytime(f, t):
 
 def sc_vision(f, t):
     P = PLAN
-    # Wazir-e-Azam name plate (the President's name is cut from this line), below her neck, left-aligned, in a band
-    # that is safe for both segments it spans
-    a1, b1 = band('vision_a2', 'low'); a2, b2 = band('vision_b', 'low')
-    lo, hi = max(a1, a2), min(b1, b2)
-    hh = 76
+    # title cards (no personal names, on request): Government of Pakistan emblem + "Sadr-e-Pakistan" / "Wazir-e-Azam",
+    # side by side below her neck, in a band that is safe for every segment they span
+    segs = ('vision_a', 'vision_a2', 'vision_b')
+    lo = max(band(x, 'low')[0] for x in segs); hi = min(band(x, 'low')[1] for x in segs)
+    hh = 70
     k = min(1.0, (hi - lo) / hh)
-    role, name, tt = 'WAZIR-E-AZAM', 'Muhammad Shehbaz Sharif', P['plate2']
-    Ln = T(name, 30, 'xbold')
-    pw = Ln.shape[1] + 112
-    b = Box(f, t, SAFE['l'] + 6 + pw * k / 2, hi - hh * k / 2, pw, hh, tt, P['plates_out'], r=24,
-            style='dark', side=1, tag='plate', k=k)
-    if b.ok:
-        b.put(K.emblem_disc(56), -pw / 2 + 42, 0)
-        b.put(T(role, 17, 'ui_b', color=K.GOLD, tracking=3, shadow=0.0), -pw / 2 + 80, -17, anchor='l')
-        b.put(Ln, -pw / 2 + 80, 11, anchor='l')
+    items = (('Sadr-e-Pakistan', P['plate1']), ('Wazir-e-Azam', P['plate2']))
+    ws = [T(name, 30, 'xbold').shape[1] - 12 + 96 for name, _ in items]
+    gap = 16
+    x = CXL - (sum(ws) + gap) * k / 2
+    for (name, tt), pw in zip(items, ws):
+        b = Box(f, t, x + pw * k / 2, hi - hh * k / 2, pw, hh, tt, P['plates_out'], r=35, style='dark', side=1,
+                tag='plate', k=k)
+        if b.ok:
+            b.put(K.emblem_disc(52), -pw / 2 + 38, 0)
+            b.put(T(name, 30, 'xbold'), -pw / 2 + 74, 0, anchor='l')
+        x += (pw + gap) * k
     # "Maali Khudmukhtari" (after the plates have gone), same lower band
     (cy,), k = stack('vision_b', 'low', [104])
     b = Box(f, t, CXL, cy, 620, 104, P['maali_in'], P['maali_out'], r=32, style='dark', k=k)
@@ -1051,7 +1054,7 @@ def sfx_cues():
     add(P['logo_pulse'] + 0.2, 'glass_tap', -10)
     add(P['crore_in'], 'card_slide', -9); add(P['crore_in'] + 0.2, 'slot_tick', -12, align='start'); add(P['crore_in'] + 1.45, 'coin_ring', -10)
     for k in ('any_pak', 'any_waqt', 'any_din', 'any_sahulat'): add(P[k], 'bubble_pop', -9)
-    add(P['plate2'], 'card_slide', -10)
+    add(P['plate1'], 'card_slide', -10); add(P['plate2'], 'card_slide', -10)
     add(P['maali_in'], 'toast_chime', -10)
     add(P['whatis_in'], 'impact_big', -6)
     add(P['pehle_tag'], 'glitch_short', -12)

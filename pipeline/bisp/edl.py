@@ -6,10 +6,11 @@ re-transcribing the joined audio:
   * IMG_1689: she says "Wazir-e-Azam Mian Muhammad Nawaz Sharif" (all three Whisper models agree and there is no "sh"
     burst where "Shehbaz" would start). The script says Shehbaz Sharif, so the name is cut (3.76 -> 4.93 s): the line
     becomes "... aur Wazir-e-Azam ke vision ke mutabiq ...", and the lower-third carries the script's correct name.
-  * On the client's request the President's name is skipped too: "Sadr-e-Pakistan Asif Ali Zardari aur" (1.098 ->
-    3.13 s, out-point just before the "S" frication of "Sadr"). The line now reads "Yeh iqdaam Wazir-e-Azam ke vision
-    ke mutabiq ...". Both cuts in this line are MORPH cuts (optical-flow warp + blend over 6 frames, reel.morph) under
-    one continuous push-in (ZOOM_GROUPS), so they do not read as jump cuts.
+  * On the client's request only the NAMES are skipped, the titles stay: "Asif Ali Zardari" is cut too (2.12 ->
+    3.00 s: out before "Asif", in at the silence before "aur"). The line reads "Yeh iqdaam Sadr-e-Pakistan aur
+    Wazir-e-Azam ke vision ke mutabiq ...". IMG_1689 is a walking shot, so both cuts in this line are SPEED RAMPS
+    (reel.ramp: the skipped footage flies past in ~0.3 s with motion blur) under one continuous push-in
+    (ZOOM_GROUPS), so they do not read as jump cuts.
   * IMG_1731 has several takes. Used: the clean take 13.9-33.78 s (up to "Is ke") + the last take from "baad" (39.567 s, in the silence before it).
   * IMG_1691: the first attempt (2.2-5.2 s) is dropped, the clean take starts at 7.2 s.
   * IMG_1704 is an alternate take of IMG_1705 (ends with an outtake), IMG_1738's second sentence is a flub that
@@ -40,8 +41,8 @@ SEGMENTS = [
     ('hook',      'IMG_1672', 0.40, 6.62, 1.00),
     ('wallets',   'IMG_1677', 1.12, 9.98, 1.00),
     ('anytime',   'IMG_1681', 1.52, 8.18, 1.00),
-    ('vision_a',  'IMG_1689', 0.45, 1.098, 1.00),   # "Yeh iqdaam" | (Sadr-e-Pakistan Asif Ali Zardari aur: cut)
-    ('vision_a2', 'IMG_1689', 3.13, 3.76, 1.00),    # "Wazir-e-Azam" | (Mian Muhammad Nawaz Sharif: cut)
+    ('vision_a',  'IMG_1689', 0.45, 2.12, 1.00),    # "Yeh iqdaam Sadr-e-Pakistan" | (Asif Ali Zardari: cut)
+    ('vision_a2', 'IMG_1689', 3.00, 3.76, 1.00),    # "aur Wazir-e-Azam" | (Mian Muhammad Nawaz Sharif: cut)
     ('vision_b',  'IMG_1689', 4.93, 9.02, 1.00),    # "ke vision ke mutabiq ..." (morph cuts, one continuous zoom)
     ('whatis',    'IMG_1689', 9.20, 11.00, 1.28),
     ('pehle',     'IMG_1691', 7.18, 16.22, 1.00),
@@ -70,7 +71,7 @@ SENTENCES = [
     ('IMG_1677', 1.0, 5.7, 'Benazir Income Support Programme ne apne payment system mein ek bari tabdeeli introduce ki hai'),
     ('IMG_1677', 5.7, 10.0, 'Ek crore se zyada mustahiq khawateen ke digital wallets qaim kiye ja chuke hain'),
     ('IMG_1681', 1.0, 8.5, 'Ab khawateen poore Pakistan mein kisi bhi waqt aur kisi bhi din apni sahulat ke hisaab se wazaaif ki raqam hasil kar sakengi^2'),
-    ('IMG_1689', 0.0, 3.7, 'Yeh iqdaam -^6 Wazir-e-Azam^2'),   # cut on request: "Sadr-e-Pakistan Asif Ali Zardari aur"
+    ('IMG_1689', 0.0, 3.7, 'Yeh iqdaam Sadr-e-Pakistan^2 -^3 aur Wazir-e-Azam^2'),   # names cut on request
     ('IMG_1689', 3.7, 4.85, '-^4'),   # cut: "Mian Muhammad Nawaz Sharif"
     ('IMG_1689', 4.85, 8.8, 'ke vision ke mutabiq khawateen ki maali khudmukhtari^2 ki taraf ek aham qadam hai'),
     ('IMG_1689', 8.8, 11.0, 'Ab@9.31 Interoperability^2 hai kya?'),
