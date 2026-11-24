@@ -13,8 +13,8 @@ S = os.path.abspath(os.path.join(HERE, '..', 'workspace_ear', 'tts'))
 SR = 44100
 DUR = 34.0
 SLOTS = [(0.35, 'Manchester, can you name this place by ear?', 'nar'), (4.45, 'First clue.', 'nar'), (10.25, 'Second clue.', 'nar'),
-         (16.2, 'Last one.', 'nar'), (18.75, 'Assalamu alaikum, Manchester.', 'pres'), (27.2, 'Three sounds. One address.', 'nar'),
-         (29.35, 'The British Muslim Heritage Centre, Whalley Range.', 'nar')]
+         (16.2, 'Last one.', 'nar'), (18.75, 'Assalamu alaikum, Manchester.', 'pres'), (26.95, 'Three sounds. One address.', 'nar'),
+         (29.6, 'The British Muslim Heritage Centre, Whalley Range.', 'nar')]
 
 
 def rd(f):
@@ -28,6 +28,31 @@ def whisper(f):
                                      capture_output=True, check=True).stdout, np.float32)
     m = WhisperModel('small.en', device='cpu', compute_type='int8')
     return [(w.word.strip(), w.start, w.end) for s in m.transcribe(a, word_timestamps=True, beam_size=5)[0] for w in s.words]
+
+
+def edges(x, a, b, thr=0.012):
+    """True speech onset/offset around whisper's [a, b]: walk out from the words until the level stays below thr."""
+    win = int(0.01 * SR)
+    def rms(t):
+        i = int(t * SR)
+        return float(np.sqrt(np.mean(x[max(0, i - win):i + win] ** 2))) if i < len(x) else 0.0
+    s = a
+    lim = max(0.0, a - 0.7)
+    quiet = 0
+    while s > lim:
+        quiet = quiet + 1 if rms(s) < thr else 0
+        if quiet >= 6:
+            break
+        s -= 0.01
+    e = b
+    lim2 = min(len(x) / SR, b + 0.6)
+    quiet = 0
+    while e < lim2:
+        quiet = quiet + 1 if rms(e) < thr else 0
+        if quiet >= 8:
+            break
+        e += 0.01
+    return max(0.0, s), min(len(x) / SR, e + 0.05)
 
 
 def place(buf, x, t0):
@@ -62,8 +87,7 @@ if os.path.exists(nar_p):
         target = text.split()
         seg_w = nw[i:i + len(target)]
         i += len(target)
-        b0 = max(0, seg_w[0][1] - 0.05)
-        b1 = seg_w[-1][2] + 0.18
+        b0, b1 = edges(n, seg_w[0][1], seg_w[-1][2])
         x = n[int(b0 * SR):int(b1 * SR)].copy()
         f = int(0.01 * SR)
         x[:f] *= np.linspace(0, 1, f)

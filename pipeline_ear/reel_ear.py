@@ -31,8 +31,8 @@ SLOTS = [
     (10.25, 'Second clue.', 'nar'),
     (16.2, 'Last one.', 'nar'),
     (18.75, 'Assalamu alaikum, Manchester.', 'pres'),
-    (27.2, 'Three sounds. One address.', 'nar'),
-    (29.35, 'The British Muslim Heritage Centre, Whalley Range.', 'nar'),
+    (26.95, 'Three sounds. One address.', 'nar'),
+    (29.6, 'The British Muslim Heritage Centre, Whalley Range.', 'nar'),
 ]
 INFO_P = f'{S}/tts/info.json'
 INFO = json.load(open(INFO_P)) if os.path.exists(INFO_P) else None
