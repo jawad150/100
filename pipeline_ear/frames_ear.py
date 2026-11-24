@@ -49,7 +49,7 @@ def dark_bg(seed=0, landscape=False):
         glow = np.exp(-np.clip(-d, 0, None) ** 2 * 2)[..., None] * (d < 0)[..., None]
         rng = np.random.default_rng(seed)
         speck = (rng.random((H, W)) > 0.985).astype(np.float32)[..., None] * body * 0.5
-        c = c * (1 - body) + (MAG * 0.75 + np.array((1, 1, 1), np.float32) * 0.1) * body + MAG * glow * 0.35 + speck
+        c = c * (1 - body) + (MAG * 0.36 + np.array((0.04, 0.02, 0.03), np.float32)) * body + MAG * glow * 0.3 + speck
     return np.clip(c, 0, 1).astype(np.float32)
 
 
