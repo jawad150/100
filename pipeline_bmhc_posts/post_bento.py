@@ -118,15 +118,23 @@ tg = text('COMMUNITY', 800, 22, tuple(INK), 0.12)
 pw, ph = tg.shape[1] + 34, tg.shape[0] + 22
 paste(c, np.dstack([rrect_mask(pw, ph, 8)[..., None] * WHITE, rrect_mask(pw, ph, 8)]), X, 56)
 paste(c, tg, X + 17, 56 + 11)
-# official colour logo (as supplied), unmodified, on a tab cut from its own light background
-logo = cv2.imread(f'{ROOT}/workspace_bmhc_posts/bmhc_logo_colour.png', cv2.IMREAD_UNCHANGED)[..., :3].astype(np.float32) / 255
+# official logo (as supplied), background keyed out; line art and wordmark reversed to white for the ink ground
+# (the brand's "reversed on ink" version) - the four bars keep their colours
+lg = cv2.imread(f'{ROOT}/workspace_bmhc_posts/bmhc_logo_colour.png', cv2.IMREAD_UNCHANGED)[..., 2::-1].astype(np.float32) / 255
+big = cv2.resize(lg, (lg.shape[1] * 3, lg.shape[0] * 3), interpolation=cv2.INTER_CUBIC)       # work at 3x for clean edges
+lum = (big * np.array((0.3, 0.59, 0.11), np.float32)).sum(-1)
+sat = big.max(-1) - big.min(-1)
+bar = np.clip((sat - 0.18) / 0.12, 0, 1)
+line_a = np.clip((0.9 - lum) / 0.7, 0, 1)
+alpha = np.maximum(bar, line_a)
+rgb = WHITE[None, None] * (1 - bar[..., None]) + big * bar[..., None]
+ys, xs = np.where(alpha > 0.1)
+rgb, alpha = rgb[ys.min():ys.max() + 1, xs.min():xs.max() + 1], alpha[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 LW = 270
-logo = cv2.resize(logo, (LW, int(logo.shape[0] * LW / logo.shape[1])), interpolation=cv2.INTER_AREA)
-lh = logo.shape[0]
-lm = rrect_mask(LW, lh, 22)
-sh = cv2.GaussianBlur(np.pad(lm, 30), (0, 0), 12) * 0.45
-paste(c, np.dstack([np.zeros(sh.shape + (3,), np.float32), sh]), W - X - LW - 30, 36 - 30 + 8)
-paste(c, np.dstack([logo[..., ::-1] * lm[..., None], lm]), W - X - LW, 36)
+lh = int(alpha.shape[0] * LW / alpha.shape[1])
+rgb = cv2.resize(rgb, (LW, lh), interpolation=cv2.INTER_AREA)
+alpha = cv2.resize(alpha, (LW, lh), interpolation=cv2.INTER_AREA)
+paste(c, np.dstack([rgb * alpha[..., None], alpha]), W - X - LW, 46)
 
 h1 = text('EVERYTHING', 800, 98, tuple(WHITE), 0.02)
 paste(c, h1, X, 150)
