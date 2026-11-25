@@ -1,0 +1,11 @@
+Belonging rarely starts with the big moments. It starts with a name on a page, a text when City score, a drawing on the fridge. Thinking about fostering in Greater Manchester? Start your enquiry through the link in our bio.
+
+#OrganicFostering #FosteringManchester #BecomeAFosterCarer
+
+---
+Production notes (not for posting):
+- Built in the grammar of the Pinterest reference (centred cutouts on a vignetted ground, stacked light/bold type, blur dissolves, star-bullet list, pin, UI pills, words-only beat, out-of-focus pass, glow bloom, brand flash into the logo card), in Organic Fostering colours.
+- Narration: AI-generated Microsoft neural voice "Ryan" (en-GB) via edge-tts; ElevenLabs is at its monthly limit until about 30 Nov. Disclose AI voice where the platform asks.
+- Photos: organicfostering.co.uk, toned plum. 3D: houses, book, pin, fridge, hearts, corner crescents rendered in Blender.
+- Music: "Lasting Hope" by Kevin MacLeod (incompetech.com), CC BY 4.0 - credit when posting. SFX synthesised.
+- 1080 x 1920, 25 fps, 34 s, H.264 + AAC, -14 LUFS.
