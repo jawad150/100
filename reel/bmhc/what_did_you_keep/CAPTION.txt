@@ -1,0 +1,11 @@
+If someone opened your family’s keepsake drawer, what would need explaining?
+We’re starting with one object and one story at the British Muslim Heritage Centre in Manchester. What would you bring?
+
+#BritishMuslimHeritage #Manchester #WhalleyRange
+
+---
+Production notes (not for posting):
+- Illustrative story built on the brief's recipe-card example, not a recorded interview. The on-screen "Illustrative story" label stays in the first scene.
+- Voices: AI-generated Microsoft neural voices (en-GB): "Sonia" as the owner and "Thomas" as the off-camera questions. ElevenLabs is at its monthly limit until about 30 Nov. Disclose AI voice where the platform asks.
+- Sound effects: Mixkit (free licence): paper, envelope, page lift, drawer, room tone. No music (BMHC guidelines).
+- Photos: the centre's window from bmhc.org.uk; the kitchen still is a Mixkit stock clip. Keepsakes are 3D renders shown as B&W cut-outs.
