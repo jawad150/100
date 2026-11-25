@@ -1,0 +1,10 @@
+When City score, his brother gets the first text. That's the detail the carer remembers. Thinking about fostering in Greater Manchester? Start your enquiry through the link in our bio. Dramatisation.
+
+#OrganicFostering #FosteringManchester
+
+---
+Production notes (not for posting):
+- Dramatisation (on screen for the whole story). Voices are AI-generated Microsoft neural voices (en-GB): carer "Libby", young person "Thomas" (pitched younger). ElevenLabs is at its monthly limit until about 30 Nov. Disclose AI voice where the platform asks.
+- 3D: book, scarf, pen and phone are Blender renders; no real hands. Photos: kitchen from a free Mixkit stock clip, park from organicfostering.co.uk.
+- Music: "Easy Lemon" (Kevin MacLeod, incompetech.com, CC BY 4.0), low under the first two scenes. SFX: Mixkit (free licence) + synthesised buzz/thud/whooshes.
+- Cover frame: the scarf on the new page (around 0:11); cover title "Can I add a page?". 1080x1920, 25 fps, H.264 + AAC stereo.

@@ -313,7 +313,20 @@ STITCH = (RP[0] - 120, 905)
 
 def world(t):
     c = book().copy()
-    # 1 - the tap and the drawn star
+    # 2 - the household: two photos land, labels reveal left to right
+    for spr_name, rot, pos, t0, label in (('kitchen', -4.0, KIT, T_KITCHEN, 'Our kitchen'), ('park', 3.5, PARK, T_PARK, 'The park round the corner')):
+        u0 = t - t0 + 0.28
+        if u0 > 0:                                               # drops in from above with a little spin, then lands
+            k = e_out(clamp(u0 / 0.28))
+            sp, a = land(photo_card(spr_name, rot), t - t0)
+            if sp is None:
+                sp, a = xform(photo_card(spr_name, rot), 1.08, 9 * (1 - k) * (1 if rot < 0 else -1)), clamp(u0 / 0.1)
+            paste(c, sp, pos[0] + 60 * (1 - k) * (1 if rot > 0 else -1), pos[1] - 260 * (1 - k), a)
+            lu = (t - t0 - 0.2) / (8 * FR)
+            if lu > 0:
+                ls = label_spr(label)
+                paste(c, reveal_lr(ls, lu), pos[0] - 250 + ls.shape[1] / 2, pos[1] + 268)
+    # 1 - the tap and the drawn star (drawn over the photos so its flight into the bullet stays visible)
     if t >= T_TAP:
         u = t - T_TAP
         if u < 0.5:                                              # fingertip tap: a soft press ring
@@ -324,18 +337,14 @@ def world(t):
             paste(c, np.dstack([ring[..., None] * CHAR, ring]), LP[0], STAR_Y)
         d = 6 * FR
         s = 1.1 * smooth(u / (d * 0.6)) if u < d * 0.6 else 1.1 - 0.1 * smooth((u - d * 0.6) / (d * 0.4))
-        s *= 1 - smooth((t - (T_KITCHEN - 0.35)) / 0.3)
-        if s > 0.01:
-            paste(c, xform(star_spr(120), s, 8 * math.sin(t * 0.8)), LP[0], STAR_Y)
-    # 2 - the household: two photos land, labels reveal left to right
-    for spr_name, rot, pos, t0, label in (('kitchen', -4.0, KIT, T_KITCHEN, 'Our kitchen'), ('park', 3.5, PARK, T_PARK, 'The park round the corner')):
-        sp, a = land(photo_card(spr_name, rot), t - t0)
-        if sp is not None:
-            paste(c, sp, pos[0], pos[1], a)
-            lu = (t - t0 - 0.2) / (8 * FR)
-            if lu > 0:
-                ls = label_spr(label)
-                paste(c, reveal_lr(ls, lu), pos[0] - 250 + ls.shape[1] / 2, pos[1] + 268)
+        fly = e_inout(prog(t, T_KITCHEN - 0.45, T_KITCHEN + 0.2))
+        if fly < 1:
+            bx, by = KIT[0] - 250 + 13, KIT[1] + 268                   # the label's star bullet
+            x = LP[0] + (bx - LP[0]) * fly + 120 * math.sin(math.pi * fly)
+            y = STAR_Y + (by - STAR_Y) * fly - 160 * math.sin(math.pi * fly)
+            sz = s * (1 - fly) + (26 / 120) * fly
+            if sz > 0.01:
+                paste(c, xform(star_spr(120), sz, 8 * math.sin(t * 0.8) + 360 * e_inout(fly)), x, y)
     return c
 
 
@@ -343,6 +352,36 @@ def world_new_page(t, mono):
     """Right-page content that sits under the monochrome grade (bubbles/phone/text), drawn before the scarf."""
     c = book().copy() if False else None
     return c
+
+
+@functools.lru_cache(None)
+def _world_grid():
+    h, w = book().shape[:2]
+    return np.mgrid[0:h, 0:w].astype(np.float32)
+
+
+DRAIN0, DRAIN_P = 10.05, (2300.0, 980.0)
+FILL0 = PEN0 + 0.1
+
+
+def mono_map(t):
+    """Monochrome amount over the world: a wave drains the colour from the scarf's side, then colour flows back
+    out from the pen tip as it starts writing."""
+    if t < DRAIN0:
+        return None
+    full = 0.85
+    yy, xx = _world_grid()
+    if t < DRAIN0 + 1.0:
+        R = 2600 * e_out(prog(t, DRAIN0, DRAIN0 + 1.0))
+        m = np.clip((R - np.hypot(xx - DRAIN_P[0], yy - DRAIN_P[1])) / 260, 0, 1) * full
+        return m[..., None]
+    if t < FILL0:
+        return full
+    if t < FILL0 + 1.6:
+        R = 2800 * e_inout(prog(t, FILL0, FILL0 + 1.6))
+        m = (1 - np.clip((R - np.hypot(xx - (MATCH[0] - 330), yy - MATCH[1])) / 300, 0, 1)) * full
+        return m[..., None]
+    return None
 
 
 def compose_world(t):
@@ -354,11 +393,20 @@ def compose_world(t):
         ph = asset('phone', 150)
         buzz = 6 * math.sin(u * 70) * math.exp(-4 * max(0, u - 0.1)) if u > 0.1 else 0
         paste(c, shadowed(xform(ph, 1, -18 + buzz * 0.4), 8, (8, 10), 0.25), PHONE[0] + 260 * (1 - k) + buzz, PHONE[1])
+        for j in range(2):                                         # one quiet buzz: two soft rings
+            ur = u - 0.1 - j * 0.12
+            if 0 < ur < 0.7:
+                ring = np.zeros((420, 420), np.float32)
+                cv2.circle(ring, (210, 210), int(60 + 150 * e_out(ur / 0.7)), 1.0, 4, cv2.LINE_AA)
+                ring *= 0.45 * (1 - ur / 0.7)
+                paste(c, np.dstack([ring[..., None] * PLUM, ring]), PHONE[0], PHONE[1])
         for txt, col, pos, dl, tl in (('GOAL!', PLUM, GOAL, 0.0, True), ('I KNOW!', CHAR, IKNOW, 6 * FR, False)):
             ub = t - T_TEXT - dl
             if ub > 0:
                 s = e_back(clamp(ub / 0.3), 2.0)
-                paste(c, xform(bubble(txt, tuple(col), tl), max(0.01, s), -4 if tl else 4), pos[0], pos[1], clamp(ub / 0.08))
+                bob = 6 * math.sin((t + (0 if tl else 1.3)) * 2.2) * clamp((ub - 0.3) / 0.5)
+                paste(c, xform(bubble(txt, tuple(col), tl), max(0.01, s), (-4 if tl else 4) + 1.5 * math.sin(t * 1.7 + dl * 9)),
+                      pos[0], pos[1] + bob, clamp(ub / 0.08))
     if t >= PEN0:
         u = (t - PEN0) / (PEN1 - PEN0)
         ht = hand_text()
@@ -367,8 +415,8 @@ def compose_world(t):
         u = t - T_THREE
         s = 1.25 - 0.25 * e_out(clamp(u / (4 * FR)))
         paste(c, xform(stamp_spr(), s), STAMP[0], STAMP[1], clamp(u / (2 * FR)))
-    mono = smooth((t - 10.0) / 0.6) * (1 - smooth((t - 17.2) / 1.6)) * 0.85
-    if mono > 0:
+    mono = mono_map(t)
+    if mono is not None:
         g = (c[..., :3] * np.array((0.3, 0.59, 0.11), np.float32)).sum(-1, keepdims=True)
         c[..., :3] = c[..., :3] * (1 - mono) + g * mono
     if t >= T_CITY - 0.35:
@@ -394,11 +442,17 @@ def compose_world(t):
 def cam(t):
     """(centre x, centre y, zoom, rotation deg) in world px."""
     if t < COVER:
-        z = 1.10 + 0.07 * prog(t, 0, COVER)
+        z = 1.10 + 0.07 * prog(t, 0, COVER) + 0.1 * (1 - e_out(prog(t, 0, 1.2)))
+        for tl in (T_KITCHEN, T_PARK):                                    # tiny bump as each photo lands
+            if t > tl:
+                z += 0.012 * math.exp(-9 * (t - tl)) * math.sin(22 * (t - tl))
         return LP[0], LP[1] + 30 - 30 * prog(t, 0, COVER), z, 0.4 - 0.8 * prog(t, 0, COVER)
     if t < PEN0:
-        z = 1.08 + 0.08 * prog(t, COVER, PEN0)
-        return RP[0], RP[1] + 40 - 50 * prog(t, COVER, PEN0), z, -0.3 + 0.6 * prog(t, COVER, PEN0)
+        settle = 0.08 * (1 - e_out(prog(t, COVER, LIFT1 + 0.6)))          # the new page settles after the peel
+        z = 1.08 + 0.06 * prog(t, COVER, PEN0) + settle
+        z += 0.035 * math.exp(-5 * max(0, t - T_TEXT)) * math.sin(14 * max(0, t - T_TEXT)) if t > T_TEXT else 0
+        gl = e_inout(prog(t, 14.6, PEN0))                                  # glide along the scarf
+        return RP[0] - 50 + 110 * gl, RP[1] + 40 - 50 * prog(t, COVER, PEN0), z, -0.3 + 0.6 * prog(t, COVER, PEN0) + 1.2 * math.sin(math.pi * gl)
     if t < PULL0:
         k = e_inout(prog(t, PEN1 + 0.3, T_THREE - 0.2))
         cx = RP[0] - 40 + 60 * k
@@ -414,6 +468,10 @@ def cam(t):
 
 def cam_M(t):
     cx, cy, z, r = cam(t)
+    if T_THREE < t < T_THREE + 0.3:                                       # the stamp's soft desk tap
+        a = 9 * (1 - (t - T_THREE) / 0.3)
+        cx += a * math.sin(t * 90)
+        cy += a * math.cos(t * 70)
     M = cv2.getRotationMatrix2D((cx, cy), r, z)
     M[0, 2] += W / 2 - cx
     M[1, 2] += H / 2 - cy
@@ -481,16 +539,26 @@ def overlay_text(c, spr, x, y, a=1.0, anchor='c'):
 
 
 def title(c, t):
-    """Reference-style stacked type: a small light line over a big bold line (scene 1)."""
-    a = clamp((t - 0.25) / 0.4) * (1 - clamp((t - 3.6) / 0.4))
-    if a <= 0:
+    """Reference-style stacked type, each word rising out of a soft blur in turn (scene 1)."""
+    out = clamp((t - 3.5) / 0.45)
+    if t < 0.2 or out >= 1:
         return
-    k = e_out(clamp((t - 0.25) / 0.6))
-    s1 = text_spr('Can I', 400, 52, tuple(GREY))
-    s2 = line_spr((('add a ', tuple(CHAR)), ('page?', tuple(PLUM))), 800, 110)
-    y = 470 + 30 * (1 - k)
-    paste(c, s1, W / 2, y - 92, a)
-    paste(c, s2, W / 2, y, a)
+    items = [('Can I', 400, 52, GREY, W / 2, 378, 0.25)]
+    f = F(800, 110)
+    full = 'add a page?'
+    x0 = W / 2 - f.getlength(full) / 2
+    for i, (wd, col) in enumerate((('add', CHAR), ('a', CHAR), ('page?', PLUM))):
+        pre = ' '.join(['add', 'a', 'page?'][:i]) + (' ' if i else '')
+        items.append((wd, 800, 110, col, x0 + f.getlength(pre) + f.getlength(wd) / 2, 470, 0.45 + 0.14 * i))
+    for wd, wt, sz, col, x, y, d0 in items:
+        u = clamp((t - d0) / 0.45)
+        if u <= 0:
+            continue
+        k = e_out(u)
+        spr = text_spr(wd, wt, sz, tuple(col))
+        if u < 1:
+            spr = cv2.GaussianBlur(spr, (0, 0), 0.1 + 6 * (1 - k))
+        paste(c, spr, x, y + 40 * (1 - k) - 30 * e_inout(out), k * (1 - out))
 
 
 def wrap2(txt, maxw, f):
@@ -502,30 +570,52 @@ def wrap2(txt, maxw, f):
     return best
 
 
+def line_words(lid, t0, t1, txt):
+    toks = txt.split()
+    ws = [w for w in WORDS if t0 - 0.4 <= w[1] <= t1 + 0.2]
+    n, m = len(toks), len(ws)
+    out = []
+    for i, tk in enumerate(toks):
+        j = i if n == m else int(round(i * (m - 1) / max(1, n - 1)))
+        out.append((tk, ws[j][1], ws[j][2]))
+    return out
+
+
 def subtitles(c, t):
-    """Every spoken line verbatim, lower middle, up to two lines: charcoal on an ivory pill (Nunito regular)."""
+    """Every spoken line verbatim, lower middle, up to two lines, charcoal on ivory (Nunito regular); each word
+    fades up as it is said and the word being said is plum."""
     if t >= PULL0:
         return
+    f = F(400, 46)
+    sp = f.getlength(' ')
     for lid, spk, t0, t1, txt in LINES:
         if t0 - 0.05 <= t < t1 + 0.35:
             u = t - (t0 - 0.05)
             a = clamp(u / 0.15) * (1 - clamp((t - t1 - 0.2) / 0.15))
-            f = F(400, 46)
             ls = wrap2(txt, 820, f)
-            sprs = [text_spr(l, 400, 46, tuple(CHAR)) for l in ls]
-            wmax = max(s.shape[1] for s in sprs)
-            hsum = sum(s.shape[0] for s in sprs) + 14 * (len(sprs) - 1)
-            pw, ph = wmax + 64, hsum + 40
-            pill = np.zeros((ph * 4, pw * 4), np.uint8)
-            cv2.rectangle(pill, (0, 0), (pw * 4, ph * 4), 255, -1)
-            pill = cv2.resize(pill, (pw, ph), interpolation=cv2.INTER_AREA).astype(np.float32) / 255
+            words = line_words(lid, t0, t1, txt)
+            rows, k = [], 0
+            for l in ls:
+                n = len(l.split())
+                rows.append(words[k:k + n])
+                k += n
+            wmax = max(f.getlength(l) for l in ls)
+            lh = 60
+            pw, ph = int(wmax + 64), int(lh * len(rows) + 30)
             y = 1610 + 10 * (1 - e_out(clamp(u / 0.3)))
+            pill = np.ones((ph, pw), np.float32)
             paste(c, np.dstack([pill[..., None] * IVORY, pill * 0.93]), W / 2, y, a)
-            yy = y - hsum / 2
-            for s in sprs:
-                paste(c, s, W / 2, yy + s.shape[0] / 2, a)
-                yy += s.shape[0] + 14
-            # who is speaking: a small plum star for the young person, a small charcoal dot for the carer
+            yy = y - ph / 2 + 15 + lh / 2
+            for row in rows:
+                rw = sum(f.getlength(w[0]) for w in row) + sp * (len(row) - 1)
+                x = W / 2 - rw / 2
+                for tk, ws, we in row:
+                    wa = clamp((t - ws + 0.05) / 0.12)
+                    col = PLUM if ws - 0.02 <= t < we + 0.08 else CHAR
+                    spr = text_spr(tk, 400, 46, tuple(col))
+                    paste(c, spr, x + f.getlength(tk) / 2, yy + 6 * (1 - wa), a * (0.25 + 0.75 * wa))
+                    x += f.getlength(tk) + sp
+                yy += lh
             mark = star_spr(22) if spk == 'yp' else star_spr(22, tuple(CHAR))
             paste(c, mark, W / 2 - pw / 2 + 2, y - ph / 2 + 2, a)
 
@@ -587,8 +677,20 @@ def frame(t):
             b = 14 * (1 - e_out(t / 0.6))
             if b > 0.3:
                 c = cv2.GaussianBlur(c, (0, 0), b)
-        if PEN0 <= t < PEN0 + 3 * FR:                               # cut on the pen touching paper
-            c = cv2.GaussianBlur(c, (0, 0), 6 * (1 - (t - PEN0) / (3 * FR)))
+        if PEN0 - 2 * FR <= t < PEN0 + 5 * FR:                       # cut on the pen: a zoom-blur punch
+            amt = 1 - abs(t - PEN0) / (5 * FR)
+            acc = c.copy()
+            for i in range(1, 5):
+                z = 1 + 0.018 * i * amt
+                M2 = cv2.getRotationMatrix2D((W / 2, H * 0.4), 0, z)
+                acc += cv2.warpAffine(c, M2, (W, H), borderMode=cv2.BORDER_REFLECT)
+            c = acc / 5
+        if 22.3 <= t < 25.2:                                           # a warm light sweep across the page
+            u = (t - 22.3) / 2.9
+            yy, xx = _screen_grid()
+            d = (xx * 0.6 + yy * 0.8) - (-600 + 3200 * u)
+            g = np.exp(-(d / 260) ** 2) * 0.12 * math.sin(math.pi * u)
+            c = c + g[..., None] * np.array((1.0, 0.8, 0.55), np.float32)
         title(c, t)
         subtitles(c, t)
         line_up(c, t, M)
@@ -596,14 +698,26 @@ def frame(t):
             p = M @ np.array((STITCH[0], STITCH[1], 1))
             r = 2400 * e_inout(clamp((t - END0) / (8 * FR)))
             yy, xx = _screen_grid()
-            m = np.clip((r - np.hypot(xx - p[0], yy - p[1])) / 3, 0, 1)[..., None]
+            dist = np.hypot(xx - p[0], yy - p[1])
+            m = np.clip((r - dist) / 3, 0, 1)[..., None]
+            edge = np.exp(-((dist - r) / 10) ** 2)[..., None] * 0.6 * (r < 2300)
             c = c * (1 - m) + end_card() * m
+            c = c * (1 - edge) + PLUM * edge
     if t < END0 + 8 * FR:
         lab = text_spr('Dramatisation', 400, 32, tuple(CHAR * 0.8))
         paste(c, lab, 56 + lab.shape[1] / 2, 92, 0.9)
     rng = np.random.default_rng(int(t * FPS))
     c = np.clip(c + rng.normal(0, 0.008, (H, W, 1)).astype(np.float32), 0, 1)
     return c
+
+
+def frame_mb(t):
+    """Motion blur through the fast moves (page lift, pull back, scarf slide, star flight)."""
+    fast = (LIFT0 <= t < LIFT1) or (PULL0 <= t < PULL1) or (T_CITY - 0.4 <= t < T_CITY + 0.5) or (T_KITCHEN - 0.45 <= t < T_KITCHEN + 0.2) \
+        or (END0 <= t < END0 + 8 * FR)
+    if not fast:
+        return frame(t)
+    return (frame(t - FR / 4) + frame(t + FR / 4)) / 2
 
 
 def write(path, c):
@@ -623,6 +737,6 @@ if __name__ == '__main__':
         d = f'{S}/frames'
         os.makedirs(d, exist_ok=True)
         for i in range(a, min(b, NF)):
-            write(f'{d}/{i:05d}.png', frame(i / FPS))
+            write(f'{d}/{i:05d}.png', frame_mb(i / FPS))
             if i % 25 == 0:
                 print('frame', i, flush=True)
