@@ -118,14 +118,15 @@ tg = text('COMMUNITY', 800, 22, tuple(INK), 0.12)
 pw, ph = tg.shape[1] + 34, tg.shape[0] + 22
 paste(c, np.dstack([rrect_mask(pw, ph, 8)[..., None] * WHITE, rrect_mask(pw, ph, 8)]), X, 56)
 paste(c, tg, X + 17, 56 + 11)
-logo = cv2.imread(f'{ROOT}/workspace_bmhc/web/img/bmhc-white-logo.png', cv2.IMREAD_UNCHANGED)
-if logo.shape[2] == 3:
-    g_ = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
-    logo = np.dstack([logo, np.clip((g_.astype(np.float32) - 40) * 2, 0, 255).astype(np.uint8)])
-logo = logo.astype(np.float32) / 255
-LW = 250
+# official colour logo (as supplied), unmodified, on a tab cut from its own light background
+logo = cv2.imread(f'{ROOT}/workspace_bmhc_posts/bmhc_logo_colour.png', cv2.IMREAD_UNCHANGED)[..., :3].astype(np.float32) / 255
+LW = 270
 logo = cv2.resize(logo, (LW, int(logo.shape[0] * LW / logo.shape[1])), interpolation=cv2.INTER_AREA)
-paste(c, np.dstack([logo[..., 2::-1] * logo[..., 3:4], logo[..., 3]]), W - X - LW, 40)
+lh = logo.shape[0]
+lm = rrect_mask(LW, lh, 22)
+sh = cv2.GaussianBlur(np.pad(lm, 30), (0, 0), 12) * 0.45
+paste(c, np.dstack([np.zeros(sh.shape + (3,), np.float32), sh]), W - X - LW - 30, 36 - 30 + 8)
+paste(c, np.dstack([logo[..., ::-1] * lm[..., None], lm]), W - X - LW, 36)
 
 h1 = text('EVERYTHING', 800, 98, tuple(WHITE), 0.02)
 paste(c, h1, X, 150)
