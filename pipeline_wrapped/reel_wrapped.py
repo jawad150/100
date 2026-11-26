@@ -20,8 +20,18 @@ OBJ = f'{ROOT}/workspace_bmhc_posts/assets'
 IMG = f'{ROOT}/workspace_bmhc/web/img'
 W, H = 1080, 1920
 FPS = 30
-DUR = 43.0
+import json, re
+INFO = json.load(open(f'{S}/tts/info.json'))
+DUR = INFO['dur']
 NF = int(DUR * FPS)
+
+
+def WT(word, line):
+    """Start time of the first word in a narration line that begins with `word`."""
+    for w in INFO['words']:
+        if w[3] == line and re.sub(r"[^a-z0-9]", '', w[0].lower()).startswith(word):
+            return w[1]
+    return INFO['lines'][line][0]
 
 
 def hx(h):
@@ -33,7 +43,7 @@ MAG, TEAL, ORANGE, LIME = hx('#E60585'), hx('#2DC892'), hx('#FF4200'), hx('#69FF
 BARS = (MAG, TEAL, ORANGE, LIME)
 
 # scene cuts
-T = dict(s0=0.0, s1=4.0, s2=8.5, s3=13.5, s4=18.5, s5=25.5, s6=30.5, s7=34.0, s8=38.0, end=40.6)
+T = dict(INFO['scenes'])
 
 
 def clamp(x, a=0.0, b=1.0):
@@ -406,13 +416,14 @@ def s2(t):
     head(c, INK, t)
     u0 = T['s2']
     rise(c, text('This year, you showed up.', 700, 56, tuple(INK)), 80, 330, t, u0 + 0.2, 'l')
-    n = int(round(52 * e_out(prog(t, u0 + 0.5, u0 + 1.9))))
-    if t > u0 + 0.5:
+    t52, tfr = WT('52', 'v3'), WT('fridays', 'v3')
+    n = int(round(52 * e_out(prog(t, u0 + 0.6, t52 + 0.1))))
+    if t > u0 + 0.6:
         num = text(str(n), 900, 520, tuple(INK))
-        slam(c, num, 70, 760, t, u0 + 0.5, 'l', 0.3)
-    slam(c, text('Fridays.', 900, 150, tuple(WHITE)), 80, 1150, t, u0 + 1.9, 'l')
-    rise(c, text('52 Jummahs at the centre.', 600, 48, tuple(INK)), 84, 1300, t, u0 + 2.4, 'l')
-    pop_obj(c, 'lantern', 800, 1560, 420, t, u0 + 1.2, 6, seed=4)
+        slam(c, num, 70, 760, t, u0 + 0.6, 'l', 0.3)
+    slam(c, text('Fridays.', 900, 150, tuple(WHITE)), 80, 1150, t, tfr - 0.05, 'l')
+    rise(c, text('52 Jummahs at the centre.', 600, 48, tuple(INK)), 84, 1300, t, tfr + 0.45, 'l')
+    pop_obj(c, 'lantern', 800, 1560, 420, t, u0 + 0.9, 6, seed=4)
     for i, (x, y, s) in enumerate(((930, 380, 70), (180, 1640, 54), (700, 1080, 40))):
         if t > u0 + 1.5 + 0.2 * i:
             paste(c, xform(sticker_star(s, WHITE), e_back(prog(t, u0 + 1.5 + 0.2 * i, u0 + 1.9 + 0.2 * i)), t * 40 + i * 30), x, y)
@@ -428,9 +439,9 @@ def s3(t):
     u0 = T['s3']
     rise(c, text('Most played', 700, 56, tuple(INK)), 80, 330, t, u0 + 0.2, 'l')
     pop_obj(c, 'radio', W / 2, 760, 600, t, u0 + 0.35, -4, seed=6, shadow=0.3)
-    slam(c, text('Heritage', 900, 170, tuple(INK)), 72, 1200, t, u0 + 0.9, 'l')
-    slam(c, text('Radio', 900, 170, tuple(WHITE)), 72, 1380, t, u0 + 1.1, 'l')
-    rise(c, text('90.6 FM  ·  DAB+  ·  the app  ·  Alexa', 600, 44, tuple(INK)), 80, 1540, t, u0 + 1.5, 'l')
+    slam(c, text('Heritage', 900, 170, tuple(INK)), 72, 1200, t, WT('heritage', 'v4') - 0.05, 'l')
+    slam(c, text('Radio', 900, 170, tuple(WHITE)), 72, 1380, t, WT('radio', 'v4') - 0.05, 'l')
+    rise(c, text('90.6 FM  ·  DAB+  ·  the app  ·  Alexa', 600, 44, tuple(INK)), 80, 1540, t, WT('on', 'v4'), 'l')
     if t > u0 + 1.0:                                                    # equaliser
         for i in range(14):
             hgt = 40 + 140 * abs(math.sin(t * (3 + i * 0.37) + i))
@@ -452,7 +463,7 @@ def s4(t):
     u0 = T['s4']
     slam(c, text('Your top 5', 900, 120, tuple(WHITE)), 72, 330, t, u0 + 0.2, 'l')
     for i, (lab, ob) in enumerate(TOP5):
-        t0 = u0 + 0.8 + 0.75 * i
+        t0 = INFO['lines'][f't{i + 1}'][0] - 0.12
         u = (t - t0) / 0.5
         if u <= 0:
             continue
@@ -482,7 +493,7 @@ def s5(t):
     slam(c, text('in numbers', 900, 120, tuple(INK)), 72, 460, t, u0 + 0.35, 'l')
     rows = [(130, 'K+', 'visitors a year'), (14, '', 'awards'), (12, '+', 'years of Muslim heritage')]
     for i, (v, suf, lab) in enumerate(rows):
-        t0 = u0 + 0.8 + 0.7 * i
+        t0 = (WT('130', 'v6'), WT('14', 'v6'), WT('over', 'v6'))[i] - 0.1
         if t < t0:
             continue
         k = e_out(prog(t, t0, t0 + 1.0))
@@ -490,7 +501,7 @@ def s5(t):
         num = text(f'{counter(v, k)}{suf}', 900, 260, tuple(INK))
         slam(c, num, 72, y, t, t0, 'l', 0.3)
         rise(c, text(lab, 700, 52, tuple(INK)), 80, y + 175, t, t0 + 0.3, 'l')
-    rise(c, text('Figures as stated on bmhc.org.uk', 500, 28, tuple(INK * 0.6 + LIME * 0.4)), 80, 1840, t, u0 + 2.6, 'l')
+    rise(c, text('Figures as stated on bmhc.org.uk', 500, 28, tuple(INK * 0.6 + LIME * 0.4)), 80, 1840, t, WT('over', 'v6') + 0.6, 'l')
     return c
 
 
@@ -503,12 +514,12 @@ def s6(t):
     story_bars(c, t, 5, INK)
     head(c, INK, t)
     u0 = T['s6']
-    rise(c, text('Your aura', 700, 56, tuple(INK)), 80, 330, t, u0 + 0.2, 'l')
-    slam(c, text('Welcoming', 900, 158, tuple(INK)), W / 2, 1000, t, u0 + 0.6)
+    rise(c, text('Your aura', 700, 56, tuple(INK)), 80, 330, t, u0 + 0.15, 'l')
+    slam(c, text('Welcoming', 900, 158, tuple(INK)), W / 2, 1000, t, WT('welcoming', 'v7') - 0.05)
     for i, (w, x, y) in enumerate((('Grounded', 300, 1240), ('Clear', 720, 1240), ('Proud of heritage', W / 2, 1360))):
         chip = rrect(F(700, 46).getlength(w) + 70, 92, 46, WHITE)
         paste(chip, text(w, 700, 46, tuple(INK)), chip.shape[1] / 2, 46)
-        u = (t - (u0 + 1.2 + 0.25 * i)) / 0.4
+        u = (t - (WT('welcoming', 'v7') + 0.35 + 0.2 * i)) / 0.4
         if u > 0:
             paste(c, xform(chip, e_back(clamp(u), 1.8)), x, y, clamp(u * 3))
     return c
@@ -520,7 +531,7 @@ def s7(t):
     z = 1.0 + 0.08 * prog(t, u0, T['s8'])
     snow = photo('1-BMHC-web.jpg', W, H, 0.47, 0.5, z)
     aut = photo('bhmc-f.png', W, H, 0.47, 0.5, z)
-    k = smooth(prog(t, u0 + 1.4, u0 + 2.4))
+    k = smooth(prog(t, WT('four', 'v8') - 0.3, WT('four', 'v8') + 0.8))
     c = snow * (1 - k) + aut * k
     if 0 < k < 1:                                                       # a warm light leak through the dissolve
         yy, xx = _grid()
@@ -531,9 +542,9 @@ def s7(t):
     c = c * (1 - shade)
     story_bars(c, t, 6)
     head(c, WHITE, t)
-    slam(c, text('1 tower.', 900, 170, tuple(WHITE)), 72, 1440, t, u0 + 0.3, 'l')
-    slam(c, text('4 seasons.', 900, 170, tuple(WHITE)), 72, 1620, t, u0 + 0.6, 'l')
-    rise(c, text('Whalley Range, Manchester', 600, 44, tuple(WHITE)), 80, 1760, t, u0 + 1.0, 'l')
+    slam(c, text('1 tower.', 900, 170, tuple(WHITE)), 72, 1440, t, WT('one', 'v8') - 0.05, 'l')
+    slam(c, text('4 seasons.', 900, 170, tuple(WHITE)), 72, 1620, t, WT('four', 'v8') - 0.05, 'l')
+    rise(c, text('Whalley Range, Manchester', 600, 44, tuple(WHITE)), 80, 1760, t, WT('four', 'v8') + 0.5, 'l')
     return c
 
 
@@ -554,11 +565,11 @@ def s8(t):
     paste(c, card, W / 2, 1050 + 300 * (1 - u), clamp(u * 2))
     pop_obj(c, 'ball', 180, 1500, 200, t, u0 + 0.7, seed=9)
     pop_obj(c, 'lantern', 900, 640, 200, t, u0 + 0.9, seed=10)
-    k = e_inout(prog(t, u0 + 1.0, u0 + 1.8))
+    k = e_inout(prog(t, u0 + 0.8, u0 + 1.6))
     bx, by = W / 2, 1050 - 410 + 640
     px, py = W + 60 + (bx + 20 - W - 60) * k, H + 60 + (by + 10 - H - 60) * k
-    press = prog(t, u0 + 1.9, u0 + 2.3)
-    if t > u0 + 1.0:
+    press = prog(t, u0 + 1.65, u0 + 2.05)
+    if t > u0 + 0.8:
         cursor(c, px, py, press if press < 1 else 0)
     return c
 

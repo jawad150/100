@@ -1,0 +1,11 @@
+Your 2026 at the centre, wrapped. 52 Fridays, Heritage Radio on 90.6 FM, and a top 5 only this community could make. What was your favourite moment at BMHC this year? Tell us below. 📍 College Road, Whalley Range · bmhc.org.uk
+
+#BritishMuslimHeritage #Manchester #WhalleyRange #BMHCWrapped
+
+---
+Production notes (not for posting):
+- 9:16, 1080 x 1920, 30 fps, 47.7 s, H.264 + AAC, -14 LUFS. bmhc_wrapped_2026.mp4 = master, _share.mp4 = upload copy.
+- Voiceover: AI-generated Microsoft neural voice "Sonia" (en-GB). Disclose AI voice where the platform asks. Can be swapped for ElevenLabs once credits reset (~29 Nov).
+- Sound-led, no music (BMHC guideline default): synthesised UI sounds + room tone.
+- Confirm before posting: top-5 order (or retitle "Five things you came for"); Jummah held all 52 Fridays; 130K+ visitors / 14 awards / 12+ years still current.
+- The script PDF (BMHC_Wrapped_2026_reel_script.pdf) was written for the 43 s sound-only cut; the scenes are the same, now paced to the voiceover.
