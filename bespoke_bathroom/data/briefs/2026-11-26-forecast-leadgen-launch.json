@@ -1,0 +1,963 @@
+{
+  "id": "2026-11-26-forecast-leadgen-launch",
+  "kind": "forecast",
+  "focus": "leadgen",
+  "pinterest": false,
+  "sources": [
+    "instagram",
+    "tiktok",
+    "youtube",
+    "facebook"
+  ],
+  "date": "2026-11-26",
+  "window": {
+    "label": "Friday 27 November 2026 to Sunday 29 November 2026",
+    "dates": [
+      "2026-11-27",
+      "2026-11-28",
+      "2026-11-29"
+    ]
+  },
+  "created_at": "2026-11-26T07:24:00.000Z",
+  "sample": true,
+  "model": "Launch research (Claude Code session)",
+  "usage": null,
+  "brief": {
+    "headline": "Black Friday, a cold weekend and Advent Sunday: three days to turn discount noise into January design bookings.",
+    "summary": "Friday is Black Friday, and most UK adults doubt the deals, so the winning move is a calm, priced alternative that sends people to the free 3D studio. Saturday is a cold weekend at home when couples browse renovation ideas together: give them the cost answer they are searching for and a studio session to try. Sunday is Advent Sunday, the natural start for a December series that keeps the brand in feeds until January, when bathroom planning peaks. Film Saturday's and Sunday's pieces on Friday.",
+    "trends": [
+      {
+        "name": "Black Friday scepticism",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "kind": "moment",
+        "what_it_is": "Black Friday is Friday 27 November; Cyber Monday is 30 November.",
+        "why_now": "Barclays (23 Nov): 71% of UK adults question whether discounts are genuine, 72% say it is more marketing than sales, 36% are more likely to wait for another sale.",
+        "how_we_use_it": "A calm, honest alternative: no 'was' prices, a real room priced to the pound, a free design as the offer.",
+        "brand_fit": 84,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://www.home.barclays/insights/2026/11/Black-Friday-2026/"
+        ]
+      },
+      {
+        "name": "Cost questions as the hook",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "youtube"
+        ],
+        "kind": "search",
+        "what_it_is": "Turning the most-asked question ('how much does a bathroom cost?') into the first line of a post.",
+        "why_now": "Volume (25 Nov): turning a viewer comment into the hook earns a median 13x for home accounts. UK cost guides updated this month (MyJobQuote, 5 Nov) put a standard fitted bathroom at £6,000 to £8,000 and premium at £11,000 to £15,000.",
+        "how_we_use_it": "Answer the cost question with sources, then show what each budget looks like in the studio.",
+        "brand_fit": 90,
+        "momentum": "steady",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://tryvolume.app/working/home-and-real-estate.md",
+          "https://www.myjobquote.co.uk/costs/full-bathroom-cost"
+        ]
+      },
+      {
+        "name": "Appointment timestamps",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "format",
+        "what_it_is": "One appointment filmed from arrival to departure, a timestamp on each clip.",
+        "why_now": "Added by Later on 13 Nov and still trending the week of 17 Nov (Chatfuel). Later flags it for service businesses.",
+        "how_we_use_it": "'Designing a bathroom in 3D, 7:41 pm to 7:49 pm': a homeowner's evening with the studio, from sofa to finished render.",
+        "brand_fit": 88,
+        "momentum": "steady",
+        "lifespan": "weeks",
+        "sources": [
+          "https://later.com/blog/instagram-reels-trends/",
+          "https://chatfuel.com/blog/instagram-reels-trends"
+        ]
+      },
+      {
+        "name": "Cold snap and the January price cap",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "kind": "moment",
+        "what_it_is": "Below-average temperatures this week and an energy price cap rise of 26% from 1 January.",
+        "why_now": "Met Office (23 Nov) and Ofgem (25 Nov).",
+        "how_we_use_it": "Warm-floor and towel-rail moments for the weekend: 'POV: heated tiles at 6 am'.",
+        "brand_fit": 86,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.metoffice.gov.uk/blog/2026/week-ahead-rain-cold-winds-and-the-risk-of-hill-snow",
+          "https://www.ofgem.gov.uk/press-release/energy-price-cap-rise-26-january-2027"
+        ]
+      },
+      {
+        "name": "POV format",
+        "platforms": [
+          "tiktok",
+          "instagram"
+        ],
+        "kind": "format",
+        "what_it_is": "A first-person moment captioned 'POV: ...'.",
+        "why_now": "Postdom (checked 23 Nov) lists POV as peaking on TikTok, with the most-viewed example at 59.3M views.",
+        "how_we_use_it": "'POV: you just stepped onto heated tiles at 6 am.' Sensory, short, easy to film.",
+        "brand_fit": 80,
+        "momentum": "peaking",
+        "lifespan": "weeks",
+        "sources": [
+          "https://postdom.com/blog/tiktok-trends"
+        ]
+      },
+      {
+        "name": "Advent countdown series",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "moment",
+        "what_it_is": "Advent Sunday is 29 November and Advent calendars start on 1 December. 'Day 1 of 24' countdown series are a running Christmas interiors format.",
+        "why_now": "NewEngen's Christmas trends round-up lists countdown series among this season's home formats.",
+        "how_we_use_it": "'Bathroom Advent': 24 days of design decisions, each one a save-worthy tip that leads to the studio.",
+        "brand_fit": 85,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://newengen.com/insights/christmas-tiktok-instagram-trends/"
+        ]
+      },
+      {
+        "name": "Plan over Christmas, renovate in January",
+        "platforms": [
+          "pinterest",
+          "instagram",
+          "facebook"
+        ],
+        "kind": "search",
+        "what_it_is": "People plan home projects in the quiet week after Christmas; UK bathroom design searches peak in January.",
+        "why_now": "Pinterest: 'home organisation ideas' searches rise 75% between Christmas and New Year; Bathroom Review reports UK 'bathroom design' searches peak in January.",
+        "how_we_use_it": "Start collecting January leads now: 'Design it over Christmas, fit it in the new year.'",
+        "brand_fit": 92,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://business.pinterest.com/en-gb/blog/q5-on-pinterest-your-bonus-marketing-moment/",
+          "https://www.bathroom-review.co.uk/expert-reveals-the-bathroom-trends-set-to-dominate-2026/"
+        ]
+      }
+    ],
+    "ideas": [
+      {
+        "id": "f1",
+        "title": "The Black Friday offer: a free design and a price you can hold us to",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Offer & Invite",
+        "trend": "Black Friday scepticism",
+        "day": "2026-11-27",
+        "hook": "Our Black Friday deal is the same as every other day.",
+        "concept": "A designer to camera, dry and confident: 'Our Black Friday deal is the same as every other day. A free 3D design of your bathroom, every piece priced with VAT, and a quotation you can hold us to.' Cut to the studio doing exactly that in 20 seconds.",
+        "why_it_works": "Turns scepticism into trust and gives a zero-risk action on the busiest shopping day. The deadpan opening line earns comments.",
+        "scores": {
+          "reach": 76,
+          "business": 92,
+          "ease": 90,
+          "brand_fit": 94,
+          "overall": 89
+        },
+        "reel": {
+          "duration_seconds": 25,
+          "audio": "Voiceover with a quiet ambient bed.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Designer at a desk with stone samples, straight to camera",
+              "on_screen_text": "Our Black Friday deal:",
+              "voiceover": "Our Black Friday deal is the same as every other day."
+            },
+            {
+              "time": "0:03-0:15",
+              "visual": "Studio screen recording: budget, room, look, finished render",
+              "on_screen_text": "Free 3D design. Every piece priced. VAT included.",
+              "voiceover": "A free 3D design of your bathroom, every piece priced."
+            },
+            {
+              "time": "0:15-0:21",
+              "visual": "Designer reviewing a design on screen, ticking stock and lead times",
+              "on_screen_text": "Checked by a designer",
+              "voiceover": "Checked by a person, with a quotation you can hold us to."
+            },
+            {
+              "time": "0:21-0:25",
+              "visual": "End card",
+              "on_screen_text": "No countdown. Start whenever you like.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Keep the designer's delivery deadpan. Subtitles burned in."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom designer desk samples"
+        ],
+        "caption": "Our Black Friday deal is the same as every other day.\n\nA free 3D design of your bathroom, every piece priced with VAT, checked by a designer, and a quotation you can hold us to.\n\nComment DESIGN for the link.",
+        "hashtags": [
+          "#blackfriday",
+          "#bathroomdesign",
+          "#bathroomrenovation",
+          "#bespokebathroom",
+          "#ukhomes"
+        ],
+        "cta": "Comment DESIGN for the studio link",
+        "lead_capture": "Comment DESIGN: DM with the studio link (UTM: blackfriday).",
+        "post_time": "Friday 27 November, 08:00",
+        "production": "Film on Thursday afternoon: one designer, tripod, studio on a second screen. 45 minutes."
+      },
+      {
+        "id": "f2",
+        "title": "Ask a designer: what does my budget buy?",
+        "format": "story",
+        "platforms": [
+          "instagram",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Cost questions as the hook",
+        "day": "2026-11-27",
+        "hook": "Tell us your budget. We'll show you the room.",
+        "concept": "A story set with a question sticker: followers send a budget and a style, the team answers through the day with a studio render for each. Each reply ends with a link sticker to the studio.",
+        "why_it_works": "Stories with question stickers create DMs and replies on a day when feeds are noisy. Each answer is a personalised lead.",
+        "scores": {
+          "reach": 52,
+          "business": 88,
+          "ease": 86,
+          "brand_fit": 90,
+          "overall": 81
+        },
+        "reel": {
+          "duration_seconds": 15,
+          "audio": "None.",
+          "shots": [
+            {
+              "time": "Frame 1",
+              "visual": "Navy card with a question sticker",
+              "on_screen_text": "Tell us your budget and style. We'll design it.",
+              "voiceover": ""
+            },
+            {
+              "time": "Frames 2-6",
+              "visual": "Each answer: the follower's budget and a studio render",
+              "on_screen_text": "£9,000, warm and simple: here it is",
+              "voiceover": ""
+            },
+            {
+              "time": "Frame 7",
+              "visual": "Link sticker on the studio start screen",
+              "on_screen_text": "Try yours: free, no sign-up",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Answer within the hour where possible. Save to a 'Prices' highlight."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [],
+        "caption": "Story series. No caption needed.",
+        "hashtags": [],
+        "cta": "Send us your budget",
+        "lead_capture": "Question sticker replies and link sticker clicks; follow up each reply by DM.",
+        "post_time": "Friday 27 November, from 10:00",
+        "production": "One person on the studio for the day. 10 minutes per answer."
+      },
+      {
+        "id": "f3",
+        "title": "Facebook: 'We don't do Black Friday' for local homeowners",
+        "format": "static",
+        "platforms": [
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Offer & Invite",
+        "trend": "Black Friday scepticism",
+        "day": "2026-11-27",
+        "hook": "We don't do Black Friday. We do prices you can check.",
+        "concept": "A native Facebook image post (no link in the body) showing one finished studio design with its total price, aimed at homeowners who check a company on Facebook before contacting it. Studio link goes in the first comment.",
+        "why_it_works": "Facebook reaches older, local homeowners who are planning, not impulse buying. Native posts avoid the new limits on Page link posts.",
+        "scores": {
+          "reach": 58,
+          "business": 80,
+          "ease": 95,
+          "brand_fit": 90,
+          "overall": 79
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "We don't do Black Friday.",
+          "subline": "We do prices you can check. Your bathroom, designed free in 3D, every piece priced with VAT.",
+          "visual": "One finished studio render, warm stone and gold, with a small price tag graphic showing the real total.",
+          "layout": "Render fills the top two-thirds; navy band below with the headline in Cormorant and the subline in Inter.",
+          "palette": [
+            "#081C26",
+            "#F5F2ED",
+            "#C5A16B",
+            "#174A5C"
+          ]
+        },
+        "pinterest": null,
+        "moodboard_searches": [
+          "warm stone bathroom gold"
+        ],
+        "caption": "We don't do Black Friday. We do prices you can check.\n\nDesign your bathroom in 3D for free: every piece is a real product, priced with VAT, inside your budget. A designer checks it before you spend a penny.\n\nLink in the first comment.",
+        "hashtags": [
+          "#bathroomrenovation",
+          "#bespokebathroom"
+        ],
+        "cta": "Studio link in the first comment",
+        "lead_capture": "First comment with the studio link (UTM: facebook).",
+        "post_time": "Friday 27 November, 19:00",
+        "production": "Export a render from the studio, add the band in Canva at 1080 x 1350. 20 minutes."
+      },
+      {
+        "id": "f4",
+        "title": "Designing a bathroom on the sofa, 7:41 pm to 7:49 pm",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "youtube"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Designed in 3D",
+        "trend": "Appointment timestamps",
+        "day": "2026-11-28",
+        "hook": "7:41 pm: 'shall we finally sort the bathroom?'",
+        "concept": "The appointment-timestamp format, applied to a homeowner's Saturday night: a laptop on the sofa, a cup of tea, and eight minutes later a finished, priced bathroom they can walk around. Each clip has a timestamp.",
+        "why_it_works": "Shows how little effort the first step takes, at the exact moment people browse renovation ideas at home. The timestamp format suits service businesses.",
+        "scores": {
+          "reach": 74,
+          "business": 93,
+          "ease": 82,
+          "brand_fit": 92,
+          "overall": 88
+        },
+        "reel": {
+          "duration_seconds": 22,
+          "audio": "Original audio: cosy room tone, keyboard clicks, a mug set down.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Sofa, blanket, laptop opening",
+              "on_screen_text": "7:41 pm",
+              "voiceover": "Shall we finally sort the bathroom?"
+            },
+            {
+              "time": "0:03-0:08",
+              "visual": "Budget slider set to £12,000",
+              "on_screen_text": "7:42 pm: budget",
+              "voiceover": ""
+            },
+            {
+              "time": "0:08-0:12",
+              "visual": "Photos of the old bathroom uploaded",
+              "on_screen_text": "7:44 pm: our room",
+              "voiceover": ""
+            },
+            {
+              "time": "0:12-0:16",
+              "visual": "Mood, metal finish and style chosen",
+              "on_screen_text": "7:46 pm: the look",
+              "voiceover": ""
+            },
+            {
+              "time": "0:16-0:22",
+              "visual": "Finished render, then the walkable 3D room",
+              "on_screen_text": "7:49 pm: there it is. Priced.",
+              "voiceover": "Oh. That's ours."
+            }
+          ],
+          "edit_notes": "Real screen recordings only. Keep the timestamps honest to how long it takes."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "cosy evening home planning"
+        ],
+        "caption": "7:41 pm: 'shall we finally sort the bathroom?'\n7:49 pm: there it is, finished and priced.\n\nYour first step takes a few minutes, on the sofa, for free.\n\nComment DESIGN for the link.",
+        "hashtags": [
+          "#bathroomdesign",
+          "#3Ddesign",
+          "#bathroomrenovation",
+          "#bespokebathroom",
+          "#weekendplans",
+          "#ukhomes"
+        ],
+        "cta": "Comment DESIGN for the studio link",
+        "lead_capture": "Comment DESIGN to DM automation.",
+        "post_time": "Saturday 28 November, 19:30",
+        "production": "Film Friday evening at home with a team member or a willing friend. Screen-record the studio separately at full resolution. About 1.5 hours."
+      },
+      {
+        "id": "f5",
+        "title": "What a bathroom really costs in the UK in 2026",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "pinterest"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Cost questions as the hook",
+        "day": "2026-11-28",
+        "hook": "How much does a new bathroom cost in 2026? Here are the real numbers.",
+        "concept": "A sourced cost carousel: standard, premium and wet room ranges from this month's UK cost guides, what pushes the price up, the 15% contingency most guides recommend, and the line that sets the brand apart: 'Or skip the ranges and see your own room priced to the pound.'",
+        "why_it_works": "Cost is the top search question around bathrooms and cost carousels get saved and sent. Citing sources builds trust; the studio offers the personal answer.",
+        "scores": {
+          "reach": 78,
+          "business": 95,
+          "ease": 85,
+          "brand_fit": 90,
+          "overall": 90
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "What a bathroom costs in 2026",
+            "body": "The real UK numbers, with sources. Save this.",
+            "visual": "Finished bathroom, navy band, gold numerals"
+          },
+          {
+            "slide": 2,
+            "headline": "Standard: £6,000 to £8,000",
+            "body": "Supplied and fitted, typical UK range (MyJobQuote, Nov 2026).",
+            "visual": "Simple modern bathroom"
+          },
+          {
+            "slide": 3,
+            "headline": "Premium: £11,000 to £15,000",
+            "body": "Better materials, more tiling, upgraded brassware (MyJobQuote, Nov 2026).",
+            "visual": "Stone, brass, freestanding bath"
+          },
+          {
+            "slide": 4,
+            "headline": "Wet room: £4,000 to £7,000",
+            "body": "Average about £5,500, before premium finishes (MyJobQuote, Sep 2026).",
+            "visual": "Level-access wet room"
+          },
+          {
+            "slide": 5,
+            "headline": "What pushes it up",
+            "body": "Moving the toilet or waste, full-height tiling, stone, underfloor heating, and London (about 10 to 20% higher).",
+            "visual": "Floor plan with arrows"
+          },
+          {
+            "slide": 6,
+            "headline": "Keep 15% back",
+            "body": "Most UK cost guides suggest a contingency for surprises behind the walls.",
+            "visual": "Old tiles coming off a wall"
+          },
+          {
+            "slide": 7,
+            "headline": "Or see your own price",
+            "body": "Our studio designs your room in 3D and prices every piece, VAT included, inside your budget. Free.",
+            "visual": "Studio render with price tags"
+          },
+          {
+            "slide": 8,
+            "headline": "Comment COST",
+            "body": "We'll send the full guide and your studio link.",
+            "visual": "Brand end card"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "How much does a bathroom cost in the UK in 2026? Real price ranges",
+          "pin_description": "UK bathroom renovation costs for 2026: standard £6,000 to £8,000, premium £11,000 to £15,000, wet rooms £4,000 to £7,000 (MyJobQuote, Nov 2026). What pushes the price up, why to keep 15% back, and how to see your own room priced in 3D, free.",
+          "board": "Bathroom Costs and Planning",
+          "keywords": [
+            "bathroom renovation cost uk",
+            "new bathroom cost 2026",
+            "wet room cost",
+            "bathroom budget planner"
+          ],
+          "alt_text": "Infographic showing UK bathroom renovation cost ranges for 2026 over a photo of a finished bathroom"
+        },
+        "moodboard_searches": [
+          "bathroom cost infographic",
+          "bathroom budget planning"
+        ],
+        "caption": "How much does a new bathroom cost in 2026? The honest answer, with sources.\n\nSave this before you start getting quotes. Then skip the guesswork: see your own room designed and priced to the pound, free.\n\nComment COST for the full guide.",
+        "hashtags": [
+          "#bathroomcost",
+          "#bathroomrenovation",
+          "#renovationbudget",
+          "#bathroomdesign",
+          "#bespokebathroom",
+          "#homerenovationuk"
+        ],
+        "cta": "Comment COST for the guide and studio link",
+        "lead_capture": "Comment COST: DM with a one-page cost guide and the studio link.",
+        "post_time": "Saturday 28 November, 09:30",
+        "production": "Design in Canva at 1080 x 1350 and a 1000 x 1500 Pinterest version. Put the source and month on every price slide. About 2 hours."
+      },
+      {
+        "id": "f6",
+        "title": "POV: heated tiles at 6 am",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "POV format",
+        "day": "2026-11-28",
+        "hook": "POV: you just stepped onto heated tiles at 6 am.",
+        "concept": "A seven-second sensory clip: frost on the window, bare feet stepping from a cold hallway onto warm stone tiles, a towel lifted off a warm rail. Text does the rest.",
+        "why_it_works": "The POV format is peaking, the weekend is cold, and heating is front of mind after the price cap news. It is quick to film and very shareable ('send this to your other half').",
+        "scores": {
+          "reach": 82,
+          "business": 55,
+          "ease": 90,
+          "brand_fit": 88,
+          "overall": 71
+        },
+        "reel": {
+          "duration_seconds": 8,
+          "audio": "Original audio: quiet morning room tone, a soft exhale.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Frost on a window, blue morning light",
+              "on_screen_text": "POV: 6 am, -1°C outside",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "Bare feet step onto warm stone tiles",
+              "on_screen_text": "...and the floor is warm",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:08",
+              "visual": "Hand lifts a towel from a heated rail, steam from the shower",
+              "on_screen_text": "Send this to whoever controls the thermostat",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Cool blue grade on the window, warm grade in the room. Loop-friendly ending."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "underfloor heating stone bathroom",
+          "warm bathroom morning"
+        ],
+        "caption": "POV: it's 6 am, it's freezing, and the floor is warm.\n\nUnderfloor heating and a towel rail on a timer: designed in from the start, priced inside your budget.",
+        "hashtags": [
+          "#pov",
+          "#underfloorheating",
+          "#bathroomgoals",
+          "#cosyhome",
+          "#bespokebathroom",
+          "#bathroomdesign"
+        ],
+        "cta": "Design yours warm: link in bio",
+        "lead_capture": "Link in bio.",
+        "post_time": "Saturday 28 November, 08:00",
+        "production": "Film in a finished bathroom with underfloor heating (with permission) or a display. 20 minutes."
+      },
+      {
+        "id": "f7",
+        "title": "Bathroom Advent: 24 days of design decisions",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Advent countdown series",
+        "day": "2026-11-29",
+        "hook": "From Tuesday: one bathroom decision a day until Christmas.",
+        "concept": "Launch a 24-day series on Advent Sunday. Each day, one decision explained in a single slide or short video (bath or shower, tile size, brassware finish, lighting, storage, heating). Followers who comment ADVENT get each day's tip by DM and the studio link to try it.",
+        "why_it_works": "Countdown series give people a reason to come back daily, and the DM list becomes the January lead list. Each daily tip is a reusable Pinterest pin.",
+        "scores": {
+          "reach": 70,
+          "business": 86,
+          "ease": 72,
+          "brand_fit": 90,
+          "overall": 82
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Bathroom Advent",
+            "body": "24 days. 24 decisions. Your 2027 bathroom, planned by Christmas.",
+            "visual": "A calendar grid of 24 small bathroom details, gold numbers"
+          },
+          {
+            "slide": 2,
+            "headline": "Day 1: bath, shower or both?",
+            "body": "Starts Tuesday 1 December.",
+            "visual": "Freestanding bath beside a walk-in shower"
+          },
+          {
+            "slide": 3,
+            "headline": "Day 2: tile size",
+            "body": "Big tiles calm a room; small ones grip a wet floor.",
+            "visual": "Large-format and mosaic tiles side by side"
+          },
+          {
+            "slide": 4,
+            "headline": "Day 3: the metal finish",
+            "body": "Brushed bronze and aged brass are rising; matt black is fading.",
+            "visual": "Three tap finishes on stone"
+          },
+          {
+            "slide": 5,
+            "headline": "...and 21 more",
+            "body": "Lighting, storage, heating, layout, colour.",
+            "visual": "Grid of detail shots"
+          },
+          {
+            "slide": 6,
+            "headline": "Comment ADVENT",
+            "body": "Get each day's decision by DM, plus the free studio to try it.",
+            "visual": "Brand end card"
+          }
+        ],
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom design decisions",
+          "brushed bronze taps",
+          "large format tiles bathroom"
+        ],
+        "caption": "Advent starts today. So does your 2027 bathroom.\n\nFrom Tuesday, one bathroom decision a day until Christmas: baths, tiles, finishes, lighting, heating. By Christmas Eve you'll know exactly what you want.\n\nComment ADVENT and we'll send each day's decision by DM.",
+        "hashtags": [
+          "#advent",
+          "#bathroomdesign",
+          "#bathroomplanning",
+          "#bathroomrenovation",
+          "#bespokebathroom",
+          "#2027home"
+        ],
+        "cta": "Comment ADVENT to join",
+        "lead_capture": "Comment ADVENT: add to a DM sequence (24 daily messages, each with the studio link).",
+        "post_time": "Sunday 29 November, 10:00",
+        "production": "Plan all 24 decisions on Friday; design the launch carousel and the first 3 daily slides. Set up a 24-message DM sequence. About 4 hours for the setup, 15 minutes a day after."
+      },
+      {
+        "id": "f8",
+        "title": "Design it over Christmas, fit it in the new year",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "youtube"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Offer & Invite",
+        "trend": "Plan over Christmas, renovate in January",
+        "day": "2026-11-29",
+        "hook": "The best time to design your bathroom is the week nobody's working.",
+        "concept": "A calm reel for Sunday evening: the quiet days between Christmas and New Year are when people plan their year. Show the studio on a laptop by the tree, then a finished room, then the line 'Design it over Christmas. Fit it in the new year.'",
+        "why_it_works": "Plants the January intent now, when Pinterest and Google behaviour shows planning picks up. Sunday evening is planning time.",
+        "scores": {
+          "reach": 66,
+          "business": 90,
+          "ease": 80,
+          "brand_fit": 94,
+          "overall": 85
+        },
+        "reel": {
+          "duration_seconds": 15,
+          "audio": "Royalty-free soft piano, or 'Christmas Market' (Eoneun) if available for business use.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Laptop on a sofa by a lit tree, studio open",
+              "on_screen_text": "The week nobody's working",
+              "voiceover": ""
+            },
+            {
+              "time": "0:03-0:09",
+              "visual": "Studio render builds, walkable 3D room",
+              "on_screen_text": "is the best week to design your bathroom",
+              "voiceover": ""
+            },
+            {
+              "time": "0:09-0:15",
+              "visual": "Finished fitted bathroom, morning light",
+              "on_screen_text": "Design it over Christmas. Fit it in the new year.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Slow, warm, festive without clichés."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "christmas cosy laptop planning",
+          "new year home renovation"
+        ],
+        "caption": "The quiet days after Christmas are made for planning.\n\nDesign your bathroom in 3D, priced to the pound, then let our team fit it in the new year. [CONFIRM: January fitting availability]\n\nComment JANUARY for the link.",
+        "hashtags": [
+          "#newyearnewhome",
+          "#bathroomrenovation",
+          "#bathroomdesign",
+          "#bespokebathroom",
+          "#ukhomes"
+        ],
+        "cta": "Comment JANUARY for the studio link",
+        "lead_capture": "Comment JANUARY: DM with the studio link; tag as January lead.",
+        "post_time": "Sunday 29 November, 19:00",
+        "production": "Film the laptop-by-the-tree shot on Friday (any styled living room). Use a real fitted project for the end shot. About 1 hour."
+      },
+      {
+        "id": "f9",
+        "title": "Built once: the slow bathroom",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "goal": "brand",
+        "pillar": "Know Before You Renovate",
+        "trend": "Plan over Christmas, renovate in January",
+        "day": "2026-11-29",
+        "hook": "Most people renovate a bathroom every 8 to 10 years. Make the next one the last for a long time.",
+        "concept": "The 'slow bathroom' idea from this year's trade forecasts: renovate once, properly. Five decisions that make a bathroom last (proper tanking, quality brassware, timeless layout, good ventilation, easy-clean surfaces), each linked to how the studio and the fitting team handle it.",
+        "why_it_works": "A premium counter-message to Black Friday weekend that is save-worthy and positions the brand on quality without claiming anything it cannot prove.",
+        "scores": {
+          "reach": 64,
+          "business": 72,
+          "ease": 86,
+          "brand_fit": 96,
+          "overall": 77
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Built once",
+            "body": "UK homeowners typically renovate every 8 to 10 years (Sanctuary OnePoll, Jan 2026). Make yours last.",
+            "visual": "Timeless stone and walnut bathroom"
+          },
+          {
+            "slide": 2,
+            "headline": "Waterproof everything",
+            "body": "Proper tanking behind every wet wall. You never see it; you'd notice if it was missing.",
+            "visual": "Tanking membrane before tiling"
+          },
+          {
+            "slide": 3,
+            "headline": "Buy brassware once",
+            "body": "Solid, serviceable taps and valves outlast fashionable ones.",
+            "visual": "Brushed brass tap close-up"
+          },
+          {
+            "slide": 4,
+            "headline": "Choose a layout you won't outgrow",
+            "body": "Walk-in showers and wall-hung pieces suit every stage of life.",
+            "visual": "Level-access walk-in shower"
+          },
+          {
+            "slide": 5,
+            "headline": "Let it breathe",
+            "body": "Good ventilation is the difference between fresh and mouldy in five years.",
+            "visual": "Clean ceiling extractor"
+          },
+          {
+            "slide": 6,
+            "headline": "Make it easy to clean",
+            "body": "Fewer grout lines, wall-hung WCs, sealed stone.",
+            "visual": "Large-format tiles, minimal grout"
+          },
+          {
+            "slide": 7,
+            "headline": "Designed, supplied and fitted by one team",
+            "body": "So the design you approve is the room that gets built.",
+            "visual": "Brand end card"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "The slow bathroom: 5 decisions that make a bathroom renovation last",
+          "pin_description": "Renovate once, properly. Waterproofing, brassware, layout, ventilation and easy-clean surfaces: the five decisions that make a bathroom last for years. Plan yours in 3D, free.",
+          "board": "Bathroom Planning",
+          "keywords": [
+            "bathroom renovation tips",
+            "timeless bathroom",
+            "bathroom planning checklist"
+          ],
+          "alt_text": "Carousel cover showing a timeless stone and walnut bathroom with the words Built once"
+        },
+        "moodboard_searches": [
+          "timeless bathroom stone walnut",
+          "slow living bathroom"
+        ],
+        "caption": "Black Friday weekend, and we're talking about the opposite: a bathroom you only do once.\n\nSave this for when you start planning.",
+        "hashtags": [
+          "#slowliving",
+          "#timelessdesign",
+          "#bathroomrenovation",
+          "#bathroomdesign",
+          "#bespokebathroom"
+        ],
+        "cta": "Save it, then start your design",
+        "lead_capture": "Link in bio.",
+        "post_time": "Sunday 29 November, 12:00",
+        "production": "Canva at 1080 x 1350 plus a 1000 x 1500 pin. Install photos from a live job. About 1.5 hours."
+      }
+    ],
+    "days": [
+      {
+        "date": "2026-11-27",
+        "label": "Friday 27 November: Black Friday",
+        "moments": [
+          "Black Friday",
+          "Cold snap",
+          "Payday for many"
+        ],
+        "focus": "Stand apart from the discount noise and turn attention into free 3D designs started.",
+        "idea_ids": [
+          "f1",
+          "f2",
+          "f3"
+        ],
+        "prep": "Thursday: film the designer piece (f1), prepare the story question set (f2), export the render for the Facebook post (f3), and check the DESIGN keyword automation works."
+      },
+      {
+        "date": "2026-11-28",
+        "label": "Saturday 28 November: a cold weekend at home",
+        "moments": [
+          "Weekend planning",
+          "Cold weather",
+          "Not Small Business Saturday UK (that's 5 December)"
+        ],
+        "focus": "Answer the cost question and show how easy the first step is, while couples browse ideas together.",
+        "idea_ids": [
+          "f4",
+          "f5",
+          "f6"
+        ],
+        "prep": "Friday: film the sofa session (f4) and the heated-floor POV (f6); finish the cost carousel and its Pinterest version (f5); set up the COST keyword."
+      },
+      {
+        "date": "2026-11-29",
+        "label": "Sunday 29 November: Advent Sunday",
+        "moments": [
+          "Advent Sunday",
+          "Cyber Monday tomorrow",
+          "St Andrew's Day tomorrow"
+        ],
+        "focus": "Launch the December series that builds the January lead list.",
+        "idea_ids": [
+          "f7",
+          "f8",
+          "f9"
+        ],
+        "prep": "Friday and Saturday: plan all 24 Advent decisions, design the launch carousel and first three days, set the ADVENT DM sequence, film the laptop-by-the-tree shot."
+      }
+    ],
+    "watch_outs": [
+      "Do not imply other companies' Black Friday deals are fake; talk only about how we work.",
+      "Cost carousels: put the source and month on every price, and swap in our own price bands once they are confirmed.",
+      "January fitting: confirm real availability before promising fit dates [CONFIRM].",
+      "Small Business Saturday UK is 5 December; do not post for it on 28 November.",
+      "Comment-keyword automations only reply once per person per post and within 7 days; test DESIGN, COST, ADVENT and JANUARY before posting.",
+      "Use real project footage only with written client permission."
+    ],
+    "sources": [
+      {
+        "title": "Barclays: Black Friday 2026 insights",
+        "url": "https://www.home.barclays/insights/2026/11/Black-Friday-2026/"
+      },
+      {
+        "title": "MyJobQuote: full bathroom cost (updated 5 Nov 2026)",
+        "url": "https://www.myjobquote.co.uk/costs/full-bathroom-cost"
+      },
+      {
+        "title": "Volume: what's working in home and real estate",
+        "url": "https://tryvolume.app/working/home-and-real-estate.md"
+      },
+      {
+        "title": "Later: Instagram Reels trends",
+        "url": "https://later.com/blog/instagram-reels-trends/"
+      },
+      {
+        "title": "Chatfuel: Instagram Reels trends",
+        "url": "https://chatfuel.com/blog/instagram-reels-trends"
+      },
+      {
+        "title": "Postdom: TikTok trends",
+        "url": "https://postdom.com/blog/tiktok-trends"
+      },
+      {
+        "title": "NewEngen: Christmas TikTok and Instagram trends",
+        "url": "https://newengen.com/insights/christmas-tiktok-instagram-trends/"
+      },
+      {
+        "title": "Met Office: week ahead",
+        "url": "https://www.metoffice.gov.uk/blog/2026/week-ahead-rain-cold-winds-and-the-risk-of-hill-snow"
+      },
+      {
+        "title": "Ofgem: price cap rise for January 2027",
+        "url": "https://www.ofgem.gov.uk/press-release/energy-price-cap-rise-26-january-2027"
+      },
+      {
+        "title": "Pinterest Business: Q5 on Pinterest",
+        "url": "https://business.pinterest.com/en-gb/blog/q5-on-pinterest-your-bonus-marketing-moment/"
+      },
+      {
+        "title": "Bathroom Review: bathroom search trends",
+        "url": "https://www.bathroom-review.co.uk/expert-reveals-the-bathroom-trends-set-to-dominate-2026/"
+      },
+      {
+        "title": "Sanctuary Bathrooms: bathroom trends 2027",
+        "url": "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+      },
+      {
+        "title": "Small Business Saturday UK",
+        "url": "https://smallbusinesssaturdayuk.com/"
+      },
+      {
+        "title": "GOV.UK: bank holidays",
+        "url": "https://www.gov.uk/bank-holidays"
+      }
+    ],
+    "top_picks": [
+      "f5",
+      "f1",
+      "f4"
+    ]
+  },
+  "dossier": "Launch brief researched on 26 November 2026 from two sourced research dossiers (social trends; Pinterest, bathroom trends and lead generation)."
+}

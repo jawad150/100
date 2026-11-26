@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en-GB" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Social Studio · Bespoke Bathroom UK</title>
+  <meta name="theme-color" content="#081C26" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/app.css" />
+  <script>
+    try { const t = localStorage.getItem("bb-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <div class="orb orb-c"></div>
+    <div class="grain"></div>
+  </div>
+
+  <header class="topbar glass">
+    <a class="brand" href="#studio" aria-label="Social Studio home">
+      <span class="brand-chip"><img src="/assets/logo-on-dark.png" alt="Bespoke Bathrooms" /></span>
+      <span class="brand-text"><b>Social Studio</b><small>Bespoke Bathroom UK</small></span>
+    </a>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <span class="tab-glider" aria-hidden="true"></span>
+      <button class="tab" data-view="studio" role="tab">Studio</button>
+      <button class="tab" data-view="planner" role="tab">Planner</button>
+      <button class="tab" data-view="history" role="tab">History</button>
+      <button class="tab" data-view="brand" role="tab">Brand Brain</button>
+      <button class="tab" data-view="strategy" role="tab">Strategy</button>
+    </nav>
+    <div class="top-actions">
+      <span class="status-pill" id="statusPill"><i></i><span>Ready</span></span>
+      <button class="icon-btn" id="themeBtn" title="Switch light or dark" aria-label="Switch theme"></button>
+      <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings"></button>
+    </div>
+  </header>
+
+  <main id="app">
+    <section class="view" id="view-studio" data-view="studio"></section>
+    <section class="view" id="view-planner" data-view="planner" hidden></section>
+    <section class="view" id="view-history" data-view="history" hidden></section>
+    <section class="view" id="view-brand" data-view="brand" hidden></section>
+    <section class="view" id="view-strategy" data-view="strategy" hidden></section>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-backdrop" data-close></div>
+    <div class="drawer-panel glass" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-body" id="drawerBody"></div>
+    </div>
+  </aside>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel glass" role="dialog" aria-modal="true" id="modalPanel"></div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

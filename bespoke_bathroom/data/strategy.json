@@ -1,0 +1,177 @@
+{
+  "title": "Social Media Strategy",
+  "subtitle": "Bespoke Bathroom UK · Instagram, TikTok, YouTube, Facebook and Pinterest",
+  "updated": "26 November 2026",
+  "sections": [
+    {
+      "id": "goal",
+      "title": "1. The one job",
+      "blocks": [
+        { "type": "p", "text": "Every post has one job: get the right homeowner to start a free 3D design. The studio is the brand's strongest asset. It turns a scroll into a priced, photographed room in a few minutes, with no sign-up. Reach brings people in, saves keep them, the studio turns them into enquiries." },
+        { "type": "cards", "items": [
+          { "title": "North-star metric", "text": "3D designs started from social, tracked with a UTM link per platform." },
+          { "title": "Leading signals", "text": "Saves, shares, reach from non-followers, 3-second hold, profile visits, link clicks, DMs." },
+          { "title": "Business results", "text": "Designer conversations, quotes sent, products ordered, rooms fitted." }
+        ] }
+      ]
+    },
+    {
+      "id": "funnel",
+      "title": "2. The funnel: see it, save it, design it",
+      "blocks": [
+        { "type": "table", "head": ["Stage", "What they need", "Content that does it", "Main platforms"], "rows": [
+          ["See it", "Stop the scroll", "Trend-led reels, reveals, satisfying installs, budget challenges", "Instagram Reels, TikTok, YouTube Shorts, Facebook Reels"],
+          ["Save it", "Ideas worth keeping", "Carousels, material palettes, cost guides, Pinterest pins", "Instagram carousels, Pinterest"],
+          ["Design it", "A low-risk next step", "Comment-to-DM links, 'design yours free in 3D', redesign series", "Instagram, Facebook, Pinterest links"],
+          ["Talk to a designer", "Trust and answers", "Fitter tips, how it works, Q&A stories, real reviews", "Stories, DMs, Facebook"],
+          ["Fitted", "Proof for the next person", "Screen-to-room reveals, client stories with permission", "Every platform, then back to See it"]
+        ] }
+      ]
+    },
+    {
+      "id": "pillars",
+      "title": "3. Content pillars",
+      "blocks": [
+        { "type": "table", "head": ["Pillar", "Share", "What it covers", "Example"], "rows": [
+          ["Designed in 3D", "25%", "The studio in action: budgets, styles, follower rooms redesigned", "'Same room. £5k, £15k, £50k.'"],
+          ["The Reveal", "20%", "Finished rooms, screen-to-room comparisons, product moments", "'We drew it in March. This is it fitted.'"],
+          ["Know Before You Renovate", "20%", "Costs, mistakes, planning, layouts, materials explained", "'5 things to decide before you buy a bath'"],
+          ["Material & Mood", "15%", "Pinterest-led aesthetics, palettes, styles from Spanish to Japanese", "'Warm stone and brushed gold: the palette'"],
+          ["Fitted by Our Team", "10%", "Behind the scenes, craft, fitters' tips, delivery day", "'Why our fitters never start without the design sheet'"],
+          ["Proof & People", "5%", "Real reviews and client stories (with permission)", "'Sarah's en-suite, start to finish'"],
+          ["Offer & Invite", "5%", "Direct invitations to the studio or a designer", "'Your room, designed free this weekend'"]
+        ] },
+        { "type": "p", "text": "Proof & People grows to 15% as real reviews arrive. Until then, never fill the gap with invented testimonials." }
+      ]
+    },
+    {
+      "id": "series",
+      "title": "4. Signature series (built to repeat and go viral)",
+      "blocks": [
+        { "type": "cards", "items": [
+          { "title": "The Budget Ladder", "text": "One room designed three times in the studio: £5k, £15k, £50k. Viewers guess which is which. Ends with 'Set your own budget, free.'", "meta": "Reel · lead gen + reach" },
+          { "title": "Your Bathroom, Redesigned", "text": "Followers send a photo of their bathroom. The studio redesigns it on camera. Comment DESIGN to get yours.", "meta": "Reel + carousel · lead gen" },
+          { "title": "Guess the Price", "text": "Show a finished room or a single hero piece. Comments guess the total. Reveal it, priced to the pound.", "meta": "Reel · comments + reach" },
+          { "title": "Spanish to Japanese", "text": "One room, six styles, same budget. Each cut is a different mood and metal finish.", "meta": "Reel / carousel · saves" },
+          { "title": "Screen to Room", "text": "Split screen: the 3D render the client approved, then the fitted room, matched angle for angle.", "meta": "Reel · trust + business" },
+          { "title": "Fitter's Eye", "text": "Fifteen seconds with a fitter: one mistake people make and how to avoid it.", "meta": "Short · authority" },
+          { "title": "The Bath Arrived Three Weeks Before the Taps", "text": "Relatable renovation pain told with humour, solved by one order and one delivery plan.", "meta": "Meme reel · shares" },
+          { "title": "One Piece, Three Rooms", "text": "A single basin, tap or vanity styled into three looks.", "meta": "Carousel / pins · saves + product" }
+        ] }
+      ]
+    },
+    {
+      "id": "platforms",
+      "title": "5. Platform playbook",
+      "blocks": [
+        { "type": "table", "head": ["Platform", "Role", "Formats", "Weekly cadence"], "rows": [
+          ["Instagram", "Home base: reach, saves and DMs", "4 Reels, 2 carousels, 1 static, stories daily", "7 feed posts + daily stories"],
+          ["TikTok", "Reach and trend testing", "Reels re-cut natively, trend formats, studio screen recordings", "3 to 5 posts"],
+          ["YouTube", "Search and depth", "Shorts from the best reels; one long-form project or cost explainer a month", "3 Shorts + 1 long-form a month"],
+          ["Facebook", "Local homeowners, older audience, lead forms", "Reels cross-posted, carousels, local group answers (no spam), Lead Ads", "4 to 5 posts"],
+          ["Pinterest", "Evergreen discovery months before people renovate", "Static pins, carousel pins, idea pins linking to the studio and products", "10 to 15 pins"]
+        ] },
+        { "type": "list", "items": [
+          "First two seconds show the outcome or the pain, never the logo.",
+          "Native text, native captions and on-screen subtitles on every video (most people watch muted).",
+          "Pins carry keyword-led titles and descriptions; people search Pinterest like Google.",
+          "Cut one shoot into many: a reveal becomes a reel, a carousel, three pins, a story set and a Short."
+        ] }
+      ]
+    },
+    {
+      "id": "rhythm",
+      "title": "6. Weekly rhythm",
+      "blocks": [
+        { "type": "table", "head": ["Day", "Feed", "Stories / extras"], "rows": [
+          ["Monday", "Know Before You Renovate carousel", "Poll: 'What's stopping your bathroom?'"],
+          ["Tuesday", "Designed in 3D reel (Budget Ladder or Redesign)", "Studio screen recording"],
+          ["Wednesday", "Material & Mood static + 5 pins", "This or that sticker"],
+          ["Thursday", "Trend-led reel picked from the daily research", "Behind the scenes"],
+          ["Friday", "The Reveal reel", "Weekend invite to start a design"],
+          ["Saturday", "Fitter's Eye short", "Q&A box: 'Ask a designer'"],
+          ["Sunday", "Inspiration carousel + 5 pins", "Week's best comments answered"]
+        ] }
+      ]
+    },
+    {
+      "id": "leadgen",
+      "title": "7. Lead generation system",
+      "blocks": [
+        { "type": "list", "items": [
+          "Comment keywords with automated DMs: DESIGN sends the studio link, COST sends the budget guide, PLAN sends the planning checklist.",
+          "Link in bio goes straight to the 3D studio with a UTM per platform; secondary link to 'Talk to a designer'.",
+          "Story link stickers on every studio story; pin a 'How it works' highlight.",
+          "Facebook and Instagram Lead Ads for 'Talk to a designer' once organic winners are known; retarget people who watched 50% or more of a reel.",
+          "Pinterest pins link to the studio or the exact product, never the home page.",
+          "Answer every DM and comment within [CONFIRM: response time] in working hours; designers, not bots, close the conversation."
+        ] }
+      ]
+    },
+    {
+      "id": "daily",
+      "title": "8. Daily workflow with the Social Studio",
+      "blocks": [
+        { "type": "list", "items": [
+          "Open the studio each morning. Today's research runs automatically (or press Research).",
+          "Pick the focus: Lead Gen for enquiries, Brand & Viral for reach, Balanced for both. Switch on Pinterest for static and carousel ideas.",
+          "Choose one or two Top Picks, add them to the Planner and produce them the same day while the trend is live.",
+          "On Mondays and Thursdays press Update to plan the next three days and film ahead.",
+          "Download the PDF for the team or the client. Review numbers every Friday and update the Brand Brain when something new is learned."
+        ] }
+      ]
+    },
+    {
+      "id": "kit",
+      "title": "9. Capture kit for every project",
+      "blocks": [
+        { "type": "list", "items": [
+          "Before: wide shot from the door, three details, the problem close up (with permission).",
+          "The 3D render and a screen recording of the studio design.",
+          "Delivery day: one order arriving together.",
+          "Install: hands, tools, levels, tiles going on, brass going on stone, water running for the first time.",
+          "After: the same door shot, matched angles to the render, light changing through the day.",
+          "A ten-second voice note from the client, only with written consent."
+        ] }
+      ]
+    },
+    {
+      "id": "guardrails",
+      "title": "10. Guardrails",
+      "blocks": [
+        { "type": "list", "items": [
+          "Music: business accounts cannot use most commercial tracks. Use original audio, voiceover, or licensed library sounds; check before using a trending song.",
+          "Claims: every price, product count and promise must match the website. No 'best' or 'cheapest' without evidence (ASA CAP Code).",
+          "Reviews: only real, unedited reviews with permission. Fake or hidden-incentive reviews are illegal under the DMCC Act 2024.",
+          "Before and after: real projects only, same angle, no misleading edits.",
+          "Partnerships: label paid or gifted content clearly (#ad)."
+        ] }
+      ]
+    },
+    {
+      "id": "roadmap",
+      "title": "11. 90-day roadmap",
+      "blocks": [
+        { "type": "table", "head": ["Weeks", "Focus", "Done when"], "rows": [
+          ["1 to 2", "Foundations", "Handles secured, bios and highlights live, UTM links set, DM keywords automated, 20-post content bank filmed"],
+          ["3 to 6", "Consistency and testing", "Weekly rhythm running; each signature series tested at least twice; baseline numbers recorded"],
+          ["7 to 10", "Scale the winners", "Top three formats doubled; first Lead Ads live; Pinterest at 15 pins a week"],
+          ["11 to 13", "Proof and partnerships", "First client stories published; two creator or interior-designer collaborations; targets set from real baselines"]
+        ] },
+        { "type": "p", "text": "Targets for reach, saves and designs started are set after the first four weeks, from real numbers, not guesses." }
+      ]
+    },
+    {
+      "id": "profiles",
+      "title": "12. Profile copy",
+      "blocks": [
+        { "type": "cards", "items": [
+          { "title": "Instagram and TikTok bio", "text": "Bathrooms designed, supplied and fitted by one team. See your room in 3D, priced to the pound. Free design below." },
+          { "title": "Facebook intro", "text": "Bespoke Bathroom UK designs your bathroom in 3D, supplies every piece from 4,637 products and fits it with our own qualified team. Start with a free design." },
+          { "title": "Pinterest profile", "text": "Bathroom ideas you can actually build. Every pin links to a real product or a free 3D design of your own room." },
+          { "title": "Highlights", "text": "Design in 3D · Reveals · Prices · How it works · Fitting · Reviews" }
+        ] }
+      ]
+    }
+  ]
+}

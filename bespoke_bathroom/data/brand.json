@@ -1,0 +1,139 @@
+{
+  "name": "Bespoke Bathroom UK",
+  "logo_wordmark": "Bespoke Bathrooms",
+  "website": "https://bespokebathroomsuk.co.uk",
+  "tagline": "Design without compromise",
+  "one_liner": "One team designs your bathroom in 3D, supplies every piece and fits it for you.",
+  "location": "[ADD: town or city and showroom address, if there is one]",
+  "service_area": "[ADD: areas the fitting team covers]. Products and the 3D design studio are available UK-wide.",
+  "social": {
+    "instagram": "[ADD: @handle]",
+    "facebook": "[ADD: page URL]",
+    "tiktok": "[ADD: @handle]",
+    "youtube": "[ADD: channel URL]",
+    "pinterest": "[ADD: profile URL]"
+  },
+  "positioning": "A bathroom company that does the whole job. Design, supply and fitting usually mean three companies and three chances for the room to drift away from what you wanted. Here the designer, the range and the fitters belong to one team: what you approve on screen is what gets ordered, and what gets ordered is what gets fitted.",
+  "services": [
+    "Free 3D Design Studio: set a budget from £1,000 to £100,000, pick a mood, a metal finish and a style (from Spanish to Japanese), drag the room to size or upload photos",
+    "Up to 4 photographs of your designed room plus a 3D room you can walk around, with every product tagged and priced (VAT included) inside your budget",
+    "A designer reviews every design and confirms stock, lead times and delivery before you pay anything",
+    "Printable design sheet with tile and flooring quantities worked out for your room",
+    "Supply from a range of 4,637 products across 22 brands, sold as a whole room or piece by piece, delivered on one plan",
+    "Fitting by qualified fitters from the company's own team, priced separately and agreed before work starts",
+    "Trade and fitters portal"
+  ],
+  "range": {
+    "brands": ["Onsen", "Jaquar", "Artize", "Dell", "Falegnameria Adriatica", "BJ", "MS", "Kudos (Dell Bathrooms)", "K Stone (Dell Bathrooms)", "Grespania", "Capital Towel Rails"],
+    "categories": ["Vanities & Furniture (1,828)", "Showers (1,194)", "Taps & Brassware (611)", "Basins (195)", "Toilets (127)", "Mirrors (84)", "Baths (55)", "Tiles & Flooring", "Lighting", "Heating", "Wellness", "Accessories"],
+    "hero_products": [
+      "Artize Tiaara Solid Surface Free Standing Bathtub (£6,626)",
+      "Artize Stone Counter Top Basin, Bottocino Classico Beige (£1,243)",
+      "Onsen Vanity Unit 2D W.120, Light Walnut (£950)",
+      "Jaquar floor-mounted single lever bath mixer (£2,251)",
+      "Dell LED Mirror Demister Round 600 mm (£263.84)",
+      "Jaquar walk-in shower screen, laminated framed (£1,162)"
+    ]
+  },
+  "differentiators": [
+    "See it before you buy it: your own room photographed with real products, not a brochure or 'from' prices",
+    "Priced to the pound inside your budget, VAT included, before anything is ordered",
+    "One team answers for design, supply and fitting, so there is nobody to pass you on to",
+    "Fitters work from the design you approved: no second brief to get wrong",
+    "Nothing is ordered until you approve it; one order, one delivery plan, so the bath does not arrive three weeks before the taps",
+    "The design costs nothing and needs no sign-up"
+  ],
+  "proof": [
+    "[ADD: real customer reviews with names and permission]",
+    "[ADD: number of bathrooms designed or fitted, only if counted]",
+    "[ADD: accreditations, insurance, guarantees, warranty terms]",
+    "Real studio design on the website: £15,000 budget, warm stone, gold finish"
+  ],
+  "price_positioning": "Premium range with honest, visible prices. Budgets in the studio run from £1,000 to £100,000; a website 'shop the look' room of six pieces totals £11,533.84.",
+  "audiences": [
+    {
+      "name": "Planning homeowners",
+      "situation": "Homeowners, 30 to 65, planning a main bathroom or en-suite in the next 3 to 12 months, typical budget £8,000 to £30,000",
+      "pains": "Do not know what it will cost; scared of cowboy fitters and overruns; cannot picture the finished room; juggling three companies",
+      "wants": "To see it finished and priced before committing, a fixed price, one point of contact"
+    },
+    {
+      "name": "Inspiration savers",
+      "situation": "Interior lovers who save bathroom ideas on Pinterest and Instagram months before they renovate",
+      "pains": "Endless scrolling, not sure what suits their room or budget",
+      "wants": "Ideas they can actually build, material palettes, 'this vs that' guidance"
+    },
+    {
+      "name": "Small-space and en-suite upgraders",
+      "situation": "Flats, terraces and new-builds with small bathrooms or cloakrooms",
+      "pains": "Space, storage, light, making it feel bigger",
+      "wants": "Clever layouts, wall-hung pieces, walk-in showers"
+    },
+    {
+      "name": "Wellness and spa seekers",
+      "situation": "Higher budgets wanting a hotel-spa bathroom at home",
+      "pains": "Cold, dated rooms; showers that disappoint",
+      "wants": "Rain showers, freestanding baths, heating, lighting, calm"
+    },
+    {
+      "name": "Trade and fitters",
+      "situation": "Independent fitters and builders sourcing products for client jobs",
+      "pains": "Split deliveries, missing pieces, slow quotes",
+      "wants": "One order, one delivery plan, a design sheet with quantities"
+    }
+  ],
+  "voice": {
+    "personality": ["Calm", "Confident", "Exact", "Warm", "Quietly premium"],
+    "do": [
+      "Lead with the moment the customer feels: the first quiet morning in the finished room",
+      "Use real numbers: budgets, product counts, prices, timings",
+      "Show the room, the materials and the hands that fit it",
+      "Write short sentences in British English"
+    ],
+    "dont": [
+      "No em-dashes",
+      "No invented reviews, stats, awards or guarantees",
+      "No shouting, no cheap discount language",
+      "Avoid filler: elevate, unlock, seamless, world-class, game-changer, nestled, tailored solutions"
+    ],
+    "words_we_use": ["designed", "priced to the pound", "see it before you buy it", "one team", "fitted to the design you approved", "quiet mornings"],
+    "words_we_avoid": ["cheap", "luxury (as a bare adjective)", "solutions", "elevate", "seamless", "best-in-class"]
+  },
+  "visual_style": "Deep navy-teal (#081C26) and teal (#174A5C) with warm cream (#F5F2ED) and brushed gold (#C5A16B, #E4C99B, #8A6A3B). Cormorant Garamond headlines, Inter body. Moody close-ups of stone, brass and water; warm stone, walnut and gold finishes; slow, controlled camera moves.",
+  "offers": [
+    "Free 3D bathroom design, no sign-up needed",
+    "Talk to a designer",
+    "Fitting quoted separately and agreed before work starts"
+  ],
+  "ctas": [
+    "Design your bathroom in 3D (free)",
+    "Start your design",
+    "Talk to a designer",
+    "Ask about fitting",
+    "Shop the look"
+  ],
+  "lead_magnets": [
+    "Free 3D design of your own room (the studio)",
+    "[PLAN] Bathroom planning checklist via comment-to-DM",
+    "[COST] What a bathroom costs in 2026: budget tiers from the studio",
+    "Printable design sheet with tile quantities"
+  ],
+  "hashtags": {
+    "core": ["#bespokebathroom", "#bathroomdesign", "#bathroominspo", "#bathroomrenovation", "#bathroomideas", "#3Ddesign"],
+    "uk": ["#ukbathrooms", "#ukhomes", "#homerenovationuk", "#ukinteriors"],
+    "local": ["[ADD: #town hashtags]"]
+  },
+  "competitors": ["Victorian Plumbing", "Bathroom Mountain", "C.P. Hart", "Drummonds", "West One Bathrooms", "Porcelanosa UK", "Lusso"],
+  "content_rules": [
+    "Every lead-gen post points to one action: start a free 3D design",
+    "Trending audio: business accounts cannot use most commercial music; use original audio, voiceover or Meta's licensed library unless the sound is cleared",
+    "Show prices with VAT included, matching the website",
+    "Never show a customer's home or face without written permission"
+  ],
+  "assumptions": [
+    "Location, service area, social handles and proof were not on the website on 26 November 2026. Fill them in to sharpen local and trust content.",
+    "Audiences and budgets are a starting model; refine them with real enquiry data."
+  ],
+  "updated_at": "2026-11-26",
+  "source": "bespokebathroomsuk.co.uk home page, read 26 November 2026"
+}

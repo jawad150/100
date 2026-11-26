@@ -1,0 +1,818 @@
+{
+  "id": "2026-11-26-daily-brand-pinterest-launch",
+  "kind": "daily",
+  "focus": "brand",
+  "pinterest": true,
+  "sources": [
+    "instagram",
+    "pinterest"
+  ],
+  "date": "2026-11-26",
+  "window": {
+    "label": "Thursday 26 November 2026",
+    "dates": [
+      "2026-11-26"
+    ]
+  },
+  "created_at": "2026-11-26T07:12:00.000Z",
+  "sample": true,
+  "model": "Launch research (Claude Code session)",
+  "usage": null,
+  "brief": {
+    "headline": "Green, warm stone and Rose Earth lead 2027, and January planners start saving now: publish the pins they'll find in the new year.",
+    "summary": "Pinterest Predicts 2027 lands on 8 December and Pantone is due in early December, so today's job is to get evergreen, keyword-led pins indexed before the January planning peak. The colour story for 2027 is clear: Dulux chose Soulful Sage, UK bathroom designers' top pick is Graham & Brown's Rose Earth, and natural stone searches on Houzz UK are up 96%. Matt black brassware, fluted everything and blue bathrooms are losing momentum, which makes a strong 'skip this, choose that' carousel. Lead every pin with real photography or studio designs, link each one to the 3D studio or the exact product, and save it to a tightly named board.",
+    "trends": [
+      {
+        "name": "Green leads the 2027 colours (Dulux Soulful Sage)",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "aesthetic",
+        "what_it_is": "Dulux's Colour of the Year 2027 is Soulful Sage, a light silvery sage. Benjamin Moore (Webster Green), Sherwin-Williams (Celery) and Behr (Grounded, a mossy olive) also chose greens.",
+        "why_now": "Ideal Home's 2027 colour round-up (4 Nov 2026): 'green, in many shades'. Pantone 2027 is expected in early December and many forecasters predict a green.",
+        "how_we_use_it": "Sage walls with warm stone and brushed brass: a palette pin and a studio design in the same look.",
+        "brand_fit": 88,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.dulux.co.uk/en/colour-inspiration/colour-of-the-year-2027-soulful-sage",
+          "https://www.idealhome.co.uk/all-rooms/colour-trends-2027"
+        ]
+      },
+      {
+        "name": "Rose Earth: the designers' bathroom colour for 2027",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "aesthetic",
+        "what_it_is": "Graham & Brown's 2027 colour, a dusty clay pink with brown undertones.",
+        "why_now": "Top pick of UK bathroom designers for 2027 (9 of 14 in the Sanctuary Bathrooms survey, Oct 2026). Earthy, warm palettes lead the designer forecasts.",
+        "how_we_use_it": "A Rose Earth, walnut and zellige mood board, paired with a matching studio design.",
+        "brand_fit": 86,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.grahambrown.com/uk/design-of-the-year/",
+          "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+        ]
+      },
+      {
+        "name": "Neo Deco: red marble and brass",
+        "platforms": [
+          "pinterest"
+        ],
+        "kind": "search",
+        "what_it_is": "Art Deco revival with marble, chrome and brass.",
+        "why_now": "Pinterest Predicts 2026: 'red marble bathroom' +80% and 'brass aesthetic' +35%, the only bathroom-specific term in the report. Mandarin Stone's 2026 tile trends feature red and claret marbles.",
+        "how_we_use_it": "A dramatic statement pin: a cloakroom or powder room in red-veined stone with brass.",
+        "brand_fit": 78,
+        "momentum": "steady",
+        "lifespan": "weeks",
+        "sources": [
+          "https://newsroom.pinterest.com/en-gb/news/pinterest-predicts-nonconformity-self-preservation-and-escapism-drive-21-trends-for-2026/",
+          "https://www.mandarinstone.com/inspiration/tile-trends-for-2026/"
+        ]
+      },
+      {
+        "name": "Natural stone and texture",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "aesthetic",
+        "what_it_is": "Stone walls, limewash, Venetian plaster and natural stone basins.",
+        "why_now": "Houzz UK searches (Jan to Mar 2026): 'stone walls' +148%, 'limewash' +109%, 'natural stone' +96%. Natural stone picked by 71% of designers for 2027.",
+        "how_we_use_it": "Material close-ups: the Artize stone basin, limestone, walnut. Collage pins drive clicks.",
+        "brand_fit": 94,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.houzz.co.uk/magazine/2026-houzz-uk-emerging-trends-report-stsetivw-vs~185312726",
+          "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+        ]
+      },
+      {
+        "name": "Warm metals up, matt black down",
+        "platforms": [
+          "pinterest",
+          "instagram",
+          "tiktok"
+        ],
+        "kind": "topic",
+        "what_it_is": "Brushed bronze and aged brass are rising; matt black brassware, fluted designs and blue bathrooms are losing momentum.",
+        "why_now": "Sanctuary Bathrooms 2027 report (27 Oct 2026): brushed bronze picked by 71% of designers, unit sales up 60%; no manufacturer expects matt black to grow.",
+        "how_we_use_it": "A 'skip it, choose this' carousel and pins for 2027.",
+        "brand_fit": 90,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+        ]
+      },
+      {
+        "name": "Walk-in showers, wet rooms and accessible design",
+        "platforms": [
+          "pinterest",
+          "instagram",
+          "facebook"
+        ],
+        "kind": "search",
+        "what_it_is": "Level-access showers, seats, wet rooms and accessible bathrooms that don't look clinical.",
+        "why_now": "Houzz UK (Jan to Mar 2026): 'accessible bathrooms' up 5x, 'showers with seats' +84%, 'walk-in showers' +37%, 'wet rooms' +19%.",
+        "how_we_use_it": "'This vs that' pins and an accessible-luxury board.",
+        "brand_fit": 88,
+        "momentum": "rising",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://www.houzz.co.uk/magazine/2026-houzz-uk-emerging-trends-report-stsetivw-vs~185312726"
+        ]
+      },
+      {
+        "name": "Plan in the quiet week: Pinterest's 'Q5'",
+        "platforms": [
+          "pinterest"
+        ],
+        "kind": "moment",
+        "what_it_is": "Between Christmas and New Year, Pinterest users plan the year ahead.",
+        "why_now": "Pinterest: 'home organisation ideas' searches rise 75% in that week; Pinterest advises publishing about two months before a seasonal peak. Pinterest Predicts 2027 arrives on 8 December.",
+        "how_we_use_it": "Publish planning checklists and cost guides now so they are indexed before January; refresh trend pins after 8 December.",
+        "brand_fit": 92,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://business.pinterest.com/en-gb/blog/q5-on-pinterest-your-bonus-marketing-moment/",
+          "https://business.pinterest.com/blog/pinterest-brand-moments-guide-2026/",
+          "https://newsroom.pinterest.com/news/creators-to-watch-2027/"
+        ]
+      },
+      {
+        "name": "Carousels lead engagement, real photos win on Pinterest",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "kind": "format",
+        "what_it_is": "Carousels top Instagram engagement; Pinterest labels AI-modified images and lets home decor users see fewer of them.",
+        "why_now": "Buffer 2026: carousels 6.90% engagement vs 3.31% for Reels. Pinterest's 'AI modified' labels and filters are live.",
+        "how_we_use_it": "Lead with real project photography; label studio renders as 3D designs; use 2:3 pins at 1000 x 1500.",
+        "brand_fit": 85,
+        "momentum": "steady",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://buffer.com/resources/state-of-social-media-engagement-2026/",
+          "https://newsroom.pinterest.com/en-gb/news/introducing-gen-ai-labels"
+        ]
+      }
+    ],
+    "ideas": [
+      {
+        "id": "p1",
+        "title": "2027 bathroom trends: 3 to skip, 3 to choose",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest",
+          "tiktok"
+        ],
+        "goal": "viral",
+        "pillar": "Material & Mood",
+        "trend": "Warm metals up, matt black down",
+        "day": null,
+        "hook": "Three bathroom trends to skip in 2027, and what designers are choosing instead.",
+        "concept": "A save-and-send carousel built on this autumn's designer survey: skip matt black taps, fluted everything and cold grey; choose brushed bronze, natural stone and layered lighting. Each 'choose' slide shows a real product or studio design.",
+        "why_it_works": "Contrarian lists get shared and argued about, and this one is backed by named survey data. Posting before Pinterest Predicts on 8 December makes the brand an early voice on 2027.",
+        "scores": {
+          "reach": 88,
+          "business": 62,
+          "ease": 86,
+          "brand_fit": 92,
+          "overall": 86
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "2027: skip these three",
+            "body": "What UK bathroom designers are moving away from, and what they're choosing instead.",
+            "visual": "Split image: matt black tap vs brushed bronze tap"
+          },
+          {
+            "slide": 2,
+            "headline": "Skip: matt black taps",
+            "body": "No manufacturer in this year's survey expects matt black to grow.",
+            "visual": "Matt black tap on white basin, desaturated"
+          },
+          {
+            "slide": 3,
+            "headline": "Choose: brushed bronze",
+            "body": "Picked by 71% of designers. Warm, soft, forgiving with water marks.",
+            "visual": "Brushed bronze basin mixer on stone"
+          },
+          {
+            "slide": 4,
+            "headline": "Skip: fluted everything",
+            "body": "Lovely as one statement piece; tired across a whole room.",
+            "visual": "Fluted vanity, fluted glass, fluted tiles together"
+          },
+          {
+            "slide": 5,
+            "headline": "Choose: natural stone",
+            "body": "Searches for natural stone up 96% on Houzz UK.",
+            "visual": "Artize stone counter-top basin, Bottocino Classico"
+          },
+          {
+            "slide": 6,
+            "headline": "Skip: cold grey",
+            "body": "No surveyed designer expects cool neutrals to grow.",
+            "visual": "Grey tiled room, flat light"
+          },
+          {
+            "slide": 7,
+            "headline": "Choose: layered light",
+            "body": "The strongest designer forecast for 2027 (86%).",
+            "visual": "Lit mirror, wall lights, warm evening glow"
+          },
+          {
+            "slide": 8,
+            "headline": "Try the 2027 look in 3D",
+            "body": "Pick a warm metal finish and a stone mood in our studio. Free.",
+            "visual": "Studio render in warm stone and bronze"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "2027 bathroom trends: what to skip and what designers are choosing",
+          "pin_description": "Bathroom trends for 2027 from a survey of UK designers: skip matt black taps, fluted everything and cold grey; choose brushed bronze, natural stone and layered lighting. Try the look in a free 3D design.",
+          "board": "Bathroom Trends 2027",
+          "keywords": [
+            "bathroom trends 2027",
+            "brushed bronze taps",
+            "natural stone bathroom",
+            "bathroom lighting ideas"
+          ],
+          "alt_text": "Side-by-side of a matt black tap and a brushed bronze tap on a stone basin with the words 2027 skip these three"
+        },
+        "moodboard_searches": [
+          "brushed bronze bathroom taps",
+          "natural stone basin bathroom",
+          "layered lighting bathroom"
+        ],
+        "caption": "Three bathroom trends to skip in 2027, and what designers are choosing instead.\n\nBased on this autumn's survey of UK bathroom designers and manufacturers. Save it before you choose your taps.\n\nWhich one would you keep anyway?",
+        "hashtags": [
+          "#bathroomtrends",
+          "#bathroomtrends2027",
+          "#bathroomdesign",
+          "#interiortrends",
+          "#bespokebathroom",
+          "#ukinteriors"
+        ],
+        "cta": "Save this, then try the 2027 look in 3D",
+        "lead_capture": "Pin links to the studio (UTM: pinterest-trends).",
+        "post_time": "Thursday 26 November, 20:00 (Instagram); pins scheduled across 5 days",
+        "production": "Instagram 1080 x 1350; Pinterest 1000 x 1500 cover plus a 5-image carousel pin. Use range photography (Jaquar, Artize). Refresh after Pinterest Predicts on 8 December. About 2.5 hours."
+      },
+      {
+        "id": "p2",
+        "title": "The Soulful Sage bathroom palette",
+        "format": "pin",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "Green leads the 2027 colours (Dulux Soulful Sage)",
+        "day": null,
+        "hook": "Soulful Sage, warm stone and brushed brass: the 2027 bathroom palette.",
+        "concept": "A collage pin with four swatches (soft sage, warm limestone, walnut, brushed brass) around a studio design in the same look. Clicks go to the studio pre-set to the mood.",
+        "why_it_works": "Colour-of-the-year searches spike when announcements land, and collage pins lead on clicks. It ties a trend people are searching for to a design they can try.",
+        "scores": {
+          "reach": 78,
+          "business": 66,
+          "ease": 92,
+          "brand_fit": 90,
+          "overall": 83
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "The 2027 bathroom palette",
+          "subline": "Soulful Sage · warm limestone · walnut · brushed brass",
+          "visual": "A studio render with sage walls, limestone floor, a light walnut vanity (Onsen) and brushed brass taps, surrounded by four circular swatches.",
+          "layout": "2:3 collage: render top 60%, swatch row with names, headline in Cormorant on cream at the foot.",
+          "palette": [
+            "#A9B5A0",
+            "#D9CDB8",
+            "#8B6A4E",
+            "#C5A16B",
+            "#F5F2ED"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Sage green bathroom ideas: the Soulful Sage palette for 2027",
+          "pin_description": "Dulux's Colour of the Year 2027, Soulful Sage, paired with warm limestone, walnut and brushed brass. A calm, warm bathroom palette for 2027. See it in your own room with a free 3D design.",
+          "board": "Sage Green Bathrooms",
+          "keywords": [
+            "sage green bathroom",
+            "soulful sage",
+            "colour of the year 2027",
+            "brushed brass bathroom"
+          ],
+          "alt_text": "Sage green bathroom with limestone floor, walnut vanity and brushed brass taps, with four colour swatches"
+        },
+        "moodboard_searches": [
+          "sage green bathroom brass",
+          "soulful sage dulux",
+          "limestone walnut bathroom"
+        ],
+        "caption": "Soulful Sage, warm limestone, walnut and brushed brass. Calm, warm and very 2027.\n\nWe built this palette in our 3D studio. Try it in your own room, free.",
+        "hashtags": [
+          "#sagegreen",
+          "#colouroftheyear2027",
+          "#bathroompalette",
+          "#bathroomdesign",
+          "#bespokebathroom"
+        ],
+        "cta": "Try this palette in the 3D studio",
+        "lead_capture": "Pin destination: studio link with UTM (pinterest-sage).",
+        "post_time": "Thursday 26 November, 21:00",
+        "production": "Build the look in the studio, export the render, assemble the collage in Canva at 1000 x 1500. Label the render as a 3D design. About 1 hour."
+      },
+      {
+        "id": "p3",
+        "title": "Rose Earth, walnut and zellige: the designers' pick",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "Rose Earth: the designers' bathroom colour for 2027",
+        "day": null,
+        "hook": "UK bathroom designers' favourite colour for 2027 isn't green.",
+        "concept": "A mood-board carousel: Rose Earth (dusty clay pink) with walnut, handmade zellige and aged brass. Slide by slide: the colour, the materials, the finished look, how to keep it grown-up. Mirrors as a Pinterest carousel pin.",
+        "why_it_works": "A surprising first line ('isn't green') beats the obvious colour post, and the designer survey backs it. Mood boards are save magnets on both platforms.",
+        "scores": {
+          "reach": 80,
+          "business": 58,
+          "ease": 84,
+          "brand_fit": 88,
+          "overall": 81
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "It isn't green",
+            "body": "UK bathroom designers' top colour for 2027 is Rose Earth.",
+            "visual": "Dusty pink limewashed wall with a brass wall light"
+          },
+          {
+            "slide": 2,
+            "headline": "Rose Earth",
+            "body": "A warm clay pink with brown undertones. 9 of 14 designers picked it.",
+            "visual": "Large swatch on cream"
+          },
+          {
+            "slide": 3,
+            "headline": "Pair it with walnut",
+            "body": "Darker woods are back for 2027.",
+            "visual": "Walnut vanity against the pink wall"
+          },
+          {
+            "slide": 4,
+            "headline": "Add handmade tile",
+            "body": "Zellige glaze that shifts in the light.",
+            "visual": "Cream zellige close-up"
+          },
+          {
+            "slide": 5,
+            "headline": "Finish in aged brass",
+            "body": "Warm metal, not black.",
+            "visual": "Aged brass tap"
+          },
+          {
+            "slide": 6,
+            "headline": "See it in your room",
+            "body": "Choose a warm mood and a brass finish in our free 3D studio.",
+            "visual": "Studio render in Rose Earth"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Pink bathroom ideas 2027: Rose Earth with walnut and zellige",
+          "pin_description": "Rose Earth, the dusty clay pink chosen by UK bathroom designers for 2027, with walnut, handmade zellige tiles and aged brass. A warm, grown-up pink bathroom. Try it in a free 3D design.",
+          "board": "Warm Bathroom Colours",
+          "keywords": [
+            "pink bathroom ideas",
+            "rose earth",
+            "zellige bathroom",
+            "walnut vanity"
+          ],
+          "alt_text": "Dusty pink bathroom wall with walnut vanity, cream zellige tiles and aged brass taps"
+        },
+        "moodboard_searches": [
+          "rose earth graham and brown bathroom",
+          "dusty pink bathroom walnut",
+          "zellige bathroom brass"
+        ],
+        "caption": "UK bathroom designers' favourite colour for 2027 isn't green.\n\nIt's Rose Earth: a warm clay pink that looks beautiful with walnut, handmade tile and aged brass. Save the palette.",
+        "hashtags": [
+          "#pinkbathroom",
+          "#roseearth",
+          "#zellige",
+          "#bathroomdesign",
+          "#interiortrends2027",
+          "#bespokebathroom"
+        ],
+        "cta": "Save it, then build it in 3D",
+        "lead_capture": "Pinterest destination: studio link (UTM: pinterest-roseearth).",
+        "post_time": "Friday 27 November, 20:30",
+        "production": "Mix range photography and a studio render. Instagram 1080 x 1350; Pinterest carousel 2:3, 5 images. About 1.5 hours."
+      },
+      {
+        "id": "p4",
+        "title": "Wet room or walk-in shower?",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Walk-in showers, wet rooms and accessible design",
+        "day": null,
+        "hook": "Wet room or walk-in shower? The differences nobody explains properly.",
+        "concept": "A 'this vs that' carousel: what each one is, how the floor works, cost, cleaning, and which suits which room. Real cost figure for wet rooms cited from MyJobQuote. Ends with 'see both in your room' in the studio.",
+        "why_it_works": "Walk-in showers (+37%) and wet rooms (+19%) are rising searches, and the choice is a genuine question homeowners ask designers. Comparison posts get saved for later.",
+        "scores": {
+          "reach": 76,
+          "business": 86,
+          "ease": 88,
+          "brand_fit": 90,
+          "overall": 83
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Wet room or walk-in?",
+            "body": "The differences nobody explains properly.",
+            "visual": "Split image: open wet room vs glass walk-in"
+          },
+          {
+            "slide": 2,
+            "headline": "Walk-in shower",
+            "body": "A shower area with a low tray and a fixed glass panel. Water stays in one zone.",
+            "visual": "Walk-in with a Jaquar laminated screen"
+          },
+          {
+            "slide": 3,
+            "headline": "Wet room",
+            "body": "The whole floor is waterproofed and falls to a drain. No tray, no step.",
+            "visual": "Level-access wet room floor"
+          },
+          {
+            "slide": 4,
+            "headline": "Cost",
+            "body": "Wet rooms typically £4,000 to £7,000 in the UK (MyJobQuote, Sep 2026). Walk-ins often cost less as only one area is tanked.",
+            "visual": "Floor plan with the tanked area shaded"
+          },
+          {
+            "slide": 5,
+            "headline": "Which suits you?",
+            "body": "Small room or accessible design: wet room. Family bathroom with a bath: walk-in.",
+            "visual": "Two small icons with room types"
+          },
+          {
+            "slide": 6,
+            "headline": "See both in your room",
+            "body": "Our 3D studio designs it either way, priced to the pound. Comment SHOWER.",
+            "visual": "Studio render"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Wet room vs walk-in shower: cost, look and which to choose",
+          "pin_description": "Wet room or walk-in shower? How each works, UK cost (wet rooms typically £4,000 to £7,000, MyJobQuote 2026), cleaning, and which suits small bathrooms, family bathrooms and accessible design.",
+          "board": "Walk-in Showers and Wet Rooms",
+          "keywords": [
+            "wet room vs walk in shower",
+            "walk in shower ideas",
+            "wet room ideas small bathroom",
+            "accessible bathroom"
+          ],
+          "alt_text": "Split image comparing an open wet room with a glass walk-in shower"
+        },
+        "moodboard_searches": [
+          "walk in shower ideas uk",
+          "wet room small bathroom",
+          "level access shower stylish"
+        ],
+        "caption": "Wet room or walk-in shower? They're not the same thing.\n\nSave this before you talk to anyone about your bathroom. Then see both options in your own room in our free 3D studio.\n\nComment SHOWER for the link.",
+        "hashtags": [
+          "#walkinshower",
+          "#wetroom",
+          "#bathroomideas",
+          "#bathroomrenovation",
+          "#bespokebathroom",
+          "#ukhomes"
+        ],
+        "cta": "Comment SHOWER for the studio link",
+        "lead_capture": "Comment SHOWER: DM with the studio link and the Showers range.",
+        "post_time": "Saturday 28 November, 11:00",
+        "production": "Canva at 1080 x 1350 and 1000 x 1500. Use Showers range photography. About 1.5 hours."
+      },
+      {
+        "id": "p5",
+        "title": "The 2027 bathroom planner: save this for the week after Christmas",
+        "format": "pin",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Plan in the quiet week: Pinterest's 'Q5'",
+        "day": null,
+        "hook": "Planning a new bathroom in 2027? Save this checklist for the quiet week after Christmas.",
+        "concept": "A tall checklist pin: set a budget (and keep 15% back), measure the room, pick bath or shower, choose a mood and metal finish, plan the lighting and heating, see it in 3D, get a priced quotation. Links straight to the studio.",
+        "why_it_works": "Pinterest says seasonal content should go live about two months before the peak; planning searches rise sharply between Christmas and New Year. Checklists are the classic save-for-later pin.",
+        "scores": {
+          "reach": 70,
+          "business": 92,
+          "ease": 94,
+          "brand_fit": 88,
+          "overall": 81
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "Your 2027 bathroom planner",
+          "subline": "7 steps from idea to fitted. Save for the week after Christmas.",
+          "visual": "Cream background, a thin gold line down the left linking 7 numbered steps, a small finished bathroom photo at the top.",
+          "layout": "1000 x 1500 checklist; steps in Inter, headline in Cormorant; website at the foot.",
+          "palette": [
+            "#F5F2ED",
+            "#081C26",
+            "#C5A16B",
+            "#174A5C"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Bathroom renovation planner 2027: 7 steps from idea to finished room",
+          "pin_description": "A simple bathroom renovation checklist for 2027: set your budget (keep 15% back), measure, choose bath or shower, pick your mood and metal finish, plan lighting and heating, see it in 3D, then get a priced quotation. Save it for the week after Christmas.",
+          "board": "Bathroom Costs and Planning",
+          "keywords": [
+            "bathroom renovation checklist",
+            "bathroom planning",
+            "renovation planner 2027",
+            "new bathroom ideas"
+          ],
+          "alt_text": "Checklist graphic titled Your 2027 bathroom planner with seven numbered steps"
+        },
+        "moodboard_searches": [
+          "bathroom renovation checklist",
+          "home renovation planner printable"
+        ],
+        "caption": "Planning a new bathroom in 2027? Save this for the quiet week after Christmas.\n\nSeven steps, in the right order, from 'we should really do the bathroom' to a fitted room.",
+        "hashtags": [
+          "#bathroomplanning",
+          "#renovationchecklist",
+          "#newyearnewhome",
+          "#bathroomrenovation",
+          "#bespokebathroom"
+        ],
+        "cta": "Step 6: see it in 3D, free",
+        "lead_capture": "Pin destination: studio link (UTM: pinterest-planner); Instagram version with Comment PLAN.",
+        "post_time": "Thursday 26 November, 20:30 (then re-pin weekly to 3 boards until January)",
+        "production": "One Canva design at 1000 x 1500 plus a 1080 x 1350 crop for Instagram. 45 minutes."
+      },
+      {
+        "id": "p6",
+        "title": "Neo Deco: a red marble cloakroom",
+        "format": "pin",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "Material & Mood",
+        "trend": "Neo Deco: red marble and brass",
+        "day": null,
+        "hook": "The small room that gets the biggest reaction: red marble and brass.",
+        "concept": "A statement pin for the cloakroom or powder room: red-veined marble, a brass Deco mirror, a pendant light. The point: small rooms are where bold choices are affordable.",
+        "why_it_works": "'Red marble bathroom' was the bathroom breakout in the last Pinterest Predicts (+80%), and statement rooms are highly saveable. It shows range and design confidence.",
+        "scores": {
+          "reach": 82,
+          "business": 48,
+          "ease": 80,
+          "brand_fit": 76,
+          "overall": 77
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "Go bold in the small room",
+          "subline": "Red marble, brass and a pendant: Neo Deco for the cloakroom",
+          "visual": "A cloakroom render or styled photo: red-veined marble basin and splashback, round brass mirror, globe pendant, dark walls.",
+          "layout": "Full-bleed 2:3 image, small cream headline band at the top.",
+          "palette": [
+            "#7A2E2A",
+            "#C5A16B",
+            "#081C26",
+            "#F5F2ED"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Red marble bathroom ideas: Neo Deco cloakroom with brass",
+          "pin_description": "Small room, bold choice: a red marble cloakroom with brass mirror and pendant light. Neo Deco style for downstairs toilets and powder rooms. Design your own in 3D, free.",
+          "board": "Cloakroom and Powder Room Ideas",
+          "keywords": [
+            "red marble bathroom",
+            "cloakroom ideas",
+            "art deco bathroom",
+            "powder room ideas"
+          ],
+          "alt_text": "Small cloakroom with red-veined marble basin, round brass mirror and globe pendant light"
+        },
+        "moodboard_searches": [
+          "red marble bathroom",
+          "art deco cloakroom brass",
+          "powder room bold ideas"
+        ],
+        "caption": "The smallest room in the house can take the boldest idea. Red marble, brass, a pendant light. Would you?",
+        "hashtags": [
+          "#redmarble",
+          "#cloakroomideas",
+          "#artdeco",
+          "#powderroom",
+          "#bespokebathroom"
+        ],
+        "cta": "Design your cloakroom in 3D",
+        "lead_capture": "Pin destination: studio link (UTM: pinterest-neodeco).",
+        "post_time": "Friday 27 November, 21:00",
+        "production": "Create the look in the studio if red stone is in range; otherwise style a moodboard collage from licensed images. Label renders as designs. About 1 hour."
+      },
+      {
+        "id": "p7",
+        "title": "One basin, three bathrooms",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "Natural stone and texture",
+        "day": null,
+        "hook": "Same stone basin. Three completely different bathrooms.",
+        "concept": "The Artize stone counter-top basin (Bottocino Classico beige) styled three ways in the studio: Japanese calm (oak, paper light), Spanish warmth (terracotta, aged brass), and modern spa (limestone, brushed bronze). Ends with 'Shop the basin' and 'Design yours'.",
+        "why_it_works": "Natural stone searches are up 96% and 'one piece, three rooms' is a save-friendly, product-led format that shows the studio's style range (from Spanish to Japanese).",
+        "scores": {
+          "reach": 74,
+          "business": 74,
+          "ease": 86,
+          "brand_fit": 94,
+          "overall": 82
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "One basin, three bathrooms",
+            "body": "Same stone. Completely different rooms.",
+            "visual": "The basin alone on cream, soft shadow"
+          },
+          {
+            "slide": 2,
+            "headline": "Japanese calm",
+            "body": "Pale oak, paper lantern light, brushed nickel.",
+            "visual": "Studio render, Japanese style"
+          },
+          {
+            "slide": 3,
+            "headline": "Spanish warmth",
+            "body": "Terracotta floor, limewash, aged brass.",
+            "visual": "Studio render, Spanish style"
+          },
+          {
+            "slide": 4,
+            "headline": "Modern spa",
+            "body": "Limestone, walnut, brushed bronze.",
+            "visual": "Studio render, spa style"
+          },
+          {
+            "slide": 5,
+            "headline": "Which is yours?",
+            "body": "Pick a style in our 3D studio and see your room in minutes. Free.",
+            "visual": "Brand end card with the product name"
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Stone basin bathroom ideas: one basin styled three ways",
+          "pin_description": "A natural stone counter-top basin styled three ways: Japanese calm, Spanish warmth and modern spa. Bathroom ideas built from real products. Design your own bathroom in 3D, free.",
+          "board": "Stone Bathroom Ideas",
+          "keywords": [
+            "stone basin bathroom",
+            "japandi bathroom",
+            "spanish style bathroom",
+            "spa bathroom ideas"
+          ],
+          "alt_text": "A beige stone counter-top basin shown in a Japanese, a Spanish and a modern spa bathroom"
+        },
+        "moodboard_searches": [
+          "stone countertop basin bathroom",
+          "japandi bathroom oak",
+          "spanish bathroom terracotta brass"
+        ],
+        "caption": "Same stone basin. Three completely different bathrooms.\n\nJapanese, Spanish or modern spa: which one's yours? Build any of them in our 3D studio.",
+        "hashtags": [
+          "#stonebasin",
+          "#japandibathroom",
+          "#spanishstyle",
+          "#spabathroom",
+          "#bathroomdesign",
+          "#bespokebathroom"
+        ],
+        "cta": "Shop the basin or design your room",
+        "lead_capture": "Product link in the pin; studio link in bio.",
+        "post_time": "Sunday 29 November, 20:00",
+        "production": "Three studio renders with the same basin (Artize Stone Counter Top Basin, Bottocino Classico Beige, £1,243). Label as 3D designs. About 1.5 hours."
+      }
+    ],
+    "days": null,
+    "watch_outs": [
+      "Pinterest Predicts 2027 is published on 8 December 2026 and Pantone 2027 is due in early December: refresh trend pins then, and do not claim what they will say before they are out.",
+      "Pinterest labels AI-modified images and lets home decor users hide them: lead with real photography and clearly label studio renders as 3D designs.",
+      "Quote cost figures with source and month on the image.",
+      "Link every pin to the studio or the exact product, never the home page; add UTMs to measure designs started.",
+      "Survey figures (Sanctuary, 14 designers) are a small sample: say 'designers surveyed', not 'most designers'."
+    ],
+    "sources": [
+      {
+        "title": "Pinterest: Creators to Watch 2027 (Predicts date)",
+        "url": "https://newsroom.pinterest.com/news/creators-to-watch-2027/"
+      },
+      {
+        "title": "Pinterest Predicts 2026 (UK newsroom)",
+        "url": "https://newsroom.pinterest.com/en-gb/news/pinterest-predicts-nonconformity-self-preservation-and-escapism-drive-21-trends-for-2026/"
+      },
+      {
+        "title": "Pinterest Business: Q5 on Pinterest",
+        "url": "https://business.pinterest.com/en-gb/blog/q5-on-pinterest-your-bonus-marketing-moment/"
+      },
+      {
+        "title": "Pinterest: brand moments guide 2026",
+        "url": "https://business.pinterest.com/blog/pinterest-brand-moments-guide-2026/"
+      },
+      {
+        "title": "Pinterest: Gen AI labels",
+        "url": "https://newsroom.pinterest.com/en-gb/news/introducing-gen-ai-labels"
+      },
+      {
+        "title": "Dulux: Colour of the Year 2027, Soulful Sage",
+        "url": "https://www.dulux.co.uk/en/colour-inspiration/colour-of-the-year-2027-soulful-sage"
+      },
+      {
+        "title": "Graham & Brown: Design of the Year",
+        "url": "https://www.grahambrown.com/uk/design-of-the-year/"
+      },
+      {
+        "title": "Ideal Home: colour trends 2027",
+        "url": "https://www.idealhome.co.uk/all-rooms/colour-trends-2027"
+      },
+      {
+        "title": "Sanctuary Bathrooms: bathroom trends 2027",
+        "url": "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+      },
+      {
+        "title": "Houzz UK: Emerging Trends Report 2026",
+        "url": "https://www.houzz.co.uk/magazine/2026-houzz-uk-emerging-trends-report-stsetivw-vs~185312726"
+      },
+      {
+        "title": "Mandarin Stone: tile trends for 2026",
+        "url": "https://www.mandarinstone.com/inspiration/tile-trends-for-2026/"
+      },
+      {
+        "title": "MyJobQuote: full bathroom cost",
+        "url": "https://www.myjobquote.co.uk/costs/full-bathroom-cost"
+      },
+      {
+        "title": "Buffer: State of Social Media Engagement 2026",
+        "url": "https://buffer.com/resources/state-of-social-media-engagement-2026/"
+      }
+    ],
+    "top_picks": [
+      "p1",
+      "p2",
+      "p4"
+    ]
+  },
+  "dossier": "Launch brief researched on 26 November 2026 from two sourced research dossiers (social trends; Pinterest, bathroom trends and lead generation)."
+}

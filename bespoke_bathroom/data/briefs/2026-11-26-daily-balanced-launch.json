@@ -1,0 +1,946 @@
+{
+  "id": "2026-11-26-daily-balanced-launch",
+  "kind": "daily",
+  "focus": "balanced",
+  "pinterest": false,
+  "sources": [
+    "instagram",
+    "tiktok",
+    "youtube",
+    "facebook"
+  ],
+  "date": "2026-11-26",
+  "window": {
+    "label": "Thursday 26 November 2026",
+    "dates": [
+      "2026-11-26"
+    ]
+  },
+  "created_at": "2026-11-26T07:36:00.000Z",
+  "sample": true,
+  "model": "Launch research (Claude Code session)",
+  "usage": null,
+  "brief": {
+    "headline": "A cold week, Black Friday noise and year-end recaps: show warm, finished rooms and let the free 3D studio do the selling.",
+    "summary": "Three things are moving at once. Ofgem confirmed yesterday that the energy price cap rises 26% from 1 January, in the coldest week of the autumn so far, so warm-bathroom content has a real reason to exist today. Black Friday is tomorrow and 71% of UK adults doubt the discounts are genuine, which makes a calm 'no fake discounts, just your room priced to the pound' message stand out. On Reels and TikTok, same-angle before/after cuts and 'finished result first' hooks are beating account averages by 9 to 14 times, and year-end recap formats are rising fast. Lead with the studio: a priced, photographed room in minutes is the most shareable thing this brand owns.",
+    "trends": [
+      {
+        "name": "Same-angle before/after, cut on the beat",
+        "platforms": [
+          "instagram",
+          "tiktok"
+        ],
+        "kind": "format",
+        "what_it_is": "Lock the camera in one spot at strip-out, then cut to the finished room from the identical angle on the beat drop.",
+        "why_now": "Volume's home and real estate tracker (25 Nov 2026, 995 posts) ranks it the top home format: 14 accounts at a median 14x their usual reach, with one 1920s bathroom makeover reveal at 50x.",
+        "how_we_use_it": "Pair the studio render with the fitted room from the same angle: 'the picture you approved' then 'the room we fitted'. Exactly the brand promise.",
+        "brand_fit": 94,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://tryvolume.app/working/home-and-real-estate/same-angle-before-after-cut-on-the-beat.md",
+          "https://tryvolume.app/working/home-and-real-estate.md"
+        ]
+      },
+      {
+        "name": "Finished result flashed before the process",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "youtube"
+        ],
+        "kind": "format",
+        "what_it_is": "Two seconds of the finished room up front, then back to the start to show how it got there.",
+        "why_now": "Top home and real estate format measured on 25 Nov 2026: 20 accounts at a median 9x their usual reach.",
+        "how_we_use_it": "Open every studio screen recording on the finished render, then show the three choices that made it.",
+        "brand_fit": 92,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://tryvolume.app/working/home-and-real-estate/finished-result-flashed-before-the-process-starts.md"
+        ]
+      },
+      {
+        "name": "Energy price cap up 26% from January, in a cold snap",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "youtube"
+        ],
+        "kind": "moment",
+        "what_it_is": "Ofgem's 25 Nov announcement: typical dual-fuel bill from £1,723 to £2,166 a year from 1 January, gas up 33%, electricity up 19%. The Met Office forecast below-average temperatures and hill snow risk this week.",
+        "why_now": "Announced yesterday and leading UK news in the coldest week so far.",
+        "how_we_use_it": "Warm-bathroom content without scaremongering: towel rails on timers, underfloor heating controls, insulation behind tiles. No running-cost figures until recalculated at January rates.",
+        "brand_fit": 86,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.ofgem.gov.uk/press-release/energy-price-cap-rise-26-january-2027",
+          "https://www.metoffice.gov.uk/blog/2026/week-ahead-rain-cold-winds-and-the-risk-of-hill-snow"
+        ]
+      },
+      {
+        "name": "Black Friday scepticism",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "kind": "moment",
+        "what_it_is": "Black Friday is Friday 27 November. Barclays (23 Nov) found 71% of UK adults question whether discounts are genuine and 72% say it is more marketing than sales.",
+        "why_now": "Peak noise from today to Cyber Monday (30 Nov). Chatfuel also spotted a 'Black Friday story reveal' format this week: a 10 to 15 second mini-story that hides the brand until the last frame.",
+        "how_we_use_it": "Counter-programme calmly: no countdowns, no 'was' prices, just a real room priced to the pound with VAT. Talk about our approach, never about competitors.",
+        "brand_fit": 82,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://www.home.barclays/insights/2026/11/Black-Friday-2026/",
+          "https://chatfuel.com/blog/instagram-reels-trends"
+        ]
+      },
+      {
+        "name": "'I feel like I haven't done much this year' recap",
+        "platforms": [
+          "instagram",
+          "tiktok"
+        ],
+        "kind": "audio",
+        "what_it_is": "Open on the line, then fast month-by-month clips as proof. Usual audio: 'Coming Up Roses' by Harry Styles.",
+        "why_now": "SocialPilot: the audio went from 49K to 116K Reels in under three weeks; Later added it on 20 Nov. Year-end reflection season runs to mid-December.",
+        "how_we_use_it": "'We feel like we haven't done much this year' then twelve rooms, designs or deliveries, one per month. Check the song is available on a business account; otherwise use original audio with the same structure.",
+        "brand_fit": 76,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://later.com/blog/instagram-reels-trends/",
+          "https://www.socialpilot.co/blog/instagram-reels-trends"
+        ]
+      },
+      {
+        "name": "Slow festive walk-through ('Christmas Market', Eoneun)",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "audio",
+        "what_it_is": "A calm, textless glide through a decorated space, set to the instrumental 'Christmas Market' by Eoneun.",
+        "why_now": "SocialPilot: from 72K to 89K Reels in three days; Postdom counts 106K and marks it trending.",
+        "how_we_use_it": "Ten seconds through a finished bathroom styled for Christmas at dusk. The most premium of this season's formats.",
+        "brand_fit": 90,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.socialpilot.co/blog/instagram-reels-trends",
+          "https://postdom.com/blog/instagram-trends"
+        ]
+      },
+      {
+        "name": "Contrarian bathroom rules",
+        "platforms": [
+          "tiktok",
+          "instagram",
+          "youtube"
+        ],
+        "kind": "format",
+        "what_it_is": "A one-line rejection of a popular choice ('Unpopular opinion: spotlights ruin bathrooms'), then the reason and the better option.",
+        "why_now": "UK interiors creators' top bathroom posts this month are 'don't' tips (against spotlights 513K views, against black taps 416K views, Modash, 25 Nov). Volume: 'reject a popular trend in one line' at a median 5x across 13 accounts.",
+        "how_we_use_it": "A designer says one rule to camera and shows the alternative in the studio. Backed by the Sanctuary 2027 survey: matt black brassware and fluted everything are losing momentum, layered lighting is the top designer forecast.",
+        "brand_fit": 86,
+        "momentum": "steady",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.modash.io/find-influencers/tiktok/united-kingdom/interior-design",
+          "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027",
+          "https://tryvolume.app/working/home-and-real-estate.md"
+        ]
+      },
+      {
+        "name": "Hard calendar deadline as the hook",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "A countdown or fixed date in the first line ('29 days until Christmas guests').",
+        "why_now": "Volume (25 Nov): median 16x across 7 home accounts. Hosting season: 59% of hosts say more people use their bathroom over the holidays (Talker Research, 19 Nov, US).",
+        "how_we_use_it": "Guest-bathroom quick wins now, with the real renovation designed over Christmas and fitted in the new year.",
+        "brand_fit": 84,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://tryvolume.app/working/home-and-real-estate/hard-calendar-deadline-as-the-hook.md",
+          "https://talker.news/2026/11/19/what-hosts-clean-most-before-holiday-guests-arrive/"
+        ]
+      },
+      {
+        "name": "'In this town everybody goes out partying except me'",
+        "platforms": [
+          "tiktok",
+          "instagram"
+        ],
+        "kind": "meme",
+        "what_it_is": "Voiceover about everyone partying while the creator works, with a 'huss' sound effect.",
+        "why_now": "Virlo: up 6050% in creators week on week; Postdom counts 528,900 videos on the sound.",
+        "how_we_use_it": "The 6 am van load, setting-out lines and a tiler at work, ending on the finished room. Light, human, shows the craft.",
+        "brand_fit": 64,
+        "momentum": "rising",
+        "lifespan": "days",
+        "sources": [
+          "https://virlo.ai/trends",
+          "https://postdom.com/blog/tiktok-trends"
+        ]
+      },
+      {
+        "name": "YouTube Shorts: custom thumbnails and seasons",
+        "platforms": [
+          "youtube"
+        ],
+        "kind": "format",
+        "what_it_is": "Every creator can now upload a custom Shorts thumbnail (announced 23 Nov), and Shorts can be grouped into seasons and episodes.",
+        "why_now": "Rolled out this week. Volume finds episode numbers in titles earn a median 12x for home accounts.",
+        "how_we_use_it": "One consistent 'finished room' cover per Short and a 'Screen to Room' season, so the Shorts shelf reads like a portfolio.",
+        "brand_fit": 78,
+        "momentum": "rising",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://www.tubefilter.com/2026/11/25/youtube-shorts-thumbnails-all-creators/",
+          "https://socialbee.com/blog/youtube-updates-news-features/"
+        ]
+      }
+    ],
+    "ideas": [
+      {
+        "id": "i1",
+        "title": "Same room. £5k, £15k, £50k.",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "youtube",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Designed in 3D",
+        "trend": "Finished result flashed before the process",
+        "day": null,
+        "hook": "Which of these bathrooms cost £50,000?",
+        "concept": "One real room run through the 3D studio three times: £5,000, £15,000 and £50,000, same mood and finish. Flash all three finished renders first and ask viewers to guess, then reveal the budgets and what changed between them. It turns the studio into a game and ends on the only action that matters: set your own budget.",
+        "why_it_works": "It uses the top-performing home hook this week (finished result first) and invites comments (guesses), which feed reach. It also answers the question every homeowner has ('what does my budget actually buy?') and shows the studio doing it in seconds, free.",
+        "scores": {
+          "reach": 86,
+          "business": 94,
+          "ease": 88,
+          "brand_fit": 95,
+          "overall": 91
+        },
+        "reel": {
+          "duration_seconds": 24,
+          "audio": "Original audio: a soft piano or ambient bed with a light tick on each reveal. If you want a trending sound, pick an instrumental from the in-app business library.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Three finished studio renders side by side, labelled A, B, C",
+              "on_screen_text": "Which one cost £50,000?",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:06",
+              "visual": "Screen recording: the budget slider set to £5,000, render appears",
+              "on_screen_text": "A: £5,000",
+              "voiceover": "Same room. Same style. Three budgets."
+            },
+            {
+              "time": "0:06-0:11",
+              "visual": "Slider to £15,000, render builds piece by piece with prices ticking up",
+              "on_screen_text": "B: £15,000",
+              "voiceover": "Every piece is a real product with a real price."
+            },
+            {
+              "time": "0:11-0:17",
+              "visual": "Slider to £50,000, slow push into the freestanding bath and stone basin",
+              "on_screen_text": "C: £50,000",
+              "voiceover": "VAT included. Inside the budget, to the pound."
+            },
+            {
+              "time": "0:17-0:21",
+              "visual": "Walk-through of the 3D room at £15,000",
+              "on_screen_text": "Which would you choose?",
+              "voiceover": "Which one would you choose?"
+            },
+            {
+              "time": "0:21-0:24",
+              "visual": "Studio start screen",
+              "on_screen_text": "Set your budget. Free, no sign-up.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Speed-ramp the slider moves (Edits app speed curves). Keep each render on screen long enough to read. Subtitles throughout for sound-off viewers. Hold the logo back until the final frame."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "warm stone bathroom gold taps",
+          "freestanding bath walnut vanity",
+          "luxury bathroom budget ideas"
+        ],
+        "caption": "Same room. Three budgets. Can you spot the £50,000 one?\n\nWe ran one bathroom through our 3D studio at £5k, £15k and £50k. Same mood, same gold finish. Every piece is a real product, priced with VAT, inside the budget.\n\nGuess A, B or C in the comments. Then set your own budget and see your room finished, free.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroomrenovation",
+          "#bathroominspo",
+          "#3Ddesign",
+          "#ukhomes",
+          "#bathroombudget",
+          "#homerenovationuk"
+        ],
+        "cta": "Comment DESIGN and we'll send you the studio link",
+        "lead_capture": "Comment-keyword automation: DESIGN sends the 3D studio link with a UTM for Instagram; pin a comment with the link on Facebook (links in the post body are being limited for Pages).",
+        "post_time": "Thursday 26 November, 19:30",
+        "production": "Screen-record the studio on desktop at 1080 x 1920 (or record and reframe). Use one room plan and the 'warm stone, gold' look for all three budgets. About 90 minutes including the edit. Cut a 2:3 cover image of the three renders for Pinterest and a YouTube Shorts thumbnail."
+      },
+      {
+        "id": "i2",
+        "title": "Warm bathroom, sensible bills",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Energy price cap up 26% from January, in a cold snap",
+        "day": null,
+        "hook": "Energy bills rise 26% in January. Your bathroom doesn't have to be the coldest room in the house.",
+        "concept": "A calm, useful carousel on keeping a bathroom warm without wasting heat: towel rails on timers, underfloor heating controls, insulated boards behind tiles, the right extractor, and designing heating in from the start. Ends on designing it in 3D with heating included in the price.",
+        "why_it_works": "It is the most talked-about household story in the UK this week and the coldest days so far. Carousels lead Instagram engagement in 2026 (Buffer: 6.9% vs 3.3% for Reels), and practical lists get saved and sent.",
+        "scores": {
+          "reach": 74,
+          "business": 82,
+          "ease": 90,
+          "brand_fit": 90,
+          "overall": 83
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Bills rise 26% in January.",
+            "body": "Here's how to keep your bathroom warm without heating the whole house.",
+            "visual": "Steam on a stone basin at dusk, warm light. Cream text on navy band."
+          },
+          {
+            "slide": 2,
+            "headline": "Put the towel rail on a timer",
+            "body": "Twenty minutes before your shower is all it needs. A thermostatic or smart element stops it running all day.",
+            "visual": "Heated towel rail with folded towels, close-up of the control"
+          },
+          {
+            "slide": 3,
+            "headline": "Underfloor heating, set properly",
+            "body": "Wet systems run from your boiler or heat pump; electric mats suit single rooms. Either way, a programmable thermostat does the saving.",
+            "visual": "Bare feet on warm tiles, morning light"
+          },
+          {
+            "slide": 4,
+            "headline": "Insulate behind the tiles",
+            "body": "On an outside wall, insulated tile backer boards keep heat in the room instead of the brickwork.",
+            "visual": "Fitter fixing backer boards, before tiling"
+          },
+          {
+            "slide": 5,
+            "headline": "Ventilate without the draught",
+            "body": "A humidity-sensing extractor clears steam and switches off when the air is dry.",
+            "visual": "Ceiling extractor in a finished room, clean lines"
+          },
+          {
+            "slide": 6,
+            "headline": "Design heating in from day one",
+            "body": "In our studio the rail, the floor and the controls are priced with everything else, inside your budget.",
+            "visual": "Studio render with the towel rail and heating tagged"
+          },
+          {
+            "slide": 7,
+            "headline": "See yours warm, before you buy",
+            "body": "Free 3D design. No sign-up. Comment WARM and we'll send the link.",
+            "visual": "Logo end card, brushed gold on navy"
+          }
+        ],
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "heated towel rail bathroom",
+          "underfloor heating bathroom stone",
+          "warm cosy bathroom winter"
+        ],
+        "caption": "Bills rise 26% from January. A warm bathroom shouldn't mean heating the whole house.\n\nSave this for the next cold morning: five ways to keep the heat where you need it, and when to design it in from the start.\n\nComment WARM and we'll send you the free 3D studio, heating included in the price.",
+        "hashtags": [
+          "#bathroomdesign",
+          "#underfloorheating",
+          "#heatedtowelrail",
+          "#bathroomrenovation",
+          "#energybills",
+          "#ukhomes",
+          "#bespokebathroom"
+        ],
+        "cta": "Comment WARM for the free 3D studio link",
+        "lead_capture": "Comment WARM: DM with the studio link and the heating category page.",
+        "post_time": "Friday 27 November, 07:30 (before the Black Friday noise)",
+        "production": "Design in Canva or Figma at 1080 x 1350, brand navy and cream, Cormorant headlines. Use real product shots from the Heating range (Capital Towel Rails). Do not add running costs: published figures pre-date the January cap. About 2 hours."
+      },
+      {
+        "id": "i3",
+        "title": "No countdown. Just the price.",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ],
+        "goal": "brand",
+        "pillar": "Offer & Invite",
+        "trend": "Black Friday scepticism",
+        "day": null,
+        "hook": "Everyone's shouting '70% off'. We'd rather show you the real price.",
+        "concept": "A 12-second mini-story that hides the brand until the end: a phone screen flooded with flashing 'SALE' banners, a thumb scrolling past, then calm. A finished studio design appears with every piece priced, VAT included, total inside the budget. Final frame: 'No Black Friday. Just your room, priced to the pound.'",
+        "why_it_works": "Rides the Black Friday story-reveal format while siding with the 71% who doubt the discounts. It positions the brand as the calm, honest choice without naming anyone.",
+        "scores": {
+          "reach": 78,
+          "business": 70,
+          "ease": 84,
+          "brand_fit": 92,
+          "overall": 80
+        },
+        "reel": {
+          "duration_seconds": 12,
+          "audio": "Original audio: busy notification pings that cut to silence, then a single soft chime.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Phone screen, rapid scroll through generic sale banners (made up, no real brands)",
+              "on_screen_text": "Black Friday week",
+              "voiceover": ""
+            },
+            {
+              "time": "0:03-0:05",
+              "visual": "Thumb stops. Screen goes calm and dark navy",
+              "on_screen_text": "",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:09",
+              "visual": "Studio design builds, each product tagged with its price, total counter rising",
+              "on_screen_text": "Every piece priced. VAT included.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:09-0:12",
+              "visual": "Logo on navy, gold rule",
+              "on_screen_text": "No Black Friday. Just your room, priced to the pound.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Fast cuts for the first 3 seconds, then hold. Keep the fake banners generic and unbranded. Logo only in the last frame."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "dark navy gold bathroom",
+          "minimal luxury bathroom"
+        ],
+        "caption": "No countdown. No 'was' prices.\n\nJust your bathroom, designed in 3D and priced to the pound with VAT, before anything is ordered. It's free, today and every day.\n\nStart your design: link in bio.",
+        "hashtags": [
+          "#blackfriday",
+          "#bathroomdesign",
+          "#bespokebathroom",
+          "#bathroomrenovation",
+          "#ukhomes",
+          "#nofakediscounts"
+        ],
+        "cta": "Start your free design (link in bio)",
+        "lead_capture": "Link in bio to the studio with a 'blackfriday' UTM to measure it.",
+        "post_time": "Friday 27 November, 12:00",
+        "production": "Screen-record a scroll of mocked-up generic banners (no real retailer names or logos), then a studio design. About 1 hour. Check the price shown matches the website."
+      },
+      {
+        "id": "i4",
+        "title": "The quiet glide: a bathroom dressed for Christmas",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "facebook"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "Slow festive walk-through ('Christmas Market', Eoneun)",
+        "day": null,
+        "hook": "No words. Just the first warm bath of December.",
+        "concept": "A ten-second, textless slow pan through a finished bathroom at dusk: eucalyptus over the shower, candles on stone, warm towels on the rail, steam rising from a freestanding bath. One caption line does the talking.",
+        "why_it_works": "The calm festive walk-through is rising fast on Reels and suits a premium brand far better than loud Christmas trends. Saves and sends follow beautiful rooms.",
+        "scores": {
+          "reach": 80,
+          "business": 46,
+          "ease": 70,
+          "brand_fit": 96,
+          "overall": 72
+        },
+        "reel": {
+          "duration_seconds": 10,
+          "audio": "'Christmas Market' by Eoneun if it shows in the business audio library (it is an instrumental, so it often does); otherwise a royalty-free music-box instrumental.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Gimbal glide from the doorway, low warm light, eucalyptus bundle on the shower head",
+              "on_screen_text": "",
+              "voiceover": ""
+            },
+            {
+              "time": "0:03-0:06",
+              "visual": "Pass the stone basin, brushed gold tap, a lit candle",
+              "on_screen_text": "",
+              "voiceover": ""
+            },
+            {
+              "time": "0:06-0:10",
+              "visual": "Settle on the freestanding bath with steam rising, towels warming on the rail",
+              "on_screen_text": "",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "One continuous move if possible. Warm grade, lifted blacks. No text on screen; the caption carries it."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "christmas bathroom decor eucalyptus",
+          "candlelit freestanding bath",
+          "festive bathroom styling"
+        ],
+        "caption": "The first warm bath of December.\n\nDesigned, supplied and fitted by one team. Yours can start in 3D tonight, free.",
+        "hashtags": [
+          "#christmasbathroom",
+          "#bathroominspo",
+          "#bathroomdesign",
+          "#freestandingbath",
+          "#bespokebathroom",
+          "#cosyhome"
+        ],
+        "cta": "Start your design in 3D (link in bio)",
+        "lead_capture": null,
+        "post_time": "Thursday 26 November, 17:00 (dusk)",
+        "production": "Film in a finished client bathroom with written permission, or style the display baths. Gimbal, 4K, 25 fps. Props: eucalyptus, two candles, rolled towels. About 45 minutes on site."
+      },
+      {
+        "id": "i5",
+        "title": "We feel like we haven't done much this year",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok"
+        ],
+        "goal": "viral",
+        "pillar": "The Reveal",
+        "trend": "'I feel like I haven't done much this year' recap",
+        "day": null,
+        "hook": "We feel like we haven't done much this year.",
+        "concept": "The rising year-end format: the opening line, then a fast month-by-month montage of what the team actually did. Finished rooms, studio designs, delivery days, a new brand added to the range. Ends on 'Your room, 2027?'",
+        "why_it_works": "Rising quickly (49K to 116K Reels in under three weeks) and perfectly timed for year-end. Compilations of past work earn a median 17x for home accounts on Volume's data.",
+        "scores": {
+          "reach": 84,
+          "business": 58,
+          "ease": 62,
+          "brand_fit": 80,
+          "overall": 72
+        },
+        "reel": {
+          "duration_seconds": 18,
+          "audio": "'Coming Up Roses' (Harry Styles) only if it appears for business accounts; otherwise original audio with the opening line as voiceover and a soft beat.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Designer at the studio screen, shrugging",
+              "on_screen_text": "We feel like we haven't done much this year",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:14",
+              "visual": "Twelve 1-second clips: fitted rooms, renders, deliveries, close-ups of stone and brass",
+              "on_screen_text": "January / February / March ... December",
+              "voiceover": ""
+            },
+            {
+              "time": "0:14-0:18",
+              "visual": "Slow push on the best reveal",
+              "on_screen_text": "Your room, 2027?",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Cut exactly on the beat. Label each month. Only use real projects (with permission) or clearly labelled studio designs."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom renovation year review",
+          "before after bathroom compilation"
+        ],
+        "caption": "We feel like we haven't done much this year...\n\nTwelve months of rooms designed, delivered and fitted. Which month wins?\n\nNext year's could be yours. Start it in 3D, free.",
+        "hashtags": [
+          "#yearinreview",
+          "#bathroomrenovation",
+          "#bathroomdesign",
+          "#bespokebathroom",
+          "#beforeandafter",
+          "#ukhomes"
+        ],
+        "cta": "Tell us your favourite month, then start your design",
+        "lead_capture": "Link in bio to the studio.",
+        "post_time": "Saturday 28 November, 10:00",
+        "production": "Pull clips from the archive: [ADD: real project footage for each month]. If the archive is thin, use 'twelve looks from the studio' instead and label them as designs. About 2 hours."
+      },
+      {
+        "id": "i6",
+        "title": "Unpopular opinion: spotlights are why your bathroom feels like a clinic",
+        "format": "short",
+        "platforms": [
+          "youtube",
+          "tiktok",
+          "instagram"
+        ],
+        "goal": "brand",
+        "pillar": "Know Before You Renovate",
+        "trend": "Contrarian bathroom rules",
+        "day": null,
+        "hook": "Unpopular opinion: spotlights are why your bathroom feels like a clinic.",
+        "concept": "A designer to camera, one rule, one reason, one better option: layer the light. A lit mirror at face height, a wall light or two, a low glow under the vanity. Then the studio shows the same room lit both ways.",
+        "why_it_works": "Contrarian, specific bathroom tips are the top-performing UK interiors posts this month. Layered lighting is the strongest designer forecast for 2027 (86% in the Sanctuary survey), so the advice is credible as well as clickable.",
+        "scores": {
+          "reach": 82,
+          "business": 60,
+          "ease": 88,
+          "brand_fit": 88,
+          "overall": 78
+        },
+        "reel": {
+          "duration_seconds": 30,
+          "audio": "Voiceover only, quiet ambient bed.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Designer to camera in a bright, spotlit bathroom",
+              "on_screen_text": "Unpopular opinion",
+              "voiceover": "Spotlights are why your bathroom feels like a clinic."
+            },
+            {
+              "time": "0:03-0:12",
+              "visual": "Close-up of harsh shadows under eyes in a spotlit mirror",
+              "on_screen_text": "Light from above = shadows on your face",
+              "voiceover": "Light from straight above puts shadows exactly where you don't want them."
+            },
+            {
+              "time": "0:12-0:22",
+              "visual": "Same room: lit mirror on, wall lights on, low LED under the vanity",
+              "on_screen_text": "Layer it: mirror, walls, floor",
+              "voiceover": "Light the mirror at face height, add a wall light, and a low glow for night."
+            },
+            {
+              "time": "0:22-0:30",
+              "visual": "Studio: toggle between the two lighting plans",
+              "on_screen_text": "Plan the light before the tiles",
+              "voiceover": "Plan it in the design, before anyone picks up a drill."
+            }
+          ],
+          "edit_notes": "Upload a custom Shorts thumbnail (new for all creators this week): the designer, the words 'NO SPOTLIGHTS?' in Cormorant. Add to a 'Designer Rules' Shorts season."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom wall lights mirror lighting",
+          "layered lighting bathroom"
+        ],
+        "caption": "Unpopular opinion: spotlights are why your bathroom feels like a clinic.\n\nLight the mirror at face height, add wall lights, and a low glow for night. Plan it before the tiles go on.\n\nAgree or disagree?",
+        "hashtags": [
+          "#bathroomlighting",
+          "#interiordesigntips",
+          "#bathroomdesign",
+          "#unpopularopinion",
+          "#bespokebathroom",
+          "#ukinteriors"
+        ],
+        "cta": "Plan your lighting in the free 3D studio",
+        "lead_capture": "Pinned comment with the studio link.",
+        "post_time": "Sunday 29 November, 18:00",
+        "production": "One designer, phone on a tripod, two rooms (or one room with lights switched). Feature the Dell LED mirror demister from the range. About 40 minutes."
+      },
+      {
+        "id": "i7",
+        "title": "29 days until Christmas guests: the 20-minute bathroom fixes",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Hard calendar deadline as the hook",
+        "day": null,
+        "hook": "29 days until the in-laws use your bathroom. Here's what to fix first.",
+        "concept": "A save-worthy checklist of quick fixes before Christmas guests arrive (fresh silicone, grout refresh, a new shower head, warm towels, a lamp instead of the big light), ending honestly: the full renovation is a January job, so design it now and book the fit for the new year.",
+        "why_it_works": "Deadline hooks are earning a median 16x for home accounts. The 'comment for the list' mechanic earns DMs, which Instagram rewards, and every DM is a warm lead for January.",
+        "scores": {
+          "reach": 80,
+          "business": 84,
+          "ease": 92,
+          "brand_fit": 84,
+          "overall": 84
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "29 days until Christmas guests",
+            "body": "The 20-minute bathroom fixes worth doing first.",
+            "visual": "Bright guest bathroom, folded towels, a small wreath on the door"
+          },
+          {
+            "slide": 2,
+            "headline": "Re-do the silicone",
+            "body": "Mouldy silicone is the first thing guests notice. Cut it out, clean, re-seal.",
+            "visual": "Clean white silicone bead along a bath edge"
+          },
+          {
+            "slide": 3,
+            "headline": "Refresh the grout",
+            "body": "A grout pen or a deep clean makes old tiles look years younger.",
+            "visual": "Before/after grout close-up"
+          },
+          {
+            "slide": 4,
+            "headline": "Swap the shower head",
+            "body": "A new head is a 10-minute job and the biggest daily upgrade.",
+            "visual": "Rain shower head, water running"
+          },
+          {
+            "slide": 5,
+            "headline": "Warm the towels",
+            "body": "Put the towel rail on a timer for the morning rush.",
+            "visual": "Heated towel rail with stacked towels"
+          },
+          {
+            "slide": 6,
+            "headline": "Lose the big light",
+            "body": "A mirror light or a lamp on the windowsill changes the whole mood.",
+            "visual": "Lit mirror, soft evening light"
+          },
+          {
+            "slide": 7,
+            "headline": "The real fix? Design it now.",
+            "body": "See your new bathroom in 3D over Christmas, priced to the pound. Fit it in the new year.",
+            "visual": "Studio render on a tablet beside a mug of tea"
+          },
+          {
+            "slide": 8,
+            "headline": "Comment GUEST",
+            "body": "We'll send the checklist and your free studio link.",
+            "visual": "Brand end card"
+          }
+        ],
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "guest bathroom christmas ready",
+          "small guest bathroom ideas"
+        ],
+        "caption": "29 days until Christmas guests use your bathroom.\n\nSave this: the 20-minute fixes that make the biggest difference, and the honest truth about the rest (it's a January job).\n\nComment GUEST for the printable checklist and your free 3D design link.",
+        "hashtags": [
+          "#guestbathroom",
+          "#christmashosting",
+          "#bathroomtips",
+          "#bathroomrenovation",
+          "#bespokebathroom",
+          "#ukhomes"
+        ],
+        "cta": "Comment GUEST for the checklist",
+        "lead_capture": "Comment GUEST: DM with a one-page checklist PDF and the studio link; tag replies as 'January lead'.",
+        "post_time": "Thursday 26 November, 12:30",
+        "production": "Design in Canva at 1080 x 1350. Write the checklist PDF (one page, brand colours). Set up the GUEST keyword in ManyChat or Meta's automation. About 2.5 hours. Note: today is 29 days before Christmas Day; update the number if posting later."
+      },
+      {
+        "id": "i8",
+        "title": "6 am: in this town everybody goes out partying except us",
+        "format": "reel",
+        "platforms": [
+          "tiktok",
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "Fitted by Our Team",
+        "trend": "'In this town everybody goes out partying except me'",
+        "day": null,
+        "hook": "In this town everybody goes out partying except me.",
+        "concept": "The fastest-rising TikTok meme, played straight by a fitter: 6 am van load, laser level lines on a bare wall, a tile set into place, the silicone bead, then a hard cut to the finished room. Human, funny, and it shows the craft.",
+        "why_it_works": "Creators on the format rose 6050% week on week, so the window is now. Behind-the-scenes from real fitters builds trust in the 'fitted by our own team' promise.",
+        "scores": {
+          "reach": 85,
+          "business": 42,
+          "ease": 78,
+          "brand_fit": 66,
+          "overall": 66
+        },
+        "reel": {
+          "duration_seconds": 15,
+          "audio": "The trending 'in this town' original sound on TikTok (check it is allowed for business use); on Instagram, re-record the line as original audio.",
+          "shots": [
+            {
+              "time": "0:00-0:03",
+              "visual": "Dark street, van doors open, fitter loading a vanity at 6 am",
+              "on_screen_text": "Friday, 6:02 am",
+              "voiceover": "In this town everybody goes out partying..."
+            },
+            {
+              "time": "0:03-0:07",
+              "visual": "Laser level line across bare boards",
+              "on_screen_text": "",
+              "voiceover": "...except me."
+            },
+            {
+              "time": "0:07-0:11",
+              "visual": "Tile pressed into place, perfect silicone bead",
+              "on_screen_text": "1 mm grout lines",
+              "voiceover": ""
+            },
+            {
+              "time": "0:11-0:15",
+              "visual": "Hard cut to the finished room, lights on",
+              "on_screen_text": "Worth it.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Keep it under 15 seconds. Do not show a client's home or address without permission."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom fitter tiling satisfying",
+          "bathroom install process"
+        ],
+        "caption": "In this town everybody goes out partying except us. Someone's got to set out the tiles.\n\nDesigned, supplied and fitted by one team.",
+        "hashtags": [
+          "#inthistown",
+          "#bathroomfitter",
+          "#tiling",
+          "#satisfying",
+          "#bathroomrenovation",
+          "#bespokebathroom"
+        ],
+        "cta": "Follow for the finished rooms",
+        "lead_capture": null,
+        "post_time": "Friday 27 November, 18:00",
+        "production": "Film on a live job across a morning (with the client's written permission). Phone in the van, a clamp on the ladder. About 30 minutes of capture, 1 hour edit. Post within the week while the meme is live."
+      }
+    ],
+    "days": null,
+    "watch_outs": [
+      "Music: most commercial songs (Harry Styles, Wham!, Mariah Carey) are unavailable to business accounts. Check the in-app audio picker before building a post around a named song; original audio is always safe.",
+      "Energy content: do not publish towel rail or underfloor heating running costs. Published figures pre-date the January 2027 cap and conflict; recalculate first.",
+      "Black Friday: talk about our approach, never imply competitors' discounts are fake (ASA and CAP Code).",
+      "Small Business Saturday UK is Saturday 5 December, not 28 November (that is the US date).",
+      "Before/after and recap reels: real projects only, with written client permission; label studio designs as designs.",
+      "Facebook: Meta is limiting link posts for Pages; post natively and put the studio link in the first comment.",
+      "Prices shown on screen must match the website, VAT included."
+    ],
+    "sources": [
+      {
+        "title": "Volume: what's working in home and real estate (25 Nov 2026)",
+        "url": "https://tryvolume.app/working/home-and-real-estate.md"
+      },
+      {
+        "title": "Volume: same-angle before/after cut on the beat",
+        "url": "https://tryvolume.app/working/home-and-real-estate/same-angle-before-after-cut-on-the-beat.md"
+      },
+      {
+        "title": "Volume: finished result flashed before the process starts",
+        "url": "https://tryvolume.app/working/home-and-real-estate/finished-result-flashed-before-the-process-starts.md"
+      },
+      {
+        "title": "Volume: hard calendar deadline as the hook",
+        "url": "https://tryvolume.app/working/home-and-real-estate/hard-calendar-deadline-as-the-hook.md"
+      },
+      {
+        "title": "Ofgem: energy price cap to rise 26% in January 2027",
+        "url": "https://www.ofgem.gov.uk/press-release/energy-price-cap-rise-26-january-2027"
+      },
+      {
+        "title": "Met Office: week ahead, rain, cold winds and the risk of hill snow",
+        "url": "https://www.metoffice.gov.uk/blog/2026/week-ahead-rain-cold-winds-and-the-risk-of-hill-snow"
+      },
+      {
+        "title": "Barclays: Black Friday 2026 insights",
+        "url": "https://www.home.barclays/insights/2026/11/Black-Friday-2026/"
+      },
+      {
+        "title": "Later: Instagram Reels trends",
+        "url": "https://later.com/blog/instagram-reels-trends/"
+      },
+      {
+        "title": "SocialPilot: Instagram Reels trends",
+        "url": "https://www.socialpilot.co/blog/instagram-reels-trends"
+      },
+      {
+        "title": "Chatfuel: Instagram Reels trends",
+        "url": "https://chatfuel.com/blog/instagram-reels-trends"
+      },
+      {
+        "title": "Postdom: Instagram trends",
+        "url": "https://postdom.com/blog/instagram-trends"
+      },
+      {
+        "title": "Postdom: TikTok trends",
+        "url": "https://postdom.com/blog/tiktok-trends"
+      },
+      {
+        "title": "Virlo: TikTok trends",
+        "url": "https://virlo.ai/trends"
+      },
+      {
+        "title": "Modash: UK interior design creators on TikTok",
+        "url": "https://www.modash.io/find-influencers/tiktok/united-kingdom/interior-design"
+      },
+      {
+        "title": "Sanctuary Bathrooms: bathroom trends 2027",
+        "url": "https://www.sanctuary-bathrooms.co.uk/journal/bathroom-trends-2027"
+      },
+      {
+        "title": "Talker Research: what hosts clean before holiday guests",
+        "url": "https://talker.news/2026/11/19/what-hosts-clean-most-before-holiday-guests-arrive/"
+      },
+      {
+        "title": "Tubefilter: custom Shorts thumbnails for all creators",
+        "url": "https://www.tubefilter.com/2026/11/25/youtube-shorts-thumbnails-all-creators/"
+      },
+      {
+        "title": "SocialBee: YouTube updates",
+        "url": "https://socialbee.com/blog/youtube-updates-news-features/"
+      },
+      {
+        "title": "Buffer: State of Social Media Engagement 2026",
+        "url": "https://buffer.com/resources/state-of-social-media-engagement-2026/"
+      },
+      {
+        "title": "Social Media Examiner: Facebook's new link rules",
+        "url": "https://www.socialmediaexaminer.com/what-facebooks-new-link-rules-mean-for-your-2026-strategy/"
+      }
+    ],
+    "top_picks": [
+      "i1",
+      "i7",
+      "i2"
+    ]
+  },
+  "dossier": "Launch brief researched on 26 November 2026 from two sourced research dossiers (social trends; Pinterest, bathroom trends and lead generation)."
+}
