@@ -5,9 +5,13 @@ A local web app that runs the brand's social media content desk. It researches w
 ## Start it
 
 1. Install Node.js (LTS) from nodejs.org, once.
-2. Open this `bespoke_bathroom` folder.
-3. Mac: double-click `start.command`. Windows: double-click `start.bat`. Linux: run `./start.sh`.
-4. Your browser opens at http://localhost:4321.
+2. Windows: double-click the **Social Studio** icon on the desktop. It starts the studio in the background if it is not already running and opens it in Chrome, with no terminal window.
+3. No icon yet? Open a terminal in this `bespoke_bathroom` folder and run `node launch.mjs --shortcut` once to put it on the desktop. Or double-click `Social Studio.vbs` in this folder, which does the same as the icon.
+4. Mac: double-click `start.command`. Linux: run `./start.sh`.
+
+The studio keeps running in the background after you close the browser, so the next double-click opens it at once. To stop it, run `node launch.mjs --stop` (restarting the computer also stops it). If it does not open, the server's messages are in `data/server.log`.
+
+To open a particular Chrome profile, add a line such as `STUDIO_CHROME_PROFILE="Profile 4"` to a `.env` file in this folder (the profile's folder name is shown on `chrome://version` as the last part of "Profile Path").
 
 To have Claude Code set everything up for you instead, paste the prompt in [OPEN-WITH-CLAUDE.md](OPEN-WITH-CLAUDE.md).
 

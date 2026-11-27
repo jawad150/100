@@ -1,0 +1,1085 @@
+{
+  "id": "2026-11-27-daily-brand-pinterest-125712",
+  "kind": "daily",
+  "focus": "brand",
+  "pinterest": true,
+  "sources": [
+    "instagram",
+    "pinterest"
+  ],
+  "date": "2026-11-27",
+  "window": {
+    "label": "Friday 27 November 2026",
+    "dates": [
+      "2026-11-27"
+    ]
+  },
+  "created_at": "2026-11-27T12:57:12.579Z",
+  "duration_s": 521,
+  "model": "claude-opus-5-5",
+  "usage": {
+    "billing": "plan",
+    "input": 541299,
+    "output": 126399,
+    "cacheWrite": 179714,
+    "cacheRead": 287185,
+    "searches": 20,
+    "fetches": 8,
+    "cost": null,
+    "apiEquivalent": 3.3311813
+  },
+  "brief": {
+    "headline": "Black Friday is full of fake deals, so today we show the one thing nobody else will: a real room at its real price.",
+    "summary": "Today is Black Friday. UK coverage is full of warnings about fake deals, which gives a brand with visible, VAT-included prices an easy contrast that people will comment on. Christmas formats are climbing on Reels: the \"Dear Santa\" letter, and the brand-new \"my coffee sounded weird\" sound gag, which we can turn into a brass-and-water moment. On Pinterest and in home magazines, the \"living room treatment\" (lived-in bathrooms with furniture vanities, art and mixed metals) and \"brassware as jewellery\" are the strongest aesthetics this week, and both match our warm stone, walnut and gold look. Lead today with a Guess the Price Reel and a lived-in bathroom carousel. Support them with Pinterest collages and 2:3 pins that link to the studio, and put a licensed instrumental on every carousel so it can show in the Reels tab.",
+    "trends": [
+      {
+        "name": "Black Friday counter-programming: priced, not discounted",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "kind": "moment",
+        "what_it_is": "Black Friday is today (27 November) and the weekend runs to Cyber Monday on 30 November. UK coverage is dominated by fake-deal warnings and sales that started in October.",
+        "why_now": "It peaks today and fades after Monday 30 November. NationalWorld, Shopappy and Which? are all running Black Friday and fake-deal coverage this week.",
+        "how_we_use_it": "No discount. We make the contrast instead: 'The only thing we're taking off is the guesswork.' Show a real room priced to the pound with VAT included, and make a Guess the Price quiz of it so people comment.",
+        "brand_fit": 88,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://www.nationalworld.com/recommended/black-friday-2026-9268295",
+          "https://shopappy.com/consumer-trends/discount-value/black-friday-2026-uk-early-sales-fake-deals",
+          "https://www.which.co.uk/news/black-friday/"
+        ]
+      },
+      {
+        "name": "The living room treatment (lived-in bathrooms)",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "aesthetic",
+        "what_it_is": "Bathrooms that feel like real rooms: furniture-style vanities, upholstered stools, art, rugs, pendants and wall lights instead of spotlights, mixed metals and warm stone.",
+        "why_now": "Homes & Gardens published 'the living room treatment' on 23 November 2026. Its 2027 bathroom trends piece (23 October 2026) leads with 'bathrooms that feel like actual rooms'.",
+        "how_we_use_it": "Make a save-led carousel and a set of 2:3 pins built around the Onsen Light Walnut vanity (£950) and the Artize stone basin (£1,243). Add one practical slide on which soft pieces survive humidity.",
+        "brand_fit": 92,
+        "momentum": "rising",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend",
+          "https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027"
+        ]
+      },
+      {
+        "name": "Dear Santa wishlist",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "kind": "format",
+        "what_it_is": "On-screen text written as a letter to Santa over clips of the things on the wishlist.",
+        "why_now": "Later logged it on 20 November 2026. SocialPilot ranks its usual sound among the top audios for 17 to 25 November, and Christmas audio is climbing on every tracker.",
+        "how_we_use_it": "Write 'Dear Santa, my bathroom is 2.1 m by 1.7 m...', with each wish cutting to a studio render of that piece and its VAT-included price. It works for the small-space audience and is easy to send to whoever is buying the present.",
+        "brand_fit": 85,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://later.com/blog/instagram-reels-trends/",
+          "https://www.socialpilot.co/blog/instagram-reels-trends"
+        ]
+      },
+      {
+        "name": "'My coffee sounded weird this morning' (an object starts a song)",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "format",
+        "what_it_is": "Stirring a coffee starts a festive song and taking the spoon out stops it. It is a sound gag built on original audio.",
+        "why_now": "Later logged it today, 27 November 2026. It is brand new, so whoever posts first gets the most from it.",
+        "how_we_use_it": "'My bath sounded different this morning.' Turning on the Jaquar floor-mounted bath mixer (£2,251) brings in a warm instrumental. Turning it off leaves silence and steam. Film it as a moody brass-and-water close-up.",
+        "brand_fit": 82,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://later.com/blog/instagram-reels-trends/"
+        ]
+      },
+      {
+        "name": "Brassware as jewellery and mixed metals",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "kind": "aesthetic",
+        "what_it_is": "Taps and hardware treated as decoration: cross handles, backplates, antique-style fittings, and polished nickel deliberately mixed with aged brass.",
+        "why_now": "Homes & Gardens' 2027 trends piece (23 October 2026) quotes a designer calling them 'almost like jewelry for a bathroom'. Mixed metals come up again in its 23 November piece.",
+        "how_we_use_it": "Use 'One Piece, Three Rooms': one Jaquar mixer styled into three palettes, shot as slow macro close-ups, posted as a carousel and pinned slide by slide to a 'Brassware as jewellery' board.",
+        "brand_fit": 90,
+        "momentum": "rising",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027",
+          "https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend"
+        ]
+      },
+      {
+        "name": "Carousels with music in the Reels tab, plus Replace Audio",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "format",
+        "what_it_is": "Carousels with music are showing in the Reels tab again, so they can reach non-followers. Audio on a published carousel can now be swapped without losing engagement, and likes can be seen per slide.",
+        "why_now": "SocialBee (updated 23 November 2026) and Ethical SMM (November 2026) both report it. Edits has built carousels since 7 October 2026. These are secondary sources, so check them against @creators.",
+        "how_we_use_it": "Every carousel today goes out with a licensed instrumental from the business account's library. Use per-slide likes to learn which palette or room wins.",
+        "brand_fit": 95,
+        "momentum": "rising",
+        "lifespan": "evergreen",
+        "sources": [
+          "https://socialbee.com/blog/instagram-updates-news-features/",
+          "https://ethicalsmm.com/blog/instagram-updates-november-2026",
+          "https://carouselpost.io/digest/instagram-carousel-creation-edits-app-2026"
+        ]
+      },
+      {
+        "name": "'Don't let a ___ see this' (forbidden-content hook)",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "meme",
+        "what_it_is": "On-screen text suggests the viewer is seeing something they shouldn't. It reliably starts arguments in the comments.",
+        "why_now": "Virlo marks it Rising in the week to 27 November 2026, with top Reels at 3.1M, 1M and 993K views.",
+        "how_we_use_it": "'Don't let a minimalist see this' over a layered studio render with patterned tile, mixed metals and a furniture vanity. Keep the pacing slow and the grade calm, and never use a real customer's room.",
+        "brand_fit": 68,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://virlo.ai/instagram-trends"
+        ]
+      },
+      {
+        "name": "Guest-ready bathroom for Christmas hosting",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "search",
+        "what_it_is": "Seasonal 'get the bathroom ready for Christmas guests' content: layered lighting, soft towels, a light scent, spare toiletries.",
+        "why_now": "Ideal Home, Woman & Home and Dowsing & Reynolds are running guest-ready guides now. Seasonal searching peaks up to 24 December.",
+        "how_we_use_it": "Make a text-on-image pin of quick fixes that ends on 'If the room itself is the problem, design the new one over Christmas, free.' Do not imply we can fit before Christmas.",
+        "brand_fit": 75,
+        "momentum": "peaking",
+        "lifespan": "weeks",
+        "sources": [
+          "https://www.womanandhome.com/homes/how-to-style-a-bathroom-for-christmas/",
+          "https://www.idealhome.co.uk/collection/all-rooms/bathroom/guest-ready-shopping-edit",
+          "https://www.dowsingandreynolds.com/inspiration/guest-bathroom-ideas-for-christmas/"
+        ]
+      },
+      {
+        "name": "Green 2027 colours, and Pantone on 3 December",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "kind": "moment",
+        "what_it_is": "Green leads the 2027 colour picks (Dulux Soulful Sage, Sherwin-Williams Celery, Benjamin Moore Webster Green). Pantone reveals its 2027 colour on 3 December.",
+        "why_now": "Dulux announced Soulful Sage on 8 September 2026. The Pantone reveal is a dated spike six days from now. The 'Aqua Splash' leak is unconfirmed.",
+        "how_we_use_it": "Get a Soulful Sage render ready now and plan a reactive Pantone render to go out within two hours of the 3 December reveal. Not for today's posts.",
+        "brand_fit": 78,
+        "momentum": "steady",
+        "lifespan": "weeks",
+        "sources": [
+          "https://dezeen.com/2026/09/08/sage-green-colour-year-2027-dulux",
+          "https://www.dulux.co.uk/en/colour-inspiration/one-room-four-ways-with-colour-of-the-year-2027",
+          "https://thecolortools.com/learn/pantone-color-of-the-year-2027"
+        ]
+      },
+      {
+        "name": "'I feel like I haven't done much this year' (year in review)",
+        "platforms": [
+          "instagram"
+        ],
+        "kind": "format",
+        "what_it_is": "An opening line saying you haven't done much this year, then clips labelled month by month that prove otherwise.",
+        "why_now": "Later logged it on 20 November 2026. SocialPilot reports its sound went from 49K to 116K Reels in under three weeks.",
+        "how_we_use_it": "Hold it for December. It only works with real rooms and customer permission, so gather them now and use [ADD] placeholders until they are confirmed.",
+        "brand_fit": 80,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://later.com/blog/instagram-reels-trends/",
+          "https://www.socialpilot.co/blog/instagram-reels-trends"
+        ]
+      }
+    ],
+    "ideas": [
+      {
+        "id": "i1",
+        "title": "Black Friday quiz: what does this room cost?",
+        "format": "reel",
+        "platforms": [
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "The Reveal",
+        "trend": "Black Friday counter-programming: priced, not discounted",
+        "day": null,
+        "hook": "Black Friday quiz: guess what this whole room costs.",
+        "concept": "Today's UK feeds are full of 'was' prices and fake-deal warnings. This Reel answers them with one real room at one real price. Slow, controlled pans across the website's six-piece shop-the-look room ask viewers to pause and comment their guess. The last frame reveals £11,533.84, VAT included and priced to the pound, with 'Nothing's off. Everything's priced.' and an invitation to set their own budget in the free 3D studio.",
+        "why_it_works": "Black Friday peaks today. NationalWorld, Shopappy and Which? are all running fake-deal and early-sale warnings, so a brand showing an exact price with VAT included stands out without criticising anyone. A guessing game gets comments from people who don't follow us. A 'send this to the person you're renovating with' line gets sends, and sends per reach is still Instagram's strongest signal for reaching non-followers (Ethical SMM, November 2026). Holding the answer until the end gets rewatches and more watch time. Lightreel (14 to 21 Nov) found that simple bathroom moments with one strong line on screen beat busy seasonal edits, so the cut is text-led and calm. It is also a ready-made episode of the Guess the Price series, so the format can run again after the weekend.",
+        "scores": {
+          "reach": 78,
+          "business": 62,
+          "ease": 86,
+          "brand_fit": 88,
+          "overall": 81
+        },
+        "reel": {
+          "duration_seconds": 18,
+          "audio": "A licensed instrumental from Meta's Reels library, picked inside the business account. Go for slow piano or soft, warm downtempo at about 80 to 90 BPM. Original audio also works. Add one soft chime or brass 'tick' on the price reveal at 0:12. Don't use commercial Christmas or Black Friday tracks (for example Wham!'s 'Last Christmas') unless they show as cleared in the business account's library. I haven't verified any Black Friday sound as trending, so don't name one.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Wide shot of the shop-the-look room (studio render or 3D walk-around screen recording). Very slow push-in. Warm stone, gold finish, low warm light.",
+              "on_screen_text": "Black Friday quiz: guess what this whole room costs.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "Slow lateral pan across the freestanding bath and floor-mounted mixer. Brass catches the light.",
+              "on_screen_text": "Six pieces. Real prices. VAT included.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:08",
+              "visual": "Macro-style glide over the stone counter-top basin and tap, then tilt up to the round LED mirror.",
+              "on_screen_text": "No 'was' prices. No 'from' prices.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:08-0:10",
+              "visual": "Slow pull-back across the walnut vanity and the walk-in shower screen to the full room.",
+              "on_screen_text": "Pause here. Comment your guess.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:10-0:12",
+              "visual": "Hold on the wide shot, a slight fade towards navy.",
+              "on_screen_text": "Final answer?",
+              "voiceover": ""
+            },
+            {
+              "time": "0:12-0:15",
+              "visual": "Deep navy (#081C26) card. The price is set in brushed gold Cormorant Garamond with a soft fade-up, no counter animation. A small Inter line sits underneath.",
+              "on_screen_text": "£11,533.84 | Six pieces, VAT included. Priced to the pound. Products only; fitting quoted separately.",
+              "voiceover": "Eleven thousand, five hundred and thirty-three pounds, eighty-four. Priced to the pound."
+            },
+            {
+              "time": "0:15-0:18",
+              "visual": "Cream (#F5F2ED) card with the navy wordmark and a gold rule. A short screen-recording clip of the studio budget slider moving between £1,000 and £100,000.",
+              "on_screen_text": "Nothing's off. Everything's priced. | Set your own budget, free. Design your bathroom in 3D.",
+              "voiceover": "Nothing's off. Everything's priced. Set your own budget, free."
+            }
+          ],
+          "edit_notes": "Use Cormorant Garamond for the headline text and Inter for small lines, in cream on footage and gold for the price only. Keep every move slow and controlled with soft cross-dissolves. No hard cuts on the beat, no red, no countdown timers, no flashing or 'SALE' styling. Keep the cover frame as the hook text over the wide room and keep the price off the cover and out of the caption's first lines so the reveal isn't spoiled. Add a small 'Designed in our 3D studio' tag in the corner of the render shots so they read clearly as designs. Let the end frame hold so the loop restarts on the hook, which helps rewatches."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "warm stone bathroom gold taps",
+          "freestanding bath floor mounted tap",
+          "walnut vanity stone basin",
+          "bathroom budget breakdown"
+        ],
+        "caption": "Black Friday quiz. What does this whole room cost?\nSix pieces. Real prices. VAT included.\nComment your guess before the end, then send this to whoever you're renovating with.\nNo 'was' prices here. Nothing's off. Everything's priced.\nSet your own budget from £1,000 to £100,000 and see your room priced to the pound. Comment DESIGN for the free 3D studio link.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#bathroomrenovation",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#blackfriday",
+          "#guesstheprice"
+        ],
+        "cta": "Set your own budget, free. Design your bathroom in 3D.",
+        "lead_capture": "Comment DESIGN to get the free 3D studio link by DM (set up a comment-to-DM automation before posting). The studio link is also in the bio. Pin a comment with 'Closest guess so far:' and reply to guesses in the first hour with the studio invite.",
+        "post_time": "Friday 27 November, 19:30 UK. Reshare to stories on Saturday 28 November at 10:00 with a quiz sticker, then again on Cyber Monday 30 November at 12:30.",
+        "production": "One person, about 1.5 to 2 hours. 1) Before editing, open the website's shop-the-look section and check the six pieces and the £11,533.84 total (VAT included). The six hero products listed in the Brand Brain add up to £12,495.84, not £11,533.84, so they are not the same set. Don't name or price individual pieces on screen until they're checked against the page. 2) Screen-record the studio's 3D walk-around of that room (or use the website photographs) at the highest resolution, moving the camera slowly. Then record the budget slider in the studio. 3) Edit in Edits or CapCut, 9:16, using brand fonts and colours. 4) Choose and check the licensed instrumental inside the business account's Reels audio library. 5) Set up the DESIGN comment-to-DM automation and write the pinned comment. No customer homes or faces are used. It's a website design, so no permission is needed."
+      },
+      {
+        "id": "i2",
+        "title": "5 ways to make your bathroom feel like a room, not a utility",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "goal": "brand",
+        "pillar": "Material & Mood",
+        "trend": "The living room treatment (lived-in bathrooms)",
+        "day": null,
+        "hook": "Your bathroom is a room. Stop designing it like a utility.",
+        "concept": "An 8-slide carousel that is easy to save. It shows the 'living room treatment' five ways: a vanity that looks like furniture, a stone counter-top basin, one piece of art, wall lights in place of a grid of spotlights, and soft pieces that can live with steam. Two hero pieces carry real, VAT-included prices, and one practical slide on humidity gives it Know Before You Renovate credibility. It posts with a licensed instrumental so it can show in the Reels tab, and each slide is cut down into its own 2:3 Pinterest pin that links to the studio.",
+        "why_it_works": "Homes & Gardens ran 'the living room treatment' on 23 Nov 2026 and led its 2027 bathroom trends piece (23 Oct) with 'bathrooms that feel like actual rooms'. So this rides an aesthetic with editorial momentum this week, and it fits our warm stone, walnut and gold look (brand fit 92 in the dossier). SocialBee (23 Nov) and Ethical SMM (Nov 2026) report that carousels with music are being shown in the Reels tab again, which gives a save-led format a route to non-followers. Per-slide likes will show which of the five ideas lands, and that feeds the next post. On Pinterest, numbered text-on-image guides and 2:3 statics suit the inspiration savers who plan months ahead. The dossier also notes a content gap: Victorian Plumbing lost organic visibility because its informational content was thin. The humidity slide is what makes this more than a moodboard.",
+        "scores": {
+          "reach": 72,
+          "business": 48,
+          "ease": 70,
+          "brand_fit": 92,
+          "overall": 75
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Your bathroom is a room. Stop designing it like a utility.",
+            "body": "5 ways to give it the living room treatment.",
+            "visual": "Full-bleed studio render, 4:5. A warm stone bathroom with a walnut furniture-style vanity, a stone basin, a framed print and wall lights glowing at dusk. Cormorant Garamond headline in cream #F5F2ED on a soft navy-teal #081C26 gradient at the top. A small gold #C5A16B rule above '5 ways'."
+          },
+          {
+            "slide": 2,
+            "headline": "1. Choose a vanity that looks like furniture",
+            "body": "Wood grain, a plinth line, drawers you would happily put in a bedroom. Onsen Vanity Unit 2D W.120, Light Walnut. £950, VAT included.",
+            "visual": "Close render of the Onsen 2D W.120 in Light Walnut, slightly off-centre, with soft side light on the grain. Price set in Inter on a cream #F5F2ED band at the foot. A small '1/5' in gold #C5A16B."
+          },
+          {
+            "slide": 3,
+            "headline": "2. Put stone on top",
+            "body": "A counter-top basin sits on the vanity like a bowl on a sideboard. Artize Stone Counter Top Basin, Bottocino Classico Beige. £1,243, VAT included.",
+            "visual": "Macro render of the Artize Bottocino Classico Beige basin on the walnut top, showing the veining of the stone. Warm, low-key light. Cream text band with the price, gold accent line."
+          },
+          {
+            "slide": 4,
+            "headline": "3. Hang one piece of art",
+            "body": "One framed print at eye level, away from the shower. It is the quickest way to tell a room it is not a utility.",
+            "visual": "Render or styled photo: a simple framed print under glass on a warm limewash or panelled wall above a towel rail. Navy-teal #174A5C text panel on the left third."
+          },
+          {
+            "slide": 5,
+            "headline": "4. Swap the spotlight grid for wall lights",
+            "body": "Wall lights either side of the mirror and a pendant over the bath, kept well clear of the water. Antique brass lights with brushed nickel taps: mixing metals is part of the look. Bathroom lights follow zones and IP ratings, so your electrician confirms what can go where.",
+            "visual": "Dusk render of two warm wall lights framing a mirror, with a soft pendant glow beyond. Deep navy-teal #081C26 shadows and gold #E4C99B highlights. Text in cream."
+          },
+          {
+            "slide": 6,
+            "headline": "5. Add soft pieces that can take the steam",
+            "body": "Yes: prints framed behind glass, a cotton rug you can wash, a teak or sealed-wood stool, a performance-fabric seat kept out of the splash zone. Think twice: unframed paper, velvet beside the shower, untreated wood. Whatever you choose, a good extractor fan does the heavy lifting.",
+            "visual": "Text-led slide on cream #F5F2ED. Two columns, 'Yes' and 'Think twice', with a thin gold #8A6A3B divider. A small cut-out photo of a stool and a folded rug in one corner. Headline in Cormorant Garamond, navy-teal #081C26."
+          },
+          {
+            "slide": 7,
+            "headline": "The walnut and stone pairing: £2,193",
+            "body": "Onsen vanity £950 plus Artize basin £1,243, VAT included, priced to the pound. In the studio, a designer checks stock and lead times before you pay anything.",
+            "visual": "Split layout: the vanity and basin render on the left, a clean price list on the right in Inter, with the total in gold #C5A16B. Navy-teal #174A5C background."
+          },
+          {
+            "slide": 8,
+            "headline": "See it in your own room first",
+            "body": "Set a budget from £1,000 to £100,000, pick a mood and a metal finish, and see your room with every piece tagged and priced. Free, no sign-up. Design your bathroom in 3D at the link in bio.",
+            "visual": "A screen recording still of the 3D studio showing the lived-in room, framed on a navy-teal #081C26 background. Cream headline, gold button-style CTA 'Design your bathroom in 3D (free)'. Small 'Bespoke Bathrooms' wordmark at the foot."
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Lived in bathroom ideas: 5 ways to make it feel like a room",
+          "pin_description": "Lived in bathroom ideas for 2027: a furniture vanity in light walnut (£950), a stone counter-top basin (£1,243), one framed print, wall lights instead of spotlights, and soft pieces that survive humidity. Every price includes VAT. Design your own bathroom in 3D for free and see it priced before you buy.",
+          "board": "Lived-in bathrooms: furniture vanities and warm stone",
+          "keywords": [
+            "lived in bathroom",
+            "bathroom with furniture vanity",
+            "vintage vanity bathroom",
+            "warm stone bathroom",
+            "walnut vanity",
+            "stone countertop basin",
+            "bathroom wall lights",
+            "mixed metals bathroom brass nickel",
+            "bathroom design 2027"
+          ],
+          "alt_text": "A warm stone bathroom styled like a living room, with a light walnut furniture-style vanity, a beige stone counter-top basin, a framed print on the wall and two brass wall lights glowing either side of a mirror."
+        },
+        "moodboard_searches": [
+          "lived in bathroom",
+          "bathroom with furniture vanity",
+          "bathroom pendant light over bath",
+          "warm stone bathroom"
+        ],
+        "caption": "Your bathroom is a room. It just hasn't been treated like one. Five changes from the 'living room treatment': a vanity that looks like furniture, stone on top, one piece of art, wall lights instead of a spotlight grid, and soft pieces that can live with the steam. Slide 6 is the one to save before you buy anything soft. Which would you start with? Design your bathroom in 3D, free. Link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#bathroomideas",
+          "#livedinbathroom",
+          "#furniturevanity",
+          "#ukinteriors",
+          "#homerenovationuk"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "For now: link in bio to the free 3D studio, and the same link on every Pinterest pin. Once the [PLAN] bathroom planning checklist exists, add 'Comment PLAN and we'll send you the checklist' to the caption and set up a comment-to-DM automation that sends the checklist plus the studio link.",
+        "post_time": "Instagram: Friday 27 November, 19:30 UK, a few hours after the i1 Guess the Price Reel. Pinterest: one slide-pin a day from Saturday 28 November, 20:00 UK, for five days (slides 1, 2, 3, 5 and 6 first).",
+        "production": "Design and build only, no filming. About 3 hours for one person. (1) In the 3D studio, build a warm stone room with the Onsen 2D W.120 Light Walnut vanity and the Artize Bottocino Classico Beige basin, choose a gold or brass finish, and export up to four room photographs plus close crops. If the studio cannot place art, a rug or a stool, use a styled photo of a real fitted project instead (with written permission, no faces) or a simple prop shoot of a stool and a rug against a stone-effect wall. Do not show any customer's home without consent. If you use AI to add props or scenes with people, label it as AI-generated. (2) Lay out 8 slides at 4:5 in the Edits app or Canva: Cormorant Garamond headlines, Inter body, palette #081C26, #174A5C, #F5F2ED, #C5A16B, #E4C99B, #8A6A3B. Check every price against the website on the day (£950, £1,243, total £2,193, VAT included). (3) Audio: add a slow piano or warm acoustic instrumental from the business account's licensed music library so the carousel can show in the Reels tab. Do not use commercial tracks, because most are not cleared for business accounts. Use Replace Audio later if a better licensed track turns up. (4) Pinterest: re-crop slides 1 to 6 to 2:3 (1000 x 1500), add a short keyword overlay (for example 'Bathroom with furniture vanity'), and link each pin to the studio. Slides 2 and 3 can link to the product pages instead. (5) After 48 hours, check the per-slide likes and note which idea won, to brief the next Material & Mood post."
+      },
+      {
+        "id": "i3",
+        "title": "Dear Santa, my bathroom is 2.1 m by 1.7 m",
+        "format": "reel",
+        "platforms": [
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "Designed in 3D",
+        "trend": "Dear Santa wishlist",
+        "day": null,
+        "hook": "Dear Santa, my bathroom is 2.1 m by 1.7 m.",
+        "concept": "A letter to Santa from someone with a small en-suite, typed on screen one line at a time. Each wish cuts to a studio render of that piece in a 2.1 m by 1.7 m room, with its VAT-included price: a walk-in shower (Jaquar walk-in screen, £1,162), a wall-hung vanity, a round LED mirror that does not steam up (Dell, £263.84) and 'to stop showering under a tile I hate'. The last frame turns Santa's delay into the invitation: 'Santa's running late. The studio isn't. Design yours free.' The caption asks people to send it to whoever is buying their present.",
+        "why_it_works": "Later logged the 'Dear Santa' letter format on 20 November 2026, and SocialPilot shows Christmas audio climbing from 17 to 25 November. That gives us a format people already recognise, with about four weeks left before Christmas. The line 'send this to whoever's buying your present' is built for sends, and the dossier names sends per reach as Instagram's strongest signal for reaching non-followers. The exact measurements speak straight to the small-space and en-suite audience, and they show the studio's drag-to-size feature without explaining it. Lightreel (14 to 21 Nov) found that simple bathroom moments with one strong line beat busy seasonal edits, so this is text-led, slow and calm. Real prices on each wish set us apart in a week full of fake-deal warnings.",
+        "scores": {
+          "reach": 80,
+          "business": 70,
+          "ease": 80,
+          "brand_fit": 86,
+          "overall": 81
+        },
+        "reel": {
+          "duration_seconds": 19,
+          "audio": "A calm festive instrumental from Meta's licensed Reels library (soft piano or celesta, slow tempo, no sleigh-bell overload). Check it plays on the business account before you post. Do not use Wham!'s 'Last Christmas (Instrumental)' unless it shows as cleared in the business account's library. Most commercial music is not available to business accounts. Add a quiet keyboard-tap sound as each line types in. Original audio works as a fallback.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Screen recording of the 3D Design Studio: a room being dragged to size and snapping to 2.1 m by 1.7 m. Deep navy-teal (#081C26) frame, slow push-in.",
+              "on_screen_text": "Dear Santa, my bathroom is 2.1 m by 1.7 m.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "Studio render of the walk-in shower with the Jaquar laminated framed walk-in screen, warm stone walls, brushed gold fittings. Slow lateral move. A small gold price tag slides in at the lower third.",
+              "on_screen_text": "I'd like a walk-in shower. (Jaquar walk-in screen, £1,162)",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:08",
+              "visual": "Render of a wall-hung vanity with the floor visible underneath, so the small room reads bigger. Gentle tilt down to show the clear floor.",
+              "on_screen_text": "A vanity that floats, so the floor looks bigger. ([ADD: wall-hung vanity name and price from the studio design, VAT incl.])",
+              "voiceover": ""
+            },
+            {
+              "time": "0:08-0:11",
+              "visual": "Render close-up of the Dell round 600 mm LED mirror lit and clear, with soft steam drifting across the lower frame.",
+              "on_screen_text": "A mirror that doesn't steam up. (Dell LED round mirror with demister, £263.84)",
+              "voiceover": ""
+            },
+            {
+              "time": "0:11-0:13",
+              "visual": "A tight macro of a dated, plain tile, filmed in the team's own office or a showroom offcut, never a customer's home. Flat, cool light.",
+              "on_screen_text": "And to stop showering under a tile I hate.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:13-0:16",
+              "visual": "Whip transition to the render of the new tiled shower wall in warm stone, then a slow pull back to the whole designed en-suite with product tags visible in the walk-around 3D view.",
+              "on_screen_text": "New tiles. Quantities worked out for this room. ([ADD: tile price from the design sheet, VAT incl.])",
+              "voiceover": ""
+            },
+            {
+              "time": "0:16-0:19",
+              "visual": "Cream (#F5F2ED) end card with the brass-gold wordmark 'Bespoke Bathrooms' and a faint render of the finished room behind it.",
+              "on_screen_text": "Santa's running late. The studio isn't. Design yours free. No sign-up.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "9:16, about 19 seconds, so people watch it twice. Type the letter text in line by line in Cormorant Garamond italic (cream on navy-teal), with prices in Inter in a small brushed-gold (#C5A16B) tag. Keep text inside Instagram's safe zones. Use only slow, controlled moves: push-ins, gentle lateral drifts, one whip into the new tiles for the payoff. Put a small 'Studio design' label in the lower corner of every render so viewers can tell they're designs, not fitted rooms. No people appear in the renders, so no AI labelling is needed. Cut on each keyboard tap. Turn on auto-captions. Use the hook frame (the room snapping to 2.1 m by 1.7 m with the 'Dear Santa' line) as the cover. On the day of posting, check that every price on screen matches the website, VAT included. Build the vanity and tile from the real studio design and replace the [ADD] placeholders before you export. Don't show a room total unless every line is a confirmed price."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "small en suite walk in shower",
+          "wall hung vanity small bathroom",
+          "round LED mirror bathroom warm stone",
+          "zellige shower wall"
+        ],
+        "caption": "Dear Santa, my bathroom is 2.1 m by 1.7 m. A walk-in shower. A vanity that floats. A mirror that stays clear after a hot shower. And a wall of tiles I don't hate. We designed every wish in the studio, to size, and priced each piece with VAT included. Send this to whoever's buying your present. Then comment your room size, or comment DESIGN and we'll send you the link to design yours free. No sign-up.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#3Ddesign",
+          "#smallbathroomideas",
+          "#ensuite",
+          "#ukbathrooms",
+          "#christmaswishlist"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "Comment DESIGN to get a DM with the studio link (https://bespokebathroomsuk.co.uk). People who comment a room size get a reply inviting them to start their own design, and the best replies go into a 'Your Bathroom, Redesigned' follow-up with written permission for any photos.",
+        "post_time": "Sunday 29 November (Advent Sunday), 19:30 UK",
+        "production": "One person, about 3 hours. 1) Build a 2.1 m by 1.7 m en-suite in the 3D Design Studio: small-space layout, warm stone, brushed gold finish, Jaquar walk-in screen, a wall-hung vanity from the range, Dell round LED mirror, Grespania or similar tiles. 2) Screen-record the drag-to-size step and the walk-around 3D room with product tags showing. Export the studio photographs. 3) Take the vanity and tile prices (VAT included) from the design and the printable design sheet, and replace the [ADD] placeholders. 4) Film a 3-second macro of a dated tile in the team's own office or on a showroom offcut, never a customer's home. 5) Edit in Edits or CapCut with typed text, a licensed instrumental checked on the business account, and the cream end card. Ask a designer to check prices and stock on the day."
+      },
+      {
+        "id": "i4",
+        "title": "Warm stone bathroom with gold finish: a £15,000 design, every piece priced",
+        "format": "pin",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Designed in 3D",
+        "trend": "Black Friday counter-programming: priced, not discounted",
+        "day": null,
+        "hook": "A £15,000 bathroom. Warm stone, gold taps. Every piece priced to the pound.",
+        "concept": "A Pinterest collage pin built from the real £15,000 warm stone and gold design that is already on the website. The studio's room photograph sits in the centre. Each product is cut out around it with its VAT-included price and links to its own product page, and the whole pin links to the free 3D studio. On Black Friday it is the calm alternative to fake deals: no discount, just the real price of a real room. After this weekend it keeps working as an evergreen save for people planning a 2027 bathroom.",
+        "why_it_works": "The UK's Black Friday coverage this week is full of fake-deal warnings (Which?, Shopappy, NationalWorld), so a room with every piece priced to the pound stands out without any discount language. Pinterest's own August 2026 format analysis found collages came close to video pins for saves and drove the most clicks, and each cutout can link to a product. That makes this the strongest click format for 'shop the look'. Warm stone, earthy palettes and gold brassware are the aesthetics Homes & Gardens covered on 23 Oct and 23 Nov 2026, so the pin matches what savers are looking for now. The keyword title is about the room, not about Black Friday, so the pin keeps being found long after the four-day peak. We are assuming that December saves turn into January projects. No 2026 Pinterest data confirms this yet.",
+        "scores": {
+          "reach": 58,
+          "business": 76,
+          "ease": 80,
+          "brand_fit": 93,
+          "overall": 74
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "Warm stone and gold: a £15,000 bathroom, priced to the pound",
+          "subline": "Every piece tagged with its real price, VAT included. See yours before you buy it. Free 3D design.",
+          "visual": "Centre: the website's studio photograph of the £15,000 warm stone, gold-finish design (one of its up to 4 room photographs), cropped tall so the stone wall and the gold tap are the focal point. Around it are 5 to 6 product cutouts on clean backgrounds, taken from the products tagged in that design: [ADD: product name and VAT-included price for each tagged piece, taken from the studio design]. Each cutout has a thin brushed-gold leader line pointing to where it sits in the room, and a small cream price tag in Inter. At the foot is a navy band with the design total: [ADD: exact design total from the studio, inside the £15,000 budget].",
+          "layout": "2:3 vertical, 1000 x 1500 px. Top 18%: Cormorant Garamond headline in #081C26 on cream #F5F2ED. Middle 60%: room photograph with cutouts slightly overlapping its edges, in a loose collage, never cluttered, and with at least 40 px of breathing room around each cutout. Bottom 22%: deep navy band (#081C26) with 'Design total: £[ADD]' in #E4C99B, subline in cream Inter, and a small 'Bespoke Bathrooms' wordmark bottom right. No logo at the top.",
+          "palette": [
+            "#F5F2ED",
+            "#081C26",
+            "#174A5C",
+            "#C5A16B",
+            "#E4C99B",
+            "#8A6A3B",
+            "#D8C8B0"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Warm stone bathroom with gold taps: £15,000 design, priced to the pound",
+          "pin_description": "A warm stone bathroom with a brushed gold finish, designed in our free 3D studio on a £15,000 budget. Every piece in the room is shown with its real price, VAT included, and each one links to its product. Set your own budget from £1,000 to £100,000, choose a mood and a metal finish, and see your own room photographed with real products before you buy anything. No sign-up needed. Warm stone bathroom ideas, gold bathroom taps, beige stone bathroom, bathroom cost UK.",
+          "board": "Warm stone bathrooms",
+          "keywords": [
+            "warm stone bathroom",
+            "gold bathroom taps",
+            "brushed gold bathroom",
+            "beige stone bathroom",
+            "bathroom shop the look",
+            "bathroom cost UK",
+            "£15000 bathroom",
+            "bathroom budget UK",
+            "3D bathroom design"
+          ],
+          "alt_text": "A bathroom in warm beige stone with brushed gold taps and fittings. Each product in the room is cut out around the photo with its price in pounds, VAT included, and the full design total is shown at the bottom."
+        },
+        "moodboard_searches": [
+          "warm stone bathroom",
+          "brushed gold bathroom taps",
+          "bathroom shop the look collage",
+          "beige stone bathroom gold"
+        ],
+        "caption": "A £15,000 bathroom. Every piece priced to the pound.\nNo Black Friday deal. Just the real price, VAT included.\nWarm stone, a gold finish, and nothing hidden behind a 'from'.\nSet your own budget and see your room before you buy anything.\nDesign your bathroom in 3D (free). Link in the story.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#warmstonebathroom",
+          "#goldbathroom",
+          "#ukbathrooms",
+          "#bathroomrenovation",
+          "#3Ddesign"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "The whole pin links to the 3D studio (https://bespokebathroomsuk.co.uk?utm_source=pinterest&utm_medium=pin&utm_campaign=priced_not_discounted). Each collage cutout links to its own product page. The Instagram story uses a link sticker to the studio (utm_source=instagram&utm_medium=story) so studio starts from each platform can be counted separately.",
+        "post_time": "Friday 27 November, 8:30pm UK (Pinterest pin and Instagram story). Repost the story on Sunday 29 November at 10:00am UK and Monday 30 November at 7:30pm UK for Cyber Monday.",
+        "production": "About 90 minutes, one designer, no filming. 1) Open the £15,000 warm stone and gold design in the studio. Export its best room photograph and list every tagged product with its VAT-included price and product URL. Fill in the [ADD] placeholders from that list only. Do not swap in the hero products unless they are actually in this design: the six hero products add up to £12,495.84, which does not match the £11,533.84 shop-the-look total, so the figures must not be mixed. 2) Remove the backgrounds from 5 to 6 product images. 3) Build the 1000 x 1500 base in Canva or Figma with the headline, price tags and navy total band. 4) In the Pinterest app, make the collage and give each cutout its product link. If the collage tool will not hold the price text, put the prices on the base plate. 5) Export a second version as a plain static 2:3 pin with the same title and use it as an A/B test. 6) For the Instagram story, crop to 9:16 with the room and the total in frame, add a link sticker to the studio and a poll asking 'Guess the total before you tap?', then reveal the total on the next frame. Do not add Black Friday wording to the pin artwork, so it stays evergreen. Keep that framing in the story and description only."
+      },
+      {
+        "id": "i5",
+        "title": "My bath sounded different this morning",
+        "format": "reel",
+        "platforms": [
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "The Reveal",
+        "trend": "'My coffee sounded weird this morning' (an object starts a song)",
+        "day": null,
+        "hook": "My bath sounded different this morning.",
+        "concept": "Our take on the newest sound gag on Reels. A hand lifts the lever on the Jaquar floor-mounted bath mixer (£2,251) and a warm instrumental starts the moment the water does. Lever down: the music stops dead, and all that's left is silence and steam. Lever up again and it picks up where it stopped. A slow pull-back then shows the Artize Tiaara freestanding bath (£6,626) and closes on 'See it in your room first. Free 3D design.'",
+        "why_it_works": "Later logged the 'my coffee sounded weird' format on 27 November on original audio, so it's brand new and early versions get the benefit of people recognising it. The gag is the music starting and stopping, and that comes from our footage and our edit, not a commercial track. That suits a business account and Instagram's originality rule. Lightreel (14 to 21 Nov) found that simple bathroom moments with one strong line beat busy seasonal edits, and this is one line over macro shots of brass and water. Watch time and sends per reach are still Instagram's main signals for reaching non-followers. A short Reel that loops and satisfies gets rewatched and sent on ('this is so satisfying'), and the two real prices give people something to comment on. It also shows 'quiet mornings' on screen and matches the brand's moody stone, brass and water look, so the reach builds the brand instead of diluting it.",
+        "scores": {
+          "reach": 78,
+          "business": 42,
+          "ease": 60,
+          "brand_fit": 88,
+          "overall": 75
+        },
+        "reel": {
+          "duration_seconds": 16,
+          "audio": "Two layers. (1) Real water and room tone, recorded clean on set, used as the 'before' and under every silence. (2) A warm, slow instrumental (soft piano or strings, optionally with a light celesta or bells for a gentle seasonal feel) from Meta's licensed Sound Collection, checked as available inside the business account before editing. Or use original audio composed or recorded for us. Don't use Wham!, Harry Styles or any commercial track unless it shows as cleared in the business account. The music must start on the frame the water hits and cut out completely, with no fade, on the frame the lever closes.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Extreme macro of the dry Jaquar floor-mounted bath mixer spout in low, warm side light. One drip forms and falls. Static on tripod.",
+              "on_screen_text": "My bath sounded different this morning.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "A hand (no face) lifts the lever. Water breaks from the spout in slow motion. The instrumental starts on the exact frame the water appears.",
+              "on_screen_text": "My bath sounded different this morning.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:07",
+              "visual": "Slow slider push along the stream into the Artize Tiaara bath. Water rolls over the solid surface and steam starts to rise. The music swells.",
+              "on_screen_text": "",
+              "voiceover": ""
+            },
+            {
+              "time": "0:07-0:09",
+              "visual": "The hand closes the lever. The music cuts dead. Hold for a full second on silence: the last drops, steam drifting across the brass.",
+              "on_screen_text": "Huh.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:09-0:11",
+              "visual": "The hand lifts the lever again. The music comes back on the same note where it stopped. A slightly wider macro this time, with the brass catching the light.",
+              "on_screen_text": "Every single time.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:11-0:14",
+              "visual": "Slow pull-back to the full shot: the Tiaara freestanding bath half filled and steaming, the mixer beside it, warm stone wall, low light. The music settles.",
+              "on_screen_text": "Jaquar floor-mounted bath mixer, £2,251. Artize Tiaara freestanding bath, £6,626. Prices include VAT.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:14-0:16",
+              "visual": "Cut to a screen recording of the 3D studio: a render of a room built around the same bath and mixer, with the product tags visible. Small label in the corner: 'Designed in the 3D studio'. End on a navy #081C26 card with the wordmark.",
+              "on_screen_text": "See it in your room first. Free 3D design.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "No logo or wordmark until the final card. The first two seconds are the spout and the hook line only. Audio sync is the joke, so set every music start and stop to the exact frame of the water and lever, with hard cuts and no fades. Film at 4K 60fps and slow the water shots to 50%. Keep camera moves slow and controlled. Grade warm, with deep shadows toward #081C26 and highlights toward #E4C99B, matching the brand's stone and brass look. Text in Cormorant Garamond, cream #F5F2ED, centred low and clear of the Reels interface. Prices exactly as written, VAT included. Make the end card cut cleanly back to the dry spout so the Reel loops. The studio render must read clearly as a design, not as a photo of a fitted room. Add closed captions for the on-screen lines. Cover frame: the steaming wide shot with 'My bath sounded different this morning.'"
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "brass bath mixer water close up",
+          "freestanding bath steam moody",
+          "floor mounted bath tap warm stone",
+          "warm stone bathroom gold"
+        ],
+        "caption": "My bath sounded different this morning. It was the Jaquar floor-mounted mixer (£2,251) running into the Artize Tiaara freestanding bath (£6,626). Prices include VAT. Some mornings are quiet. Some come with a soundtrack. Before you choose either, see them in your own room. Set a budget, pick a metal finish, and the studio prices every piece to the pound. Design your bathroom in 3D, free. Link in bio, or comment DESIGN and we'll send it to you.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#freestandingbath",
+          "#brassware",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#ukinteriors"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "Comment DESIGN to get the free 3D studio link by DM (https://bespokebathroomsuk.co.uk). Link in bio as the backup.",
+        "post_time": "Sunday 29 November, 09:30 UK (a quiet weekend morning, after the Black Friday Guess the Price Reel has had Friday and Saturday to itself)",
+        "production": "Location: a fitted project or display with the Jaquar floor-mounted bath mixer and the Artize Tiaara bath plumbed in and running hot water. Use a client's home only with written permission, or use [ADD: showroom or display location]. If no Tiaara is installed anywhere, film the mixer shots on whatever install is available, swap the reveal for the studio render, and change the price line to match what's actually shown. Kit: a phone that shoots 4K 60fps with a macro lens or clip-on macro, a tripod, a small slider or gimbal, and one warm practical lamp or LED panel at a low angle. The tap's own hot water gives the steam. Crew: one person filming and one pair of hands (designer or fitter, hands only, no faces). Record 30 seconds of clean water sound and room tone with the music off. Time: about 2 hours on set and 2 to 3 hours editing, including the frame-accurate audio sync and the studio screen recording. Before editing, choose and confirm the licensed instrumental inside the business account. Set up the DESIGN comment-to-DM automation before posting. The trend may only last 1 to 3 weeks, so film this weekend."
+      },
+      {
+        "id": "i6",
+        "title": "Your taps are the jewellery: one mixer, three rooms",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "pinterest"
+        ],
+        "goal": "community",
+        "pillar": "Material & Mood",
+        "trend": "Brassware as jewellery and mixed metals",
+        "day": null,
+        "hook": "Your taps are the jewellery. Choose them like it.",
+        "concept": "A 'One Piece, Three Rooms' carousel with music. One Jaquar floor-mounted single lever bath mixer (£2,251, VAT included) sits in three rooms designed in our 3D studio: warm stone and gold, walnut and nickel, sage and brass. Each room gets a slow macro detail slide and a wide slide, so the tap reads like jewellery before you see the whole room. The caption asks 'Which room is yours?' and per-slide likes tell us which palette wins. Each room is then pinned on its own to a 'Brassware as jewellery' board linking to the studio.",
+        "why_it_works": "Homes & Gardens' 2027 bathroom trends (23 Oct 2026) quotes a designer calling decorative taps 'almost like jewelry for a bathroom', and its 23 Nov 'living room treatment' piece repeats the mixed-metals advice (aged brass lights with nickel taps). This is an editorial aesthetic with a long life into 2027, and it suits our brushed gold, warm stone and walnut look. Dulux's 'one room, four ways' for its 2027 colour shows that one subject shown several ways is the format home brands use for this kind of moment. On reach: carousels with music are being shown in the Reels tab again (SocialBee, 23 Nov 2026), so a licensed instrumental puts this in front of non-followers. A simple 1, 2 or 3 vote is an easy comment, a 'pick your room' post gets sent to partners, which helps sends per reach, and a palette guide gets saved. Per-slide likes show us which room is most popular, and we can use that for the next renders and pins. On Pinterest, 'mixed metals bathroom brass nickel' and 'unlacquered brass taps' are evergreen planning searches that savers make months before they renovate, so each pin links straight to the studio.",
+        "scores": {
+          "reach": 70,
+          "business": 42,
+          "ease": 72,
+          "brand_fit": 93,
+          "overall": 74
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "Your taps are the jewellery. Choose them like it.",
+            "body": "One mixer. Three rooms. Which one is yours?",
+            "visual": "Full-bleed macro crop of the Jaquar floor-mounted mixer spout from the warm stone and gold render, a thin fall of water caught in warm side light. Cormorant Garamond headline in cream (#F5F2ED) on a soft navy-teal (#081C26) gradient at the bottom third. Small Inter tag top left: 'Designed in our 3D studio'."
+          },
+          {
+            "slide": 2,
+            "headline": "The piece",
+            "body": "Jaquar floor-mounted single lever bath mixer. £2,251, VAT included. It stands on its own beside a freestanding bath, so it is seen from every side of the room. Treat it like a pendant light, not a plumbing part.",
+            "visual": "Clean product cut-out of the mixer centred on warm cream (#F5F2ED), with a thin brushed gold (#C5A16B) rule under the price. Plenty of empty space. Price set in Inter, product name in Cormorant."
+          },
+          {
+            "slide": 3,
+            "headline": "Room 1: Warm stone and gold",
+            "body": "Gold that catches morning light against honey-toned stone.",
+            "visual": "Macro crop from the studio render: the mixer lever and the stone floor beside it, gold finish warm against the stone. Slight vignette. Room number '1' in large Cormorant numerals, gold (#E4C99B), top right."
+          },
+          {
+            "slide": 4,
+            "headline": "Room 1, wide",
+            "body": "Artize Tiaara freestanding bath, £6,626. Artize stone counter-top basin in Bottocino Classico Beige, £1,243. Mixer, £2,251. All VAT included.",
+            "visual": "Wide studio render of the warm stone room: freestanding bath centred, mixer beside it, stone basin in the background. Prices in a slim cream caption bar at the bottom in Inter."
+          },
+          {
+            "slide": 5,
+            "headline": "Room 2: Walnut and nickel",
+            "body": "Cool metal against warm wood. Nickel keeps walnut from feeling heavy.",
+            "visual": "Macro crop of the mixer in a nickel finish with the grain of a walnut vanity front softly out of focus behind it. Room number '2' in Cormorant, cream, top right."
+          },
+          {
+            "slide": 6,
+            "headline": "Room 2, wide",
+            "body": "Onsen Vanity Unit 2D W.120 in Light Walnut, £950. Mixer, £2,251. All VAT included.",
+            "visual": "Wide studio render of the walnut room: Onsen vanity on one wall, freestanding bath with the mixer in front of it, nickel accents repeated on the mirror and towel rail. Cream caption bar with prices."
+          },
+          {
+            "slide": 7,
+            "headline": "Room 3: Sage and brass",
+            "body": "Green walls make brass look warmer. It is the palette of 2027: Dulux chose Soulful Sage.",
+            "visual": "Macro crop of the brass mixer against a sage painted wall, a little steam in the air. Room number '3' in Cormorant, gold (#C5A16B), top right."
+          },
+          {
+            "slide": 8,
+            "headline": "Room 3, wide",
+            "body": "Sage walls, warm brass, a freestanding bath. Mixer, £2,251, VAT included.",
+            "visual": "Wide studio render of the sage room: freestanding bath, brass mixer, brass wall lights. Cream caption bar. Only list priced pieces from the range; any other priced piece goes in as [ADD: product and website price]."
+          },
+          {
+            "slide": 9,
+            "headline": "How to mix metals so it looks designed",
+            "body": "Pick one lead metal for what you touch: taps and handles. Use a second for what you look at: wall lights and mirror frames. Repeat each one at least twice so the mix looks intentional.",
+            "visual": "Text slide on deep navy-teal (#081C26) with cream Inter body text. Two small swatch circles, brushed gold (#C5A16B) and a cool nickel grey (#B8BCBF), set side by side with a thin gold rule."
+          },
+          {
+            "slide": 10,
+            "headline": "Which room is yours? 1, 2 or 3.",
+            "body": "Then see it in your own room. Design your bathroom in 3D, free. No sign-up. Link in bio.",
+            "visual": "The three wide renders as a tight triptych on teal (#174A5C), numbered 1, 2, 3 in gold. Cream CTA line underneath, and the Bespoke Bathrooms wordmark small at the bottom centre."
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Mixed metals bathroom: brass and nickel ideas built around one bath mixer",
+          "pin_description": "How to mix metals in a bathroom without it looking accidental. One Jaquar floor-mounted bath mixer (£2,251, VAT included) designed into three rooms: warm stone and gold, walnut and nickel, sage and brass. Treat your taps as the jewellery of the room, then choose the palette around them. Design your own bathroom in 3D for free, with every piece priced to the pound.",
+          "board": "Brassware as jewellery",
+          "keywords": [
+            "mixed metals bathroom brass nickel",
+            "brass bathroom taps",
+            "floor mounted bath mixer",
+            "freestanding bath tap",
+            "warm stone bathroom gold",
+            "walnut vanity nickel taps",
+            "sage green bathroom brass",
+            "bathroom design ideas 2027"
+          ],
+          "alt_text": "Close-up of a floor-mounted bath mixer beside a freestanding bath in a warm stone bathroom with gold fittings, shown next to the same mixer in a walnut room with nickel accents and a sage green room with brass wall lights."
+        },
+        "moodboard_searches": [
+          "mixed metals bathroom brass nickel",
+          "unlacquered brass taps",
+          "freestanding bath floor mounted tap",
+          "sage green bathroom brass"
+        ],
+        "caption": "Your taps are the jewellery. Choose them like it. One Jaquar floor-mounted bath mixer, £2,251 with VAT. Three rooms designed around it in our 3D studio. 1. Warm stone and gold. 2. Walnut and nickel. 3. Sage and brass. Which room is yours? Tell us 1, 2 or 3, and send it to the person who'll disagree. Then see it in your own room. Design your bathroom in 3D, free, no sign-up. Link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#bathroomideas",
+          "#mixedmetals",
+          "#brasstaps",
+          "#freestandingbath",
+          "#ukinteriors",
+          "#3Ddesign"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "A soft mechanic, because this is a community post. Reply to every 1, 2 or 3 comment with: 'Want that room at your size? Comment DESIGN and we'll DM you the studio link.' Each Pinterest pin links to the 3D studio at https://bespokebathroomsuk.co.uk, and the slide 2 pin links to the mixer's product page.",
+        "post_time": "Instagram: Sunday 29 November, 19:30 UK (Advent Sunday evening, when people browse to plan, and clear of Friday's Black Friday posts). Pinterest: room 1 pin on Sunday 29 November at 20:30, room 2 on Monday 30 November at 20:30, room 3 on Tuesday 1 December at 20:30.",
+        "production": "Who: one designer in the 3D studio, plus one person for layout and posting. Time: about 4 hours. (1) Before designing, check on the website which finishes this Jaquar mixer comes in (gold, nickel, brass) and the VAT-included price for each finish. If a finish costs a different amount, put that price on its slide. If the mixer comes in only one finish, keep that finish in all three rooms and change the other metals (mirror frames, wall lights, towel rails) so the post still shows mixed metals. Mark anything unconfirmed as [ADD: confirm finish and price]. (2) Build three studio designs with the same room size and the same budget (we suggest £20,000), changing only the mood and metal finish: warm stone and gold, walnut and nickel, sage and brass. Use the Artize Tiaara bath, the Artize Bottocino basin and the Onsen Light Walnut vanity where they suit the room. Take the studio's room photographs: one wide and one close to the mixer per room. Allow about 2 hours. (3) Crop the macro slides from the highest-resolution render. If the crop looks soft, photograph the real mixer in warm side light against a stone, walnut or sage-painted board instead. Allow 1 hour. (4) Lay out the slides at 4:5 in Edits or Canva: Cormorant Garamond headlines, Inter body, brand palette, and 'Designed in our 3D studio' on the render slides so nobody mistakes them for a customer's home. (5) Add a slow licensed instrumental (warm piano or soft strings) from the Instagram business account's music library so the carousel can show in the Reels tab. Check it is cleared before publishing, and use Replace Audio later if a better licensed track appears. (6) After 48 hours, compare per-slide likes on slides 4, 6 and 8, then re-render the winning palette for the next pin. (7) Pinterest: export each wide room at 2:3 with a small Cormorant title on top, and pin each one to a new board called 'Brassware as jewellery'. Pin titles: 'Warm stone bathroom with gold taps: freestanding bath mixer idea', 'Walnut vanity with nickel taps: mixed metals bathroom', 'Sage green bathroom with brass taps: 2027 palette'. Allow 30 minutes."
+      },
+      {
+        "id": "i7",
+        "title": "Don't let a minimalist see this",
+        "format": "reel",
+        "platforms": [
+          "instagram"
+        ],
+        "goal": "viral",
+        "pillar": "Designed in 3D",
+        "trend": "'Don't let a ___ see this' (forbidden-content hook)",
+        "day": null,
+        "hook": "Don't let a minimalist see this.",
+        "concept": "We take the 'Don't let a ___ see this' text hook and lay it over a slow walk through a layered 3D studio design: patterned tile, a walnut furniture vanity, brass and nickel used together, and a pendant over a freestanding bath. Each shot gets one short line on screen and, where we have it, the real price with VAT included. The tone is affectionate. The end card tells minimalists they are welcome too, which gives people a reason to tag and send it, and the caption question 'Too much, or exactly right?' starts the debate in the comments.",
+        "why_it_works": "Virlo marks the 'Don't let a ___ see this' hook as Rising in the week to 27 November, with top Reels at 3.1M, 1M and 993K views, so the format is travelling now. The room inside it is this week's strongest editorial aesthetic: the 'living room treatment' (Homes & Gardens, 23 Nov 2026), with furniture vanities, pendants and mixed metals, plus 'brassware as jewellery' (Homes & Gardens UK, 23 Oct 2026). That keeps a meme format design-led, not cheap. A question that splits taste earns comments, and 'send this to your minimalist friend' earns sends, which is still Instagram's strongest signal for reaching non-followers. Lightreel's round-up for 14 to 21 November found that simple bathroom moments with one strong line beat busy seasonal edits, so the low-production build is a strength. The real prices on screen show the studio's 'see it before you buy it' promise to people who have never heard of us.",
+        "scores": {
+          "reach": 78,
+          "business": 45,
+          "ease": 76,
+          "brand_fit": 72,
+          "overall": 73
+        },
+        "reel": {
+          "duration_seconds": 15,
+          "audio": "Original audio. Virlo's tracked sound for this trend ('PHANTOM LIQUID DESIRE') is not confirmed as cleared for business accounts, so do not use it. Choose a slow, warm, slightly playful instrumental from Meta's licensed library inside the business account (soft jazz piano or brushed drums, no vocals), with gentle room tone underneath. Check that it is available in-app before you edit. Replace Audio is not available on Reels, so get the audio right before publishing.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Tight, slow push-in on the patterned floor tile (Grespania from the range) in the studio render, warm low light, with the edge of a walnut vanity leg just in frame.",
+              "on_screen_text": "Don't let a minimalist see this.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:04",
+              "visual": "Slow lateral glide along the Onsen Vanity Unit 2D W.120 in Light Walnut with the Artize stone counter-top basin on top. Shown as a piece of furniture, not a utility.",
+              "on_screen_text": "A walnut furniture vanity. £950. Stone basin on top. £1,243.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:04-0:07",
+              "visual": "Macro drift across the metals: brushed gold tap next to a nickel or chrome towel rail or shower fitting in the same frame. Controlled and slow.",
+              "on_screen_text": "Brass and nickel. In the same room. On purpose.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:07-0:10",
+              "visual": "Tilt up from the Artize Tiaara freestanding bath and the Jaquar floor-mounted bath mixer to a pendant light hanging above.",
+              "on_screen_text": "A pendant over the bath. Tiaara bath £6,626. Floor-standing mixer £2,251.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:10-0:12",
+              "visual": "Slow pull-back to the full room in the 3D walk-around view, so the whole layered look reads at once. Small cream label in the corner: 'Studio design'.",
+              "on_screen_text": "Designed in 3D. Every piece priced, VAT included.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:12-0:15",
+              "visual": "End card in deep navy (#081C26) with a cream Cormorant Garamond headline and a thin brushed gold rule. Studio URL in Inter underneath.",
+              "on_screen_text": "Too much, or exactly right? Minimalists, we'll design yours too. Free 3D design: bespokebathroomsuk.co.uk",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Keep the pacing calm even though the hook is playful. Use slow, controlled moves, about 2 to 3 seconds per shot, and no whip pans, zooms or shakes. Use a warm grade that matches the brand palette. Set headlines in Cormorant Garamond in cream (#F5F2ED) on a soft navy scrim, and prices in smaller Inter in gold (#E4C99B). Keep text inside the Reels safe zone, clear of the caption and buttons. Hold the hook frame for a full 2 seconds so it can be read. Keep the 'Studio design' label visible so nobody thinks this is a customer's home. Add a small footnote on the pendant shot: 'Lights over a bath must suit the bathroom zone. Check the IP rating with your fitter.' This adds credibility. If it performs, make a Part 2, 'Don't let a maximalist see this', using the same room stripped back. Write 'Part 2' on screen and pin Part 1, since linked Reel series ended on 28 October."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "lived in bathroom",
+          "mixed metals bathroom brass nickel",
+          "bathroom with furniture vanity",
+          "bathroom pendant light over bath"
+        ],
+        "caption": "Don't let a minimalist see this. Patterned tile. A walnut furniture vanity. Brass and nickel side by side. A pendant over the bath.\nDesigned in our 3D studio, with every piece tagged and priced, VAT included. Too much, or exactly right? Tell us below, and send it to the minimalist in your life. Design yours your way, free. Comment DESIGN for the link.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#ukinteriors",
+          "#livedinbathroom",
+          "#mixedmetals",
+          "#bathroomtrends2027"
+        ],
+        "cta": "Design yours your way, free. Comment DESIGN for the studio link.",
+        "lead_capture": "Comment DESIGN to trigger an auto-DM with the free 3D studio link (bespokebathroomsuk.co.uk). The same link goes in the bio.",
+        "post_time": "Tuesday 1 December, 7:00pm UK (after the Black Friday and Cyber Monday noise, and while the hook is still rising, roughly two weeks of life left)",
+        "production": "About 2 to 3 hours with one person and a laptop. 1) In the 3D studio, build one layered room: set a budget of about £20,000 (the four named pieces alone come to £11,070), choose a warm mood and a gold finish, and add the Onsen W.120 Light Walnut vanity, the Artize stone basin, the Artize Tiaara bath, the Jaquar floor-mounted bath mixer, a patterned Grespania floor tile and a pendant from the lighting range. 2) If the studio only allows one metal finish per design, get the mixed-metal look by adding a nickel or chrome towel rail or shower piece product by product. Ask a designer to confirm the pairing works and that the pendant is suitable for its position. 3) Screen-record the 3D walk-around at the highest frame rate available, moving slowly, and export the studio photographs as backup stills. 4) Cut a vertical 9:16 edit in Edits or CapCut, add text, pick the licensed audio in-app and check every price against the website before posting. Do not use customer homes or people. Keep it framed as a studio design so no AI or real-home confusion arises. Set up the DESIGN auto-reply before publishing."
+      },
+      {
+        "id": "i8",
+        "title": "Christmas guests in 3 weeks? What to fix now, what to design for 2027",
+        "format": "pin",
+        "platforms": [
+          "pinterest",
+          "instagram"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Guest-ready bathroom for Christmas hosting",
+        "day": null,
+        "hook": "Christmas guests in 3 weeks? Fix these four things now.",
+        "concept": "A text-on-image 2:3 pin, with a matching three-frame Instagram story, giving four honest fixes a homeowner can do before guests arrive: warmer light, a round LED mirror with demister (Dell 600 mm, £263.84 VAT included), fresh towels and one light scent. It then turns to the bigger problem: if the room itself is what embarrasses you, design the new one over the Christmas lull in the free 3D studio, so January starts with a priced plan. It does not promise fitting before Christmas.",
+        "why_it_works": "Guest-ready bathroom guides are running across UK titles right now (Ideal Home, Woman & Home, Dowsing & Reynolds), so the search is live and seasonal until 24 December. Text-on-image guides suit the planning audience on Pinterest, and a keyword-led title ('guest bathroom Christmas') gets the pin found during the hosting rush and saved for later. The pivot turns a short-lived seasonal search into a studio start. Our working assumption, which we have not proven, is that December saves become January projects, and this pin is placed for that. Quick fixes are useful and safe to share ('send this to whoever's hosting'), which helps sends on the Instagram story.",
+        "scores": {
+          "reach": 58,
+          "business": 60,
+          "ease": 88,
+          "brand_fit": 77,
+          "overall": 68
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "Christmas guests in 3 weeks?",
+          "subline": "4 fixes for this month. 1 plan for 2027.",
+          "visual": "A warm evening shot of a studio render in warm stone with a gold finish. A Dell round LED mirror with demister (600 mm) sits lit above a stone counter-top basin, with two folded cream towels, a small amber reed diffuser and a low warm lamp. The light is low and golden with soft shadows, the same moody palette as the brand. The render is clearly labelled 'Designed in our 3D studio' in small type. If you use a real fitted room, you need the customer's written permission.",
+          "layout": "1000 x 1500 px (2:3). Top 35%: deep navy-teal block with 'Christmas guests in 3 weeks?' in Cormorant Garamond, cream, around 88 pt, and the subline in Inter, brushed gold, around 30 pt. Middle 45%: the render, full bleed, with four small numbered labels in cream Inter on a translucent teal strip: '1. Warm-white bulbs and one low lamp' '2. LED mirror with demister. Dell 600 mm, £263.84' '3. Two fresh towels per guest, one spare set' '4. One light scent, nothing strong'. Bottom 20%: cream band with 'Room itself the problem? Design the new one over Christmas. Free.' in navy Cormorant, a thin gold rule, and the 'Bespoke Bathrooms' wordmark small at the base. No logo in the top half.",
+          "palette": [
+            "#081C26",
+            "#174A5C",
+            "#F5F2ED",
+            "#C5A16B",
+            "#E4C99B",
+            "#8A6A3B"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Guest bathroom Christmas ideas: 4 quick fixes before guests arrive",
+          "pin_description": "Getting the guest bathroom ready for Christmas? Here are four fixes you can do this month: warm-white lighting, a round LED mirror with demister (Dell 600 mm, £263.84 VAT included), fresh towels and one light scent. If the room itself is the problem, use the quiet weeks to design the new one in our free 3D bathroom design studio. Set a budget from £1,000 to £100,000, pick a style and see every piece priced to the pound. No sign-up needed.",
+          "board": "Guest bathroom Christmas ideas",
+          "keywords": [
+            "guest bathroom christmas",
+            "guest ready bathroom",
+            "christmas bathroom ideas",
+            "bathroom refresh ideas",
+            "LED mirror with demister",
+            "warm lighting bathroom",
+            "bathroom renovation 2027",
+            "free 3D bathroom design"
+          ],
+          "alt_text": "Text pin reading 'Christmas guests in 3 weeks? 4 fixes for this month. 1 plan for 2027' above a warm-lit stone bathroom with a round LED mirror, folded cream towels and a reed diffuser, with four numbered tips and a line inviting you to design a new bathroom for free in a 3D studio."
+        },
+        "moodboard_searches": [
+          "guest bathroom Christmas",
+          "warm lighting bathroom evening",
+          "round LED mirror stone basin",
+          "hotel guest bathroom towel styling"
+        ],
+        "caption": "Christmas guests in three weeks? Fix these four things now.\nWarm-white bulbs and one low lamp. A round LED mirror with demister (Dell 600 mm, £263.84 VAT included). Two fresh towels per guest. One light scent.\nIf the room itself is the problem, no towel will hide it.\nDesign the new one over Christmas instead. Free, no sign-up, priced to the pound.\nStart your design.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomideas",
+          "#bathroominspo",
+          "#bathroomrenovation",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#guestbathroom",
+          "#christmashosting"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "The pin's destination URL is the studio (https://bespokebathroomsuk.co.uk?utm_source=pinterest&utm_campaign=guest_xmas). The last story frame has a link sticker to the same studio URL with utm_source=instagram_story. That keeps one action only: start a free 3D design.",
+        "post_time": "Pin: Sunday 29 November, 8:00pm UK. Instagram story: Sunday 29 November, 7:30pm UK. Re-pin a second image variant on Thursday 10 December, 8:00pm UK, as hosting searches build.",
+        "production": "Designer and phone, about 60 to 75 minutes. 1) In the studio, build or reuse a warm stone and gold room that includes the Dell round LED mirror with demister (600 mm). Export a low, warm evening angle. 2) Lay out the 1000 x 1500 pin in Canva or Figma using Cormorant Garamond and Inter in the brand palette. Make a second variant with a close-up of the mirror and towels to A/B test. 3) Story version, 1080 x 1920, three frames: Frame 1 'Christmas guests in 3 weeks?' over the render. Frame 2: the four fixes as a list, with a poll sticker 'Which one are you doing first?'. Frame 3: 'Room itself the problem? Design the new one over Christmas. Free.' with the link sticker. Use a quiet licensed festive instrumental from the business account's library, not commercial tracks. 4) Before publishing, check that £263.84 matches the live product page, and add a small note in the description that hard-wired LED mirrors need a qualified electrician. Confirm wiring needs for this model first. Do not mention fitting before Christmas unless lead times are confirmed. No customer homes or faces without written permission."
+      }
+    ],
+    "days": null,
+    "watch_outs": [
+      "i1: Before filming, check the six pieces and their individual prices in the website's shop-the-look room. The Brand Brain hero products add up to £12,495.84, not £11,533.84, so do not assume the hero six are that look.",
+      "Black Friday tone: no 'deal', '% off', 'sale', countdowns or urgency anywhere in captions, stickers or on-screen text. The contrast only works if it stays calm.",
+      "Audio: do not use Wham!'s 'Last Christmas', 'Coming Up Roses' or any tracked commercial sound unless it shows as cleared in the business account's Reels library. Use original audio, real water sound, voiceover or Meta's licensed library.",
+      "i4: use only the real £15,000 warm stone and gold design shown on the website, and link each cutout to a live product page with the VAT-included price.",
+      "i7: build the room from a studio render only. Never use or mock a customer's home, and keep the grade and pacing calm so the meme does not look cheap.",
+      "i8 and i3: do not imply delivery or fitting before Christmas unless the designer has confirmed lead times. 'Design it over Christmas' is the promise.",
+      "i2: only promise the PLAN checklist by comment-to-DM if the lead magnet has been built. Otherwise point to the free 3D design.",
+      "Studio renders must be clearly framed as designs. If any render includes people, apply Instagram's AI-generated labelling.",
+      "Do not publish the 'Aqua Splash' Pantone leak or any Pinterest Predicts 2027 names before 3 December and 8 December."
+    ],
+    "sources": [
+      {
+        "title": "Later: Instagram Reels Trends (entries to 27 Nov 2026)",
+        "url": "https://later.com/blog/instagram-reels-trends/"
+      },
+      {
+        "title": "SocialPilot: Instagram Reels Trends and trending audio",
+        "url": "https://www.socialpilot.co/blog/instagram-reels-trends"
+      },
+      {
+        "title": "Virlo: Instagram Trends This Week",
+        "url": "https://virlo.ai/instagram-trends"
+      },
+      {
+        "title": "Homes & Gardens: The living room treatment (23 Nov 2026)",
+        "url": "https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend"
+      },
+      {
+        "title": "Homes & Gardens UK: Bathroom trends 2027 (23 Oct 2026)",
+        "url": "https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027"
+      },
+      {
+        "title": "SocialBee: Instagram updates (23 Nov 2026)",
+        "url": "https://socialbee.com/blog/instagram-updates-news-features/"
+      },
+      {
+        "title": "Ethical SMM: Instagram Updates November 2026",
+        "url": "https://ethicalsmm.com/blog/instagram-updates-november-2026"
+      },
+      {
+        "title": "carouselpost.io: Carousel creation in Edits",
+        "url": "https://carouselpost.io/digest/instagram-carousel-creation-edits-app-2026"
+      },
+      {
+        "title": "NationalWorld: When is Black Friday 2026 (UK)",
+        "url": "https://www.nationalworld.com/recommended/black-friday-2026-9268295"
+      },
+      {
+        "title": "Shopappy: Black Friday 2026 UK early sales and fake deals",
+        "url": "https://shopappy.com/consumer-trends/discount-value/black-friday-2026-uk-early-sales-fake-deals"
+      },
+      {
+        "title": "Which?: Black Friday",
+        "url": "https://www.which.co.uk/news/black-friday/"
+      },
+      {
+        "title": "Pinterest Create: Formats and features",
+        "url": "https://create.pinterest.com/en-GB/blog/pinterest-formats-and-features-creator-business/"
+      },
+      {
+        "title": "Pinterest Create: Beauty content that performs (collage data)",
+        "url": "https://create.pinterest.com/blog/beauty-content-ideas-examples/"
+      },
+      {
+        "title": "Woman & Home: Style a bathroom for Christmas guests",
+        "url": "https://www.womanandhome.com/homes/how-to-style-a-bathroom-for-christmas/"
+      },
+      {
+        "title": "Ideal Home: Guest-ready bathroom edit",
+        "url": "https://www.idealhome.co.uk/collection/all-rooms/bathroom/guest-ready-shopping-edit"
+      },
+      {
+        "title": "Dowsing & Reynolds: Guest bathroom ideas for Christmas",
+        "url": "https://www.dowsingandreynolds.com/inspiration/guest-bathroom-ideas-for-christmas/"
+      },
+      {
+        "title": "Dezeen: Sage green is the Dulux Colour of the Year 2027",
+        "url": "https://dezeen.com/2026/09/08/sage-green-colour-year-2027-dulux"
+      },
+      {
+        "title": "Dulux: One room four ways with Colour of the Year 2027",
+        "url": "https://www.dulux.co.uk/en/colour-inspiration/one-room-four-ways-with-colour-of-the-year-2027"
+      },
+      {
+        "title": "The Color Tools: Pantone 2027 release date",
+        "url": "https://thecolortools.com/learn/pantone-color-of-the-year-2027"
+      },
+      {
+        "title": "Lightreel: What is trending on Instagram, November 2026",
+        "url": "https://lightreel.ai/blogs/whats-trending-on-instagram"
+      }
+    ],
+    "top_picks": [
+      "i1",
+      "i3",
+      "i2"
+    ]
+  },
+  "dossier": "I've finished the research and am writing up the dossier now.\n\n# Research dossier: Bespoke Bathroom UK, brand and viral reach\n**Date:** Friday 27 November 2026 (Black Friday). **Window:** today to about 8 December 2026. **Platforms:** Instagram and Pinterest (Pinterest Lab on).\n\n**How sure I am:** No platform-owned trend data could be read today. Pinterest Predicts 2027 isn't published until 8 December, and the Pinterest Trends tool needs a login. The Instagram trend and audio rankings come from third-party trackers (Later, Virlo, SocialPilot, CreatorDB, Lightreel), and they don't agree with each other. Check every sound in the Reels audio library on the business account before posting.\n\n---\n\n## Trends\n\n### 1. \"Dear Santa\" wishlist\n- **Platforms:** Instagram Reels (also works as a story frame and a Pinterest idea pin)\n- **Kind:** Seasonal text-led format\n- **What it is:** On-screen text written as a letter (\"Dear Santa, I'm a size...\") over clips of the wished-for things. Later logged it on 20 November with Wham!'s \"Last Christmas (Instrumental)\".\n- **Momentum:** Later, 20 Nov 2026. SocialPilot ranks \"Last Christmas\" in its top audios for 17 to 25 Nov. Christmas audio is climbing on every tracker.\n- **How we use it:** \"Dear Santa, my bathroom is 2.1 m by 1.7 m. I'd like a walk-in shower, a wall-hung vanity and to stop showering under a tile I hate.\" Each line cuts to a studio render of that piece with its price (VAT included). The last frame says \"Santa's running late. The studio isn't. Design yours free.\" This fits the small-space audience, sharing is built in (\"send this to whoever's buying your present\"), and the measurements make it exact.\n- **Audio:** Don't use the Wham! track unless it shows as cleared in the business account's library. Use a licensed festive instrumental or original audio.\n- **Brand fit:** 85. **Momentum:** Rising. **Lifespan:** About 3 to 4 weeks, to Christmas.\n- **Sources:** [Later](https://later.com/blog/instagram-reels-trends/), [SocialPilot](https://www.socialpilot.co/blog/instagram-reels-trends)\n\n### 2. \"I feel like I haven't done much this year\" (year in review)\n- **Platforms:** Instagram Reels and carousels\n- **Kind:** End-of-year format\n- **What it is:** An opening line saying you haven't done much, then clips labelled month by month that prove otherwise. Later logged it on 20 November with Harry Styles' \"Coming Up Roses\". SocialPilot says that sound went from 49K to 116K Reels in under three weeks.\n- **Momentum:** Later, 20 Nov 2026. SocialPilot, 17 to 25 Nov 2026.\n- **How we use it:** \"We feel like we haven't done much this year.\" Then \"January: [ADD: real room]\", \"March: [ADD]\"... Each month is a screen-to-room cut or a studio render. Only use rooms that are real and that customers have given permission for. If there aren't 12, do \"six rooms we designed this year\". Don't invent counts. A carousel version with one month per slide gets saves and makes a good pinned post for December.\n- **Audio:** Use original audio or a licensed piano track.\n- **Brand fit:** 80. **Momentum:** Rising, peaking through December. **Lifespan:** To early January.\n- **Sources:** [Later](https://later.com/blog/instagram-reels-trends/), [SocialPilot](https://www.socialpilot.co/blog/instagram-reels-trends)\n\n### 3. \"My coffee sounded weird this morning\" (an object starts a song)\n- **Platforms:** Instagram Reels\n- **Kind:** Sound gag and transition\n- **What it is:** Stirring coffee starts a holiday song. Taking the spoon out stops it. Later logged it on 27 November (today) on original audio.\n- **Momentum:** Later, 27 Nov 2026. It's brand new.\n- **How we use it:** \"My bath sounded different this morning.\" Turn on the Jaquar floor-mounted bath mixer (£2,251), and a slow, warm instrumental rises with the water. Turn it off and there's silence and steam. It's a moody close-up of brass and water in our usual palette, and it's a \"quiet mornings\" moment you can see. Close on the Artize Tiaara freestanding bath (£6,626) and \"See it in your room first. Free 3D design.\"\n- **Audio:** Original audio or a licensed library track only. Real water sound works well as the \"before\".\n- **Brand fit:** 82. **Momentum:** New. **Lifespan:** 1 to 3 weeks, so film this weekend.\n- **Sources:** [Later](https://later.com/blog/instagram-reels-trends/)\n\n### 4. \"Don't let a ___ see this\" (forbidden-content hook)\n- **Platforms:** Instagram Reels\n- **Kind:** Text hook meme\n- **What it is:** On-screen text hints the viewer is seeing something they shouldn't. Virlo marks it Rising in the week to 27 November, with top Reels at 3.1M, 1M and 993K views.\n- **Momentum:** Virlo, data as of 27 Nov 2026.\n- **How we use it:** \"Don't let a minimalist see this.\" Show a layered room with patterned tile, mixed metals and a furniture vanity, which ties into trends 6 and 7. Another version is \"Don't let your fitter see this price\", showing a full room priced to the pound inside budget. People will argue in the comments, and that's what we want. Keep the tone affectionate and never mock a customer's home.\n- **Audio:** Virlo's tracked sound (\"PHANTOM LIQUID DESIRE\") isn't confirmed as cleared. Use original audio.\n- **Brand fit:** 68. It's playful, so the grading and pacing need to stay calm. **Momentum:** Rising. **Lifespan:** About 2 weeks.\n- **Sources:** [Virlo Instagram trends](https://virlo.ai/instagram-trends)\n\n### 5. Black Friday counter-programming: \"Nothing's off. Everything's priced.\"\n- **Platforms:** Instagram (Reel, stories, carousel), Pinterest\n- **Kind:** Dated cultural moment\n- **What it is:** Black Friday is today, 27 November, and the weekend runs to Cyber Monday on 30 November. UK coverage is full of fake-deal warnings and retailers' sales running from October to 1 December.\n- **How we use it:** Don't run a discount. That goes against the voice. Make the contrast instead: \"This Black Friday, the only thing we're taking off is the guesswork.\" Then show a £15,000 studio room priced to the pound with VAT included, and the fact that the design costs nothing and needs no sign-up. A \"Guess the Price\" Reel works this weekend: \"Black Friday quiz: what does this room cost?\" with the real six-piece shop-the-look total of £11,533.84. People will comment their guesses, which drives reach to non-followers.\n- **Brand fit:** 88. **Momentum:** Peak today. **Lifespan:** 4 days.\n- **Sources:** [NationalWorld](https://www.nationalworld.com/recommended/black-friday-2026-9268295), [Shopappy on fake deals](https://shopappy.com/consumer-trends/discount-value/black-friday-2026-uk-early-sales-fake-deals), [Which?](https://www.which.co.uk/news/black-friday/)\n\n### 6. The \"living room treatment\" (lived-in bathrooms)\n- **Platforms:** Pinterest (main), Instagram carousels\n- **Kind:** Aesthetic\n- **What it is:** Bathrooms that feel like real rooms, with soft textures among the tile, antique or freestanding furniture vanities, upholstered stools, art, rugs, and pendants and wall lights instead of spotlights. Designers suggest mixed metals (antique brass wall lights with brushed nickel taps), warm stone and paneling.\n- **Momentum:** Homes & Gardens published \"the living room treatment\" on 23 Nov 2026, quoting Lauren Gilberthorpe and Marie Flanigan. Its 2027 trends piece (23 Oct 2026) leads with \"bathrooms that feel like actual rooms\".\n- **How we use it:** A carousel called \"5 ways to make your bathroom feel like a room, not a utility\". Use the Onsen Vanity Unit 2D W.120 in Light Walnut (£950) as the furniture-style piece and the Artize stone counter-top basin (£1,243), and add a practical slide on what survives humidity (that's our \"Know before you renovate\" credibility). Pin each slide on its own as a 2:3 static pin.\n- **Brand fit:** 92, because it matches warm stone, walnut and gold. **Momentum:** Rising, with editorial coverage this week. **Lifespan:** Months, as a 2027 theme.\n- **Sources:** [Homes & Gardens, lived-in bathroom](https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend), [Homes & Gardens UK, 2027 trends](https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027)\n\n### 7. \"Jewellery for the bathroom\": decorative brassware and mixed metals\n- **Platforms:** Instagram Reels (macro close-ups), Pinterest\n- **Kind:** Aesthetic and product moment\n- **What it is:** Taps and hardware treated as decoration: cross handles, backplates, antique-style fittings, polished nickel deliberately mixed with aged brass. A designer quoted by Homes & Gardens called them \"almost like jewelry for a bathroom\".\n- **Momentum:** Homes & Gardens, 23 Oct 2026, with mixed metals repeated in its 23 Nov piece.\n- **How we use it:** Run it as \"One Piece, Three Rooms\". One Jaquar mixer goes into three palettes (warm stone and gold, walnut and nickel, sage and brass), each a slow 3-second macro shot. The caption hook is \"Your taps are the jewellery. Choose them like it.\" Ask \"Which room?\" in the comments.\n- **Brand fit:** 90. **Momentum:** Steady and rising. **Lifespan:** Into 2027.\n- **Sources:** [Homes & Gardens UK, 2027 trends](https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027), [Homes & Gardens, lived-in bathroom](https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend)\n\n### 8. The green wave in 2027 colours, plus Pantone on 3 December\n- **Platforms:** Pinterest, Instagram carousels and Reels\n- **Kind:** Colour moment (dated)\n- **What it is:** Green leads the 2027 colour picks: Dulux Soulful Sage (UK, mixing since 8 Sep 2026), Sherwin-Williams Celery, Benjamin Moore Webster Green and Behr Grounded. Pantone reveals its colour on 3 December in Miami. Several sites report a leaked \"Aqua Splash (14-4812)\", but it's unconfirmed.\n- **How we use it:** Do a \"Spanish to Japanese\" cut called \"One bathroom, Soulful Sage, three metal finishes\" now. Dulux's own \"one room four ways\" with its colour shows the format works. Have a reactive post ready to publish within 2 hours of Pantone's announcement on 3 December: \"Pantone's 2027 colour, in a real bathroom, priced.\" Don't publish anything about the leak as if it were fact.\n- **Brand fit:** 78. **Momentum:** Pantone is a dated spike. Green is steady. **Lifespan:** The Pantone spike lasts about 1 week. The palette lasts all year.\n- **Sources:** [Dezeen, Dulux 2027](https://dezeen.com/2026/09/08/sage-green-colour-year-2027-dulux), [Dulux one room four ways](https://www.dulux.co.uk/en/colour-inspiration/one-room-four-ways-with-colour-of-the-year-2027), [Homes & Gardens, colours of 2027](https://www.homesandgardens.com/decor/paint/colors-of-the-year-2027), [Beebom on the leak](https://gadgets.beebom.com/news/motorola-phones-pantone-2027-colour-of-the-year-leaked-aqua-splash), [thecolortools, Pantone timing](https://thecolortools.com/learn/pantone-color-of-the-year-2027)\n\n### 9. Carousels with music in the Reels tab, plus Replace Audio\n- **Platforms:** Instagram\n- **Kind:** Platform mechanic\n- **What it is:**\n  - Carousels with music are being shown in the Reels tab again, so they can reach non-followers.\n  - You can now swap the audio on a published carousel without losing likes, comments or reach.\n  - Likes can be viewed per slide.\n  - The Edits app now builds carousels.\n  - Sends per reach is still the strongest signal for reaching non-followers. Linked Reel series ended on 28 October, so label \"Part 2\" on screen and pin Part 1.\n- **Momentum:** SocialBee (updated 23 Nov 2026), Ethical SMM (November 2026), carouselpost.io (Edits carousels from 7 Oct 2026). These are secondary sources, so check them against @creators.\n- **How we use it:** Every carousel in this dossier (living room treatment, Dear Santa, budget tiers) goes out with a licensed instrumental. Then refresh the audio on the best older carousels instead of reposting them. Use per-slide likes to learn which room or palette wins.\n- **Brand fit:** 95. **Momentum:** Current. **Lifespan:** Ongoing.\n- **Sources:** [SocialBee](https://socialbee.com/blog/instagram-updates-news-features/), [Ethical SMM](https://ethicalsmm.com/blog/instagram-updates-november-2026), [carouselpost.io](https://carouselpost.io/digest/instagram-carousel-creation-edits-app-2026)\n\n### 10. Guest-ready bathroom for Christmas hosting\n- **Platforms:** Pinterest (seasonal searching), Instagram stories\n- **Kind:** Seasonal need\n- **What it is:** Recurring \"get the bathroom ready for Christmas guests\" content: layered lighting, soft towels, a light scent, spare toiletries. UK titles (Ideal Home, Woman & Home, Homes & Gardens) are running guest-ready guides.\n- **How we use it:** A text-on-image pin and carousel called \"Christmas guests in 3 weeks? What you can fix, and what to design for 2027\". Give quick fixes now: lighting, a Dell LED round mirror with demister (£263.84), towels. Then pivot: \"If the room itself is the problem, design the new one over Christmas, free.\" Don't imply we can fit before Christmas unless lead times are confirmed.\n- **Brand fit:** 75. **Momentum:** Seasonal peak now. **Lifespan:** To 24 December.\n- **Sources:** [Woman & Home](https://www.womanandhome.com/homes/how-to-style-a-bathroom-for-christmas/), [Ideal Home guest-ready edit](https://www.idealhome.co.uk/collection/all-rooms/bathroom/guest-ready-shopping-edit), [Dowsing & Reynolds](https://www.dowsingandreynolds.com/inspiration/guest-bathroom-ideas-for-christmas/)\n\n**Trends I left out:**\n- \"First to react loses\" and the blindfold \"If You're Happy and You Know It\" challenge: they need faces and slapstick, which isn't our brand.\n- \"POV: you're the villain\", \"Bicep heart flex\" and the door prank: off-brand or fading.\n- Most of the top GTA VI-related audio (Virlo, week to 27 Nov): commercial music, not cleared, and off-brand.\n\n---\n\n## Moments in the window\n\n| Date | Moment | Use |\n|---|---|---|\n| Fri 27 Nov | Black Friday (UK) | Counter-programming: \"priced, not discounted\", Guess the Price (trend 5) |\n| Sat 28 Nov | US Small Business Saturday (not UK) | Ignore. The UK date is 5 Dec |\n| Sun 29 Nov | Advent Sunday (fourth Sunday before Christmas on Fri 25 Dec) | Start an \"Advent of details\" stories run, one material close-up a day |\n| Mon 30 Nov | Cyber Monday. St Andrew's Day | Last Black Friday contrast post. Optional Scottish-stone or heather palette pin |\n| Tue 1 Dec | Advent calendars open. Currys' sale ends (marks the end of sale noise) | Daily stories begin |\n| Thu 3 Dec | Pantone Colour of the Year 2027 reveal, Miami | Reactive render within hours (trend 8) |\n| Sat 5 Dec | Small Business Saturday UK (official site) | \"One team\" story: the designer, the range and the fitters. Use real team photos only |\n| Tue 8 Dec | Pinterest Predicts 2027 released | Run the Pinterest Lab refresh on 8 to 9 Dec. Re-title boards with the new trend names that suit us |\n| Mid to late Dec | Christmas hosting, then the planning lull between Christmas and New Year | \"Design it over Christmas\" studio push ahead of January |\n\n**Sources:** [NationalWorld](https://www.nationalworld.com/recommended/black-friday-2026-9268295), [Small Business Saturday UK](https://smallbusinesssaturdayuk.com/), [Pinterest newsroom: Creators to Watch 2027](https://newsroom.pinterest.com/news/creators-to-watch-2027/), [pinboostr (Predicts date)](https://pinboostr.com/pinterest-trends-2027/), [thecolortools (Pantone)](https://thecolortools.com/learn/pantone-color-of-the-year-2027)\n\n---\n\n## Pinterest signals\n\n**Where the data stands.** There's no current Pinterest search-growth data for bathrooms in public. Pinterest Predicts 2027 arrives on 8 December. Pinterest has said its predictions were 88% accurate over the past six years. Its newsroom post of 17 November confirms the date and names its first \"Creators to Watch for 2027\", including UK creators. The 2026 Predicts home themes are still being saved: Neo Deco (Art Deco revival), \"afrobohemian\" decor, opalescent finishes and circus stripes. Of those, only Neo Deco really suits us. Pinterest's Spring 2026 report framed home projects as \"micro-renovations\", which supports content about upgrading one piece at a time.\n\n**Aesthetics being saved and written about (editorial evidence from Oct to Nov 2026):**\n- Lived-in bathrooms, or the \"living room treatment\": furniture vanities, upholstered stools, art, pendants\n- Warm, earthy palettes replacing all-white spa rooms: espresso and chocolate, warm stone, dark wood\n- Bolder material mixes: espresso pill tiles with natural stone, glossy small tiles against large slabs\n- Brassware as jewellery: mixed nickel and aged brass, cross handles, backplates\n- Tile as a focal point: zellige, herringbone floors, long thin tiles, tiled panels that look like millwork\n- Reeded glass replacing frosted screens, and fabric curtains replacing glass over baths\n- Built-in baths coming back\n- \"Texture drenching\" and \"lightscaping\" (layered lighting)\n- Wet rooms that look unified\n- Green paint: Soulful Sage and Celery\n- On Pinterest boards, \"zen bathroom\" and \"natural spa\" persist. This comes from a secondary source, so treat it with caution.\n\n**Pin formats:**\n- **Collages:** Pinterest's own August 2026 beauty analysis found video pins got about 1.2x the saves of image pins, collages came close behind, and collages drove the most clicks. Pinterest says the format is especially popular with Gen Z, and each cutout can link to a product. This is ideal for \"shop the look\" with each piece tagged and priced.\n- **Static 2:3 pins** with a clear focal point and keyword-led titles. Pinterest's guidance is to open video pins on the result.\n- **Multi-slide or carousel pins:** One vendor study (GenSumo, March 2026) says they have the best save rate, but its own figures contradict each other. Test them rather than assume.\n- **Text-on-image guides** such as \"5 ways to...\", \"£5k vs £15k vs £50k\" and \"what it costs\". These suit the planning audience.\n\n**Search phrases to open on Pinterest for moodboards** (check each in Pinterest Trends for the UK):\n- lived in bathroom\n- bathroom with furniture vanity\n- vintage vanity bathroom\n- warm stone bathroom\n- chocolate brown bathroom tiles\n- espresso tile bathroom\n- mixed metals bathroom brass nickel\n- unlacquered brass taps\n- cross handle tap bathroom\n- reeded glass shower screen\n- built in bath alcove tiled\n- zellige shower wall\n- herringbone bathroom floor\n- tiled wainscot bathroom\n- sage green bathroom 2027\n- Soulful Sage bathroom\n- celery green bathroom\n- Art Deco bathroom modern (Neo Deco)\n- Japandi bathroom walnut\n- Spanish bathroom terracotta\n- hotel spa bathroom at home\n- small en suite walk in shower\n- wall hung vanity small bathroom\n- guest bathroom Christmas\n- bathroom pendant light over bath\n\n**Board structure:** Keep one theme per board, with keyword titles, for example \"Warm stone bathrooms\", \"Small en-suite layouts\", \"Bathroom budgets: £5k to £50k\", \"Brassware as jewellery\" and \"Soulful Sage bathrooms\". Link each pin to the studio or a product page.\n\n**When people plan:** I found no public 2026 data showing a January rise in Pinterest bathroom searches. Domino (2021) reported Pinterest home-renovation searches at a record high, and it cited Google data showing US January bathroom searches more than doubling. Both are old or not from Pinterest. The working assumption is that December saves turn into January projects, so pin evergreen planning content now. Mark it as an assumption.\n\n**Sources:** [Pinterest Creators formats guide](https://create.pinterest.com/en-GB/blog/pinterest-formats-and-features-creator-business/), [Pinterest beauty content data](https://create.pinterest.com/blog/beauty-content-ideas-examples/), [GenSumo report](https://gensumo.pages.dev/research/pinterest-content-mix-report/), [Pinterest Predicts 2026 (UK)](https://business.pinterest.com/en-gb/pinterest-predicts/), [Stylist on Predicts interiors](https://www.stylist.co.uk/home/pinterest-predicts-interiors-trends-2026/1044089), [Pinterest Spring Trend Report 2026](https://newsroom.pinterest.com/en-gb/news/spring-trend-report-2026/), [LEVEL UP (secondary)](https://levelupcontractor.com/pinterest-inspired-home-design-trends-2026-fresh-ideas-for-kitchens-bathrooms-and-living-spaces/), [Domino](https://www.domino.com/content/home-renovation-ideas-pinterest/)\n\n---\n\n## What is working for comparable brands\n\nI found little published evidence of specific UK bathroom-brand posts going viral this month. These are the defensible signals:\n- **Dulux \"one room, four ways\"** with its 2027 colour. One room shown in several versions is the house format for colour moments. That supports \"Spanish to Japanese\" and \"One Piece, Three Rooms\".\n- **Victorian Plumbing** has the most brand demand among UK bathroom retailers, but its organic search visibility more than halved in the year to May 2026. Salience blames thin informational content, while Big Bathroom Shop wins on inspiration guides. That leaves room for \"Know Before You Renovate\" on YouTube and Pinterest.\n- **Pearler**, an investing app, ran a bathroom-set campaign in November 2026. Its creator skit (\"Toilet cubicle financial planning\") passed 1M Instagram views, and sign-ups rose 18% that week. Bathroom-as-setting humour still travels. That supports \"The Bath Arrived Three Weeks Before the Taps\".\n- **Lightreel (14 to 21 Nov)** found that simple, low-production bathroom moments with one strong line beat generic seasonal content. One sharp line on screen beats a busy edit.\n- **Instagram's signals:** Watch time, likes per reach and sends per reach are still the main signals. Reposted or lightly edited content loses reach under the originality rule.\n\n**Sources:** [Dulux](https://www.dulux.co.uk/en/colour-inspiration/one-room-four-ways-with-colour-of-the-year-2027), [Salience](https://salience.co.uk/insight/victorian-plumbing-is-the-most-searched-most-reviewed-name-in-bathrooms-its-organic-search-still-halved/), [Mediaweek on Pearler](https://www.mediaweek.com.au/pearler-takes-investing-message-to-pub-toilets-lands-1m-views), [Lightreel](https://lightreel.ai/blogs/whats-trending-on-instagram), [Ethical SMM](https://ethicalsmm.com/blog/instagram-updates-november-2026)\n\n---\n\n## Lead-gen angles\n\n1. **Black Friday Guess the Price** (today to Monday). Comments guess the total, then reveal £11,533.84 priced to the pound. The CTA is \"Set your own budget, free. Design your bathroom in 3D.\"\n2. **Dear Santa, my bathroom is...** Followers comment their room size. Reply with \"Comment DESIGN and we'll send the studio link\", and start a \"Your Bathroom, Redesigned\" thread from the replies.\n3. **\"Design it over Christmas\"**. Pitch the studio as a calm job for the Christmas lull, so homeowners start January with a priced design and a designer's stock check.\n4. **Pantone reactive render** (3 Dec). \"Want it in your room? Upload a photo, free.\"\n5. **Pinterest collage \"shop the look\" pins** linking to products and the studio. They suit savers months before renovating.\n6. **Comment-to-DM planning checklist** ([PLAN] lead magnet) attached to the living-room-treatment and guest-ready carousels.\n7. **Cost guide teaser** ([COST] magnet). Use studio budget tiers from £1,000 to £100,000 as a January anchor, and pin it now.\n\n---\n\n## Watch-outs\n\n- **Music licensing:** Wham!'s \"Last Christmas\", \"Coming Up Roses\", Kanye West's \"Runaway\", the GTA VI tracks and Tate McRae's \"Housewife\" are commercial. Business accounts usually can't use them. Use original audio, voiceover or Meta's licensed library, and check inside the business account. Replace Audio lets you upgrade later.\n- **Tracker reliability:** The audio and trend rankings from Virlo, Later, SocialPilot and CreatorDB don't agree. Treat them as signals and check in-app before filming.\n- **Black Friday tone:** No \"deals\", \"% off\", countdowns or urgency. That breaks the voice and the \"no cheap discount language\" rule. The contrast idea only works if it stays calm.\n- **Pantone leak:** \"Aqua Splash\" is unconfirmed. Don't publish it as fact before 3 December.\n- **Pinterest Predicts 2027:** It doesn't exist until 8 December. Don't quote 2027 Pinterest trend names or percentages until then.\n- **Claims:**\n  - The year-in-review and \"one team\" posts need real rooms, real counts and written permission. Leave [ADD] placeholders until then.\n  - No review quotes until real ones exist.\n  - Don't promise fitting before Christmas unless lead times are confirmed.\n- **Prices:** Use the Brand Brain figures with VAT included: Jaquar mixer £2,251, Tiaara bath £6,626, Onsen vanity £950, Artize basin £1,243, Dell mirror £263.84, look total £11,533.84.\n- **Consent:** No customers' homes or faces without written permission. \"Don't let a ___ see this\" must never use or mock a real customer's room.\n- **AI content:** If renders or AI scenes include people, the \"AI-generated\" labelling rules apply. Keep studio renders clearly framed as designs.\n- **Originality:** Rebuild every trend with our own footage. Lightly edited reposts of other creators lose reach.\n\n---\n\n## Sources\n\n- Later: Instagram Reels Trends (updated weekly, entries to 27 Nov 2026): https://later.com/blog/instagram-reels-trends/\n- Virlo: Instagram Trends This Week (data to 27 Nov 2026): https://virlo.ai/instagram-trends\n- Virlo: Reels trends: https://virlo.ai/reels\n- SocialPilot: Instagram Reels Trends, trending audio: https://www.socialpilot.co/blog/instagram-reels-trends\n- CreatorDB: Trending Instagram Audio (18 Nov 2026): https://creatordb.app/free-tools/trending-instagram-audio/\n- Dash Social: Trending Instagram Reels Songs (Nov 2026): https://www.dashsocial.com/blog/trending-instagram-reels-songs\n- Lightreel: What Is Trending on Instagram, November 2026: https://lightreel.ai/blogs/whats-trending-on-instagram\n- SocialBee: Instagram updates (23 Nov 2026): https://socialbee.com/blog/instagram-updates-news-features/\n- Ethical SMM: Instagram Updates November 2026: https://ethicalsmm.com/blog/instagram-updates-november-2026\n- carouselpost.io: Instagram Adds Carousel Creation to Edits: https://carouselpost.io/digest/instagram-carousel-creation-edits-app-2026\n- Homes & Gardens: The living room treatment (23 Nov 2026): https://www.homesandgardens.com/decor/bathrooms/lived-in-bathroom-trend\n- Homes & Gardens UK: Bathroom trends 2027 (23 Oct 2026): https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027\n- Homes & Gardens: Every Colour of the Year 2027: https://www.homesandgardens.com/decor/paint/colors-of-the-year-2027\n- Dezeen: Sage green is the Dulux Colour of the Year 2027: https://dezeen.com/2026/09/08/sage-green-colour-year-2027-dulux\n- Dulux: One room four ways with Colour of the Year 2027: https://www.dulux.co.uk/en/colour-inspiration/one-room-four-ways-with-colour-of-the-year-2027\n- Beebom: Pantone 2027 leak (Aqua Splash): https://gadgets.beebom.com/news/motorola-phones-pantone-2027-colour-of-the-year-leaked-aqua-splash\n- The Color Tools: Pantone 2027 release date: https://thecolortools.com/learn/pantone-color-of-the-year-2027\n- Pinterest Newsroom: Creators to Watch 2027: https://newsroom.pinterest.com/news/creators-to-watch-2027/\n- pinboostr: Pinterest Predicts 2027 out 8 Dec 2026: https://pinboostr.com/pinterest-trends-2027/\n- Pinterest Business: Pinterest Predicts 2026 (UK): https://business.pinterest.com/en-gb/pinterest-predicts/\n- Stylist: Pinterest Predicts interiors trends 2026: https://www.stylist.co.uk/home/pinterest-predicts-interiors-trends-2026/1044089\n- Pinterest Newsroom: Spring Trend Report 2026: https://newsroom.pinterest.com/en-gb/news/spring-trend-report-2026/\n- Pinterest Create: Formats and features (28 Apr 2026): https://create.pinterest.com/en-GB/blog/pinterest-formats-and-features-creator-business/\n- Pinterest Create: Beauty content that performs: https://create.pinterest.com/blog/beauty-content-ideas-examples/\n- GenSumo: Pinterest content mix report: https://gensumo.pages.dev/research/pinterest-content-mix-report/\n- LEVEL UP: Pinterest-inspired home design trends 2026: https://levelupcontractor.com/pinterest-inspired-home-design-trends-2026-fresh-ideas-for-kitchens-bathrooms-and-living-spaces/\n- Domino: Pinterest renovation searches (2021): https://www.domino.com/content/home-renovation-ideas-pinterest/\n- NationalWorld: When is Black Friday 2026 (UK): https://www.nationalworld.com/recommended/black-friday-2026-9268295\n- Shopappy: Black Friday 2026 UK early sales and fake deals: https://shopappy.com/consumer-trends/discount-value/black-friday-2026-uk-early-sales-fake-deals\n- Which?: Black Friday: https://www.which.co.uk/news/black-friday/\n- Small Business Saturday UK: https://smallbusinesssaturdayuk.com/\n- Woman & Home: Style a bathroom for Christmas guests: https://www.womanandhome.com/homes/how-to-style-a-bathroom-for-christmas/\n- Ideal Home: Guest-ready bathroom edit: https://www.idealhome.co.uk/collection/all-rooms/bathroom/guest-ready-shopping-edit\n- Dowsing & Reynolds: Guest bathroom ideas for Christmas: https://www.dowsingandreynolds.com/inspiration/guest-bathroom-ideas-for-christmas/\n- Salience: Victorian Plumbing organic search analysis: https://salience.co.uk/insight/victorian-plumbing-is-the-most-searched-most-reviewed-name-in-bathrooms-its-organic-search-still-halved/\n- Mediaweek: Pearler pub toilets campaign, 1M views: https://www.mediaweek.com.au/pearler-takes-investing-message-to-pub-toilets-lands-1m-views"
+}

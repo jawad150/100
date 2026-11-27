@@ -3,3 +3,5 @@ node_modules/
 data/config.json
 data/plan.json
 *.tmp
+data/server.pid
+data/server.log
