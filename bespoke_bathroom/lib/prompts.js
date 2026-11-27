@@ -119,38 +119,68 @@ ${pinterest ? "## Pinterest signals (aesthetics, searches, pin formats, moodboar
 Aim for 6 to 10 strong trends. Quality over quantity.`;
 }
 
-export function synthesisTask({ kind, focus, pinterest, today, dossier, ideaCount }) {
-  const win = windowDates(kind, today);
-  const mix = pinterest
-    ? "At least half the ideas must be Pinterest-led static posts, pins or carousels built from the Pinterest signals (fill static_design or slides, plus the pinterest block with keyword-led pin copy). The rest can be reels."
+// The brief is written in two steps (see BriefPlanSchema in schema.js): planTask plans the
+// brief with an outline per idea, then ideaTask writes each idea in full.
+const formatMix = (pinterest) =>
+  pinterest
+    ? "At least half the ideas must be Pinterest-led static posts, pins or carousels built from the Pinterest signals. The rest can be reels."
     : "Mix formats: about half reels (or Shorts), the rest carousels, statics and stories, matched to what the research says is working.";
-  const forecastRules =
-    kind === "forecast"
-      ? `This is a FORECAST for ${win.label}. Set each idea's "day" to one of: ${win.dates.join(", ")}. Spread ideas across all three days (2 to 4 per day). Fill "days" with one entry per date: label (weekday, date and the main moment), moments, the day's focus, the idea ids for that day, and prep (what to film or design the day before).`
-      : `This is the DAILY brief for ${win.label}. Set "day" to null on every idea and "days" to null.`;
 
+const IDEA_RULES = `- Reels, Shorts and stories: fill "reel" with 3 to 8 shots with timecodes, word-for-word on-screen text, voiceover where used, audio direction and edit notes. The hook lands in the first two seconds.
+- Carousels: fill "slides" with 5 to 10 slides; slide 1 is the hook, the last slide is the CTA.
+- Statics and pins: fill "static_design" with headline, subline, visual, layout and a palette from the brand colours (#081C26, #174A5C, #F5F2ED, #C5A16B, #E4C99B, #8A6A3B) plus any trend colours.
+- Pinterest ideas: fill "pinterest" with keyword-led pin title and description, board, keywords and alt text. Set the blocks that do not apply to the format to null.
+- moodboard_searches: 2 to 4 phrases the team can type into Pinterest.
+- Scores are honest predictions (0-100). Ease reflects a small team with a phone, the 3D studio and access to fitted projects.
+- post_time in UK time with the day name.
+- Follow every writing rule in the system prompt: British English, no em-dashes, no invented proof.`;
+
+export function dossierBlock(dossier) {
   return `Here is today's research dossier:
 
 <dossier>
 ${dossier}
-</dossier>
+</dossier>`;
+}
 
-Turn it into the content brief as JSON matching the schema.
+export function planTask({ kind, focus, pinterest, today, ideaCount }) {
+  const win = windowDates(kind, today);
+  const forecastRules =
+    kind === "forecast"
+      ? `This is a FORECAST for ${win.label}. Set each outline's "day" to one of: ${win.dates.join(", ")}. Spread ideas across all three days (2 to 4 per day). Fill "days" with one entry per date: label (weekday, date and the main moment), moments, the day's focus, the idea ids for that day, and prep (what to film or design the day before).`
+      : `This is the DAILY brief for ${win.label}. Set "day" to null on every outline and "days" to null.`;
+
+  return `Plan the content brief from the dossier above, as JSON matching the schema. The full ideas are written next, one at a time, from your outlines.
 
 Rules:
-- ${ideaCount} ideas, ranked best first. Every idea must ride a trend or moment from the dossier (or be marked 'Evergreen' when it is a signature series that suits the day).
+- ${ideaCount} idea outlines, ranked best first, with ids i1, i2 and so on. Every idea must ride a trend or moment from the dossier (or be marked 'Evergreen' when it is a signature series that suits the day). Make the ideas clearly different from each other.
 - Focus: ${FOCUS_TEXT[focus]}
-- ${mix}
+- ${formatMix(pinterest)}
 - ${forecastRules}
-- Reels: 3 to 8 shots with timecodes, word-for-word on-screen text, voiceover where used, audio direction, edit notes. Hook lands in the first two seconds.
-- Carousels: 5 to 10 slides, slide 1 is the hook, last slide is the CTA.
-- Statics and pins: headline, subline, visual, layout and a palette from the brand colours (#081C26, #174A5C, #F5F2ED, #C5A16B, #E4C99B, #8A6A3B) plus any trend colours.
-- moodboard_searches: 2 to 4 phrases the team can type into Pinterest.
-- Scores are honest predictions (0-100). Ease reflects a small team with a phone, the 3D studio and access to fitted projects.
-- post_time in UK time with the day name.
 - Trends: include the 6 to 10 strongest from the dossier with their source URLs.
 - watch_outs: specific to today's ideas.
 - Follow every writing rule in the system prompt: British English, no em-dashes, no invented proof.`;
+}
+
+export function ideaTask({ focus, plan, outline }) {
+  const others = plan.idea_outlines
+    .filter((o) => o.id !== outline.id)
+    .map((o) => `- ${o.id}: ${o.title} (${o.format})`)
+    .join("\n");
+  return `The brief's plan: ${plan.headline}
+${plan.summary}
+
+Write this idea in full, as JSON in the "idea" field:
+${JSON.stringify(outline, null, 2)}
+
+Keep its id, title, format, platforms, goal, pillar, trend and day. Build the hook, concept and everything else from its angle and the dossier evidence for its trend.
+
+The other ideas in this brief (do not repeat them):
+${others || "- none"}
+
+Rules:
+- Focus: ${FOCUS_TEXT[focus]}
+${IDEA_RULES}`;
 }
 
 export function reworkTask({ idea, instruction, focus }) {

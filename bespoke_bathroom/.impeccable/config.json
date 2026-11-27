@@ -1,0 +1,23 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-26T10:38:16.250Z",
+        "reason": "Brand-mandated: bespoke_bathroom/data/brand.json visual_style specifies Inter body text"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "public/app.css"
+        ],
+        "createdAt": "2026-11-26T10:38:26.676Z",
+        "reason": "False positive: .mix-row i::before uses a 2px border-right as the target marker on a progress bar, not a card side accent"
+      }
+    ]
+  }
+}

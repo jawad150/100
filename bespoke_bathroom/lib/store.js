@@ -23,7 +23,6 @@ export function createStore(root) {
   };
 
   const DEFAULT_CONFIG = {
-    apiKey: "",
     model: "claude-opus-5-5",
     depth: "standard",
     autoResearch: true,
@@ -34,22 +33,15 @@ export function createStore(root) {
   const safeId = (id) => String(id).replace(/[^a-zA-Z0-9_-]/g, "");
 
   return {
-    // Settings (data/config.json is git-ignored; it holds the API key).
+    // Settings (data/config.json is git-ignored). Sign-in comes from the Console login
+    // (lib/auth.js), so no key is kept here; an old saved apiKey is dropped on next save.
     getConfig() {
-      const cfg = { ...DEFAULT_CONFIG, ...readJSON(file("config.json"), {}) };
-      if (!cfg.apiKey && process.env.ANTHROPIC_API_KEY) cfg.apiKey = process.env.ANTHROPIC_API_KEY;
+      const { apiKey, ...cfg } = { ...DEFAULT_CONFIG, ...readJSON(file("config.json"), {}) };
       return cfg;
-    },
-    keySource() {
-      const saved = readJSON(file("config.json"), {});
-      if (saved.apiKey) return "settings";
-      if (process.env.ANTHROPIC_API_KEY) return "env";
-      if (process.env.ANTHROPIC_AUTH_TOKEN) return "env";
-      return null;
     },
     saveConfig(patch) {
       const current = readJSON(file("config.json"), {});
-      const next = { ...DEFAULT_CONFIG, ...current, ...patch };
+      const { apiKey, ...next } = { ...DEFAULT_CONFIG, ...current, ...patch };
       writeJSON(file("config.json"), next);
       return next;
     },
@@ -96,6 +88,7 @@ export function createStore(root) {
           headline: b.brief?.headline,
           ideas: b.brief?.ideas?.length ?? 0,
           cost: b.usage?.cost ?? null,
+          billing: b.usage?.billing ?? "api",
           sample: !!b.sample,
         }))
         .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));

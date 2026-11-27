@@ -1,0 +1,1031 @@
+{
+  "id": "2026-11-27-daily-balanced-122201",
+  "kind": "daily",
+  "focus": "balanced",
+  "pinterest": false,
+  "sources": [
+    "instagram",
+    "tiktok",
+    "youtube",
+    "facebook"
+  ],
+  "date": "2026-11-27",
+  "window": {
+    "label": "Friday 27 November 2026",
+    "dates": [
+      "2026-11-27"
+    ]
+  },
+  "created_at": "2026-11-27T12:22:01.862Z",
+  "duration_s": 466,
+  "model": "claude-opus-5-5",
+  "usage": {
+    "billing": "plan",
+    "input": 535790,
+    "output": 110711,
+    "cacheWrite": 170834,
+    "cacheRead": 297407,
+    "searches": 22,
+    "fetches": 10,
+    "cost": null,
+    "apiEquivalent": 3.1799529
+  },
+  "brief": {
+    "headline": "Black Friday with nothing to discount: show real prices to the pound, say no countdown, and post NO-vember before it ends on Tuesday.",
+    "summary": "I found no bathroom-specific trend from the last 14 days. What is live are general formats from third-party trackers, and two of them are on a deadline: NO-vember ends on 1 December and \"Add to Cart\" fades after Cyber Monday. Today we use those for reach. We also post \"When life gives you a £15,000 budget\", one day old and our best brand fit, to turn saves into studio starts. Most competitors are leading Black Friday with discounts, so we stay calm and clear about price: exact figures with VAT, nothing ordered until you approve, and no sale language. Half of today's ideas go after reach and saves, and half point to one action: start a free 3D design.",
+    "trends": [
+      {
+        "name": "It's NO-vember: things to stop doing",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "Text-led Reels with short 'no' lines stacked under the month's name. Each line names a habit to drop. The audio is usually original and the on-screen text carries it.",
+        "why_now": "New Engen's weekly tracker, updated 20 November 2026, lists it and says the pun expires on 1 December. That leaves about three days.",
+        "how_we_use_it": "A Fitter's Eye piece. A slow push-in on a finished stone and brass wall while renovation mistakes land one line at a time, ending on 'Start your design, free.'",
+        "brand_fit": 82,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://newengen.com/insights/instagram-trends/"
+        ]
+      },
+      {
+        "name": "When life gives you…: carousel that builds to a reveal",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "A carousel with one ingredient or element per slide, building to a surprise finished result on the last slide.",
+        "why_now": "SocialBee added it on 26 November 2026, so it is one day old. Suggested brand use: ingredients first, finished product last.",
+        "how_we_use_it": "'When life gives you a £15,000 budget…' then warm stone, gold finish, walnut vanity and worked-out tile quantities, ending on the real £15,000 studio render.",
+        "brand_fit": 92,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://socialbee.com/blog/latest-instagram-trends/"
+        ]
+      },
+      {
+        "name": "These can coexist btw / It's cool to do both",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "pinterest"
+        ],
+        "kind": "format",
+        "what_it_is": "Split-screen or two-panel posts showing two things people assume are in conflict, side by side.",
+        "why_now": "SocialBee listed 'It's cool to do both' on 11 November and 'These can coexist btw' on 26 November 2026.",
+        "how_we_use_it": "Small-space and budget myths, such as a small en-suite with a walk-in shower, or a fixed budget with a stone basin. Each pair ends on a studio render and works as a two-panel Pinterest pin.",
+        "brand_fit": 88,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://socialbee.com/blog/latest-instagram-trends/"
+        ]
+      },
+      {
+        "name": "Some bills are non-negotiable. The bills:",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "A relatable list of small comforts people refuse to cut from their budget, shown as quick cuts.",
+        "why_now": "SocialBee added it on 11 November 2026, which is 16 days ago and just outside the 14-day line. It sits alongside the 19 and 26 November entries and suits the Black Friday spending mood.",
+        "how_we_use_it": "Close-ups of the bathroom pieces worth paying for (heated towel rail, rain shower, LED demister mirror, stone basin), each with its price including VAT. We talk about what is worth paying for, not what is cheap.",
+        "brand_fit": 85,
+        "momentum": "steady",
+        "lifespan": "weeks",
+        "sources": [
+          "https://socialbee.com/blog/latest-instagram-trends/"
+        ]
+      },
+      {
+        "name": "Add to Cart: Black Friday shopping format",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "Hands bring products into frame one by one, and each gets an 'add to cart' reaction or voiceover.",
+        "why_now": "New Engen made it the top November pick on 6 November and still listed it on 20 November 2026, noting it appeared across several November round-ups. It peaks through Black Friday and Cyber Monday.",
+        "how_we_use_it": "Gloved hands bring each hero piece into frame while a running total updates to the pound with VAT. The last beat: 'Or skip the cart. Design the whole room around your budget, free.'",
+        "brand_fit": 78,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://newengen.com/insights/instagram-trends/"
+        ]
+      },
+      {
+        "name": "Born to… forced to…",
+        "platforms": [
+          "tiktok",
+          "instagram"
+        ],
+        "kind": "meme",
+        "what_it_is": "A contrast format setting what you love doing against the daily reality, usually as on-screen text over b-roll.",
+        "why_now": "SocialBee added it on 19 November 2026.",
+        "how_we_use_it": "The Bath Arrived Three Weeks Before the Taps series for trade: 'Born to fit bathrooms. Forced to chase four deliveries for one job.' Solved by one order and one delivery plan. Use team members or b-roll only.",
+        "brand_fit": 74,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://socialbee.com/blog/latest-instagram-trends/"
+        ]
+      },
+      {
+        "name": "Black Friday and Cyber Monday, the honest-price way",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok",
+          "pinterest"
+        ],
+        "kind": "moment",
+        "what_it_is": "The big UK retail weekend, which bathroom retailers mostly fill with discount pages and countdowns.",
+        "why_now": "Today is Black Friday (27 November) and Cyber Monday is 30 November. Doors 2 Floors launched its first Black Friday campaign, and its MD said renovation plans are being scaled back because of price rises. Most competitor Black Friday pages are discount-led.",
+        "how_we_use_it": "Stand apart by showing prices, not cutting them: no countdown, no 'from' prices, the room priced to the pound before anything is ordered.",
+        "brand_fit": 80,
+        "momentum": "peaking",
+        "lifespan": "days",
+        "sources": [
+          "https://www.thestar.co.uk/community/doors-2-floors-unveils-first-black-friday-campaign-5414415",
+          "https://www.victorianplumbing.co.uk/black-friday-deals",
+          "https://www.drench.co.uk/c/sale/black-friday"
+        ]
+      },
+      {
+        "name": "Year-end recaps and Wrapped season",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook",
+          "youtube"
+        ],
+        "kind": "format",
+        "what_it_is": "A quiet opener ('I feel like I haven't done much this year') followed by one clip per month, or a data-led 'Wrapped' carousel.",
+        "why_now": "New Engen listed it on 20 November 2026. Spotify Wrapped is predicted for Wednesday 2 December 2026, though this is not confirmed, and its launch usually sets off brand recaps.",
+        "how_we_use_it": "Prepare now for next week: 'Our 2026, designed', one render or fitted room per month, plus a Studio Wrapped carousel built only from real studio figures.",
+        "brand_fit": 72,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://newengen.com/insights/instagram-trends/",
+          "https://www.officialcharts.com/chart-news/spotify-wrapped-2026-release-date/"
+        ]
+      },
+      {
+        "name": "Christmas wrapping-paper reveal",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "kind": "format",
+        "what_it_is": "Paper covers the frame and is torn open to reveal a product, offer or date.",
+        "why_now": "New Engen listed it on 20 November 2026. It has no fixed sound, and it builds from Advent Sunday on 29 November.",
+        "how_we_use_it": "Cream paper with a gold edge, a slow tear and a real paper sound, revealing a Screen to Room or a render. Hold it until Sunday.",
+        "brand_fit": 66,
+        "momentum": "rising",
+        "lifespan": "weeks",
+        "sources": [
+          "https://newengen.com/insights/instagram-trends/"
+        ]
+      }
+    ],
+    "ideas": [
+      {
+        "id": "i1",
+        "title": "NO-vember: four things a bathroom should never do to you",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "goal": "viral",
+        "pillar": "Fitted by Our Team",
+        "trend": "It's NO-vember: things to stop doing",
+        "day": null,
+        "hook": "It's NO-vember. Four things a bathroom should never do to you.",
+        "concept": "A Fitter's Eye Reel shot as one slow push-in on a finished stone and brass wall. 'NO-vember' sits at the top while four 'no' lines land one at a time. Each line is a renovation pain that the one-team model removes: tile layouts the fitter actually follows, one delivery plan, fitting priced before work starts, and no second brief. It ends on 'Start your design, free.'",
+        "why_it_works": "New Engen's weekly tracker (updated 20 November 2026) lists 'It's NO-vember' as live and says the pun expires on 1 December. That makes it a peaking format with a hard deadline, and few bathroom brands will get to it in time. The format is text-led and usually runs on original audio, so a business account can use it without licensing risk. Each 'no' matches a real differentiator from the Brand Brain (fitters work from the approved design, one order and one delivery plan, fitting agreed before work starts), so the list is relatable enough to share and save and explains the offer without a hard sell. On Black Friday, while competitors lead with discounts, a calm list of things you won't put up with stands out and avoids sale language. The evidence comes from an aggregator, so check the format is still live in the apps before posting.",
+        "scores": {
+          "reach": 72,
+          "business": 45,
+          "ease": 85,
+          "brand_fit": 82,
+          "overall": 68
+        },
+        "reel": {
+          "duration_seconds": 20,
+          "audio": "Original audio only. A fitter's short voiceover recorded on a phone in a quiet room, over the real room tone of the finished bathroom (a soft tap running, a brass lever moving). No commercial music. If the fitter can't record today, text-only over room tone works, because the text carries this format.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "The slow push-in starts wide on a finished stone wall with a brushed brass mixer, in warm, low side light. The movement is already under way on frame one, with no logo and no title card.",
+              "on_screen_text": "NO-vember. Four things a bathroom should never do to you.",
+              "voiceover": "It's NO-vember. Four things a bathroom should never do to you."
+            },
+            {
+              "time": "0:02-0:06",
+              "visual": "The push-in continues and the tile joints come into focus, running true to the layout.",
+              "on_screen_text": "No grout lines that don't match the tile layout.",
+              "voiceover": "Grout lines that ignore the tile layout."
+            },
+            {
+              "time": "0:06-0:09",
+              "visual": "The push-in continues towards the brass mixer.",
+              "on_screen_text": "No bath that arrives three weeks before the taps.",
+              "voiceover": "A bath that turns up three weeks before the taps."
+            },
+            {
+              "time": "0:09-0:12",
+              "visual": "Closer still, across the stone surface, with light catching the brushed gold.",
+              "on_screen_text": "No price that turns up after the work starts.",
+              "voiceover": "A price that arrives after the work has started."
+            },
+            {
+              "time": "0:12-0:15",
+              "visual": "Tight on the brass lever. A hand in a work glove turns it on, and water starts to run.",
+              "on_screen_text": "No second brief for the fitter to get wrong.",
+              "voiceover": "And a second brief for the fitter to get wrong."
+            },
+            {
+              "time": "0:15-0:17",
+              "visual": "The push-in stops on the water running over stone. Hold the frame.",
+              "on_screen_text": "One team. Designed, supplied and fitted to the design you approved.",
+              "voiceover": "One team. Fitted to the design you approved."
+            },
+            {
+              "time": "0:17-0:20",
+              "visual": "The same frame dims gently to deep navy (#081C26) under the end card.",
+              "on_screen_text": "Start your design, free. bespokebathroomsuk.co.uk",
+              "voiceover": "Start your design. It's free."
+            }
+          ],
+          "edit_notes": "Use one continuous take with no cuts, slow and controlled (gimbal or slider, 4K at 25fps). 'NO-vember' sits at the top in Cormorant Garamond, cream #F5F2ED, with the 'NO' in brushed gold #C5A16B. The four lines stack underneath in Inter, cream, each fading in over about 10 frames. Once the next line lands, the one before it dims to 60% so the list builds on screen. Keep the text clear of the top and bottom safe zones on TikTok and Reels. Grade warm and moody with no heavy LUT. Add burned-in captions for the voiceover only if the text block stays readable, otherwise rely on the on-screen lines. Turn off TikTok's automatic music suggestion. Don't name or knock competitors, and don't promise lead times or fitting dates."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "stone and brass bathroom wall close up",
+          "warm stone shower brushed gold mixer",
+          "moody bathroom detail travertine brass",
+          "bathroom tile layout grout lines detail"
+        ],
+        "caption": "It's NO-vember. Four things a bathroom should never do to you. Grout that ignores the tile layout. A bath that arrives three weeks before the taps. A price that turns up after the work starts. A fitter working from a different brief. Here one team designs, supplies and fits your bathroom. Nothing is ordered until you approve it, and fitting is priced and agreed before work starts. Start your design, free. Link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroomrenovation",
+          "#bathroomideas",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#NOvember",
+          "#fittertips"
+        ],
+        "cta": "Start your design, free",
+        "lead_capture": "Bio link and a pinned comment linking to the free 3D Design Studio (bespokebathroomsuk.co.uk). Reply to 'how does it work' comments with the studio link. On Facebook, put the link in the first comment.",
+        "post_time": "Friday 27 November, 19:30 UK on Instagram and Facebook, then TikTok at 20:30. If it slips, post on Saturday 28 November at 10:00. The last useful day is Monday 30 November, because the format ends on 1 December.",
+        "production": "Film one 20-second continuous push-in on a finished stone and brass wall. Use a fitted project only with the client's written permission (no faces, no identifiable rooms), or use a display or the team's own space. You need a phone on a gimbal or slider, warm side light and one team member in work gloves for the hands. One fitter records the five voiceover lines on a phone in a quiet room. Record 30 seconds of room tone and running water separately. Add the text in Edits or CapCut using the brand fonts. A small team needs about 2 hours: 45 minutes filming, 15 for voiceover and an hour to edit. Before posting, check the NO-vember format is still live in the Reels and TikTok apps."
+      },
+      {
+        "id": "i2",
+        "title": "When life gives you a £15,000 budget…",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Designed in 3D",
+        "trend": "When life gives you…: carousel that builds to a reveal",
+        "day": null,
+        "hook": "When life gives you a £15,000 budget…",
+        "concept": "A carousel that builds one ingredient at a time: warm stone, a gold finish, a walnut vanity, tile quantities worked out and a designer's check. Each slide ends on an ellipsis so people keep swiping. The final reveal is the real studio design from the website (£15,000, warm stone, gold), and the last slide invites people to set their own budget for free. It answers Black Friday with a real budget, not a discount, and asks people to save it and comment PLAN for the planning checklist.",
+        "why_it_works": "SocialBee added 'When life gives you…' to its tracker on 26 November 2026, so the format is one day old and rising. Its suggested brand use, ingredients first and the finished product last, matches how the studio works: you pick a budget, a mood and a metal, and the room comes together. Putting an exact figure on slide 1 follows the price-led framing Virlo saw on 26 November (the same creator got 4.5M views on a $20 meal and 75K on a $12 one). One palette per slide gives inspiration savers something to save, and MEAN CEO's November guide favours saveable carousels with DM-based conversion, which the PLAN keyword covers. While competitors lead with discounts, a calm, real £15,000 room priced to the pound looks different in the feed.",
+        "scores": {
+          "reach": 62,
+          "business": 76,
+          "ease": 80,
+          "brand_fit": 92,
+          "overall": 76
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "When life gives you a £15,000 budget…",
+            "body": "Swipe to see what we'd make with it.",
+            "visual": "Deep navy (#081C26) background. Headline in cream (#F5F2ED) Cormorant Garamond, centred, with '£15,000' in brushed gold (#C5A16B). A thin gold rule underneath. Faint, soft-focus macro of warm stone in the bottom third at about 20% opacity. 4:5, 1080 x 1350."
+          },
+          {
+            "slide": 2,
+            "headline": "…start with warm stone.",
+            "body": "Soft beige, honed and calm. The surface your hands touch first every morning.",
+            "visual": "Full-bleed macro of a warm beige stone surface (product photography of the Artize Stone Counter Top Basin, Bottocino Classico Beige, or a stone close-up from the render). Cream text on a navy band across the bottom quarter."
+          },
+          {
+            "slide": 3,
+            "headline": "…add a gold finish.",
+            "body": "Pick one metal in the studio and the design is built around it: taps, mirror edge, towel rail.",
+            "visual": "Close-up of brushed gold brassware catching low light, taken from the studio render or product photography. Headline in cream on a teal (#174A5C) panel on the left third. Small gold swatch chips (#C5A16B, #E4C99B, #8A6A3B) in a row."
+          },
+          {
+            "slide": 4,
+            "headline": "…ground it with walnut.",
+            "body": "Onsen Vanity Unit 2D W.120, Light Walnut. £950, VAT included. [ADD: confirm this vanity is in the £15,000 design, or swap in the one that is]",
+            "visual": "Product shot of the walnut vanity on a cream (#F5F2ED) background. Headline in navy Cormorant Garamond, price in Inter, gold. Lots of space around the product."
+          },
+          {
+            "slide": 5,
+            "headline": "…let someone else do the tile maths.",
+            "body": "Your printable design sheet works out tile and flooring quantities for your room. [ADD: real m² figure from this design's sheet, or leave the figure out]",
+            "visual": "A styled flat lay of the printable design sheet (real export, no customer details) on navy, with a tile sample and a brass pencil at the edge. Quantities circled in gold."
+          },
+          {
+            "slide": 6,
+            "headline": "…and have a designer check it.",
+            "body": "Stock, lead times and delivery confirmed before you pay anything. Nothing is ordered until you approve it.",
+            "visual": "Over-the-shoulder shot of a team member reviewing the design on a laptop (team only, no customers). Navy overlay at 40%, cream text."
+          },
+          {
+            "slide": 7,
+            "headline": "You get this.",
+            "body": "A real design from our studio. £15,000. Warm stone. Gold. Every product tagged and priced, VAT included.",
+            "visual": "The real studio render from the website, full-bleed, no overlay on the room. Small cream caption strip at the bottom in Inter: '£15,000 · warm stone · gold finish'. This is the payoff, so keep text minimal."
+          },
+          {
+            "slide": 8,
+            "headline": "Set your own budget, free.",
+            "body": "£1,000 to £100,000. Pick a mood, a metal finish and a style. No sign-up. Save this for later, and comment PLAN for the planning checklist.",
+            "visual": "Navy background, headline in cream Cormorant Garamond, 'free' in gold. Below it: 'bespokebathroomsuk.co.uk' in Inter. Small Bespoke Bathrooms wordmark at the foot (only on this last slide)."
+          }
+        ],
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "warm stone bathroom brushed brass",
+          "walnut vanity beige stone basin",
+          "navy and cream editorial carousel layout",
+          "travertine bathroom gold fixtures"
+        ],
+        "caption": "When life gives you a £15,000 budget, this is what it can become.\nWarm stone, a gold finish, a walnut vanity and the tile quantities already worked out.\nIt's a real design from our studio. Every piece is priced to the pound with VAT included, and nothing is ordered until you approve it.\nSave this for when you start planning. Comment PLAN and we'll send you the planning checklist.\nSet your own budget, free: link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#bathroomideas",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#brassbathroom",
+          "#bathroombudget"
+        ],
+        "cta": "Set your own budget, free",
+        "lead_capture": "Comment PLAN (Instagram and Facebook) to get the planning checklist by DM, with the free 3D studio link in the same message. On TikTok, reply to comments and point people to the studio link in bio.",
+        "post_time": "Saturday 28 November, 10:00 UK time (weekend planners browsing in the morning, a day after the Black Friday reels so it doesn't crowd them)",
+        "production": "Design in Canva or Figma at 1080 x 1350 using Cormorant Garamond headlines, Inter body and the brand palette. Images: the real £15,000 studio render (export up to 4 photographs from the studio), product photography from the website, a printed design sheet flat lay and one team-member shot. Show no customer homes or faces. Before publishing: (1) check which products are in the £15,000 design and make sure the names and prices on slides 4 and 7 match the website, VAT included; (2) pull the real tile figure from the design sheet, or leave it out; (3) make sure the [PLAN] checklist exists and set up the PLAN keyword auto-reply in the Meta inbox (or ManyChat). If the checklist isn't ready, remove the PLAN line and keep the studio CTA. For TikTok photo mode, export 9:16 versions with text inside the safe zones and use a calm piano or ambient track from TikTok's Commercial Music Library, not a trending commercial sound. Post on Facebook as a multi-image post with the studio link in the first line of the comments. One person, about 2.5 to 3 hours."
+      },
+      {
+        "id": "i3",
+        "title": "Add to cart, priced to the pound",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Designed in 3D",
+        "trend": "Add to Cart: Black Friday shopping format",
+        "day": null,
+        "hook": "Add to cart. (On screen: a walnut vanity slides into frame against navy as a cream counter reads £950.00)",
+        "concept": "Guess the Price meets Shop the Look in the Black Friday 'Add to Cart' format. Gloved hands bring five hero pieces into frame against deep navy: the Onsen walnut vanity, the Artize stone basin, the Artize Tiaara freestanding bath, the Jaquar floor-mounted mixer and the Dell round LED mirror. Each piece gets a calm 'add to cart' and a small running total that climbs, to the pound with VAT, to £11,333.84. Then the turn: 'Or skip the cart. Design the whole room around your budget, free.' This takes people from shopping mode straight to the studio, and it never uses the word sale.",
+        "why_it_works": "New Engen named 'Add to Cart' its top November pick on 6 November and was still listing it on 20 November 2026, saying it showed up across several November round-ups. Shoppers are in cart mode today and stay there until Cyber Monday. The format runs on voiceover and original audio, so a business account can use it safely. The dossier found that most competitors are leading Black Friday with discounts, so a calm reel with exact VAT-inclusive prices stands out. Virlo's 26 November note found that showing exact prices on screen drove far more views (4.5M against 75K for the same creator). The running total gives Guess the Price comments a reason to happen, which helps reach. The last beat turns that attention into one action: start a free 3D design. One caveat: the trend evidence comes from third-party trackers, so check the format is still live in the Reels and TikTok apps before posting.",
+        "scores": {
+          "reach": 70,
+          "business": 72,
+          "ease": 55,
+          "brand_fit": 80,
+          "overall": 71
+        },
+        "reel": {
+          "duration_seconds": 25,
+          "audio": "Original audio only. A calm, close-miked voiceover from a team member says 'Add to cart' on each piece, with no hype in the delivery. Under it, real material sounds: the soft knock of walnut on the table, stone set down on wood, a brass lever turning, a short run of water, the click of the mirror's LED. If you want a bed, use a low, slow ambient pad from Meta's licensed library at low volume (on TikTok, pick one from the Commercial Music Library). Do not use any commercial track tied to Black Friday or Christmas trends. No cash-register or 'ka-ching' effects.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Tight shot on a navy (#081C26) surface. Gloved hands in cream cotton slide the Onsen Vanity Unit 2D W.120 in Light Walnut into frame from the left. Slow push-in.",
+              "on_screen_text": "Add to cart. | Onsen vanity, Light Walnut W.120: £950 | Running total: £950.00",
+              "voiceover": "Add to cart."
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "The hands lower the Artize Stone Counter Top Basin (Bottocino Classico Beige) onto the vanity top. Light rakes across the stone.",
+              "on_screen_text": "Artize stone counter top basin: £1,243 | Running total: £2,193.00",
+              "voiceover": "Add to cart."
+            },
+            {
+              "time": "0:05-0:09",
+              "visual": "Slow, controlled dolly along the curve of the Artize Tiaara freestanding bath, with one gloved hand tracing the rim. This beat holds longer to mark the biggest jump.",
+              "on_screen_text": "Artize Tiaara freestanding bath: £6,626 | Running total: £8,819.00",
+              "voiceover": "Add to cart."
+            },
+            {
+              "time": "0:09-0:12",
+              "visual": "Close-up of the Jaquar floor-mounted single lever bath mixer. A gloved hand turns the lever and a short run of water catches the light.",
+              "on_screen_text": "Jaquar floor-mounted bath mixer: £2,251 | Running total: £11,070.00",
+              "voiceover": "Add to cart."
+            },
+            {
+              "time": "0:12-0:15",
+              "visual": "The hands lift the Dell round 600 mm LED demister mirror into frame. The LED ring switches on and warms the frame.",
+              "on_screen_text": "Dell round LED demister mirror: £263.84 | Running total: £11,333.84",
+              "voiceover": "Add to cart."
+            },
+            {
+              "time": "0:15-0:18",
+              "visual": "Wide shot of all five pieces together on navy. The counter grows to the centre of the frame and holds.",
+              "on_screen_text": "£11,333.84. VAT included. Priced to the pound. Did you guess it?",
+              "voiceover": "Eleven thousand, three hundred and thirty-three pounds, eighty-four. VAT included."
+            },
+            {
+              "time": "0:18-0:22",
+              "visual": "Screen recording of the 3D Design Studio: the budget slider set, the warm stone mood and gold finish picked, then the finished render of the room.",
+              "on_screen_text": "Or skip the cart. Design the whole room around your budget, free.",
+              "voiceover": "Or skip the cart. Design the whole room around your budget. Free."
+            },
+            {
+              "time": "0:22-0:25",
+              "visual": "Navy end card with the Bespoke Bathrooms wordmark in brushed gold and a slow fade.",
+              "on_screen_text": "Start your design, free. Budgets from £1,000 to £100,000. Nothing is ordered until you approve it. Comment DESIGN for the link.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Cut on each 'add to cart', with every beat about 2.5 to 3 seconds and the bath held longest. Set the running total small and bottom right in Inter, cream (#F5F2ED) on a navy (#081C26) pill. It ticks up over about 0.4 seconds to the exact figure, always with pence shown (£950.00, £2,193.00, £8,819.00, £11,070.00, £11,333.84). Set product names in Cormorant Garamond, brushed gold (#C5A16B), top left. Keep it calm: no zoom punches, no flashing, and nothing red or 'sale' coloured. Burn in captions for viewers watching with sound off. Before posting, check every price against the website on the day. Note: this total is the five hero pieces, not the website's six-piece 'shop the look' room (£11,533.84), so never call it the shop-the-look total. Export at 9:16, keeping text inside TikTok and Reels safe zones. For Facebook, add the studio link as the first comment."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "moody product photography navy background brass",
+          "gloved hands product reveal close up",
+          "freestanding stone bath curve detail",
+          "walnut vanity stone basin gold tap"
+        ],
+        "caption": "Black Friday cart, bathroom edition.\nFive pieces. Every price with VAT. No 'from', no countdown.\nVanity, stone basin, freestanding bath, floor-mounted mixer, LED mirror: £11,333.84.\nDid you guess the total before the mirror landed? Tell us below.\nOr skip the cart. Set any budget from £1,000 to £100,000 and see your own room designed and priced to the pound. Comment DESIGN and we'll send you the free 3D studio link.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#bathroomrenovation",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#addtocart",
+          "#freestandingbath"
+        ],
+        "cta": "Start your design, free",
+        "lead_capture": "Comment DESIGN to get the free 3D studio link (https://bespokebathroomsuk.co.uk) by DM. Set up an auto-reply in Meta's inbox or ManyChat for Instagram and Facebook, and reply by hand on TikTok. Also put the studio link in the bio and as the first comment on Facebook.",
+        "post_time": "Friday 27 November, 19:00 UK on Instagram and Facebook (Black Friday evening, while shoppers are in cart mode). Saturday 28 November, 11:00 UK on TikTok. If it performs, reshare it to Stories on Monday 30 November (Cyber Monday) as the last push before the format fades.",
+        "production": "Who: two people, one on hands (in cream cotton gloves) and one filming on a phone with a gimbal, plus a voiceover from a team member. Props: a navy (#081C26) backdrop board or fabric, the five products (or the showroom or warehouse stock, [ADD: location]), and a jug of water for the mixer shot if it is plumbed or rigged. The bath cannot be carried into frame, so film a slow dolly along it in the showroom or warehouse. If you use a fitted project instead, get the client's written permission for the home, and show no faces or personal items. If no physical stock is available, film gloved hands placing printed product cards on navy and cut to studio renders of each piece. Record the studio screen at full resolution. Time: about 2.5 hours to shoot, 1.5 hours to edit with the counter overlay, and 15 minutes to check every price against the website before posting."
+      },
+      {
+        "id": "i4",
+        "title": "Some bills are non-negotiable. The bathroom bills:",
+        "format": "reel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "facebook"
+        ],
+        "goal": "viral",
+        "pillar": "The Reveal",
+        "trend": "Some bills are non-negotiable. The bills:",
+        "day": null,
+        "hook": "Some bills are non-negotiable. The bathroom bills:",
+        "concept": "While everyone else is cutting prices, we list the four bathroom pieces worth paying for, each with its real price including VAT. Moody close-ups over real sound (water, steam, a brass tap turning) show what each piece does for your morning: a towel that's already warm, a shower that falls like rain, a mirror that stays clear, stone you touch every day. It ends on quiet mornings and one action: start your design, free.",
+        "why_it_works": "SocialBee added the 'Some bills are non-negotiable' format on 11 November 2026. That is 16 days ago, so just outside our 14-day rule, but it sits alongside the 19 and 26 November entries and fits the Black Friday spending mood. It lets us answer Black Friday without a discount. Competitors are leading with discounts, so a calm 'this is worth it' list stands out. Virlo's 26 November note found that putting exact prices on screen pulled far more views in another category, which backs showing every price to the pound. The list is relatable and easy to share, and wellness and spa seekers will want to come back to it, so it earns reach and saves. The price on each piece and the closing line move people towards the studio.",
+        "scores": {
+          "reach": 70,
+          "business": 45,
+          "ease": 60,
+          "brand_fit": 86,
+          "overall": 65
+        },
+        "reel": {
+          "duration_seconds": 18,
+          "audio": "Original audio only. Record the real sounds clean on the phone: room tone, bare feet on tile, steam, rain-shower water, a brass tap turning and running over stone. Optional quiet room-tone bed from Meta's licensed library, mixed low. One calm voiceover line at the end only. Do not use trending commercial tracks: business accounts cannot use most of them.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Cold blue morning light through frosted glass. A team member's bare feet step onto stone-effect floor tile. Slow, locked-off frame.",
+              "on_screen_text": "Some bills are non-negotiable. The bathroom bills:",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:05",
+              "visual": "A hand lifts a towel off a heated towel rail. The light turns warmer as the towel comes away. Slow push-in on the rail.",
+              "on_screen_text": "A towel that's warm before you are. Capital Towel Rails [ADD: model], £[ADD: price] inc. VAT",
+              "voiceover": ""
+            },
+            {
+              "time": "0:05-0:08",
+              "visual": "Looking up into a rain shower head as the water starts, then a slow tilt down through the falling water. Backlit so every drop shows.",
+              "on_screen_text": "A shower that falls like rain, not a drip. [ADD: model], £[ADD: price] inc. VAT",
+              "voiceover": ""
+            },
+            {
+              "time": "0:08-0:11",
+              "visual": "Dell round LED demister mirror, steamed over. The LED switches on and the centre clears from the middle outwards. Locked-off shot, held.",
+              "on_screen_text": "A mirror that stays clear after a long shower. Dell LED Mirror Demister Round 600 mm, £263.84 inc. VAT",
+              "voiceover": ""
+            },
+            {
+              "time": "0:11-0:14",
+              "visual": "Macro of the Artize Bottocino Classico Beige stone basin. Fingertips trace the rim, a brass tap turns and water runs over the stone. The sound of the tap is the beat.",
+              "on_screen_text": "Stone you'll touch every morning. Artize Stone Counter Top Basin, Bottocino Classico Beige, £1,243 inc. VAT",
+              "voiceover": ""
+            },
+            {
+              "time": "0:14-0:18",
+              "visual": "Slow pull back to the whole finished room (a permitted fitted project or a studio render in warm stone and gold). Ends on a navy (#081C26) card with cream text and a brushed-gold rule.",
+              "on_screen_text": "Every piece priced to the pound, before you pay anything. Start your design, free.",
+              "voiceover": "The bill worth paying? Quiet mornings. Design yours, free."
+            }
+          ],
+          "edit_notes": "Vertical 9:16. Cut on the sounds (the towel lifting, the water starting, the tap turning), not on a beat. Slow, controlled moves only, no whip transitions. Headlines in Cormorant Garamond, cream #F5F2ED. Product names and prices in Inter on a navy #081C26 lower third with a thin #C5A16B rule. Keep text inside the safe zones for Reels and TikTok. Warm grade that moves from cool to warm across the reel. Before posting: (1) Fill both [ADD] prices from the website, VAT included. If they are not confirmed, swap in the Jaquar walk-in shower screen, laminated framed (£1,162), for the rain shower shot, and drop the towel rail shot rather than guess a price. (2) Check the Dell and Artize prices against the website on the day. (3) Check the format is still live in the Reels and TikTok apps. (4) Do not use 'deal', 'sale' or 'cheap' anywhere, including in the comment replies. (5) Show a customer's home only with written permission. Otherwise use the showroom, product shots or studio renders."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "moody spa bathroom warm stone brass",
+          "steamy bathroom mirror close up",
+          "heated towel rail cosy morning",
+          "stone countertop basin brass tap"
+        ],
+        "caption": "Some bills are non-negotiable. The bathroom bills: A towel that's warm before you are. A shower that falls like rain. A mirror that stays clear. Stone you touch every morning. Every price shown with VAT, to the pound. Nothing is ordered until you approve it. Start your free 3D design: link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroominspo",
+          "#spabathroom",
+          "#heatedtowelrail",
+          "#rainshower",
+          "#nonnegotiables",
+          "#ukbathrooms",
+          "#homerenovationuk"
+        ],
+        "cta": "Start your design (free 3D design, no sign-up)",
+        "lead_capture": "Link in bio and a pinned first comment linking to the free 3D Design Studio at https://bespokebathroomsuk.co.uk. On Facebook, put the studio link in the post itself.",
+        "post_time": "Saturday 28 November 2026, 09:30 UK (weekend morning, the 'quiet morning' moment, still Black Friday weekend). Repost to TikTok at 19:00 the same day.",
+        "production": "Who: one team member (hands and feet only, no face needed) plus one person filming on a phone. Where: the showroom or a fitted project with the owner's written permission. Props: Dell round 600 mm LED demister mirror, Artize Bottocino Classico Beige basin with a brass tap, a heated towel rail, a working rain shower, a cream towel, and a kettle or shower steam to fog the mirror. Shoot in early morning light, with a phone macro lens for the stone and water. Record the sounds separately for a clean mix. Allow about 2 to 3 hours to film and 1.5 hours to edit. If the products are not on display, build the shots from studio renders with slow pans and use recorded water and tap sounds."
+      },
+      {
+        "id": "i5",
+        "title": "These can coexist: four bathroom myths, side by side",
+        "format": "carousel",
+        "platforms": [
+          "instagram",
+          "tiktok",
+          "pinterest"
+        ],
+        "goal": "brand",
+        "pillar": "Know Before You Renovate",
+        "trend": "These can coexist btw / It's cool to do both",
+        "day": null,
+        "hook": "A small en-suite and a walk-in shower can coexist, btw.",
+        "concept": "This is a saveable 'this vs that' carousel. It takes four things people think they must choose between in a bathroom and shows them living together in one room designed in the studio. Each slide is a two-panel split cut from the same studio render, so the answer is always 'both'. A bonus slide uses the 'It's cool to do both' version of the trend for design and fitting by one team. The four pairs are then cut into two-panel Pinterest pins with keyword-led titles, so they keep finding people for months.",
+        "why_it_works": "SocialBee listed 'These can coexist btw' on 26 November 2026 and 'It's cool to do both' on 11 November 2026, and rates both as rising, so the format is live and has two to four weeks left. The trend rests on a false either/or, which suits the myths our inspiration savers and small-space upgraders bring with them: small means no walk-in shower, a fixed budget means no stone, storage means a cramped floor, and seeing it in 3D means you are locked in. Every answer is a fact from the Brand Brain, with real VAT-inclusive prices for the Jaquar screen (£1,162) and the Artize basin (£1,243), and the truth that nothing is ordered until you approve. That gives people a reason to save it. MEAN CEO's November guide favours saveable carousels, and the split panels move straight to Pinterest, where people plan months before they renovate. The trend data comes from an aggregator, so check the format is still live in the app before posting.",
+        "scores": {
+          "reach": 62,
+          "business": 45,
+          "ease": 76,
+          "brand_fit": 88,
+          "overall": 66
+        },
+        "reel": null,
+        "slides": [
+          {
+            "slide": 1,
+            "headline": "These can coexist, btw.",
+            "body": "Four bathroom 'pick one' myths. Each one designed in our 3D studio. Save this before you plan yours.",
+            "visual": "Cover in a split panel with a 2 px brushed gold (#C5A16B) vertical divider. On the left, a tight crop of a compact en-suite floor in a studio render. On the right, a crop of a clear walk-in screen with water running. Headline in Cormorant Garamond, cream (#F5F2ED), across a deep navy-teal (#081C26) band at the top. 'btw' in Inter, lower case, light gold (#E4C99B)."
+          },
+          {
+            "slide": 2,
+            "headline": "A small en-suite and a walk-in shower can coexist.",
+            "body": "Drag the room to size in the studio and see whether a walk-in fits before you commit. The Jaquar walk-in screen, laminated framed: £1,162, VAT included.",
+            "visual": "Two panels from one studio render of a compact en-suite. Left: the whole room from the doorway, showing the floor area. Right: a close-up of the Jaquar walk-in screen, glass catching the light. Labels 'Small en-suite' and 'Walk-in shower' in Inter, cream on navy chips. Gold divider."
+          },
+          {
+            "slide": 3,
+            "headline": "A fixed budget and a stone basin can coexist.",
+            "body": "Set your budget and the studio designs the room inside it. Every product tagged and priced to the pound. The Artize stone counter top basin, Bottocino Classico Beige: £1,243, VAT included.",
+            "visual": "Left panel: a clean studio-screen crop of the budget slider set to a figure, cream on teal (#174A5C). Right panel: a moody close-up render of the Artize Bottocino beige stone basin on a walnut top with a brushed gold tap. Gold divider."
+          },
+          {
+            "slide": 4,
+            "headline": "Wall-hung storage and a floor that feels bigger can coexist.",
+            "body": "Lift the vanity off the floor and the tiles run wall to wall. More floor on show, more room to breathe. 1,828 vanities and furniture pieces to choose from.",
+            "visual": "Left panel: a render close-up of a wall-hung walnut vanity with drawers. Right panel: a low-angle crop of the same render showing the floor running under the unit to the skirting. Warm stone tiles. Gold divider."
+          },
+          {
+            "slide": 5,
+            "headline": "Seeing it in 3D and changing your mind can coexist.",
+            "body": "Change the style, the metal finish or the budget as often as you like. Nothing is ordered until you approve it, and a designer confirms stock, lead times and delivery before you pay anything.",
+            "visual": "The same small room rendered twice in the studio, side by side. Left: warm stone with a gold finish. Right: a calm Japanese-style version in a different metal finish. Small Inter tags: 'Version 1' and 'Version 2'. Gold divider."
+          },
+          {
+            "slide": 6,
+            "headline": "It's cool to do both: design it and have it fitted.",
+            "body": "One team does the designing, the supply and the fitting. Our fitters work from the design you approved, so there is no second brief to get wrong. Fitting is quoted separately and agreed before work starts.",
+            "visual": "Left panel: the approved studio render on a laptop screen. Right panel: a team fitter's gloved hands setting a basin or levelling a tile, with no customer home or face in frame. Gold divider."
+          },
+          {
+            "slide": 7,
+            "headline": "Set your budget. See your room.",
+            "body": "Free 3D design, no sign-up. Budgets from £1,000 to £100,000, priced to the pound with VAT included. Design your bathroom in 3D (free): link in bio.",
+            "visual": "Full-bleed hero studio render (the real £15,000 warm stone and gold design from the website). Navy-teal (#081C26) gradient at the bottom with the headline in Cormorant Garamond, cream. CTA in Inter on a brushed gold (#C5A16B) pill. Bespoke Bathrooms wordmark small, bottom centre."
+          }
+        ],
+        "static_design": null,
+        "pinterest": {
+          "pin_title": "Small en-suite walk-in shower ideas: designed in 3D",
+          "pin_description": "Small en-suite walk-in shower ideas you can actually build. A compact en-suite and a walk-in shower designed together in a free 3D bathroom studio, with a Jaquar walk-in screen priced at £1,162 including VAT. Set your budget from £1,000 to £100,000, drag the room to size and see your own bathroom priced to the pound before you buy anything. Free, no sign-up.",
+          "board": "Small Bathroom and En-Suite Ideas",
+          "keywords": [
+            "small en-suite ideas",
+            "walk-in shower small bathroom",
+            "small bathroom ideas UK",
+            "en-suite walk-in shower",
+            "stone basin bathroom ideas",
+            "wall-hung vanity small bathroom",
+            "3D bathroom design",
+            "bathroom planning"
+          ],
+          "alt_text": "Two-panel pin with a gold divider. On the left, a compact en-suite in warm stone tiles seen from the doorway. On the right, a close-up of a clear framed walk-in shower screen with water running. Cream headline on deep navy reads 'A small en-suite and a walk-in shower can coexist'."
+        },
+        "moodboard_searches": [
+          "small ensuite walk in shower warm stone",
+          "stone counter top basin walnut vanity brass tap",
+          "wall hung vanity small bathroom floor",
+          "two panel split pin design minimal"
+        ],
+        "caption": "A small en-suite and a walk-in shower can coexist, btw. So can a fixed budget and a stone basin. So can wall-hung storage and a floor that feels bigger.\nFour 'pick one' myths, each one designed in our 3D studio.\nAnd yes, you can change your mind. Nothing is ordered until you approve it.\nSave this for when you plan yours. Set your budget and see your own room, priced to the pound, free. Link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroomideas",
+          "#smallbathroomideas",
+          "#ensuiteideas",
+          "#walkinshower",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#bathroominspo"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "Link in bio to the free 3D Design Studio (https://bespokebathroomsuk.co.uk). Each Pinterest pin links straight to the studio.",
+        "post_time": "Sunday 29 November, 19:30 UK (Instagram carousel and TikTok photo mode). Pinterest: one pin a day at 20:00 UK, Monday 30 November to Thursday 3 December.",
+        "production": "Designer, about 3 hours in total. 1) In the 3D studio, build three rooms with no customer home involved: a compact en-suite dragged to size with the Jaquar walk-in screen; a warm stone room with the Artize Bottocino basin on a walnut top and a wall-hung vanity; the same small room in two styles and metal finishes for slide 5. Export up to 4 photos from each and take screen recordings or grabs of the budget slider. 2) For slide 6, use existing fitting b-roll of a team fitter's hands only, with written permission if it was shot in a client's home, otherwise a showroom or workshop. 3) Design in Canva or Figma at 1080x1350 for Instagram and 1080x1920 for TikTok photo mode. Use the split-panel template with a 2 px #C5A16B divider, Cormorant Garamond headlines, Inter body, and #081C26, #174A5C and #F5F2ED backgrounds. 4) Before publishing, check prices against the website (VAT included). 5) TikTok photo mode: use original audio or a quiet licensed-library ambient track (no commercial music), and add the slide headlines as text. 6) Pinterest: cut slides 2 to 5 into four 1000x1500 two-panel pins (panels stacked top and bottom, headline band in the middle). Give each a keyword-led title: 'Small en-suite walk-in shower ideas', 'Stone basin bathroom ideas on a budget', 'Wall-hung vanity ideas for a small bathroom floor', 'Bathroom design in 3D before you buy'. Each pin links to the studio. Before posting, check in the Instagram and TikTok apps that the format is still live."
+      },
+      {
+        "id": "i6",
+        "title": "No countdown. No 'from' prices.",
+        "format": "static",
+        "platforms": [
+          "instagram",
+          "facebook",
+          "pinterest"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Offer & Invite",
+        "trend": "Black Friday and Cyber Monday, the honest-price way",
+        "day": null,
+        "hook": "No countdown. No \"from\" prices.",
+        "concept": "A single calm static: Cormorant Garamond in cream on deep navy-teal with a thin brushed-gold rule. It reads 'No countdown. No \"from\" prices. Just your room, priced to the pound, before you pay anything', with 'Free 3D design. No sign-up.' underneath in Inter. It is built to look quiet next to Black Friday feeds full of red banners and timers. The caption covers how it works (a budget from £1,000 to £100,000, a designer confirming stock and lead times, nothing ordered until you approve) and gives one action: start a free 3D design. It stays pinned to the top of the Instagram grid from Black Friday to Cyber Monday.",
+        "why_it_works": "The dossier found that most bathroom retailers lead Black Friday with discounts (Victorian Plumbing, Drench and Sanctuary all run Black Friday pages). A typographic post with no sale language stands out in that feed without naming anyone. It also answers the worry of the moment: Doors 2 Floors' MD said renovation plans are being scaled back because of price rises, and the FMB survey (28 April 2026) found 71% of homeowners expect a bathroom to cost under £10,000. People who are unsure of the cost want an exact figure before they commit, and that is what the studio gives them. Virlo's 26 November note suggests exact prices on screen draw more attention. Pinning it means everyone who visits the profile from the weekend's reels (i1, i3, i4) lands on one clear invitation. Its reach will be modest. Its job is conversion.",
+        "scores": {
+          "reach": 38,
+          "business": 74,
+          "ease": 95,
+          "brand_fit": 96,
+          "overall": 72
+        },
+        "reel": null,
+        "slides": null,
+        "static_design": {
+          "headline": "No countdown. No \"from\" prices.",
+          "subline": "Just your room, priced to the pound, before you pay anything. Free 3D design. No sign-up.",
+          "visual": "Instagram and Facebook (4:5, 1080 x 1350): mostly type. A flat deep navy-teal ground (#081C26) with a very faint teal (#174A5C) vignette at the edges for depth. The headline sits in Cormorant Garamond, cream (#F5F2ED), across two lines: 'No countdown.' and 'No \"from\" prices.' A thin brushed-gold rule (#C5A16B, about 1.5 px, 30% of the width) sits under it. Below that, 'Just your room, priced to the pound, before you pay anything.' runs in Cormorant italic, cream at 85% opacity. 'Free 3D design. No sign-up.' goes at the foot in Inter, small caps with letter spacing, champagne gold (#E4C99B). A small 'Bespoke Bathrooms' wordmark sits bottom centre in #8A6A3B. No logo at the top, no price stickers, no timers, no red. Pinterest (2:3, 1000 x 1500): the same type block on navy fills the top 55%. The bottom 45% shows a crop of the real studio render from the website (£15,000 budget, warm stone, gold finish), so the pin has a room to stop the scroll. A gold rule separates the two halves.",
+          "layout": "Centred, with plenty of space. Headline block in the upper-middle third, gold rule at the optical centre, subline below it, Inter line about 120 px from the bottom edge, wordmark under that. Keep everything inside a 90 px safe margin so it still reads when cropped to the 3:4 grid preview on Instagram. On the Pinterest version, set the type at 1:1 scale in the top section and run the render edge to edge in the bottom section with no overlay text.",
+          "palette": [
+            "#081C26",
+            "#174A5C",
+            "#F5F2ED",
+            "#C5A16B",
+            "#E4C99B",
+            "#8A6A3B"
+          ]
+        },
+        "pinterest": {
+          "pin_title": "Free 3D Bathroom Design UK: See Your Room Priced to the Pound",
+          "pin_description": "Plan your bathroom renovation with a real price, not a 'from' price. Set a budget from £1,000 to £100,000, choose a mood, a metal finish and a style, and get photographs of your own room plus a 3D room you can walk around. Every product is tagged and priced with VAT included. A designer checks stock and lead times before you pay anything, and nothing is ordered until you approve it. Free, no sign-up.",
+          "board": "Bathroom Planning & Costs UK",
+          "keywords": [
+            "free 3D bathroom design",
+            "bathroom design UK",
+            "bathroom renovation cost UK",
+            "3D bathroom planner",
+            "bathroom budget planner",
+            "bathroom renovation ideas UK",
+            "warm stone and gold bathroom"
+          ],
+          "alt_text": "Navy poster with cream serif text reading 'No countdown. No \"from\" prices. Just your room, priced to the pound, before you pay anything.' above a thin gold line, and below it a 3D render of a warm stone bathroom with gold brassware designed in the Bespoke Bathrooms studio."
+        },
+        "moodboard_searches": [
+          "minimal serif typography poster navy and gold",
+          "quiet premium brand instagram post cream on navy",
+          "editorial typographic announcement gold line",
+          "warm stone bathroom brushed gold brassware"
+        ],
+        "caption": "No countdown. No \"from\" prices. Set a budget anywhere from £1,000 to £100,000. Pick a mood, a metal finish and a style.\nYou get up to four photographs of your own room and a 3D room to walk around, with every product tagged and priced to the pound, VAT included.\nA designer confirms stock, lead times and delivery before you pay anything. Nothing is ordered until you approve it.\nThe design is free and needs no sign-up. Design your bathroom in 3D (free). Link in bio.",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomdesign",
+          "#bathroomrenovation",
+          "#3Ddesign",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#bathroomplanning",
+          "#blackfridayuk"
+        ],
+        "cta": "Design your bathroom in 3D (free)",
+        "lead_capture": "Studio link (https://bespokebathroomsuk.co.uk) with UTM tags so the weekend's starts can be counted: Instagram via the link in bio (utm_source=instagram&utm_campaign=honest_price_bf26), Facebook as a direct link in the post (utm_source=facebook), and the Pinterest pin as the destination URL (utm_source=pinterest). One action only, so no comment keyword.",
+        "post_time": "Friday 27 November, 12:30 UK on Instagram and Facebook (lunchtime browsing on Black Friday). Pin it to the top of the Instagram grid right away and unpin on the morning of Tuesday 1 December. Pinterest: Friday 27 November, 20:30 UK, as an evergreen pin with no Black Friday wording.",
+        "production": "One designer, about 45 minutes in Canva or Figma with the brand fonts (Cormorant Garamond, Inter). Export three files: 1080 x 1350 for Instagram and Facebook, and 1000 x 1500 for Pinterest using a crop of the existing website render (£15,000 budget, warm stone, gold finish). You don't need a shoot, a home or a face, so there are no consent issues. Before posting: (1) open the live studio and check that 'no sign-up' and the £1,000 to £100,000 range are still accurate; (2) check every line against the Brand Brain (it says 'before you pay anything' and 'nothing is ordered until you approve it'); (3) remove any word like sale, deal, save or offer; (4) check the 4:5 file in the grid preview so the headline isn't cropped. Leave the tagline and price figures out of the image itself so the Pinterest pin keeps working after the weekend."
+      },
+      {
+        "id": "i7",
+        "title": "You're budgeting for the bathroom you imagine",
+        "format": "story",
+        "platforms": [
+          "instagram",
+          "facebook"
+        ],
+        "goal": "lead_gen",
+        "pillar": "Know Before You Renovate",
+        "trend": "Evergreen",
+        "day": null,
+        "hook": "What does a new main bathroom cost?",
+        "concept": "A five-frame Stories sequence that asks followers to guess what a main bathroom costs, then shows them the gap between that guess and the real figure. Frames 2 and 3 use the Federation of Master Builders finding and quote, credited on screen. Frames 4 and 5 are a short Budget Ladder: one room designed in the studio at £5,000, £15,000 and £50,000, with a quiz sticker, then a reveal and a link sticker to start a free 3D design. It rides the Black Friday price mood without any sale language. The message is simple: know the real number before you commit.",
+        "why_it_works": "The FMB survey (reported 28 April 2026) says 71% of homeowners expect a bathroom to cost under £10,000 and only 38% knew labour is the most expensive part. That gap is the exact pain of our Planning homeowners, and the studio closes it by pricing their own room to the pound. Poll and quiz stickers get taps and replies, which tells the algorithm to show our Stories to more followers. Interactive frames also turn passive viewers into active ones just before the link sticker. On Black Friday weekend, when most competitors lead with discounts, an honest cost check stands out as calm and useful. It is evergreen, so it can live in a 'Costs' Highlight long after the weekend.",
+        "scores": {
+          "reach": 38,
+          "business": 74,
+          "ease": 80,
+          "brand_fit": 91,
+          "overall": 68
+        },
+        "reel": {
+          "duration_seconds": 33,
+          "audio": "No music needed: most Stories are watched muted. If you want sound, use original ambient audio of slow running water recorded in a fitted bathroom or the showroom, kept very low. Do not use commercial tracks; business accounts cannot use most of them.",
+          "shots": [
+            {
+              "time": "0:00-0:06",
+              "visual": "Frame 1. Full-bleed moody close-up of a warm stone counter-top basin and a brushed gold tap, slow controlled push-in (a 6-second clip, or a still with a gentle zoom). The lower half fades into deep navy #081C26. Instagram poll sticker sits in the navy area, styled cream and gold.",
+              "on_screen_text": "What does a new main bathroom cost? | Poll: Under £10k / Over £10k",
+              "voiceover": ""
+            },
+            {
+              "time": "0:06-0:13",
+              "visual": "Frame 2. Solid navy #081C26 background. Two large figures in Cormorant Garamond, brushed gold #C5A16B, stacked one above the other, each with an Inter line in cream #F5F2ED underneath. Small source line at the bottom in Inter, #E4C99B.",
+              "on_screen_text": "71% expect a new bathroom to cost under £10,000. | 38% knew labour is the most expensive part. | Source: Federation of Master Builders survey, reported 28 April 2026",
+              "voiceover": ""
+            },
+            {
+              "time": "0:13-0:19",
+              "visual": "Frame 3. Warm cream #F5F2ED background with a faint stone texture drifting slowly. The quote set in large Cormorant Garamond italic, navy #081C26, with thin gold quote marks. Attribution in small Inter below.",
+              "on_screen_text": "\"Most homeowners are budgeting for the bathroom they imagine, not the bathroom they'll actually get.\" | Chief executive, Federation of Master Builders",
+              "voiceover": ""
+            },
+            {
+              "time": "0:19-0:26",
+              "visual": "Frame 4. Three studio renders of the same room, same angle, stacked vertically and labelled A, B and C in gold. Each was designed at a different budget (£5,000, £15,000, £50,000), shown in shuffled order so the £15,000 design is B. Quiz sticker below in cream and navy.",
+              "on_screen_text": "One room. Three budgets: £5,000, £15,000, £50,000. | Quiz: Which one is the £15,000 design? A / B / C",
+              "voiceover": ""
+            },
+            {
+              "time": "0:26-0:33",
+              "visual": "Frame 5. Full-bleed render B, the real studio design (£15,000 budget, warm stone, gold finish), with a slow pan across the stone and brass. Navy band at the bottom holds the headline, small print and a link sticker to https://bespokebathroomsuk.co.uk.",
+              "on_screen_text": "It was B. £15,000. Warm stone, gold finish. | See yours priced to the pound, free. | Products priced with VAT included. Fitting quoted separately and agreed before work starts. No sign-up. | Link sticker: Start your design",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Post all five frames together so the sequence plays straight through. Give each frame enough time to read: at least 6 seconds, 7 for the quiz and the link. Keep text inside the safe zone, at least 250px clear of the top and bottom edges. Fonts are Cormorant Garamond for headlines and Inter for body, with brand colours only. Add UTM tags to the link sticker (utm_source=instagram_story / facebook_story, utm_campaign=budget_imagine) so studio starts can be tracked. On Facebook, check in the app whether poll, quiz and link stickers are available for the Page. If they are not, keep Frame 1 as a plain question and Frame 4 as 'Which one is £15,000?', with Frame 5 answering both. Afterwards, add the sequence to a 'Costs' Highlight with a navy and gold cover. Before posting, check the FMB quote and both percentages word for word against the FMB source page."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "warm stone bathroom brushed gold tap",
+          "navy and cream instagram story design",
+          "editorial serif statistic layout",
+          "bathroom budget comparison renders"
+        ],
+        "caption": "You're budgeting for the bathroom you imagine.\nMost people guess under £10,000. Labour is the part they forget.\nWe designed one room three times: £5,000, £15,000 and £50,000.\nSet your own budget and see your room priced to the pound, VAT included, before anything is ordered.\nDesign your bathroom in 3D (free): bespokebathroomsuk.co.uk",
+        "hashtags": [
+          "#bespokebathroom",
+          "#bathroomrenovation",
+          "#bathroomdesign",
+          "#bathroomideas",
+          "#homerenovationuk",
+          "#ukbathrooms",
+          "#bathroomcost",
+          "#3Ddesign"
+        ],
+        "cta": "See yours priced to the pound, free. Start your design.",
+        "lead_capture": "Link sticker on Frame 5 to the free 3D Design Studio (https://bespokebathroomsuk.co.uk) with UTM tags per platform. The poll and quiz build engagement up to the link; anyone who replies to the Story gets a short, personal DM with the same studio link.",
+        "post_time": "Sunday 29 November 2026, 19:30 UK (Instagram and Facebook Stories). It runs for 24 hours, then moves to the 'Costs' Highlight.",
+        "production": "One person, about 2 to 2.5 hours. (1) In the studio, design the same room at £5,000 and £50,000, matching the size, layout and camera angle of the existing £15,000 warm stone and gold design, and export one matching render of each. (2) Film or pick one 6-second close-up of a stone basin and gold tap from a fitted project or the showroom (no customer home without written permission). (3) Build five 1080 x 1920 frames in Canva or Figma with brand fonts and colours. (4) Check the FMB figures and quote word for word against https://www.fmb.org.uk/resource/fmb-warns-homeowners-wildly-underestimate-costs-of-new-bathroom.html and https://www.homebuilding.co.uk/rooms/bathroom/7-in-10-homeowners-underestimate-bathroom-renovation-costs-are-you-one-of-them. (5) Add the stickers in the app, set up the UTM link, post, and reply to Story DMs within the evening."
+      },
+      {
+        "id": "i8",
+        "title": "Born to fit bathrooms. Forced to chase four deliveries.",
+        "format": "reel",
+        "platforms": [
+          "tiktok",
+          "instagram"
+        ],
+        "goal": "community",
+        "pillar": "Fitted by Our Team",
+        "trend": "Born to… forced to…",
+        "day": null,
+        "hook": "Born to fit bathrooms. Forced to chase four deliveries for one job.",
+        "concept": "A wry piece from The Bath Arrived Three Weeks Before the Taps series, told for fitters and builders. The first half is the familiar mess: a trowel stopping mid-wall, a phone filling with tracking alerts, a bath box with no taps beside it. Then a hard cut to calm: one stacked, labelled delivery and a printed design sheet with the tile quantities already worked out. 'One order. One delivery plan.' It ends by pointing trade to the fitters portal and asking fitters to share their own worst delivery week.",
+        "why_it_works": "SocialBee added 'Born to… forced to…' on 19 November 2026 and rates it rising, with two to three weeks left, so it is fresh enough for TikTok trend testing. The format runs on text and contrast, not licensed music, so a business account can use original audio and real site sounds. The joke is the fitter's own pain from the Brand Brain (split deliveries, missing pieces, slow quotes), so it mocks nobody, and the answer is a real differentiator (one order, one delivery plan, a design sheet with quantities). Virlo's 24 November note on small shops going viral with delivery and packing formats supports showing a delivery as the payoff. The goal is community: fitters tag fitters and share stories in the comments. Trade enquiries are a secondary win, which is why the business score sits below the studio-led ideas.",
+        "scores": {
+          "reach": 62,
+          "business": 38,
+          "ease": 72,
+          "brand_fit": 74,
+          "overall": 59
+        },
+        "reel": {
+          "duration_seconds": 18,
+          "audio": "Original audio only. No trending sound is confirmed for this format, and business accounts cannot use most commercial music. First half: real site sounds layered fast (trowel scrape, phone notification pings stacking up, a van door, a sigh). At 0:07 cut all sound to near silence, then one soft room tone and the clean thud of a pallet strap being released. Optional single dry voiceover from the team member at the end. Check in the TikTok and Reels apps on the day that the format is still live.",
+          "shots": [
+            {
+              "time": "0:00-0:02",
+              "visual": "Close-up of a team fitter's gloved hands (written consent on file, face optional) pressing a tile onto a half-finished wall in the team's own workshop or a staged practice board. The trowel stops mid-stroke as a phone buzzes off-frame.",
+              "on_screen_text": "Born to fit bathrooms.\nForced to chase four deliveries for one job.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:02-0:04",
+              "visual": "Phone screen in hand, notifications stacking one after another. Mocked up by the team with generic wording and no real courier or supplier names.",
+              "on_screen_text": "Bath: delivered.\nTaps: 'out for delivery'.\nTiles: 'next week'.\nTray: 'we'll call you'.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:04-0:07",
+              "visual": "Three quick handheld cuts, about one second each: a boxed bath alone in a bare corridor, an empty van floor, the half-tiled wall with a gap where the stop runs out.",
+              "on_screen_text": "Day three. Still no taps.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:07-0:08",
+              "visual": "Hard cut to black, then a locked-off shot fades up. Sound drops to near silence.",
+              "on_screen_text": "Or.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:08-0:12",
+              "visual": "Slow, controlled push-in on one delivery: pieces stacked neatly on a pallet, every box labelled. Hands release the strap.",
+              "on_screen_text": "One order. One delivery plan.",
+              "voiceover": ""
+            },
+            {
+              "time": "0:12-0:15",
+              "visual": "A printed design sheet laid on a dust sheet. A finger traces the tile and flooring quantities line by line. Warm workshop light, brushed gold pencil beside it.",
+              "on_screen_text": "Design sheet with tile and flooring quantities worked out for the room.",
+              "voiceover": "Everything for the job. On one plan."
+            },
+            {
+              "time": "0:15-0:18",
+              "visual": "The fitter folds the sheet into a back pocket and picks the trowel back up. End frame: cream text on navy-teal with the Bespoke Bathrooms wordmark small at the bottom.",
+              "on_screen_text": "Trade and fitters portal.\nComment TRADE for the link.",
+              "voiceover": ""
+            }
+          ],
+          "edit_notes": "Two halves, two speeds. 0:00 to 0:07: handheld, fast cuts, slightly cooler grade, text popping in line by line in Inter, cream on a translucent navy bar. 0:08 onwards: locked-off or slow gimbal, warm grade towards walnut and gold, headline in Cormorant Garamond. Both hook lines must be readable inside the first two seconds, so stagger them by about half a second. No logo until the final frame. Burn in captions for silent viewing. No customer homes, no customer faces, no real courier, supplier or competitor names on any screen. Keep the humour on the situation, never on a customer or another trade. Export 9:16, keep text inside the safe zones for TikTok and Reels buttons."
+        },
+        "slides": null,
+        "static_design": null,
+        "pinterest": null,
+        "moodboard_searches": [
+          "bathroom fitter tiling close up moody",
+          "labelled pallet delivery warehouse aesthetic",
+          "tradesman hands workshop cinematic",
+          "bathroom design sheet tile layout drawing"
+        ],
+        "caption": "Born to fit bathrooms. Forced to chase four deliveries for one job. If you fit for a living, you know the week. The bath turns up. The taps don't. The tiles are somewhere in a depot. Our trade and fitters portal puts the job on one order and one delivery plan, with a design sheet that has the tile and flooring quantities worked out. Fitters: what's the longest you've waited for the last piece of a job? Tell us below. Comment TRADE and we'll send you the portal link.",
+        "hashtags": [
+          "#bathroomfitter",
+          "#ukbathroomfitters",
+          "#installersofinstagram",
+          "#bathroomrenovation",
+          "#ukbathrooms",
+          "#homerenovationuk",
+          "#bespokebathroom",
+          "#bathroomdesign"
+        ],
+        "cta": "Comment TRADE for the trade and fitters portal link",
+        "lead_capture": "Comment keyword TRADE triggers an automated DM with the trade and fitters portal link [ADD: trade portal URL]. Reply to fitters' delivery stories in the comments to build the thread.",
+        "post_time": "Tuesday 1 December, 6:45am UK on TikTok (before first jobs start), then Instagram Reels at 12:30pm UK (lunch break on site)",
+        "production": "One team fitter (written consent for hands and, if used, face) plus one person filming on a phone with a gimbal. Shoot in the team's own workshop or stockroom, never a customer's home. Props: a staged half-tiled practice board, trowel and adhesive, one boxed bath, the van, one pallet of labelled boxes, a printed design sheet from the studio, a phone with mocked-up notifications made in a notes or design app (generic wording, no brand names). Record wild sound on set: trowel scrape, pings, van door, strap release. About 1.5 hours to shoot, 1 hour to edit and caption. Set up the TRADE comment-to-DM automation and add the portal URL before posting."
+      }
+    ],
+    "days": null,
+    "watch_outs": [
+      "NO-vember (i1) expires on 1 December. Post it today or tomorrow at the latest, and check in the Reels and TikTok apps that the format is still live, because the evidence comes from a third-party tracker.",
+      "Add to Cart (i3): the five-piece total of £11,333.84 is built only from the Brand Brain's hero prices. It is not the £11,533.84 'shop the look' room, so do not label it that. Check each price against the live product page before you film the counter.",
+      "Price placeholders: the heated towel rail and rain shower in i4 have no confirmed price. Fill the [ADD: price] slots from the website (VAT included) or swap in a hero product with a known price. Never estimate.",
+      "Black Friday tone across i3, i4 and i6: no 'deal', 'sale', 'cheap' or money-saving language, and no naming or knocking competitors. Use 'save' only to mean bookmarking a post, never money.",
+      "Audio: use original audio, voiceover, or real water, brass and paper sounds, or Meta's licensed library. No commercial tracks linked to these trends, and no trending sound unless it is confirmed cleared in-app for business accounts.",
+      "FMB statistic (i7): credit the Federation of Master Builders on screen with the April 2026 date, and quote it word for word. Do not round or reframe the 71% and 38% figures.",
+      "Coexist carousel (i5): show what is possible, not a promise for every room. A designer confirms layout, stock and lead times for each design, so avoid lines like 'any en-suite can take a walk-in shower'.",
+      "Lead times: no idea should promise 'fitted before Christmas' or any delivery date.",
+      "Consent: i3 and i8 use gloved team hands, team members with consent, renders and b-roll only. No customer homes or faces without written permission.",
+      "The £15,000 render in i2 must be the real studio design on the website (warm stone, gold finish), not a mock-up presented as the real one.",
+      "Trade CTA (i8) points to the trade portal. Make sure the link works before posting, because every other lead-gen post today points to the studio.",
+      "Proof gaps: there are no reviews, accreditations or service area in the Brand Brain yet. Keep today's trust claims to the brand's stated facts (one team, nothing ordered until you approve, design is free with no sign-up)."
+    ],
+    "sources": [
+      {
+        "title": "New Engen, Instagram Trends (updated 20 Nov 2026)",
+        "url": "https://newengen.com/insights/instagram-trends/"
+      },
+      {
+        "title": "SocialBee, Latest Instagram Trends (entries 5 to 26 Nov 2026)",
+        "url": "https://socialbee.com/blog/latest-instagram-trends/"
+      },
+      {
+        "title": "Virlo, What's working on TikTok and Instagram this week (23 to 27 Nov 2026)",
+        "url": "https://virlo.ai/trending-on-tiktok-this-week"
+      },
+      {
+        "title": "Official Charts, Spotify Wrapped 2026 release date",
+        "url": "https://www.officialcharts.com/chart-news/spotify-wrapped-2026-release-date/"
+      },
+      {
+        "title": "Homebuilding & Renovating, FMB survey on bathroom costs (28 Apr 2026)",
+        "url": "https://www.homebuilding.co.uk/rooms/bathroom/7-in-10-homeowners-underestimate-bathroom-renovation-costs-are-you-one-of-them"
+      },
+      {
+        "title": "FMB, homeowners underestimate bathroom costs",
+        "url": "https://www.fmb.org.uk/resource/fmb-warns-homeowners-wildly-underestimate-costs-of-new-bathroom.html"
+      },
+      {
+        "title": "The Star, Doors 2 Floors Black Friday campaign",
+        "url": "https://www.thestar.co.uk/community/doors-2-floors-unveils-first-black-friday-campaign-5414415"
+      },
+      {
+        "title": "Victorian Plumbing, Black Friday deals",
+        "url": "https://www.victorianplumbing.co.uk/black-friday-deals"
+      },
+      {
+        "title": "Drench, Black Friday",
+        "url": "https://www.drench.co.uk/c/sale/black-friday"
+      },
+      {
+        "title": "MEAN CEO, Instagram Trends November 2026",
+        "url": "https://blog.mean.ceo/instagram-trends-november-2026/"
+      },
+      {
+        "title": "Homes & Gardens UK, Bathroom trends 2027 (23 Oct 2026)",
+        "url": "https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027"
+      }
+    ],
+    "top_picks": [
+      "i2",
+      "i6",
+      "i3"
+    ]
+  },
+  "dossier": "# Research dossier: Bespoke Bathroom UK\n**Date:** Friday 27 November 2026 (Black Friday). **Window:** today to Saturday 5 December 2026. **Focus:** balanced, half reach and saves, half studio starts.\n\n**Before you read:** I found no bathroom or interiors trend on any platform with evidence from the last 14 days. The dated, current signals are general formats from third-party trend trackers (New Engen, SocialBee, Virlo), not from TikTok Creative Center or Instagram's own channels. Each idea below takes a live format and fills it with this brand's material. Treat momentum figures as third-party estimates.\n\n---\n\n## Trends\n\n### 1. \"It's NO-vember\": the list of things to stop doing\n- **Platforms:** Instagram Reels, TikTok, Facebook Reels\n- **Kind:** Text-led format with a deadline\n- **What it is:** Short \"no\" lines stacked under the month's name, each naming a habit to drop.\n- **Evidence:** New Engen's weekly tracker, updated 20 November 2026, lists it. It says the pun \"expires December 1\". The audio is usually original and the text does the work, so business accounts can use it.\n- **How we use it:** A Fitter's Eye piece. A slow push-in on a finished stone and brass wall while the lines land one at a time: \"NO-vember. No grout lines that don't match the tile layout. No bath that arrives three weeks before the taps. No price that turns up after the work starts. No second brief for the fitter to get wrong.\" Last frame: \"Start your design, free.\" This is the most urgent idea on the list: post today or tomorrow, because it dies on Tuesday.\n- **Brand fit:** 82\n- **Momentum:** Peaking, with a fixed end date\n- **Lifespan:** About 3 days (ends 1 December)\n- **Sources:** https://newengen.com/insights/instagram-trends/\n\n### 2. \"When life gives you…\": a carousel that builds to a reveal\n- **Platforms:** Instagram carousel, TikTok photo mode, Facebook\n- **Kind:** Carousel format\n- **What it is:** One element per slide, building to a surprise final slide.\n- **Evidence:** SocialBee added it on 26 November 2026, so it is one day old. The suggested brand use is showing the ingredients first and the finished product last.\n- **How we use it:** Material & Mood into Designed in 3D. \"When life gives you a £15,000 budget…\" Then one slide each for warm stone, gold finish, walnut vanity and tile quantities worked out, ending on the real studio render (£15,000, warm stone, gold). The caption asks people to save it. The CTA is \"Set your own budget, free.\"\n- **Brand fit:** 92\n- **Momentum:** New and rising\n- **Lifespan:** 2 to 3 weeks\n- **Sources:** https://socialbee.com/blog/latest-instagram-trends/\n\n### 3. \"These can coexist btw\" and \"It's cool to do both\": split-screen pairs\n- **Platforms:** Instagram carousel and Reels, TikTok, Pinterest (as a two-panel pin)\n- **Kind:** Split-screen or comparison format\n- **What it is:** Two things people assume are in conflict, shown side by side.\n- **Evidence:** SocialBee lists \"These can coexist btw\" on 26 November and \"It's cool to do both\" on 11 November 2026.\n- **How we use it:** Small-space and price myths. \"A small en-suite and a walk-in shower can coexist.\" \"A fixed budget and a stone basin can coexist.\" \"Seeing it in 3D and changing your mind can coexist (nothing is ordered until you approve).\" Each pair ends on a studio render. This makes good saveable \"this vs that\" content for inspiration savers.\n- **Brand fit:** 88\n- **Momentum:** Rising\n- **Lifespan:** 2 to 4 weeks\n- **Sources:** https://socialbee.com/blog/latest-instagram-trends/\n\n### 4. \"Some bills are non-negotiable. The bills:\"\n- **Platforms:** Instagram Reels, TikTok, Facebook Reels\n- **Kind:** Relatable list format\n- **What it is:** Small luxuries people refuse to cut from their budget.\n- **Evidence:** SocialBee added it on 11 November 2026 (16 days ago, just outside the 14-day line, but it sits with the 19 and 26 November entries and matches the Black Friday spending mood).\n- **How we use it:** For wellness and spa seekers. \"Some bills are non-negotiable. The bills:\" over close-ups of a heated towel rail, a rain shower, a Dell round LED demister mirror (£263.84) and a warm stone basin. Each piece gets its price with VAT, priced to the pound. It answers Black Friday without discount language: the point is what's worth paying for, not what's cheap.\n- **Brand fit:** 85\n- **Momentum:** Holding\n- **Lifespan:** 1 to 2 weeks\n- **Sources:** https://socialbee.com/blog/latest-instagram-trends/\n\n### 5. \"Add to Cart\": Black Friday's shopping format\n- **Platforms:** Instagram Reels, TikTok, Facebook Reels\n- **Kind:** Seasonal shopping format\n- **What it is:** Hands bring products into frame, and each one gets an \"add to cart\" reaction.\n- **Evidence:** New Engen named it the top November pick on 6 November and still listed it on 20 November 2026. It says the format \"showed up across several November trend roundups\". Original audio or a voiceover saying \"add to cart\" works for business accounts.\n- **How we use it:** Guess the Price meets Shop the Look. Gloved hands bring each piece of a room into frame: the vanity, the basin, the mixer, the mirror. A small running total in Inter, cream on navy, updates to the pound with VAT. The last beat: \"Or skip the cart. Design the whole room around your budget, free.\" It suits today because shoppers are in cart mode, but it never says \"sale\".\n- **Brand fit:** 78\n- **Momentum:** Peaking (it lasts while Black Friday and Cyber Monday run)\n- **Lifespan:** Until about 30 November, then the \"gift guide\" version runs into December\n- **Sources:** https://newengen.com/insights/instagram-trends/\n\n### 6. \"Born to… forced to…\"\n- **Platforms:** TikTok, Instagram Reels\n- **Kind:** Contrast and humour format\n- **What it is:** What you love doing set against the daily reality.\n- **Evidence:** SocialBee added it on 19 November 2026.\n- **How we use it:** The Bath Arrived Three Weeks Before the Taps series. \"Born to soak in a freestanding bath. Forced to share one shower with three teenagers.\" Or for trade: \"Born to fit bathrooms. Forced to chase four deliveries for one job.\" Use illustration, b-roll or a team member, never a customer's home. End with \"One order. One delivery plan.\"\n- **Brand fit:** 74\n- **Momentum:** Rising\n- **Lifespan:** 2 to 3 weeks\n- **Sources:** https://socialbee.com/blog/latest-instagram-trends/\n\n### 7. Year-end recaps (\"I feel like I haven't done much this year\", Wrapped season)\n- **Platforms:** Instagram Reels and carousel, TikTok, Facebook, YouTube Shorts\n- **Kind:** Seasonal recap format\n- **What it is:** A quiet opener, then one clip per month.\n- **Evidence:** New Engen listed it on 20 November 2026. Spotify Wrapped is predicted (not confirmed) for Wednesday 2 December 2026, and its launch usually sets off brand recaps.\n- **How we use it:** \"Our 2026, designed.\" One studio render or fitted room per month. A carousel version: \"Studio Wrapped: the most-picked style, the most-picked metal finish, the most common budget.\" **Only use real counts.** Leave placeholders such as [ADD: most-chosen style from studio data] rather than guessing. The trend's usual audio (Harry Styles, \"Coming Up Roses\") is licensed music, so business accounts should use original audio or a voiceover.\n- **Brand fit:** 72 (rises to 85 if the studio data is available)\n- **Momentum:** Rising into December\n- **Lifespan:** To about 31 December\n- **Sources:** https://newengen.com/insights/instagram-trends/ ; https://www.officialcharts.com/chart-news/spotify-wrapped-2026-release-date/\n\n### 8. Christmas wrapping-paper reveal\n- **Platforms:** Instagram Reels and Stories, TikTok, Facebook\n- **Kind:** Seasonal reveal format\n- **What it is:** Paper covers the frame and is torn open to reveal a product, offer or date.\n- **Evidence:** New Engen listed it on 20 November 2026. No set sound, so original audio or paper sounds are safe.\n- **How we use it:** Do it the calm way. Use cream paper with a gold edge, a slow tear and a real paper sound, then reveal a Screen to Room or render. Line: \"The gift that takes a weekend to plan: a bathroom designed before the new year.\" Avoid red-and-green clutter. It works best from Advent Sunday (29 November) onwards.\n- **Brand fit:** 66\n- **Momentum:** Rising\n- **Lifespan:** To about 24 December\n- **Sources:** https://newengen.com/insights/instagram-trends/\n\n### Aesthetic signals (useful, but not trends under the 14-day rule)\n- **Warm textures and bathrooms that feel like rooms:** Homes & Gardens UK, 23 October 2026. It names bold material pairings (\"something small and glossy with a large, dramatic slab of stone\"), design-led brassware and personalised tile layouts. Ideal Home (6 August 2026) says sky blue, pattern play and \"bathrooms that don't feel like bathrooms\" will carry into 2027. These suit the Spanish to Japanese and One Piece, Three Rooms series.\n- **Dulux Colour of the Year 2027, Soulful Sage:** announced 8 September 2026. Good for a Material & Mood carousel: sage with warm stone, walnut and brushed gold.\n- **Ignore:** \"0 to 100 loading transformation\" is marked fading by Virlo. \"He wanna pay full price SNL\" is rising on TikTok, but no tracker explains the format and it uses SNL broadcast audio, so it carries a licensing risk.\n\n---\n\n## Moments in the window (dated)\n\n| Date | Moment | How to use it |\n|---|---|---|\n| Fri 27 Nov | Black Friday | Run trends 4 and 5. Message: honest prices, no sale language. |\n| Sat 28 Nov | US Small Business Saturday (not the UK date) | Ignore. |\n| Sun 29 Nov | Advent Sunday (calendar date) | Start the wrapping-paper reveal and \"plan it before the new year\" messages. |\n| Mon 30 Nov | Cyber Monday; St Andrew's Day | Final \"Add to Cart\" push. Last day for NO-vember. A Scottish nod only if the fitting team covers Scotland [ADD: service area]. |\n| Tue 1 Dec | NO-vember ends; Advent calendars start | Switch to December formats. A 24-day \"one detail a day\" Stories series is an option. |\n| Wed 2 Dec | Spotify Wrapped (predicted, not confirmed) | Post \"Our 2026, designed\" within 24 hours of launch. |\n| Thu 3 Dec | Pantone Colour of the Year 2027 public event in Miami (reveal date not confirmed) | Be ready with a \"Pantone in a bathroom\" studio render the day it's revealed. |\n| Sat 5 Dec | Small Business Saturday UK (smallbusinesssaturdayuk.com) | A \"meet the team\" Fitted by Our Team piece. |\n| Weather | No current Met Office forecast found for this week; the latest evidence is from mid-November | Check the Met Office on the day. A cold snap would justify a heating and towel-rail post. |\n\n---\n\n## What is working for comparable brands\nI couldn't find evidence from the last 14 days of specific high-performing posts from Victorian Plumbing, C.P. Hart, Drench, Lusso or the other competitors, so I'm not reporting any. What the research does show:\n- **Black Friday is mostly discount-led.** Victorian Plumbing, Drench and Sanctuary run Black Friday pages, but those I could see were labelled 2025 or carried over. Doors 2 Floors ran its first Black Friday campaign, and its MD said renovation plans are being scaled back because of price rises. This leaves room for a calm, price-transparent voice.\n- **Small shops on TikTok:** Virlo's 24 November note covers three viral selling formats small shops use, including product demos and packing orders. Our version is delivery day and the \"one delivery plan\" story.\n- **Price-led framing outperforms:** Virlo's 26 November note found a $20 meal plating got 4.5M views while the same creator's $12 meal got 75K. It's outside our category, but it supports showing exact prices on screen.\n- **Platform direction:** MEAN CEO's November guide (secondary source) favours search-friendly Reels, saveable carousels and DM-based conversion. That supports comment-to-DM and keyword-led on-screen text.\n- **Bathroom TikTok in general:** DIY fails and mismatched-tile reveals keep resurfacing, but the examples I found were from 2023 to 2025. We can use the pain in our own story, but we should never mock a real person.\n\n---\n\n## Lead-gen angles\n1. **The expectation gap (Know Before You Renovate):** A Federation of Master Builders survey (reported 28 April 2026) found 71% of homeowners expect a bathroom renovation to cost under £10,000, and only 38% knew labour is the most expensive part. Its chief executive said: \"Most homeowners are budgeting for the bathroom they imagine, not the bathroom they'll actually get.\" Hook: \"You're budgeting for the bathroom you imagine.\" Then the Budget Ladder, ending with \"See yours priced to the pound, free.\" Cite the FMB on screen.\n2. **Black Friday without a discount:** \"No countdown. No 'from' prices. Just your room, priced to the pound, before you pay anything.\" Link to the studio.\n3. **\"When life gives you £X\" (trend 2):** Add a comment-to-DM: comment PLAN to get the planning checklist.\n4. **Facebook lead form for January planners:** Older, local homeowners plan over the holidays. Offer \"Talk to a designer\" and the [COST] budget-tiers guide. Wait until the service area is filled in before targeting locally.\n5. **Your Bathroom, Redesigned, festive edition:** \"Send us your bathroom before Christmas, we'll redesign it on camera.\" Use the comment DESIGN mechanic, and get written permission before showing any home.\n\n---\n\n## Watch-outs\n- **Audio:** Commercial tracks linked to these trends (Harry Styles, Wham!'s \"Last Christmas\", the Finneas \"My Moon My Man\" cover, the SNL clip) are not safe for business accounts. Use original audio, voiceover, real sounds (water, paper, brass) or Meta's licensed library, and check in the app before posting.\n- **Price mismatch to resolve:** The six hero products add up to £12,495.84. The Brand Brain says the six-piece \"shop the look\" room totals £11,533.84, so the hero list and that room are not the same six pieces. Check which six make up £11,533.84 before showing a running total.\n- **Recap data:** Every studio count needs real figures. Use [ADD:] placeholders until they arrive.\n- **Black Friday tone:** Avoid \"deal\", \"sale\", \"save\" and \"cheap\", and don't name or knock competitors.\n- **Consent:** Never show a customer's face or home without written permission. Use renders, studio b-roll or team members.\n- **Timings:** Don't promise \"fitted before Christmas\" or any lead time. The designer confirms stock and lead times per design.\n- **Third-party data:** Every trend here comes from aggregators. Check the format is still live in the Reels and TikTok apps on the day you post.\n- **Proof gaps:** There are still no reviews, accreditations or service area in the Brand Brain. Trust content should wait for those.\n\n---\n\n## Sources\n- New Engen, Instagram Trends (updated 20 Nov 2026): https://newengen.com/insights/instagram-trends/\n- SocialBee, Latest Instagram Trends (entries 5 to 26 Nov 2026): https://socialbee.com/blog/latest-instagram-trends/\n- Virlo, What's working on TikTok and Instagram this week (23 to 27 Nov 2026): https://virlo.ai/trending-on-tiktok-this-week\n- Virlo, TikTok trends of November 2026: https://virlo.ai/trends/2026-11\n- Virlo, What worked on TikTok and Instagram, week of 2 Nov 2026: https://virlo.ai/trending-on-tiktok-this-week/2026-11-02\n- Virlo, Trending songs on Instagram: https://virlo.ai/data/trending-songs-on-instagram\n- Buffer, Trending sounds on Instagram, November 2026: https://buffer.com/resources/trending-audio-instagram/\n- SocialPilot, TikTok Trends November 2026: https://www.socialpilot.co/blog/tiktok-trends\n- MEAN CEO, Instagram Trends November 2026: https://blog.mean.ceo/instagram-trends-november-2026/\n- MEAN CEO, Viral YouTube Video Trends November 2026: https://blog.mean.ceo/viral-youtube-video-trends-november-2026/\n- Metricool, Instagram Updates and News 2026: https://metricool.com/instagram-news/\n- Social Media Today, Pinterest Creators to Watch (17 Nov 2026): https://www.socialmediatoday.com/news/pinterest-shares-its-first-creators-to-watch-list/874969\n- Official Charts, Spotify Wrapped 2026 release date: https://www.officialcharts.com/chart-news/spotify-wrapped-2026-release-date/\n- Pantone, Colour of the Year (2027 events): https://www.pantone.com/en-GB/color-of-the-year\n- Small Business Saturday UK: https://smallbusinesssaturdayuk.com/\n- Met Office, 10-day trend (12 Nov 2026): https://www.metoffice.gov.uk/blog/2026/10-day-trend-cold-and-frosty-before-a-wetter-and-windier-change\n- Homes & Gardens UK, Bathroom trends 2027 (23 Oct 2026): https://www.homesandgardens.com/uk/decor/bathrooms/bathroom-trends-2027\n- Ideal Home, 2026 bathroom trends to last into 2027 (6 Aug 2026): https://www.idealhome.co.uk/all-rooms/bathroom/2026-bathroom-trends-to-last-into-2027\n- Dezeen, Dulux Colour of the Year 2027 (8 Sep 2026): https://dezeen.com/2026/09/08/sage-green-colour-year-2027-dulux\n- Homes & Gardens, Dulux Soulful Sage: https://www.homesandgardens.com/uk/decor/paint/dulux-colour-of-the-year-2027-soulful-sage\n- Homebuilding & Renovating, FMB survey (28 Apr 2026): https://www.homebuilding.co.uk/rooms/bathroom/7-in-10-homeowners-underestimate-bathroom-renovation-costs-are-you-one-of-them\n- FMB, homeowners underestimate bathroom costs: https://www.fmb.org.uk/resource/fmb-warns-homeowners-wildly-underestimate-costs-of-new-bathroom.html\n- The Star, Doors 2 Floors Black Friday campaign: https://www.thestar.co.uk/community/doors-2-floors-unveils-first-black-friday-campaign-5414415\n- Victorian Plumbing, Black Friday deals: https://www.victorianplumbing.co.uk/black-friday-deals\n- Drench, Black Friday: https://www.drench.co.uk/c/sale/black-friday\n- Sanctuary Bathrooms, Black Friday: https://www.sanctuary-bathrooms.co.uk/sale/black-friday"
+}

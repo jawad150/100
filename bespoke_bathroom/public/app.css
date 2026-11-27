@@ -293,7 +293,7 @@ main { width: min(1320px, calc(100% - 28px)); margin: 22px auto 80px; }
 :root[data-theme="light"] .notice .n-icon { color: var(--gold-dark); }
 .notice .n-icon svg { width: 20px; height: 20px; }
 .notice p { margin: 2px 0 0; color: var(--text-2); font-size: 13.5px; }
-.notice .btn { margin-left: auto; }
+.notice .btn { margin-left: auto; flex: none; white-space: nowrap; }
 
 /* ---------- brief ---------- */
 .brief-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 26px 4px 0; }
@@ -528,4 +528,19 @@ input:focus, select:focus, textarea:focus { border-color: rgba(228,201,155,0.6);
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* Inline commands, such as the sign-in command */
+code {
+  font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--glass-bottom);
+  border: 1px solid var(--glass-border);
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+[data-theme="light"] code {
+  color: var(--gold-dark);
 }

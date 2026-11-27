@@ -119,6 +119,8 @@ const niceDate = (iso, opts = { weekday: "long", day: "numeric", month: "long" }
   new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { ...opts, timeZone: "UTC" });
 const timeOf = (iso) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
 const money = (n) => (n == null ? "" : `$${Number(n).toFixed(2)}`);
+// Runs on the Claude plan carry no charge of their own: show that instead of a price.
+const costLabel = (usage) => (usage?.billing === "plan" ? "Claude plan" : money(usage?.cost));
 
 function greeting() {
   const h = Number(new Date().toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Europe/London" }));
@@ -174,9 +176,9 @@ function updateStatusPill() {
   if (S.job) {
     pill.classList.add("busy");
     label.textContent = S.job.type === "learn" ? "Learning the brand" : "Researching";
-  } else if (!S.status?.hasKey) {
+  } else if (!S.status?.signedIn) {
     pill.classList.add("off");
-    label.textContent = "Add API key";
+    label.textContent = "Not signed in";
   } else {
     label.textContent = S.status?.todayDaily ? "Up to date" : "Ready";
   }
@@ -294,37 +296,37 @@ function bindStudioControls() {
 function renderNotice() {
   const slot = $("#noticeSlot");
   if (!slot) return;
-  if (S.status?.hasKey || S.job) {
+  if (S.status?.signedIn || S.job) {
     slot.innerHTML = "";
     return;
   }
   slot.innerHTML = `
   <div class="notice glass">
     <span class="n-icon">${I.key}</span>
-    <div><b>Switch on live research</b><p>Add your Anthropic API key once. After that, every morning the studio researches the day's trends on its own when you open it. You're looking at the launch brief researched on 26 November.</p></div>
-    <button class="btn primary small" id="addKeyBtn">${I.key}Add API key</button>
+    <div><b>Switch on live research</b><p>Sign Claude Code in to your Claude plan once on this computer: open a terminal and run <code>${esc(S.status?.signInCommand || "claude auth login")}</code>. After that, every morning the studio researches the day's trends on its own when you open it. You're looking at the launch brief researched on 26 November.</p></div>
+    <button class="btn primary small" id="recheckBtn">${I.key}I've signed in</button>
   </div>`;
-  $("#addKeyBtn").addEventListener("click", openSettings);
+  $("#recheckBtn").addEventListener("click", recheckSignIn);
 }
 
 // ------------------------------------------------------------------ research jobs
 async function startResearch(kind, { auto = false } = {}) {
   if (S.job) return toast("Research is already running");
-  if (!S.status?.hasKey) {
+  if (!S.status?.signedIn) {
     openSettings();
-    return toast("Add your Anthropic API key to run live research", "err");
+    return toast("Sign in to your Claude plan to run live research", "err");
   }
   const sources = [...S.sources];
   try {
     const { job } = await api("/api/research", {
       method: "POST",
-      body: { kind, focus: S.focus, sources, pinterest: S.pinterest },
+      body: { kind, focus: S.focus, sources, pinterest: S.pinterest, auto },
     });
     toast(auto ? "Good morning. Researching today's trends for you" : kind === "forecast" ? "Planning the next three days" : "Researching today's trends");
     attachJob(job);
   } catch (err) {
     if (err.status === 409 && err.data?.job) attachJob(err.data.job);
-    else toast(err.message, "err");
+    else if (!(auto && err.data?.skipped)) toast(err.message, "err");
   }
 }
 
@@ -358,7 +360,7 @@ function attachJob(job) {
     } else if (e.kind === "progress") {
       L.ideas = e.count;
     } else if (e.kind === "usage") {
-      L.cost = e.usage.cost;
+      L.usage = e.usage;
     } else if (e.kind === "done") {
       es.close();
       onJobDone(job, e.result);
@@ -429,7 +431,7 @@ function renderLive(partial = false) {
         <div><b data-c="searches">${L.searches}</b><span>Searches</span></div>
         <div><b data-c="reads">${L.reads}</b><span>Pages read</span></div>
         <div><b data-c="ideas">${L.ideas}</b><span>Ideas</span></div>
-        <div><b data-c="cost">${money(L.cost)}</b><span>Cost so far</span></div>
+        <div><b data-c="cost">${costLabel(L.usage) || "Claude plan"}</b><span>${L.usage && L.usage.billing !== "plan" ? "Cost so far" : "Billed to"}</span></div>
       </div>
     </div>
     <div>
@@ -447,7 +449,7 @@ function renderLive(partial = false) {
     // update in place so the orb keeps spinning smoothly
     slot.querySelector("#liveText").textContent = L.text;
     for (const k of ["searches", "reads", "ideas"]) slot.querySelector(`[data-c="${k}"]`).textContent = L[k];
-    slot.querySelector('[data-c="cost"]').textContent = money(L.cost);
+    slot.querySelector('[data-c="cost"]').textContent = costLabel(L.usage) || "Claude plan";
     slot.querySelector(".stages").innerHTML = stages
       .map(([k, l], i) => `<span class="stage ${i < cur ? "done" : i === cur ? "now" : ""}"><i></i>${l}</span>`)
       .join("");
@@ -513,7 +515,7 @@ function renderBriefArea() {
       ${rec.pinterest ? `<span class="badge pin">Pinterest Lab</span>` : ""}
       ${rec.sample ? `<span class="badge teal">Launch brief</span>` : ""}
       <span class="badge">${created.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Europe/London" })} · ${timeOf(rec.created_at)}</span>
-      ${rec.usage?.cost != null ? `<span class="badge">Cost ${money(rec.usage.cost)}</span>` : ""}
+      ${rec.usage?.billing === "plan" ? `<span class="badge">Claude plan</span>` : rec.usage?.cost != null ? `<span class="badge">Cost ${money(rec.usage.cost)}</span>` : ""}
     </div>
   </section>
 
@@ -781,7 +783,7 @@ function bindIdeaActions(idea, planItem) {
     })
   );
   const doRework = async (instruction, btn) => {
-    if (!S.status?.hasKey) return (openSettings(), toast("Add your API key to rework ideas", "err"));
+    if (!S.status?.signedIn) return (openSettings(), toast("Sign in to your Claude plan to rework ideas", "err"));
     btn.disabled = true;
     const old = btn.innerHTML;
     btn.innerHTML = `${I.refresh}Reworking…`;
@@ -926,7 +928,7 @@ async function renderHistory() {
       <div><div class="d">${esc(niceDate(m.date, { weekday: "short", day: "numeric", month: "short" }))}</div><span class="faint" style="font-size:12px">${timeOf(m.created_at)}</span></div>
       <div>
         <div class="h">${esc(m.headline ?? "")}</div>
-        <div class="tags"><span class="badge gold">${m.kind === "forecast" ? "3-day plan" : "Daily"}</span><span class="badge">${esc(FOCUS_LABEL[m.focus] ?? m.focus)}</span>${m.pinterest ? '<span class="badge pin">Pinterest</span>' : ""}<span class="badge">${m.ideas} ideas</span>${m.cost != null ? `<span class="badge">${money(m.cost)}</span>` : ""}${m.sample ? '<span class="badge teal">Launch brief</span>' : ""}</div>
+        <div class="tags"><span class="badge gold">${m.kind === "forecast" ? "3-day plan" : "Daily"}</span><span class="badge">${esc(FOCUS_LABEL[m.focus] ?? m.focus)}</span>${m.pinterest ? '<span class="badge pin">Pinterest</span>' : ""}<span class="badge">${m.ideas} ideas</span>${m.billing === "plan" ? `<span class="badge">Claude plan</span>` : m.cost != null ? `<span class="badge">${money(m.cost)}</span>` : ""}${m.sample ? '<span class="badge teal">Launch brief</span>' : ""}</div>
       </div>
       <div class="acts">
         <button class="btn small" data-open="${esc(m.id)}">${I.open}Open</button>
@@ -1060,7 +1062,7 @@ async function saveBrand() {
 }
 
 async function startLearn() {
-  if (!S.status?.hasKey) return (openSettings(), toast("Add your API key so the agent can read the website", "err"));
+  if (!S.status?.signedIn) return (openSettings(), toast("Sign in to your Claude plan so the agent can read the website", "err"));
   try {
     const { job } = await api("/api/brand/learn", { method: "POST", body: { website: $('[data-k="website"]').value } });
     openModal(`<button class="icon-btn close-x" data-close aria-label="Close">${I.x}</button>
@@ -1166,37 +1168,40 @@ async function openSettings() {
   openModal(`
     <button class="icon-btn close-x" data-close aria-label="Close">${I.x}</button>
     <span class="eyebrow">Settings</span><h2>Research engine</h2>
-    <p class="muted">The studio uses Claude with live web search. Your key stays on this computer in data/config.json.</p>
+    <p class="muted">The studio uses Claude with live web search, through the Claude plan signed in to Claude Code on this computer. Research uses your plan's allowance, not API credits, and no API key is needed.</p>
     <div class="stack">
-      <div class="field"><label for="sKey">Anthropic API key</label>
-        <input type="password" id="sKey" placeholder="${st.keySource ? `Saved (${esc(st.keyPreview || "from .env")}). Paste a new key to replace it` : "sk-ant-..."}" autocomplete="off" />
-        <small>Get one at console.anthropic.com. ${st.keySource === "env" ? "Currently read from the .env file." : ""}</small>
+      <div class="field"><label>Claude plan</label>
+        <p style="margin:0">${st.signedIn ? `Signed in${st.plan ? ` (${esc(st.plan)} plan)` : ""}. Live research is on.` : `Not signed in. Open a terminal and run <code>${esc(st.signInCommand)}</code>, then press Check again.`}</p>
+        <small>To switch accounts, run <code>${esc(st.signInCommand)}</code> again.</small>
       </div>
       <div class="form-grid">
         <div class="field"><label for="sModel">Model</label><select id="sModel">${st.models.map((m) => `<option value="${m.id}" ${st.model === m.id ? "selected" : ""}>${esc(m.label)}</option>`).join("")}</select></div>
         <div class="field"><label for="sDepth">Research depth</label><select id="sDepth"><option value="standard" ${st.depth === "standard" ? "selected" : ""}>Standard (about 15 searches)</option><option value="deep" ${st.depth === "deep" ? "selected" : ""}>Deep (about 30 searches)</option></select></div>
       </div>
       <label class="check-row" style="cursor:pointer"><input type="checkbox" id="sAuto" ${st.autoResearch ? "checked" : ""} /><span><b>Daily auto-research</b>Research today's trends automatically the first time you open the studio each day.</span></label>
-      <p class="faint" style="font-size:12px;margin:0">Each run's cost is shown live while it runs and saved with the brief. Server-side fallback is on, so a declined request retries on a fallback model automatically.</p>
-      <div style="display:flex;gap:8px;justify-content:flex-end">${st.keySource === "settings" ? `<button class="btn danger" id="sClear">${I.trash}Remove key</button>` : ""}<button class="btn primary" id="sSave">Save settings</button></div>
+      <p class="faint" style="font-size:12px;margin:0">Runs count towards your Claude plan's usage limits. A deep run or a 3-day plan uses more of the allowance than a standard daily brief.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">${st.signedIn ? "" : `<button class="btn" id="sRecheck">Check again</button>`}<button class="btn primary" id="sSave">Save settings</button></div>
     </div>`);
   $("#sSave").addEventListener("click", async () => {
     const body = { model: $("#sModel").value, depth: $("#sDepth").value, autoResearch: $("#sAuto").checked };
-    const key = $("#sKey").value.trim();
-    if (key) body.apiKey = key;
     await api("/api/settings", { method: "PUT", body });
     await loadStatus();
     closeModal();
     renderNotice();
-    toast(key ? "Key saved. Live research is on" : "Settings saved");
+    toast("Settings saved");
   });
-  $("#sClear")?.addEventListener("click", async () => {
-    await api("/api/settings", { method: "PUT", body: { apiKey: "" } });
-    await loadStatus();
+  $("#sRecheck")?.addEventListener("click", async () => {
     closeModal();
-    renderNotice();
-    toast("Key removed");
+    await recheckSignIn();
   });
+}
+
+async function recheckSignIn() {
+  await api("/api/status?fresh=1").catch(() => null);
+  await loadStatus();
+  renderNotice();
+  if (S.status?.signedIn) toast("Signed in. Live research is on");
+  else toast(`Still not signed in. Run ${S.status?.signInCommand || "claude auth login"} in a terminal`, "err");
 }
 
 // ------------------------------------------------------------------ theme + glass sheen
@@ -1267,7 +1272,7 @@ window.addEventListener("resize", moveGlider);
   render();
   moveGlider();
   // Keep the bot up to date: research today's trends the first time the studio opens each day.
-  if (st.autoResearch && st.hasKey && !st.todayDaily && !st.job && !S.autoTried) {
+  if (st.autoResearch && st.signedIn && !st.todayDaily && !st.autoRanToday && !st.job && !S.autoTried) {
     S.autoTried = true;
     startResearch("daily", { auto: true });
   }

@@ -113,6 +113,31 @@ export const BriefSchema = z.object({
 
 export const SingleIdeaSchema = z.object({ idea: IdeaSchema });
 
+// A list of full ideas compiles to a grammar too large for structured outputs, so a brief
+// is written in two steps: this plan (with a short outline per idea), then each idea in
+// full with SingleIdeaSchema. The assembled result still matches BriefSchema.
+export const IdeaOutlineSchema = z.object({
+  id: z.string().describe("Short unique id: 'i1', 'i2' and so on, in rank order"),
+  title: z.string(),
+  format: z.enum(FORMATS),
+  platforms: z.array(Platform),
+  goal: z.enum(GOALS),
+  pillar: z.string().describe("One of the brand's content pillars"),
+  trend: z.string().describe("Name of the trend or moment it rides, or 'Evergreen'"),
+  day: z.string().nullable().describe("ISO date (YYYY-MM-DD) to post it, for forecast briefs; null otherwise"),
+  angle: z.string().describe("The hook direction and concept in one or two sentences, so the full idea can be written from it"),
+});
+
+export const BriefPlanSchema = z.object({
+  headline: z.string().describe("One line that sums up the opportunity today"),
+  summary: z.string().describe("Three to five sentences: what is moving and what we should do about it"),
+  trends: z.array(TrendSchema),
+  idea_outlines: z.array(IdeaOutlineSchema).describe("The ideas, ranked best first"),
+  days: z.array(DaySchema).nullable().describe("Three-day plan for forecast briefs; null for daily briefs"),
+  watch_outs: z.array(z.string()).describe("Things to avoid or check (licensing, claims, tone)"),
+  sources: z.array(z.object({ title: z.string(), url: z.string() })),
+});
+
 export const BrandUpdateSchema = z.object({
   summary: z.string().describe("What was learned and from where"),
   updates: z.object({

@@ -9,6 +9,7 @@ import { ResearchEngine, MODELS, EngineError, scoreIdeas } from "./lib/research.
 import { windowDates } from "./lib/prompts.js";
 import { renderBriefPdf, renderStrategyPdf } from "./lib/pdf.js";
 import { PLATFORMS } from "./lib/schema.js";
+import { authStatus, SIGN_IN_COMMAND } from "./lib/auth.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 try {
@@ -81,16 +82,19 @@ const wrap = (fn) => (req, res) =>
     res.status(500).json({ error: err.message || "Something went wrong" });
   });
 
-app.get("/api/status", (req, res) => {
+app.get("/api/status", async (req, res) => {
   const today = londonDate();
   const briefs = store.listBriefs();
   const todays = briefs.filter((b) => b.date === today && !b.sample);
   const cfg = store.getConfig();
+  const auth = await authStatus({ fresh: req.query.fresh === "1" });
   res.json({
     today,
     todayNice: windowDates("daily", today).label,
-    hasKey: !!store.keySource(),
-    keySource: store.keySource(),
+    signedIn: auth.signedIn,
+    authSource: auth.source,
+    plan: auth.plan,
+    signInCommand: SIGN_IN_COMMAND,
     model: cfg.model,
     depth: cfg.depth,
     autoResearch: cfg.autoResearch,
@@ -98,6 +102,7 @@ app.get("/api/status", (req, res) => {
     defaultSources: cfg.defaultSources,
     todayDaily: todays.find((b) => b.kind === "daily") ?? null,
     todayForecast: todays.find((b) => b.kind === "forecast") ?? null,
+    autoRanToday: cfg.lastAutoResearch === today,
     latest: briefs[0] ?? null,
     job: jobInfo(runningJob()),
     models: MODELS,
@@ -130,6 +135,12 @@ app.get(
 // Research jobs
 app.post("/api/research", (req, res) => {
   if (runningJob("research")) return res.status(409).json({ error: "Research is already running", job: jobInfo(runningJob("research")) });
+  // Auto-research runs at most once a day, even if that run fails, so reopening the
+  // studio never starts another paid run on its own.
+  if (req.body.auto) {
+    if (store.getConfig().lastAutoResearch === londonDate()) return res.status(409).json({ error: "Auto-research already ran today", skipped: true });
+    store.saveConfig({ lastAutoResearch: londonDate() });
+  }
   const kind = req.body.kind === "forecast" ? "forecast" : "daily";
   const focus = ["balanced", "leadgen", "brand"].includes(req.body.focus) ? req.body.focus : "balanced";
   const pinterest = !!req.body.pinterest;
@@ -165,6 +176,7 @@ app.post("/api/research", (req, res) => {
     })
     .catch((err) => {
       const e = err instanceof EngineError ? err : new EngineError(String(err?.message || err), "unknown");
+      console.error(`  Research failed (${e.code}): ${e.message}`);
       finish(job, "error", { message: e.message, code: e.code });
     });
 });
@@ -204,10 +216,11 @@ app.post(
       record.brief.ideas[idx] = idea;
       scoreIdeas(record.brief, record.focus);
       record.usage = record.usage ?? {};
-      record.usage.cost = (record.usage.cost ?? 0) + usage.cost;
+      if (usage.cost != null) record.usage.cost = (record.usage.cost ?? 0) + usage.cost;
       store.saveBrief(record);
       res.json({ idea: record.brief.ideas[idx], top_picks: record.brief.top_picks });
     } catch (err) {
+      console.error(`  Rework failed (${err.code ?? "unknown"}): ${err.message}`);
       res.status(err.code === "auth" ? 401 : 502).json({ error: err.message, code: err.code });
     }
   })
@@ -229,7 +242,10 @@ app.post("/api/brand/learn", (req, res) => {
   engine
     .learnBrand({ website, handles, onEvent: (e) => emit(job, e), signal: job.controller.signal })
     .then(({ proposal, usage }) => finish(job, "done", { proposal, usage }))
-    .catch((err) => finish(job, "error", { message: err.message, code: err.code }));
+    .catch((err) => {
+      console.error(`  Brand learning failed (${err.code ?? "unknown"}): ${err.message}`);
+      finish(job, "error", { message: err.message, code: err.code });
+    });
 });
 
 // Strategy
@@ -260,12 +276,14 @@ app.delete("/api/plan/:id", (req, res) => {
 });
 
 // Settings
-app.get("/api/settings", (req, res) => {
+app.get("/api/settings", async (req, res) => {
   const cfg = store.getConfig();
-  const k = cfg.apiKey || "";
+  const auth = await authStatus({ fresh: true });
   res.json({
-    keySource: store.keySource(),
-    keyPreview: k ? `${k.slice(0, 7)}…${k.slice(-4)}` : "",
+    signedIn: auth.signedIn,
+    authSource: auth.source,
+    plan: auth.plan,
+    signInCommand: SIGN_IN_COMMAND,
     model: cfg.model,
     depth: cfg.depth,
     autoResearch: cfg.autoResearch,
@@ -277,7 +295,6 @@ app.get("/api/settings", (req, res) => {
 app.put("/api/settings", (req, res) => {
   const patch = {};
   const b = req.body ?? {};
-  if (typeof b.apiKey === "string") patch.apiKey = b.apiKey.trim();
   if (MODELS.some((m) => m.id === b.model)) patch.model = b.model;
   if (["standard", "deep"].includes(b.depth)) patch.depth = b.depth;
   if (typeof b.autoResearch === "boolean") patch.autoResearch = b.autoResearch;
@@ -287,8 +304,8 @@ app.put("/api/settings", (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, HOST, () => {
+app.listen(PORT, HOST, async () => {
   const url = `http://localhost:${PORT}`;
   console.log(`\n  Bespoke Bathroom UK · Social Studio\n  Open ${url}\n`);
-  if (!store.keySource()) console.log("  No API key yet: add it in Settings (or put ANTHROPIC_API_KEY in .env).\n");
+  if (!(await authStatus()).signedIn) console.log(`  Claude Code is not signed in to a Claude plan yet: run ${SIGN_IN_COMMAND} once on this computer.\n`);
 });

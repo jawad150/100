@@ -9,11 +9,20 @@ A local web app that runs the brand's social media content desk. It researches w
 3. Mac: double-click `start.command`. Windows: double-click `start.bat`. Linux: run `./start.sh`.
 4. Your browser opens at http://localhost:4321.
 
+To have Claude Code set everything up for you instead, paste the prompt in [OPEN-WITH-CLAUDE.md](OPEN-WITH-CLAUDE.md).
+
 ## First time only
 
-1. Click the gear icon (Settings).
-2. Paste your Anthropic API key (from console.anthropic.com) and press Save.
-3. Leave "Daily auto-research" on.
+The studio has no API key. It runs on the Claude plan (Pro, Max or higher) signed in to Claude Code on this computer, so research uses the plan's allowance, not API credits.
+
+1. Install Claude Code, once, if it is not already installed (code.claude.com).
+2. Open a terminal and run `claude auth login` (on Windows PowerShell, `claude.cmd auth login`). Your browser opens; sign in with the account that has your Claude plan, and paste the code back into the terminal if it asks.
+3. Back in the studio, press **I've signed in**. Live research is now on.
+4. In Settings (the gear icon), leave "Daily auto-research" on.
+
+If research ever says Claude Code is not signed in, run the sign-in command again.
+
+Use the studio on your own computer with your own plan. Anthropic does not allow claude.ai plan sign-in in tools offered to other people, so a team that shares the studio needs each person on their own plan, or an API key set-up instead.
 
 ## Every day
 
@@ -33,6 +42,6 @@ A local web app that runs the brand's social media content desk. It researches w
 
 ## Good to know
 
-- Everything is stored in the `data` folder on this computer. Your API key stays in `data/config.json` and is never committed.
-- Each research run's cost is shown live and saved with the brief. Settings lets you switch to Sonnet 5.5 for faster, cheaper runs or Deep research for more searches.
+- Everything is stored in the `data` folder on this computer. No key is stored by the studio: the sign-in lives with Claude Code.
+- Runs count towards your Claude plan's usage limits, so briefs show "Claude plan" instead of a price. Settings lets you switch to Sonnet 5.5 for faster runs that use less of the allowance, or Deep research for more searches.
 - The three "launch" briefs from 26 November 2026 were researched by hand from sourced trend reports so the studio has real content before the first live run.
